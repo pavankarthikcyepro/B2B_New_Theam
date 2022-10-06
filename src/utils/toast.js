@@ -38,7 +38,12 @@ export const showToastSucess = (title) => {
 // ----------------------------------------
 
 export const showToastRedAlert = (title) => {
-    let msg = title.charAt(0).toUpperCase() + title.slice(1)
+    let msg = '';
+    try {
+        msg = title.charAt(0).toUpperCase() + title.slice(1)
+    } catch (e) {
+        Alert.alert('Error occurred: ');
+    }
     if (Platform.OS === 'ios') {
         Snackbar.show({
             text: msg,

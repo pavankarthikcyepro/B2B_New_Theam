@@ -539,6 +539,7 @@ const LeadsScreen = ({navigation}) => {
                                                         route = AppNavigator.EmsStackIdentifiers.bookingForm;
                                                         break;
                                                     case 'PRE_BOOKING':
+                                                    case 'PREBOOKING':
                                                         route = AppNavigator.EmsStackIdentifiers.preBookingForm;
                                                         break;
 

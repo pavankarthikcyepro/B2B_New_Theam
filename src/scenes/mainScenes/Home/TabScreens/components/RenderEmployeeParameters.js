@@ -27,18 +27,17 @@ export const RenderEmployeeParameters = (parameter) => {
 
     const {params, item, color, displayType} = parameter;
     const paramsData = params.map(({paramName}) => paramName);
-    console.log('PARAMS in Employee Params: ', paramsData);
 
     return (
         <>
             {
-                paramsData.map((param) => {
+                paramsData.map(param => {
                     const selectedParameter = item.targetAchievements.filter((x) => x.paramName === param)[0];
                     const enquiryParameter = item.targetAchievements.filter((item) => item.paramName === 'Enquiry')[0];
 
                     const elementColor = getColor(Number(selectedParameter.achievment), Number(selectedParameter.target));
                     return (
-                        <View style={[styles.itemBox, {width: param === "Accessories" ? 65 : 55}]}>
+                        <View key={param} style={[styles.itemBox, {width: param === "Accessories" ? 65 : 55}]}>
                             <View style={{justifyContent: 'center', alignItems: 'center', height: 23}}>
                                 <Text style={[styles.totalText1, {color: Colors.RED}]}>
                                     {selectedParameter ?

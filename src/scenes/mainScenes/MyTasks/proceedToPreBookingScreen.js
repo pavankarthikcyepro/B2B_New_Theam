@@ -350,11 +350,11 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
         if (identifier === "PROCEED_TO_PRE_BOOKING") {
             console.log("INSIDE ", identifier);
             getMyTasksListFromServer();
-            navigation.navigate(EmsTopTabNavigatorIdentifiers.preBooking)
+            navigation.navigate(EmsTopTabNavigatorIdentifiers.leads)
         }
         else if (identifier === "PROCEED_TO_BOOKING") {
             console.log("INSIDE ", identifier);
-            navigation.navigate(EmsTopTabNavigatorIdentifiers.booking)
+            navigation.navigate(EmsTopTabNavigatorIdentifiers.leads)
         }
         else {
             console.log("INSIDE ELSE", identifier);

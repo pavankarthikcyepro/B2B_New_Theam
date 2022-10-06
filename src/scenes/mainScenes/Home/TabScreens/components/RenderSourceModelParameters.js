@@ -26,7 +26,6 @@ export const RenderSourceModelParameters = (parameter) => {
 
     const {params, item, color, displayType} = parameter;
     // const paramsData = params.map(({paramName}) => paramName);
-    console.log('PARAMS in Employee Params: ', item);
     return (
         <>
             {
@@ -37,7 +36,7 @@ export const RenderSourceModelParameters = (parameter) => {
                     if (selectedParameter) {
                         const elementColor = getColor(Number(selectedParameter.achievment), Number(selectedParameter.target));
                         return (
-                            <View style={[styles.itemBox, {width: param === "Accessories" ? 80 : 60}]}>
+                            <View key={param} style={[styles.itemBox, {width: param === "Accessories" ? 80 : 60}]}>
                                 <Text style={[styles.totalText1, {color: elementColor}]}>
                                     {selectedParameter ?
                                         displayType === 0 ? selectedParameter.achievment :
@@ -45,13 +44,6 @@ export const RenderSourceModelParameters = (parameter) => {
                                                 selectedParameter.achievment
                                         : 0}
                                 </Text>
-                                {/*<Text style={[styles.totalText, {*/}
-                                {/*    width: param === "Accessories" ? 78 : 58,*/}
-                                {/*    color: "#FA03B9",*/}
-                                {/*    backgroundColor: 'lightgray'*/}
-                                {/*}]}>*/}
-                                {/*    {Number(selectedParameter.target)}*/}
-                                {/*</Text>*/}
                             </View>
                         );
                     }

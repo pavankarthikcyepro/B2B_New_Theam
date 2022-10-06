@@ -307,7 +307,7 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
 
     await navigation.popToTop();
     await navigation.navigate('EMS_TAB');
-    await navigation.navigate(EmsTopTabNavigatorIdentifiers.booking);
+    await navigation.navigate(EmsTopTabNavigatorIdentifiers.leads);
     dispatch(clearState());
   }
 
@@ -460,7 +460,7 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
       console.log("INSIDE ", identifier);
       navigation.popToTop();
       navigation.navigate('EMS_TAB')
-      navigation.navigate(EmsTopTabNavigatorIdentifiers.booking)
+      navigation.navigate(EmsTopTabNavigatorIdentifiers.leads)
     }
     else {
       navigation.popToTop();
