@@ -67,11 +67,15 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
   const [defaultContext, setDefaultContext] = useState({});
 
   useEffect(() => {
+    console.log(
+      "accessorylist: ",
+      selectedAccessoryList.length,
+      accessorylist.length
+    );
     const titleNames = [];
     const dataObj = {};
- console.log("accessorylist=============>", accessorylist);
+
     accessorylist.forEach((item) => {
-      console.log("item=============>", item);
       let isSelected = false;
       let find = [];
       find = selectedAccessoryList.filter((innerItem) => {
@@ -89,27 +93,24 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
         });
       }
       const newItem = { ...item, selected: isSelected };
-  console.log("newItem=============>", newItem);
+
       if (titleNames.includes(item.item)) {
         const oldData = dataObj[item.item];
-        const newData = [newItem];
+        const newData = [...oldData, newItem];
         dataObj[item.item] = newData;
+        //console.log('RUNNNNN=====>', item.item)
         //console.log("RUNNNNN")
-        console.log("OLD=============>", newData);
+        //console.log("OLD=============>", oldData);
       } else {
         //   removeExistingKeysFromAsync(titleNames);
         titleNames.push(item.item);
         dataObj[item.item] = [newItem];
-         console.log("titleNames=============>", titleNames, dataObj);
       }
-   
     });
-     console.log("titleNames<><", titleNames);
-     console.log("dataObj<><", dataObj);
-    //   //console.log("DATAOBJ: ", JSON.stringify(dataObj));
+    //console.log("DATAOBJ: ", JSON.stringify(dataObj));
     setAccessoriesData({ names: titleNames, data: dataObj });
 
-    console.log("RUNNN====>", JSON.stringify(accessoriesData));
+    console.log("RUNNN====>", titleNames);
 
     removeExistingKeysFromAsync(titleNames);
   }, []);
@@ -122,22 +123,28 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
     try {
       const asyncStorageData = await AsyncStorage.getData(key);
       let existingData;
-      console.log("JSON.parse(asyncStorageData)", JSON.parse(asyncStorageData));
+      console.log(">>>>>>>>>><<<<<<<<<<<, main: ", asyncStorageData);
       if (
         asyncStorageData &&
         asyncStorageData.length &&
         typeof asyncStorageData === "string"
       ) {
+        console.log(">>>>>>>>>><<<<<<<<<<<, Async: ", asyncStorageData);
         existingData = JSON.parse(asyncStorageData);
       }
+      console.log(">>>>>>>>>><<<<<<<<<<<, exis???????: ", existingData);
       const itemExists = existingData.findIndex((x) => x.id === item.id);
       let data = [];
       if (itemExists === -1) {
+        console.log("exis??????? DATA NA: ", existingData, " :key: ", key);
         data = [item];
       } else {
+        console.log("exis??????? DATA AV: ", existingData, " :key: ", key);
+
         data = [...existingData, item];
       }
 
+      console.log("exis??????? final: ", key);
       const uniqueTags = [];
       data.map((item) => {
         const findItem = uniqueTags.find((x) => x.id === item.id);
@@ -174,7 +181,6 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {console.log('accessoriesData.names',accessoriesData)}
       {accessoriesData.names.length === 0 ? (
         <EmptyListView title={"No Data Found"} />
       ) : (

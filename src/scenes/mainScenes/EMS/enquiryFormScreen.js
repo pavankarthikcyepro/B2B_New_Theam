@@ -3076,6 +3076,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 ]}
               >
                 <ProformaComp
+                  route={route}
+                  userData={userData}
                   modelDetails={selector.dmsLeadProducts[0]}
                   branchId={selectedBranchId} 
                   universalId={route.params.universalId}
