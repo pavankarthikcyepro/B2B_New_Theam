@@ -2,7 +2,6 @@ import React, {useEffect, useState} from "react";
 import {
     ActivityIndicator,
     FlatList,
-    Modal,
     Platform,
     Pressable,
     RefreshControl,
@@ -11,9 +10,9 @@ import {
     Text,
     View
 } from "react-native";
-import {Button, IconButton, Searchbar} from "react-native-paper";
+import {IconButton, Searchbar} from "react-native-paper";
 import {EmptyListView} from "../../../pureComponents";
-import {LeadsFilterComp, SortAndFilterComp} from "../../../components";
+import {DatePickerComponent, DateRangeComp, SortAndFilterComp} from "../../../components";
 import {useDispatch, useSelector} from "react-redux";
 import {Colors} from "../../../styles";
 import {AppNavigator} from '../../../navigations';
@@ -24,7 +23,6 @@ import {Category_Type_List_For_Filter} from '../../../jsonData/enquiryFormScreen
 import {MyTaskNewItem} from '../MyTasks/components/MyTasksNewItem';
 import {updateIsSearch, updateSearchKey} from '../../../redux/appReducer';
 import {getPreBookingData} from "../../../redux/preBookingReducer";
-import DateRangePicker from "../../../utils/DateRangePicker";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().add(0, "day").format(dateFormat)
@@ -98,6 +96,9 @@ const LeadsScreen = ({navigation}) => {
             if (appSelector.searchKey !== '') {
                 let tempData = []
                 tempData = leadsList.filter((item) => {
+                    if (item.leadStage.toLowerCase() === 'prebooking') {
+                        item.leadStage = 'booking approval';
+                    }
                     return (
                         `${item.firstName} ${item.lastName}`
                             .toLowerCase()
@@ -110,6 +111,9 @@ const LeadsScreen = ({navigation}) => {
                             .includes(appSelector.searchKey.toLowerCase()) ||
                         item.enquiryCategory
                             ?.toLowerCase()
+                            .includes(appSelector.searchKey.toLowerCase()) ||
+                        item.leadStage
+                            .toLowerCase()
                             .includes(appSelector.searchKey.toLowerCase()) ||
                         item.model
                             .toLowerCase()
@@ -191,10 +195,12 @@ const LeadsScreen = ({navigation}) => {
             case "FROM_DATE":
                 setFromDateState(formatDate);
                 // getEnquiryListFromServer(employeeId, formatDate, selectedToDate);
+                applyLeadsFilter(leadsFilterData, formatDate, selectedToDate);
                 break;
             case "TO_DATE":
                 setToDateState(formatDate);
                 // getEnquiryListFromServer(employeeId, selectedFromDate, formatDate);
+                applyLeadsFilter(leadsFilterData, selectedFromDate, formatDate);
                 break;
         }
     }
@@ -334,49 +340,24 @@ const LeadsScreen = ({navigation}) => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <Modal
-                animationType={Platform.OS === "ios" ? 'slide' : 'fade'}
-                transparent={true}
+
+            <DatePickerComponent
                 visible={showDatePicker}
-                onRequestClose={() => {
-                }}
-            >
-                <SafeAreaView style={styles.calContainer}>
-                    <View style={styles.calView1}>
-                        <View style={styles.calView2}>
-                            <Button
-                                mode="text"
-                                labelStyle={{textTransform: 'none', color: Colors.RED}}
-                                onPress={() => setShowDatePicker(false)}
-                            >
-                                Close
-                            </Button>
-                        </View>
-                        <DateRangePicker
-                            initialRange={[selectedFromDate, selectedToDate]}
-                            onSuccess={(from, to) => {
-                                applyDateFilter(from, to);
-                            }}
-                            theme={{markColor: Colors.RED, markTextColor: 'white'}}/>
-                    </View>
-                </SafeAreaView>
-            </Modal>
-            <View>
-                <LeadsFilterComp visible={leadsFilterVisible} modelList={leadsFilterData} submitCallback={(x) => {
-                    setLeadsFilterData([...x]);
-                    applyLeadsFilter([...x], selectedFromDate, selectedToDate);
-                    setLeadsFilterVisible(false);
-                    const data = x.filter(y => y.checked);
-                    if (data.length === 3) {
-                        setLeadsFilterDropDownText('All')
+                mode={"date"}
+                value={new Date(Date.now())}
+                onChange={(event, selectedDate) => {
+                    setShowDatePicker(false)
+                    if (Platform.OS === "android") {
+                        if (selectedDate) {
+                            updateSelectedDate(selectedDate, datePickerId);
+                        }
                     } else {
-                        const names = data.map(y => y.title);
-                        setLeadsFilterDropDownText(names.toString());
+                        updateSelectedDate(selectedDate, datePickerId);
                     }
-                }} cancelClicked={() => {
-                    setLeadsFilterVisible(false)
-                }}/>
-            </View>
+                }}
+                onRequestClose={() => setShowDatePicker(false)}
+            />
+
 
             <SortAndFilterComp
                 visible={sortAndFilterVisible}
@@ -393,76 +374,13 @@ const LeadsScreen = ({navigation}) => {
             />
 
             <View style={styles.view1}>
-                <View style={{width: "30%"}}>
-                    <View
-                        style={{
-                            flexDirection: "row",
-                            justifyContent: "space-around",
-                            paddingVertical: 10,
-                        }}
-                    >
-                        <View>
-                            <Pressable onPress={() => showDatePickerMethod('FROM_DATE')}>
-                                <View style={{
-                                    borderColor: Colors.GRAY,
-                                    borderWidth: 0.5,
-                                    borderRadius: 4,
-                                    backgroundColor: Colors.WHITE,
-                                    paddingHorizontal: 5,
-                                    height: 50,
-                                    justifyContent: 'center'
-                                }}>
-                                    <Text style={{fontSize: 12, fontWeight: '400', color: Colors.GRAY}}>Date
-                                        range</Text>
-                                    <View style={{
-                                        flexDirection: 'row',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center'
-                                    }}>
-                                        <View>
-                                            <Text style={{
-                                                fontSize: 12,
-                                                fontWeight: '400',
-                                                color: '2022-08-23' ? Colors.BLACK : Colors.GRAY
-                                            }}>{selectedFromDate ? selectedFromDate : moment(new Date()).format(dateFormat)
-                                            }</Text>
-                                            <Text style={{
-                                                fontSize: 12,
-                                                fontWeight: '400',
-                                                color: '2022-08-23' ? Colors.BLACK : Colors.GRAY
-                                            }}>{selectedToDate ? selectedToDate : moment(new Date()).format(dateFormat)}</Text>
-                                        </View>
-                                        <IconButton
-                                            icon={"calendar-month"}
-                                            size={20}
-                                            style={{margin: 0}}
-                                            color={Colors.RED}
-                                        />
-                                    </View>
-                                </View>
-                            </Pressable>
-                        </View>
-                    </View>
-                </View>
-                <View style={{width: '45%'}}>
-                    <Pressable onPress={() => {
-                        setLeadsFilterVisible(true);
-                    }}>
-                        <View style={{
-                            borderWidth: 0.5,
-                            borderColor: Colors.RED,
-                            borderRadius: 4,
-                            flexDirection: 'row',
-                            justifyContent: 'space-between',
-                            alignItems: 'center'
-                        }}>
-                            <Text style={{width: '70%', paddingHorizontal: 4, paddingVertical: 2, fontSize: 12}}
-                                  numberOfLines={2}>{leadsFilterDropDownText}</Text>
-                            <IconButton icon={leadsFilterVisible ? 'chevron-up' : 'chevron-down'} size={20}
-                                        color={Colors.RED}
-                                        style={{margin: 0, padding: 0, width: '30%'}}/>
-                        </View>
-                    </Pressable>
+                <View style={{width: "80%"}}>
+                    <DateRangeComp
+                        fromDate={selectedFromDate}
+                        toDate={selectedToDate}
+                        fromDateClicked={() => showDatePickerMethod("FROM_DATE")}
+                        toDateClicked={() => showDatePickerMethod("TO_DATE")}
+                    />
                 </View>
                 <Pressable onPress={() => setSortAndFilterVisible(true)}>
                     <View style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -472,6 +390,28 @@ const LeadsScreen = ({navigation}) => {
                     </View>
                 </Pressable>
             </View>
+            {/*<View style={{flexDirection: 'row', justifyContent: 'space-between'}}>*/}
+            {/*    <LeadsStageFilter leadsFilterDropDownText={'All'} onStageClick={() => alert('Hi')}/>*/}
+
+            {/*    <Pressable onPress={() => {*/}
+            {/*        setLeadsFilterVisible(true);*/}
+            {/*    }}>*/}
+            {/*        <View style={{*/}
+            {/*            borderWidth: 0.5,*/}
+            {/*            borderColor: Colors.RED,*/}
+            {/*            borderRadius: 4,*/}
+            {/*            flexDirection: 'row',*/}
+            {/*            justifyContent: 'space-between',*/}
+            {/*            alignItems: 'center'*/}
+            {/*        }}>*/}
+            {/*            <Text style={{paddingHorizontal: 4, paddingVertical: 2, fontSize: 12}}*/}
+            {/*                  numberOfLines={2}>{leadsFilterDropDownText}</Text>*/}
+            {/*            <IconButton icon={leadsFilterVisible ? 'chevron-up' : 'chevron-down'} size={20}*/}
+            {/*                        color={Colors.RED}*/}
+            {/*                        style={{margin: 0, padding: 0, width: '30%'}}/>*/}
+            {/*        </View>*/}
+            {/*    </Pressable>*/}
+            {/*</View>*/}
             <View>
                 <Searchbar
                     placeholder="Search"
