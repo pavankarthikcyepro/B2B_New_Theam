@@ -36,7 +36,8 @@ const TopTabNavigator = ({ titles, data }) => {
   return (
     <TopTab.Navigator
       initialRouteName={titles[0]}
-      tabBarOptions={tabBarOptions}>
+      tabBarOptions={tabBarOptions}
+    >
       {titles.map((title, index) => {
         console.log("titles: ", title);
         console.log("titles data: ", data[title].length);
@@ -64,7 +65,6 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
     names: [],
     data: {},
   });
-  const [defaultContext, setDefaultContext] = useState({});
 
   useEffect(() => {
     console.log(
@@ -75,9 +75,10 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
     const titleNames = [];
     const dataObj = {};
 
-    accessorylist.forEach((item) => {
+    accessorylist.forEach((item, index) => {
       let isSelected = false;
       let find = [];
+      
       find = selectedAccessoryList.filter((innerItem) => {
         return (
           innerItem.accessoriesName === item.partName &&
@@ -85,6 +86,8 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
           innerItem?.dmsAccessoriesType === item.item
         );
       });
+
+      
       if (find.length > 0) {
         isSelected = true;
         addItemInAsyncStorage(find[0].dmsAccessoriesType, {
@@ -92,26 +95,20 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
           selected: isSelected,
         });
       }
-      const newItem = { ...item, selected: isSelected };
 
+      const newItem = { ...item, selected: isSelected };
+      
       if (titleNames.includes(item.item)) {
-        const oldData = dataObj[item.item];
-        const newData = [...oldData, newItem];
-        dataObj[item.item] = newData;
-        //console.log('RUNNNNN=====>', item.item)
-        //console.log("RUNNNNN")
-        //console.log("OLD=============>", oldData);
+        if(dataObj[item.item].findIndex(item => item.id === newItem.id) == -1){
+          dataObj[item.item].push(newItem);
+        }
       } else {
-        //   removeExistingKeysFromAsync(titleNames);
         titleNames.push(item.item);
         dataObj[item.item] = [newItem];
       }
     });
-    //console.log("DATAOBJ: ", JSON.stringify(dataObj));
+
     setAccessoriesData({ names: titleNames, data: dataObj });
-
-    console.log("RUNNN====>", titleNames);
-
     removeExistingKeysFromAsync(titleNames);
   }, []);
 
@@ -203,14 +200,16 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
           style={{ width: 120 }}
           color={Colors.GRAY}
           labelStyle={{ textTransform: "none" }}
-          onPress={() => navigation.goBack()}>
+          onPress={() => navigation.goBack()}
+        >
           Cancel
         </Button>
         <Button
           mode="contained"
           color={Colors.RED}
           labelStyle={{ textTransform: "none" }}
-          onPress={addSelected}>
+          onPress={addSelected}
+        >
           Add Selected
         </Button>
       </View>

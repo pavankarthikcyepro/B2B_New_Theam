@@ -124,8 +124,17 @@ export const getRescheduleMyTasksListApi = createAsyncThunk("MY_TASKS/getResched
   const url = URL.GET_MY_TASKS_NEW_DATA();
   const response = await client.post(url, payload);
   const json = await response.json()
-  console.log(json, "url")
   // console.log(json)
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const getCompletedMyTasksListApi = createAsyncThunk("MY_TASKS/getCompletedMyTasksListApi", async (payload, { rejectWithValue }) => {
+  const url = URL.GET_MY_TASKS_NEW_DATA();
+  const response = await client.post(url, payload);
+  const json = await response.json()
   if (!response.ok) {
     return rejectWithValue(json);
   }
@@ -174,6 +183,16 @@ export const getRescheduleTeamTasksListApi = createAsyncThunk("MY_TASKS/getResch
   const json = await response.json()
   console.log(json, "url")
   // console.log(json)
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const getCompletedTeamTasksListApi = createAsyncThunk("MY_TASKS/getCompletedTeamTasksListApi", async (payload, { rejectWithValue }) => {
+  const url = URL.GET_MY_TASKS_NEW_DATA();
+  const response = await client.post(url, payload);
+  const json = await response.json()
   if (!response.ok) {
     return rejectWithValue(json);
   }
@@ -373,6 +392,19 @@ export const mytaskSlice = createSlice({
       state.myReData = [];
       state.isLoading = false;
     })
+    
+    builder.addCase(getCompletedMyTasksListApi.pending, (state) => {
+      state.myReData = [];
+      state.isLoading = true;
+    })
+    builder.addCase(getCompletedMyTasksListApi.fulfilled, (state, action) => {
+      state.myReData = action.payload.completedData;
+      state.isLoading = false;
+    })
+    builder.addCase(getCompletedMyTasksListApi.rejected, (state, action) => {
+      state.myReData = [];
+      state.isLoading = false;
+    })
 
     builder.addCase(getTodayTeamTasksListApi.pending, (state) => {
       state.teamTodayData = [];
@@ -422,6 +454,19 @@ export const mytaskSlice = createSlice({
       state.isTeamsTaskLoading = false;
     })
     builder.addCase(getRescheduleTeamTasksListApi.rejected, (state, action) => {
+      state.teamReData = [];
+      state.isTeamsTaskLoading = false;
+    })
+    
+    builder.addCase(getCompletedTeamTasksListApi.pending, (state) => {
+      state.teamReData = [];
+      state.isTeamsTaskLoading = false;
+    })
+    builder.addCase(getCompletedTeamTasksListApi.fulfilled, (state, action) => {
+      state.teamReData = action.payload.completedData;
+      state.isTeamsTaskLoading = false;
+    })
+    builder.addCase(getCompletedTeamTasksListApi.rejected, (state, action) => {
       state.teamReData = [];
       state.isTeamsTaskLoading = false;
     })

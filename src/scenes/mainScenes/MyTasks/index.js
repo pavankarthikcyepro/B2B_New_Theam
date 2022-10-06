@@ -17,17 +17,17 @@ const tabBarOptions = {
     backgroundColor: Colors.RED,
   },
   labelStyle: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "600",
   },
   style: {
     elevation: 0,
   },
-}
+};
 
 const SecondTopTab = createMaterialTopTabNavigator()
 
-const SecondTopTabNavigator = ({ todaysData = [], upcomingData = [], pendingData = [], reScheduleData = [] }) => {
+const SecondTopTabNavigator = ({ todaysData = [], upcomingData = [], pendingData = [], reScheduleData = [], completedData = [] }) => {
 
   return (
     <SecondTopTab.Navigator
@@ -56,7 +56,13 @@ const SecondTopTabNavigator = ({ todaysData = [], upcomingData = [], pendingData
         name={"NEW_RESCHEDULE"}
         component={ListComponent}
         initialParams={{ data: reScheduleData, from: "RESCHEDULE" }}
-        options={{ title: "RESCHEDULE" }}
+        options={{ title: `RE-\nSCHEDULE` }}
+      />
+      <SecondTopTab.Screen
+        name={"CLOSED"}
+        component={ListComponent}
+        initialParams={{ data: completedData, from: "CLOSED" }}
+        options={{ title: "CLOSED" }}
       />
     </SecondTopTab.Navigator>
   );

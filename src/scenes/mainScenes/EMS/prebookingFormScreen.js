@@ -1486,6 +1486,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       console.log("ATTCH", JSON.stringify(uploadedImagesDataObj));
       // console.log("FOUND: ", uploadedImagesDataObj.hasOwnProperty('receipt'));
       
+      if (selector.salutation.length === 0) {
+        scrollToPos(0);
+        setOpenAccordian("1");
+        showToast("please select salutation");
+        return;
+      }
+
       if (selector.first_name.length === 0) {
         scrollToPos(0);
         setOpenAccordian("1");
@@ -3323,7 +3330,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       },
                     ]}
                   ></Text>
-
                   <TextinputComp
                     style={{ height: 65, width: "100%" }}
                     disabled={
