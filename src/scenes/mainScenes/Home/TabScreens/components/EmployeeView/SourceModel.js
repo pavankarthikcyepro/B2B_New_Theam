@@ -184,7 +184,7 @@ const SourceModel = ({ route, navigation }) => {
     let data = [...paramsMetadata];
     data = data.filter((x) => x.toggleIndex === 0);
     setToggleParamsMetaData([...data]);
-  }, []);
+  }, [isSourceIndex]);
 
   useEffect(() => {
     if (selector.sourceModelData) {
@@ -451,7 +451,7 @@ const SourceModel = ({ route, navigation }) => {
                   </Text>
                 </View>
               </View>
-              <ScrollView horizontal>
+              <ScrollView horizontal bounces={false}>
                 <View>
                   {/* TOP Header view */}
                   <View key={"headers"} style={[styles.flexRow]}>
