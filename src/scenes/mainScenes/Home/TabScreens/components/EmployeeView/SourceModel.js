@@ -302,7 +302,7 @@ const styles = StyleSheet.create({
     titleColumnView: {
         height: 25, marginVertical: 6, justifyContent: 'center', backgroundColor: 'rgba(223,228,231,0.67)'
     },
-    titleColumnText: {maxWidth: 100, fontWeight: 'bold', fontSize: 12},
+    titleColumnText: {maxWidth: 100, fontWeight: 'bold', fontSize: 10},
     justifyAlignCenter: {
         justifyContent: 'center', alignItems: 'center'
     },
