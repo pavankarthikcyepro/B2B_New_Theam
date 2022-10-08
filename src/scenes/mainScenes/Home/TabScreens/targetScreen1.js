@@ -331,7 +331,10 @@ const TargetScreen = ({route}) => {
     const getBranchName = (branchId) => {
         let branchName = '';
         if (branches.length > 0) {
-            branchName = branches.find((x) => +x.branchId === +branchId).branchName.split(" - ")[0];
+            const branch = branches.find((x) => +x.branchId === +branchId);
+            if (branch) {
+                branchName = branch.branchName.split(" - ")[0];
+            }
         }
         return branchName;
     }
@@ -806,7 +809,6 @@ const TargetScreen = ({route}) => {
                                                                     <View style={{flexDirection: 'row'}}>
                                                                         <RenderLevel1NameView level={1}
                                                                                               item={innerItem1}
-                                                                                              branchName={''}
                                                                                               color={'#F59D00'}
                                                                                               titleClick={async () => {
                                                                                                   setSelectedName(innerItem1.empName);
@@ -919,7 +921,6 @@ const TargetScreen = ({route}) => {
                                                                                         style={{flexDirection: 'row'}}>
                                                                                         <RenderLevel1NameView level={2}
                                                                                                               item={innerItem2}
-                                                                                                              branchName={''}
                                                                                                               color={'#2C97DE'}
                                                                                                               titleClick={async () => {
                                                                                                                   setSelectedName(innerItem2.empName);
@@ -1036,7 +1037,6 @@ const TargetScreen = ({route}) => {
                                                                                                         <RenderLevel1NameView
                                                                                                             level={3}
                                                                                                             item={innerItem3}
-                                                                                                            branchName={''}
                                                                                                             color={'#EC3466'}
                                                                                                             titleClick={async () => {
                                                                                                                 setSelectedName(innerItem3.empName);
@@ -1121,7 +1121,6 @@ const TargetScreen = ({route}) => {
                                                                                                                         <RenderLevel1NameView
                                                                                                                             level={4}
                                                                                                                             item={innerItem4}
-                                                                                                                            branchName={''}
                                                                                                                             color={'#1C95A6'}
                                                                                                                             titleClick={async () => {
                                                                                                                                 setSelectedName(innerItem4.empName);
@@ -1205,7 +1204,6 @@ const TargetScreen = ({route}) => {
                                                                                                                                         <RenderLevel1NameView
                                                                                                                                             level={5}
                                                                                                                                             item={innerItem5}
-                                                                                                                                            branchName={''}
                                                                                                                                             color={'#C62159'}
                                                                                                                                             titleClick={async () => {
                                                                                                                                                 setSelectedName(innerItem5.empName);
@@ -1289,7 +1287,6 @@ const TargetScreen = ({route}) => {
                                                                                                                                                         <RenderLevel1NameView
                                                                                                                                                             level={6}
                                                                                                                                                             item={innerItem6}
-                                                                                                                                                            branchName={''}
                                                                                                                                                             color={'#C62159'}
                                                                                                                                                             titleClick={async () => {
                                                                                                                                                                 setSelectedName(innerItem6.empName);
@@ -1497,7 +1494,7 @@ const TargetScreen = ({route}) => {
                                     flexDirection: "row",
                                     justifyContent: 'space-between'
                                 }}>
-                                    <Text style={{fontSize: 8}}>Ach</Text>
+                                    <Text style={{fontSize: 8}}>ACH</Text>
                                     <Text style={{fontSize: 8}}>TGT</Text>
                                 </View>
                                 <RenderSelfInsights
@@ -1733,7 +1730,7 @@ const TargetScreen = ({route}) => {
 export default TargetScreen;
 
 
-export const RenderLevel1NameView = ({level, item, branchName, color, titleClick}) => {
+export const RenderLevel1NameView = ({level, item, branchName = '', color, titleClick}) => {
     return (
         <View style={{width: 60, justifyContent: 'center', textAlign: 'center', display: 'flex', flexDirection: 'row'}}>
             <View style={{justifyContent: 'center', alignItems: 'center'}}>
@@ -1747,13 +1744,13 @@ export const RenderLevel1NameView = ({level, item, branchName, color, titleClick
                     marginTop: 5,
                     marginBottom: 5
                 }}
-                                  onPress={titleClick}>
+                    onPress={titleClick}>
                     <Text style={{
                         fontSize: 14,
                         color: '#fff'
                     }}>{item.empName.charAt(0)}</Text>
                 </TouchableOpacity>
-                {level === 0 && <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                {level === 0 && !!branchName && <View style={{flexDirection: 'row', alignItems: 'center'}}>
                     <IconButton
                         icon="map-marker"
                         style={{padding: 0, margin: 0}}
@@ -1761,7 +1758,7 @@ export const RenderLevel1NameView = ({level, item, branchName, color, titleClick
                         size={8}
                     />
                     <Text style={{fontSize: 8}}
-                          numberOfLines={1}>{branchName}</Text>
+                          numberOfLines={2}>{branchName}</Text>
                 </View>}
             </View>
             <View style={{
