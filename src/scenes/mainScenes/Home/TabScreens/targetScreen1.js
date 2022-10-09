@@ -1442,7 +1442,7 @@ const TargetScreen = ({route}) => {
                     <>
                         <View style={{flexDirection: "row", marginVertical: 8}}>
                             <View style={{
-                                width: "65%",
+                                width: "62%",
                                 justifyContent: "flex-start",
                                 alignItems: 'center',
                                 height: 15,
@@ -1469,16 +1469,16 @@ const TargetScreen = ({route}) => {
                                     }}>Source/Model</Text>
                                 </Pressable>
                             </View>
-                            <View style={{width: "35%", flexDirection: "row"}}>
+                            <View style={{width: "30%", flexDirection: "row"}}>
                                 <Text style={{fontSize: 14, fontWeight: "600"}}>Balance</Text>
-                                <View style={{marginRight: 10}}></View>
+                                <View style={{marginRight: 15}}></View>
                                 <Text style={{fontSize: 14, fontWeight: "600"}}>AR/Day</Text>
                             </View>
                         </View>
                         <>
                             <View>
                                 <View style={{
-                                    width: "32%",
+                                    width: "42%",
                                     marginLeft: '12%',
                                     marginBottom: -6,
                                     flexDirection: "row",
