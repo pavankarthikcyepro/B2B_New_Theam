@@ -11,7 +11,7 @@ import {getSourceModelDataForSelf} from "../../../../../../redux/homeReducer";
 const SourceModel = ({route, navigation}) => {
     const dispatch = useDispatch();
     const selector = useSelector((state) => state.homeReducer);
-    const {empId, loggedInEmpId, orgId, type} = route.params;
+    const {empId, loggedInEmpId, headerTitle, orgId, type} = route.params;
     const [leadSource, setLeadSource] = useState([]);
     const [vehicleModel, setVehicleModel] = useState([]);
     const [leadSourceKeys, setLeadSourceKeys] = useState([]);
@@ -22,6 +22,7 @@ const SourceModel = ({route, navigation}) => {
 
 
     useEffect(async () => {
+        navigation.setOptions({title: headerTitle ? headerTitle : 'Source/Model'});
         if (isSourceIndex !== 0) {
             setIsSourceIndex(0);
         }
@@ -199,7 +200,7 @@ const SourceModel = ({route, navigation}) => {
                             getTotal(0);
                         }
                     }}
-                                      style={[styles.toggleViewButtons, styles.justifyAlignCenter, {backgroundColor: isSourceIndex === 1 ? Colors.WHITE : Colors.RED}]}>
+                        style={[styles.toggleViewButtons, styles.justifyAlignCenter, {backgroundColor: isSourceIndex === 1 ? Colors.WHITE : Colors.RED}]}>
                         <Text
                             style={[styles.toggleButtonText, {color: isSourceIndex === 1 ? Colors.BLACK : Colors.WHITE}]}>Lead
                             Source</Text>
@@ -218,78 +219,63 @@ const SourceModel = ({route, navigation}) => {
 
                 </View>
             </View>
-            <View style={styles.percentageToggleView}>
-                <PercentageToggleControl toggleChange={(x) => setDisplayType(x)}/>
-            </View>
-            <View style={{height: '85%'}}>
-                <ScrollView>
-                    <View style={[styles.flexRow, {paddingHorizontal: 6}]}>
-                        <View>
-                            <View style={{height: 20}}></View>
-                            {renderTitleColumn()}
-                            <View style={[styles.flexRow, {
-                                justifyContent: 'flex-start',
-                                flex: 1,
-                                alignItems: 'center',
-                                backgroundColor: Colors.RED,
-                            }]}>
-                                <Text style={{
-                                    flexDirection: 'row',
-                                    color: Colors.WHITE,
-                                    textAlign: "center",
-                                    marginLeft: 8,
-                                    fontWeight: 'bold'
-                                }}>Total</Text>
-                            </View>
-
-                        </View>
-                        <ScrollView horizontal>
+            <View style={styles.sourceModelContainer}>
+                <View style={styles.percentageToggleView}>
+                    <PercentageToggleControl toggleChange={(x) => setDisplayType(x)}/>
+                </View>
+                <View style={{height: '85%'}}>
+                    <ScrollView>
+                        <View style={[styles.flexRow, {paddingHorizontal: 6}]}>
                             <View>
-                                {/* TOP Header view */}
-                                <View key={'headers'} style={[styles.flexRow]}>
-                                    <View style={[styles.flexRow, {height: 20}]}>
-                                        {paramsMetadata.map((param, i) => {
-                                            return (<View key={`${param.paramName}__${i}`} style={[styles.flexRow, styles.justifyAlignCenter, {
-                                                width: param.paramName === "Accessories" ? 80 : 60
-                                            }]}>
-                                                <Text style={{color: param.color}}>{param.shortName}</Text>
-                                            </View>)
-                                        })}
+                                <View style={{height: 20}}></View>
+                                {renderTitleColumn()}
+                                <View style={[styles.flexRow, styles.totalTextView]}>
+                                    <Text style={styles.totalTitleText}>Total</Text>
+                                </View>
+
+                            </View>
+                            <ScrollView horizontal>
+                                <View>
+                                    {/* TOP Header view */}
+                                    <View key={'headers'} style={[styles.flexRow]}>
+                                        <View style={[styles.flexRow, {height: 20}]}>
+                                            {paramsMetadata.map((param, i) => {
+                                                return (<View key={`${param.paramName}__${i}`}
+                                                              style={[styles.flexRow, styles.justifyAlignCenter, {
+                                                                  width: param.paramName === "Accessories" ? 80 : 60
+                                                              }]}>
+                                                    <Text style={{color: param.color}}>{param.shortName}</Text>
+                                                </View>)
+                                            })}
+                                        </View>
                                     </View>
-                                </View>
-                                <View>
-                                    {renderDataView()}
-                                </View>
-                                {/* Total section */}
-                                <View>
-                                    <View style={{
-                                        flexDirection: 'row', height: 40, backgroundColor: Colors.RED
-                                    }}>
-                                        <View style={{
-                                            width: '92%',
-                                            minHeight: 25,
-                                            flexDirection: 'column',
-                                            marginRight: 5,
-                                            paddingHorizontal: 5,
-                                        }}>
-                                            <View style={{width: '92%', minHeight: 40, flexDirection: 'row'}}>
-                                                {Object.keys(sourceModelTotals).map((x, index) => {
-                                                    return (
-                                                        <View key={`${index}`} style={[styles.justifyAlignCenter, {width: 60}]}>
-                                                            <Text
-                                                                style={{color: Colors.WHITE}}>{sourceModelTotals[x]}</Text>
-                                                        </View>
-                                                    )
-                                                })}
+                                    <View>
+                                        {renderDataView()}
+                                    </View>
+                                    {/* Total section */}
+                                    <View>
+                                        <View style={styles.paramsTotalContainerView}>
+                                            <View style={styles.paramsTotalContainerSubView}>
+                                                <View style={styles.paramsTotalContainer}>
+                                                    {Object.keys(sourceModelTotals).map((x, index) => {
+                                                        return (
+                                                            <View key={`${index}`}
+                                                                  style={[styles.justifyAlignCenter, {width: 60}]}>
+                                                                <Text
+                                                                    style={{color: Colors.WHITE}}>{sourceModelTotals[x]}</Text>
+                                                            </View>
+                                                        )
+                                                    })}
+                                                </View>
                                             </View>
                                         </View>
                                     </View>
-                                </View>
 
-                            </View>
-                        </ScrollView>
-                    </View>
-                </ScrollView>
+                                </View>
+                            </ScrollView>
+                        </View>
+                    </ScrollView>
+                </View>
             </View>
         </View>
     </>)
@@ -300,9 +286,13 @@ export default SourceModel;
 const styles = StyleSheet.create({
     flexRow: {flexDirection: 'row', display: 'flex'},
     titleColumnView: {
-        height: 25, marginVertical: 6, justifyContent: 'center', backgroundColor: 'rgba(223,228,231,0.67)'
+        height: 25,
+        marginVertical: 6,
+        justifyContent: 'center',
+        backgroundColor: 'rgba(223,228,231,0.67)',
+        paddingLeft: 8
     },
-    titleColumnText: {maxWidth: 100, fontWeight: 'bold', fontSize: 12},
+    titleColumnText: {maxWidth: 100, color: Colors.BLACK, fontWeight: '500', fontSize: 12},
     justifyAlignCenter: {
         justifyContent: 'center', alignItems: 'center'
     },
@@ -311,7 +301,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 5,
         padding: 0.75,
-        height: 41,
+        height: 35,
         marginTop: 10,
         justifyContent: 'center',
         width: '70%'
@@ -324,5 +314,30 @@ const styles = StyleSheet.create({
     },
     percentageToggleView: {
         justifyContent: 'center', alignItems: 'flex-end', marginVertical: 8, paddingHorizontal: 12
-    }
+    },
+    sourceModelContainer: {backgroundColor: Colors.WHITE, marginHorizontal: 12},
+    totalTextView: {
+        justifyContent: 'flex-start',
+        flex: 1,
+        alignItems: 'center',
+        backgroundColor: Colors.RED,
+    },
+    totalTitleText: {
+        flexDirection: 'row',
+        color: Colors.WHITE,
+        textAlign: "center",
+        marginLeft: 8,
+        fontWeight: 'bold'
+    },
+    paramsTotalContainerView: {
+        flexDirection: 'row', height: 40, backgroundColor: Colors.RED
+    },
+    paramsTotalContainerSubView: {
+        width: '92%',
+        minHeight: 25,
+        flexDirection: 'column',
+        marginRight: 5,
+        paddingHorizontal: 5,
+    },
+    paramsTotalContainer: {width: '92%', minHeight: 40, flexDirection: 'row'}
 });

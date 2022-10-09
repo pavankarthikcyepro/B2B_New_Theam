@@ -60,10 +60,6 @@ const TargetScreen = ({route}) => {
     const [reoprtingManagerDropdownList, setReoprtingManagerDropdownList] = useState([]);
     const [selectedUser, setSelectedUser] = useState(null);
 
-    const [isLevel2Available, setIsLevel2Available] = useState(false);
-    const [isLevel3Available, setIsLevel3Available] = useState(false);
-    const [isLevel4Available, setIsLevel4Available] = useState(false);
-    const [isLevel5Available, setIsLevel5Available] = useState(false);
     const [branches, setBranches] = useState([]);
     const [togglePercentage, setTogglePercentage] = useState(0);
     const [toggleParamsIndex, setToggleParamsIndex] = useState(0);
@@ -246,17 +242,17 @@ const TargetScreen = ({route}) => {
         }
     }, [selector.isTeam])
 
-    const handleModalDropdownDataForShuffle = (user) => {
-        if (delegateButtonClick) {
-            getReportingManagerListFromServer(user);
-            setShowShuffleModal(true);
-            // setReoprtingManagerDropdownList(selector.reporting_manager_list.map(({ name: label, id: value, ...rest }) => ({ value, label, ...rest })));
-        } else {
-            getEmployeeListFromServer(user);
-            setShowShuffleModal(true);
-            // setEmployeeDropdownList(selector.employee_list.map(({ name: label, id: value, ...rest }) => ({ value, label, ...rest })));
-        }
-    }
+    // const handleModalDropdownDataForShuffle = (user) => {
+    //     if (delegateButtonClick) {
+    //         getReportingManagerListFromServer(user);
+    //         setShowShuffleModal(true);
+    //         // setReoprtingManagerDropdownList(selector.reporting_manager_list.map(({ name: label, id: value, ...rest }) => ({ value, label, ...rest })));
+    //     } else {
+    //         getEmployeeListFromServer(user);
+    //         setShowShuffleModal(true);
+    //         // setEmployeeDropdownList(selector.employee_list.map(({ name: label, id: value, ...rest }) => ({ value, label, ...rest })));
+    //     }
+    // }
 
     useEffect(() => {
         setEmployeeDropdownList(selector.employee_list.map(({name: label, id: value, ...rest}) => ({
@@ -316,14 +312,6 @@ const TargetScreen = ({route}) => {
         return (
             <View style={{flexDirection: 'row', backgroundColor: Colors.BORDER_COLOR}}>
                 <RenderEmployeeParameters item={item} displayType={togglePercentage} params={toggleParamsMetaData}/>
-            </View>
-        )
-    }
-
-    const renderTotalView = () => {
-        return (
-            <View style={styles.totalView}>
-                <Text style={styles.totalText}>Total</Text>
             </View>
         )
     }
@@ -408,237 +396,237 @@ const TargetScreen = ({route}) => {
 
     return (
         <>
-            <Modal
-                visible={showShuffleModal}
-                animationType={'fade'}
-                transparent={true}
-                onRequestClose={() => setShowShuffleModal(false)}
-            >
-                <View style={{
-                    flex: 1,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                    paddingHorizontal: 20
-                }}>
-                    <View
-                        style={{
-                            width: "95%",
-                            height: "30%",
-                            alignSelf: "center",
-                            backgroundColor: "white",
-                            borderRadius: 8,
-                        }}
-                    >
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                                borderWidth: 1,
-                                borderColor: "#d1d1d1",
-                                backgroundColor: "#d1d1d1",
-                                borderTopEndRadius: 8,
-                                borderTopStartRadius: 8,
-                            }}
-                        >
-                            <Text style={{fontSize: 17, fontWeight: "500", margin: 10}}>
-                                Team Shuffle
-                            </Text>
+            {/*<Modal*/}
+            {/*    visible={showShuffleModal}*/}
+            {/*    animationType={'fade'}*/}
+            {/*    transparent={true}*/}
+            {/*    onRequestClose={() => setShowShuffleModal(false)}*/}
+            {/*>*/}
+            {/*    <View style={{*/}
+            {/*        flex: 1,*/}
+            {/*        justifyContent: "center",*/}
+            {/*        alignItems: "center",*/}
+            {/*        backgroundColor: 'rgba(0, 0, 0, 0.5)',*/}
+            {/*        paddingHorizontal: 20*/}
+            {/*    }}>*/}
+            {/*        <View*/}
+            {/*            style={{*/}
+            {/*                width: "95%",*/}
+            {/*                height: "30%",*/}
+            {/*                alignSelf: "center",*/}
+            {/*                backgroundColor: "white",*/}
+            {/*                borderRadius: 8,*/}
+            {/*            }}*/}
+            {/*        >*/}
+            {/*            <View*/}
+            {/*                style={{*/}
+            {/*                    flexDirection: "row",*/}
+            {/*                    justifyContent: "space-between",*/}
+            {/*                    borderWidth: 1,*/}
+            {/*                    borderColor: "#d1d1d1",*/}
+            {/*                    backgroundColor: "#d1d1d1",*/}
+            {/*                    borderTopEndRadius: 8,*/}
+            {/*                    borderTopStartRadius: 8,*/}
+            {/*                }}*/}
+            {/*            >*/}
+            {/*                <Text style={{fontSize: 17, fontWeight: "500", margin: 10}}>*/}
+            {/*                    Team Shuffle*/}
+            {/*                </Text>*/}
 
-                            <TouchableOpacity
-                                activeOpacity={0.6}
-                                onPress={() => {
-                                    setShowShuffleModal(false);
-                                    setHeaderTitle(
-                                        "Selected employees has Active tasks. Please delegate to another employee"
-                                    );
-                                    setDropDownPlaceHolder("Employees");
-                                    setDelegateButtonClick(false);
-                                    setEmployeeDropdownList([]);
-                                    setReoprtingManagerDropdownList([]);
-                                }}
-                            >
-                                <CloseIcon
-                                    style={{margin: 10}}
-                                    name="close"
-                                    color={Colors.BLACK}
-                                    size={20}
-                                />
-                            </TouchableOpacity>
-                        </View>
+            {/*                <TouchableOpacity*/}
+            {/*                    activeOpacity={0.6}*/}
+            {/*                    onPress={() => {*/}
+            {/*                        setShowShuffleModal(false);*/}
+            {/*                        setHeaderTitle(*/}
+            {/*                            "Selected employees has Active tasks. Please delegate to another employee"*/}
+            {/*                        );*/}
+            {/*                        setDropDownPlaceHolder("Employees");*/}
+            {/*                        setDelegateButtonClick(false);*/}
+            {/*                        setEmployeeDropdownList([]);*/}
+            {/*                        setReoprtingManagerDropdownList([]);*/}
+            {/*                    }}*/}
+            {/*                >*/}
+            {/*                    <CloseIcon*/}
+            {/*                        style={{margin: 10}}*/}
+            {/*                        name="close"*/}
+            {/*                        color={Colors.BLACK}*/}
+            {/*                        size={20}*/}
+            {/*                    />*/}
+            {/*                </TouchableOpacity>*/}
+            {/*            </View>*/}
 
-                        <Text
-                            style={{color: Colors.GRAY, marginLeft: 12, marginTop: 5}}
-                        >
-                            {headerTitle}
-                        </Text>
-                        <Dropdown
-                            style={styles.dropdownContainer}
-                            placeholderStyle={styles.placeholderStyle}
-                            selectedTextStyle={styles.selectedTextStyle}
-                            inputSearchStyle={styles.inputSearchStyle}
-                            iconStyle={styles.iconStyle}
-                            data={
-                                delegateButtonClick
-                                    ? reoprtingManagerDropdownList
-                                    : employeeDropdownList
-                            }
-                            search
-                            maxHeight={300}
-                            labelField="label"
-                            valueField="value"
-                            placeholder={dropDownPlaceHolder}
-                            searchPlaceholder="Search..."
-                            renderRightIcon={() => (
-                                <Image
-                                    style={{height: 5, width: 10}}
-                                    source={require("../../../../assets/images/Polygon.png")}
-                                />
-                            )}
-                            onChange={async (item) => {
-                                if (delegateButtonClick) {
-                                    setReoprtingManagerListDropdownItem(item.value);
-                                } else {
-                                    setEmployeeListDropdownItem(item.value);
-                                }
-                            }}
-                        />
+            {/*            <Text*/}
+            {/*                style={{color: Colors.GRAY, marginLeft: 12, marginTop: 5}}*/}
+            {/*            >*/}
+            {/*                {headerTitle}*/}
+            {/*            </Text>*/}
+            {/*            <Dropdown*/}
+            {/*                style={styles.dropdownContainer}*/}
+            {/*                placeholderStyle={styles.placeholderStyle}*/}
+            {/*                selectedTextStyle={styles.selectedTextStyle}*/}
+            {/*                inputSearchStyle={styles.inputSearchStyle}*/}
+            {/*                iconStyle={styles.iconStyle}*/}
+            {/*                data={*/}
+            {/*                    delegateButtonClick*/}
+            {/*                        ? reoprtingManagerDropdownList*/}
+            {/*                        : employeeDropdownList*/}
+            {/*                }*/}
+            {/*                search*/}
+            {/*                maxHeight={300}*/}
+            {/*                labelField="label"*/}
+            {/*                valueField="value"*/}
+            {/*                placeholder={dropDownPlaceHolder}*/}
+            {/*                searchPlaceholder="Search..."*/}
+            {/*                renderRightIcon={() => (*/}
+            {/*                    <Image*/}
+            {/*                        style={{height: 5, width: 10}}*/}
+            {/*                        source={require("../../../../assets/images/Polygon.png")}*/}
+            {/*                    />*/}
+            {/*                )}*/}
+            {/*                onChange={async (item) => {*/}
+            {/*                    if (delegateButtonClick) {*/}
+            {/*                        setReoprtingManagerListDropdownItem(item.value);*/}
+            {/*                    } else {*/}
+            {/*                        setEmployeeListDropdownItem(item.value);*/}
+            {/*                    }*/}
+            {/*                }}*/}
+            {/*            />*/}
 
-                        <LoaderComponent
-                            visible={selector.isLoading}
-                            onRequestClose={() => {
-                            }}
-                        />
+            {/*            <LoaderComponent*/}
+            {/*                visible={selector.isLoading}*/}
+            {/*                onRequestClose={() => {*/}
+            {/*                }}*/}
+            {/*            />*/}
 
-                        <View style={{
-                            position: 'absolute',
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            marginBottom: 10,
-                            flexDirection: 'row',
-                            width: '95%',
-                            justifyContent: 'space-around'
-                        }}>
-                            {dropDownPlaceHolder === 'Employees' ?
-                                <View style={{flexDirection: 'row', width: '95%', justifyContent: 'space-around'}}>
-                                    <TouchableOpacity activeOpacity={0.6} style={{
-                                        padding: 5,
-                                        borderRadius: 6,
-                                        borderColor: Colors.RED,
-                                        borderWidth: 0.8,
-                                        width: '43%',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        marginLeft: 18,
-                                        marginRight: 12,
-                                        backgroundColor: Colors.RED,
-                                        height: 40
-                                    }} onPress={() => {
-                                        // updateEmployeeData();
-                                        if (employeeListDropdownItem !== 0) {
-                                            setDelegateButtonClick(true);
-                                            setHeaderTitle('Reporting Managers');
-                                            setDropDownPlaceHolder(state => state = 'Reporting Manager');
-                                            getReportingManagerListFromServer(selectedUser);
-                                        }
-                                    }}>
-                                        <Text style={{
-                                            fontSize: 13,
-                                            fontWeight: '300',
-                                            color: Colors.WHITE
-                                        }}>DELEGATE</Text>
-                                    </TouchableOpacity>
+            {/*            <View style={{*/}
+            {/*                position: 'absolute',*/}
+            {/*                left: 0,*/}
+            {/*                right: 0,*/}
+            {/*                bottom: 0,*/}
+            {/*                marginBottom: 10,*/}
+            {/*                flexDirection: 'row',*/}
+            {/*                width: '95%',*/}
+            {/*                justifyContent: 'space-around'*/}
+            {/*            }}>*/}
+            {/*                {dropDownPlaceHolder === 'Employees' ?*/}
+            {/*                    <View style={{flexDirection: 'row', width: '95%', justifyContent: 'space-around'}}>*/}
+            {/*                        <TouchableOpacity activeOpacity={0.6} style={{*/}
+            {/*                            padding: 5,*/}
+            {/*                            borderRadius: 6,*/}
+            {/*                            borderColor: Colors.RED,*/}
+            {/*                            borderWidth: 0.8,*/}
+            {/*                            width: '43%',*/}
+            {/*                            alignItems: 'center',*/}
+            {/*                            justifyContent: 'center',*/}
+            {/*                            marginLeft: 18,*/}
+            {/*                            marginRight: 12,*/}
+            {/*                            backgroundColor: Colors.RED,*/}
+            {/*                            height: 40*/}
+            {/*                        }} onPress={() => {*/}
+            {/*                            // updateEmployeeData();*/}
+            {/*                            if (employeeListDropdownItem !== 0) {*/}
+            {/*                                setDelegateButtonClick(true);*/}
+            {/*                                setHeaderTitle('Reporting Managers');*/}
+            {/*                                setDropDownPlaceHolder(state => state = 'Reporting Manager');*/}
+            {/*                                getReportingManagerListFromServer(selectedUser);*/}
+            {/*                            }*/}
+            {/*                        }}>*/}
+            {/*                            <Text style={{*/}
+            {/*                                fontSize: 13,*/}
+            {/*                                fontWeight: '300',*/}
+            {/*                                color: Colors.WHITE*/}
+            {/*                            }}>DELEGATE</Text>*/}
+            {/*                        </TouchableOpacity>*/}
 
-                                    <TouchableOpacity activeOpacity={0.6} style={{
-                                        padding: 5,
-                                        borderRadius: 6,
-                                        borderColor: Colors.RED,
-                                        borderWidth: 0.8,
-                                        width: '43%',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        backgroundColor: Colors.RED,
-                                        height: 40
-                                    }} onPress={() => {
-                                        if (employeeListDropdownItem !== 0) {
-                                            setHeaderTitle('Reporting Managers');
-                                            setDropDownPlaceHolder('Reporting Manager');
-                                            setDelegateButtonClick(true);
-                                            getReportingManagerListFromServer(selectedUser);
-                                        }
-                                    }}>
-                                        <Text style={{fontSize: 13, fontWeight: '300', color: Colors.WHITE}}>NEXT</Text>
-                                    </TouchableOpacity>
-                                </View> :
-                                <View style={{position: 'absolute', right: 0, bottom: 0}}>
-                                    <TouchableOpacity activeOpacity={0.6} style={{
-                                        padding: 5,
-                                        borderRadius: 6,
-                                        borderColor: Colors.RED,
-                                        borderWidth: 0.8,
-                                        width: 80,
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        marginLeft: 18,
-                                        marginRight: 12,
-                                        backgroundColor: Colors.RED,
-                                        height: 40
-                                    }} onPress={() => {
-                                        if (reoprtingManagerListDropdownItem !== 0) {
-                                            updateEmployeeData();
-                                            setShowShuffleModal(false);
-                                            setHeaderTitle('Selected employees has Active tasks. Please delegate to another employee');
-                                            setDropDownPlaceHolder('Employees');
-                                            setDelegateButtonClick(false);
-                                            setEmployeeDropdownList([]);
-                                            setReoprtingManagerDropdownList([]);
-                                        }
-                                    }}>
-                                        <Text
-                                            style={{fontSize: 13, fontWeight: '300', color: Colors.WHITE}}>SUBMIT</Text>
-                                    </TouchableOpacity>
-                                </View>}
-                        </View>
-                    </View>
-                </View>
+            {/*                        <TouchableOpacity activeOpacity={0.6} style={{*/}
+            {/*                            padding: 5,*/}
+            {/*                            borderRadius: 6,*/}
+            {/*                            borderColor: Colors.RED,*/}
+            {/*                            borderWidth: 0.8,*/}
+            {/*                            width: '43%',*/}
+            {/*                            alignItems: 'center',*/}
+            {/*                            justifyContent: 'center',*/}
+            {/*                            backgroundColor: Colors.RED,*/}
+            {/*                            height: 40*/}
+            {/*                        }} onPress={() => {*/}
+            {/*                            if (employeeListDropdownItem !== 0) {*/}
+            {/*                                setHeaderTitle('Reporting Managers');*/}
+            {/*                                setDropDownPlaceHolder('Reporting Manager');*/}
+            {/*                                setDelegateButtonClick(true);*/}
+            {/*                                getReportingManagerListFromServer(selectedUser);*/}
+            {/*                            }*/}
+            {/*                        }}>*/}
+            {/*                            <Text style={{fontSize: 13, fontWeight: '300', color: Colors.WHITE}}>NEXT</Text>*/}
+            {/*                        </TouchableOpacity>*/}
+            {/*                    </View> :*/}
+            {/*                    <View style={{position: 'absolute', right: 0, bottom: 0}}>*/}
+            {/*                        <TouchableOpacity activeOpacity={0.6} style={{*/}
+            {/*                            padding: 5,*/}
+            {/*                            borderRadius: 6,*/}
+            {/*                            borderColor: Colors.RED,*/}
+            {/*                            borderWidth: 0.8,*/}
+            {/*                            width: 80,*/}
+            {/*                            alignItems: 'center',*/}
+            {/*                            justifyContent: 'center',*/}
+            {/*                            marginLeft: 18,*/}
+            {/*                            marginRight: 12,*/}
+            {/*                            backgroundColor: Colors.RED,*/}
+            {/*                            height: 40*/}
+            {/*                        }} onPress={() => {*/}
+            {/*                            if (reoprtingManagerListDropdownItem !== 0) {*/}
+            {/*                                updateEmployeeData();*/}
+            {/*                                setShowShuffleModal(false);*/}
+            {/*                                setHeaderTitle('Selected employees has Active tasks. Please delegate to another employee');*/}
+            {/*                                setDropDownPlaceHolder('Employees');*/}
+            {/*                                setDelegateButtonClick(false);*/}
+            {/*                                setEmployeeDropdownList([]);*/}
+            {/*                                setReoprtingManagerDropdownList([]);*/}
+            {/*                            }*/}
+            {/*                        }}>*/}
+            {/*                            <Text*/}
+            {/*                                style={{fontSize: 13, fontWeight: '300', color: Colors.WHITE}}>SUBMIT</Text>*/}
+            {/*                        </TouchableOpacity>*/}
+            {/*                    </View>}*/}
+            {/*            </View>*/}
+            {/*        </View>*/}
+            {/*    </View>*/}
 
-            </Modal>
+            {/*</Modal>*/}
 
-            <Modal
-                animationType={'fade'}
-                transparent={true}
-                visible={false}
-                onRequestClose={() => setSelectedName('')}
-            >
-                <View style={{
-                    flex: 1,
-                    justifyContent: "center",
-                    alignItems: "flex-start",
-                    // backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                    paddingHorizontal: 20
-                }}>
-                    <View style={{
-                        maxWidth: '90%',
-                        minHeight: 50,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        backgroundColor: '#fff',
-                        borderRadius: 10,
-                        paddingVertical: 10,
-                        paddingHorizontal: 15,
-                        borderWidth: 1,
-                        borderColor: '#0c0c0c'
-                    }}>
-                        <Text style={{
-                            fontSize: 16,
-                            color: '#0c0c0c',
-                            fontWeight: 'bold',
-                            textAlign: 'center'
-                        }}>{selectedName}</Text>
-                    </View>
-                </View>
-            </Modal>
+            {/*<Modal*/}
+            {/*    animationType={'fade'}*/}
+            {/*    transparent={true}*/}
+            {/*    visible={false}*/}
+            {/*    onRequestClose={() => setSelectedName('')}*/}
+            {/*>*/}
+            {/*    <View style={{*/}
+            {/*        flex: 1,*/}
+            {/*        justifyContent: "center",*/}
+            {/*        alignItems: "flex-start",*/}
+            {/*        // backgroundColor: 'rgba(0, 0, 0, 0.5)',*/}
+            {/*        paddingHorizontal: 20*/}
+            {/*    }}>*/}
+            {/*        <View style={{*/}
+            {/*            maxWidth: '90%',*/}
+            {/*            minHeight: 50,*/}
+            {/*            justifyContent: 'center',*/}
+            {/*            alignItems: 'center',*/}
+            {/*            backgroundColor: '#fff',*/}
+            {/*            borderRadius: 10,*/}
+            {/*            paddingVertical: 10,*/}
+            {/*            paddingHorizontal: 15,*/}
+            {/*            borderWidth: 1,*/}
+            {/*            borderColor: '#0c0c0c'*/}
+            {/*        }}>*/}
+            {/*            <Text style={{*/}
+            {/*                fontSize: 16,*/}
+            {/*                color: '#0c0c0c',*/}
+            {/*                fontWeight: 'bold',*/}
+            {/*                textAlign: 'center'*/}
+            {/*            }}>{selectedName}</Text>*/}
+            {/*        </View>*/}
+            {/*    </View>*/}
+            {/*</Modal>*/}
             <View style={styles.container}>
                 {selector.isTeam ? (
                     <View>
@@ -726,9 +714,10 @@ const TargetScreen = ({route}) => {
                                                 navigation.navigate(AppNavigator.HomeStackIdentifiers.sourceModel,
                                                     {
                                                         empId: item.empId,
+                                                        headerTitle: item.empName,
                                                         loggedInEmpId: selector.login_employee_details.empId,
                                                         orgId: selector.login_employee_details.orgId,
-                                                        type: selector.isDSE ? 'SELF' : selector.isTeam ? 'TEAM' : 'INSIGHTS'
+                                                        type: 'TEAM'
                                                     })
                                             }}>
                                                 <Text style={{
@@ -794,7 +783,8 @@ const TargetScreen = ({route}) => {
                                                                         <Pressable onPress={() => {
                                                                             navigation.navigate(AppNavigator.HomeStackIdentifiers.sourceModel, {
                                                                                 empId: innerItem1.empId,
-                                                                                type: selector.isDSE ? 'SELF' : selector.isTeam ? 'TEAM' : 'INSIGHTS'
+                                                                                headerTitle: innerItem1.empName,
+                                                                                type: 'TEAM'
                                                                             })
                                                                         }}>
                                                                             <Text style={{
@@ -906,7 +896,8 @@ const TargetScreen = ({route}) => {
                                                                                         <Pressable onPress={() => {
                                                                                             navigation.navigate(AppNavigator.HomeStackIdentifiers.sourceModel, {
                                                                                                 empId: innerItem2.empId,
-                                                                                                type: selector.isDSE ? 'SELF' : selector.isTeam ? 'TEAM' : 'INSIGHTS'
+                                                                                                headerTitle: innerItem2.empName,
+                                                                                                type: 'TEAM'
                                                                                             })
                                                                                         }}>
                                                                                             <Text style={{
@@ -972,7 +963,6 @@ const TargetScreen = ({route}) => {
                                                                                                                                       }
                                                                                                                                   }
                                                                                                                               }
-                                                                                                                              setIsLevel2Available(tempRawData.length > 0);
                                                                                                                               setAllParameters([...localData])
                                                                                                                           })
 
@@ -1020,7 +1010,8 @@ const TargetScreen = ({route}) => {
                                                                                                             onPress={() => {
                                                                                                                 navigation.navigate(AppNavigator.HomeStackIdentifiers.sourceModel, {
                                                                                                                     empId: innerItem3.empId,
-                                                                                                                    type: selector.isDSE ? 'SELF' : selector.isTeam ? 'TEAM' : 'INSIGHTS'
+                                                                                                                    headerTitle: innerItem3.empName,
+                                                                                                                    type: 'TEAM'
                                                                                                                 })
                                                                                                             }}>
                                                                                                             <Text
@@ -1088,7 +1079,6 @@ const TargetScreen = ({route}) => {
                                                                                                                                     }
                                                                                                                                 }
                                                                                                                             }
-                                                                                                                            setIsLevel3Available(tempRawData.length > 0);
                                                                                                                             setAllParameters([...localData])
                                                                                                                         })
                                                                                                                     }
@@ -1172,7 +1162,6 @@ const TargetScreen = ({route}) => {
                                                                                                                                                     }
                                                                                                                                                 }
                                                                                                                                             }
-                                                                                                                                            setIsLevel4Available(tempRawData.length > 0);
                                                                                                                                             setAllParameters([...localData])
                                                                                                                                         })
                                                                                                                                     }
@@ -1255,7 +1244,6 @@ const TargetScreen = ({route}) => {
                                                                                                                                                                     }
                                                                                                                                                                 }
                                                                                                                                                             }
-                                                                                                                                                            setIsLevel5Available(tempRawData.length > 0);
                                                                                                                                                             setAllParameters([...localData])
                                                                                                                                                         })
                                                                                                                                                     }
@@ -1385,8 +1373,9 @@ const TargetScreen = ({route}) => {
                                     <Pressable style={{alignSelf: 'flex-end'}} onPress={() => {
                                         navigation.navigate(AppNavigator.HomeStackIdentifiers.sourceModel, {
                                             empId: selector.login_employee_details.empId,
+                                            headerTitle: 'Grand Total',
                                             loggedInEmpId: selector.login_employee_details.empId,
-                                            type: selector.isDSE ? 'SELF' : selector.isTeam ? 'TEAM' : 'INSIGHTS'
+                                            type: 'TEAM'
                                         })
                                     }}>
                                         <Text style={{
@@ -1466,8 +1455,9 @@ const TargetScreen = ({route}) => {
                                 <Pressable style={{alignSelf: 'flex-end'}} onPress={() => {
                                     navigation.navigate(AppNavigator.HomeStackIdentifiers.sourceModel, {
                                         empId: selector.login_employee_details.empId,
+                                        headerTitle: 'Source/Model',
                                         loggedInEmpId: selector.login_employee_details.empId,
-                                        type: selector.isDSE ? 'SELF' : selector.isTeam ? 'TEAM' : 'INSIGHTS'
+                                        type: selector.isDSE ? 'SELF' : 'INSIGHTS'
                                     })
                                 }}>
                                     <Text style={{
