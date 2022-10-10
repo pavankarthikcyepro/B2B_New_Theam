@@ -1583,12 +1583,17 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       }
 
       let isAddressSelected = false;
-      for (let i = 0; i < addressData.length; i++) {
-        if(addressData[i].value == selector.defaultAddress){
+      if (
+        (selector.defaultAddress && selector.defaultAddress.addressType) ||
+        (selector.defaultAddress && selector.defaultAddress.village)){
           isAddressSelected = true;
+        } else {
+        for (let i = 0; i < addressData.length; i++) {
+          if (addressData[i].value == selector.defaultAddress) {
+            isAddressSelected = true;
+          }
         }
       }
-
       if (!isAddressSelected){
         scrollToPos(2);
         setOpenAccordian("2");
