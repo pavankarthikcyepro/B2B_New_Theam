@@ -10,27 +10,23 @@ const PercentageToggleControl = (props) => {
     return (
         <Switch
             value={toggleValue}
-            renderActiveText={false}
-            renderInActiveText={false}
-            circleActiveColor={Colors.RED}
-            backgroundActive={Colors.GREEN}
-            backgroundInactive={Colors.RETAIL_BORDER_COLOR}
-            circleInActiveColor={Colors.RED}
-            innerCircleStyle={{
-                color: Colors.YELLOW,
-                alignItems: "center",
-                justifyContent: "center"
-            }}
-            circleBorderActiveColor={Colors.RED}
-            circleBorderInactiveColor={Colors.RED}
-            barHeight={16}
-            circleSize={18}
-            renderInsideCircle={() => {
-                return (
-                    <Text
-                        style={{color: Colors.WHITE, fontWeight: 'bold', fontSize: 12}}>%</Text>
-                )
-            }}
+            renderActiveText={true}
+            renderInActiveText={true}
+            backgroundActive={Colors.RED}
+            circleBorderActiveColor={Colors.WHITE}
+            circleBorderInactiveColor={Colors.WHITE}
+            barHeight={20}
+            activeText={'%'}
+            inActiveText={'%'}
+            activeTextStyle={{fontWeight: 'bold'}}
+            inActiveTextStyle={{fontWeight: 'lighter'}}
+            switchLeftPx={12}
+            switchRightPx={12}
+            outerCircleStyle={{borderRadius: 4}}
+            switchWidthMultiplier={1.5}
+            innerCircleStyle={{borderRadius: 2, height: 16, width: 16}}
+            switchBorderRadius={4}
+            changeValueImmediately={true}
             onValueChange={x => {
                 setToggleValue(x);
                 toggleChange(x === true ? 1 : 0)
