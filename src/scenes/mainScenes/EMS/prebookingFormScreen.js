@@ -1582,17 +1582,20 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         return;
       }
 
-      if (
-        !selector.defaultAddress ||
-        (selector.defaultAddress &&
-          selector.defaultAddress.addressType &&
-          !selector.defaultAddress.addressType.village)
-      ) {
+      let isAddressSelected = false;
+      for (let i = 0; i < addressData.length; i++) {
+        if(addressData[i].value == selector.defaultAddress){
+          isAddressSelected = true;
+        }
+      }
+
+      if (!isAddressSelected){
         scrollToPos(2);
         setOpenAccordian("2");
         showToast("please select address");
         return;
-      }
+      };
+
       if (selector.urban_or_rural == 0) {
         scrollToPos(2);
         setOpenAccordian("2");
