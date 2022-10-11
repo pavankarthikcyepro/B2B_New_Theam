@@ -3,9 +3,37 @@ import URL from "../networking/endpoints";
 import { client } from '../networking/client';
 import { showToast } from '../utils/toast';
 
-export const getLeadDropList = createAsyncThunk('DROPANALYSIS/getLeaddropList', async (payload, { rejectWithValue })=>{
+export const getSubMenu = createAsyncThunk('DROPANALYSIS/getSubMenu', async (payload, { rejectWithValue }) => {
 
-    console.log("PAYLOAD EN: ", URL.GET_LEADDROP_LIST(payload.branchId, payload.empName, payload.orgId, payload.offset,payload.limit));
+    console.log("PAYLOAD EN: ", URL.GET_SUB_MENU(payload));
+
+    const response = await client.get(URL.GET_SUB_MENU(payload));
+    const json = await response.json()
+    console.log("ENQ LIST:", JSON.stringify(json));
+
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+export const getLeadsList = createAsyncThunk('DROPANALYSIS/getLeaddropList', async (payload, { rejectWithValue }) => {
+
+    console.log("PAYLOAD getLeadsList EN: ", URL.GET_LEAD_LIST(payload.branchId, payload.empName, payload.empId, payload.offSet, payload.limit, payload.status, payload.substatus));
+
+    const response = await client.get(URL.GET_LEAD_LIST(payload.branchId, payload.empName, payload.empId, payload.offSet, payload.limit, payload.status, payload.substatus));
+    const json = await response.json()
+    console.log("ENQ getLeadsList LIST:", JSON.stringify(json));
+
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+export const getLeadDropList = createAsyncThunk('DROPANALYSIS/getLeaddropList', async (payload, { rejectWithValue }) => {
+
+    console.log("PAYLOAD EN: ", URL.GET_LEADDROP_LIST(payload.branchId, payload.empName, payload.orgId, payload.offset, payload.limit));
 
     const response = await client.get(URL.GET_LEADDROP_LIST(payload.branchId, payload.empName, payload.orgId, payload.offset, payload.limit));
     const json = await response.json()
@@ -52,7 +80,7 @@ export const revokeDrop = createAsyncThunk('DROPANALYSIS/revokeDrop', async (pay
     // const json = await response.json()
 
     console.log("REVOKE RES: ", response);
-    
+
     if (!response.ok) {
         return rejectWithValue(response);
     }
@@ -73,26 +101,48 @@ export const updateBulkApproval = createAsyncThunk('DROPANALYSIS/updateBulkAppro
     return json;
 })
 const leaddropListSlice = createSlice({
-    name:'DROPANALYSIS',
-    initialState:{
-        leadDropList:[],
+    name: 'DROPANALYSIS',
+    initialState: {
+        leadDropList: [],
         pageNumber: 0,
         totalPages: 1,
         isLoading: false,
         isLoadingExtraData: false,
         status: "",
-        approvalStatus:""
+        approvalStatus: "",
+        subMenu: []
     },
-    reducers:{},
-    extraReducers:(builder)=>{
-        builder.addCase(getLeadDropList.pending,(state, action)=>{
+    reducers: {},
+    extraReducers: (builder) => {
+        builder.addCase(getSubMenu.pending, (state, action) => {
+            console.log("dropanalysis pending", action)
+            state.subMenu = []
+        })
+        builder.addCase(getSubMenu.fulfilled, (state, action) => {
+            console.log("dropanalysis sucess",JSON.stringify(action));
+
+            const dmsLeadDropInfos = action.payload?.dmsLeadDropInfos;
+            state.leadDropList = []
+            if (dmsLeadDropInfos) {
+                state.totalPages = dmsLeadDropInfos.totalPages;
+                state.pageNumber = dmsLeadDropInfos.pageable.pageNumber;
+                state.leadDropList = dmsLeadDropInfos.content;
+            }
+            state.isLoading = false;
+            state.status = "sucess";
+        })
+        builder.addCase(getSubMenu.rejected, (state, action) => {
+            console.log("dropanalysis", "rejected")
+            state.leadDropList = []
+        })
+        builder.addCase(getLeadDropList.pending, (state, action) => {
             console.log("dropanalysis pending", action)
             state.totalPages = 1
             state.pageNumber = 0
             state.leadDropList = []
             state.isLoading = true;
         })
-        builder.addCase(getLeadDropList.fulfilled,(state, action)=>{
+        builder.addCase(getLeadDropList.fulfilled, (state, action) => {
 
             const dmsLeadDropInfos = action.payload?.dmsLeadDropInfos;
             state.totalPages = 1
@@ -106,7 +156,7 @@ const leaddropListSlice = createSlice({
             state.isLoading = false;
             state.status = "sucess";
         })
-        builder.addCase(getLeadDropList.rejected,(state, action)=>{
+        builder.addCase(getLeadDropList.rejected, (state, action) => {
             console.log("dropanalysis", "rejected")
 
             state.totalPages = 1
@@ -124,7 +174,7 @@ const leaddropListSlice = createSlice({
             // console.log('res: ', action.payload);
             console.log("dropanalysis success", action.payload)
 
-           
+
             const dmsLeadDropInfos = action.payload?.dmsLeadDropInfos;
             state.totalPages = 1
             state.pageNumber = 0
@@ -156,33 +206,33 @@ const leaddropListSlice = createSlice({
             state.approvalStatus = "sucess";
         })
         builder.addCase(updateSingleApproval.rejected, (state, action) => {
-            
+
         })
 
         builder.addCase(revokeDrop.pending, (state) => {
         })
         builder.addCase(revokeDrop.fulfilled, (state, action) => {
             // console.log('res: ', action.payload);
-           
+
         })
         builder.addCase(revokeDrop.rejected, (state, action) => {
-            
+
         })
 
         builder.addCase(updateBulkApproval.pending, (state) => {
         })
         builder.addCase(updateBulkApproval.fulfilled, (state, action) => {
-             console.log('builk uplres: ', action.payload);
-             if(action.payload.length > 0){
-                 showToast("Successfully updated");
+            console.log('builk uplres: ', action.payload);
+            if (action.payload.length > 0) {
+                showToast("Successfully updated");
 
-             }
+            }
             // const status = action.payload?.status;
             // if (status === 'SUCCESS') {
 
             // }
             // state.isLoadingExtraData = false;
-             state.approvalStatus = "sucess";
+            state.approvalStatus = "sucess";
         })
         builder.addCase(updateBulkApproval.rejected, (state, action) => {
             state.approvalStatus = "failed";
@@ -191,5 +241,5 @@ const leaddropListSlice = createSlice({
     }
 })
 
-export const {}= leaddropListSlice.actions;
+export const { } = leaddropListSlice.actions;
 export default leaddropListSlice.reducer;

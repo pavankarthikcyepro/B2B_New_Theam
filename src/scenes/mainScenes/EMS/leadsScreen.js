@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import {
     ActivityIndicator,
     FlatList,
@@ -11,30 +11,31 @@ import {
     Text,
     View
 } from "react-native";
-import {Button, IconButton, Searchbar} from "react-native-paper";
-import {EmptyListView} from "../../../pureComponents";
-import {LeadsFilterComp, SortAndFilterComp} from "../../../components";
-import {useDispatch, useSelector} from "react-redux";
-import {Colors} from "../../../styles";
-import {AppNavigator} from '../../../navigations';
+import { Button, IconButton, Searchbar } from "react-native-paper";
+import { EmptyListView } from "../../../pureComponents";
+import { LeadsFilterComp, SingleLeadSelectComp, SortAndFilterComp } from "../../../components";
+import { useDispatch, useSelector } from "react-redux";
+import { Colors } from "../../../styles";
+import { AppNavigator } from '../../../navigations';
 import * as AsyncStore from '../../../asyncStore';
-import {getEnquiryList, getMoreEnquiryList} from "../../../redux/enquiryReducer";
+import { getEnquiryList, getMoreEnquiryList } from "../../../redux/enquiryReducer";
 import moment from "moment";
-import {Category_Type_List_For_Filter} from '../../../jsonData/enquiryFormScreenJsonData';
-import {MyTaskNewItem} from '../MyTasks/components/MyTasksNewItem';
-import {updateIsSearch, updateSearchKey} from '../../../redux/appReducer';
-import {getPreBookingData} from "../../../redux/preBookingReducer";
+import { Category_Type_List_For_Filter } from '../../../jsonData/enquiryFormScreenJsonData';
+import { MyTaskNewItem } from '../MyTasks/components/MyTasksNewItem';
+import { updateIsSearch, updateSearchKey } from '../../../redux/appReducer';
+import { getPreBookingData } from "../../../redux/preBookingReducer";
 import DateRangePicker from "../../../utils/DateRangePicker";
+import { getLeadsList, getSubMenu } from "../../../redux/leaddropReducer";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().add(0, "day").format(dateFormat)
 const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
 
-const LeadsScreen = ({navigation}) => {
+const LeadsScreen = ({ navigation }) => {
 
     const selector = useSelector((state) => state.enquiryReducer);
     const appSelector = useSelector(state => state.appReducer);
-    const {vehicle_model_list_for_filters, source_of_enquiry_list} = useSelector(state => state.homeReducer);
+    const { vehicle_model_list_for_filters, source_of_enquiry_list } = useSelector(state => state.homeReducer);
     const dispatch = useDispatch();
     const [vehicleModelList, setVehicleModelList] = useState(vehicle_model_list_for_filters);
     const [sourceList, setSourceList] = useState(source_of_enquiry_list);
@@ -53,6 +54,12 @@ const LeadsScreen = ({navigation}) => {
     const [leadsFilterDropDownText, setLeadsFilterDropDownText] = useState('All');
     const [leadsList, setLeadsList] = useState([]);
 
+    const [subMenu, setSubMenu] = useState([]);
+    const [leadsSubMenuFilterVisible, setLeadsSubMenuFilterVisible] = useState(false);
+    const [leadsSubMenuFilterDropDownText, setLeadsSubMenuFilterDropDownText] = useState('All');
+    const [loader, setLoader] = useState(false);
+    const [tempStore, setTempStore] = useState({});
+
     const orgIdStateRef = React.useRef(orgId);
     const empIdStateRef = React.useRef(employeeId);
     const fromDateRef = React.useRef(selectedFromDate);
@@ -67,17 +74,51 @@ const LeadsScreen = ({navigation}) => {
         {
             id: 1,
             title: "Enquiry",
-            checked: true
+            checked: false
         },
         {
             id: 2,
-            title: "Booking Approval",
-            checked: true
+            title: "Booking",
+            checked: false
         },
         {
             id: 3,
+            title: "Retail",
+            checked: false
+        },
+        {
+            id: 4,
+            title: "Delivery",
+            checked: false
+        },
+
+    ]
+
+    const leadsFilterDataMainTemp = [
+        // {
+        //     id: 0,
+        //     title: "All",
+        //     checked: false
+        // },
+        {
+            id: 1,
+            title: "Enquiry",
+            checked: false
+        },
+        {
+            id: 2,
             title: "Booking",
-            checked: true
+            checked: false
+        },
+        {
+            id: 3,
+            title: "Retail",
+            checked: false
+        },
+        {
+            id: 4,
+            title: "Delivery",
+            checked: false
         },
 
     ]
@@ -145,14 +186,19 @@ const LeadsScreen = ({navigation}) => {
     // Navigation Listner to Auto Referesh
     useEffect(async () => {
         navigation.addListener('focus', async () => {
+            setLeadsFilterDropDownText("All");
+            setSubMenu([]);
             setFromDateState(lastMonthFirstDate);
             const tomorrowDate = moment().add(1, "day").format(dateFormat)
             setToDateState(currentDate);
-            setLeadsFilterData([...leadsFilterDataMain]);
-            await applyLeadsFilter(leadsFilterDataMain, lastMonthFirstDate, currentDate);
+            setLeadsFilterData(leadsFilterDataMainTemp);
+            const newArr = leadsFilterDataMain.map(function (x) {
+                x.checked = true;
+                return x
+            });;
+            await applyLeadsFilter(newArr, lastMonthFirstDate, currentDate);
         });
     }, [navigation]);
-
 
     const getPayloadData = (leadType, empId, startDate, endDate, offSet = 0, modelFilters = [], categoryFilters = [], sourceFilters = []) => {
         // const type = {enq: "ENQUIRY", bkgAprvl: 'PRE_BOOKING', bkg: 'BOOKING'}
@@ -168,6 +214,7 @@ const LeadsScreen = ({navigation}) => {
             "limit": 500,
         };
     }
+
 
     const getMoreEnquiryListFromServer = async () => {
         if (selector.isLoadingExtraData) {
@@ -207,7 +254,6 @@ const LeadsScreen = ({navigation}) => {
         const categoryFilters = [];
         const modelFilters = [];
         const sourceFilters = [];
-
         categoryData.forEach(element => {
             if (element.isChecked) {
                 categoryFilters.push({
@@ -233,7 +279,6 @@ const LeadsScreen = ({navigation}) => {
                 })
             }
         });
-
         setCategoryList([...categoryFilters])
         setVehicleModelList([...modelData]);
         setSourceList([...sourceData]);
@@ -301,6 +346,105 @@ const LeadsScreen = ({navigation}) => {
 
     }
 
+    const getSubMenuList = async (item) => {
+        console.log(item.toUpperCase());
+        Promise.all([dispatch(getSubMenu(item.toUpperCase()))])
+            .then((response) => {
+                let path = response[0]?.payload[0]?.allLeadsSubstagesEntity;
+                if (path.length == 1) {
+                    getFliteredList(path[0]);
+                    NewSubMenu([]);
+                } else {
+                    NewSubMenu(path);
+                }
+            }).catch((error) =>
+                console.log("response[0]?.payload[0]?.ERRor", error)
+            );
+    }
+
+    const NewSubMenu = (item) => {
+        const newArr = item.map(v => ({ ...v, checked: false, subData: [] }));
+        console.log(newArr);
+        setSubMenu(newArr);
+        setLeadsSubMenuFilterDropDownText('Select Sub Menu');
+    }
+
+
+
+    const getLatestPayload = (branchId, empName, empId, leadStage, leadStatus) => {
+        return {
+            "branchId": branchId,
+            "empName": empName,
+            "empId": empId,
+            "offSet": 0,
+            "limit": 500,
+            "status": leadStage,
+            "substatus": leadStatus ? leadStatus : ""
+        };
+    }
+
+    const onTempFliter = async (item) => {
+        setSearchedData([]);
+        setLoader(true);
+        const employeeData = await AsyncStore.getData(
+            AsyncStore.Keys.LOGIN_EMPLOYEE
+        );
+        if (employeeData) {
+            let newArray = item.filter(i => i.checked === true);
+            const jsonObj = JSON.parse(employeeData);
+            let dispatchData = [];
+
+            for (let i = 0; i < newArray.length; i++) {
+                dispatchData.push(dispatch(getLeadsList(getLatestPayload(jsonObj.branchId, jsonObj.empName, jsonObj.empId, newArray[i].leadStage, newArray[i].leadStatus))))
+            }
+
+            Promise.all(dispatchData).then((response) => {
+                setLoader(false);
+
+                console.log("dispatchData", JSON.stringify(response));
+                let newData = [];
+                for (let i = 0; i < response.length; i++) {
+                    let path = response[i].payload?.dmsEntity?.leadDtoPage?.content;
+                    newData = [...newData, ...path]
+                }
+                setSearchedData(newData);
+            })
+                .catch((error) => {
+                    setLoader(false);
+                    console.log(error);
+                });
+        }
+    }
+
+    const getFliteredList = async (item) => {
+        setSearchedData([]);
+        setLoader(true);
+        const employeeData = await AsyncStore.getData(
+            AsyncStore.Keys.LOGIN_EMPLOYEE
+        );
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            let payload = {
+                branchId: jsonObj.branchId,
+                empName: jsonObj.empName,
+                empId: jsonObj.empId,
+                offSet: 0,
+                limit: 500,
+                status: item?.leadStage,
+                substatus: item?.leadStatus ? item?.leadStatus : ""
+            }
+            Promise.all([dispatch(getLeadsList(payload))]).then(([response]) => {
+                setLoader(false);
+                let newData = response?.payload?.dmsEntity?.leadDtoPage?.content;
+                setSearchedData(newData);
+
+            }).catch((error) => {
+                console.log(error);
+                setLoader(false);
+            });
+        }
+    }
+
     const renderFooter = () => {
         if (!selector.isLoadingExtraData) {
             return null
@@ -308,7 +452,7 @@ const LeadsScreen = ({navigation}) => {
         return (
             <View style={styles.footer}>
                 <Text style={styles.btnText}>Loading More...</Text>
-                <ActivityIndicator color={Colors.GRAY}/>
+                <ActivityIndicator color={Colors.GRAY} />
             </View>
         );
     };
@@ -332,6 +476,7 @@ const LeadsScreen = ({navigation}) => {
         }, 500);
     }
 
+
     return (
         <SafeAreaView style={styles.container}>
             <Modal
@@ -346,7 +491,7 @@ const LeadsScreen = ({navigation}) => {
                         <View style={styles.calView2}>
                             <Button
                                 mode="text"
-                                labelStyle={{textTransform: 'none', color: Colors.RED}}
+                                labelStyle={{ textTransform: 'none', color: Colors.RED }}
                                 onPress={() => setShowDatePicker(false)}
                             >
                                 Close
@@ -357,25 +502,63 @@ const LeadsScreen = ({navigation}) => {
                             onSuccess={(from, to) => {
                                 applyDateFilter(from, to);
                             }}
-                            theme={{markColor: Colors.RED, markTextColor: 'white'}}/>
+                            theme={{ markColor: Colors.RED, markTextColor: 'white' }} />
                     </View>
                 </SafeAreaView>
             </Modal>
             <View>
-                <LeadsFilterComp visible={leadsFilterVisible} modelList={leadsFilterData} submitCallback={(x) => {
+                <SingleLeadSelectComp visible={leadsFilterVisible} modelList={leadsFilterData} submitCallback={(x) => {
                     setLeadsFilterData([...x]);
-                    applyLeadsFilter([...x], selectedFromDate, selectedToDate);
+                    // applyLeadsFilter([...x], selectedFromDate, selectedToDate);
                     setLeadsFilterVisible(false);
                     const data = x.filter(y => y.checked);
                     if (data.length === 3) {
                         setLeadsFilterDropDownText('All')
                     } else {
                         const names = data.map(y => y.title);
+                        getSubMenuList(names.toString());
                         setLeadsFilterDropDownText(names.toString());
                     }
                 }} cancelClicked={() => {
                     setLeadsFilterVisible(false)
-                }}/>
+                }}
+                    selectAll={async (x) => {
+                        setSubMenu([]);
+                        setLeadsFilterDropDownText('All');
+                        setFromDateState(lastMonthFirstDate);
+                        const tomorrowDate = moment().add(1, "day").format(dateFormat)
+                        setToDateState(currentDate);
+                        setLeadsFilterData(leadsFilterDataMainTemp);
+                        const newArr = leadsFilterDataMain.map(function (x) {
+                            x.checked = true;
+                            return x
+                        });;
+                        await applyLeadsFilter(newArr, lastMonthFirstDate, currentDate);
+                    }}
+                />
+                <LeadsFilterComp visible={leadsSubMenuFilterVisible} modelList={subMenu} submitCallback={(x) => {
+                    setSubMenu([...x]);
+                    onTempFliter(x);
+                    setLeadsSubMenuFilterVisible(false);
+                    const data = x.filter(y => y.checked);
+                    if (data.length === subMenu.length) {
+                        setLeadsSubMenuFilterDropDownText('All')
+                    } else {
+                        const names = data.map(y => y?.subMenu);
+                        setLeadsSubMenuFilterDropDownText(names.toString() ? names.toString() : "Select Sub Menu");
+                    }
+                }}
+                    cancelClicked={() => {
+                        setLeadsSubMenuFilterVisible(false)
+                    }}
+                    onChange={(x) => {
+                        console.log("onChange", x);
+                        // onTempFliter(x);
+                        // getFliteredList(x);
+                        // setSubMenu(x);
+                        // onTempFliter(x)
+                    }}
+                />
             </View>
 
             <SortAndFilterComp
@@ -393,7 +576,7 @@ const LeadsScreen = ({navigation}) => {
             />
 
             <View style={styles.view1}>
-                <View style={{width: "30%"}}>
+                <View style={{ width: "30%" }}>
                     <View
                         style={{
                             flexDirection: "row",
@@ -412,7 +595,7 @@ const LeadsScreen = ({navigation}) => {
                                     height: 50,
                                     justifyContent: 'center'
                                 }}>
-                                    <Text style={{fontSize: 12, fontWeight: '400', color: Colors.GRAY}}>Date
+                                    <Text style={{ fontSize: 12, fontWeight: '400', color: Colors.GRAY }}>Date
                                         range</Text>
                                     <View style={{
                                         flexDirection: 'row',
@@ -425,7 +608,7 @@ const LeadsScreen = ({navigation}) => {
                                                 fontWeight: '400',
                                                 color: '2022-08-23' ? Colors.BLACK : Colors.GRAY
                                             }}>{selectedFromDate ? selectedFromDate : moment(new Date()).format(dateFormat)
-                                            }</Text>
+                                                }</Text>
                                             <Text style={{
                                                 fontSize: 12,
                                                 fontWeight: '400',
@@ -435,7 +618,7 @@ const LeadsScreen = ({navigation}) => {
                                         <IconButton
                                             icon={"calendar-month"}
                                             size={20}
-                                            style={{margin: 0}}
+                                            style={{ margin: 0 }}
                                             color={Colors.RED}
                                         />
                                     </View>
@@ -444,7 +627,7 @@ const LeadsScreen = ({navigation}) => {
                         </View>
                     </View>
                 </View>
-                <View style={{width: '45%'}}>
+                <View style={{ width: '45%' }}>
                     <Pressable onPress={() => {
                         setLeadsFilterVisible(true);
                     }}>
@@ -456,23 +639,46 @@ const LeadsScreen = ({navigation}) => {
                             justifyContent: 'space-between',
                             alignItems: 'center'
                         }}>
-                            <Text style={{width: '70%', paddingHorizontal: 4, paddingVertical: 2, fontSize: 12}}
-                                  numberOfLines={2}>{leadsFilterDropDownText}</Text>
+                            <Text style={{ width: '70%', paddingHorizontal: 4, paddingVertical: 2, fontSize: 12, fontWeight: "600" }}
+                                numberOfLines={2}>{leadsFilterDropDownText}</Text>
                             <IconButton icon={leadsFilterVisible ? 'chevron-up' : 'chevron-down'} size={20}
-                                        color={Colors.RED}
-                                        style={{margin: 0, padding: 0, width: '30%'}}/>
+                                color={Colors.RED}
+                                style={{ margin: 0, padding: 0, width: '30%' }} />
                         </View>
                     </Pressable>
                 </View>
                 <Pressable onPress={() => setSortAndFilterVisible(true)}>
-                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Text style={styles.text1}>{'Filter'}</Text>
                         <IconButton icon={'filter-outline'} size={20} color={Colors.RED}
-                                    style={{margin: 0, padding: 0}}/>
+                            style={{ margin: 0, padding: 0 }} />
                     </View>
                 </Pressable>
+
             </View>
+            {subMenu?.length > 1 &&
+                <View style={{ width: '90%', alignSelf: "center", backgroundColor: 'white', marginBottom: 5 }}>
+                    <Pressable onPress={() => {
+                        setLeadsSubMenuFilterVisible(true);
+                    }}>
+                        <View style={{
+                            borderWidth: 0.5,
+                            borderColor: Colors.RED,
+                            borderRadius: 4,
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                            alignItems: 'center'
+                        }}>
+                            <Text style={{ width: '70%', paddingHorizontal: 4, paddingVertical: 2, fontSize: 12, fontWeight: "600" }}
+                                numberOfLines={2}>{leadsSubMenuFilterDropDownText}</Text>
+                            <IconButton icon={leadsSubMenuFilterVisible ? 'chevron-up' : 'chevron-down'} size={20}
+                                color={Colors.RED}
+                                style={{ margin: 0, padding: 0, width: '10%' }} />
+                        </View>
+                    </Pressable>
+                </View>}
             <View>
+
                 <Searchbar
                     placeholder="Search"
                     onChangeText={onChangeSearch}
@@ -480,8 +686,8 @@ const LeadsScreen = ({navigation}) => {
                     style={styles.searchBar}
                 />
             </View>
-            {searchedData.length === 0 ? <EmptyListView title={"No Data Found"} isLoading={selector.isLoading}/> :
-                <View style={[{backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10}]}>
+            {searchedData.length === 0 ? <EmptyListView title={"No Data Found"} isLoading={selector.isLoading || loader} /> :
+                <View style={[{ backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10 }]}>
                     <FlatList
                         data={searchedData}
                         extraData={searchedData}
@@ -501,7 +707,7 @@ const LeadsScreen = ({navigation}) => {
                         //     }
                         // }}
                         ListFooterComponent={renderFooter}
-                        renderItem={({item, index}) => {
+                        renderItem={({ item, index }) => {
                             let color = Colors.WHITE;
                             if (index % 2 !== 0) {
                                 color = Colors.LIGHT_GRAY;
@@ -599,7 +805,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginBottom: 5
     },
-    searchBar: {height: 40},
+    searchBar: { height: 40 },
     button: {
         borderRadius: 0,
         padding: 10,

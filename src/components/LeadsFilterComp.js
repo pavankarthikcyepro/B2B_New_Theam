@@ -1,24 +1,40 @@
-import React, {useEffect, useState} from 'react';
-import {FlatList, Modal, Platform, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {Button, Checkbox} from "react-native-paper";
-import {Colors} from "../styles";
+import React, { useEffect, useState } from "react";
+import {
+    FlatList,
+    Modal,
+    Platform,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+} from "react-native";
+import { Button, Checkbox } from "react-native-paper";
+import { Colors } from "../styles";
 
-const LeadsFilterComp = ({visible, modelList, onRequestClose, submitCallback, cancelClicked}) => {
+const LeadsFilterComp = ({
+    visible,
+    modelList,
+    onRequestClose,
+    submitCallback,
+    cancelClicked,
+    onChange,
+}) => {
     const [localModelList, setLocalModelList] = useState([]);
     useEffect(() => {
-        setLocalModelList([...modelList])
+        setLocalModelList([...modelList]);
     }, []);
     useEffect(() => {
-        setLocalModelList([...modelList])
+        setLocalModelList([...modelList]);
     }, [visible]);
 
     const itemSelected = (selectedItem, itemIndex) => {
         let modelList = [...localModelList];
-        let selectedObject = {...modelList[itemIndex]};
+        let selectedObject = { ...modelList[itemIndex] };
         selectedObject.checked = !selectedObject.checked;
         modelList[itemIndex] = selectedObject;
+        onChange([...modelList]);
         setLocalModelList([...modelList]);
-    }
+    };
 
     return (
         <View>
@@ -30,27 +46,36 @@ const LeadsFilterComp = ({visible, modelList, onRequestClose, submitCallback, ca
             >
                 <View style={styles.centeredView}>
                     <View style={styles.modalView}>
-                        <View>
-                            <Text style={styles.modalText}>Select lead type</Text>
-                            <View style={{height: 0.5, backgroundColor: 'gray', marginBottom: 16}}></View>
+                        <View style={{ width: "85%" }}>
+                            <Text style={styles.modalText}>{"Sub Menu"}</Text>
+                            <View
+                                style={{
+                                    height: 0.5,
+                                    backgroundColor: "gray",
+                                    marginBottom: 16,
+                                }}
+                            />
                             <FlatList
                                 key={"CATEGORY_LIST"}
                                 data={localModelList}
                                 keyExtractor={(item, index) => index.toString()}
-                                renderItem={({item, index}) => {
+                                renderItem={({ item, index }) => {
                                     return (
                                         <TouchableOpacity
-                                            onPress={() => itemSelected(item, index)}
+                                            onPress={() => {
+                                                // onChange(item);
+                                                itemSelected(item, index);
+                                            }}
                                         >
                                             <View style={styles.radiobuttonVw}>
                                                 <Checkbox.Android
                                                     color={Colors.RED}
-                                                    status={
-                                                        item.checked ? "checked" : "unchecked"
-                                                    }
+                                                    status={item.checked ? "checked" : "unchecked"}
                                                 />
-                                                <Text style={[styles.radioText, {color: Colors.BLACK}]}>
-                                                    {item.title}
+                                                <Text
+                                                    style={[styles.radioText, { color: Colors.BLACK }]}
+                                                >
+                                                    {item?.subMenu}
                                                 </Text>
                                             </View>
                                         </TouchableOpacity>
@@ -58,13 +83,15 @@ const LeadsFilterComp = ({visible, modelList, onRequestClose, submitCallback, ca
                                 }}
                             />
                         </View>
-                        <View style={{
-                            display: 'flex',
-                            flexDirection: 'row',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            width: '85%'
-                        }}>
+                        <View
+                            style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                width: "85%",
+                            }}
+                        >
                             <Button
                                 mode="text"
                                 color={Colors.RED}
@@ -74,7 +101,7 @@ const LeadsFilterComp = ({visible, modelList, onRequestClose, submitCallback, ca
                                     fontWeight: "600",
                                 }}
                                 onPress={() => {
-                                    cancelClicked()
+                                    cancelClicked();
                                 }}
                             >
                                 Cancel
@@ -97,18 +124,17 @@ const LeadsFilterComp = ({visible, modelList, onRequestClose, submitCallback, ca
             </Modal>
         </View>
     );
-}
+};
 
-export {LeadsFilterComp};
+export { LeadsFilterComp };
 
 const styles = StyleSheet.create({
-
     // modal view
     centeredView: {
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        marginTop: 22
+        marginTop: 22,
     },
     modalView: {
         margin: 20,
@@ -120,26 +146,29 @@ const styles = StyleSheet.create({
         shadowColor: "#000",
         shadowOffset: {
             width: 0,
-            height: 2
+            height: 2,
         },
         shadowOpacity: 0.25,
         shadowRadius: 4,
         elevation: 5,
-        width: '60%',
+        // width: '60%',
         height: 225,
-        display: 'flex',
-        justifyContent: 'space-evenly'
+        display: "flex",
+        justifyContent: "space-evenly",
+        width: "85%",
     },
     modalText: {
         marginBottom: 15,
-        textAlign: "center"
+        textAlign: "center",
+        fontSize: 14,
+        fontWeight: "700",
     },
     radiobuttonVw: {
-        flexDirection: 'row',
-        alignItems: 'center'
+        flexDirection: "row",
+        alignItems: "center",
     },
     radioText: {
         fontSize: 14,
-        fontWeight: '400'
+        fontWeight: "400",
     },
-})
+});
