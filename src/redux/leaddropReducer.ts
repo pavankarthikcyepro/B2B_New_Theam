@@ -3,6 +3,20 @@ import URL from "../networking/endpoints";
 import { client } from '../networking/client';
 import { showToast } from '../utils/toast';
 
+export const getMenu = createAsyncThunk('DROPANALYSIS/getMenu', async (payload, { rejectWithValue }) => {
+
+    console.log("PAYLOAD EN: ", URL.GET_MENU_DROP_DOWN_DATA());
+
+    const response = await client.get(URL.GET_MENU_DROP_DOWN_DATA());
+    const json = await response.json()
+    console.log("ENQ LIST:", JSON.stringify(json));
+
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
 export const getSubMenu = createAsyncThunk('DROPANALYSIS/getSubMenu', async (payload, { rejectWithValue }) => {
 
     console.log("PAYLOAD EN: ", URL.GET_SUB_MENU(payload));
@@ -110,30 +124,34 @@ const leaddropListSlice = createSlice({
         isLoadingExtraData: false,
         status: "",
         approvalStatus: "",
-        subMenu: []
+        subMenu: [],
+        menu:[]
     },
     reducers: {},
     extraReducers: (builder) => {
+        builder.addCase(getMenu.pending, (state, action) => {
+            console.log("dropanalysis getMenu pending", action)
+            state.menu = []
+        })
+        builder.addCase(getMenu.fulfilled, (state, action) => {
+            console.log("dropanalysis getMenu sucess",JSON.stringify(action));
+            state.menu = action.payload;
+        })
+        builder.addCase(getMenu.rejected, (state, action) => {
+            console.log("dropanalysis getMenu", "rejected")
+            state.menu = []
+        })
         builder.addCase(getSubMenu.pending, (state, action) => {
             console.log("dropanalysis pending", action)
             state.subMenu = []
         })
         builder.addCase(getSubMenu.fulfilled, (state, action) => {
             console.log("dropanalysis sucess",JSON.stringify(action));
-
-            const dmsLeadDropInfos = action.payload?.dmsLeadDropInfos;
-            state.leadDropList = []
-            if (dmsLeadDropInfos) {
-                state.totalPages = dmsLeadDropInfos.totalPages;
-                state.pageNumber = dmsLeadDropInfos.pageable.pageNumber;
-                state.leadDropList = dmsLeadDropInfos.content;
-            }
-            state.isLoading = false;
-            state.status = "sucess";
+            state.subMenu = action.payload;
         })
         builder.addCase(getSubMenu.rejected, (state, action) => {
             console.log("dropanalysis", "rejected")
-            state.leadDropList = []
+            state.subMenu = []
         })
         builder.addCase(getLeadDropList.pending, (state, action) => {
             console.log("dropanalysis pending", action)

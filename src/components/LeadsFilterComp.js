@@ -59,6 +59,14 @@ const LeadsFilterComp = ({
                                 key={"CATEGORY_LIST"}
                                 data={localModelList}
                                 keyExtractor={(item, index) => index.toString()}
+                                ListEmptyComponent={() => {
+                                    return (<View style={{ alignItems: 'center' }}><Text>{"Data Not Available"}</Text></View>)
+                                }}
+                                style={{
+                                    width: "100%",
+                                    height: "70%",
+                                    paddingHorizontal: 5,
+                                }}
                                 renderItem={({ item, index }) => {
                                     return (
                                         <TouchableOpacity
@@ -90,6 +98,8 @@ const LeadsFilterComp = ({
                                 justifyContent: "space-between",
                                 alignItems: "center",
                                 width: "85%",
+                                backgroundColor: 'white',
+                                paddingVertical: 5
                             }}
                         >
                             <Button
@@ -158,10 +168,10 @@ const styles = StyleSheet.create({
         width: "85%",
     },
     modalText: {
-        marginBottom: 15,
         textAlign: "center",
         fontSize: 14,
         fontWeight: "700",
+        paddingVertical: 15
     },
     radiobuttonVw: {
         flexDirection: "row",

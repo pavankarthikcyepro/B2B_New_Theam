@@ -268,21 +268,26 @@ const URL = {
   GET_LEAD_LIST: (branchId, empName, empId, offSet, limit, status, substatus) => {
     return (
       sales_url +
-      "/lead/allLeads?limit=" + 
-      limit + 
-      "&offset=" + 
-      offSet + 
-      "&status=" + 
-      status + 
-      "&substatus=" + 
-      substatus + 
-      "&empId=" + 
-      empId + 
-      "&branchId=" + 
-      branchId + 
-      "&empName=" + 
+      "/lead/allLeads?limit=" +
+      limit +
+      "&offset=" +
+      offSet +
+      "&status=" +
+      status +
+      "&substatus=" +
+      substatus +
+      "&empId=" +
+      empId +
+      "&branchId=" +
+      branchId +
+      "&empName=" +
       empName
     );
+  },
+  GET_MENU_DROP_DOWN_DATA: () => {
+    return (
+      sales_url +
+      "/lead/menudropdown");
   },
   GET_EMPLOYEES_DROP_DOWN_DATA: (orgId, employeeId) => {
     return orgnaizationHirarchy + `/active-dropdowns/${orgId}/${employeeId}`;

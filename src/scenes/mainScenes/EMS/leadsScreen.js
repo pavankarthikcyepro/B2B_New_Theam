@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
     ActivityIndicator,
     FlatList,
@@ -25,7 +25,7 @@ import { MyTaskNewItem } from '../MyTasks/components/MyTasksNewItem';
 import { updateIsSearch, updateSearchKey } from '../../../redux/appReducer';
 import { getPreBookingData } from "../../../redux/preBookingReducer";
 import DateRangePicker from "../../../utils/DateRangePicker";
-import { getLeadsList, getSubMenu } from "../../../redux/leaddropReducer";
+import { getLeadsList, getMenu, getSubMenu } from "../../../redux/leaddropReducer";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().add(0, "day").format(dateFormat)
@@ -58,7 +58,7 @@ const LeadsScreen = ({ navigation }) => {
     const [leadsSubMenuFilterVisible, setLeadsSubMenuFilterVisible] = useState(false);
     const [leadsSubMenuFilterDropDownText, setLeadsSubMenuFilterDropDownText] = useState('All');
     const [loader, setLoader] = useState(false);
-    const [tempStore, setTempStore] = useState({});
+    const [tempStore, setTempStore] = useState([]);
 
     const orgIdStateRef = React.useRef(orgId);
     const empIdStateRef = React.useRef(employeeId);
@@ -186,17 +186,24 @@ const LeadsScreen = ({ navigation }) => {
     // Navigation Listner to Auto Referesh
     useEffect(async () => {
         navigation.addListener('focus', async () => {
-            setLeadsFilterDropDownText("All");
-            setSubMenu([]);
-            setFromDateState(lastMonthFirstDate);
-            const tomorrowDate = moment().add(1, "day").format(dateFormat)
-            setToDateState(currentDate);
-            setLeadsFilterData(leadsFilterDataMainTemp);
-            const newArr = leadsFilterDataMain.map(function (x) {
-                x.checked = true;
-                return x
-            });;
-            await applyLeadsFilter(newArr, lastMonthFirstDate, currentDate);
+            Promise.all([dispatch(getMenu())]).then(async (res) => {
+                let path = res[0]?.payload;
+                const newArr = path.map(v => ({ ...v, checked: false }));
+                setLeadsFilterData(newArr);
+                setTempStore(newArr);
+                setLeadsFilterDropDownText("All");
+                setSubMenu([]);
+                setFromDateState(lastMonthFirstDate);
+                const tomorrowDate = moment().add(1, "day").format(dateFormat)
+                setToDateState(currentDate);
+                const tempArray = Array.from(newArr);
+                await applyLeadsFilter(tempArray, lastMonthFirstDate, currentDate);
+            }).catch((err) => {
+                setLeadsFilterDropDownText("All");
+                setSubMenu([]);
+                console.log(err);
+            });
+
         });
     }, [navigation]);
 
@@ -295,7 +302,8 @@ const LeadsScreen = ({ navigation }) => {
         );
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
-            const leadsData = data.filter(x => x.checked);
+            // const leadsData = data.filter(x => x.checked);
+            const leadsData = data.filter(x => x.status === "Active");
             const payload1 = getPayloadData('ENQUIRY', jsonObj.empId, startDate, endDate, 0, modelFilters, categoryFilters, sourceFilters)
             const payload2 = getPayloadData('PREBOOKING', jsonObj.empId, startDate, endDate, 0, modelFilters, categoryFilters, sourceFilters)
             const payload3 = getPayloadData('BOOKING', jsonObj.empId, startDate, endDate, 0, modelFilters, categoryFilters, sourceFilters)
@@ -347,7 +355,6 @@ const LeadsScreen = ({ navigation }) => {
     }
 
     const getSubMenuList = async (item) => {
-        console.log(item.toUpperCase());
         Promise.all([dispatch(getSubMenu(item.toUpperCase()))])
             .then((response) => {
                 let path = response[0]?.payload[0]?.allLeadsSubstagesEntity;
@@ -358,13 +365,12 @@ const LeadsScreen = ({ navigation }) => {
                     NewSubMenu(path);
                 }
             }).catch((error) =>
-                console.log("response[0]?.payload[0]?.ERRor", error)
+                console.log("Error", error)
             );
     }
 
     const NewSubMenu = (item) => {
         const newArr = item.map(v => ({ ...v, checked: false, subData: [] }));
-        console.log(newArr);
         setSubMenu(newArr);
         setLeadsSubMenuFilterDropDownText('Select Sub Menu');
     }
@@ -400,8 +406,6 @@ const LeadsScreen = ({ navigation }) => {
 
             Promise.all(dispatchData).then((response) => {
                 setLoader(false);
-
-                console.log("dispatchData", JSON.stringify(response));
                 let newData = [];
                 for (let i = 0; i < response.length; i++) {
                     let path = response[i].payload?.dmsEntity?.leadDtoPage?.content;
@@ -509,13 +513,12 @@ const LeadsScreen = ({ navigation }) => {
             <View>
                 <SingleLeadSelectComp visible={leadsFilterVisible} modelList={leadsFilterData} submitCallback={(x) => {
                     setLeadsFilterData([...x]);
-                    // applyLeadsFilter([...x], selectedFromDate, selectedToDate);
                     setLeadsFilterVisible(false);
                     const data = x.filter(y => y.checked);
                     if (data.length === 3) {
                         setLeadsFilterDropDownText('All')
                     } else {
-                        const names = data.map(y => y.title);
+                        const names = data.map(y => y.menu);
                         getSubMenuList(names.toString());
                         setLeadsFilterDropDownText(names.toString());
                     }
@@ -528,9 +531,9 @@ const LeadsScreen = ({ navigation }) => {
                         setFromDateState(lastMonthFirstDate);
                         const tomorrowDate = moment().add(1, "day").format(dateFormat)
                         setToDateState(currentDate);
-                        setLeadsFilterData(leadsFilterDataMainTemp);
-                        const newArr = leadsFilterDataMain.map(function (x) {
-                            x.checked = true;
+                        setLeadsFilterData(tempStore);
+                        const newArr = tempStore.map(function (x) {
+                            x.checked = false;
                             return x
                         });;
                         await applyLeadsFilter(newArr, lastMonthFirstDate, currentDate);
@@ -552,11 +555,7 @@ const LeadsScreen = ({ navigation }) => {
                         setLeadsSubMenuFilterVisible(false)
                     }}
                     onChange={(x) => {
-                        console.log("onChange", x);
-                        // onTempFliter(x);
-                        // getFliteredList(x);
-                        // setSubMenu(x);
-                        // onTempFliter(x)
+                        // console.log("onChange", x);
                     }}
                 />
             </View>
@@ -639,11 +638,11 @@ const LeadsScreen = ({ navigation }) => {
                             justifyContent: 'space-between',
                             alignItems: 'center'
                         }}>
-                            <Text style={{ width: '70%', paddingHorizontal: 4, paddingVertical: 2, fontSize: 12, fontWeight: "600" }}
+                            <Text style={{ width: '70%', paddingHorizontal: 5, paddingVertical: 2, fontSize: 12, fontWeight: "600" }}
                                 numberOfLines={2}>{leadsFilterDropDownText}</Text>
                             <IconButton icon={leadsFilterVisible ? 'chevron-up' : 'chevron-down'} size={20}
                                 color={Colors.RED}
-                                style={{ margin: 0, padding: 0, width: '30%' }} />
+                                style={{ margin: 0, padding: 0, width: '20%' }} />
                         </View>
                     </Pressable>
                 </View>
