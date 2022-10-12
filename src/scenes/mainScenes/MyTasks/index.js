@@ -56,7 +56,7 @@ const SecondTopTabNavigator = ({ todaysData = [], upcomingData = [], pendingData
         name={"NEW_RESCHEDULE"}
         component={ListComponent}
         initialParams={{ data: reScheduleData, from: "RESCHEDULE" }}
-        options={{ title: `RE-\nSCHEDULE` }}
+        options={{ title: "RESCHEDULE" }}
       />
       <SecondTopTab.Screen
         name={"CLOSED"}

@@ -292,7 +292,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(223,228,231,0.67)',
         paddingLeft: 8
     },
-    titleColumnText: {maxWidth: 100, color: Colors.BLACK, fontWeight: '500', fontSize: 12},
+    titleColumnText: {maxWidth: 100, color: Colors.BLACK, fontWeight: '500', fontSize: 10},
     justifyAlignCenter: {
         justifyContent: 'center', alignItems: 'center'
     },
