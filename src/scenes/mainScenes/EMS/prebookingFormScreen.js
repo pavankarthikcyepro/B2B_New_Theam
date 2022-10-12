@@ -6764,7 +6764,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     </Button>
                   </View>
                 )}
-              {!isDropSelected && !isEdit && (
+              {!isDropSelected && !isEdit && userData.isManager && (
                 <View style={styles.actionBtnView}>
                   <Button
                     mode="contained"
