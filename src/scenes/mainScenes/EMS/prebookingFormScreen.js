@@ -1583,17 +1583,17 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       }
 
       let isAddressSelected = false;
-      if (
-        (selector.defaultAddress && selector.defaultAddress.addressType) ||
-        (selector.defaultAddress && selector.defaultAddress.village)){
-          isAddressSelected = true;
-        } else {
+
+      if (defaultAddress) {
+        isAddressSelected = true;
+      } else {
         for (let i = 0; i < addressData.length; i++) {
           if (addressData[i].value == selector.defaultAddress) {
             isAddressSelected = true;
           }
         }
       }
+      
       if (!isAddressSelected){
         scrollToPos(2);
         setOpenAccordian("2");
@@ -1873,8 +1873,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         JSON.stringify(postOnRoadPriceTable)
       );
       if (isEdit) {
-        postOnRoadPriceTable.id =
-          selector.on_road_price_dto_list_response[0].id;
+        // postOnRoadPriceTable.id =
+        //   selector.on_road_price_dto_list_response[0].id;
         dispatch(sendEditedOnRoadPriceDetails(postOnRoadPriceTable));
       } else dispatch(sendOnRoadPriceDetails(postOnRoadPriceTable));
       // Promise.all([
