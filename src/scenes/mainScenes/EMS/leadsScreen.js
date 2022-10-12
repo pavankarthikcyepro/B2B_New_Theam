@@ -359,7 +359,10 @@ const LeadsScreen = ({ navigation }) => {
             .then((response) => {
                 let path = response[0]?.payload[0]?.allLeadsSubstagesEntity;
                 if (path.length == 1) {
-                    getFliteredList(path[0]);
+                    // getFliteredList(path[0]);
+                    let newPath = path.map(v => ({ ...v, checked: true }));
+
+                    onTempFliter(newPath);
                     NewSubMenu([]);
                 } else {
                     NewSubMenu(path);
@@ -377,15 +380,14 @@ const LeadsScreen = ({ navigation }) => {
 
 
 
-    const getLatestPayload = (branchId, empName, empId, leadStage, leadStatus) => {
+    const getLatestPayload = (branchId, empName, empId, payload) => {
         return {
             "branchId": branchId,
             "empName": empName,
             "empId": empId,
             "offSet": 0,
             "limit": 500,
-            "status": leadStage,
-            "substatus": leadStatus ? leadStatus : ""
+            "body": payload
         };
     }
 
@@ -398,19 +400,19 @@ const LeadsScreen = ({ navigation }) => {
         if (employeeData) {
             let newArray = item.filter(i => i.checked === true);
             const jsonObj = JSON.parse(employeeData);
-            let dispatchData = [];
-
+            let leadStage = [];
+            let leadStatus = [];
             for (let i = 0; i < newArray.length; i++) {
-                dispatchData.push(dispatch(getLeadsList(getLatestPayload(jsonObj.branchId, jsonObj.empName, jsonObj.empId, newArray[i].leadStage, newArray[i].leadStatus))))
+                leadStage.push(newArray[i].leadStage);
+                leadStatus.push(newArray[i].leadStatus ? newArray[i].leadStatus : "");
             }
-
-            Promise.all(dispatchData).then((response) => {
+            let payload = {
+                "leadStage": leadStage,
+                "leadStatus": leadStatus
+            }
+            Promise.all([dispatch(getLeadsList(getLatestPayload(jsonObj.branchId, jsonObj.empName, jsonObj.empId, payload)))]).then((response) => {
                 setLoader(false);
-                let newData = [];
-                for (let i = 0; i < response.length; i++) {
-                    let path = response[i].payload?.dmsEntity?.leadDtoPage?.content;
-                    newData = [...newData, ...path]
-                }
+                let newData = response[0].payload?.dmsEntity?.leadDtoPage?.content;
                 setSearchedData(newData);
             })
                 .catch((error) => {

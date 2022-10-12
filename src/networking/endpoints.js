@@ -265,24 +265,31 @@ const URL = {
       "/lead/stagedropdown?menu=" + stage
     );
   },
-  GET_LEAD_LIST: (branchId, empName, empId, offSet, limit, status, substatus) => {
+  GET_LEAD_LIST: (branchId, empName, empId, offSet, limit) => {
     return (
-      sales_url +
-      "/lead/allLeads?limit=" +
-      limit +
-      "&offset=" +
-      offSet +
-      "&status=" +
-      status +
-      "&substatus=" +
-      substatus +
-      "&empId=" +
-      empId +
-      "&branchId=" +
-      branchId +
-      "&empName=" +
-      empName
+      sales_url + "/lead/allLeads?limit=" +
+      limit + "&offset=" +
+      offSet + "&empId=" +
+      empId + "&branchId=" +
+      branchId + "&empName=" + empName
     );
+    // return (
+    //   sales_url +
+    //   "/lead/allLeads?limit=" +
+    //   limit +
+    //   "&offset=" +
+    //   offSet +
+    //   "&status=" +
+    //   status +
+    //   "&substatus=" +
+    //   substatus +
+    //   "&empId=" +
+    //   empId +
+    //   "&branchId=" +
+    //   branchId +
+    //   "&empName=" +
+    //   empName
+    // );
   },
   GET_MENU_DROP_DOWN_DATA: () => {
     return (

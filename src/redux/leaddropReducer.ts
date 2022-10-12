@@ -31,25 +31,56 @@ export const getSubMenu = createAsyncThunk('DROPANALYSIS/getSubMenu', async (pay
     return json;
 })
 
-export const getLeadsList = createAsyncThunk('DROPANALYSIS/getLeaddropList', async (payload, { rejectWithValue }) => {
+export const getLeadsList = createAsyncThunk(
+    "DROPANALYSIS/getLeadsList",
+    async (payload, { rejectWithValue }) => {
+        console.log(
+          "PAYLOAD getLeadsList EN: ",
+          URL.GET_LEAD_LIST(
+            payload.branchId,
+            payload.empName,
+            payload.empId,
+            payload.offSet,
+            payload.limit
+          )
+        );
+        console.log(payload.body);
+        
 
-    console.log("PAYLOAD getLeadsList EN: ", URL.GET_LEAD_LIST(payload.branchId, payload.empName, payload.empId, payload.offSet, payload.limit, payload.status, payload.substatus));
+        const response = await client.post(
+            URL.GET_LEAD_LIST(
+                payload.branchId,
+                payload.empName,
+                payload.empId,
+                payload.offSet,
+                payload.limit
+            ),
+            payload.body
+        );
+        const json = await response.json();
+        console.log("ENQ getLeadsList LIST:", JSON.stringify(json));
 
-    const response = await client.get(URL.GET_LEAD_LIST(payload.branchId, payload.empName, payload.empId, payload.offSet, payload.limit, payload.status, payload.substatus));
-    const json = await response.json()
-    console.log("ENQ getLeadsList LIST:", JSON.stringify(json));
-
-    if (!response.ok) {
-        return rejectWithValue(json);
+        if (!response.ok) {
+            return rejectWithValue(json);
+        }
+        return json;
     }
-    return json;
-})
+);
 
 export const getLeadDropList = createAsyncThunk('DROPANALYSIS/getLeaddropList', async (payload, { rejectWithValue }) => {
 
     console.log("PAYLOAD EN: ", URL.GET_LEADDROP_LIST(payload.branchId, payload.empName, payload.orgId, payload.offset, payload.limit));
 
-    const response = await client.get(URL.GET_LEADDROP_LIST(payload.branchId, payload.empName, payload.orgId, payload.offset, payload.limit));
+    const response = await client.get(
+        URL.GET_LEADDROP_LIST(
+            payload.branchId,
+            payload.empName,
+            payload.orgId,
+            payload.offset,
+            payload.limit
+        ),
+        payload.body
+    );
     const json = await response.json()
     console.log("ENQ LIST:", JSON.stringify(json));
 
@@ -125,7 +156,8 @@ const leaddropListSlice = createSlice({
         status: "",
         approvalStatus: "",
         subMenu: [],
-        menu:[]
+        menu: [],
+        leadList: []
     },
     reducers: {},
     extraReducers: (builder) => {
@@ -134,7 +166,7 @@ const leaddropListSlice = createSlice({
             state.menu = []
         })
         builder.addCase(getMenu.fulfilled, (state, action) => {
-            console.log("dropanalysis getMenu sucess",JSON.stringify(action));
+            console.log("dropanalysis getMenu sucess", JSON.stringify(action));
             state.menu = action.payload;
         })
         builder.addCase(getMenu.rejected, (state, action) => {
@@ -146,7 +178,7 @@ const leaddropListSlice = createSlice({
             state.subMenu = []
         })
         builder.addCase(getSubMenu.fulfilled, (state, action) => {
-            console.log("dropanalysis sucess",JSON.stringify(action));
+            console.log("dropanalysis sucess", JSON.stringify(action));
             state.subMenu = action.payload;
         })
         builder.addCase(getSubMenu.rejected, (state, action) => {
@@ -183,6 +215,18 @@ const leaddropListSlice = createSlice({
             state.isLoading = false;
             state.status = "failed";
         })
+        builder.addCase(getLeadsList.pending, (state, action) => {
+            console.log("dropanalysis pending", action);
+            state.leadList = [];
+        });
+        builder.addCase(getLeadsList.fulfilled, (state, action) => {
+            state.leadList = action.payload;
+        });
+        builder.addCase(getLeadsList.rejected, (state, action) => {
+            console.log("dropanalysis", "rejected");
+            state.leadList = [];
+
+        });
         builder.addCase(getMoreLeadDropList.pending, (state) => {
             state.totalPages = 1
             state.pageNumber = 0
