@@ -3996,7 +3996,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   //  style={{ height: faltListHeight }}
                   data={carModelsList}
                   extraData={carModelsList}
-                  keyExtractor={(item, index) => item.id.toString()}
+                  keyExtractor={(item, index) => index.toString()}
                   renderItem={({ item, index }) => {
                     return (
                       // <Pressable onPress={() => selectedItem(item, index)}>
