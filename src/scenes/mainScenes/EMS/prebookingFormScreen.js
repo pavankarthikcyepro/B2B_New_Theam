@@ -1582,17 +1582,17 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         return;
       }
 
-      if (
-        !selector.defaultAddress ||
-        (selector.defaultAddress &&
-          selector.defaultAddress.addressType &&
-          !selector.defaultAddress.addressType.village)
-      ) {
-        scrollToPos(2);
-        setOpenAccordian("2");
-        showToast("please select address");
-        return;
-      }
+      // if (
+      //   !selector.defaultAddress ||
+      //   (selector.defaultAddress &&
+      //     selector.defaultAddress.addressType &&
+      //     !selector.defaultAddress.addressType.village)
+      // ) {
+      //   scrollToPos(2);
+      //   setOpenAccordian("2");
+      //   showToast("please select address");
+      //   return;
+      // }
       if (selector.urban_or_rural == 0) {
         scrollToPos(2);
         setOpenAccordian("2");
