@@ -1998,7 +1998,7 @@ const TargetScreen = ({route}) => {
     );
 }
 
-export default TargetScreen1;
+export default TargetScreen;
 
 
 export const RenderLevel1NameView = ({level, item, branchName = '', color, titleClick}) => {
