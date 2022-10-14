@@ -371,7 +371,7 @@ const TestDriveScreen = ({ route, navigation }) => {
             const taskName = selector.task_details_response.taskName;
             console.log("TASK STATUS:", taskStatus, taskName);
             if (taskStatus === "SENT_FOR_APPROVAL" && taskName === "Test Drive") {
-                setHandleActionButtons(2);
+                setHandleActionButtons(4);
             } else if (
                 taskStatus === "ASSIGNED" &&
                 taskName === "Test Drive Approval"
@@ -380,8 +380,8 @@ const TestDriveScreen = ({ route, navigation }) => {
                 setHandleActionButtons(3);
             } else if (taskStatus === "APPROVED" && taskName === "Test Drive") {
                 console.log("INSIDE B");
-                setHandleActionButtons(4);
-            } else if (taskStatus === "CANCELLED") {
+            //     setHandleActionButtons(2);
+            // } else if (taskStatus === "CANCELLED") {
                 setHandleActionButtons(5);
             }
             else if (taskStatus === "ASSIGNED" && taskName === "Test Drive") {
