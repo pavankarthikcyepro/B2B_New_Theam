@@ -298,7 +298,7 @@ const HomeScreen = ({ route, navigation }) => {
                 console.log('I did everything!');
             });
             console.log("LOGIN DATA:>>>>>>>>>>>>>>>>>>>>>>>>>", JSON.stringify(jsonObj.hrmsRole));
-            if (jsonObj?.hrmsRole === "Admin" || jsonObj?.hrmsRole === "Admin Prod" || jsonObj?.hrmsRole === "App Admin" || jsonObj?.hrmsRole === "Manager" || jsonObj?.hrmsRole === "TL" || jsonObj?.hrmsRole === "General Manager" || jsonObj?.hrmsRole === "branch manager" || jsonObj?.hrmsRole === "Testdrive_Manager" || jsonObj?.hrmsRole === "MD" || jsonObj?.hrmsRole === "Business Head" || jsonObj?.hrmsRole === "Sales Manager"){
+            if (jsonObj?.hrmsRole === "Admin" || jsonObj?.hrmsRole === "Admin Prod" || jsonObj?.hrmsRole === "App Admin" || jsonObj?.hrmsRole === "Manager" || jsonObj?.hrmsRole === "TL" || jsonObj?.hrmsRole === "General Manager" || jsonObj?.hrmsRole === "branch manager" || jsonObj?.hrmsRole === "Testdrive_Manager" || jsonObj?.hrmsRole === "MD" || jsonObj?.hrmsRole === "Business Head" || jsonObj?.hrmsRole === "Sales Manager" || jsonObj?.hrmsRole === "Sales Head"){
                 dispatch(updateIsTeamPresent(true))
                 setIsTeamPresent(true)
                 if (jsonObj?.hrmsRole === 'MD' || jsonObj?.hrmsRole === "App Admin" ) {
@@ -815,7 +815,7 @@ const HomeScreen = ({ route, navigation }) => {
                                 <>
                                     {isTeamPresent && !selector.isDSE &&
                                         <View style={{ flexDirection: 'row', marginBottom: 15, justifyContent: 'center', alignItems: 'center' }}>
-                                            <View style={{ flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 41, marginTop: 10, justifyContent: 'center', width: '80%' }}>
+                                            <View style={{ flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 28, marginTop: 10, justifyContent: 'center', width: '80%' }}>
 
                                                 <TouchableOpacity onPress={() => {
                                                     // setIsTeam(true)
@@ -835,7 +835,7 @@ const HomeScreen = ({ route, navigation }) => {
                                     }
                                     {selector.isDSE &&
                                         <View style={{ flexDirection: 'row', marginBottom: 15, justifyContent: 'center', alignItems: 'center' }}>
-                                            <View style={{ flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 41, justifyContent: 'center', width: '80%' }}>
+                                            <View style={{ flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 28, justifyContent: 'center', width: '80%' }}>
                                                 <TouchableOpacity onPress={() => {
                                                     // setIsTeam(true)
                                                     dispatch(updateIsTeam(false))

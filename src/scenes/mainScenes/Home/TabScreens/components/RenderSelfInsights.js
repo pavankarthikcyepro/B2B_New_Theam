@@ -23,7 +23,6 @@ export const RenderSelfInsights = (args) => {
     const dateDiff = ((new Date(monthLastDate).getTime() - new Date(currentDate).getTime()) / (1000 * 60 * 60 * 24));
     const {data, type} = args;
     const enq = data.find(x => x.paramName === 'Enquiry');
-    console.log('45678====> ', enq)
     return (
         data.map((item, index) => {
             if (item){
@@ -48,7 +47,7 @@ export const RenderSelfInsights = (args) => {
                         </Text>
                     </View>
                     <View style={{
-                        width: item.paramName === 'Accessories' ? '23%' : "25%",
+                        width: item.paramName === 'Accessories' ? '33%' : "35%",
                         marginTop: 10,
                         position: "relative"
                     }}>
@@ -86,53 +85,53 @@ export const RenderSelfInsights = (args) => {
                             </Text>
                         </View>
                     </View>
-                    <View
-                        style={{
-                            width: "10%",
-                            justifyContent: "center",
-                            flexDirection: "row",
-                            height: 25,
-                            marginTop: 8,
-                            alignItems: "center",
-                            marginLeft: 8,
-                        }}
-                    >
-                        <IconButton
-                            icon={
-                                parseInt(
-                                    item.achivementPerc.substring(
-                                        0,
-                                        item.achivementPerc.indexOf("%")
-                                    )
-                                ) > 40
-                                    ? "menu-up"
-                                    : "menu-down"
-                            }
-                            color={
-                                parseInt(
-                                    item.achivementPerc.substring(
-                                        0,
-                                        item.achivementPerc.indexOf("%")
-                                    )
-                                ) > 40
-                                    ? Colors.DARK_GREEN
-                                    : Colors.RED
-                            }
-                            size={30}
-                        />
-                        <View
-                            style={{
-                                justifyContent: "center",
-                                flexDirection: "row",
-                                height: 25,
-                                marginTop: 0,
-                                alignItems: "center",
-                                marginLeft: -20,
-                            }}
-                        >
-                            <Text>{item.achivementPerc}</Text>
-                        </View>
-                    </View>
+                    {/*<View*/}
+                    {/*    style={{*/}
+                    {/*        width: "10%",*/}
+                    {/*        justifyContent: "center",*/}
+                    {/*        flexDirection: "row",*/}
+                    {/*        height: 25,*/}
+                    {/*        marginTop: 8,*/}
+                    {/*        alignItems: "center",*/}
+                    {/*        marginLeft: 8,*/}
+                    {/*    }}*/}
+                    {/*>*/}
+                    {/*    <IconButton*/}
+                    {/*        icon={*/}
+                    {/*            parseInt(*/}
+                    {/*                item.achivementPerc.substring(*/}
+                    {/*                    0,*/}
+                    {/*                    item.achivementPerc.indexOf("%")*/}
+                    {/*                )*/}
+                    {/*            ) > 40*/}
+                    {/*                ? "menu-up"*/}
+                    {/*                : "menu-down"*/}
+                    {/*        }*/}
+                    {/*        color={*/}
+                    {/*            parseInt(*/}
+                    {/*                item.achivementPerc.substring(*/}
+                    {/*                    0,*/}
+                    {/*                    item.achivementPerc.indexOf("%")*/}
+                    {/*                )*/}
+                    {/*            ) > 40*/}
+                    {/*                ? Colors.DARK_GREEN*/}
+                    {/*                : Colors.RED*/}
+                    {/*        }*/}
+                    {/*        size={30}*/}
+                    {/*    />*/}
+                    {/*    <View*/}
+                    {/*        style={{*/}
+                    {/*            justifyContent: "center",*/}
+                    {/*            flexDirection: "row",*/}
+                    {/*            height: 25,*/}
+                    {/*            marginTop: 0,*/}
+                    {/*            alignItems: "center",*/}
+                    {/*            marginLeft: -20,*/}
+                    {/*        }}*/}
+                    {/*    >*/}
+                    {/*        <Text>{item.achivementPerc}</Text>*/}
+                    {/*    </View>*/}
+                    {/*</View>*/}
                     <View
                         style={{
                             width: "35%",
