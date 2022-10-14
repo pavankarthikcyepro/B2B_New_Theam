@@ -311,7 +311,7 @@ const TargetScreen = ({route}) => {
     const renderData = (item, color) => {
         return (
             <View style={{flexDirection: 'row', backgroundColor: Colors.BORDER_COLOR}}>
-                <RenderEmployeeParameters item={item} displayType={togglePercentage} params={toggleParamsMetaData}/>
+                <RenderEmployeeParameters item={item} displayType={togglePercentage} params={toggleParamsMetaData} navigation={navigation}/>
             </View>
         )
     }

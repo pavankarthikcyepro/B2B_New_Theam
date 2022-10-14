@@ -171,8 +171,8 @@ const LeadAge = () => {
     const dispatch = useDispatch();
 
     return (
-        <View style={{ width: 110, height: 30, borderRadius: 15, backgroundColor: Colors.RED, justifyContent: 'center', alignItems: 'center', marginRight: 5, flexDirection: 'row'}}>
-            <Image source={require('../assets/images/calendar.png')} style={{width: 20, height: 20}} />
+        <View style={{ width: 110, height: 30, borderRadius: 15, backgroundColor: Colors.RED, justifyContent: 'center', alignItems: 'center', marginRight: 5, flexDirection: 'row' }}>
+            <Image source={require('../assets/images/calendar.png')} style={{ width: 20, height: 20 }} />
             <Text style={{ fontSize: 15, fontWeight: '600', color: '#fff', marginLeft: 5 }}>{`${selector.leadAge} ${selector.leadAge > 1 ? 'days' : 'day'}`}</Text>
             {/* <Text style={{ fontSize: 15, fontWeight: '600', color: '#fff' }}>200 days</Text> */}
         </View>
@@ -225,7 +225,7 @@ export const DrawerStackIdentifiers = {
     taskManagement: "TASK_MANAGEMENT",
     taskTransfer: "TASK_TRANSFER",
     evtbrlReport: "EVTBRL_REPORT",
-    dropAnalysis:'DROP_ANALYSIS'
+    dropAnalysis: 'DROP_ANALYSIS'
 };
 
 export const TabStackIdentifiers = {
@@ -248,24 +248,24 @@ export const HomeStackIdentifiers = {
 };
 
 export const EmsStackIdentifiers = {
-  addPreEnq: "ADD_PRE_ENQUIRY",
-  confirmedPreEnq: "CONFIRMED_PRE_ENQUIRY",
-  detailsOverview: "DETAILS_OVERVIEW",
-  preBookingForm: "PRE_BOOKING_FORM",
+    addPreEnq: "ADD_PRE_ENQUIRY",
+    confirmedPreEnq: "CONFIRMED_PRE_ENQUIRY",
+    detailsOverview: "DETAILS_OVERVIEW",
+    preBookingForm: "PRE_BOOKING_FORM",
 
-  paidAccessories: "PAID_ACCESSORIES",
-  task360: "TASK_360",
-  homeVisit: "HOME_VISIT_1",
-  preBookingFollowUp: "PREBOOKING_FOLLOWUP_1",
-  bookingFollowUp: "PREBOOKING_FOLLOWUP_1",
-  testDrive: "TEST_DRIVE_1",
-  enquiryFollowUp: "ENQUIRY_FOLLOW_UP_1",
-  proceedToPreBooking: "PROCEED_TO_PRE_BOOKING_1",
-  proceedToBooking: "PROCEED_TO_BOOKING_1",
-  createEnquiry: "CREATE_ENQUIRY_1",
-  bookingForm: "BOOKING_FORM",
-  webViewComp: "webViewComp",
-  ProformaScreen: "PROFORMA_SCREEN",
+    paidAccessories: "PAID_ACCESSORIES",
+    task360: "TASK_360",
+    homeVisit: "HOME_VISIT_1",
+    preBookingFollowUp: "PREBOOKING_FOLLOWUP_1",
+    bookingFollowUp: "PREBOOKING_FOLLOWUP_1",
+    testDrive: "TEST_DRIVE_1",
+    enquiryFollowUp: "ENQUIRY_FOLLOW_UP_1",
+    proceedToPreBooking: "PROCEED_TO_PRE_BOOKING_1",
+    proceedToBooking: "PROCEED_TO_BOOKING_1",
+    createEnquiry: "CREATE_ENQUIRY_1",
+    bookingForm: "BOOKING_FORM",
+    webViewComp: "webViewComp",
+    ProformaScreen: "PROFORMA_SCREEN",
 };
 
 export const PreBookingStackIdentifiers = {
@@ -280,16 +280,16 @@ export const BookingStackIdentifiers = {
 };
 
 export const MyTasksStackIdentifiers = {
-  mytasks: "MY_TASKS",
-  homeVisit: "HOME_VISIT",
-  preBookingFollowUp: "PREBOOKING_FOLLOWUP",
-  bookingFollowUp: "PREBOOKING_FOLLOWUP",
-  testDrive: "TEST_DRIVE",
-  enquiryFollowUp: "ENQUIRY_FOLLOW_UP",
-  proceedToPreBooking: "PROCEED_TO_PRE_BOOKING",
-  proceedToBooking: "PROCEED_TO_BOOKING",
-  createEnquiry: "CREATE_ENQUIRY",
-  tasksListScreen: "TASKS_LIST_SCREEN",
+    mytasks: "MY_TASKS",
+    homeVisit: "HOME_VISIT",
+    preBookingFollowUp: "PREBOOKING_FOLLOWUP",
+    bookingFollowUp: "PREBOOKING_FOLLOWUP",
+    testDrive: "TEST_DRIVE",
+    enquiryFollowUp: "ENQUIRY_FOLLOW_UP",
+    proceedToPreBooking: "PROCEED_TO_PRE_BOOKING",
+    proceedToBooking: "PROCEED_TO_BOOKING",
+    createEnquiry: "CREATE_ENQUIRY",
+    tasksListScreen: "TASKS_LIST_SCREEN",
 };
 
 export const PriceStackIdentifiers = {
@@ -369,141 +369,141 @@ const EmsStack = createStackNavigator();
 
 const EmsStackNavigator = ({ navigation }) => {
     return (
-      <EmsStack.Navigator
-        initialRouteName={"EMS"}
-        screenOptions={screeOptionStyle}
-      >
-        <EmsStack.Screen
-          name="EMS"
-          component={EMSScreen}
-          options={{
-            title: "EMS",
-            headerLeft: () => <MenuIcon navigation={navigation} />,
-            headerRight: () => {
-              return (
-                <View style={{ flexDirection: "row" }}>
-                  {/*<SearchIcon />*/}
-                  {/* <RefreshIcon /> */}
-                  {/* <MapIcon /> */}
-                  <NotficationIcon
-                    navigation={navigation}
-                    identifier={"NOTIF_2"}
-                  />
-                </View>
-              );
-            },
-          }}
-        />
+        <EmsStack.Navigator
+            initialRouteName={"EMS"}
+            screenOptions={screeOptionStyle}
+        >
+            <EmsStack.Screen
+                name="EMS"
+                component={EMSScreen}
+                options={{
+                    title: "EMS",
+                    headerLeft: () => <MenuIcon navigation={navigation} />,
+                    headerRight: () => {
+                        return (
+                            <View style={{ flexDirection: "row" }}>
+                                {/*<SearchIcon />*/}
+                                {/* <RefreshIcon /> */}
+                                {/* <MapIcon /> */}
+                                <NotficationIcon
+                                    navigation={navigation}
+                                    identifier={"NOTIF_2"}
+                                />
+                            </View>
+                        );
+                    },
+                }}
+            />
 
-        <EmsStack.Screen
-          name={"NOTIF_2"}
-          component={NotificationScreen}
-          options={{ title: "Notifications" }}
-        />
-        <EmsStack.Screen
-          name={EmsStackIdentifiers.addPreEnq}
-          component={AddPreEnquiryScreen}
-          options={{ title: "Contacts" }}
-        />
-        <EmsStack.Screen
-          name={EmsStackIdentifiers.confirmedPreEnq}
-          component={ConfirmedPreEnquiryScreen}
-          options={{ title: "Contacts" }}
-        />
-        <EmsStack.Screen
-          name={EmsStackIdentifiers.detailsOverview}
-          component={EnquiryFormScreen}
-          options={{ title: "Enquiry Form" }}
-        />
-        <EmsStack.Screen
-          name={EmsStackIdentifiers.preBookingForm}
-          component={PreBookingFormScreen}
-          initialParams={{ accessoriesList: [] }}
-          options={{ title: "Booking Approval Form" }}
-        />
-        <EmsStack.Screen
-          name={EmsStackIdentifiers.bookingForm}
-          component={BookingFormScreen}
-          initialParams={{ accessoriesList: [] }}
-          options={{ title: "Booking View Form" }}
-        />
+            <EmsStack.Screen
+                name={"NOTIF_2"}
+                component={NotificationScreen}
+                options={{ title: "Notifications" }}
+            />
+            <EmsStack.Screen
+                name={EmsStackIdentifiers.addPreEnq}
+                component={AddPreEnquiryScreen}
+                options={{ title: "Contacts" }}
+            />
+            <EmsStack.Screen
+                name={EmsStackIdentifiers.confirmedPreEnq}
+                component={ConfirmedPreEnquiryScreen}
+                options={{ title: "Contacts" }}
+            />
+            <EmsStack.Screen
+                name={EmsStackIdentifiers.detailsOverview}
+                component={EnquiryFormScreen}
+                options={{ title: "Enquiry Form" }}
+            />
+            <EmsStack.Screen
+                name={EmsStackIdentifiers.preBookingForm}
+                component={PreBookingFormScreen}
+                initialParams={{ accessoriesList: [] }}
+                options={{ title: "Booking Approval Form" }}
+            />
+            <EmsStack.Screen
+                name={EmsStackIdentifiers.bookingForm}
+                component={BookingFormScreen}
+                initialParams={{ accessoriesList: [] }}
+                options={{ title: "Booking View Form" }}
+            />
 
-        <EmsStack.Screen
-          name={EmsStackIdentifiers.paidAccessories}
-          component={PaidAccessoriesScreen}
-          options={{
-            title: "Paid Accessories",
-            headerRight: () => {
-              return (
-                <View style={{ flexDirection: "row" }}>
-                  <SearchIcon />
-                </View>
-              );
-            },
-          }}
-        />
+            <EmsStack.Screen
+                name={EmsStackIdentifiers.paidAccessories}
+                component={PaidAccessoriesScreen}
+                options={{
+                    title: "Paid Accessories",
+                    headerRight: () => {
+                        return (
+                            <View style={{ flexDirection: "row" }}>
+                                <SearchIcon />
+                            </View>
+                        );
+                    },
+                }}
+            />
 
-        <EmsStack.Screen
-          name={EmsStackIdentifiers.proceedToPreBooking}
-          component={ProceedToPreBookingScreen}
-          options={{ title: "Proceed to Booking approval" }}
-        />
-        <EmsStack.Screen
-          name={EmsStackIdentifiers.proceedToBooking}
-          component={ProceedToBookingScreen}
-          initialParams={{ accessoriesList: [] }}
-          options={{ title: "Proceed To Booking View" }}
-        />
-        <EmsStack.Screen
-          name={EmsStackIdentifiers.task360}
-          component={TaskThreeSixtyScreen}
-          options={{
-            title: "Task 360",
-            headerRight: () => {
-              return <LeadAge />;
-            },
-          }}
-        />
+            <EmsStack.Screen
+                name={EmsStackIdentifiers.proceedToPreBooking}
+                component={ProceedToPreBookingScreen}
+                options={{ title: "Proceed to Booking approval" }}
+            />
+            <EmsStack.Screen
+                name={EmsStackIdentifiers.proceedToBooking}
+                component={ProceedToBookingScreen}
+                initialParams={{ accessoriesList: [] }}
+                options={{ title: "Proceed To Booking View" }}
+            />
+            <EmsStack.Screen
+                name={EmsStackIdentifiers.task360}
+                component={TaskThreeSixtyScreen}
+                options={{
+                    title: "Task 360",
+                    headerRight: () => {
+                        return <LeadAge />;
+                    },
+                }}
+            />
 
-        <EmsStack.Screen
-          name={EmsStackIdentifiers.homeVisit}
-          component={HomeVisitScreen}
-          options={{ title: "Visit" }}
-        />
+            <EmsStack.Screen
+                name={EmsStackIdentifiers.homeVisit}
+                component={HomeVisitScreen}
+                options={{ title: "Visit" }}
+            />
 
-        <EmsStack.Screen
-          name={EmsStackIdentifiers.testDrive}
-          component={TestDriveScreen}
-          options={{ title: "Test Drive" }}
-        />
+            <EmsStack.Screen
+                name={EmsStackIdentifiers.testDrive}
+                component={TestDriveScreen}
+                options={{ title: "Test Drive" }}
+            />
 
-        <EmsStack.Screen
-          name={EmsStackIdentifiers.enquiryFollowUp}
-          component={EnquiryFollowUpScreen}
-          options={{ title: "Enquiry Follow Up" }}
-        />
-        <EmsStack.Screen
-          name={EmsStackIdentifiers.bookingFollowUp}
-          component={EnquiryFollowUpScreen}
-          options={{ title: "Booking View Follow Up" }}
-        />
+            <EmsStack.Screen
+                name={EmsStackIdentifiers.enquiryFollowUp}
+                component={EnquiryFollowUpScreen}
+                options={{ title: "Enquiry Follow Up" }}
+            />
+            <EmsStack.Screen
+                name={EmsStackIdentifiers.bookingFollowUp}
+                component={EnquiryFollowUpScreen}
+                options={{ title: "Booking View Follow Up" }}
+            />
 
-        <EmsStack.Screen
-          name={EmsStackIdentifiers.createEnquiry}
-          component={CreateEnquiryScreen}
-          options={{ title: "Create Enquiry" }}
-        />
-        <EmsStack.Screen
-          name={EmsStackIdentifiers.webViewComp}
-          component={webViewComp}
-          options={{ title: "Call Record" }}
-        />
-        <EmsStack.Screen
-          name={EmsStackIdentifiers.ProformaScreen}
-          component={ProformaScreen}
-          options={{ title: "Proforma Invoice" }}
-        />
-      </EmsStack.Navigator>
+            <EmsStack.Screen
+                name={EmsStackIdentifiers.createEnquiry}
+                component={CreateEnquiryScreen}
+                options={{ title: "Create Enquiry" }}
+            />
+            <EmsStack.Screen
+                name={EmsStackIdentifiers.webViewComp}
+                component={webViewComp}
+                options={{ title: "Call Record" }}
+            />
+            <EmsStack.Screen
+                name={EmsStackIdentifiers.ProformaScreen}
+                component={ProformaScreen}
+                options={{ title: "Proforma Invoice" }}
+            />
+        </EmsStack.Navigator>
     );
 };
 
@@ -511,81 +511,81 @@ const MyTaskStack = createStackNavigator();
 
 const MyTaskStackNavigator = ({ navigation }) => {
     return (
-      <MyTaskStack.Navigator
-        initialRouteName={MyTasksStackIdentifiers.mytasks}
-        screenOptions={screeOptionStyle}
-      >
-        <MyTaskStack.Screen
-          name={MyTasksStackIdentifiers.mytasks}
-          component={MyTasksScreen}
-          options={{
-            title: "My Tasks",
-            headerLeft: () => <MenuIcon navigation={navigation} />,
-            headerRight: () => {
-              return (
-                <View style={{ flexDirection: "row" }}>
-                  {/* <SearchIcon /> */}
-                  <NotficationIcon
-                    navigation={navigation}
-                    identifier={"NOTIF_3"}
-                  />
-                </View>
-              );
-            },
-          }}
-        />
+        <MyTaskStack.Navigator
+            initialRouteName={MyTasksStackIdentifiers.mytasks}
+            screenOptions={screeOptionStyle}
+        >
+            <MyTaskStack.Screen
+                name={MyTasksStackIdentifiers.mytasks}
+                component={MyTasksScreen}
+                options={{
+                    title: "My Tasks",
+                    headerLeft: () => <MenuIcon navigation={navigation} />,
+                    headerRight: () => {
+                        return (
+                            <View style={{ flexDirection: "row" }}>
+                                {/* <SearchIcon /> */}
+                                <NotficationIcon
+                                    navigation={navigation}
+                                    identifier={"NOTIF_3"}
+                                />
+                            </View>
+                        );
+                    },
+                }}
+            />
 
-        <MyTaskStack.Screen
-          name={"NOTIF_3"}
-          component={NotificationScreen}
-          options={{ title: "Notifications" }}
-        />
+            <MyTaskStack.Screen
+                name={"NOTIF_3"}
+                component={NotificationScreen}
+                options={{ title: "Notifications" }}
+            />
 
-        <MyTaskStack.Screen
-          name={MyTasksStackIdentifiers.tasksListScreen}
-          component={TaskListScreen}
-          options={{ title: "My Tasks" }}
-        />
+            <MyTaskStack.Screen
+                name={MyTasksStackIdentifiers.tasksListScreen}
+                component={TaskListScreen}
+                options={{ title: "My Tasks" }}
+            />
 
-        <MyTaskStack.Screen
-          name={MyTasksStackIdentifiers.bookingFollowUp}
-          component={EnquiryFollowUpScreen}
-          options={{ title: "Booking Follow Up" }}
-        />
-        <MyTaskStack.Screen
-          name={MyTasksStackIdentifiers.createEnquiry}
-          component={CreateEnquiryScreen}
-          options={{ title: "Create Enquiry" }}
-        />
+            <MyTaskStack.Screen
+                name={MyTasksStackIdentifiers.bookingFollowUp}
+                component={EnquiryFollowUpScreen}
+                options={{ title: "Booking Follow Up" }}
+            />
+            <MyTaskStack.Screen
+                name={MyTasksStackIdentifiers.createEnquiry}
+                component={CreateEnquiryScreen}
+                options={{ title: "Create Enquiry" }}
+            />
 
-        <MyTaskStack.Screen
-          name={MyTasksStackIdentifiers.enquiryFollowUp}
-          component={EnquiryFollowUpScreen}
-          options={{ title: "Enquiry Follow Up" }}
-        />
-        <MyTaskStack.Screen
-          name={MyTasksStackIdentifiers.testDrive}
-          component={TestDriveScreen}
-          options={{ title: "Test Drive" }}
-        />
+            <MyTaskStack.Screen
+                name={MyTasksStackIdentifiers.enquiryFollowUp}
+                component={EnquiryFollowUpScreen}
+                options={{ title: "Enquiry Follow Up" }}
+            />
+            <MyTaskStack.Screen
+                name={MyTasksStackIdentifiers.testDrive}
+                component={TestDriveScreen}
+                options={{ title: "Test Drive" }}
+            />
 
-        <MyTaskStack.Screen
-          name={MyTasksStackIdentifiers.homeVisit}
-          component={HomeVisitScreen}
-          options={{ title: "Visit" }}
-        />
+            <MyTaskStack.Screen
+                name={MyTasksStackIdentifiers.homeVisit}
+                component={HomeVisitScreen}
+                options={{ title: "Visit" }}
+            />
 
-        <MyTaskStack.Screen
-          name={MyTasksStackIdentifiers.proceedToPreBooking}
-          component={ProceedToPreBookingScreen}
-          options={{ title: "Proceed to Booking approval" }}
-        />
-        <MyTaskStack.Screen
-          name={MyTasksStackIdentifiers.proceedToBooking}
-          component={ProceedToBookingScreen}
-          options={{ title: "Proceed To Booking View" }}
-        />
-      </MyTaskStack.Navigator>
+            <MyTaskStack.Screen
+                name={MyTasksStackIdentifiers.proceedToPreBooking}
+                component={ProceedToPreBookingScreen}
+                options={{ title: "Proceed to Booking approval" }}
+            />
+            <MyTaskStack.Screen
+                name={MyTasksStackIdentifiers.proceedToBooking}
+                component={ProceedToBookingScreen}
+                options={{ title: "Proceed To Booking View" }}
+            />
+        </MyTaskStack.Navigator>
     );
 };
 

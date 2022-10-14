@@ -26,13 +26,14 @@ import { updateIsSearch, updateSearchKey } from '../../../redux/appReducer';
 import { getPreBookingData } from "../../../redux/preBookingReducer";
 import DateRangePicker from "../../../utils/DateRangePicker";
 import { getLeadsList, getMenu, getSubMenu } from "../../../redux/leaddropReducer";
+import { useIsFocused, useNavigationState } from "@react-navigation/native";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().add(0, "day").format(dateFormat)
 const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
 
-const LeadsScreen = ({ navigation }) => {
-
+const LeadsScreen = ({ route, navigation }) => {
+    const isFocused = useIsFocused();
     const selector = useSelector((state) => state.enquiryReducer);
     const appSelector = useSelector(state => state.appReducer);
     const { vehicle_model_list_for_filters, source_of_enquiry_list } = useSelector(state => state.homeReducer);
@@ -59,6 +60,7 @@ const LeadsScreen = ({ navigation }) => {
     const [leadsSubMenuFilterDropDownText, setLeadsSubMenuFilterDropDownText] = useState('All');
     const [loader, setLoader] = useState(false);
     const [tempStore, setTempStore] = useState([]);
+    const [tempFilterPayload, setTempFilterPayload] = useState([]);
 
     const orgIdStateRef = React.useRef(orgId);
     const empIdStateRef = React.useRef(employeeId);
@@ -183,29 +185,94 @@ const LeadsScreen = ({ navigation }) => {
         }
     }, [])
 
-    // Navigation Listner to Auto Referesh
-    useEffect(async () => {
-        navigation.addListener('focus', async () => {
+    const managerFilter = (newArr) => {
+        const alreadyFilterMenu = newArr.filter(e => e.menu == route.params.param);
+        // setLeadsFilterData(newArr);
+        let modelList = [...newArr];
+        for (let i = 0; i < modelList.length; i++) {
+            if (modelList.menu == route.params.param) {
+                modelList[i].checked = true;
+            } else {
+                modelList[i].checked = false;
+            }
+        }
+        setLeadsFilterData([...modelList]);
+        getSubMenuList(alreadyFilterMenu[0].menu, true, route.params.employeeDetail);
+        setLeadsFilterDropDownText(alreadyFilterMenu[0].menu);
+    }
+
+    useEffect(() => {
+        if (isFocused) {
             Promise.all([dispatch(getMenu())]).then(async (res) => {
                 let path = res[0]?.payload;
                 const newArr = path.map(v => ({ ...v, checked: false }));
-                setLeadsFilterData(newArr);
                 setTempStore(newArr);
-                setLeadsFilterDropDownText("All");
-                setSubMenu([]);
-                setFromDateState(lastMonthFirstDate);
-                const tomorrowDate = moment().add(1, "day").format(dateFormat)
-                setToDateState(currentDate);
-                const tempArray = Array.from(newArr);
-                await applyLeadsFilter(tempArray, lastMonthFirstDate, currentDate);
-            }).catch((err) => {
-                setLeadsFilterDropDownText("All");
-                setSubMenu([]);
-                console.log(err);
-            });
+                if (route.params) {
+                    managerFilter(newArr)
+                }
+                else {
+                    setLeadsFilterData(newArr);
+                    defualtCall(newArr);
+                    return
+                    setLeadsFilterDropDownText("All");
+                    setSubMenu([]);
+                    setFromDateState(lastMonthFirstDate);
+                    const tomorrowDate = moment().add(1, "day").format(dateFormat)
+                    setToDateState(currentDate);
+                    const tempArray = Array.from(newArr);
+                    await applyLeadsFilter(tempArray, lastMonthFirstDate, currentDate);
+                }
 
-        });
-    }, [navigation]);
+            }).catch((err) => {
+                console.log("ERORORRRO", err);
+                setLeadsFilterDropDownText("All");
+                setSubMenu([]);
+            });
+        }
+
+    }, [route.params, isFocused])
+
+
+    const defualtCall = async (tempStores) => {
+        setSubMenu([]);
+        setLeadsFilterDropDownText('All');
+        setFromDateState(lastMonthFirstDate);
+        const tomorrowDate = moment().add(1, "day").format(dateFormat)
+        setToDateState(currentDate);
+        setLeadsFilterData(tempStores);
+        const newArr = tempStores.map(function (x) {
+            x.checked = false;
+            return x
+        });;
+        await applyLeadsFilter(newArr, lastMonthFirstDate, currentDate);
+    }
+    // Navigation Listner to Auto Referesh
+    // useEffect(async () => {
+    //     navigation.addListener('focus', async () => {
+    //     console.log("ON FOCUS-------------------->", JSON.stringify(route));
+
+    //         Promise.all([dispatch(getMenu())]).then(async (res) => {
+    //             let path = res[0]?.payload;
+    //             const newArr = path.map(v => ({ ...v, checked: false }));
+    //             setLeadsFilterData(newArr);
+    //             setTempStore(newArr);
+    //             setLeadsFilterDropDownText("All");
+    //             setSubMenu([]);
+    //             setFromDateState(lastMonthFirstDate);
+    //             const tomorrowDate = moment().add(1, "day").format(dateFormat)
+    //             setToDateState(currentDate);
+    //             const tempArray = Array.from(newArr);
+    //             await applyLeadsFilter(tempArray, lastMonthFirstDate, currentDate);
+    //         }).catch((err) => {
+    //             setLeadsFilterDropDownText("All");
+    //             setSubMenu([]);
+    //             console.log(err);
+    //         });
+
+
+
+    //     });
+    // }, [navigation]);
 
     const getPayloadData = (leadType, empId, startDate, endDate, offSet = 0, modelFilters = [], categoryFilters = [], sourceFilters = []) => {
         // const type = {enq: "ENQUIRY", bkgAprvl: 'PRE_BOOKING', bkg: 'BOOKING'}
@@ -289,7 +356,8 @@ const LeadsScreen = ({ navigation }) => {
         setCategoryList([...categoryFilters])
         setVehicleModelList([...modelData]);
         setSourceList([...sourceData]);
-
+        onTempFliter(tempFilterPayload, {}, modelData, categoryFilters, sourceData);
+        return
         // // Make Server call
         // const payload2 = getPayloadData(employeeId, selectedFromDate, selectedToDate, 0, modelFilters, categoryFilters, sourceFilters)
         // dispatch(getEnquiryList(payload2));
@@ -297,6 +365,7 @@ const LeadsScreen = ({ navigation }) => {
     }
 
     const applyLeadsFilter = async (data, startDate, endDate, modelFilters = [], categoryFilters = [], sourceFilters = []) => {
+        setLoader(true);
         const employeeData = await AsyncStore.getData(
             AsyncStore.Keys.LOGIN_EMPLOYEE
         );
@@ -344,24 +413,33 @@ const LeadsScreen = ({ navigation }) => {
                             break;
                     }
                 });
+                setLoader(false);
                 const dataSorted = data.sort((x, y) => y.modifiedDate - x.modifiedDate);
                 setLeadsList([...dataSorted]);
                 setSearchedData([]);
                 setSearchedData(dataSorted);
+            }).catch(() => {
+                setLoader(false);
             });
         }
 
 
     }
 
-    const getSubMenuList = async (item) => {
+    const getSubMenuList = async (item, getAllData = false, employeeDetail = {}) => {
         Promise.all([dispatch(getSubMenu(item.toUpperCase()))])
             .then((response) => {
                 let path = response[0]?.payload[0]?.allLeadsSubstagesEntity;
-                if (path.length == 1) {
+                if (getAllData) {
+                    setSearchedData([]);
+                    let newPath = path.map(v => ({ ...v, checked: true }));
+                    setTempFilterPayload(newPath);
+                    onTempFliter(newPath, employeeDetail);
+                    setSubMenu(newPath);
+                } else if (path.length == 1) {
                     // getFliteredList(path[0]);
                     let newPath = path.map(v => ({ ...v, checked: true }));
-
+                    setTempFilterPayload(newPath);
                     onTempFliter(newPath);
                     NewSubMenu([]);
                 } else {
@@ -391,7 +469,7 @@ const LeadsScreen = ({ navigation }) => {
         };
     }
 
-    const onTempFliter = async (item) => {
+    const onTempFliter = async (item, employeeDetail = {}, modelData, categoryFilters, sourceData, from, to) => {
         setSearchedData([]);
         setLoader(true);
         const employeeData = await AsyncStore.getData(
@@ -402,19 +480,81 @@ const LeadsScreen = ({ navigation }) => {
             const jsonObj = JSON.parse(employeeData);
             let leadStage = [];
             let leadStatus = [];
+            let categoryType = [];
+            let sourceOfEnquiry = [];
+            let model = [];
             for (let i = 0; i < newArray.length; i++) {
                 leadStage.push(newArray[i].leadStage);
                 leadStatus.push(newArray[i].leadStatus ? newArray[i].leadStatus : "");
+            }
+            if (modelData || categoryFilters || sourceData) {
+                for (let i = 0; i < sourceData.length; i++) {
+                    if (sourceData[i].isChecked == true) {
+                        sourceOfEnquiry.push(sourceData[i].name);
+                    }
+                }
+                for (let i = 0; i < categoryFilters.length; i++) {
+                    categoryType.push(categoryFilters[i].name);
+                }
+                for (let i = 0; i < modelData.length; i++) {
+                    if (modelData[i].isChecked == true) {
+                        model.push(modelData[i].key);
+                    }
+                }
+            } else {
+                for (let i = 0; i < sourceList.length; i++) {
+                    if (sourceList[i].isChecked == true) {
+                        sourceOfEnquiry.push(sourceList[i].name);
+                    }
+                }
+                for (let i = 0; i < categoryList.length; i++) {
+                    categoryType.push(categoryList[i].name);
+                }
+                for (let i = 0; i < vehicleModelList.length; i++) {
+                    if (vehicleModelList[i].isChecked == true) {
+                        model.push(vehicleModelList[i].key);
+                    }
+                }
             }
             let payload = {
                 "leadStage": leadStage,
                 "leadStatus": leadStatus
             }
-            Promise.all([dispatch(getLeadsList(getLatestPayload(jsonObj.branchId, jsonObj.empName, jsonObj.empId, payload)))]).then((response) => {
-                setLoader(false);
-                let newData = response[0].payload?.dmsEntity?.leadDtoPage?.content;
-                setSearchedData(newData);
-            })
+            let newPayload = {
+                "startdate": from ? from : selectedFromDate,
+                "enddate": to ? to : selectedToDate,
+                "model": model,
+                "categoryType": categoryType,
+                "sourceOfEnquiry": sourceOfEnquiry,
+                "empId": employeeDetail.empId ? employeeDetail.empId : jsonObj.empId,
+                "status": "",
+                "offset": 0,
+                "limit": 500,
+                "leadStage": leadStage,
+                "leadStatus": leadStatus
+            };
+
+            console.log("newPayload", newPayload);
+            // Promise.all([dispatch(getLeadsList(newPayload))]).then((response) => {
+            //     setLoader(false);
+            //     console.log(JSON.stringify("newPayload", response));
+            //     let newData = response[0].payload?.dmsEntity?.leadDtoPage?.content;
+            //     // setSearchedData(newData);
+            // })
+            //     .catch((error) => {
+            //         setLoader(false);
+            //         console.log(error);
+            //     });
+            Promise.all([dispatch(getLeadsList(
+                getLatestPayload(
+                    employeeDetail.branchId ? employeeDetail.branchId : jsonObj.branchId,
+                    employeeDetail.empName ? employeeDetail.empName : jsonObj.empName,
+                    employeeDetail.empId ? employeeDetail.empId : jsonObj.empId,
+                    payload)))]).then((response) => {
+                        setLoader(false);
+                        let newData = response[0].payload?.dmsEntity?.leadDtoPage?.content;
+                        setSearchedData(newData);
+                    })
                 .catch((error) => {
                     setLoader(false);
                     console.log(error);
@@ -477,6 +617,8 @@ const LeadsScreen = ({ navigation }) => {
         updateSelectedDate(from, 'FROM_DATE');
         updateSelectedDate(to, 'TO_DATE');
         setShowDatePicker(false);
+        onTempFliter(tempFilterPayload, {}, vehicleModelList, categoryList, sourceList, from, to);
+        return
         setTimeout(() => {
             applyLeadsFilter(leadsFilterData, from, to);
         }, 500);
@@ -543,6 +685,7 @@ const LeadsScreen = ({ navigation }) => {
                 />
                 <LeadsFilterComp visible={leadsSubMenuFilterVisible} modelList={subMenu} submitCallback={(x) => {
                     setSubMenu([...x]);
+                    setTempFilterPayload(x);
                     onTempFliter(x);
                     setLeadsSubMenuFilterVisible(false);
                     const data = x.filter(y => y.checked);

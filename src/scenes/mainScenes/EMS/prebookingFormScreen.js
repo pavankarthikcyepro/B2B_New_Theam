@@ -1866,7 +1866,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       );
       if (isEdit) {
         postOnRoadPriceTable.id =
-          selector.on_road_price_dto_list_response[0].id;
+          selector?.on_road_price_dto_list_response[0]?.id;
         dispatch(sendEditedOnRoadPriceDetails(postOnRoadPriceTable));
       } else dispatch(sendOnRoadPriceDetails(postOnRoadPriceTable));
       // Promise.all([
@@ -3040,7 +3040,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 delete imagesDataObj.payslips;
                 break;
             case "PATTA_PASS_BOOK":
-                delete imagesDataObj.passbook;
+                delete imagesDataObj.pattaPassBook;
                 break;
             case "PENSION_LETTER":
                 delete imagesDataObj.pension;
@@ -3049,7 +3049,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 delete imagesDataObj.imaCertificate;
                 break;
             case "LEASING_CONFIRMATION":
-                delete imagesDataObj.leasingConfirm;
+                delete imagesDataObj.leasingConfirmationLetter;
                 break;
             case "ADDRESS_PROOF":
                 delete imagesDataObj.address;
@@ -4827,7 +4827,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           }
                         />
                       </View>
-                      {uploadedImagesDataObj.passbook?.fileName ? (
+                        {uploadedImagesDataObj.pattaPassBook?.fileName ? (
                         <View style={{ flexDirection: "row" }}>
                           <TouchableOpacity
                             disabled={
@@ -4847,10 +4847,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             }}
                             onPress={() => {
                               if (
-                                uploadedImagesDataObj.passbook?.documentPath
+                                uploadedImagesDataObj.pattaPassBook?.documentPath
                               ) {
                                 setImagePath(
-                                  uploadedImagesDataObj.passbook?.documentPath
+                                  uploadedImagesDataObj.pattaPassBook?.documentPath
                                 );
                               }
                             }}
@@ -4874,7 +4874,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     : true
                                   : false
                               }
-                              fileName={uploadedImagesDataObj.passbook.fileName}
+                                fileName={uploadedImagesDataObj.pattaPassBook.fileName}
                               from={"PATTA_PASS_BOOK"}
                             />
                           </View>
@@ -5044,7 +5044,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           }
                         />
                       </View>
-                      {uploadedImagesDataObj.leasingConfirm?.fileName ? (
+                        {uploadedImagesDataObj.leasingConfirmationLetter?.fileName ? (
                         <View style={{ flexDirection: "row" }}>
                           <TouchableOpacity
                             disabled={
@@ -5064,11 +5064,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             }}
                             onPress={() => {
                               if (
-                                uploadedImagesDataObj.leasingConfirm
+                                uploadedImagesDataObj.leasingConfirmationLetter
                                   ?.documentPath
                               ) {
                                 setImagePath(
-                                  uploadedImagesDataObj.leasingConfirm
+                                  uploadedImagesDataObj.leasingConfirmationLetter
                                     ?.documentPath
                                 );
                               }
@@ -5094,7 +5094,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                   : false
                               }
                               fileName={
-                                uploadedImagesDataObj.leasingConfirm.fileName
+                                uploadedImagesDataObj.leasingConfirmationLetter.fileName
                               }
                               from={"LEASING_CONFIRMATION"}
                             />

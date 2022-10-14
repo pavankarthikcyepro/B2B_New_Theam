@@ -273,23 +273,12 @@ const URL = {
       empId + "&branchId=" +
       branchId + "&empName=" + empName
     );
-    // return (
-    //   sales_url +
-    //   "/lead/allLeads?limit=" +
-    //   limit +
-    //   "&offset=" +
-    //   offSet +
-    //   "&status=" +
-    //   status +
-    //   "&substatus=" +
-    //   substatus +
-    //   "&empId=" +
-    //   empId +
-    //   "&branchId=" +
-    //   branchId +
-    //   "&empName=" +
-    //   empName
-    // );
+  },
+  GET_LEAD_LIST_2: () => {
+    return (sales_url + "/lead/allByDateNew");
+  },
+  GET_ALL_STATUS:()=>{
+    return (sales_url + "/lead/alldatadropdown");
   },
   GET_MENU_DROP_DOWN_DATA: () => {
     return (

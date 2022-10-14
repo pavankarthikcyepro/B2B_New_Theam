@@ -47,7 +47,7 @@ const LeadsFilterComp = ({
                 <View style={styles.centeredView}>
                     <View style={styles.modalView}>
                         <View style={{ width: "85%" }}>
-                            <Text style={styles.modalText}>{"Sub Menu"}</Text>
+                            <Text style={styles.modalText}>{"STATUS"}</Text>
                             <View
                                 style={{
                                     height: 0.5,
