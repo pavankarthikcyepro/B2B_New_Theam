@@ -19,6 +19,22 @@ export const getMenu = createAsyncThunk(
   }
 );
 
+export const getStatus = createAsyncThunk(
+  "DROPANALYSIS/getStatus",
+  async (payload, { rejectWithValue }) => {
+    console.log("PAYLOAD EN: ", URL.GET_ALL_STATUS());
+
+    const response = await client.get(URL.GET_ALL_STATUS());
+    const json = await response.json();
+    console.log("ENQ LIST:", JSON.stringify(json));
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 export const getSubMenu = createAsyncThunk(
   "DROPANALYSIS/getSubMenu",
   async (payload, { rejectWithValue }) => {
@@ -35,47 +51,12 @@ export const getSubMenu = createAsyncThunk(
   }
 );
 
-export const getNewLeadsList = createAsyncThunk(
-  "DROPANALYSIS/getNewLeadsList",
-  async (payload, { rejectWithValue }) => {
-    console.log("PAYLOAD getLeadsList EN: ", payload);
-
-    const response = await client.post(URL.GET_LEAD_LIST_2(), payload);
-    const json = await response.json();
-    console.log("ENQ getLeadsList LIST:", JSON.stringify(json));
-
-    if (!response.ok) {
-      return rejectWithValue(json);
-    }
-    return json;
-  }
-);
-
 export const getLeadsList = createAsyncThunk(
   "DROPANALYSIS/getLeadsList",
   async (payload, { rejectWithValue }) => {
-    console.log(
-      "PAYLOAD getLeadsList EN: ",
-      URL.GET_LEAD_LIST(
-        payload.branchId,
-        payload.empName,
-        payload.empId,
-        payload.offSet,
-        payload.limit
-      )
-    );
-    console.log(payload.body);
+    console.log("PAYLOAD getLeadsList EN: ", URL.GET_LEAD_LIST_2());
 
-    const response = await client.post(
-      URL.GET_LEAD_LIST(
-        payload.branchId,
-        payload.empName,
-        payload.empId,
-        payload.offSet,
-        payload.limit
-      ),
-      payload.body
-    );
+    const response = await client.post(URL.GET_LEAD_LIST_2(), payload);
     const json = await response.json();
     console.log("ENQ getLeadsList LIST:", JSON.stringify(json));
 
@@ -204,6 +185,7 @@ const leaddropListSlice = createSlice({
     subMenu: [],
     menu: [],
     leadList: [],
+    defualtStatus:[]
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -231,6 +213,18 @@ const leaddropListSlice = createSlice({
       console.log("dropanalysis", "rejected");
       state.subMenu = [];
     });
+       builder.addCase(getStatus.pending, (state, action) => {
+         console.log("dropanalysis pending", action);
+         state.defualtStatus = [];
+       });
+       builder.addCase(getStatus.fulfilled, (state, action) => {
+         console.log("dropanalysis sucess", JSON.stringify(action));
+         state.defualtStatus = action.payload;
+       });
+       builder.addCase(getStatus.rejected, (state, action) => {
+         console.log("dropanalysis", "rejected");
+         state.defualtStatus = [];
+       });
     builder.addCase(getLeadDropList.pending, (state, action) => {
       console.log("dropanalysis pending", action);
       state.totalPages = 1;

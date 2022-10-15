@@ -41,12 +41,6 @@ export const RenderEmployeeParameters = (parameter) => {
                             <View style={{ justifyContent: 'center', alignItems: 'center', height: 23 }}>
                                 <Text onPress={() => {
                                     if (param == "Enquiry" || param == "Booking" || param == "INVOICE") {
-                                        // navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
-                                        //     screen: "LEADS", param :{
-                                        //         param: 'LEADS'
-                                        //     }
-                                        // });
-
                                         navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
                                         setTimeout(() => {
                                             navigation.navigate("LEADS", {
@@ -58,19 +52,7 @@ export const RenderEmployeeParameters = (parameter) => {
                                                     branchId: parameter.item.branchId
                                                 }
                                             })
-                                        }, 100);
-
-
-                                        // navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
-                                        //     screen: "LEADS",
-                                            // param: param == "INVOICE" ? "Retail" : param,
-                                            // employeeDetail: {
-                                            //     empName: parameter.item.empName,
-                                            //     empId: parameter.item.empId,
-                                            //     orgId: parameter.item.orgId,
-                                            //     branchId: parameter.item.branchId
-                                            // }
-                                        // });
+                                        }, 1000);
                                     }
                                 }} style={[styles.totalText1, { color: Colors.RED }]}>
                                     {selectedParameter ?

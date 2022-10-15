@@ -3,7 +3,7 @@ import { SafeAreaView, StyleSheet, View, Text, FlatList, Pressable, Alert, Activ
 import { PreEnquiryItem, PageControlItem, EmptyListView } from '../../../pureComponents';
 import { Colors, GlobalStyle } from '../../../styles';
 import { useSelector, useDispatch } from 'react-redux';
-import {IconButton, Searchbar} from 'react-native-paper';
+import { IconButton, Searchbar } from 'react-native-paper';
 import VectorImage from 'react-native-vector-image';
 // import { CREATE_NEW } from '../../../assets/svg';
 import CREATE_NEW from '../../../assets/images/create_new.svg';
@@ -17,10 +17,11 @@ import realm from '../../../database/realm';
 import { callNumber } from '../../../utils/helperFunctions';
 import moment from "moment";
 import {
-  Category_Type_List_For_Filter,
-  Category_Type,
+    Category_Type_List_For_Filter,
+    Category_Type,
 } from "../../../jsonData/enquiryFormScreenJsonData";
 import { MyTaskNewItem } from '../MyTasks/components/MyTasksNewItem';
+import { getLeadsList, getStatus } from '../../../redux/leaddropReducer';
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().add(0, "day").format(dateFormat)
@@ -44,6 +45,10 @@ const PreEnquiryScreen = ({ navigation }) => {
     const [sortAndFilterVisible, setSortAndFilterVisible] = useState(false);
     const [searchedData, setSearchedData] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
+
+    const [defualtLeadStage, setDefualtLeadStage] = useState([]);
+    const [defualtLeadStatus, setdefualtLeadStatus] = useState([]);
+    const [loader, setLoader] = useState(false);
 
     const orgIdStateRef = React.useRef(orgId);
     const empIdStateRef = React.useRef(employeeId);
@@ -69,7 +74,8 @@ const PreEnquiryScreen = ({ navigation }) => {
     }
 
 
-    useEffect(async() => {
+    useEffect(async () => {
+        setLoader(true);
         // Get Data From Server
         let isMounted = true;
         setFromDateState(lastMonthFirstDate);
@@ -84,6 +90,22 @@ const PreEnquiryScreen = ({ navigation }) => {
             setEmployeeId(jsonObj.empId);
             setOrgId(jsonObj.orgId);
         }
+        let leadStage = [];
+        let leadStatus = [];
+        Promise.all([dispatch(getStatus())]).then((res) => {
+            let contact = res[0].payload.filter((e) => e.menu == "Contact");
+            let newIndex = contact[0].allLeadsSubstagesEntity;
+            for (let i = 0; i < newIndex.length; i++) {
+                leadStage.push(newIndex[i].leadStage);
+                leadStatus.push(newIndex[i].leadStatus ? newIndex[i].leadStatus : "");
+            }
+            getDataFromDB(leadStage, leadStatus);
+        }).catch((err) => {
+            console.log(err);
+            setLoader(false);
+        })
+        setDefualtLeadStage(leadStage);
+        setdefualtLeadStatus(leadStatus);
         // getAsyncData().then(data => {
         //     if (isMounted) {
         //         setMyState(data);
@@ -94,7 +116,7 @@ const PreEnquiryScreen = ({ navigation }) => {
         // return () => { isMounted = false };
     }, [])
 
-    const getDataFromDB = async () => {
+    const getDataFromDB = async (leadStage, leadStatus) => {
         const employeeData = await AsyncStore.getData(
             AsyncStore.Keys.LOGIN_EMPLOYEE
         );
@@ -104,18 +126,19 @@ const PreEnquiryScreen = ({ navigation }) => {
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
             // setEmployeeId(jsonObj.empId);
-            getPreEnquiryListFromServer(jsonObj.empId, lastMonthFirstDate, currentDate);
+            onTempFliter(jsonObj.empId, lastMonthFirstDate, currentDate, null, null, null, leadStage, leadStatus);
+            // getPreEnquiryListFromServer(jsonObj.empId, lastMonthFirstDate, currentDate);
         }
     }
 
     useEffect(() => {
         setSearchQuery('');
-        console.log('selector.pre_enquiry_list----->',selector.pre_enquiry_list);
-        if (selector.pre_enquiry_list.length > 0){
+        console.log('selector.pre_enquiry_list----->', selector.pre_enquiry_list);
+        if (selector.pre_enquiry_list.length > 0) {
             setSearchedData(selector.pre_enquiry_list)
             // console.log("PreEnquiryAfterScreen:", selector.pre_enquiry_list[0])
         }
-        else{
+        else {
             setSearchedData([])
         }
     }, [selector.pre_enquiry_list]);
@@ -129,7 +152,6 @@ const PreEnquiryScreen = ({ navigation }) => {
             const tomorrowDate = moment().add(1, "day").format(dateFormat)
             setToDateState(currentDate);
             console.log("DATE &&&&", fromDateRef.current, toDateRef.current, lastMonthFirstDate, currentDate)
-            getDataFromDB()
         });
 
         // return () => {
@@ -140,32 +162,32 @@ const PreEnquiryScreen = ({ navigation }) => {
     useEffect(() => {
         if (appSelector.isSearch) {
             dispatch(updateIsSearch(false))
-            if (appSelector.searchKey !== ''){
+            if (appSelector.searchKey !== '') {
                 let tempData = []
                 tempData = selector.pre_enquiry_list.filter((item) => {
                     return (
-                      `${item.firstName} ${item.lastName}`
-                        .toLowerCase()
-                        .includes(appSelector.searchKey.toLowerCase()) ||
-                      item.phone
-                        .toLowerCase()
-                        .includes(appSelector.searchKey.toLowerCase()) ||
-                      item.enquirySource
-                        .toLowerCase()
-                        .includes(appSelector.searchKey.toLowerCase()) ||
-                      item.enquiryCategory
-                        ?.toLowerCase()
-                        .includes(appSelector.searchKey.toLowerCase()) ||
-                      item.model
-                        .toLowerCase()
-                        .includes(appSelector.searchKey.toLowerCase())
+                        `${item.firstName} ${item.lastName}`
+                            .toLowerCase()
+                            .includes(appSelector.searchKey.toLowerCase()) ||
+                        item.phone
+                            .toLowerCase()
+                            .includes(appSelector.searchKey.toLowerCase()) ||
+                        item.enquirySource
+                            .toLowerCase()
+                            .includes(appSelector.searchKey.toLowerCase()) ||
+                        item.enquiryCategory
+                            ?.toLowerCase()
+                            .includes(appSelector.searchKey.toLowerCase()) ||
+                        item.model
+                            .toLowerCase()
+                            .includes(appSelector.searchKey.toLowerCase())
                     );
                 })
                 setSearchedData([]);
                 setSearchedData(tempData);
                 dispatch(updateSearchKey(''))
             }
-            else{
+            else {
                 setSearchedData([]);
                 setSearchedData(selector.pre_enquiry_list);
             }
@@ -181,7 +203,7 @@ const PreEnquiryScreen = ({ navigation }) => {
         let empId = await AsyncStore.getData(AsyncStore.Keys.EMP_ID);
         let orgId = await AsyncStore.getData(AsyncStore.Keys.ORG_ID);
 
-        return {empId, orgId};
+        return { empId, orgId };
         // if (empId) {
         //     getPreEnquiryListFromServer(empId, startDate, endDate);
         //     setEmployeeId(empId);
@@ -193,6 +215,90 @@ const PreEnquiryScreen = ({ navigation }) => {
         const payload = getPayloadData(empId, startDate, endDate, 0);
         console.log("payload called", payload)
         dispatch(getPreEnquiryData(payload));
+    }
+
+    const onTempFliter = async (id, from, to, modelData, categoryFilters, sourceData, leadStage, leadStatus) => {
+        setLoader(true);
+        const employeeData = await AsyncStore.getData(
+            AsyncStore.Keys.LOGIN_EMPLOYEE
+        );
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            let categoryType = [];
+            let sourceOfEnquiry = [];
+            let model = [];
+            if (modelData || categoryFilters || sourceData) {
+                for (let i = 0; i < sourceData.length; i++) {
+                    let x = {
+                        id: sourceData[i].id,
+                        name: sourceData[i].name,
+                        orgId: jsonObj.orgId
+                    }
+                    sourceOfEnquiry.push(x);
+                }
+                for (let i = 0; i < categoryFilters.length; i++) {
+                    let x = {
+                        id: categoryFilters[i].id,
+                        name: categoryFilters[i].name,
+                    }
+                    categoryType.push(x);
+                }
+                for (let i = 0; i < modelData.length; i++) {
+                    let x = {
+                        id: modelData[i].id,
+                        name: modelData[i].name,
+                    }
+                    model.push(x);
+                }
+            } else {
+                for (let i = 0; i < sourceList.length; i++) {
+                    let x = {
+                        id: sourceList[i].id,
+                        name: sourceList[i].name,
+                        orgId: jsonObj.orgId
+                    }
+                    sourceOfEnquiry.push(x);
+                }
+                for (let i = 0; i < categoryList.length; i++) {
+                    let x = {
+                        id: categoryList[i].id,
+                        name: categoryList[i].name,
+                    }
+                    categoryType.push(x);
+                }
+                for (let i = 0; i < vehicleModelList.length; i++) {
+
+                    let x = {
+                        id: vehicleModelList[i].id,
+                        name: vehicleModelList[i].key,
+                    }
+                    model.push(x);
+                }
+            }
+
+            let newPayload = {
+                "startdate": from ? from : selectedFromDate,
+                "enddate": to ? to : selectedToDate,
+                "model": model,
+                "categoryType": [],
+                "sourceOfEnquiry": sourceOfEnquiry,
+                "empId": jsonObj.empId,
+                "status": "",
+                "offset": 0,
+                "limit": 500,
+                "leadStage": leadStage ? leadStage : defualtLeadStage,
+                "leadStatus": leadStatus ? leadStatus : defualtLeadStatus
+            };
+            Promise.all([dispatch(getLeadsList(newPayload))]).then((response) => {
+                setLoader(false);
+                let newData = response[0].payload?.dmsEntity?.leadDtoPage?.content;
+                setSearchedData(newData);
+            })
+                .catch((error) => {
+                    console.log(error);
+                    setLoader(false);
+                });
+        }
     }
 
 
@@ -230,11 +336,13 @@ const PreEnquiryScreen = ({ navigation }) => {
         switch (key) {
             case "FROM_DATE":
                 setFromDateState(formatDate);
-                getPreEnquiryListFromServer(employeeId, formatDate, selectedToDate);
+                onTempFliter(employeeId, formatDate, selectedToDate);
+                // getPreEnquiryListFromServer(employeeId, formatDate, selectedToDate);
                 break;
             case "TO_DATE":
                 setToDateState(formatDate);
-                getPreEnquiryListFromServer(employeeId, selectedFromDate, formatDate);
+                onTempFliter(employeeId, selectedFromDate, formatDate)
+                // getPreEnquiryListFromServer(employeeId, selectedFromDate, formatDate);
                 break;
         }
     }
@@ -277,10 +385,11 @@ const PreEnquiryScreen = ({ navigation }) => {
         });
 
         setCategoryList([...categoryFilters])
-        setVehicleModelList([...modelData]);
-        setSourceList([...sourceData]);
+        setVehicleModelList([...modelFilters]);
+        setSourceList([...sourceFilters]);
 
-
+        onTempFliter(employeeId, selectedFromDate, selectedToDate, modelFilters, categoryFilters, sourceFilters);
+        return
         // Make Server call
         const payload2 = getPayloadData(employeeId, selectedFromDate, selectedToDate, 0, modelFilters, categoryFilters, sourceFilters)
 
@@ -379,8 +488,8 @@ const PreEnquiryScreen = ({ navigation }) => {
                     />
                 </View>
 
-                {searchedData.length === 0 ? <EmptyListView title={'No Data Found'} isLoading={selector.isLoading} /> :
-                    <View style={[ { backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10 }]}>
+                {searchedData.length === 0 ? <EmptyListView title={'No Data Found'} isLoading={selector.isLoading || loader} /> :
+                    <View style={[{ backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10 }]}>
                         <FlatList
                             data={searchedData}
                             extraData={searchedData}
@@ -388,7 +497,8 @@ const PreEnquiryScreen = ({ navigation }) => {
                             refreshControl={(
                                 <RefreshControl
                                     refreshing={selector.isLoading}
-                                    onRefresh={() => getPreEnquiryListFromServer(employeeId, selectedFromDate, selectedToDate)}
+                                    onRefresh={() => onTempFliter(employeeId, selectedFromDate, selectedToDate)}
+                                    // onRefresh={() => getPreEnquiryListFromServer(employeeId, selectedFromDate, selectedToDate)}
                                     progressViewOffset={200}
                                 />
                             )}
@@ -416,7 +526,7 @@ const PreEnquiryScreen = ({ navigation }) => {
                                                 navigator={navigation}
                                                 uniqueId={item.leadId}
                                                 type='PreEnq'
-                                                 status={""}
+                                                status={""}
                                                 created={item.createdDate}
                                                 dmsLead={item.createdBy}
                                                 phone={item.phone}
@@ -439,10 +549,10 @@ const PreEnquiryScreen = ({ navigation }) => {
                             }}
                         />
                     </View>
-                    }
+                }
 
-                <View style={[styles.addView, GlobalStyle.shadow, {justifyContent: 'center', alignItems: 'center'}]}>
-                    <View style={{width: 60, height: 60, borderRadius: 30, backgroundColor: '#FFFFFF'}}>
+                <View style={[styles.addView, GlobalStyle.shadow, { justifyContent: 'center', alignItems: 'center' }]}>
+                    <View style={{ width: 60, height: 60, borderRadius: 30, backgroundColor: '#FFFFFF' }}>
                         <Pressable onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.addPreEnq, { fromEdit: false })}>
                             {/* <View style={[GlobalStyle.shadow, { height: 60, width: 60, borderRadius: 30, shadowRadius: 5 }]}> */}
                             {/* <VectorImage source={CREATE_NEW} width={60} height={60} color={"rgba(76,24,197,0.8)"} /> */}
@@ -495,6 +605,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginBottom: 5
     },
-    searchBar:{height: 40}
+    searchBar: { height: 40 }
 
 })
