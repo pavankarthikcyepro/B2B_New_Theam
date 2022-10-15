@@ -230,7 +230,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     let scrollRef = useRef(null)
     const { universalId, accessoriesList, leadStatus, leadStage } = route.params;
     const [openAccordian, setOpenAccordian] = useState(0);
-    const [componentAppear, setComponentAppear] = useState(false);    
+    const [componentAppear, setComponentAppear] = useState(false);
     const [userData, setUserData] = useState({
         orgId: "",
         employeeId: "",
@@ -356,7 +356,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
     useEffect(() => {
     handleRetailFinanceFields();
-    
+
   }, [selector.retail_finance])
   const handleRetailFinanceFields = () => {
     if (selector.retail_finance === 'In House') {
@@ -378,7 +378,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
            text: selector.bank_or_finance,
          })
        );
-    
+
        dispatch(
          setFinancialDetails({
            key: "LEASHING_NAME",
@@ -405,7 +405,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
            text: selector.loan_amount,
          })
        );
-      
+
       dispatch(
         setFinancialDetails({
           key: "RATE_OF_INTEREST",
@@ -432,7 +432,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           text: selector.leashing_name,
         })
       );
-    } 
+    }
     else {
       dispatch(
         setFinancialDetails({
@@ -1485,7 +1485,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       setIsSubmitPress(true);
       console.log("ATTCH", JSON.stringify(uploadedImagesDataObj));
       // console.log("FOUND: ", uploadedImagesDataObj.hasOwnProperty('receipt'));
-      
+
       if (selector.salutation.length === 0) {
         scrollToPos(0);
         setOpenAccordian("1");
@@ -1582,17 +1582,17 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         return;
       }
 
-      if (
-        !selector.defaultAddress ||
-        (selector.defaultAddress &&
-          selector.defaultAddress.addressType &&
-          !selector.defaultAddress.addressType.village)
-      ) {
-        scrollToPos(2);
-        setOpenAccordian("2");
-        showToast("please select address");
-        return;
-      }
+      // if (
+      //   !selector.defaultAddress ||
+      //   (selector.defaultAddress &&
+      //     selector.defaultAddress.addressType &&
+      //     !selector.defaultAddress.addressType.village)
+      // ) {
+      //   scrollToPos(2);
+      //   setOpenAccordian("2");
+      //   showToast("please select address");
+      //   return;
+      // }
       if (selector.urban_or_rural == 0) {
         scrollToPos(2);
         setOpenAccordian("2");
@@ -1714,7 +1714,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         showToast("Select is Primary for atleast one vehicle");
         return;
       }
-      
+
       // if (selector.enquiry_segment.toLowerCase() === "personal" && selector.marital_status.length == 0) {
       //     showToast("Please fill the martial status");
       //     return;
@@ -2225,7 +2225,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     const approveOrRejectMethod = (type) => {
         if (!selector.pre_booking_details_response) {
             return;
-        }      
+        }
         let dmsEntity = { ...selector.pre_booking_details_response };
         let dmsLeadDto = { ...dmsEntity.dmsLeadDto };
         if (type === "APPROVE") {
@@ -2593,7 +2593,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 otherReason: "",
                 droppedBy: userData.employeeId,
                 lostSubReason: dropSubReason,
-                stage: "BOOKINGAPPROVAL",
+                stage: "PREBOOKING",
                 status: "PREBOOKING",
             },
         };
@@ -2988,7 +2988,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 break;
         }
 
-        
+
         await fetch(URL.UPLOAD_DOCUMENT(), {
           method: "POST",
           headers: {
