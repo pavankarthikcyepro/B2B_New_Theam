@@ -11,29 +11,35 @@ import {
 import { Button, Checkbox } from "react-native-paper";
 import { Colors } from "../styles";
 
-const LeadsFilterComp = ({
+const SingleLeadSelectComp = ({
     visible,
     modelList,
     onRequestClose,
     submitCallback,
     cancelClicked,
-    onChange,
+    selectAll,
 }) => {
     const [localModelList, setLocalModelList] = useState([]);
+
     useEffect(() => {
         setLocalModelList([...modelList]);
     }, []);
+
     useEffect(() => {
         setLocalModelList([...modelList]);
     }, [visible]);
 
     const itemSelected = (selectedItem, itemIndex) => {
         let modelList = [...localModelList];
-        let selectedObject = { ...modelList[itemIndex] };
-        selectedObject.checked = !selectedObject.checked;
-        modelList[itemIndex] = selectedObject;
-        onChange([...modelList]);
+        for (let i = 0; i < modelList.length; i++) {
+            if (itemIndex === i) {
+                modelList[i].checked = true;
+            } else {
+                modelList[i].checked = false;
+            }
+        }
         setLocalModelList([...modelList]);
+        submitCallback([...modelList]);
     };
 
     return (
@@ -47,7 +53,7 @@ const LeadsFilterComp = ({
                 <View style={styles.centeredView}>
                     <View style={styles.modalView}>
                         <View style={{ width: "85%" }}>
-                            <Text style={styles.modalText}>{"STATUS"}</Text>
+                            <Text style={styles.modalText}>{"STAGE"}</Text>
                             <View
                                 style={{
                                     height: 0.5,
@@ -58,36 +64,41 @@ const LeadsFilterComp = ({
                             <FlatList
                                 key={"CATEGORY_LIST"}
                                 data={localModelList}
-                                keyExtractor={(item, index) => index.toString()}
                                 ListEmptyComponent={() => {
                                     return (<View style={{ alignItems: 'center' }}><Text>{"Data Not Available"}</Text></View>)
                                 }}
+                                keyExtractor={(item, index) => index.toString()}
                                 style={{
                                     width: "100%",
                                     height: "70%",
                                     paddingHorizontal: 5,
                                 }}
                                 renderItem={({ item, index }) => {
-                                    return (
-                                        <TouchableOpacity
-                                            onPress={() => {
-                                                // onChange(item);
-                                                itemSelected(item, index);
-                                            }}
-                                        >
-                                            <View style={styles.radiobuttonVw}>
-                                                <Checkbox.Android
-                                                    color={Colors.RED}
-                                                    status={item.checked ? "checked" : "unchecked"}
-                                                />
-                                                <Text
-                                                    style={[styles.radioText, { color: Colors.BLACK }]}
+                                    if (item?.menu !== "Contact" && item?.status === "Active" && true) {
+                                        return (
+                                            <TouchableOpacity
+                                                onPress={() => itemSelected(item, index)}
+                                                style={{ flex: 1, marginVertical: 2, width: "100%" }}
+                                            >
+                                                <View
+                                                    style={{
+                                                        ...styles.radiobuttonVw,
+                                                        justifyContent: "flex-start",
+                                                    }}
                                                 >
-                                                    {item?.subMenu}
-                                                </Text>
-                                            </View>
-                                        </TouchableOpacity>
-                                    );
+                                                    <Checkbox.Android
+                                                        color={Colors.RED}
+                                                        status={item.checked ? "checked" : "unchecked"}
+                                                    />
+                                                    <Text
+                                                        style={[styles.radioText, { color: Colors.BLACK }]}
+                                                    >
+                                                        {item?.menu}
+                                                    </Text>
+                                                </View>
+                                            </TouchableOpacity>
+                                        );
+                                    }
                                 }}
                             />
                         </View>
@@ -99,7 +110,7 @@ const LeadsFilterComp = ({
                                 alignItems: "center",
                                 width: "85%",
                                 backgroundColor: 'white',
-                                paddingVertical: 5
+                                marginHorizontal: 5
                             }}
                         >
                             <Button
@@ -109,24 +120,29 @@ const LeadsFilterComp = ({
                                     textTransform: "none",
                                     fontSize: 14,
                                     fontWeight: "600",
+                                    alignSelf: "flex-end",
+                                }}
+                                onPress={() => {
+                                    selectAll();
+                                    cancelClicked();
+                                }}
+                            >
+                                Remove Filter
+                            </Button>
+                            <Button
+                                mode="text"
+                                color={Colors.RED}
+                                labelStyle={{
+                                    textTransform: "none",
+                                    fontSize: 14,
+                                    fontWeight: "600",
+                                    alignSelf: "flex-end",
                                 }}
                                 onPress={() => {
                                     cancelClicked();
                                 }}
                             >
                                 Cancel
-                            </Button>
-                            <Button
-                                mode="contained"
-                                color={Colors.RED}
-                                labelStyle={{
-                                    textTransform: "none",
-                                    fontSize: 14,
-                                    fontWeight: "600",
-                                }}
-                                onPress={() => submitCallback([...localModelList])}
-                            >
-                                Apply
                             </Button>
                         </View>
                     </View>
@@ -136,7 +152,7 @@ const LeadsFilterComp = ({
     );
 };
 
-export { LeadsFilterComp };
+export { SingleLeadSelectComp };
 
 const styles = StyleSheet.create({
     // modal view
@@ -162,20 +178,23 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 5,
         // width: '60%',
-        height: 225,
+        // height: 225,
         display: "flex",
         justifyContent: "space-evenly",
         width: "85%",
+        height: "35%",
     },
     modalText: {
+        // marginBottom: 15,
         textAlign: "center",
         fontSize: 14,
         fontWeight: "700",
-        paddingVertical: 15
+        marginVertical: 15
     },
     radiobuttonVw: {
         flexDirection: "row",
         alignItems: "center",
+        justifyContent: "center",
     },
     radioText: {
         fontSize: 14,

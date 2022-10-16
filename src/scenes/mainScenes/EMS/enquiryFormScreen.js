@@ -296,32 +296,31 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     handleRetailFinanceFields();
-
   }, [selector.retail_finance])
   const handleRetailFinanceFields = () => {
     if (selector.retail_finance === 'In House') {
       dispatch(
         setFinancialDetails({
           key: "BANK_R_FINANCE_NAME",
-          text: '',
+          text: selector.bank_or_finance_name,
         })
       )
-       dispatch(
-         setFinancialDetails({
-           key: "BANK_FINANCE",
-           text: selector.bank_or_finance,
-         })
-       );
+      dispatch(
+        setFinancialDetails({
+          key: "BANK_FINANCE",
+          text: selector.bank_or_finance,
+        })
+      );
       dispatch(
         setFinancialDetails({
           key: "LOAN_AMOUNT",
-          text: '',
+          text: selector.loan_amount,
         })
       );
       dispatch(
         setFinancialDetails({
           key: "RATE_OF_INTEREST",
-          text: '',
+          text: selector.rate_of_interest,
         })
       );
     }
@@ -332,12 +331,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           text: selector.bank_or_finance_name,
         })
       );
-        dispatch(
-          setFinancialDetails({
-            key: "BANK_FINANCE",
-            text: '',
-          })
-        );
+      dispatch(
+        setFinancialDetails({
+          key: "BANK_FINANCE",
+          text: selector.bank_or_finance,
+        })
+      );
       dispatch(
         setFinancialDetails({
           key: "LOAN_AMOUNT",
@@ -356,13 +355,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dispatch(
         setFinancialDetails({
           key: "BANK_R_FINANCE_NAME",
-          text: '',
+          text: selector.bank_or_finance,
         })
       );
       dispatch(
         setFinancialDetails({
           key: "BANK_FINANCE",
-          text: "",
+          text: selector.bank_or_finance,
         })
       );
       dispatch(
@@ -882,7 +881,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       }
 
       await setCarModelsList(array);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const updateEnquiry = async () => {
@@ -1130,7 +1129,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           return JSON.stringify(obj) === _value;
         });
       });
-
     }
 
     if (selector.enquiry_details_response.hasOwnProperty("dmsContactDto")) {
@@ -1195,7 +1193,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     //   }
     // }
 
-    if(selector.enquiry_segment.toLowerCase() == "personal"){
+    if (selector.enquiry_segment.toLowerCase() == "personal") {
       if (selector.gender.length == 0) {
         scrollToPos(0);
         setOpenAccordian("2");
@@ -1468,7 +1466,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     if (dmsEntity.hasOwnProperty("dmsLeadDto")) {
       try {
         dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
-      } catch (error) {}
+      } catch (error) { }
       dmsLeadDto.firstName = selector.firstName;
       dmsLeadDto.lastName = selector.lastName;
       dmsLeadDto.phone = selector.mobile;
@@ -2512,7 +2510,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         let segments = [...Enquiry_Segment_Data];
         if (orgId === 21) {
           segments = [...EnquiryTypes21];
-        } else if(orgId === 22) {
+        } else if (orgId === 22) {
           segments = [...EnquiryTypes22];
         }
         setDataForDropDown(segments);
@@ -2525,15 +2523,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
         let customerTypes = []
         customerTypes = CustomerTypesObj21[selector.enquiry_segment.toLowerCase()]
-        if(orgId === 21){
+        if (orgId === 21) {
           customerTypes = CustomerTypesObj21[selector.enquiry_segment.toLowerCase()];
           selector.customerType = "";
         }
-        else if( orgId === 22){
+        else if (orgId === 22) {
           customerTypes = CustomerTypesObj22[selector.enquiry_segment.toLowerCase()];
           selector.customerType = "";
         }
-        else{
+        else {
           customerTypes = CustomerTypesObj[selector.enquiry_segment.toLowerCase()];
           selector.customerType = "";
         }
@@ -2967,9 +2965,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           }
 
           if (dropDownKey === "RETAIL_FINANCE" && selector.retail_finance !== item.name) {
-            dispatch(setFinancialDetails({key: "BANK_R_FINANCE_NAME", text: ""}));
-            dispatch(setFinancialDetails({key: "LOAN_AMOUNT", text: ""}));
-            dispatch(setFinancialDetails({key: "RATE_OF_INTEREST",text: ""}));
+            dispatch(setFinancialDetails({ key: "BANK_R_FINANCE_NAME", text: "" }));
+            dispatch(setFinancialDetails({ key: "LOAN_AMOUNT", text: "" }));
+            dispatch(setFinancialDetails({ key: "RATE_OF_INTEREST", text: "" }));
           };
 
           setShowDropDownModel(false);
@@ -3074,7 +3072,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               expandedId={openAccordian}
               onAccordionPress={(expandedId) => updateAccordian(expandedId)}
             >
-              { (leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY') ? <List.Accordion
+              {(leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY') ? <List.Accordion
                 id={"10"}
                 title={"Proforma Invoice"}
                 titleStyle={{
@@ -3100,7 +3098,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   modelDetails={selector.dmsLeadProducts[0]}
                   branchId={selectedBranchId}
                   universalId={route.params.universalId}
-                  />
+                />
               </List.Accordion> : null}
               <View style={styles.space}></View>
 
@@ -4755,43 +4753,43 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           />
                         </View>
                       </View>
-                      ) : uploadedImagesDataObj.pattaPassBook ? (
-                        <View style={{ flexDirection: "row" }}>
-                          <TouchableOpacity
+                    ) : uploadedImagesDataObj.pattaPassBook ? (
+                      <View style={{ flexDirection: "row" }}>
+                        <TouchableOpacity
+                          style={{
+                            width: "20%",
+                            height: 30,
+                            backgroundColor: Colors.SKY_BLUE,
+                            borderRadius: 4,
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                          onPress={() => {
+                            if (uploadedImagesDataObj.pattaPassBook?.documentPath) {
+                              setImagePath(
+                                uploadedImagesDataObj.pattaPassBook?.documentPath
+                              );
+                            }
+                          }}
+                        >
+                          <Text
                             style={{
-                              width: "20%",
-                              height: 30,
-                              backgroundColor: Colors.SKY_BLUE,
-                              borderRadius: 4,
-                              justifyContent: "center",
-                              alignItems: "center",
-                            }}
-                            onPress={() => {
-                              if (uploadedImagesDataObj.pattaPassBook?.documentPath) {
-                                setImagePath(
-                                  uploadedImagesDataObj.pattaPassBook?.documentPath
-                                );
-                              }
+                              color: Colors.WHITE,
+                              fontSize: 14,
+                              fontWeight: "600",
                             }}
                           >
-                            <Text
-                              style={{
-                                color: Colors.WHITE,
-                                fontSize: 14,
-                                fontWeight: "600",
-                              }}
-                            >
-                              Preview
-                            </Text>
-                          </TouchableOpacity>
-                          <View style={{ width: "80%" }}>
-                            <DisplaySelectedImage
-                              fileName={uploadedImagesDataObj.pattaPassBook.fileName}
-                              from={"PATTA_PASS_BOOK"}
-                            />
-                          </View>
+                            Preview
+                          </Text>
+                        </TouchableOpacity>
+                        <View style={{ width: "80%" }}>
+                          <DisplaySelectedImage
+                            fileName={uploadedImagesDataObj.pattaPassBook.fileName}
+                            from={"PATTA_PASS_BOOK"}
+                          />
                         </View>
-                      ) : null}
+                      </View>
+                    ) : null}
                   </View>
                 ) : null}
 
@@ -4959,8 +4957,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           />
                         </View>
                       </View>
-                      ) : 
-                        uploadedImagesDataObj.leasingConfirmationLetter ? (
+                    ) :
+                      uploadedImagesDataObj.leasingConfirmationLetter ? (
                         <View style={{ flexDirection: "row" }}>
                           <TouchableOpacity
                             style={{
@@ -4995,7 +4993,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           <View style={{ width: "80%" }}>
                             <DisplaySelectedImage
                               fileName={
-                                  uploadedImagesDataObj.leasingConfirmationLetter.fileName
+                                uploadedImagesDataObj.leasingConfirmationLetter.fileName
                               }
                               from={"LEASING_CONFIRMATION"}
                             />
@@ -5053,43 +5051,43 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           />
                         </View>
                       </View>
-                      ) : uploadedImagesDataObj.addressProof?.fileName ? (
-                        <View style={{ flexDirection: "row" }}>
-                          <TouchableOpacity
+                    ) : uploadedImagesDataObj.addressProof?.fileName ? (
+                      <View style={{ flexDirection: "row" }}>
+                        <TouchableOpacity
+                          style={{
+                            width: "20%",
+                            height: 30,
+                            backgroundColor: Colors.SKY_BLUE,
+                            borderRadius: 4,
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                          onPress={() => {
+                            if (uploadedImagesDataObj.addressProof?.documentPath) {
+                              setImagePath(
+                                uploadedImagesDataObj.addressProof?.documentPath
+                              );
+                            }
+                          }}
+                        >
+                          <Text
                             style={{
-                              width: "20%",
-                              height: 30,
-                              backgroundColor: Colors.SKY_BLUE,
-                              borderRadius: 4,
-                              justifyContent: "center",
-                              alignItems: "center",
-                            }}
-                            onPress={() => {
-                              if (uploadedImagesDataObj.addressProof?.documentPath) {
-                                setImagePath(
-                                  uploadedImagesDataObj.addressProof?.documentPath
-                                );
-                              }
+                              color: Colors.WHITE,
+                              fontSize: 14,
+                              fontWeight: "600",
                             }}
                           >
-                            <Text
-                              style={{
-                                color: Colors.WHITE,
-                                fontSize: 14,
-                                fontWeight: "600",
-                              }}
-                            >
-                              Preview
-                            </Text>
-                          </TouchableOpacity>
-                          <View style={{ width: "80%" }}>
-                            <DisplaySelectedImage
-                              fileName={uploadedImagesDataObj.addressProof.fileName}
-                              from={"ADDRESS_PROOF"}
-                            />
-                          </View>
+                            Preview
+                          </Text>
+                        </TouchableOpacity>
+                        <View style={{ width: "80%" }}>
+                          <DisplaySelectedImage
+                            fileName={uploadedImagesDataObj.addressProof.fileName}
+                            from={"ADDRESS_PROOF"}
+                          />
                         </View>
-                      )
+                      </View>
+                    )
                       : null}
                   </View>
                 ) : null}
