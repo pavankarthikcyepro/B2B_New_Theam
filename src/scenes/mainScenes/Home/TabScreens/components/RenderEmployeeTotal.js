@@ -12,7 +12,7 @@ export const RenderEmployeeTotal = (userData) => {
     const [empParams, setEmpParams] = useState([]);
     const [branches, setBranches] = useState([]);
     useEffect(async () => {
-
+        console.log("branchId => ", branchId);
         try {
             const branchData = await AsyncStore.getData("BRANCHES_DATA");
             if (branchData) {
@@ -20,7 +20,7 @@ export const RenderEmployeeTotal = (userData) => {
                 setBranches([...branchesList]);
             }
         } catch (e) {
-            Alert.alert('Error occurred - Employee total', `${JSON.stringify(e)}`);
+            // Alert.alert('Error occurred - Employee total', `${JSON.stringify(e)}`);
         }
         const dateFormat = "YYYY-MM-DD";
         const currentDate = moment().format(dateFormat)
@@ -73,7 +73,7 @@ export const RenderEmployeeTotal = (userData) => {
                   {branches.length > 0 &&
                     branches
                       .find((x) => +x.branchId === +branchId)
-                      .branchName.split(" - ")[0]}
+                      ?.branchName.split(" - ")[0]}
                 </Text>
               </View>
             }
