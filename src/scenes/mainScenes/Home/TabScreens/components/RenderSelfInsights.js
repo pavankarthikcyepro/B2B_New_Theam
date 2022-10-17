@@ -22,12 +22,12 @@ export const RenderSelfInsights = (args) => {
     const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
     const dateDiff = ((new Date(monthLastDate).getTime() - new Date(currentDate).getTime()) / (1000 * 60 * 60 * 24));
     const {data, type} = args;
-    const enq = data.find(x => x.paramName === 'Enquiry');
+    const enq = data && data.find(x => x && x.paramName === 'Enquiry');
     return (
         data.map((item, index) => {
             if (item){
             return (
-                <View style={{flexDirection: "row", marginLeft: 8}} key={index}>
+                <View style={{flexDirection: "row", marginLeft: 8}} key={`${item.paramShortName}_${index}`}>
                     <View style={{width: "10%", justifyContent: "center", marginTop: 5}}>
                         <Text>{item.paramShortName}</Text>
                     </View>
@@ -181,7 +181,7 @@ export const RenderSelfInsights = (args) => {
                 </View>
             )
             }else{
-                return <View/>
+                return <View key={index}/>
             }
         })
     )

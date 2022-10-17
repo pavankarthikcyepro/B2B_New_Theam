@@ -20,6 +20,12 @@ const data = [
     pngIcon: require("../assets/images/Home-01.png"),
   },
   {
+    title: "Live Leads",
+    icon: HOME_LINE_STR,
+    screen: 114,
+    pngIcon: require("../assets/images/Help_Desk-01.png"),
+  },
+  {
     title: "Target Planning",
     icon: CUSTOMER_RELATIONSHIP_STR,
     screen: 106,
@@ -103,6 +109,12 @@ const dataForManager = [
     title: "Home",
     icon: HOME_LINE_STR,
     screen: 99,
+  },
+  {
+    title: "Live Leads",
+    icon: HOME_LINE_STR,
+    screen: 114,
+    pngIcon: require("../assets/images/Help_Desk-01.png"),
   },
   {
     title: "Target Planning",

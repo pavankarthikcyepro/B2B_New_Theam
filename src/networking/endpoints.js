@@ -51,6 +51,7 @@ export const updateEmployeeTaskDelegate = "http://automatestaging-724985329.ap-s
 export const getLeaderBoardData = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/dashboard/v2/get_emp_target_ranking/org"
 export const getBranchRankingData = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/dashboard/v2/get_emp_target_ranking"
 export const deleteModelCard = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/lead"
+export const dashboardLiveLeads = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8083";
 
 const URL = {
   LOGIN: () => hrms_url + "/emplogin",
@@ -429,6 +430,7 @@ const URL = {
   MODEL_SOURCE_SELF: () => `${dashboard}/v2/get_target_params_for_emp_model_source`,
   MODEL_SOURCE_INSIGHTS: () => `${dashboard}/v2/get_target_params_model_source`,
   MODEL_SOURCE_TEAM: () => `${dashboard}/v4/get_target_params_for_all_emps_model_source`,
+  GET_LIVE_LEADS: () => `${dashboardLiveLeads}/dashboard/v2/get_target_params`,
 }
 
 // bankFinancier, incuranceCompany, enqueryCategory, deliveryCheckList, sublostReason
