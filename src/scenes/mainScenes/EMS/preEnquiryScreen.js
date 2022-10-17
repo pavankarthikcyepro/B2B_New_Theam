@@ -24,7 +24,7 @@ import { MyTaskNewItem } from '../MyTasks/components/MyTasksNewItem';
 import { getLeadsList, getStatus } from '../../../redux/leaddropReducer';
 
 const dateFormat = "YYYY-MM-DD";
-const currentDate = moment().add(0, "day").format(dateFormat)
+const currentDate = moment().add(0, "day").endOf('month').format(dateFormat)
 const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
 
 const PreEnquiryScreen = ({ navigation }) => {
@@ -50,6 +50,10 @@ const PreEnquiryScreen = ({ navigation }) => {
     const [defualtLeadStatus, setdefualtLeadStatus] = useState([]);
     const [loader, setLoader] = useState(false);
 
+    const [tempVehicleModelList, setTempVehicleModelList] = useState([]);
+    const [tempSourceList, setTempSourceList] = useState([]);
+    const [tempCategoryList, setTempCategoryList] = useState([]);
+    
     const orgIdStateRef = React.useRef(orgId);
     const empIdStateRef = React.useRef(employeeId);
     const fromDateRef = React.useRef(selectedFromDate);
@@ -90,22 +94,16 @@ const PreEnquiryScreen = ({ navigation }) => {
             setEmployeeId(jsonObj.empId);
             setOrgId(jsonObj.orgId);
         }
-        let leadStage = [];
-        let leadStatus = [];
         Promise.all([dispatch(getStatus())]).then((res) => {
             let contact = res[0].payload.filter((e) => e.menu == "Contact");
             let newIndex = contact[0].allLeadsSubstagesEntity;
-            for (let i = 0; i < newIndex.length; i++) {
-                leadStage.push(newIndex[i].leadStage);
-                leadStatus.push(newIndex[i].leadStatus ? newIndex[i].leadStatus : "");
-            }
-            getDataFromDB(leadStage, leadStatus);
+            setDefualtLeadStage(newIndex[0].leadStage ? newIndex[0].leadStage : []);
+            setdefualtLeadStatus(newIndex[0].leadStatus ? newIndex[0].leadStatus : []);
+            getDataFromDB(newIndex[0].leadStage ? newIndex[0].leadStage : [], newIndex[0].leadStatus ? newIndex[0].leadStatus : []);
         }).catch((err) => {
             console.log(err);
             setLoader(false);
-        })
-        setDefualtLeadStage(leadStage);
-        setdefualtLeadStatus(leadStatus);
+        })      
         // getAsyncData().then(data => {
         //     if (isMounted) {
         //         setMyState(data);
@@ -126,7 +124,7 @@ const PreEnquiryScreen = ({ navigation }) => {
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
             // setEmployeeId(jsonObj.empId);
-            onTempFliter(jsonObj.empId, lastMonthFirstDate, currentDate, null, null, null, leadStage, leadStatus);
+            onTempFliter(jsonObj.empId, lastMonthFirstDate, currentDate, [], [], [], leadStage, leadStatus);
             // getPreEnquiryListFromServer(jsonObj.empId, lastMonthFirstDate, currentDate);
         }
     }
@@ -279,9 +277,9 @@ const PreEnquiryScreen = ({ navigation }) => {
             let newPayload = {
                 "startdate": from ? from : selectedFromDate,
                 "enddate": to ? to : selectedToDate,
-                "model": model,
+                "model": modelData ? modelData : [],
                 "categoryType": [],
-                "sourceOfEnquiry": sourceOfEnquiry,
+                "sourceOfEnquiry": sourceData ? sourceData : [],
                 "empId": jsonObj.empId,
                 "status": "",
                 "offset": 0,
@@ -289,6 +287,7 @@ const PreEnquiryScreen = ({ navigation }) => {
                 "leadStage": leadStage ? leadStage : defualtLeadStage,
                 "leadStatus": leadStatus ? leadStatus : defualtLeadStatus
             };
+            console.log("sjsjhsjhsjhjsjhs", newPayload);
             Promise.all([dispatch(getLeadsList(newPayload))]).then((response) => {
                 setLoader(false);
                 let newData = response[0].payload?.dmsEntity?.leadDtoPage?.content;
@@ -336,12 +335,12 @@ const PreEnquiryScreen = ({ navigation }) => {
         switch (key) {
             case "FROM_DATE":
                 setFromDateState(formatDate);
-                onTempFliter(employeeId, formatDate, selectedToDate);
+                onTempFliter(employeeId, formatDate, selectedToDate, vehicleModelList, categoryList, sourceList);
                 // getPreEnquiryListFromServer(employeeId, formatDate, selectedToDate);
                 break;
             case "TO_DATE":
                 setToDateState(formatDate);
-                onTempFliter(employeeId, selectedFromDate, formatDate)
+                onTempFliter(employeeId, selectedFromDate, formatDate, vehicleModelList, categoryList, sourceList)
                 // getPreEnquiryListFromServer(employeeId, selectedFromDate, formatDate);
                 break;
         }
@@ -387,7 +386,7 @@ const PreEnquiryScreen = ({ navigation }) => {
         setCategoryList([...categoryFilters])
         setVehicleModelList([...modelFilters]);
         setSourceList([...sourceFilters]);
-
+        console.log("shsjhsjhsjhsjs", modelFilters, categoryFilters, sourceFilters);
         onTempFliter(employeeId, selectedFromDate, selectedToDate, modelFilters, categoryFilters, sourceFilters);
         return
         // Make Server call
@@ -497,7 +496,7 @@ const PreEnquiryScreen = ({ navigation }) => {
                             refreshControl={(
                                 <RefreshControl
                                     refreshing={selector.isLoading}
-                                    onRefresh={() => onTempFliter(employeeId, selectedFromDate, selectedToDate)}
+                                    onRefresh={() => onTempFliter(employeeId, selectedFromDate, selectedToDate, vehicleModelList, categoryList, sourceList)}
                                     // onRefresh={() => getPreEnquiryListFromServer(employeeId, selectedFromDate, selectedToDate)}
                                     progressViewOffset={200}
                                 />
