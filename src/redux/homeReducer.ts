@@ -799,7 +799,7 @@ export const homeSlice = createSlice({
             .addCase(getTargetParametersData.fulfilled, (state, action) => {
                 if (action.payload) {
                     // state.target_parameters_data = [];
-                    // console.log(action.payload, "action:")
+                    console.log("actionqweertyuioppooooooooo",action.payload )
                     state.target_parameters_data = action.payload;
                     AsyncStore.storeData('TARGET_DATA', JSON.stringify(action.payload))
                 }
@@ -916,6 +916,11 @@ export const homeSlice = createSlice({
             })
             .addCase(getTargetParametersEmpDataInsights.fulfilled, (state, action) => {
                 if (action.payload) {
+                    console.log(
+                      "kjskskkkssksksjkjksjksjksjkjkjksjk",
+                      action.payload
+                    );
+                    
                     state.insights_target_parameters_data = action.payload;
                     AsyncStore.storeData('TARGET_EMP', JSON.stringify(action.payload))
                 }
