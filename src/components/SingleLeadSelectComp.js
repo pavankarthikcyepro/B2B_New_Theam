@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
         display: "flex",
         justifyContent: "space-evenly",
         width: "85%",
-        height: "35%",
+        height: "40%",
     },
     modalText: {
         // marginBottom: 15,

@@ -29,8 +29,9 @@ import { getLeadsList, getMenu, getStatus, getSubMenu } from "../../../redux/lea
 import { useIsFocused, useNavigationState } from "@react-navigation/native";
 
 const dateFormat = "YYYY-MM-DD";
-const currentDate = moment().add(0, "day").format(dateFormat)
+const currentDate = moment().add(0, "day").endOf('month').format(dateFormat);
 const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+const defualtStage = ["INVOICE", "PREDELIVERY", "BOOKING", "ENQUIRY", "PREBOOKING", "DELIVERY"];
 
 const LeadsScreen = ({ route, navigation }) => {
     const isFocused = useIsFocused();
@@ -41,6 +42,14 @@ const LeadsScreen = ({ route, navigation }) => {
     const [vehicleModelList, setVehicleModelList] = useState(vehicle_model_list_for_filters);
     const [sourceList, setSourceList] = useState(source_of_enquiry_list);
     const [categoryList, setCategoryList] = useState(Category_Type_List_For_Filter);
+
+    const [tempVehicleModelList, setTempVehicleModelList] = useState([]);
+    const [tempSourceList, setTempSourceList] = useState([]);
+    const [tempCategoryList, setTempCategoryList] = useState([]);
+    const [tempEmployee, setTempEmployee] = useState({});
+    const [tempLeadStage, setTempLeadStage] = useState([]);
+    const [tempLeadStatus, setTempLeadStatus] = useState([]);
+
     const [employeeId, setEmployeeId] = useState("");
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [datePickerId, setDatePickerId] = useState("");
@@ -188,6 +197,7 @@ const LeadsScreen = ({ route, navigation }) => {
     }, [])
 
     const managerFilter = useCallback((newArr) => {
+
         const alreadyFilterMenu = newArr.filter(e => e.menu == route?.params?.param);
         // setLeadsFilterData(newArr);
         let modelList = [...newArr];
@@ -199,6 +209,7 @@ const LeadsScreen = ({ route, navigation }) => {
             }
         }
         setLeadsFilterData([...modelList]);
+        setTempEmployee(route?.params?.employeeDetail ? route?.params?.employeeDetail : null);
         getSubMenuList(alreadyFilterMenu[0].menu, true, route?.params?.employeeDetail ? route?.params?.employeeDetail : null);
         setLeadsFilterDropDownText(alreadyFilterMenu[0].menu);
     }, [route?.params]);
@@ -212,15 +223,28 @@ const LeadsScreen = ({ route, navigation }) => {
                 let path2 = res2.payload;
                 let leadStage = [];
                 let leadStatus = [];
-                for (let i = 0; i < path2.length; i++) {
-                    if (path2[i].menu !== "Contact") {
-                        let x = path2[i].allLeadsSubstagesEntity;
-                        for (let j = 0; j < x.length; j++) {
-                            leadStage.push(x[j].leadStage);
-                            leadStatus.push(x[j].leadStatus ? x[j].leadStatus : "");
-                        }
-                    }
-                }
+                // console.log("dddeqiuyiuwyruyeqwyrieqw", JSON.stringify(path2));
+                // for (let i = 0; i < path2.length; i++) {
+                //     if (path2[i].menu !== "Contact") {
+                //         let x = path2[i].allLeadsSubstagesEntity;
+                //         for (let j = 0; j < x.length; j++) {
+                //             console.log();
+                //             if (x[i]?.leadStage?.length >=1) {
+                //                 for (let j = 0; j < x[i].leadStage.length; j++) {
+                //                     leadStage.push(x[i].leadStage[j]);
+                //                 }
+                //             }
+                //             if (x[i].leadStatus !== null) {
+                //                 for (let j = 0; j < x[i].leadStatus.length; j++) {
+                //                     leadStatus.push(x[i].leadStatus[j]);
+                //                 }
+                //             }
+                //             // leadStage.push(x[j].leadStage);
+                //             // leadStatus.push(x[j].leadStatus ? x[j].leadStatus : "");
+                //         }
+                //     }
+                // }
+                console.log("ksjksjksjksks", leadStage);
                 setDefualtLeadStage(leadStage);
                 setdefualtLeadStatus(leadStatus);
                 const newArr = path.map(v => ({ ...v, checked: false }));
@@ -246,15 +270,28 @@ const LeadsScreen = ({ route, navigation }) => {
                 let path2 = res2.payload;
                 let leadStage = [];
                 let leadStatus = [];
-                for (let i = 0; i < path2.length; i++) {
-                    if (path2[i].menu !== "Contact") {
-                        let x = path2[i].allLeadsSubstagesEntity;
-                        for (let j = 0; j < x.length; j++) {
-                            leadStage.push(x[j].leadStage);
-                            leadStatus.push(x[j].leadStatus ? x[j].leadStatus : "");
-                        }
-                    }
-                }
+                
+                // for (let i = 0; i < path2.length; i++) {
+                //     console.log("ksjksjksjksjskjskjs", path2[i].allLeadsSubstagesEntity);
+                //     if (path2[i].menu !== "Contact") {
+                //         let x = path2[i].allLeadsSubstagesEntity;
+                //         for (let j = 0; j < x.length; j++) {
+                //             if (x[i].leadStage !== null && x[i].leadStage !== undefined ) {
+                //                 for (let j = 0; j < x[i].leadStage.length; j++) {
+                //                     leadStage.push(x[i].leadStage[j]);
+                //                 }
+                //             }
+                //             if (x[i].leadStatus !== null) {
+                //                 for (let j = 0; j < x[i].leadStatus.length; j++) {
+                //                     leadStatus.push(x[i].leadStatus[j]);
+                //                 }
+                //             }
+                //             // leadStage.push(x[j].leadStage);
+                //             // leadStatus.push(x[j].leadStatus ? x[j].leadStatus : "");
+                //         }
+                //     }
+                // }
+                console.log("jdhjdjdhdjdhjdjhdjhdjhd", leadStage);
                 setDefualtLeadStage(leadStage);
                 setdefualtLeadStatus(leadStatus);
                 const newArr = path.map(v => ({ ...v, checked: false }));
@@ -282,6 +319,7 @@ const LeadsScreen = ({ route, navigation }) => {
 
 
     const defualtCall = async (tempStores, leadStage, leadStatus) => {
+        console.log("kldklsjfklsjadklfjklsadjflkjasdjkf", leadStage, leadStatus);
         setSubMenu([]);
         setLeadsFilterDropDownText('All');
         setFromDateState(lastMonthFirstDate);
@@ -292,7 +330,11 @@ const LeadsScreen = ({ route, navigation }) => {
             x.checked = false;
             return x
         });;
-        onTempFliter(newArr, {}, vehicleModelList, categoryList, sourceList, lastMonthFirstDate, currentDate, leadStage, leadStatus);
+        let newLeadStage = ["INVOICE", "PREDELIVERY", "BOOKING", "ENQUIRY", "PREBOOKING", "DELIVERY"];
+        let newLeadStatus = [];
+        setTempLeadStage(newLeadStage);
+        setTempLeadStatus([]);
+        onTempFliter(newArr, null, [], [], [], lastMonthFirstDate, currentDate, newLeadStage, newLeadStatus);
         return
         await applyLeadsFilter(newArr, lastMonthFirstDate, currentDate);
     }
@@ -367,6 +409,10 @@ const LeadsScreen = ({ route, navigation }) => {
         }
     }
 
+    function isEmpty(obj) {
+        return Object.keys(obj).length === 0;
+    }
+
     const applySelectedFilters = payload => {
         const modelData = payload.model;
         const sourceData = payload.source;
@@ -403,7 +449,11 @@ const LeadsScreen = ({ route, navigation }) => {
         setCategoryList([...categoryFilters])
         setVehicleModelList([...modelFilters]);
         setSourceList([...sourceFilters]);
-        onTempFliter(tempFilterPayload, {}, modelFilters, categoryFilters, sourceFilters);
+        setTempVehicleModelList(modelFilters);
+        setTempCategoryList(categoryFilters);
+        setTempSourceList(sourceFilters);
+        console.log("shjshshsj", tempLeadStage, tempLeadStatus);
+        onTempFliter(tempFilterPayload, isEmpty(tempEmployee) ? null : tempEmployee, modelFilters, categoryFilters, sourceFilters, selectedFromDate, selectedToDate, tempLeadStage, tempLeadStatus);
         return
         // // Make Server call
         // const payload2 = getPayloadData(employeeId, selectedFromDate, selectedToDate, 0, modelFilters, categoryFilters, sourceFilters)
@@ -476,18 +526,26 @@ const LeadsScreen = ({ route, navigation }) => {
     const getSubMenuList = async (item, getAllData = false, employeeDetail = {}) => {
         Promise.all([dispatch(getSubMenu(item.toUpperCase()))])
             .then((response) => {
+                console.log("towyruytiuwrytiuywerutieuryituy", JSON.stringify(response[0]?.payload[0]?.allLeadsSubstagesEntity));
                 let path = response[0]?.payload[0]?.allLeadsSubstagesEntity;
                 if (getAllData) {
                     setSearchedData([]);
-                    let newPath = path.map(v => ({ ...v, checked: true }));
-                    setTempFilterPayload(newPath);
-                    onTempFliter(newPath, employeeDetail);
-                    setSubMenu(newPath);
+                    const newArr = path.map(object => {
+                        if (object.subMenu == "ALL") {
+                            return { ...object, checked: true };
+                        }
+                        return object;
+                    });
+                    setTempFilterPayload(newArr);
+                    onTempFliter(newArr, employeeDetail,);
+                    setSubMenu(newArr);
+                    setLeadsSubMenuFilterDropDownText("ALL");
+
                 } else if (path.length == 1) {
                     // getFliteredList(path[0]);
                     let newPath = path.map(v => ({ ...v, checked: true }));
                     setTempFilterPayload(newPath);
-                    onTempFliter(newPath);
+                    onTempFliter(newPath, employeeDetail, tempVehicleModelList, tempCategoryList, tempSourceList, selectedFromDate, selectedToDate);
                     NewSubMenu([]);
                 } else {
                     NewSubMenu(path);
@@ -523,6 +581,7 @@ const LeadsScreen = ({ route, navigation }) => {
             AsyncStore.Keys.LOGIN_EMPLOYEE
         );
         if (employeeData) {
+            console.log("jfjkagjkgfuduuetruweutiuewti", item, defLeadStage, defLeadStatus);
             let newArray = item.filter(i => i.checked === true);
             const jsonObj = JSON.parse(employeeData);
             let leadStage = [];
@@ -530,10 +589,25 @@ const LeadsScreen = ({ route, navigation }) => {
             let categoryType = [];
             let sourceOfEnquiry = [];
             let model = [];
+            console.log("dddddddddddddddd", newArray);
+
             for (let i = 0; i < newArray.length; i++) {
-                leadStage.push(newArray[i].leadStage);
-                leadStatus.push(newArray[i].leadStatus ? newArray[i].leadStatus : "");
+                for (let j = 0; j < newArray[i].leadStage.length; j++) {
+                    leadStage.push(newArray[i].leadStage[j]);
+                }
+                if (newArray[i].leadStatus) {
+                    for (let j = 0; j < newArray[i].leadStatus.length; j++) {
+                        leadStatus.push(newArray[i].leadStatus[j]);
+                    }
+                }
+                // leadStage = [...leadStage, ...newArray[i].leadStage]
+                // leadStatus = [...leadStatus, ...newArray[i].leadStatus]
+                // leadStage.push(newArray[i].leadStage);
+                // leadStatus.push(newArray[i].leadStatus ? newArray[i].leadStatus : "");
             }
+            console.log("hsjhdsjhdjhsjdhjsh", leadStage);
+            defLeadStage ? null : setTempLeadStage(leadStage);
+            defLeadStatus? null: setTempLeadStatus(leadStatus);
             if (modelData || categoryFilters || sourceData) {
                 for (let i = 0; i < sourceData.length; i++) {
                     let x = {
@@ -585,19 +659,21 @@ const LeadsScreen = ({ route, navigation }) => {
             let newPayload = {
                 "startdate": from ? from : selectedFromDate,
                 "enddate": to ? to : selectedToDate,
-                "model": model,
-                "categoryType": categoryType,
-                "sourceOfEnquiry": sourceOfEnquiry,
-                "empId": route.params ? route.params.employeeDetail.empId : jsonObj.empId,
+                "model": modelData ? model : [],
+                "categoryType": categoryFilters ? categoryType : [],
+                "sourceOfEnquiry": sourceData ? sourceOfEnquiry : [],
+                "empId": employeeDetail ? route.params.employeeDetail.empId : jsonObj.empId,
                 "status": "",
                 "offset": 0,
                 "limit": 500,
                 "leadStage": defLeadStage ? defLeadStage : leadStage.length === 0 ? defualtLeadStage : leadStage,
                 "leadStatus": defLeadStatus ? defLeadStatus : leadStatus.length === 0 ? defualtLeadStatus : leadStatus
             };
+            console.log("kjskjksjskjskjkjksjkjksjksjskj", newPayload);
             Promise.all([dispatch(getLeadsList(newPayload))]).then((response) => {
                 setLoader(false);
                 let newData = response[0].payload?.dmsEntity?.leadDtoPage?.content;
+                console.log("qwertyuiop", newData);
                 setSearchedData(newData);
             })
                 .catch((error) => {
@@ -662,7 +738,7 @@ const LeadsScreen = ({ route, navigation }) => {
         updateSelectedDate(from, 'FROM_DATE');
         updateSelectedDate(to, 'TO_DATE');
         setShowDatePicker(false);
-        onTempFliter(tempFilterPayload, {}, vehicleModelList, categoryList, sourceList, from, to);
+        onTempFliter(tempFilterPayload, isEmpty(tempEmployee) ? null : tempEmployee, tempVehicleModelList, tempCategoryList, tempSourceList, from, to);
         return
         setTimeout(() => {
             applyLeadsFilter(leadsFilterData, from, to);
@@ -714,24 +790,26 @@ const LeadsScreen = ({ route, navigation }) => {
                 }} cancelClicked={() => {
                     setLeadsFilterVisible(false)
                 }}
-                    selectAll={async (x) => {
+                    selectAll={async () => {
                         setSubMenu([]);
-                        setLeadsFilterDropDownText('All');
-                        setFromDateState(lastMonthFirstDate);
-                        const tomorrowDate = moment().add(1, "day").format(dateFormat)
-                        setToDateState(currentDate);
-                        setLeadsFilterData(tempStore);
-                        const newArr = tempStore.map(function (x) {
-                            x.checked = false;
-                            return x
-                        });;
-                        await applyLeadsFilter(newArr, lastMonthFirstDate, currentDate);
+                        defualtCall(tempStore);
+                        // setLeadsFilterDropDownText('All');
+                        // setFromDateState(lastMonthFirstDate);
+                        // const tomorrowDate = moment().add(1, "day").format(dateFormat)
+                        // setToDateState(currentDate);
+                        // setLeadsFilterData(tempStore);
+                        // const newArr = tempStore.map(function (x) {
+                        //     x.checked = false;
+                        //     return x
+                        // });;
+                        // await applyLeadsFilter(newArr, lastMonthFirstDate, currentDate);
                     }}
                 />
                 <LeadsFilterComp visible={leadsSubMenuFilterVisible} modelList={subMenu} submitCallback={(x) => {
                     setSubMenu([...x]);
                     setTempFilterPayload(x);
-                    onTempFliter(x);
+                    console.log("sjshjhsjsjhhjhjh", x);
+                    onTempFliter(x, isEmpty(tempEmployee) ? null : tempEmployee, tempVehicleModelList, tempCategoryList, tempSourceList, selectedFromDate, selectedToDate);
                     setLeadsSubMenuFilterVisible(false);
                     const data = x.filter(y => y.checked);
                     if (data.length === subMenu.length) {

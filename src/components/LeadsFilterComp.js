@@ -57,8 +57,8 @@ const LeadsFilterComp = ({
                             />
                             <FlatList
                                 key={"CATEGORY_LIST"}
-                                data={localModelList}
-                                keyExtractor={(item, index) => index.toString()}
+                                data={localModelList.sort((a, b) => a?.id - b?.id)}
+                                keyExtractor={(item, index) => item?.id}
                                 ListEmptyComponent={() => {
                                     return (<View style={{ alignItems: 'center' }}><Text>{"Data Not Available"}</Text></View>)
                                 }}
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 5,
         // width: '60%',
-        height: 225,
+        height: "40%",
         display: "flex",
         justifyContent: "space-evenly",
         width: "85%",
