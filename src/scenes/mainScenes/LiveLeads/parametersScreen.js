@@ -1,15 +1,11 @@
 import React, {useEffect, useState} from "react";
 import {Dimensions, Image, Pressable, StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import {Colors} from "../../../../styles";
-import {LoaderComponent} from "../../../../components";
+import {LoaderComponent} from "../../../components";
 import {useDispatch, useSelector} from 'react-redux';
 import moment from 'moment';
-
-import * as AsyncStore from '../../../../asyncStore';
+import * as AsyncStore from '../../../asyncStore';
 import {ScrollView} from "react-native-gesture-handler";
-import {Dropdown} from 'react-native-element-dropdown';
-import CloseIcon from "react-native-vector-icons/MaterialIcons";
-import Modal from "react-native-modal";
+import {Colors} from "../../../styles";
 
 
 import {
@@ -20,51 +16,35 @@ import {
     getTotalTargetParametersData,
     getUserWiseTargetParameters,
     updateEmployeeDataBasedOnDelegate
-} from "../../../../redux/homeReducer";
-import {RenderGrandTotal} from "./components/RenderGrandTotal";
-import {RenderEmployeeParameters} from "./components/RenderEmployeeParameters";
-import {RenderSelfInsights} from "./components/RenderSelfInsights";
+} from "../../../redux/liveLeadsReducer";
 import {useNavigation} from "@react-navigation/native";
-import {AppNavigator} from "../../../../navigations";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
-import PercentageToggleControl from "./components/EmployeeView/PercentageToggleControl";
 import {IconButton} from "react-native-paper";
+import {RenderGrandTotal} from "../Home/TabScreens/components/RenderGrandTotal";
+import {RenderEmployeeParameters} from "../Home/TabScreens/components/RenderEmployeeParameters";
+import {RenderSelfInsights} from "../Home/TabScreens/components/RenderSelfInsights";
+import PercentageToggleControl from "../Home/TabScreens/components/EmployeeView/PercentageToggleControl";
+import {AppNavigator} from "../../../navigations";
 
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 100) / 5;
 
-const TargetScreen = ({route}) => {
+const ParametersScreen = ({route}) => {
     const navigation = useNavigation();
-    const selector = useSelector((state) => state.homeReducer);
+    const selector = useSelector((state) => state.liveLeadsReducer);
     const dispatch = useDispatch();
 
     const [retailData, setRetailData] = useState(null);
     const [bookingData, setBookingData] = useState(null);
     const [enqData, setEnqData] = useState(null);
+    const [contactData, setContactData] = useState(null);
 
-    const [visitData, setVisitData] = useState(null);
-    const [TDData, setTDData] = useState(null);
-    const [exgData, setExgData] = useState(null);
-    const [finData, setFinData] = useState(null);
-    const [insData, setInsData] = useState(null);
-    const [exwData, setExwData] = useState(null);
-    const [accData, setAccData] = useState(null);
     const [selfInsightsData, setSelfInsightsData] = useState([]);
 
-    const [dateDiff, setDateDiff] = useState(null);
-    const [isTeamPresent, setIsTeamPresent] = useState(false);
-    const [isTeam, setIsTeam] = useState(false);
-    const [showShuffleModal, setShowShuffleModal] = useState(false);
-    const [delegateButtonClick, setDelegateButtonClick] = useState(false);
-    const [headerTitle, setHeaderTitle] = useState("Selected employee has Active tasks. Please delegate to another employee");
-    const [dropDownPlaceHolder, setDropDownPlaceHolder] = useState("Employees");
     const [allParameters, setAllParameters] = useState([])
-    const [selectedName, setSelectedName] = useState('');
 
     const [employeeListDropdownItem, setEmployeeListDropdownItem] = useState(0);
-    const [employeeDropdownList, setEmployeeDropdownList] = useState([]);
     const [reoprtingManagerListDropdownItem, setReoprtingManagerListDropdownItem] = useState(0);
-    const [reoprtingManagerDropdownList, setReoprtingManagerDropdownList] = useState([]);
     const [selectedUser, setSelectedUser] = useState(null);
 
     const [branches, setBranches] = useState([]);
@@ -105,66 +85,26 @@ const TargetScreen = ({route}) => {
         dispatch(getReportingManagerList(user.orgId));
     }
 
-    const updateEmployeeData = async () => {
-        if (employeeListDropdownItem !== 0 && reoprtingManagerListDropdownItem !== 0) {
-            const payload = {
-                empID: selectedUser.empId,
-                managerID: reoprtingManagerListDropdownItem
-            }
-            Promise.all([dispatch(updateEmployeeDataBasedOnDelegate(payload))]).then(async () => {
-                setDelegateButtonClick(false);
-                setHeaderTitle("Selected employees has Active tasks. Please delegate to another employee");
-                setDropDownPlaceHolder("Employees");
-
-                setEmployeeListDropdownItem(0);
-                setEmployeeDropdownList([]);
-                setReoprtingManagerListDropdownItem(0);
-                setReoprtingManagerDropdownList([]);
-                setSelectedUser(null);
-                const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-                if (employeeData) {
-                    const jsonObj = JSON.parse(employeeData);
-                    const dateFormat = "YYYY-MM-DD";
-                    const currentDate = moment().format(dateFormat)
-                    const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
-                    const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
-                    const payload2 = {
-                        "orgId": jsonObj.orgId,
-                        "selectedEmpId": jsonObj.empId,
-                        "endDate": monthLastDate,
-                        "loggedInEmpId": jsonObj.empId,
-                        "empId": jsonObj.empId,
-                        "startDate": monthFirstDate,
-                        "levelSelected": null,
-                        "pageNo": 0,
-                        "size": 100
-                    }
-                    Promise.allSettled([
-                        dispatch(getNewTargetParametersAllData(payload2)),
-                        dispatch(getTotalTargetParametersData(payload2)),
-                    ]).then(() => {
-                    });
-                }
-            })
-        }
-    }
-
     useEffect(() => {
         const dateFormat = "YYYY-MM-DD";
         const currentDate = moment().format(dateFormat)
         const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
-        setDateDiff((new Date(monthLastDate).getTime() - new Date(currentDate).getTime()) / (1000 * 60 * 60 * 24));
+        // setDateDiff((new Date(monthLastDate).getTime() - new Date(currentDate).getTime()) / (1000 * 60 * 60 * 24));
 
         const isInsights = selector.isTeamPresent && !selector.isDSE;
         const isSelf = selector.isDSE;
         const dashboardSelfParamsData = isSelf ? selector.self_target_parameters_data : selector.insights_target_parameters_data;
+        console.log('3456789====> ', dashboardSelfParamsData)
         if (dashboardSelfParamsData.length > 0) {
             let tempRetail = [];
             tempRetail = dashboardSelfParamsData.filter((item) => {
                 return item.paramName.toLowerCase() === 'invoice'
             })
             if (tempRetail.length > 0) {
-                setRetailData(tempRetail[0])
+                const params = {...tempRetail[0]};
+                params.paramShortName = 'Ret';
+                tempRetail[0] = params;
+                setRetailData(tempRetail[0]);
             }
 
             let tempBooking = [];
@@ -172,6 +112,9 @@ const TargetScreen = ({route}) => {
                 return item.paramName.toLowerCase() === 'booking'
             })
             if (tempBooking.length > 0) {
+                const params = {...tempBooking[0]};
+                params.paramShortName = 'Bkg';
+                tempBooking[0] = params;
                 setBookingData(tempBooking[0])
             }
 
@@ -180,67 +123,24 @@ const TargetScreen = ({route}) => {
                 return item.paramName.toLowerCase() === 'enquiry'
             })
             if (tempEnq.length > 0) {
+                const params = {...tempEnq[0]};
+                params.paramShortName = 'Enq';
+                tempEnq[0] = params;
                 setEnqData(tempEnq[0])
             }
 
-            let tempVisit = [];
-            tempVisit = dashboardSelfParamsData.filter((item) => {
-                return item.paramName.toLowerCase() === 'home visit'
+             let tempCon = [];
+            tempCon = dashboardSelfParamsData.filter((item) => {
+                return item.paramName.toLowerCase() === 'preenquiry'
             })
-            if (tempVisit.length > 0) {
-                setVisitData(tempVisit[0])
+            if (tempCon.length > 0) {
+                const params = {...tempCon[0]};
+                params.paramShortName = 'Con';
+                tempCon[0] = params;
+                setContactData(tempCon[0])
             }
 
-            let tempTD = [];
-            tempTD = dashboardSelfParamsData.filter((item) => {
-                return item.paramName.toLowerCase() === 'test drive'
-            })
-            if (tempTD.length > 0) {
-                setTDData(tempTD[0])
-            }
-
-            let tempEXG = [];
-            tempEXG = dashboardSelfParamsData.filter((item) => {
-                return item.paramName.toLowerCase() === 'exchange'
-            })
-            if (tempEXG.length > 0) {
-                setExgData(tempEXG[0])
-            }
-
-            let tempFin = [];
-            tempFin = dashboardSelfParamsData.filter((item) => {
-                return item.paramName.toLowerCase() === 'finance'
-            })
-            if (tempFin.length > 0) {
-                setFinData(tempFin[0])
-            }
-
-            let tempIns = [];
-            tempIns = dashboardSelfParamsData.filter((item) => {
-                return item.paramName.toLowerCase() === 'insurance'
-            })
-            if (tempIns.length > 0) {
-                setInsData(tempIns[0])
-            }
-
-            let tempExw = [];
-            tempExw = dashboardSelfParamsData.filter((item) => {
-                return item.paramName.toLowerCase() === 'extendedwarranty'
-            })
-            if (tempExw.length > 0) {
-                setExwData(tempExw[0])
-            }
-
-            let tempAcc = [];
-            tempAcc = dashboardSelfParamsData.filter((item) => {
-                return item.paramName.toLowerCase() === 'accessories'
-            })
-            if (tempAcc.length > 0) {
-
-                setAccData(tempAcc[0])
-            }
-
-            setSelfInsightsData([tempEnq[0], tempTD[0], tempVisit[0], tempBooking[0], tempRetail[0], tempEXG[0], tempFin[0], tempIns[0], tempExw[0], tempAcc[0]])
+            setSelfInsightsData([tempCon[0], tempEnq[0], tempBooking[0], tempRetail[0]])
 
         } else {
         }
@@ -249,7 +149,7 @@ const TargetScreen = ({route}) => {
             const dateFormat = "YYYY-MM-DD";
             const currentDate = moment().format(dateFormat)
             const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
-            setDateDiff((new Date(monthLastDate).getTime() - new Date(currentDate).getTime()) / (1000 * 60 * 60 * 24));
+            // setDateDiff((new Date(monthLastDate).getTime() - new Date(currentDate).getTime()) / (1000 * 60 * 60 * 24));
         });
 
         return unsubscribe;
@@ -284,7 +184,7 @@ const TargetScreen = ({route}) => {
 
     useEffect(() => {
         setTogglePercentage(0);
-        setIsTeam(selector.isTeam);
+        // setIsTeam(selector.isTeam);
         if (selector.isTeam) {
             setToggleParamsIndex(0);
             let data = [...paramsMetadata];
@@ -292,33 +192,6 @@ const TargetScreen = ({route}) => {
             setToggleParamsMetaData([...data]);
         }
     }, [selector.isTeam])
-
-    // const handleModalDropdownDataForShuffle = (user) => {
-    //     if (delegateButtonClick) {
-    //         getReportingManagerListFromServer(user);
-    //         setShowShuffleModal(true);
-    //         // setReoprtingManagerDropdownList(selector.reporting_manager_list.map(({ name: label, id: value, ...rest }) => ({ value, label, ...rest })));
-    //     } else {
-    //         getEmployeeListFromServer(user);
-    //         setShowShuffleModal(true);
-    //         // setEmployeeDropdownList(selector.employee_list.map(({ name: label, id: value, ...rest }) => ({ value, label, ...rest })));
-    //     }
-    // }
-
-    useEffect(() => {
-        setEmployeeDropdownList(selector.employee_list.map(({name: label, id: value, ...rest}) => ({
-            value,
-            label, ...rest
-        })));
-    }, [selector.employee_list])
-
-    useEffect(() => {
-        setReoprtingManagerDropdownList(selector.reporting_manager_list.map(({
-                                                                                 name: label,
-                                                                                 id: value,
-                                                                                 ...rest
-                                                                             }) => ({value, label, ...rest})));
-    }, [selector.reporting_manager_list])
 
     useEffect(async () => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
@@ -447,237 +320,6 @@ const TargetScreen = ({route}) => {
 
     return (
         <>
-            {/*<Modal*/}
-            {/*    visible={showShuffleModal}*/}
-            {/*    animationType={'fade'}*/}
-            {/*    transparent={true}*/}
-            {/*    onRequestClose={() => setShowShuffleModal(false)}*/}
-            {/*>*/}
-            {/*    <View style={{*/}
-            {/*        flex: 1,*/}
-            {/*        justifyContent: "center",*/}
-            {/*        alignItems: "center",*/}
-            {/*        backgroundColor: 'rgba(0, 0, 0, 0.5)',*/}
-            {/*        paddingHorizontal: 20*/}
-            {/*    }}>*/}
-            {/*        <View*/}
-            {/*            style={{*/}
-            {/*                width: "95%",*/}
-            {/*                height: "30%",*/}
-            {/*                alignSelf: "center",*/}
-            {/*                backgroundColor: "white",*/}
-            {/*                borderRadius: 8,*/}
-            {/*            }}*/}
-            {/*        >*/}
-            {/*            <View*/}
-            {/*                style={{*/}
-            {/*                    flexDirection: "row",*/}
-            {/*                    justifyContent: "space-between",*/}
-            {/*                    borderWidth: 1,*/}
-            {/*                    borderColor: "#d1d1d1",*/}
-            {/*                    backgroundColor: "#d1d1d1",*/}
-            {/*                    borderTopEndRadius: 8,*/}
-            {/*                    borderTopStartRadius: 8,*/}
-            {/*                }}*/}
-            {/*            >*/}
-            {/*                <Text style={{fontSize: 17, fontWeight: "500", margin: 10}}>*/}
-            {/*                    Team Shuffle*/}
-            {/*                </Text>*/}
-
-            {/*                <TouchableOpacity*/}
-            {/*                    activeOpacity={0.6}*/}
-            {/*                    onPress={() => {*/}
-            {/*                        setShowShuffleModal(false);*/}
-            {/*                        setHeaderTitle(*/}
-            {/*                            "Selected employees has Active tasks. Please delegate to another employee"*/}
-            {/*                        );*/}
-            {/*                        setDropDownPlaceHolder("Employees");*/}
-            {/*                        setDelegateButtonClick(false);*/}
-            {/*                        setEmployeeDropdownList([]);*/}
-            {/*                        setReoprtingManagerDropdownList([]);*/}
-            {/*                    }}*/}
-            {/*                >*/}
-            {/*                    <CloseIcon*/}
-            {/*                        style={{margin: 10}}*/}
-            {/*                        name="close"*/}
-            {/*                        color={Colors.BLACK}*/}
-            {/*                        size={20}*/}
-            {/*                    />*/}
-            {/*                </TouchableOpacity>*/}
-            {/*            </View>*/}
-
-            {/*            <Text*/}
-            {/*                style={{color: Colors.GRAY, marginLeft: 12, marginTop: 5}}*/}
-            {/*            >*/}
-            {/*                {headerTitle}*/}
-            {/*            </Text>*/}
-            {/*            <Dropdown*/}
-            {/*                style={styles.dropdownContainer}*/}
-            {/*                placeholderStyle={styles.placeholderStyle}*/}
-            {/*                selectedTextStyle={styles.selectedTextStyle}*/}
-            {/*                inputSearchStyle={styles.inputSearchStyle}*/}
-            {/*                iconStyle={styles.iconStyle}*/}
-            {/*                data={*/}
-            {/*                    delegateButtonClick*/}
-            {/*                        ? reoprtingManagerDropdownList*/}
-            {/*                        : employeeDropdownList*/}
-            {/*                }*/}
-            {/*                search*/}
-            {/*                maxHeight={300}*/}
-            {/*                labelField="label"*/}
-            {/*                valueField="value"*/}
-            {/*                placeholder={dropDownPlaceHolder}*/}
-            {/*                searchPlaceholder="Search..."*/}
-            {/*                renderRightIcon={() => (*/}
-            {/*                    <Image*/}
-            {/*                        style={{height: 5, width: 10}}*/}
-            {/*                        source={require("../../../../assets/images/Polygon.png")}*/}
-            {/*                    />*/}
-            {/*                )}*/}
-            {/*                onChange={async (item) => {*/}
-            {/*                    if (delegateButtonClick) {*/}
-            {/*                        setReoprtingManagerListDropdownItem(item.value);*/}
-            {/*                    } else {*/}
-            {/*                        setEmployeeListDropdownItem(item.value);*/}
-            {/*                    }*/}
-            {/*                }}*/}
-            {/*            />*/}
-
-            {/*            <LoaderComponent*/}
-            {/*                visible={selector.isLoading}*/}
-            {/*                onRequestClose={() => {*/}
-            {/*                }}*/}
-            {/*            />*/}
-
-            {/*            <View style={{*/}
-            {/*                position: 'absolute',*/}
-            {/*                left: 0,*/}
-            {/*                right: 0,*/}
-            {/*                bottom: 0,*/}
-            {/*                marginBottom: 10,*/}
-            {/*                flexDirection: 'row',*/}
-            {/*                width: '95%',*/}
-            {/*                justifyContent: 'space-around'*/}
-            {/*            }}>*/}
-            {/*                {dropDownPlaceHolder === 'Employees' ?*/}
-            {/*                    <View style={{flexDirection: 'row', width: '95%', justifyContent: 'space-around'}}>*/}
-            {/*                        <TouchableOpacity activeOpacity={0.6} style={{*/}
-            {/*                            padding: 5,*/}
-            {/*                            borderRadius: 6,*/}
-            {/*                            borderColor: Colors.RED,*/}
-            {/*                            borderWidth: 0.8,*/}
-            {/*                            width: '43%',*/}
-            {/*                            alignItems: 'center',*/}
-            {/*                            justifyContent: 'center',*/}
-            {/*                            marginLeft: 18,*/}
-            {/*                            marginRight: 12,*/}
-            {/*                            backgroundColor: Colors.RED,*/}
-            {/*                            height: 40*/}
-            {/*                        }} onPress={() => {*/}
-            {/*                            // updateEmployeeData();*/}
-            {/*                            if (employeeListDropdownItem !== 0) {*/}
-            {/*                                setDelegateButtonClick(true);*/}
-            {/*                                setHeaderTitle('Reporting Managers');*/}
-            {/*                                setDropDownPlaceHolder(state => state = 'Reporting Manager');*/}
-            {/*                                getReportingManagerListFromServer(selectedUser);*/}
-            {/*                            }*/}
-            {/*                        }}>*/}
-            {/*                            <Text style={{*/}
-            {/*                                fontSize: 13,*/}
-            {/*                                fontWeight: '300',*/}
-            {/*                                color: Colors.WHITE*/}
-            {/*                            }}>DELEGATE</Text>*/}
-            {/*                        </TouchableOpacity>*/}
-
-            {/*                        <TouchableOpacity activeOpacity={0.6} style={{*/}
-            {/*                            padding: 5,*/}
-            {/*                            borderRadius: 6,*/}
-            {/*                            borderColor: Colors.RED,*/}
-            {/*                            borderWidth: 0.8,*/}
-            {/*                            width: '43%',*/}
-            {/*                            alignItems: 'center',*/}
-            {/*                            justifyContent: 'center',*/}
-            {/*                            backgroundColor: Colors.RED,*/}
-            {/*                            height: 40*/}
-            {/*                        }} onPress={() => {*/}
-            {/*                            if (employeeListDropdownItem !== 0) {*/}
-            {/*                                setHeaderTitle('Reporting Managers');*/}
-            {/*                                setDropDownPlaceHolder('Reporting Manager');*/}
-            {/*                                setDelegateButtonClick(true);*/}
-            {/*                                getReportingManagerListFromServer(selectedUser);*/}
-            {/*                            }*/}
-            {/*                        }}>*/}
-            {/*                            <Text style={{fontSize: 13, fontWeight: '300', color: Colors.WHITE}}>NEXT</Text>*/}
-            {/*                        </TouchableOpacity>*/}
-            {/*                    </View> :*/}
-            {/*                    <View style={{position: 'absolute', right: 0, bottom: 0}}>*/}
-            {/*                        <TouchableOpacity activeOpacity={0.6} style={{*/}
-            {/*                            padding: 5,*/}
-            {/*                            borderRadius: 6,*/}
-            {/*                            borderColor: Colors.RED,*/}
-            {/*                            borderWidth: 0.8,*/}
-            {/*                            width: 80,*/}
-            {/*                            alignItems: 'center',*/}
-            {/*                            justifyContent: 'center',*/}
-            {/*                            marginLeft: 18,*/}
-            {/*                            marginRight: 12,*/}
-            {/*                            backgroundColor: Colors.RED,*/}
-            {/*                            height: 40*/}
-            {/*                        }} onPress={() => {*/}
-            {/*                            if (reoprtingManagerListDropdownItem !== 0) {*/}
-            {/*                                updateEmployeeData();*/}
-            {/*                                setShowShuffleModal(false);*/}
-            {/*                                setHeaderTitle('Selected employees has Active tasks. Please delegate to another employee');*/}
-            {/*                                setDropDownPlaceHolder('Employees');*/}
-            {/*                                setDelegateButtonClick(false);*/}
-            {/*                                setEmployeeDropdownList([]);*/}
-            {/*                                setReoprtingManagerDropdownList([]);*/}
-            {/*                            }*/}
-            {/*                        }}>*/}
-            {/*                            <Text*/}
-            {/*                                style={{fontSize: 13, fontWeight: '300', color: Colors.WHITE}}>SUBMIT</Text>*/}
-            {/*                        </TouchableOpacity>*/}
-            {/*                    </View>}*/}
-            {/*            </View>*/}
-            {/*        </View>*/}
-            {/*    </View>*/}
-
-            {/*</Modal>*/}
-
-            {/*<Modal*/}
-            {/*    animationType={'fade'}*/}
-            {/*    transparent={true}*/}
-            {/*    visible={false}*/}
-            {/*    onRequestClose={() => setSelectedName('')}*/}
-            {/*>*/}
-            {/*    <View style={{*/}
-            {/*        flex: 1,*/}
-            {/*        justifyContent: "center",*/}
-            {/*        alignItems: "flex-start",*/}
-            {/*        // backgroundColor: 'rgba(0, 0, 0, 0.5)',*/}
-            {/*        paddingHorizontal: 20*/}
-            {/*    }}>*/}
-            {/*        <View style={{*/}
-            {/*            maxWidth: '90%',*/}
-            {/*            minHeight: 50,*/}
-            {/*            justifyContent: 'center',*/}
-            {/*            alignItems: 'center',*/}
-            {/*            backgroundColor: '#fff',*/}
-            {/*            borderRadius: 10,*/}
-            {/*            paddingVertical: 10,*/}
-            {/*            paddingHorizontal: 15,*/}
-            {/*            borderWidth: 1,*/}
-            {/*            borderColor: '#0c0c0c'*/}
-            {/*        }}>*/}
-            {/*            <Text style={{*/}
-            {/*                fontSize: 16,*/}
-            {/*                color: '#0c0c0c',*/}
-            {/*                fontWeight: 'bold',*/}
-            {/*                textAlign: 'center'*/}
-            {/*            }}>{selectedName}</Text>*/}
-            {/*        </View>*/}
-            {/*    </View>*/}
-            {/*</Modal>*/}
             <View style={styles.container}>
                 {selector.isTeam ? (
                     <View>
@@ -1148,17 +790,17 @@ const TargetScreen = ({route}) => {
                                                                                                         innerItem3.employeeTargetAchievements.map((innerItem4, innerIndex4) => {
                                                                                                             return (
                                                                                                                 <View key={innerIndex4}
-                                                                                                                    style={[{
-                                                                                                                        width: '98%',
-                                                                                                                        minHeight: 40,
-                                                                                                                        flexDirection: 'column',
-                                                                                                                    }, innerItem4.isOpenInner && {
-                                                                                                                        borderRadius: 10,
-                                                                                                                        borderWidth: 1,
-                                                                                                                        borderColor: '#1C95A6',
-                                                                                                                        backgroundColor: '#EEEEEE',
-                                                                                                                        marginHorizontal: 5
-                                                                                                                    }]}>
+                                                                                                                      style={[{
+                                                                                                                          width: '98%',
+                                                                                                                          minHeight: 40,
+                                                                                                                          flexDirection: 'column',
+                                                                                                                      }, innerItem4.isOpenInner && {
+                                                                                                                          borderRadius: 10,
+                                                                                                                          borderWidth: 1,
+                                                                                                                          borderColor: '#1C95A6',
+                                                                                                                          backgroundColor: '#EEEEEE',
+                                                                                                                          marginHorizontal: 5
+                                                                                                                      }]}>
                                                                                                                     <View
                                                                                                                         style={{flexDirection: 'row'}}>
                                                                                                                         <RenderLevel1NameView
@@ -1230,17 +872,17 @@ const TargetScreen = ({route}) => {
                                                                                                                         innerItem4.employeeTargetAchievements.map((innerItem5, innerIndex5) => {
                                                                                                                             return (
                                                                                                                                 <View key={innerIndex5}
-                                                                                                                                    style={[{
-                                                                                                                                        width: '98%',
-                                                                                                                                        minHeight: 40,
-                                                                                                                                        flexDirection: 'column',
-                                                                                                                                    }, innerItem5.isOpenInner && {
-                                                                                                                                        borderRadius: 10,
-                                                                                                                                        borderWidth: 1,
-                                                                                                                                        borderColor: '#C62159',
-                                                                                                                                        backgroundColor: '#FFFFFF',
-                                                                                                                                        marginHorizontal: 5
-                                                                                                                                    }]}>
+                                                                                                                                      style={[{
+                                                                                                                                          width: '98%',
+                                                                                                                                          minHeight: 40,
+                                                                                                                                          flexDirection: 'column',
+                                                                                                                                      }, innerItem5.isOpenInner && {
+                                                                                                                                          borderRadius: 10,
+                                                                                                                                          borderWidth: 1,
+                                                                                                                                          borderColor: '#C62159',
+                                                                                                                                          backgroundColor: '#FFFFFF',
+                                                                                                                                          marginHorizontal: 5
+                                                                                                                                      }]}>
                                                                                                                                     <View
                                                                                                                                         style={{flexDirection: 'row'}}>
                                                                                                                                         <RenderLevel1NameView
@@ -1312,17 +954,17 @@ const TargetScreen = ({route}) => {
                                                                                                                                         innerItem5.employeeTargetAchievements.map((innerItem6, innerIndex6) => {
                                                                                                                                             return (
                                                                                                                                                 <View key={innerIndex6}
-                                                                                                                                                    style={[{
-                                                                                                                                                        width: '98%',
-                                                                                                                                                        minHeight: 40,
-                                                                                                                                                        flexDirection: 'column',
-                                                                                                                                                    }, innerItem6.isOpenInner && {
-                                                                                                                                                        borderRadius: 10,
-                                                                                                                                                        borderWidth: 1,
-                                                                                                                                                        borderColor: '#C62159',
-                                                                                                                                                        backgroundColor: '#FFFFFF',
-                                                                                                                                                        marginHorizontal: 5
-                                                                                                                                                    }]}>
+                                                                                                                                                      style={[{
+                                                                                                                                                          width: '98%',
+                                                                                                                                                          minHeight: 40,
+                                                                                                                                                          flexDirection: 'column',
+                                                                                                                                                      }, innerItem6.isOpenInner && {
+                                                                                                                                                          borderRadius: 10,
+                                                                                                                                                          borderWidth: 1,
+                                                                                                                                                          borderColor: '#C62159',
+                                                                                                                                                          backgroundColor: '#FFFFFF',
+                                                                                                                                                          marginHorizontal: 5
+                                                                                                                                                      }]}>
                                                                                                                                                     <View
                                                                                                                                                         style={{flexDirection: 'row'}}>
                                                                                                                                                         <RenderLevel1NameView
@@ -1546,9 +1188,8 @@ const TargetScreen = ({route}) => {
                         <View
                             style={{ flexDirection: "row", marginTop: 16, justifyContent: "space-between", marginHorizontal: 8 }}
                         >
-                            <View style={{ flexGrow: 1 }}>
+                            <View style={{ flexGrow: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
 
-                                <View style={{ height: 4 }}></View>
                                 <View style={styles.statWrap}>
                                     <Text
                                         style={{
@@ -1597,240 +1238,18 @@ const TargetScreen = ({route}) => {
                                     )}
                                 </View>
 
-                                <View style={{ height: 4 }}></View>
                                 <View style={styles.statWrap}>
                                     <Text
                                         style={{
                                             marginLeft: 10,
                                             fontSize: 16,
                                             fontWeight: "600",
-                                        }}
-                                    >
-                                        E2V
-                                    </Text>
-                                    {enqData !== null && visitData !== null ? (
-                                        <Text
-                                            style={{
-                                                color:
-                                                    Math.floor(
-                                                        (parseInt(visitData?.achievment) /
-                                                            parseInt(enqData?.achievment)) *
-                                                        100
-                                                    ) > 40
-                                                        ? "#14ce40"
-                                                        : "#ff0000",
-                                                fontSize: 12,
-                                                marginRight: 4
-                                            }}
-                                        >
-                                            {parseInt(enqData?.achievment) === 0 ||
-                                            parseInt(visitData?.achievment) === 0
-                                                ? 0
-                                                : Math.round(
-                                                    (parseInt(visitData?.achievment) /
-                                                        parseInt(enqData?.achievment)) *
-                                                    100
-                                                )}
-                                            %
-                                        </Text>
-                                    ) : (
-                                        <Text
-                                            style={{
-                                                color: "#ff0000",
-                                                fontSize: 12,
-                                            }}
-                                        >
-                                            0%
-                                        </Text>
-                                    )}
-                                </View>
-
-
-                                <View style={{ height: 4 }}></View>
-                                <View style={styles.statWrap}>
-                                    <Text
-                                        style={{
-                                            marginLeft: 10,
-                                            fontSize: 16,
-                                            fontWeight: "600",
-                                        }}
-                                    >
-                                        FIN
-                                    </Text>
-                                    {finData !== null && retailData !== null ? (
-                                        <Text
-                                            style={{
-                                                color:
-                                                    Math.floor(
-                                                        (parseInt(finData?.achievment) /
-                                                            parseInt(retailData?.achievment)) *
-                                                        100
-                                                    ) > 40
-                                                        ? "#14ce40"
-                                                        : "#ff0000",
-                                                fontSize: 12,
-                                                marginRight: 4
-                                            }}
-                                        >
-                                            {parseInt(finData?.achievment) === 0 ||
-                                            parseInt(retailData?.achievment) === 0
-                                                ? 0
-                                                : Math.round(
-                                                    (parseInt(finData?.achievment) /
-                                                        parseInt(retailData?.achievment)) *
-                                                    100
-                                                )}
-                                            %
-                                        </Text>
-                                    ) : (
-                                        <Text
-                                            style={{
-                                                color: "#ff0000",
-                                                fontSize: 12,
-                                            }}
-                                        >
-                                            0%
-                                        </Text>
-                                    )}
-                                </View>
-                            </View>
-
-                            <View style={{ flexGrow: 1, marginHorizontal: 2 }}>
-                                <View style={{ height: 4 }}></View>
-                                <View style={styles.statWrap}>
-                                    <Text
-                                        style={{
-                                            marginLeft: 10,
-                                            fontSize: 16,
-                                            fontWeight: "600",
-                                        }}
-                                    >
-                                        B2R
-                                    </Text>
-                                    {bookingData !== null && retailData !== null && (
-                                        <Text
-                                            style={{
-                                                color:
-                                                    Math.floor(
-                                                        (parseInt(retailData?.achievment) /
-                                                            parseInt(bookingData?.achievment)) *
-                                                        100
-                                                    ) > 40
-                                                        ? "#14ce40"
-                                                        : "#ff0000",
-                                                fontSize: 12,
-                                                marginRight: 4
-                                            }}
-                                        >
-                                            {parseInt(bookingData?.achievment) === 0 ||
-                                            parseInt(retailData?.achievment) === 0
-                                                ? 0
-                                                : Math.round(
-                                                    (parseInt(retailData?.achievment) /
-                                                        parseInt(bookingData?.achievment)) *
-                                                    100
-                                                )}
-                                            %
-                                        </Text>
-                                    )}
-                                </View>
-
-                                <View style={{ height: 4 }}></View>
-                                <View style={styles.statWrap}>
-                                    <Text
-                                        style={{
-                                            marginLeft: 10,
-                                            fontSize: 16,
-                                            fontWeight: "600",
-                                        }}
-                                    >
-                                        E2TD
-                                    </Text>
-                                    {TDData !== null && enqData !== null && (
-                                        <Text
-                                            style={{
-                                                color:
-                                                    Math.round(
-                                                        (parseInt(TDData?.achievment) /
-                                                            parseInt(enqData?.achievment)) *
-                                                        100
-                                                    ) > 40
-                                                        ? "#14ce40"
-                                                        : "#ff0000",
-                                                fontSize: 12,
-                                                marginRight: 4
-                                            }}
-                                        >
-                                            {parseInt(TDData?.achievment) === 0 ||
-                                            parseInt(enqData?.achievment) === 0
-                                                ? 0
-                                                : Math.floor(
-                                                    (parseInt(TDData?.achievment) /
-                                                        parseInt(enqData?.achievment)) *
-                                                    100
-                                                )}
-                                            %
-                                        </Text>
-                                    )}
-                                </View>
-
-
-                                <View style={{ height: 4 }}></View>
-                                <View style={styles.statWrap}>
-                                    <Text
-                                        style={{
-                                            marginLeft: 10,
-                                            fontSize: 16,
-                                            fontWeight: "600",
-                                        }}
-                                    >
-                                        INS
-                                    </Text>
-                                    {insData !== null && retailData !== null && (
-                                        <Text
-                                            style={{
-                                                color:
-                                                    Math.round(
-                                                        (parseInt(insData?.achievment) /
-                                                            parseInt(retailData?.achievment)) *
-                                                        100
-                                                    ) > 40
-                                                        ? "#14ce40"
-                                                        : "#ff0000",
-                                                fontSize: 12,
-                                                marginRight: 4
-                                            }}
-                                        >
-                                            {parseInt(insData?.achievment) === 0 ||
-                                            parseInt(retailData?.achievment) === 0
-                                                ? 0
-                                                : Math.floor(
-                                                    (parseInt(insData?.achievment) /
-                                                        parseInt(retailData?.achievment)) *
-                                                    100
-                                                )}
-                                            %
-                                        </Text>
-                                    )}
-                                </View>
-
-
-                            </View>
-
-                            <View style={{ flexGrow: 1 }}>
-
-                                <View style={{ height: 4 }}></View>
-                                <View style={styles.statWrap}>
-                                    <Text
-                                        style={{
-                                            marginLeft: 10,
-                                            fontSize: 16,
-                                            fontWeight: "600",
+                                            flexDirection: "row",
                                         }}
                                     >
                                         E2R
                                     </Text>
-                                    {retailData !== null && enqData !== null && (
+                                    {retailData !== null && enqData !== null ? (
                                         <Text
                                             style={{
                                                 color:
@@ -1855,85 +1274,6 @@ const TargetScreen = ({route}) => {
                                                 )}
                                             %
                                         </Text>
-                                    )}
-                                </View>
-
-
-                                <View style={{ height: 4 }}></View>
-                                <View style={styles.statWrap}>
-                                    <Text
-                                        style={{
-                                            marginLeft: 10,
-                                            fontSize: 16,
-                                            fontWeight: "600",
-                                        }}
-                                    >
-                                        EXG
-                                    </Text>
-                                    {exgData !== null && retailData !== null && (
-                                        <Text
-                                            style={{
-                                                color:
-                                                    Math.round(
-                                                        (parseInt(exgData?.achievment) /
-                                                            parseInt(retailData?.achievment)) *
-                                                        100
-                                                    ) > 40
-                                                        ? "#14ce40"
-                                                        : "#ff0000",
-                                                fontSize: 12,
-                                                marginRight: 4
-                                            }}
-                                        >
-                                            {parseInt(exgData?.achievment) === 0 ||
-                                            parseInt(retailData?.achievment) === 0
-                                                ? 0
-                                                : Math.floor(
-                                                    (parseInt(exgData?.achievment) /
-                                                        parseInt(retailData?.achievment)) *
-                                                    100
-                                                )}
-                                            %
-                                        </Text>
-                                    )}
-                                </View>
-
-                                <View style={{ height: 4 }}></View>
-                                <View style={styles.statWrap}>
-                                    <Text
-                                        style={{
-                                            marginLeft: 10,
-                                            fontSize: 16,
-                                            fontWeight: "600",
-                                        }}
-                                    >
-                                        EXW
-                                    </Text>
-                                    {exwData !== null && retailData !== null ? (
-                                        <Text
-                                            style={{
-                                                color:
-                                                    Math.floor(
-                                                        (parseInt(exwData?.achievment) /
-                                                            parseInt(retailData?.achievment)) *
-                                                        100
-                                                    ) > 40
-                                                        ? "#14ce40"
-                                                        : "#ff0000",
-                                                fontSize: 12,
-                                                marginRight: 4
-                                            }}
-                                        >
-                                            {parseInt(exwData?.achievment) === 0 ||
-                                            parseInt(retailData?.achievment) === 0
-                                                ? 0
-                                                : Math.round(
-                                                    (parseInt(exwData?.achievment) /
-                                                        parseInt(retailData?.achievment)) *
-                                                    100
-                                                )}
-                                            %
-                                        </Text>
                                     ) : (
                                         <Text
                                             style={{
@@ -1946,49 +1286,10 @@ const TargetScreen = ({route}) => {
                                     )}
                                 </View>
 
+
+                            {/*    */}
                             </View>
 
-
-                        </View>
-                        <View style={{ marginHorizontal: 8 }}>
-                            <View style={{ height: 4 }}></View>
-                            <View style={styles.statWrap}>
-                                <Text
-                                    style={{
-                                        marginLeft: 10,
-                                        fontSize: 16,
-                                        fontWeight: "600",
-                                    }}
-                                >
-                                    Accessories/Car
-                                </Text>
-                                {accData !== null && retailData !== null && (
-                                    <Text
-                                        style={{
-                                            color:
-                                                Math.round(
-                                                    (parseInt(accData?.achievment) /
-                                                        parseInt(retailData?.achievment)) *
-                                                    100
-                                                ) > 40
-                                                    ? "#14ce40"
-                                                    : "#ff0000",
-                                            fontSize: 12,
-                                            marginRight: 4
-                                        }}
-                                    >
-
-                                        {parseInt(accData?.achievment) === 0 ||
-                                        parseInt(retailData?.achievment) === 0
-                                            ? 0
-                                            : Math.floor(
-                                                (parseInt(accData?.achievment) /
-                                                    parseInt(retailData?.achievment)) *
-                                                100
-                                            )}
-                                    </Text>
-                                )}
-                            </View>
                         </View>
                         <View style={{ height: 20 }}></View>
                     </>
@@ -2002,7 +1303,7 @@ const TargetScreen = ({route}) => {
     );
 }
 
-export default TargetScreen;
+export default ParametersScreen;
 
 
 export const RenderLevel1NameView = ({level, item, branchName = '', color, titleClick}) => {
@@ -2019,7 +1320,7 @@ export const RenderLevel1NameView = ({level, item, branchName = '', color, title
                     marginTop: 5,
                     marginBottom: 5
                 }}
-                    onPress={titleClick}>
+                                  onPress={titleClick}>
                     <Text style={{
                         fontSize: 14,
                         color: '#fff'
@@ -2061,6 +1362,7 @@ const styles = StyleSheet.create({
     },
     statWrap: {
         flexDirection: 'row',
+        width: '48%',
         justifyContent: 'space-between', alignItems: 'center', height: 30, backgroundColor: "#F5F5F5"
     },
     itemBox: {width: 55, height: 30, justifyContent: 'center', alignItems: 'center'},

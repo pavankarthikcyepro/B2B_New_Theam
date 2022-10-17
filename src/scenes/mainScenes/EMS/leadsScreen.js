@@ -875,7 +875,7 @@ const LeadsScreen = ({ route, navigation }) => {
                     style={styles.searchBar}
                 />
             </View>
-            {searchedData.length === 0 ? <EmptyListView title={"No Data Found"} isLoading={selector.isLoading || loader} /> :
+            {searchedData && searchedData.length === 0 ? <EmptyListView title={"No Data Found"} isLoading={selector.isLoading || loader} /> :
                 <View style={[{ backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10 }]}>
                     <FlatList
                         data={searchedData}
