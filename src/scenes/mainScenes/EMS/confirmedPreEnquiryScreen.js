@@ -120,7 +120,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
             droppedBy: userData.employeeId,
             location: dropLocation,
             model: dropModel,
-            stage: "CONTACT",
+            stage: "PREENQUIRY",
             status: "PREENQUIRY",
           },
         };

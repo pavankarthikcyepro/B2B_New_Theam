@@ -93,7 +93,7 @@ const ChildComp = ({ route, navigation, }) => {
                             console.log(text);
                             setSearchKey(text)
                             if (text === '') {
-                                // setSearchedData([...tableData])
+                                setSearchedData([...tableData])
                             }
                             else {
                                 let tempData = [];

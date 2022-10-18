@@ -230,7 +230,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     let scrollRef = useRef(null)
     const { universalId, accessoriesList, leadStatus, leadStage } = route.params;
     const [openAccordian, setOpenAccordian] = useState(0);
-    const [componentAppear, setComponentAppear] = useState(false);    
+    const [componentAppear, setComponentAppear] = useState(false);
     const [userData, setUserData] = useState({
         orgId: "",
         employeeId: "",
@@ -356,7 +356,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
     useEffect(() => {
     handleRetailFinanceFields();
-    
+
   }, [selector.retail_finance])
   const handleRetailFinanceFields = () => {
     if (selector.retail_finance === 'In House') {
@@ -378,7 +378,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
            text: selector.bank_or_finance,
          })
        );
-    
+
        dispatch(
          setFinancialDetails({
            key: "LEASHING_NAME",
@@ -405,7 +405,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
            text: selector.loan_amount,
          })
        );
-      
+
       dispatch(
         setFinancialDetails({
           key: "RATE_OF_INTEREST",
@@ -432,7 +432,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           text: selector.leashing_name,
         })
       );
-    } 
+    }
     else {
       dispatch(
         setFinancialDetails({
@@ -1485,7 +1485,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       setIsSubmitPress(true);
       console.log("ATTCH", JSON.stringify(uploadedImagesDataObj));
       // console.log("FOUND: ", uploadedImagesDataObj.hasOwnProperty('receipt'));
-      
+
+      if (selector.salutation.length === 0) {
+        scrollToPos(0);
+        setOpenAccordian("1");
+        showToast("please select salutation");
+        return;
+      }
+
       if (selector.first_name.length === 0) {
         scrollToPos(0);
         setOpenAccordian("1");
@@ -1575,17 +1582,25 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         return;
       }
 
-      if (
-        !selector.defaultAddress ||
-        (selector.defaultAddress &&
-          selector.defaultAddress.addressType &&
-          !selector.defaultAddress.addressType.village)
-      ) {
+      let isAddressSelected = false;
+
+      if (defaultAddress) {
+        isAddressSelected = true;
+      } else {
+        for (let i = 0; i < addressData.length; i++) {
+          if (addressData[i].value == selector.defaultAddress) {
+            isAddressSelected = true;
+          }
+        }
+      }
+      
+      if (!isAddressSelected){
         scrollToPos(2);
         setOpenAccordian("2");
         showToast("please select address");
         return;
-      }
+      };
+
       if (selector.urban_or_rural == 0) {
         scrollToPos(2);
         setOpenAccordian("2");
@@ -1707,7 +1722,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         showToast("Select is Primary for atleast one vehicle");
         return;
       }
-      
+
       // if (selector.enquiry_segment.toLowerCase() === "personal" && selector.marital_status.length == 0) {
       //     showToast("Please fill the martial status");
       //     return;
@@ -1858,8 +1873,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         JSON.stringify(postOnRoadPriceTable)
       );
       if (isEdit) {
-        postOnRoadPriceTable.id =
-          selector.on_road_price_dto_list_response[0].id;
+        // postOnRoadPriceTable.id =
+        //   selector.on_road_price_dto_list_response[0].id;
         dispatch(sendEditedOnRoadPriceDetails(postOnRoadPriceTable));
       } else dispatch(sendOnRoadPriceDetails(postOnRoadPriceTable));
       // Promise.all([
@@ -2218,7 +2233,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     const approveOrRejectMethod = (type) => {
         if (!selector.pre_booking_details_response) {
             return;
-        }      
+        }
         let dmsEntity = { ...selector.pre_booking_details_response };
         let dmsLeadDto = { ...dmsEntity.dmsLeadDto };
         if (type === "APPROVE") {
@@ -2586,7 +2601,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 otherReason: "",
                 droppedBy: userData.employeeId,
                 lostSubReason: dropSubReason,
-                stage: "BOOKINGAPPROVAL",
+                stage: "PREBOOKING",
                 status: "PREBOOKING",
             },
         };
@@ -2981,7 +2996,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 break;
         }
 
-        
+
         await fetch(URL.UPLOAD_DOCUMENT(), {
           method: "POST",
           headers: {
@@ -3064,7 +3079,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
               color={Colors.RED}
               style={{ padding: 0, margin: 0 }}
               size={15}
-              disabled={userData.isManager ? (isEdit ? false : true) : false}
+              disabled={!isEdit}
               onPress={() => deteleButtonPressed(from)}
             />
           </View>
@@ -3303,9 +3318,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 >
                   <DropDownSelectionItem
                     label={"Salutation*"}
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     value={selector.salutation}
                     onPress={() =>
                       showDropDownModelMethod("SALUTATION", "Salutation")
@@ -3323,12 +3336,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       },
                     ]}
                   ></Text>
-
                   <TextinputComp
                     style={{ height: 65, width: "100%" }}
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     value={selector.first_name}
                     label={"First Name*"}
                     maxLength={50}
@@ -3352,9 +3362,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ]}
                   ></Text>
                   <TextinputComp
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     style={{ height: 65, width: "100%" }}
                     value={selector.last_name}
                     label={"Last Name*"}
@@ -3379,9 +3387,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ]}
                   ></Text>
                   <TextinputComp
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     style={{ height: 65, width: "100%" }}
                     value={selector.mobile}
                     editable={false}
@@ -3405,9 +3411,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ]}
                   ></Text>
                   <TextinputComp
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     style={{ height: 65, width: "100%" }}
                     value={selector.email}
                     label={"Email ID*"}
@@ -3428,9 +3432,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ]}
                   ></Text>
                   <DropDownSelectionItem
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     label={"Enquiry Segment*"}
                     value={selector.enquiry_segment}
                     onPress={() =>
@@ -3452,9 +3454,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ]}
                   ></Text>
                   <DropDownSelectionItem
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     label={"Buyer Type*"}
                     value={selector.buyer_type}
                     onPress={() =>
@@ -3473,9 +3473,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ]}
                   ></Text>
                   <DropDownSelectionItem
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     label={"Customer Type*"}
                     value={selector.customer_type}
                     onPress={() =>
@@ -3496,9 +3494,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   {selector.enquiry_segment.toLowerCase() === "personal" ? (
                     <View>
                       <DropDownSelectionItem
-                        disabled={
-                          userData.isManager ? (isEdit ? false : true) : false
-                        }
+                        disabled={!isEdit}
                         label={"Gender*"}
                         value={selector.gender}
                         onPress={() =>
@@ -3517,9 +3513,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         ]}
                       ></Text>
                       <DateSelectItem
-                        disabled={
-                          userData.isManager ? (isEdit ? false : true) : false
-                        }
+                        disabled={!isEdit}
                         label={"Date Of Birth*"}
                         value={selector.date_of_birth}
                         onPress={() => dispatch(setDatePicker("DATE_OF_BIRTH"))}
@@ -3536,9 +3530,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         ]}
                       ></Text>
                       <TextinputComp
-                        disabled={
-                          userData.isManager ? (isEdit ? false : true) : false
-                        }
+                        disabled={!isEdit}
                         style={{ height: 65, width: "100%" }}
                         value={selector.age}
                         label={"Age"}
@@ -3552,9 +3544,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       />
                       <Text style={GlobalStyle.underline}></Text>
                       <DropDownSelectionItem
-                        disabled={
-                          userData.isManager ? (isEdit ? false : true) : false
-                        }
+                        disabled={!isEdit}
                         label={"Marital Status"}
                         value={selector.marital_status}
                         onPress={() =>
@@ -3587,9 +3577,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ]}
                 >
                   <TextinputComp
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     style={styles.textInputStyle}
                     value={selector.pincode}
                     label={"Pincode*"}
@@ -3621,9 +3609,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     <>
                       <Text style={GlobalStyle.underline}></Text>
                       <Dropdown
-                        disable={
-                          userData.isManager ? (isEdit ? false : true) : false
-                        }
+                        disable={!isEdit}
                         style={[styles.dropdownContainer]}
                         placeholderStyle={styles.placeholderStyle}
                         selectedTextStyle={styles.selectedTextStyle}
@@ -3659,9 +3645,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ></Text>
                   <View style={styles.radioGroupBcVw}>
                     <RadioTextItem
-                      disabled={
-                        userData.isManager ? (isEdit ? false : true) : false
-                      }
+                      disabled={!isEdit}
                       label={"Urban"}
                       value={"urban"}
                       status={selector.urban_or_rural === 1 ? true : false}
@@ -3675,9 +3659,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       }
                     />
                     <RadioTextItem
-                      disabled={
-                        userData.isManager ? (isEdit ? false : true) : false
-                      }
+                      disabled={!isEdit}
                       label={"Rural"}
                       value={"rural"}
                       status={selector.urban_or_rural === 2 ? true : false}
@@ -3693,9 +3675,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   </View>
                   <Text style={GlobalStyle.underline}></Text>
                   <TextinputComp
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     style={styles.textInputStyle}
                     value={selector.house_number}
                     // keyboardType={"number-pad"}
@@ -3719,9 +3699,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ]}
                   ></Text>
                   <TextinputComp
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     style={styles.textInputStyle}
                     value={selector.street_name}
                     label={"Street Name*"}
@@ -3747,9 +3725,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ]}
                   ></Text>
                   <TextinputComp
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     style={styles.textInputStyle}
                     value={selector.village}
                     label={"Village*"}
@@ -3772,9 +3748,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ]}
                   ></Text>
                   <TextinputComp
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     style={styles.textInputStyle}
                     value={selector.mandal}
                     label={"Mandal/Tahsil*"}
@@ -3797,9 +3771,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ]}
                   ></Text>
                   <TextinputComp
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     style={styles.textInputStyle}
                     value={selector.city}
                     label={"City*"}
@@ -3822,9 +3794,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ]}
                   ></Text>
                   <TextinputComp
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     style={styles.textInputStyle}
                     value={selector.district}
                     label={"District*"}
@@ -3847,9 +3817,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ]}
                   ></Text>
                   <TextinputComp
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     style={styles.textInputStyle}
                     value={selector.state}
                     label={"State*"}
@@ -3888,9 +3856,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   </View>
                   <View style={styles.radioGroupBcVw}>
                     <RadioTextItem
-                      disabled={
-                        userData.isManager ? (isEdit ? false : true) : false
-                      }
+                      disabled={!isEdit}
                       label={"Yes"}
                       value={"yes"}
                       status={
@@ -3908,9 +3874,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       }
                     />
                     <RadioTextItem
-                      disabled={
-                        userData.isManager ? (isEdit ? false : true) : false
-                      }
+                      disabled={!isEdit}
                       label={"No"}
                       value={"no"}
                       status={
@@ -3932,9 +3896,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   <Text style={GlobalStyle.underline}></Text>
 
                   <TextinputComp
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     style={styles.textInputStyle}
                     value={selector.p_pincode}
                     label={"Pincode*"}
@@ -3969,9 +3931,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     <>
                       <Text style={GlobalStyle.underline}></Text>
                       <Dropdown
-                        disabled={
-                          userData.isManager ? (isEdit ? false : true) : false
-                        }
+                        disabled={!isEdit}
                         style={[styles.dropdownContainer]}
                         placeholderStyle={styles.placeholderStyle}
                         selectedTextStyle={styles.selectedTextStyle}
@@ -3998,9 +3958,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                   <View style={styles.radioGroupBcVw}>
                     <RadioTextItem
-                      disabled={
-                        userData.isManager ? (isEdit ? false : true) : false
-                      }
+                      disabled={!isEdit}
                       label={"Urban"}
                       value={"urban"}
                       status={selector.p_urban_or_rural === 1 ? true : false}
@@ -4014,9 +3972,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       }
                     />
                     <RadioTextItem
-                      disabled={
-                        userData.isManager ? (isEdit ? false : true) : false
-                      }
+                      disabled={!isEdit}
                       label={"Rural"}
                       value={"rural"}
                       status={selector.p_urban_or_rural === 2 ? true : false}
@@ -4033,9 +3989,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   <Text style={GlobalStyle.underline}></Text>
 
                   <TextinputComp
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     style={styles.textInputStyle}
                     label={"H.No*"}
                     // keyboardType={"number-pad"}
@@ -4062,9 +4016,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ]}
                   ></Text>
                   <TextinputComp
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     style={styles.textInputStyle}
                     label={"Street Name*"}
                     maxLength={120}
@@ -4090,9 +4042,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ]}
                   ></Text>
                   <TextinputComp
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     style={styles.textInputStyle}
                     value={selector.p_village}
                     maxLength={50}
@@ -4118,9 +4068,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ]}
                   ></Text>
                   <TextinputComp
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     style={styles.textInputStyle}
                     value={selector.p_mandal}
                     maxLength={50}
@@ -4146,9 +4094,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ]}
                   ></Text>
                   <TextinputComp
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     style={styles.textInputStyle}
                     value={selector.p_city}
                     maxLength={50}
@@ -4171,9 +4117,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ]}
                   ></Text>
                   <TextinputComp
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     style={styles.textInputStyle}
                     value={selector.p_district}
                     label={"District*"}
@@ -4199,9 +4143,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ]}
                   ></Text>
                   <TextinputComp
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     style={styles.textInputStyle}
                     value={selector.p_state}
                     label={"State*"}
@@ -4247,9 +4189,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ]}
                 >
                   <TouchableOpacity
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     onPress={() => {
                       if (checkModelSelection()) {
                         scrollToPos(3);
@@ -4303,13 +4243,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         // <Pressable onPress={() => selectedItem(item, index)}>
                         <View>
                           <PreBookingModelListitemCom
-                            disabled={
-                              userData.isManager
-                                ? isEdit
-                                  ? false
-                                  : true
-                                : false
-                            }
+                            disabled={!isEdit}
                             modelOnclick={modelOnclick}
                             isPrimaryOnclick={isPrimaryOnclick}
                             index={index}
@@ -4377,9 +4311,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 >
                   {/* {isDataLoaded && */}
                   <DropDownSelectionItem
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     label={"Form60/PAN"}
                     value={selector.form_or_pan}
                     onPress={() =>
@@ -4391,9 +4323,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   {selector.form_or_pan === "PAN" && (
                     <View>
                       <TextinputComp
-                        disabled={
-                          userData.isManager ? (isEdit ? false : true) : false
-                        }
+                        disabled={!isEdit}
                         style={styles.textInputStyle}
                         value={selector.pan_number}
                         label={"PAN Number*"}
@@ -4422,9 +4352,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       <Text style={GlobalStyle.underline}></Text>
                       <View style={styles.select_image_bck_vw}>
                         <ImageSelectItem
-                          disabled={
-                            userData.isManager ? (isEdit ? false : true) : false
-                          }
+                          disabled={!isEdit}
                           name={"PAN"}
                           onPress={() => dispatch(setImagePicker("UPLOAD_PAN"))}
                         />
@@ -4488,9 +4416,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     <View>
                       <View style={styles.select_image_bck_vw}>
                         <ImageSelectItem
-                          disabled={
-                            userData.isManager ? (isEdit ? false : true) : false
-                          }
+                          disabled={!isEdit}
                           name={"Form60"}
                           onPress={() =>
                             dispatch(setImagePicker("UPLOAD_FORM60"))
@@ -4556,9 +4482,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   {selector.enquiry_segment.toLowerCase() === "personal" ? (
                     <View>
                       <TextinputComp
-                        disabled={
-                          userData.isManager ? (isEdit ? false : true) : false
-                        }
+                        disabled={!isEdit}
                         style={styles.textInputStyle}
                         value={selector.adhaar_number}
                         label={"Aadhaar Number"}
@@ -4576,9 +4500,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       <Text style={GlobalStyle.underline} />
                       <View style={styles.select_image_bck_vw}>
                         <ImageSelectItem
-                          disabled={
-                            userData.isManager ? (isEdit ? false : true) : false
-                          }
+                          disabled={!isEdit}
                           name={"Upload Aadhaar"}
                           onPress={() =>
                             dispatch(setImagePicker("UPLOAD_ADHAR"))
@@ -4648,9 +4570,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     selector.customer_type.toLowerCase() === "retired") ? (
                     <View>
                       <TextinputComp
-                        disabled={
-                          userData.isManager ? (isEdit ? false : true) : false
-                        }
+                        disabled={!isEdit}
                         style={styles.textInputStyle}
                         value={selector.employee_id}
                         label={"Employee ID"}
@@ -4667,9 +4587,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       <Text style={GlobalStyle.underline}></Text>
                       <View style={styles.select_image_bck_vw}>
                         <ImageSelectItem
-                          disabled={
-                            userData.isManager ? (isEdit ? false : true) : false
-                          }
+                          disabled={!isEdit}
                           name={"Employee ID"}
                           onPress={() =>
                             dispatch(setImagePicker("UPLOAD_EMPLOYEE_ID"))
@@ -4741,9 +4659,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     <View>
                       <View style={styles.select_image_bck_vw}>
                         <ImageSelectItem
-                          disabled={
-                            userData.isManager ? (isEdit ? false : true) : false
-                          }
+                          disabled={!isEdit}
                           name={"Last 3 months payslip"}
                           onPress={() =>
                             dispatch(setImagePicker("UPLOAD_3_MONTHS_PAYSLIP"))
@@ -4812,9 +4728,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     <View>
                       <View style={styles.select_image_bck_vw}>
                         <ImageSelectItem
-                          disabled={
-                            userData.isManager ? (isEdit ? false : true) : false
-                          }
+                          disabled={!isEdit}
                           name={"Patta Pass Book"}
                           onPress={() =>
                             dispatch(setImagePicker("UPLOAD_PATTA_PASS_BOOK"))
@@ -4883,9 +4797,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     <View>
                       <View style={styles.select_image_bck_vw}>
                         <ImageSelectItem
-                          disabled={
-                            userData.isManager ? (isEdit ? false : true) : false
-                          }
+                          disabled={!isEdit}
                           name={"Pension Letter"}
                           onPress={() =>
                             dispatch(setImagePicker("UPLOAD_PENSION_LETTER"))
@@ -4952,9 +4864,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     <View>
                       <View style={styles.select_image_bck_vw}>
                         <ImageSelectItem
-                          disabled={
-                            userData.isManager ? (isEdit ? false : true) : false
-                          }
+                          disabled={!isEdit}
                           name={"IMA Certificate"}
                           onPress={() =>
                             dispatch(setImagePicker("UPLOAD_IMA_CERTIFICATE"))
@@ -5027,9 +4937,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     <View>
                       <View style={styles.select_image_bck_vw}>
                         <ImageSelectItem
-                          disabled={
-                            userData.isManager ? (isEdit ? false : true) : false
-                          }
+                          disabled={!isEdit}
                           name={"Leasing Confirmation"}
                           onPress={() =>
                             dispatch(
@@ -5104,9 +5012,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     <View>
                       <View style={styles.select_image_bck_vw}>
                         <ImageSelectItem
-                          disabled={
-                            userData.isManager ? (isEdit ? false : true) : false
-                          }
+                          disabled={!isEdit}
                           name={"Address Proof"}
                           onPress={() =>
                             dispatch(setImagePicker("UPLOAD_ADDRESS_PROOF"))
@@ -5260,9 +5166,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         onPress={() =>
                           dispatch(setImagePicker("UPLOAD_RELATION_PROOF"))
                         }
-                        disabled={
-                          userData.isManager ? (isEdit ? false : true) : false
-                        }
+                        disabled={!isEdit}
                       />
                     </View>
                     {uploadedImagesDataObj.relationshipProof?.fileName ? (
@@ -5276,9 +5180,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             justifyContent: "center",
                             alignItems: "center",
                           }}
-                          disabled={
-                            userData.isManager ? (isEdit ? false : true) : false
-                          }
+                          disabled={!isEdit}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.relationshipProof
@@ -5417,9 +5319,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       }}
                     >
                       <TextInput
-                        editable={
-                          !userData.isManager ? true : isEdit ? true : false
-                        }
+                        editable={isEdit}
                         value={taxPercent}
                         style={[
                           {
@@ -5455,9 +5355,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   <View style={styles.symbolview}>
                     <View style={{ width: "70%" }}>
                       <DropDownSelectionItem
-                        disabled={
-                          userData.isManager ? (isEdit ? false : true) : false
-                        }
+                        disabled={!isEdit}
                         label={"Insurance Type"}
                         value={selector.insurance_type}
                         onPress={() =>
@@ -5509,9 +5407,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   <View style={styles.symbolview}>
                     <View style={{ width: "70%" }}>
                       <DropDownSelectionItem
-                        disabled={
-                          userData.isManager ? (isEdit ? false : true) : false
-                        }
+                        disabled={!isEdit}
                         label={"Warranty"}
                         value={selector.warranty}
                         onPress={() =>
@@ -5526,9 +5422,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   <Text style={GlobalStyle.underline}></Text>
 
                   <CheckboxTextAndAmountComp
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     title={"Handling Charges:"}
                     amount={
                       handlingChargSlctd
@@ -5549,9 +5443,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   <Text style={GlobalStyle.underline}></Text>
 
                   <CheckboxTextAndAmountComp
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     title={"Essential Kit:"}
                     amount={
                       essentialKitSlctd
@@ -5578,9 +5470,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   <Text style={GlobalStyle.underline}></Text>
 
                   <Pressable
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     onPress={() =>
                       navigation.navigate(
                         AppNavigator.EmsStackIdentifiers.paidAccessories,
@@ -5623,9 +5513,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ) : null}
 
                   <CheckboxTextAndAmountComp
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     title={"Fast Tag:"}
                     amount={
                       fastTagSlctd
@@ -5689,9 +5577,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ]}
                 >
                   <TextinputComp
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     style={styles.offerPriceTextInput}
                     label={"Consumer Offer:"}
                     value={selector.consumer_offer}
@@ -5709,9 +5595,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   />
                   <Text style={GlobalStyle.underline}></Text>
                   <TextinputComp
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     style={styles.offerPriceTextInput}
                     label={"Exchange Offer:"}
                     value={selector.exchange_offer}
@@ -5729,9 +5613,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   />
                   <Text style={GlobalStyle.underline}></Text>
                   <TextinputComp
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     style={styles.offerPriceTextInput}
                     label={"Corporate Offer:"}
                     value={selector.corporate_offer}
@@ -5749,9 +5631,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   />
                   <Text style={GlobalStyle.underline}></Text>
                   <TextinputComp
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     style={styles.offerPriceTextInput}
                     label={"Promotional Offer:"}
                     value={selector.promotional_offer}
@@ -5769,9 +5649,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   />
                   <Text style={GlobalStyle.underline}></Text>
                   <TextinputComp
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     style={styles.offerPriceTextInput}
                     label={"Cash Discount:"}
                     value={selector.cash_discount}
@@ -5789,9 +5667,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   />
                   <Text style={GlobalStyle.underline}></Text>
                   <TextinputComp
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     style={styles.offerPriceTextInput}
                     label={"Foc Accessories:"}
                     value={selector.for_accessories}
@@ -5809,9 +5685,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   />
                   <Text style={GlobalStyle.underline}></Text>
                   <TextinputComp
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     style={styles.offerPriceTextInput}
                     label={"Insurance Discount:"}
                     value={selector.insurance_discount}
@@ -5829,9 +5703,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   />
                   <Text style={GlobalStyle.underline}></Text>
                   <TextinputComp
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     style={styles.offerPriceTextInput}
                     label={"Accessories Discount:"}
                     value={selector.accessories_discount}
@@ -5876,9 +5748,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     </View>
                                 </View> */}
                   <TextinputComp
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     style={styles.offerPriceTextInput}
                     label={"Additional Offer 1:"}
                     value={selector.additional_offer_1}
@@ -5896,9 +5766,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   />
                   <Text style={GlobalStyle.underline}></Text>
                   <TextinputComp
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     style={styles.offerPriceTextInput}
                     label={"Additional Offer 2:"}
                     value={selector.additional_offer_2}
@@ -5944,9 +5812,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ]}
                 >
                   <DropDownSelectionItem
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     label={"Retail Finance*"}
                     value={selector.retail_finance}
                     onPress={() =>
@@ -5972,9 +5838,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   {selector.retail_finance === "Out House" ? (
                     <View>
                       <TextinputComp
-                        disabled={
-                          userData.isManager ? (isEdit ? false : true) : false
-                        }
+                        disabled={!isEdit}
                         style={{ height: 65, width: "100%" }}
                         label={"Bank/Finance Name"}
                         value={selector.bank_or_finance_name}
@@ -5990,9 +5854,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       <Text style={GlobalStyle.underline}></Text>
 
                       <TextinputComp
-                        disabled={
-                          userData.isManager ? (isEdit ? false : true) : false
-                        }
+                        disabled={!isEdit}
                         style={{ height: 65, width: "100%" }}
                         label={"Location"}
                         value={selector.location}
@@ -6009,9 +5871,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   {selector.retail_finance === "Leasing" && (
                     <View>
                       <TextinputComp
-                        disabled={
-                          userData.isManager ? (isEdit ? false : true) : false
-                        }
+                        disabled={!isEdit}
                         style={{ height: 65, width: "100%" }}
                         label={"Leasing Name"}
                         maxLength={50}
@@ -6031,9 +5891,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                   {selector.retail_finance === "In House" && (
                     <DropDownSelectionItem
-                      disabled={
-                        userData.isManager ? (isEdit ? false : true) : false
-                      }
+                      disabled={!isEdit}
                       label={"Finance Category"}
                       value={selector.finance_category}
                       onPress={() =>
@@ -6048,9 +5906,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   {selector.retail_finance === "In House" && (
                     <View>
                       <TextinputComp
-                        disabled={
-                          userData.isManager ? (isEdit ? false : true) : false
-                        }
+                        disabled={!isEdit}
                         style={{ height: 65, width: "100%" }}
                         label={"Down Payment"}
                         value={selector.down_payment}
@@ -6071,9 +5927,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   {selector.retail_finance === "In House" && (
                     <View>
                       <TextinputComp
-                        disabled={
-                          userData.isManager ? (isEdit ? false : true) : false
-                        }
+                        disabled={!isEdit}
                         style={{ height: 65, width: "100%" }}
                         label={"Loan Amount"}
                         keyboardType={"number-pad"}
@@ -6094,9 +5948,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       />
                       <Text style={GlobalStyle.underline}></Text>
                       <TextinputComp
-                        disabled={
-                          userData.isManager ? (isEdit ? false : true) : false
-                        }
+                        disabled={!isEdit}
                         style={{ height: 65, width: "100%" }}
                         label={"Rate of Interest"}
                         keyboardType={"number-pad"}
@@ -6122,9 +5974,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   {selector.retail_finance === "Out House" && (
                     <View>
                       <TextinputComp
-                        disabled={
-                          userData.isManager ? (isEdit ? false : true) : false
-                        }
+                        disabled={!isEdit}
                         style={{ height: 65, width: "100%" }}
                         label={"Loan Amount"}
                         keyboardType={"number-pad"}
@@ -6145,9 +5995,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       />
                       <Text style={GlobalStyle.underline}></Text>
                       <TextinputComp
-                        disabled={
-                          userData.isManager ? (isEdit ? false : true) : false
-                        }
+                        disabled={!isEdit}
                         style={{ height: 65, width: "100%" }}
                         label={"Rate of Interest"}
                         keyboardType={"number-pad"}
@@ -6174,9 +6022,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   {selector.retail_finance === "In House" && (
                     <View>
                       <DropDownSelectionItem
-                        disabled={
-                          userData.isManager ? (isEdit ? false : true) : false
-                        }
+                        disabled={!isEdit}
                         label={"Bank/Financer"}
                         value={selector.bank_or_finance}
                         onPress={() =>
@@ -6188,9 +6034,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       />
 
                       <TextinputComp
-                        disabled={
-                          userData.isManager ? (isEdit ? false : true) : false
-                        }
+                        disabled={!isEdit}
                         style={{ height: 65, width: "100%" }}
                         label={"Loan of Tenure(Months)"}
                         value={selector.loan_of_tenure}
@@ -6213,9 +6057,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       <Text style={GlobalStyle.underline}></Text>
 
                       <TextinputComp
-                        disabled={
-                          userData.isManager ? (isEdit ? false : true) : false
-                        }
+                        disabled={!isEdit}
                         style={{ height: 65, width: "100%" }}
                         label={"EMI"}
                         value={selector.emi}
@@ -6229,9 +6071,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       <Text style={GlobalStyle.underline}></Text>
 
                       <DropDownSelectionItem
-                        disabled={
-                          userData.isManager ? (isEdit ? false : true) : false
-                        }
+                        disabled={!isEdit}
                         label={"Approx Annual Income"}
                         value={selector.approx_annual_income}
                         onPress={() =>
@@ -6264,9 +6104,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ]}
                 >
                   <TextinputComp
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     style={{ height: 65, width: "100%" }}
                     value={selector.booking_amount}
                     label={"Booking Amount*"}
@@ -6294,9 +6132,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ></Text>
 
                   <DropDownSelectionItem
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     label={"Payment At"}
                     value={selector.payment_at}
                     onPress={() =>
@@ -6306,9 +6142,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   <Text style={GlobalStyle.underline} />
 
                   <DropDownSelectionItem
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     label={"Booking Payment Mode*"}
                     value={selector.booking_payment_mode}
                     onPress={() =>
@@ -6350,9 +6184,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ]}
                 >
                   <DateSelectItem
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     label={"Customer Preferred Date"}
                     value={selector.customer_preferred_date}
                     onPress={() =>
@@ -6361,9 +6193,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   />
                   <Text style={GlobalStyle.underline} />
                   <TextinputComp
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     style={{ height: 65, width: "100%" }}
                     label={"Occasion"}
                     value={selector.occasion}
@@ -6376,9 +6206,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   />
                   <Text style={GlobalStyle.underline}></Text>
                   <DateSelectItem
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     label={"Tentative Delivery Date"}
                     value={selector.tentative_delivery_date}
                     onPress={() =>
@@ -6387,9 +6215,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   />
                   <Text style={GlobalStyle.underline} />
                   <TextinputComp
-                    disabled={
-                      userData.isManager ? (isEdit ? false : true) : false
-                    }
+                    disabled={!isEdit}
                     style={{ height: 65, width: "100%" }}
                     label={"Delivery Location"}
                     maxLength={50}
