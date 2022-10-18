@@ -85,7 +85,7 @@ const HomeScreen = ({ route, navigation }) => {
 
     useLayoutEffect(() => {
         navigation.addListener('focus', () => {
-            setTargetData().then(r => console.log(r));
+            setTargetData().then(r => console.log(r));  //Commented to resolved filter issue for Home Screen
         })
 
     }, [navigation]);
@@ -185,8 +185,8 @@ const HomeScreen = ({ route, navigation }) => {
         // }
 
         const unsubscribe = navigation.addListener('focus', () => {
-            updateBranchNameInHeader()
-            getLoginEmployeeDetailsFromAsyn();
+            updateBranchNameInHeader()           //Commented to resolved filter issue for Home Screen
+            getLoginEmployeeDetailsFromAsyn();   //Commented to resolved filter issue for Home Screen
         });
 
         return unsubscribe;

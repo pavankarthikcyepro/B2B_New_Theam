@@ -4,7 +4,7 @@ import { SafeAreaView, View, Text, StyleSheet, FlatList, Dimensions, Image, Pres
 import { Colors } from '../../../styles';
 import { IconButton } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
-import { } from '../../../redux/homeReducer';
+import { getTargetParametersEmpDataInsights } from '../../../redux/homeReducer';
 import * as AsyncStore from '../../../asyncStore';
 import { DatePickerComponent, DropDownComponant } from '../../../components';
 import { DateSelectItem, DropDownSelectionItem } from '../../../pureComponents';
@@ -311,7 +311,8 @@ const FilterScreen = ({ navigation }) => {
                 dispatch(getSalesData(payload2)),
                 dispatch(getSalesComparisonData(payload2)),
                 // // Target Params Data
-                dispatch(getTargetParametersData(payload2))
+                dispatch(getTargetParametersData(payload2)),
+                // dispatch(getTargetParametersEmpDataInsights(payload2))  // Added to filter an Home Screen's INSIGHT
             ]).then(() => {
                 console.log("SUCCESS");
             }).catch(() => {
