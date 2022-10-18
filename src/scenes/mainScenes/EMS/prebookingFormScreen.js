@@ -3048,7 +3048,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 delete imagesDataObj.payslips;
                 break;
             case "PATTA_PASS_BOOK":
-                delete imagesDataObj.passbook;
+                delete imagesDataObj.passbook || imagesDataObj?.pattaPassBook ;
                 break;
             case "PENSION_LETTER":
                 delete imagesDataObj.pension;
@@ -3057,7 +3057,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 delete imagesDataObj.imaCertificate;
                 break;
             case "LEASING_CONFIRMATION":
-                delete imagesDataObj.leasingConfirm;
+                delete imagesDataObj.leasingConfirm || imagesDataObj?.leasingConfirmationLetter;
                 break;
             case "ADDRESS_PROOF":
                 delete imagesDataObj.address;
@@ -4787,7 +4787,59 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             />
                           </View>
                         </View>
-                      ) : null}
+                        ) : uploadedImagesDataObj?.pattaPassBook?.fileName ? (
+                          <View style={{ flexDirection: "row" }}>
+                            <TouchableOpacity
+                              disabled={
+                                userData.isManager
+                                  ? isEdit
+                                    ? false
+                                    : true
+                                  : false
+                              }
+                              style={{
+                                width: "20%",
+                                height: 30,
+                                backgroundColor: Colors.SKY_BLUE,
+                                borderRadius: 4,
+                                justifyContent: "center",
+                                alignItems: "center",
+                              }}
+                              onPress={() => {
+                                if (
+                                  uploadedImagesDataObj?.pattaPassBook?.documentPath
+                                ) {
+                                  setImagePath(
+                                    uploadedImagesDataObj?.pattaPassBook?.documentPath
+                                  );
+                                }
+                              }}
+                            >
+                              <Text
+                                style={{
+                                  color: Colors.WHITE,
+                                  fontSize: 14,
+                                  fontWeight: "600",
+                                }}
+                              >
+                                Preview
+                              </Text>
+                            </TouchableOpacity>
+                            <View style={{ width: "80%" }}>
+                              <DisplaySelectedImage
+                                disabled={
+                                  userData.isManager
+                                    ? isEdit
+                                      ? false
+                                      : true
+                                    : false
+                                }
+                                  fileName={uploadedImagesDataObj?.pattaPassBook?.fileName}
+                                from={"PATTA_PASS_BOOK"}
+                              />
+                            </View>
+                          </View>
+                        ) : null}
                     </View>
                   ) : null}
 
@@ -5002,7 +5054,48 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             />
                           </View>
                         </View>
-                      ) : null}
+                        ) : uploadedImagesDataObj.leasingConfirmationLetter ? (
+                          <View style={{ flexDirection: "row" }}>
+                            <TouchableOpacity
+                              style={{
+                                width: "20%",
+                                height: 30,
+                                backgroundColor: Colors.SKY_BLUE,
+                                borderRadius: 4,
+                                justifyContent: "center",
+                                alignItems: "center",
+                              }}
+                              onPress={() => {
+                                if (
+                                  uploadedImagesDataObj.leasingConfirmationLetter?.documentPath
+                                ) {
+                                  setImagePath(
+                                    uploadedImagesDataObj.leasingConfirmationLetter
+                                      ?.documentPath
+                                  );
+                                }
+                              }}
+                            >
+                              <Text
+                                style={{
+                                  color: Colors.WHITE,
+                                  fontSize: 14,
+                                  fontWeight: "600",
+                                }}
+                              >
+                                Preview
+                              </Text>
+                            </TouchableOpacity>
+                            <View style={{ width: "80%" }}>
+                              <DisplaySelectedImage
+                                fileName={
+                                  uploadedImagesDataObj.leasingConfirmationLetter.fileName
+                                }
+                                from={"LEASING_CONFIRMATION"}
+                              />
+                            </View>
+                          </View>
+                        ) : null}
                     </View>
                   ) : null}
 
@@ -6584,7 +6677,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     </Button>
                   </View>
                 )}
-              {!isDropSelected && !isEdit && (
+              {!isDropSelected && !isEdit && userData.isManager &&(
                 <View style={styles.actionBtnView}>
                   <Button
                     mode="contained"
