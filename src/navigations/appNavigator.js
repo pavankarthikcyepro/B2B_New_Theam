@@ -79,6 +79,7 @@ import leaderBoardScreen from "../scenes/mainScenes/Home/leaderBoardScreen";
 import branchRankingScreen from "../scenes/mainScenes/Home/branchRankingScreen";
 import SourceModel from "../scenes/mainScenes/Home/TabScreens/components/EmployeeView/SourceModel";
 import LiveLeadsScreen from "../scenes/mainScenes/LiveLeads";
+import { EMSTopTabNavigatorTwo } from "./emsTopTabNavigator";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -377,7 +378,7 @@ const EmsStackNavigator = ({ navigation }) => {
       >
         <EmsStack.Screen
           name="EMS"
-          component={EMSScreen}
+          component={EMSTopTabNavigatorTwo}
           options={{
             title: "EMS",
             headerLeft: () => <MenuIcon navigation={navigation} />,
