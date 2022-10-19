@@ -2004,7 +2004,7 @@ export default TargetScreen;
 export const RenderLevel1NameView = ({level, item, branchName = '', color, titleClick}) => {
     return (
         <View style={{width: 60, justifyContent: 'center', textAlign: 'center', display: 'flex', flexDirection: 'row'}}>
-            <View style={{justifyContent: 'center', alignItems: 'center'}}>
+            <View style={{ justifyContent: 'center', alignItems: 'center', width: 40 }}>
                 <TouchableOpacity style={{
                     width: 30,
                     height: 30,

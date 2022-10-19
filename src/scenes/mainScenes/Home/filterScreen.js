@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { SafeAreaView, View, Text, StyleSheet, FlatList, Dimensions, Image, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 import { Colors } from '../../../styles';
 import { IconButton } from 'react-native-paper';
@@ -85,8 +85,7 @@ const FilterScreen = ({ navigation }) => {
         setToDate(monthLastDate);
     }, [selector.filter_drop_down_data])
 
-    const dropDownItemClicked = (index) => {
-
+    const dropDownItemClicked = async (index) => {
         const topRowSelectedIds = [];
         if (index > 0) {
             const topRowData = totalDataObj[nameKeyList[index - 1]].sublevels;
@@ -111,8 +110,25 @@ const FilterScreen = ({ navigation }) => {
         else {
             data = totalDataObj[nameKeyList[index]].sublevels
         }
-
-        setDropDownData([...data])
+        let newData = [];
+        const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            for (let i = 0; i < data.length; i++) {
+                const id = data[i];
+                for (let j = 0; j < jsonObj.branchs.length; j++) {
+                    const id2 = jsonObj.branchs[j];
+                    if (id2.branchName === id.name) {
+                        newData.push(id);
+                    }
+                }
+            }
+        }
+        if (index === 4) {
+            setDropDownData([...newData])
+        } else {
+            setDropDownData([...data])
+        }
         setSelectedItemIndex(index);
         setShowDropDownModel(true);
         setDropDownFrom("ORG_TABLE")
@@ -315,16 +331,16 @@ const FilterScreen = ({ navigation }) => {
             ]).then(() => {
                 console.log("SUCCESS");
             }).catch(() => {
-
+                setIsLoading(false);
             })
         }).catch(() => {
-            
+            setIsLoading(false);
         })
         if (from == "EMPLOYEE") {
             navigation.goBack();
         }
-        else{
-            navigation.goBack();
+        else {
+            navigation.goBack(); // NEED TO COMMENT FOR ASSOCIATE FILTER
         }
     }
 
@@ -347,11 +363,23 @@ const FilterScreen = ({ navigation }) => {
                 }
                 newDataObj[key] = newArray;
             }
-            setEmloyeeTitleNameList(names);
-            setEmployeeDropDownDataLocal(newDataObj);
+            setName(names, newDataObj)
         }
-        setIsLoading(false);
     }, [selector.employees_drop_down_data])
+
+    const setName = useCallback(
+        (names, newDataObj) => {
+            function isEmpty(obj) {
+                return Object.keys(obj).length === 0;
+            }
+            if (!isEmpty(names) && !isEmpty(newDataObj)) {
+                setEmloyeeTitleNameList(names);
+                setEmployeeDropDownDataLocal(newDataObj);
+                setIsLoading(false);
+            }
+        },
+        [employeeDropDownDataLocal, employeeTitleNameList],
+    );
 
     const clearBtnForEmployeeData = () => {
         let newDataObj = {};
@@ -448,7 +476,7 @@ const FilterScreen = ({ navigation }) => {
             <View style={{ flex: 1, paddingVertical: 10, paddingHorizontal: 10, backgroundColor: Colors.WHITE }}>
 
                 <FlatList
-                    data={[1, 2]}
+                    data={employeeTitleNameList.length > 0 ? [1, 2, 3] : [1, 2]}
                     keyExtractor={(item, index) => "MAIN" + index.toString()}
                     renderItem={({ item, index }) => {
 
@@ -495,7 +523,6 @@ const FilterScreen = ({ navigation }) => {
                                                 if (selectedNames.length > 0) {
                                                     selectedNames = selectedNames.slice(0, selectedNames.length - 1);
                                                 }
-
                                                 return (
                                                     <View>
                                                         <DropDownSelectionItem
