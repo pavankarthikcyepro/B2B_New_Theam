@@ -80,6 +80,7 @@ import branchRankingScreen from "../scenes/mainScenes/Home/branchRankingScreen";
 import SourceModel from "../scenes/mainScenes/Home/TabScreens/components/EmployeeView/SourceModel";
 import LiveLeadsScreen from "../scenes/mainScenes/LiveLeads";
 import { EMSTopTabNavigatorTwo } from "./emsTopTabNavigator";
+import { AppNavigator } from ".";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -676,6 +677,13 @@ const TabNavigator = ({ navigation, route }) => {
                 name={TabStackIdentifiers.ems}
                 component={EmsStackNavigator}
                 options={{ title: "EMS" }}
+                // listeners={({ navigation, route }) => ({
+                //     tabPress: e => {
+                //         if (route.state && route.state.routeNames.length > 0) {
+                //             navigation.navigate(AppNavigator.TabStackIdentifiers.myTask)
+                //         }
+                //     },
+                // })}
             />
             <Tab.Screen
                 name={TabStackIdentifiers.myTask}

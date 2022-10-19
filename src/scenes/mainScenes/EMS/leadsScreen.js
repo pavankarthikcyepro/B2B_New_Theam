@@ -9,13 +9,14 @@ import {
     SafeAreaView,
     StyleSheet,
     Text,
+    TouchableOpacity,
     View
 } from "react-native";
 import { Button, IconButton, Searchbar } from "react-native-paper";
 import { EmptyListView } from "../../../pureComponents";
 import { LeadsFilterComp, SingleLeadSelectComp, SortAndFilterComp } from "../../../components";
 import { useDispatch, useSelector } from "react-redux";
-import { Colors } from "../../../styles";
+import { Colors, GlobalStyle } from "../../../styles";
 import { AppNavigator } from '../../../navigations';
 import * as AsyncStore from '../../../asyncStore';
 import { getEnquiryList, getMoreEnquiryList } from "../../../redux/enquiryReducer";
@@ -27,6 +28,7 @@ import { getPreBookingData } from "../../../redux/preBookingReducer";
 import DateRangePicker from "../../../utils/DateRangePicker";
 import { getLeadsList, getMenu, getStatus, getSubMenu } from "../../../redux/leaddropReducer";
 import { useIsFocused } from "@react-navigation/native";
+import Entypo from "react-native-vector-icons/FontAwesome";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().add(0, "day").endOf('month').format(dateFormat);
@@ -198,7 +200,7 @@ const LeadsScreen = ({ route, navigation }) => {
     const managerFilter = useCallback((newArr) => {
         const alreadyFilterMenu = newArr.filter(e => e.menu == route?.params?.param);
         let modelList = [...newArr];
-        const newArr2 = modelList.map(v => ({ ...v, checked: v.menu == route?.params?.param ? true:false }));
+        const newArr2 = modelList.map(v => ({ ...v, checked: v.menu == route?.params?.param ? true : false }));
         setLeadsFilterData([...newArr2]);
         setTempEmployee(route?.params?.employeeDetail ? route?.params?.employeeDetail : null);
         getSubMenuList(alreadyFilterMenu[0].menu, true, route?.params?.employeeDetail ? route?.params?.employeeDetail : null);
@@ -215,10 +217,12 @@ const LeadsScreen = ({ route, navigation }) => {
                 let leadStage = [];
                 let leadStatus = [];
                 let newAre = path2.filter(e => e.menu !== "Contact");
-                for (let i = 0; i < newAre.length; i++){
+                for (let i = 0; i < newAre.length; i++) {
                     let x = newAre[i].allLeadsSubstagesEntity;
-                    for (let j = 0; j < x.length; j++){
-                        leadStage = [...leadStage, ...x[j].leadStage]
+                    for (let j = 0; j < x.length; j++) {
+                        if (x[j].leadStage) {
+                            leadStage = [...leadStage, ...x[j].leadStage];
+                        }
                     }
                 }
                 leadStage = leadStage.filter(function (item, index, inputArray) {
@@ -236,7 +240,7 @@ const LeadsScreen = ({ route, navigation }) => {
                 }
 
             }).catch((err) => {
-                console.log("ERROR", err);
+                console.log("ERROdddR", err);
                 setLoader(false);
                 setLeadsFilterDropDownText("All");
                 setSubMenu([]);
@@ -252,7 +256,9 @@ const LeadsScreen = ({ route, navigation }) => {
                 for (let i = 0; i < newAre.length; i++) {
                     let x = newAre[i].allLeadsSubstagesEntity;
                     for (let j = 0; j < x.length; j++) {
-                        leadStage = [...leadStage, ...x[j].leadStage]
+                        if (x[j]?.leadStage) {
+                            leadStage = [...leadStage, ...x[j].leadStage];
+                        }
                     }
                 }
                 leadStage = leadStage.filter(function (item, index, inputArray) {
@@ -271,7 +277,7 @@ const LeadsScreen = ({ route, navigation }) => {
                 }
 
             }).catch((err) => {
-                console.log("ERROR", err);
+                console.log("EdddRROR", err);
                 setLoader(false);
                 setLeadsFilterDropDownText("All");
                 setSubMenu([]);
@@ -521,7 +527,7 @@ const LeadsScreen = ({ route, navigation }) => {
                 }
             }
             defLeadStage ? null : setTempLeadStage(leadStage);
-            defLeadStatus? null: setTempLeadStatus(leadStatus);
+            defLeadStatus ? null : setTempLeadStatus(leadStatus);
             if (modelData || categoryFilters || sourceData) {
                 for (let i = 0; i < sourceData.length; i++) {
                     let x = {
@@ -628,6 +634,38 @@ const LeadsScreen = ({ route, navigation }) => {
         }, 500);
     }
 
+    const onRefresh = async () => {
+        Promise.all([dispatch(getMenu()), dispatch(getStatus())]).then(async ([res, res2]) => {
+            let path = res.payload;
+            let path2 = res2.payload;
+            let leadStage = [];
+            let leadStatus = [];
+            let newAre = path2.filter(e => e.menu !== "Contact");
+            for (let i = 0; i < newAre.length; i++) {
+                let x = newAre[i].allLeadsSubstagesEntity;
+                for (let j = 0; j < x.length; j++) {
+                    if (x[j]?.leadStage) {
+                        leadStage = [...leadStage, ...x[j].leadStage];
+                    }
+                }
+            }
+            leadStage = leadStage.filter(function (item, index, inputArray) {
+                return inputArray.indexOf(item) == index;
+            });
+            setDefualtLeadStage(leadStage);
+            setdefualtLeadStatus(leadStatus);
+            const newArr = path.map(v => ({ ...v, checked: false }));
+            setTempStore(newArr);
+            setLeadsFilterData(newArr);
+            defualtCall(newArr, leadStage, leadStatus);
+            setTempEmployee({});
+        }).catch((err) => {
+            console.log("EdddRROR", err);
+            setLoader(false);
+            setLeadsFilterDropDownText("All");
+            setSubMenu([]);
+        });
+    }
 
     return (
         <SafeAreaView style={styles.container}>
@@ -676,16 +714,6 @@ const LeadsScreen = ({ route, navigation }) => {
                     selectAll={async () => {
                         setSubMenu([]);
                         defualtCall(tempStore);
-                        // setLeadsFilterDropDownText('All');
-                        // setFromDateState(lastMonthFirstDate);
-                        // const tomorrowDate = moment().add(1, "day").format(dateFormat)
-                        // setToDateState(currentDate);
-                        // setLeadsFilterData(tempStore);
-                        // const newArr = tempStore.map(function (x) {
-                        //     x.checked = false;
-                        //     return x
-                        // });;
-                        // await applyLeadsFilter(newArr, lastMonthFirstDate, currentDate);
                     }}
                 />
                 <LeadsFilterComp visible={leadsSubMenuFilterVisible} modelList={subMenu} submitCallback={(x) => {
@@ -803,7 +831,6 @@ const LeadsScreen = ({ route, navigation }) => {
                             style={{ margin: 0, padding: 0 }} />
                     </View>
                 </Pressable>
-
             </View>
             {subMenu?.length > 1 &&
                 <View style={{ width: '90%', alignSelf: "center", backgroundColor: 'white', marginBottom: 5 }}>
@@ -845,8 +872,7 @@ const LeadsScreen = ({ route, navigation }) => {
                             <RefreshControl
                                 refreshing={selector.isLoading}
                                 // onRefresh={() => getEnquiryListFromServer(employeeId, selectedFromDate, selectedToDate)}
-                                progressViewOffset={200}
-                            />
+                                progressViewOffset={200} />
                         )}
                         showsVerticalScrollIndicator={false}
                         onEndReachedThreshold={0}
@@ -913,6 +939,13 @@ const LeadsScreen = ({ route, navigation }) => {
                         }}
                     />
                 </View>}
+            <TouchableOpacity
+                onPress={() => {
+                    setLoader(true); onRefresh();}}
+                style={[GlobalStyle.shadow, styles.floatingBtn]}
+            >
+                <Entypo size={30} name="refresh" color={Colors.WHITE} />
+            </TouchableOpacity>
         </SafeAreaView>
     );
 };
@@ -993,4 +1026,15 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: Colors.LIGHT_GRAY
     },
+    floatingBtn: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 65,
+        position: 'absolute',
+        bottom: 10,
+        right: 10,
+        height: 65,
+        backgroundColor: 'rgba(255,21,107,6)',
+        borderRadius: 100,
+    }
 });
