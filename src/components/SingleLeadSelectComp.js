@@ -74,7 +74,6 @@ const SingleLeadSelectComp = ({
                                     paddingHorizontal: 5,
                                 }}
                                 renderItem={({ item, index }) => {
-                                    console.log("kkjskjskjskjskjskjskjskskjskj", item);
                                     if (item?.menu !== "Contact" && item?.status === "Active" && true) {
                                         return (
                                             <TouchableOpacity

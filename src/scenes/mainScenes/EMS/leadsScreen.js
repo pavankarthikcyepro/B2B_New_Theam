@@ -517,8 +517,10 @@ const LeadsScreen = ({ route, navigation }) => {
             let model = [];
 
             for (let i = 0; i < newArray.length; i++) {
-                for (let j = 0; j < newArray[i].leadStage.length; j++) {
-                    leadStage.push(newArray[i].leadStage[j]);
+                if (newArray[i].leadStage){
+                    for (let j = 0; j < newArray[i].leadStage.length; j++) {
+                        leadStage.push(newArray[i].leadStage[j]);
+                    }
                 }
                 if (newArray[i].leadStatus) {
                     for (let j = 0; j < newArray[i].leadStatus.length; j++) {
