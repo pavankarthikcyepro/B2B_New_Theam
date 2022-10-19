@@ -13,9 +13,7 @@ import {
     getEmployeesList,
     getNewTargetParametersAllData,
     getReportingManagerList,
-    getTotalTargetParametersData,
     getUserWiseTargetParameters,
-    updateEmployeeDataBasedOnDelegate
 } from "../../../redux/liveLeadsReducer";
 import {useNavigation} from "@react-navigation/native";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
@@ -94,7 +92,6 @@ const ParametersScreen = ({route}) => {
         const isInsights = selector.isTeamPresent && !selector.isDSE;
         const isSelf = selector.isDSE;
         const dashboardSelfParamsData = isSelf ? selector.self_target_parameters_data : selector.insights_target_parameters_data;
-        console.log('3456789====> ', dashboardSelfParamsData)
         if (dashboardSelfParamsData.length > 0) {
             let tempRetail = [];
             tempRetail = dashboardSelfParamsData.filter((item) => {
@@ -166,7 +163,7 @@ const ParametersScreen = ({route}) => {
                     return item === "Admin Prod" || item === "App Admin" || item === "Manager" || item === "TL" || item === "General Manager" || item === "branch manager" || item === "Testdrive_Manager"
                 })
                 if (rolesArr.length > 0) {
-                    setIsTeamPresent(true)
+                    // setIsTeamPresent(true)
                 }
             }
         }
@@ -1182,7 +1179,7 @@ const ParametersScreen = ({route}) => {
                                     <Text style={{fontSize: 8}}>ACH</Text>
                                     <Text style={{fontSize: 8}}>TGT</Text>
                                 </View>
-                                <RenderSelfInsights data={selfInsightsData} type={togglePercentage}/>
+                                <RenderSelfInsights data={selfInsightsData} type={togglePercentage} navigation={navigation}/>
                             </View>
                         </>
                         <View

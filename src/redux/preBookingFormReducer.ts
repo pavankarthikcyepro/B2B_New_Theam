@@ -1526,7 +1526,7 @@ const prebookingFormSlice = createSlice({
         if (dmsOnRoadPriceDtoList.length > 0) {
         
 
-          const dataObj = dmsOnRoadPriceDtoList[2];
+          const dataObj = dmsOnRoadPriceDtoList[0];
           console.log('dataObjdataObj',dmsOnRoadPriceDtoList);
           state.insurance_type = dataObj.insuranceType ? dataObj.insuranceType : "";
           state.warranty = dataObj.warrantyName ? dataObj.warrantyName : "";
