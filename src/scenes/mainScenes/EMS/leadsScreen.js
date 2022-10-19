@@ -578,6 +578,13 @@ const LeadsScreen = ({ route, navigation }) => {
                     model.push(x);
                 }
             }
+            const leadStages = defLeadStage ? defLeadStage : leadStage.length === 0 ? defualtLeadStage : leadStage;
+            if (leadStages && leadStages.length > 0) {
+                const invoiceIndex = leadStages.findIndex(x => x === 'INVOICECOMPLETED');
+                if (invoiceIndex !== -1) {
+                    leadStages.splice(invoiceIndex, 1);
+                }
+            }
             let newPayload = {
                 "startdate": from ? from : selectedFromDate,
                 "enddate": to ? to : selectedToDate,
@@ -588,7 +595,7 @@ const LeadsScreen = ({ route, navigation }) => {
                 "status": "",
                 "offset": 0,
                 "limit": 500,
-                "leadStage": defLeadStage ? defLeadStage : leadStage.length === 0 ? defualtLeadStage : leadStage,
+                "leadStage": leadStages,
                 "leadStatus": defLeadStatus ? defLeadStatus : leadStatus.length === 0 ? defualtLeadStatus : leadStatus
             };
             Promise.all([dispatch(getLeadsList(newPayload))]).then((response) => {

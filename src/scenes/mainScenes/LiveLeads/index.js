@@ -311,7 +311,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
                 const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
                 const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
                 const payload = {
-                    "endDate": monthLastDate,
+                    "endDate": currentDate,
                     "loggedInEmpId": jsonObj.empId,
                     "startDate": '2021-01-01',
                     "levelSelected": null,
@@ -393,7 +393,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
         const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
         const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
         const payload = {
-            "endDate": monthLastDate,
+            "endDate": currentDate,
             "loggedInEmpId": empId,
             "startDate": monthFirstDate,
             "levelSelected": null,

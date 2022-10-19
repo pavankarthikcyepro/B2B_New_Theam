@@ -26,7 +26,7 @@ export const RenderEmployeeParameters = (parameter) => {
         }
     }
 
-    const { params, item, color, displayType, navigation } = parameter;
+    const { params, item, color, displayType, navigation, moduleType } = parameter;
     const paramsData = params.map(({ paramName }) => paramName);
     return (
         <>
@@ -35,9 +35,9 @@ export const RenderEmployeeParameters = (parameter) => {
                     const selectedParameter = item.targetAchievements.filter((x) => x.paramName === param)[0];
                     const enquiryParameter = item.targetAchievements.filter((item) => item.paramName === 'Enquiry')[0];
 
-                    const elementColor = getColor(Number(selectedParameter.achievment), Number(selectedParameter.target));
+                    // const elementColor = getColor(Number(selectedParameter.achievment), Number(selectedParameter.target));
                     return (
-                        <View key={param} style={[styles.itemBox, { width: param === "Accessories" ? 65 : 55 }]}>
+                        <View key={param} style={[styles.itemBox, { width: moduleType === 'live-leads' ? 68 : (param === "Accessories" ? 65 : 55) }]}>
                             <View style={{ justifyContent: 'center', alignItems: 'center', height: 23 }}>
                                 <Text onPress={() => {
                                     if (param == "Enquiry" || param == "Booking" || param == "INVOICE") {
@@ -49,10 +49,11 @@ export const RenderEmployeeParameters = (parameter) => {
                                                     empName: parameter.item.empName,
                                                     empId: parameter.item.empId,
                                                     orgId: parameter.item.orgId,
-                                                    branchId: parameter.item.branchId
+                                                    branchId: parameter.item.branchId,
+                                                    moduleType
                                                 }
                                             })
-                                        }, 1000);
+                                        }, 10);
                                     }
                                 }} style={[styles.totalText1, { color: Colors.RED }]}>
                                     {selectedParameter ?
@@ -64,10 +65,10 @@ export const RenderEmployeeParameters = (parameter) => {
                             </View>
                             {/*<View style={{height: 1, backgroundColor: 'black'}}/>*/}
                             <Text style={[styles.totalText, {
-                                width: param === "Accessories" ? 63 : 53,
+                                width: moduleType === 'live-leads' ? 66 : (param === "Accessories" ? 63 : 53),
                                 backgroundColor: 'lightgray'
                             }]}>
-                                {Number(selectedParameter.target)}
+                                {selectedParameter && selectedParameter.target ? Number(selectedParameter.target) : 0}
                             </Text>
                         </View>
                     );

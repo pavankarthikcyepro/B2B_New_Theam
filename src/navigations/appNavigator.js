@@ -363,7 +363,9 @@ const HomeStackNavigator = ({ navigation }) => {
             <HomeStack.Screen
                 name={HomeStackIdentifiers.sourceModel}
                 component={SourceModel}
-                options={{ title: "Source/Model" }}
+                options={{
+                    title: "Source/Model"
+                }}
             />
         </HomeStack.Navigator>
     );
@@ -874,12 +876,13 @@ const LiveLeadsStack = createStackNavigator();
 
 const LiveLeadsStackNavigator = ({ navigation }) => {
     return (
-        <LiveLeadsStack.Navigator screenOptions={screeOptionStyle}>
+        <LiveLeadsStack.Navigator initialRouteName={"LIVE_LEADS"}
+                                  screenOptions={screeOptionStyle}>
             <LiveLeadsStack.Screen
                 name={"LIVE_LEADS"}
                 component={LiveLeadsScreen}
                 options={{
-                    title: "Live leads",
+                    title: "Live Leads",
                     headerLeft: () => <MenuIcon navigation={navigation} />
                 }}
             />

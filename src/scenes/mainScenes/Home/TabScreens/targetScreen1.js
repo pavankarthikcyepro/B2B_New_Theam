@@ -362,7 +362,7 @@ const TargetScreen = ({route}) => {
     const renderData = (item, color) => {
         return (
             <View style={{flexDirection: 'row', backgroundColor: Colors.BORDER_COLOR}}>
-                <RenderEmployeeParameters item={item} displayType={togglePercentage} params={toggleParamsMetaData} navigation={navigation}/>
+                <RenderEmployeeParameters item={item} displayType={togglePercentage} params={toggleParamsMetaData} navigation={navigation} moduleType={'home'}/>
             </View>
         )
     }
@@ -770,7 +770,8 @@ const TargetScreen = ({route}) => {
                                                         headerTitle: item.empName,
                                                         loggedInEmpId: selector.login_employee_details.empId,
                                                         orgId: selector.login_employee_details.orgId,
-                                                        type: 'TEAM'
+                                                        type: 'TEAM',
+                                                        moduleType: 'home'
                                                     })
                                             }}>
                                                 <Text style={{
@@ -837,7 +838,8 @@ const TargetScreen = ({route}) => {
                                                                             navigation.navigate(AppNavigator.HomeStackIdentifiers.sourceModel, {
                                                                                 empId: innerItem1.empId,
                                                                                 headerTitle: innerItem1.empName,
-                                                                                type: 'TEAM'
+                                                                                type: 'TEAM',
+                                                                                moduleType: 'home'
                                                                             })
                                                                         }}>
                                                                             <Text style={{
@@ -950,7 +952,8 @@ const TargetScreen = ({route}) => {
                                                                                             navigation.navigate(AppNavigator.HomeStackIdentifiers.sourceModel, {
                                                                                                 empId: innerItem2.empId,
                                                                                                 headerTitle: innerItem2.empName,
-                                                                                                type: 'TEAM'
+                                                                                                type: 'TEAM',
+                                                                                                moduleType: 'home'
                                                                                             })
                                                                                         }}>
                                                                                             <Text style={{
@@ -1064,7 +1067,8 @@ const TargetScreen = ({route}) => {
                                                                                                                 navigation.navigate(AppNavigator.HomeStackIdentifiers.sourceModel, {
                                                                                                                     empId: innerItem3.empId,
                                                                                                                     headerTitle: innerItem3.empName,
-                                                                                                                    type: 'TEAM'
+                                                                                                                    type: 'TEAM',
+                                                                                                                    moduleType: 'home'
                                                                                                                 })
                                                                                                             }}>
                                                                                                             <Text
@@ -1428,7 +1432,8 @@ const TargetScreen = ({route}) => {
                                             empId: selector.login_employee_details.empId,
                                             headerTitle: 'Grand Total',
                                             loggedInEmpId: selector.login_employee_details.empId,
-                                            type: 'TEAM'
+                                            type: 'TEAM',
+                                            moduleType: 'home'
                                         })
                                     }}>
                                         <Text style={{
@@ -1510,7 +1515,8 @@ const TargetScreen = ({route}) => {
                                         empId: selector.login_employee_details.empId,
                                         headerTitle: 'Source/Model',
                                         loggedInEmpId: selector.login_employee_details.empId,
-                                        type: selector.isDSE ? 'SELF' : 'INSIGHTS'
+                                        type: selector.isDSE ? 'SELF' : 'INSIGHTS',
+                                        moduleType: 'home'
                                     })
                                 }}>
                                     <Text style={{
@@ -1540,7 +1546,7 @@ const TargetScreen = ({route}) => {
                                     <Text style={{fontSize: 8}}>ACH</Text>
                                     <Text style={{fontSize: 8}}>TGT</Text>
                                 </View>
-                                <RenderSelfInsights data={selfInsightsData} type={togglePercentage} navigation={navigation}/>
+                                <RenderSelfInsights data={selfInsightsData} type={togglePercentage} navigation={navigation} moduleType={'home'}/>
                             </View>
                         </>
                         <View
@@ -1994,10 +2000,10 @@ const TargetScreen = ({route}) => {
                     </>
                 )}
             </View>
-            {!selector.isLoading ? null : <LoaderComponent
-                visible={selector.isLoading}
-                onRequestClose={() => { }}
-            />}
+            {/*{!selector.isLoading ? null : <LoaderComponent*/}
+            {/*    visible={selector.isLoading}*/}
+            {/*    onRequestClose={() => { }}*/}
+            {/*/>}*/}
         </>
     );
 }
