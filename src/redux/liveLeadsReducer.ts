@@ -151,7 +151,8 @@ export const getTargetParametersData = createAsyncThunk("LIVE_LEADS/getTargetPar
     if (payload.isTeamPresent) {
         delete payload.isTeamPresent;
     }
-    const response = await client.post(URL.GET_TARGET_PARAMS(), payload)
+    // const response = await client.post(URL.GET_TARGET_PARAMS(), payload)
+    const response = await client.post(URL.GET_LIVE_LEADS_INSIGHTS(), payload)
     const json = await response.json()
 
 
@@ -161,9 +162,10 @@ export const getTargetParametersData = createAsyncThunk("LIVE_LEADS/getTargetPar
     return json;
 })
 
+// TEAM
 export const getTargetParametersAllData = createAsyncThunk("LIVE_LEADS/getTargetParametersAllData", async (payload: any, { rejectWithValue }) => {
 
-    const response = await client.post(URL.GET_TARGET_PARAMS_ALL(), payload)
+    const response = await client.post(URL.GET_LIVE_LEADS_TEAM(), payload)
     const json = await response.json()
 
     if (!response.ok) {
@@ -174,7 +176,7 @@ export const getTargetParametersAllData = createAsyncThunk("LIVE_LEADS/getTarget
 
 export const getNewTargetParametersAllData = createAsyncThunk("LIVE_LEADS/getNewTargetParametersAllData", async (payload: any, { rejectWithValue }) => {
 
-    const response = await client.post(URL.GET_TEAMS_TARGET_PARAMS(), payload)
+    const response = await client.post(URL.GET_LIVE_LEADS_TEAM(), payload)
     const json = await response.json()
 
     if (!response.ok) {
@@ -183,8 +185,9 @@ export const getNewTargetParametersAllData = createAsyncThunk("LIVE_LEADS/getNew
     return json;
 })
 
+// grand total for teams
 export const getTotalTargetParametersData = createAsyncThunk("LIVE_LEADS/getTotalTargetParametersData", async (payload: any, { rejectWithValue }) => {
-    const response = await client.post(URL.GET_TARGET_PARAMS(), payload);
+    const response = await client.post(URL.GET_LIVE_LEADS_INSIGHTS(), payload);
     const json = await response.json()
 
     if (!response.ok) {
@@ -205,7 +208,7 @@ export const getUserWiseTargetParameters = createAsyncThunk("LIVE_LEADS/getUserW
 })
 
 export const getTargetParametersEmpDataInsights = createAsyncThunk("LIVE_LEADS/getTargetParametersEmpDataInsights", async (payload: any, { rejectWithValue }) => {
-    const response = await client.post(URL.GET_LIVE_LEADS(), payload);
+    const response = await client.post(URL.GET_LIVE_LEADS_INSIGHTS(), payload);
     const json = await response.json();
     if (!response.ok) {
         return rejectWithValue(json);
@@ -213,8 +216,9 @@ export const getTargetParametersEmpDataInsights = createAsyncThunk("LIVE_LEADS/g
     return json;
 })
 
+// self
 export const getTargetParametersEmpData = createAsyncThunk("LIVE_LEADS/getTargetParametersEmpData", async (payload: any, { rejectWithValue }) => {
-    const response = await client.post(URL.GET_LIVE_LEADS(), payload);
+    const response = await client.post(URL.GET_LIVE_LEADS_SELF(), payload);
     const json = await response.json();
     if (!response.ok) {
     return rejectWithValue(json);
@@ -802,7 +806,7 @@ export const liveLeadsSlice = createSlice({
                 state.isLoading = false;
             })
             .addCase(getTargetParametersEmpDataInsights.pending, (state, action) => {
-                state.self_target_parameters_data = empData;
+                state.insights_target_parameters_data = empData;
                 state.isLoading = true;
             })
             .addCase(getTargetParametersEmpDataInsights.fulfilled, (state, action) => {
@@ -812,7 +816,7 @@ export const liveLeadsSlice = createSlice({
                         const {data, ...rest} = x;
                         x = rest;
                     })
-                    state.self_target_parameters_data = payloadData;
+                    state.insights_target_parameters_data = payloadData;
                     AsyncStore.storeData('TARGET_EMP', JSON.stringify(payloadData))
                 }
                 state.isLoading = false;

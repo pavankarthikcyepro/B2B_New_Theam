@@ -52,7 +52,6 @@ import ParametersScreen from "./parametersScreen";
 const LiveLeadsScreen = ({ route, navigation }) => {
     const selector = useSelector(state => state.liveLeadsReducer);
     const dispatch = useDispatch();
-    const [salesDataAry, setSalesDataAry] = useState([]);
     const [selectedBranchName, setSelectedBranchName] = useState("");
 
     const [dropDownKey, setDropDownKey] = useState("");
@@ -118,7 +117,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
             }
         } else {
         }
-    }, [selector.insights_target_parameters_data]) //selector.self_target_parameters_data
+    }, [selector.insights_target_parameters_data]) //selector.insights_target_parameters_data
 
     useEffect(async () => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
@@ -289,7 +288,12 @@ const LiveLeadsScreen = ({ route, navigation }) => {
                 console.log('I did everything!');
             });
             console.log("LOGIN DATA:>>>>>>>>>>>>>>>>>>>>>>>>>", JSON.stringify(jsonObj.hrmsRole));
-            if (jsonObj?.hrmsRole === "Admin" || jsonObj?.hrmsRole === "Admin Prod" || jsonObj?.hrmsRole === "App Admin" || jsonObj?.hrmsRole === "Manager" || jsonObj?.hrmsRole === "TL" || jsonObj?.hrmsRole === "General Manager" || jsonObj?.hrmsRole === "branch manager" || jsonObj?.hrmsRole === "Testdrive_Manager" || jsonObj?.hrmsRole === "MD" || jsonObj?.hrmsRole === "Business Head" || jsonObj?.hrmsRole === "Sales Manager" || jsonObj?.hrmsRole === "Sales Head"){
+            if (jsonObj?.hrmsRole === "Admin" || jsonObj?.hrmsRole === "Admin Prod" ||
+                jsonObj?.hrmsRole === "App Admin" || jsonObj?.hrmsRole === "Manager" ||
+                jsonObj?.hrmsRole === "TL" || jsonObj?.hrmsRole === "General Manager" ||
+                jsonObj?.hrmsRole === "branch manager" || jsonObj?.hrmsRole === "Testdrive_Manager" ||
+                jsonObj?.hrmsRole === "MD" || jsonObj?.hrmsRole === "Business Head" ||
+                jsonObj?.hrmsRole === "Sales Manager" || jsonObj?.hrmsRole === "Sales Head") {
                 dispatch(updateIsTeamPresent(true))
                 setIsTeamPresent(true)
                 if (jsonObj?.hrmsRole === 'MD' || jsonObj?.hrmsRole === "App Admin" ) {
@@ -309,7 +313,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
                 const payload = {
                     "endDate": monthLastDate,
                     "loggedInEmpId": jsonObj.empId,
-                    "startDate": monthFirstDate,
+                    "startDate": '2021-01-01',
                     "levelSelected": null,
                     "empId": jsonObj.empId,
                 }
@@ -326,6 +330,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
 
             if (jsonObj?.hrmsRole.toLowerCase().includes('dse')) {
                 dispatch(updateIsDSE(true))
+                dispatch(updateIsTeam(false))
             }
             else {
                 dispatch(updateIsDSE(false))
@@ -348,38 +353,38 @@ const LiveLeadsScreen = ({ route, navigation }) => {
             getDashboadTableDataFromServer(jsonObj.empId);
         }
     }
-
-    const getHomeData = async() => {
-        let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-        // console.log("$$$$$ LOGIN EMP:", employeeData);
-        if (employeeData) {
-            const jsonObj = JSON.parse(employeeData);
-            const dateFormat = "YYYY-MM-DD";
-            const currentDate = moment().format(dateFormat)
-            const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
-            const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
-            const payload = {
-                "endDate": monthLastDate,
-                "loggedInEmpId": jsonObj.empId,
-                "startDate": monthFirstDate,
-                "levelSelected": null,
-                "empId": jsonObj.empId
-            }
-            if(isTeamPresent){
-                dispatch(getTargetParametersData({
-                    ...payload,
-                    "pageNo": 0,
-                    "size": 5,
-                })),
-                    getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
-                        .then(x => console.log(`getAllTargetParametersDataFromServer:: success: ${x}`))
-                        .catch(y => console.log(`getAllTargetParametersDataFromServer:: error: ${y}`));
-            }
-            else{
-                getTargetParametersDataFromServer(payload).catch(y=> console.log('getTargetParametersDataFromServer:: home/index.js: ', y));
-            }
-        }
-    }
+    //
+    // const getHomeData = async() => {
+    //     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    //     // console.log("$$$$$ LOGIN EMP:", employeeData);
+    //     if (employeeData) {
+    //         const jsonObj = JSON.parse(employeeData);
+    //         const dateFormat = "YYYY-MM-DD";
+    //         const currentDate = moment().format(dateFormat)
+    //         const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+    //         const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+    //         const payload = {
+    //             "endDate": monthLastDate,
+    //             "loggedInEmpId": jsonObj.empId,
+    //             "startDate": monthFirstDate,
+    //             "levelSelected": null,
+    //             "empId": jsonObj.empId
+    //         }
+    //         if(isTeamPresent){
+    //             dispatch(getTargetParametersData({
+    //                 ...payload,
+    //                 "pageNo": 0,
+    //                 "size": 5,
+    //             })),
+    //                 getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
+    //                     .then(x => console.log(`getAllTargetParametersDataFromServer:: success: ${x}`))
+    //                     .catch(y => console.log(`getAllTargetParametersDataFromServer:: error: ${y}`));
+    //         }
+    //         else{
+    //             getTargetParametersDataFromServer(payload).catch(y=> console.log('getTargetParametersDataFromServer:: home/index.js: ', y));
+    //         }
+    //     }
+    // }
 
     const getDashboadTableDataFromServer = (empId) => {
         console.log('data for home =========> ')
@@ -401,10 +406,11 @@ const LiveLeadsScreen = ({ route, navigation }) => {
             dispatch(getEventTableList(payload)),
             // dispatch(getLostDropChartData(payload))
         ]).then(() => {
-            console.log("getDashboadTableDataFromServer");
+            console.log("getDashboadTableDataFromServer()");
         });
 
         getTaskTableDataFromServer(empId, payload);
+        payload.startDate = '2021-01-01'; // for live leads
         getTargetParametersDataFromServer(payload).catch(y=> console.log('587 home/index.js: ', y));
     }
 
@@ -482,8 +488,8 @@ const LiveLeadsScreen = ({ route, navigation }) => {
         }
         Promise.allSettled([
             //dispatch(getTargetParametersAllData(payload1)),
-            dispatch(getTotalTargetParametersData(payload2)),
-            dispatch(getNewTargetParametersAllData(payload2)),
+            dispatch(getTotalTargetParametersData(payload2)), // grand total
+            dispatch(getNewTargetParametersAllData(payload2)), // TEAM
             dispatch(isTeamPresentLocal ? getTargetParametersEmpDataInsights(payload1) : getTargetParametersEmpData(payload1))
         ]).then(() => {
             console.log("I did everything!");
@@ -496,7 +502,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
         if (Object.keys(selector.sales_data).length > 0) {
             const dataObj = selector.sales_data;
             const data = [dataObj.liveBookings, dataObj.complaints, dataObj.deliveries, dataObj.dropRevenue, dataObj.pendingOrders]
-            setSalesDataAry(data);
+            // setSalesDataAry(data);
         }
     }, [selector.sales_data])
 
@@ -701,13 +707,6 @@ const LiveLeadsScreen = ({ route, navigation }) => {
                     setDropDownData({ key: dropDownKey, value: item.name, id: item.id })
                 }}
             />
-            {/*<HeaderComp*/}
-            {/*    title={headerText}*/}
-            {/*    branchName={selectedBranchName}*/}
-            {/*    menuClicked={() => navigation.openDrawer()}*/}
-            {/*    branchClicked={() => moveToSelectBranch()}*/}
-            {/*    filterClicked={() => moveToFilter()}*/}
-            {/*/>*/}
             <View style={{ flex: 1, paddingHorizontal: 10 }}>
                 <FlatList
                     data={[1, 2, 3]}
@@ -719,13 +718,13 @@ const LiveLeadsScreen = ({ route, navigation }) => {
                         if (index === 0) {
                             return (
                                 <>
-                                    {isButtonPresent &&
-                                        <View style={{ width: '100%', alignItems: 'flex-end', marginBottom: 15 }}>
-                                            <TouchableOpacity style={{ width: 130, height: 30, backgroundColor: Colors.RED, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={downloadFileFromServer1}>
-                                                <Text style={{ fontSize: 14, fontWeight: '600', color: '#fff' }}>ETVBRL Report</Text>
-                                            </TouchableOpacity>
-                                        </View>
-                                    }
+                                    {/*{isButtonPresent &&*/}
+                                    {/*    <View style={{ width: '100%', alignItems: 'flex-end', marginBottom: 15 }}>*/}
+                                    {/*        <TouchableOpacity style={{ width: 130, height: 30, backgroundColor: Colors.RED, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={downloadFileFromServer1}>*/}
+                                    {/*            <Text style={{ fontSize: 14, fontWeight: '600', color: '#fff' }}>ETVBRL Report</Text>*/}
+                                    {/*        </TouchableOpacity>*/}
+                                    {/*    </View>*/}
+                                    {/*}*/}
                                     {!selector.isMD &&
                                         <>
                                             <View style={styles.rankView}>

@@ -4,7 +4,7 @@ import {IconButton, ProgressBar} from "react-native-paper";
 import {Colors} from "../../../../../styles";
 import moment from "moment/moment";
 import {achievementPercentage} from "../../../../../utils/helperFunctions";
-import { AppNavigator } from "../../../../../navigations";
+import {AppNavigator} from "../../../../../navigations";
 
 export const RenderSelfInsights = (args) => {
     const color = [
@@ -22,7 +22,7 @@ export const RenderSelfInsights = (args) => {
     const currentDate = moment().format(dateFormat)
     const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
     const dateDiff = ((new Date(monthLastDate).getTime() - new Date(currentDate).getTime()) / (1000 * 60 * 60 * 24));
-    const { data, type, navigation } = args;
+    const {data, type, navigation} = args;
     const enq = data && data.find(x => x && x.paramName === 'Enquiry');
     return (
         data.map((item, index) => {
