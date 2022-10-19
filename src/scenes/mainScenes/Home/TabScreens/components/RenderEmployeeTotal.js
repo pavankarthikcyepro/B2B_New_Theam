@@ -74,7 +74,7 @@ export const RenderEmployeeTotal = (userData) => {
                   {branches.length > 0 &&
                     branches
                       .find((x) => +x.branchId === +branchId)
-                      .branchName.split(" - ")[0]}
+                      ?.branchName.split(" - ")[0]}
                 </Text>
               </View>
             }
