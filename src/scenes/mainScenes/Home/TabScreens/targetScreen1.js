@@ -762,7 +762,7 @@ const TargetScreen = ({route}) => {
                                             marginTop: 12,
                                             width: '100%'
                                         }}>
-                                            <Text style={{fontSize: 12, fontWeight: '600'}}>{item.empName}</Text>
+                                            <Text style={{fontSize: 12, fontWeight: '600', textTransform: "capitalize"}}>{item.empName}</Text>
                                             <Pressable onPress={() => {
                                                 navigation.navigate(AppNavigator.HomeStackIdentifiers.sourceModel,
                                                     {
