@@ -278,7 +278,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   useEffect(() => {
     const interval = setInterval(() => {
       // if (enqDetails?.leadStage === "ENQUIRY" && enqDetails?.leadStatus === null) {
-      updateEnquiry();
+      // updateEnquiry();
       // }
     }, 5000);
     return () => {
@@ -609,7 +609,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           let tempAddr = [];
           if (res.length > 0) {
             for (let i = 0; i < res.length; i++) {
-              if (res[i].Block === selector.village) {
+              if (res[i].Block === selector.village || res[i].Name === selector.village) {
                 setDefaultAddress(res[i]);
               }
               tempAddr.push({ label: res[i].Name, value: res[i] });
@@ -672,12 +672,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       );
       // Update Attachment details
 
-      saveAttachmentDetailsInLocalObject(dmsLeadDto.dmsAttachments);
+      saveAttachmentDetailsInLocalObject(dmsLeadDto.dmsAttachments, dmsLeadDto.dmsExchagedetails);
       dispatch(updateDmsAttachmentDetails(dmsLeadDto.dmsAttachments));
     }
   }, [selector.enquiry_details_response]); //selector.enquiry_details_response
 
-  const saveAttachmentDetailsInLocalObject = (dmsAttachments) => {
+  const saveAttachmentDetailsInLocalObject = (dmsAttachments, exchangeDoc) => {
     if (dmsAttachments.length > 0) {
       const dataObj = {};
       dmsAttachments.forEach((item, index) => {
@@ -689,6 +689,27 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         };
         dataObj[item.documentType] = obj;
       });
+      function isEmpty(obj) {
+        return Object.keys(obj).length === 0;
+      }
+      if (!isEmpty(exchangeDoc[0])) {
+        const obj = {
+          documentPath: exchangeDoc[0]?.regDocumentPath,
+          documentType: "REGDOC",
+          fileName: exchangeDoc[0]?.regDocumentPath?.split("/")?.pop(),
+          keyName: exchangeDoc[0]?.regDocumentKey,
+        };
+        dataObj["REGDOC"] = obj;
+        if (exchangeDoc[0]?.insuranceAvailable == "true") {
+          const obj = {
+            documentPath: exchangeDoc[0]?.insuranceDocumentPath,
+            documentType: "insurance",
+            fileName: exchangeDoc[0]?.insuranceDocumentPath?.split("/")?.pop(),
+            keyName: exchangeDoc[0]?.insuranceDocumentKey,
+          };
+          dataObj["insurance"] = obj;
+        }
+      }
       setUploadedImagesDataObj({ ...dataObj });
     }
   };
@@ -2832,6 +2853,23 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     );
   }
 
+  const isPermanent = () => {
+    if (
+      selector?.p_pincode == selector?.pincode &&
+      selector?.p_houseNum == selector?.houseNum &&
+      selector?.p_streetName == selector?.streetName &&
+      selector?.p_village == selector?.village &&
+      selector?.p_mandal == selector?.mandal &&
+      selector?.p_city == selector?.city &&
+      selector?.p_district == selector?.district &&
+      selector?.p_state == selector?.state
+    ) {
+      return "YES"
+    } else {
+      return "NO"
+    }
+  }
+
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
       <ImagePickerComponent
@@ -3174,7 +3212,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     />
                     <TextinputComp
                       style={styles.textInputStyle}
-                      value={selector.age}
+                      value={selector?.age?.toString()}
                       label={"Age"}
                       keyboardType={"phone-pad"}
                       maxLength={10}
@@ -3732,7 +3770,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     label={"Yes"}
                     value={"yes"}
                     status={
-                      selector.is_permanent_address_same === "YES"
+                      selector.is_permanent_address_same === "YES" || isPermanent() === "YES"
                         ? true
                         : false
                     }
@@ -5758,7 +5796,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <View>
                       <View style={styles.select_image_bck_vw}>
                         <ImageSelectItem
-                          name={"Upload Insurence"}
+                          name={"Upload Insurance"}
                           onPress={() =>
                             dispatch(setImagePicker("UPLOAD_INSURENCE"))
                           }
