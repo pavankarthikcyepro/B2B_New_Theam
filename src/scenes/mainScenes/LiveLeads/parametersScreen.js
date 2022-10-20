@@ -36,6 +36,7 @@ const ParametersScreen = ({route}) => {
     const [bookingData, setBookingData] = useState(null);
     const [enqData, setEnqData] = useState(null);
     const [contactData, setContactData] = useState(null);
+    const [selectedName, setSelectedName] = useState(null);
 
     const [selfInsightsData, setSelfInsightsData] = useState([]);
 
@@ -52,16 +53,17 @@ const ParametersScreen = ({route}) => {
 
     const paramsMetadata = [
         // 'Enquiry', 'Test Drive', 'Home Visit', 'Booking', 'INVOICE', 'Finance', 'Insurance', 'Exchange', 'EXTENDEDWARRANTY', 'Accessories'
+        {color: '#FA03B9', paramName: 'PreEnquiry', shortName: 'Con', initial: 'C', toggleIndex: 0},
         {color: '#FA03B9', paramName: 'Enquiry', shortName: 'Enq', initial: 'E', toggleIndex: 0},
-        {color: '#FA03B9', paramName: 'Test Drive', shortName: 'TD', initial: 'T', toggleIndex: 0},
-        {color: '#9E31BE', paramName: 'Home Visit', shortName: 'Visit', initial: 'V', toggleIndex: 0},
+        // {color: '#FA03B9', paramName: 'Test Drive', shortName: 'TD', initial: 'T', toggleIndex: 0},
+        // {color: '#9E31BE', paramName: 'Home Visit', shortName: 'Visit', initial: 'V', toggleIndex: 0},
         {color: '#1C95A6', paramName: 'Booking', shortName: 'Bkg', initial: 'B', toggleIndex: 0},
         {color: '#C62159', paramName: 'INVOICE', shortName: 'Retail', initial: 'R', toggleIndex: 0},
-        {color: '#9E31BE', paramName: 'Exchange', shortName: 'Exg', initial: 'Ex', toggleIndex: 1},
-        {color: '#EC3466', paramName: 'Finance', shortName: 'Fin', initial: 'F', toggleIndex: 1},
-        {color: '#1C95A6', paramName: 'Insurance', shortName: 'Ins', initial: 'I', toggleIndex: 1},
-        {color: '#1C95A6', paramName: 'EXTENDEDWARRANTY', shortName: 'ExW', initial: 'ExW', toggleIndex: 1},
-        {color: '#C62159', paramName: 'Accessories', shortName: 'Acc', initial: 'A', toggleIndex: 1},
+        // {color: '#9E31BE', paramName: 'Exchange', shortName: 'Exg', initial: 'Ex', toggleIndex: 1},
+        // {color: '#EC3466', paramName: 'Finance', shortName: 'Fin', initial: 'F', toggleIndex: 1},
+        // {color: '#1C95A6', paramName: 'Insurance', shortName: 'Ins', initial: 'I', toggleIndex: 1},
+        // {color: '#1C95A6', paramName: 'EXTENDEDWARRANTY', shortName: 'ExW', initial: 'ExW', toggleIndex: 1},
+        // {color: '#C62159', paramName: 'Accessories', shortName: 'Acc', initial: 'A', toggleIndex: 1},
     ]
 
     const getEmployeeListFromServer = async (user) => {
@@ -232,7 +234,7 @@ const ParametersScreen = ({route}) => {
     const renderData = (item, color) => {
         return (
             <View style={{flexDirection: 'row', backgroundColor: Colors.BORDER_COLOR}}>
-                <RenderEmployeeParameters item={item} displayType={togglePercentage} params={toggleParamsMetaData} navigation={navigation}/>
+                <RenderEmployeeParameters item={item} displayType={togglePercentage} params={toggleParamsMetaData} navigation={navigation} moduleType={'live-leads'}/>
             </View>
         )
     }
@@ -272,7 +274,7 @@ const ParametersScreen = ({route}) => {
                 let payload = {
                     "orgId": jsonObj.orgId,
                     "selectedEmpId": item.empId,
-                    "endDate": monthLastDate,
+                    "endDate": currentDate,
                     "loggedInEmpId": jsonObj.empId,
                     "empId": item.empId,
                     "startDate": monthFirstDate,
@@ -324,37 +326,37 @@ const ParametersScreen = ({route}) => {
                             display: 'flex',
                             flexDirection: 'row',
                             alignItems: 'center',
-                            justifyContent: 'center',
+                            justifyContent: 'flex-end',
                             borderBottomWidth: 2,
                             borderBottomColor: Colors.RED,
                             paddingBottom: 8
                         }}>
-                            <SegmentedControl
-                                style={{
-                                    marginHorizontal: 4,
-                                    justifyContent: 'center',
-                                    alignSelf: 'flex-end',
-                                    height: 24,
-                                    marginTop: 8,
-                                    width: '75%'
-                                }}
-                                values={['ETVBRL', 'Allied', 'View All']}
-                                selectedIndex={toggleParamsIndex}
-                                tintColor={Colors.RED}
-                                fontStyle={{color: Colors.BLACK, fontSize: 10}}
-                                activeFontStyle={{color: Colors.WHITE, fontSize: 10}}
-                                onChange={event => {
-                                    const index = event.nativeEvent.selectedSegmentIndex;
-                                    let data = [...paramsMetadata];
-                                    if (index !== 2) {
-                                        data = data.filter(x => x.toggleIndex === index);
-                                    } else {
-                                        data = [...paramsMetadata];
-                                    }
-                                    setToggleParamsMetaData([...data]);
-                                    setToggleParamsIndex(index);
-                                }}
-                            />
+                            {/*<SegmentedControl*/}
+                            {/*    style={{*/}
+                            {/*        marginHorizontal: 4,*/}
+                            {/*        justifyContent: 'center',*/}
+                            {/*        alignSelf: 'flex-end',*/}
+                            {/*        height: 24,*/}
+                            {/*        marginTop: 8,*/}
+                            {/*        width: '75%'*/}
+                            {/*    }}*/}
+                            {/*    values={['ETVBRL', 'Allied', 'View All']}*/}
+                            {/*    selectedIndex={toggleParamsIndex}*/}
+                            {/*    tintColor={Colors.RED}*/}
+                            {/*    fontStyle={{color: Colors.BLACK, fontSize: 10}}*/}
+                            {/*    activeFontStyle={{color: Colors.WHITE, fontSize: 10}}*/}
+                            {/*    onChange={event => {*/}
+                            {/*        const index = event.nativeEvent.selectedSegmentIndex;*/}
+                            {/*        let data = [...paramsMetadata];*/}
+                            {/*        if (index !== 2) {*/}
+                            {/*            data = data.filter(x => x.toggleIndex === index);*/}
+                            {/*        } else {*/}
+                            {/*            data = [...paramsMetadata];*/}
+                            {/*        }*/}
+                            {/*        setToggleParamsMetaData([...data]);*/}
+                            {/*        setToggleParamsIndex(index);*/}
+                            {/*    }}*/}
+                            {/*/>*/}
                             <View style={{height: 24, width: '20%', marginLeft: 4}}>
                                 <View style={styles.percentageToggleView}>
                                     <PercentageToggleControl toggleChange={(x) => setTogglePercentage(x)}/>
@@ -371,7 +373,7 @@ const ParametersScreen = ({route}) => {
                                 paddingBottom: 4,
                                 borderBottomColor: Colors.GRAY
                             }}>
-                                <View style={{width: 60, height: 20, marginRight: 5}}>
+                                <View style={{width: 70, height: 20, marginRight: 5}}>
 
                                 </View>
                                 <View style={{width: '100%', height: 20, flexDirection: 'row'}}>
@@ -409,7 +411,8 @@ const ParametersScreen = ({route}) => {
                                                         headerTitle: item.empName,
                                                         loggedInEmpId: selector.login_employee_details.empId,
                                                         orgId: selector.login_employee_details.orgId,
-                                                        type: 'TEAM'
+                                                        type: 'TEAM',
+                                                        moduleType: 'live-leads'
                                                     })
                                             }}>
                                                 <Text style={{
@@ -476,7 +479,8 @@ const ParametersScreen = ({route}) => {
                                                                             navigation.navigate(AppNavigator.HomeStackIdentifiers.sourceModel, {
                                                                                 empId: innerItem1.empId,
                                                                                 headerTitle: innerItem1.empName,
-                                                                                type: 'TEAM'
+                                                                                type: 'TEAM',
+                                                                                moduleType: 'live-leads'
                                                                             })
                                                                         }}>
                                                                             <Text style={{
@@ -517,7 +521,7 @@ const ParametersScreen = ({route}) => {
                                                                                                           let payload = {
                                                                                                               "orgId": jsonObj.orgId,
                                                                                                               "selectedEmpId": innerItem1.empId,
-                                                                                                              "endDate": monthLastDate,
+                                                                                                              "endDate": currentDate,
                                                                                                               "loggedInEmpId": jsonObj.empId,
                                                                                                               "empId": innerItem1.empId,
                                                                                                               "startDate": monthFirstDate,
@@ -589,7 +593,8 @@ const ParametersScreen = ({route}) => {
                                                                                             navigation.navigate(AppNavigator.HomeStackIdentifiers.sourceModel, {
                                                                                                 empId: innerItem2.empId,
                                                                                                 headerTitle: innerItem2.empName,
-                                                                                                type: 'TEAM'
+                                                                                                type: 'TEAM',
+                                                                                                moduleType: 'live-leads'
                                                                                             })
                                                                                         }}>
                                                                                             <Text style={{
@@ -630,7 +635,7 @@ const ParametersScreen = ({route}) => {
                                                                                                                           let payload = {
                                                                                                                               "orgId": jsonObj.orgId,
                                                                                                                               "selectedEmpId": innerItem2.empId,
-                                                                                                                              "endDate": monthLastDate,
+                                                                                                                              "endDate": currentDate,
                                                                                                                               "loggedInEmpId": jsonObj.empId,
                                                                                                                               "empId": innerItem2.empId,
                                                                                                                               "startDate": monthFirstDate,
@@ -703,7 +708,8 @@ const ParametersScreen = ({route}) => {
                                                                                                                 navigation.navigate(AppNavigator.HomeStackIdentifiers.sourceModel, {
                                                                                                                     empId: innerItem3.empId,
                                                                                                                     headerTitle: innerItem3.empName,
-                                                                                                                    type: 'TEAM'
+                                                                                                                    type: 'TEAM',
+                                                                                                                    moduleType: 'live-leads'
                                                                                                                 })
                                                                                                             }}>
                                                                                                             <Text
@@ -746,7 +752,7 @@ const ParametersScreen = ({route}) => {
                                                                                                                         let payload = {
                                                                                                                             "orgId": jsonObj.orgId,
                                                                                                                             "selectedEmpId": innerItem3.empId,
-                                                                                                                            "endDate": monthLastDate,
+                                                                                                                            "endDate": currentDate,
                                                                                                                             "loggedInEmpId": jsonObj.empId,
                                                                                                                             "empId": innerItem3.empId,
                                                                                                                             "startDate": monthFirstDate,
@@ -829,7 +835,7 @@ const ParametersScreen = ({route}) => {
                                                                                                                                         let payload = {
                                                                                                                                             "orgId": jsonObj.orgId,
                                                                                                                                             "selectedEmpId": innerItem4.empId,
-                                                                                                                                            "endDate": monthLastDate,
+                                                                                                                                            "endDate": currentDate,
                                                                                                                                             "loggedInEmpId": jsonObj.empId,
                                                                                                                                             "empId": innerItem4.empId,
                                                                                                                                             "startDate": monthFirstDate,
@@ -911,7 +917,7 @@ const ParametersScreen = ({route}) => {
                                                                                                                                                         let payload = {
                                                                                                                                                             "orgId": jsonObj.orgId,
                                                                                                                                                             "selectedEmpId": innerItem5.empId,
-                                                                                                                                                            "endDate": monthLastDate,
+                                                                                                                                                            "endDate": currentDate,
                                                                                                                                                             "loggedInEmpId": jsonObj.empId,
                                                                                                                                                             "empId": innerItem5.empId,
                                                                                                                                                             "startDate": monthFirstDate,
@@ -993,7 +999,7 @@ const ParametersScreen = ({route}) => {
                                                                                                                                                                         let payload = {
                                                                                                                                                                             "orgId": jsonObj.orgId,
                                                                                                                                                                             "selectedEmpId": innerItem6.empId,
-                                                                                                                                                                            "endDate": monthLastDate,
+                                                                                                                                                                            "endDate": currentDate,
                                                                                                                                                                             "loggedInEmpId": jsonObj.empId,
                                                                                                                                                                             "empId": innerItem6.empId,
                                                                                                                                                                             "startDate": monthFirstDate,
@@ -1067,7 +1073,8 @@ const ParametersScreen = ({route}) => {
                                             empId: selector.login_employee_details.empId,
                                             headerTitle: 'Grand Total',
                                             loggedInEmpId: selector.login_employee_details.empId,
-                                            type: 'TEAM'
+                                            type: 'TEAM',
+                                            moduleType: 'live-leads'
                                         })
                                     }}>
                                         <Text style={{
@@ -1081,7 +1088,7 @@ const ParametersScreen = ({route}) => {
 
                                     <View style={{flexDirection: 'row', height: 40}}>
                                         <View style={{
-                                            width: 60,
+                                            width: 70,
                                             minHeight: 40,
                                             justifyContent: 'space-between',
                                             alignItems: 'center',
@@ -1122,7 +1129,9 @@ const ParametersScreen = ({route}) => {
                                             }}>
                                                 <RenderGrandTotal totalParams={selector.totalParameters}
                                                                   displayType={togglePercentage}
-                                                                  params={toggleParamsMetaData}/>
+                                                                  params={toggleParamsMetaData}
+                                                                  moduleType={'live-leads'}
+                                                />
                                             </View>
                                         </View>
                                     </View>
@@ -1149,7 +1158,8 @@ const ParametersScreen = ({route}) => {
                                         empId: selector.login_employee_details.empId,
                                         headerTitle: 'Source/Model',
                                         loggedInEmpId: selector.login_employee_details.empId,
-                                        type: selector.isDSE ? 'SELF' : 'INSIGHTS'
+                                        type: selector.isDSE ? 'SELF' : 'INSIGHTS',
+                                        moduleType: 'live-leads'
                                     })
                                 }}>
                                     <Text style={{
@@ -1179,7 +1189,7 @@ const ParametersScreen = ({route}) => {
                                     <Text style={{fontSize: 8}}>ACH</Text>
                                     <Text style={{fontSize: 8}}>TGT</Text>
                                 </View>
-                                <RenderSelfInsights data={selfInsightsData} type={togglePercentage} navigation={navigation}/>
+                                <RenderSelfInsights data={selfInsightsData} type={togglePercentage} navigation={navigation} moduleType={'live-leads'}/>
                             </View>
                         </>
                         <View
@@ -1305,7 +1315,7 @@ export default ParametersScreen;
 
 export const RenderLevel1NameView = ({level, item, branchName = '', color, titleClick}) => {
     return (
-        <View style={{width: 60, justifyContent: 'center', textAlign: 'center', display: 'flex', flexDirection: 'row'}}>
+        <View style={{width: 70, justifyContent: 'center', textAlign: 'center', display: 'flex', flexDirection: 'row'}}>
             <View style={{justifyContent: 'center', alignItems: 'center'}}>
                 <TouchableOpacity style={{
                     width: 30,
@@ -1335,13 +1345,13 @@ export const RenderLevel1NameView = ({level, item, branchName = '', color, title
                 </View>}
             </View>
             <View style={{
-                width: '25%',
+                width: '35%',
                 justifyContent: 'center',
                 textAlign: 'center',
-                alignItems: 'center',
+                alignItems: 'flex-end',
                 display: 'flex',
                 flexDirection: 'column',
-                marginRight: 5
+                marginRight: 5,
             }}>
                 <Text style={{fontSize: 6, fontWeight: 'bold', paddingVertical: 6, height: 25}}>ACH</Text>
                 <Text style={{fontSize: 6, fontWeight: 'bold', paddingVertical: 6, height: 20}}>TGT</Text>
@@ -1362,7 +1372,7 @@ const styles = StyleSheet.create({
         width: '48%',
         justifyContent: 'space-between', alignItems: 'center', height: 30, backgroundColor: "#F5F5F5"
     },
-    itemBox: {width: 55, height: 30, justifyContent: 'center', alignItems: 'center'},
+    itemBox: {width: 68, height: 30, justifyContent: 'center', alignItems: 'center'},
     shuffleBGView: {
         width: 30,
         height: 30,

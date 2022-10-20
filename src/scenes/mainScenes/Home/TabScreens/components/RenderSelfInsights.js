@@ -22,7 +22,7 @@ export const RenderSelfInsights = (args) => {
     const currentDate = moment().format(dateFormat)
     const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
     const dateDiff = ((new Date(monthLastDate).getTime() - new Date(currentDate).getTime()) / (1000 * 60 * 60 * 24));
-    const {data, type, navigation} = args;
+    const {data, type, navigation, moduleType} = args;
     const enq = data && data.find(x => x && x.paramName === 'Enquiry');
     return (
         data.map((item, index) => {
@@ -50,6 +50,7 @@ export const RenderSelfInsights = (args) => {
                                 setTimeout(() => {
                                     navigation.navigate("LEADS", {
                                         param: param == "INVOICE" ? "Retail" : param,
+                                        moduleType
                                     })
                                 }, 1000);
                             }

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -13,11 +14,13 @@ import PercentageToggleControl from "./PercentageToggleControl";
 import URL from "../../../../../../networking/endpoints";
 import { useDispatch, useSelector } from "react-redux";
 import { getSourceModelDataForSelf } from "../../../../../../redux/homeReducer";
+import {IconButton} from "react-native-paper";
+import {AppNavigator} from "../../../../../../navigations";
 
 const SourceModel = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.homeReducer);
-  const { empId, loggedInEmpId, headerTitle, orgId, type } = route.params;
+  const { empId, loggedInEmpId, headerTitle, orgId, type, moduleType } = route.params;
   const [leadSource, setLeadSource] = useState([]);
   const [vehicleModel, setVehicleModel] = useState([]);
   const [leadSourceKeys, setLeadSourceKeys] = useState([]);
@@ -25,6 +28,22 @@ const SourceModel = ({ route, navigation }) => {
   const [isSourceIndex, setIsSourceIndex] = useState(0);
   const [displayType, setDisplayType] = useState(0);
   const [sourceModelTotals, setSourceModelTotals] = useState({});
+
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+          <IconButton
+              icon="arrow-left"
+              color={Colors.WHITE}
+              size={30}
+              onPress={() => {
+                moduleType === 'live-leads' ? navigation.navigate(AppNavigator.DrawerStackIdentifiers.liveLeads) : navigation.pop();
+              }}
+          />
+      )
+    })
+  }, [navigation])
 
   useEffect(async () => {
     navigation.setOptions({
