@@ -332,6 +332,122 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     const [isEdit, setIsEdit] = useState(false);
     const [isReciptDocUpload, setIsReciptDocUpload] = useState(false);
     const [isSubmitPress, setIsSubmitPress] = useState(false);
+    
+    const [isEditButtonShow, setIsEditButtonShow] = useState(false);
+    const [isSubmitCancelButtonShow, setIsSubmitCancelButtonShow] = useState(false);
+
+    // Edit buttons shows
+    useEffect(() => {
+      if (
+        selector &&
+        selector.pre_booking_details_response &&
+        selector.pre_booking_details_response.dmsLeadDto
+      ) {
+        const { leadStatus } = selector.pre_booking_details_response.dmsLeadDto;
+
+        let isEditFlag = false;
+
+        if (uploadedImagesDataObj.receipt && uploadedImagesDataObj.receipt.fileName) {
+          isEditFlag = false;
+        } else if (
+          (leadStatus === "PREBOOKINGCOMPLETED" || leadStatus === "REJECTED") &&
+          !isDropSelected
+        ) {
+          if (!userData.isManager || isLeadCreatedBySelf()) {
+            isEditFlag = true;
+          }
+        }
+
+        if (isEditFlag) {
+          setIsEditButtonShow(true);
+        } else {
+          setIsEditButtonShow(false);
+        }
+      }
+    }, [selector.pre_booking_details_response, uploadedImagesDataObj]);
+
+    // Check for lead created by manager
+    const isLeadCreatedBySelf = () => {
+      let isCreatedBy = false;
+      if (
+        userData &&
+        selector &&
+        selector.pre_booking_details_response &&
+        selector.pre_booking_details_response.dmsLeadDto
+      ) {
+        if (
+          userData.employeeName ==
+          selector.pre_booking_details_response.dmsLeadDto.createdBy
+        ) {
+          isCreatedBy = true;
+        }
+      }
+
+      return isCreatedBy;
+    }
+
+    // Submit buttons shows
+    const isSubmitShow = () => {
+      let isSubmitFlag = false;
+      if (!isDropSelected){
+        if (isSubmitCancelButtonShow) {
+          isSubmitFlag = true;
+        } else if (
+          selector &&
+          selector.pre_booking_details_response &&
+          selector.pre_booking_details_response.dmsLeadDto
+        ) {
+          const { leadStatus } =
+            selector.pre_booking_details_response.dmsLeadDto;
+
+          if (
+            selector.booking_amount !== "" &&
+            leadStatus === "ENQUIRYCOMPLETED"
+          ) {
+            if (!userData.isManager || isLeadCreatedBySelf()) {
+              isSubmitFlag = true;
+            }
+          }
+        }
+      }
+      return isSubmitFlag;
+    };
+
+    // Check for Input Fields Editable
+    const isInputsEditable = () => {
+      let isInputEditFlag = false;
+      if (
+        selector &&
+        selector.pre_booking_details_response &&
+        selector.pre_booking_details_response.dmsLeadDto
+      ) {
+        const { leadStatus } = selector.pre_booking_details_response.dmsLeadDto;
+        if (!userData.isManager || isLeadCreatedBySelf()) {
+          if (leadStatus === "ENQUIRYCOMPLETED") {
+            isInputEditFlag = true;
+          } else if (!isEditButtonShow && leadStatus !== "SENTFORAPPROVAL") {
+            isInputEditFlag = true;
+          }
+        }
+      }
+
+      return isInputEditFlag;
+    }
+
+    const isRejectRemarkEnable = () => {
+      let isRejectFlag = false;
+      if (!userData.isManager) {
+        if(!isEditButtonShow){
+          isRejectFlag = true;
+        }
+      } else if (!isLeadCreatedBySelf() && isRejectSelected) {
+        isRejectFlag = true;
+      } else if (isLeadCreatedBySelf() && !isEditButtonShow) {
+        isRejectFlag = true;
+      }
+
+      return isRejectFlag;
+    }
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -3079,7 +3195,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
               color={Colors.RED}
               style={{ padding: 0, margin: 0 }}
               size={15}
-              disabled={!isEdit}
               onPress={() => deteleButtonPressed(from)}
             />
           </View>
@@ -3318,7 +3433,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 >
                   <DropDownSelectionItem
                     label={"Salutation*"}
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     value={selector.salutation}
                     onPress={() =>
                       showDropDownModelMethod("SALUTATION", "Salutation")
@@ -3338,7 +3453,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ></Text>
                   <TextinputComp
                     style={{ height: 65, width: "100%" }}
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     value={selector.first_name}
                     label={"First Name*"}
                     maxLength={50}
@@ -3362,7 +3477,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ]}
                   ></Text>
                   <TextinputComp
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     style={{ height: 65, width: "100%" }}
                     value={selector.last_name}
                     label={"Last Name*"}
@@ -3387,7 +3502,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ]}
                   ></Text>
                   <TextinputComp
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     style={{ height: 65, width: "100%" }}
                     value={selector.mobile}
                     editable={false}
@@ -3411,7 +3526,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ]}
                   ></Text>
                   <TextinputComp
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     style={{ height: 65, width: "100%" }}
                     value={selector.email}
                     label={"Email ID*"}
@@ -3432,7 +3547,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ]}
                   ></Text>
                   <DropDownSelectionItem
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     label={"Enquiry Segment*"}
                     value={selector.enquiry_segment}
                     onPress={() =>
@@ -3454,7 +3569,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ]}
                   ></Text>
                   <DropDownSelectionItem
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     label={"Buyer Type*"}
                     value={selector.buyer_type}
                     onPress={() =>
@@ -3473,7 +3588,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ]}
                   ></Text>
                   <DropDownSelectionItem
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     label={"Customer Type*"}
                     value={selector.customer_type}
                     onPress={() =>
@@ -3494,7 +3609,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   {selector.enquiry_segment.toLowerCase() === "personal" ? (
                     <View>
                       <DropDownSelectionItem
-                        disabled={!isEdit}
+                        disabled={!isInputsEditable()}
                         label={"Gender*"}
                         value={selector.gender}
                         onPress={() =>
@@ -3513,7 +3628,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         ]}
                       ></Text>
                       <DateSelectItem
-                        disabled={!isEdit}
+                        disabled={!isInputsEditable()}
                         label={"Date Of Birth*"}
                         value={selector.date_of_birth}
                         onPress={() => dispatch(setDatePicker("DATE_OF_BIRTH"))}
@@ -3530,7 +3645,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         ]}
                       ></Text>
                       <TextinputComp
-                        disabled={!isEdit}
+                        disabled={!isInputsEditable()}
                         style={{ height: 65, width: "100%" }}
                         value={selector.age}
                         label={"Age"}
@@ -3544,7 +3659,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       />
                       <Text style={GlobalStyle.underline}></Text>
                       <DropDownSelectionItem
-                        disabled={!isEdit}
+                        disabled={!isInputsEditable()}
                         label={"Marital Status"}
                         value={selector.marital_status}
                         onPress={() =>
@@ -3577,7 +3692,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ]}
                 >
                   <TextinputComp
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     style={styles.textInputStyle}
                     value={selector.pincode}
                     label={"Pincode*"}
@@ -3609,7 +3724,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     <>
                       <Text style={GlobalStyle.underline}></Text>
                       <Dropdown
-                        disable={!isEdit}
+                        disable={!isInputsEditable()}
                         style={[styles.dropdownContainer]}
                         placeholderStyle={styles.placeholderStyle}
                         selectedTextStyle={styles.selectedTextStyle}
@@ -3645,7 +3760,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ></Text>
                   <View style={styles.radioGroupBcVw}>
                     <RadioTextItem
-                      disabled={!isEdit}
+                      disabled={!isInputsEditable()}
                       label={"Urban"}
                       value={"urban"}
                       status={selector.urban_or_rural === 1 ? true : false}
@@ -3659,7 +3774,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       }
                     />
                     <RadioTextItem
-                      disabled={!isEdit}
+                      disabled={!isInputsEditable()}
                       label={"Rural"}
                       value={"rural"}
                       status={selector.urban_or_rural === 2 ? true : false}
@@ -3675,7 +3790,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   </View>
                   <Text style={GlobalStyle.underline}></Text>
                   <TextinputComp
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     style={styles.textInputStyle}
                     value={selector.house_number}
                     // keyboardType={"number-pad"}
@@ -3699,7 +3814,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ]}
                   ></Text>
                   <TextinputComp
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     style={styles.textInputStyle}
                     value={selector.street_name}
                     label={"Street Name*"}
@@ -3725,7 +3840,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ]}
                   ></Text>
                   <TextinputComp
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     style={styles.textInputStyle}
                     value={selector.village}
                     label={"Village*"}
@@ -3748,7 +3863,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ]}
                   ></Text>
                   <TextinputComp
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     style={styles.textInputStyle}
                     value={selector.mandal}
                     label={"Mandal/Tahsil*"}
@@ -3771,7 +3886,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ]}
                   ></Text>
                   <TextinputComp
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     style={styles.textInputStyle}
                     value={selector.city}
                     label={"City*"}
@@ -3794,7 +3909,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ]}
                   ></Text>
                   <TextinputComp
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     style={styles.textInputStyle}
                     value={selector.district}
                     label={"District*"}
@@ -3817,7 +3932,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ]}
                   ></Text>
                   <TextinputComp
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     style={styles.textInputStyle}
                     value={selector.state}
                     label={"State*"}
@@ -3856,7 +3971,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   </View>
                   <View style={styles.radioGroupBcVw}>
                     <RadioTextItem
-                      disabled={!isEdit}
+                      disabled={!isInputsEditable()}
                       label={"Yes"}
                       value={"yes"}
                       status={
@@ -3874,7 +3989,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       }
                     />
                     <RadioTextItem
-                      disabled={!isEdit}
+                      disabled={!isInputsEditable()}
                       label={"No"}
                       value={"no"}
                       status={
@@ -3896,7 +4011,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   <Text style={GlobalStyle.underline}></Text>
 
                   <TextinputComp
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     style={styles.textInputStyle}
                     value={selector.p_pincode}
                     label={"Pincode*"}
@@ -3931,7 +4046,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     <>
                       <Text style={GlobalStyle.underline}></Text>
                       <Dropdown
-                        disabled={!isEdit}
+                        disabled={!isInputsEditable()}
                         style={[styles.dropdownContainer]}
                         placeholderStyle={styles.placeholderStyle}
                         selectedTextStyle={styles.selectedTextStyle}
@@ -3958,7 +4073,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                   <View style={styles.radioGroupBcVw}>
                     <RadioTextItem
-                      disabled={!isEdit}
+                      disabled={!isInputsEditable()}
                       label={"Urban"}
                       value={"urban"}
                       status={selector.p_urban_or_rural === 1 ? true : false}
@@ -3972,7 +4087,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       }
                     />
                     <RadioTextItem
-                      disabled={!isEdit}
+                      disabled={!isInputsEditable()}
                       label={"Rural"}
                       value={"rural"}
                       status={selector.p_urban_or_rural === 2 ? true : false}
@@ -3989,7 +4104,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   <Text style={GlobalStyle.underline}></Text>
 
                   <TextinputComp
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     style={styles.textInputStyle}
                     label={"H.No*"}
                     // keyboardType={"number-pad"}
@@ -4016,7 +4131,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ]}
                   ></Text>
                   <TextinputComp
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     style={styles.textInputStyle}
                     label={"Street Name*"}
                     maxLength={120}
@@ -4042,7 +4157,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ]}
                   ></Text>
                   <TextinputComp
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     style={styles.textInputStyle}
                     value={selector.p_village}
                     maxLength={50}
@@ -4068,7 +4183,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ]}
                   ></Text>
                   <TextinputComp
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     style={styles.textInputStyle}
                     value={selector.p_mandal}
                     maxLength={50}
@@ -4094,7 +4209,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ]}
                   ></Text>
                   <TextinputComp
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     style={styles.textInputStyle}
                     value={selector.p_city}
                     maxLength={50}
@@ -4117,7 +4232,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ]}
                   ></Text>
                   <TextinputComp
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     style={styles.textInputStyle}
                     value={selector.p_district}
                     label={"District*"}
@@ -4143,7 +4258,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ]}
                   ></Text>
                   <TextinputComp
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     style={styles.textInputStyle}
                     value={selector.p_state}
                     label={"State*"}
@@ -4189,7 +4304,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ]}
                 >
                   <TouchableOpacity
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     onPress={() => {
                       if (checkModelSelection()) {
                         scrollToPos(3);
@@ -4243,7 +4358,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         // <Pressable onPress={() => selectedItem(item, index)}>
                         <View>
                           <PreBookingModelListitemCom
-                            disabled={!isEdit}
+                            disabled={!isInputsEditable()}
                             modelOnclick={modelOnclick}
                             isPrimaryOnclick={isPrimaryOnclick}
                             index={index}
@@ -4311,7 +4426,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 >
                   {/* {isDataLoaded && */}
                   <DropDownSelectionItem
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     label={"Form60/PAN"}
                     value={selector.form_or_pan}
                     onPress={() =>
@@ -4323,7 +4438,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   {selector.form_or_pan === "PAN" && (
                     <View>
                       <TextinputComp
-                        disabled={!isEdit}
+                        disabled={!isInputsEditable()}
                         style={styles.textInputStyle}
                         value={selector.pan_number}
                         label={"PAN Number*"}
@@ -4352,7 +4467,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       <Text style={GlobalStyle.underline}></Text>
                       <View style={styles.select_image_bck_vw}>
                         <ImageSelectItem
-                          disabled={!isEdit}
+                          disabled={!isInputsEditable()}
                           name={"PAN"}
                           onPress={() => dispatch(setImagePicker("UPLOAD_PAN"))}
                         />
@@ -4360,13 +4475,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       {uploadedImagesDataObj.pan?.fileName ? (
                         <View style={{ flexDirection: "row" }}>
                           <TouchableOpacity
-                            disabled={
-                              userData.isManager
-                                ? isEdit
-                                  ? false
-                                  : true
-                                : false
-                            }
+                            disabled={!isInputsEditable()}
                             style={{
                               width: "20%",
                               height: 30,
@@ -4395,13 +4504,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           </TouchableOpacity>
                           <View style={{ width: "80%" }}>
                             <DisplaySelectedImage
-                              disabled={
-                                userData.isManager
-                                  ? isEdit
-                                    ? false
-                                    : true
-                                  : false
-                              }
+                              disabled={!isInputsEditable()}
                               fileName={uploadedImagesDataObj.pan.fileName}
                               from={"PAN"}
                             />
@@ -4416,7 +4519,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     <View>
                       <View style={styles.select_image_bck_vw}>
                         <ImageSelectItem
-                          disabled={!isEdit}
+                          disabled={!isInputsEditable()}
                           name={"Form60"}
                           onPress={() =>
                             dispatch(setImagePicker("UPLOAD_FORM60"))
@@ -4426,13 +4529,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       {uploadedImagesDataObj.form60?.fileName ? (
                         <View style={{ flexDirection: "row" }}>
                           <TouchableOpacity
-                            disabled={
-                              userData.isManager
-                                ? isEdit
-                                  ? false
-                                  : true
-                                : false
-                            }
+                            disabled={!isInputsEditable()}
                             style={{
                               width: "20%",
                               height: 30,
@@ -4461,13 +4558,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           </TouchableOpacity>
                           <View style={{ width: "80%" }}>
                             <DisplaySelectedImage
-                              disabled={
-                                userData.isManager
-                                  ? isEdit
-                                    ? false
-                                    : true
-                                  : false
-                              }
+                              disabled={!isInputsEditable()}
                               fileName={uploadedImagesDataObj.form60.fileName}
                               from={"FORM60"}
                             />
@@ -4482,7 +4573,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   {selector.enquiry_segment.toLowerCase() === "personal" ? (
                     <View>
                       <TextinputComp
-                        disabled={!isEdit}
+                        disabled={!isInputsEditable()}
                         style={styles.textInputStyle}
                         value={selector.adhaar_number}
                         label={"Aadhaar Number"}
@@ -4500,7 +4591,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       <Text style={GlobalStyle.underline} />
                       <View style={styles.select_image_bck_vw}>
                         <ImageSelectItem
-                          disabled={!isEdit}
+                          disabled={!isInputsEditable()}
                           name={"Upload Aadhaar"}
                           onPress={() =>
                             dispatch(setImagePicker("UPLOAD_ADHAR"))
@@ -4509,13 +4600,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         {uploadedImagesDataObj.aadhar?.fileName ? (
                           <View style={{ flexDirection: "row" }}>
                             <TouchableOpacity
-                              disabled={
-                                userData.isManager
-                                  ? isEdit
-                                    ? false
-                                    : true
-                                  : false
-                              }
+                              disabled={!isInputsEditable()}
                               style={{
                                 width: "20%",
                                 height: 30,
@@ -4546,13 +4631,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             </TouchableOpacity>
                             <View style={{ width: "80%" }}>
                               <DisplaySelectedImage
-                                disabled={
-                                  userData.isManager
-                                    ? isEdit
-                                      ? false
-                                      : true
-                                    : false
-                                }
+                                disabled={!isInputsEditable()}
                                 fileName={uploadedImagesDataObj.aadhar.fileName}
                                 from={"AADHAR"}
                               />
@@ -4570,7 +4649,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     selector.customer_type.toLowerCase() === "retired") ? (
                     <View>
                       <TextinputComp
-                        disabled={!isEdit}
+                        disabled={!isInputsEditable()}
                         style={styles.textInputStyle}
                         value={selector.employee_id}
                         label={"Employee ID"}
@@ -4587,7 +4666,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       <Text style={GlobalStyle.underline}></Text>
                       <View style={styles.select_image_bck_vw}>
                         <ImageSelectItem
-                          disabled={!isEdit}
+                          disabled={!isInputsEditable()}
                           name={"Employee ID"}
                           onPress={() =>
                             dispatch(setImagePicker("UPLOAD_EMPLOYEE_ID"))
@@ -4597,13 +4676,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       {uploadedImagesDataObj.employeeId?.fileName ? (
                         <View style={{ flexDirection: "row" }}>
                           <TouchableOpacity
-                            disabled={
-                              userData.isManager
-                                ? isEdit
-                                  ? false
-                                  : true
-                                : false
-                            }
+                            disabled={!isInputsEditable()}
                             style={{
                               width: "20%",
                               height: 30,
@@ -4634,13 +4707,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           </TouchableOpacity>
                           <View style={{ width: "80%" }}>
                             <DisplaySelectedImage
-                              disabled={
-                                userData.isManager
-                                  ? isEdit
-                                    ? false
-                                    : true
-                                  : false
-                              }
+                              disabled={!isInputsEditable()}
                               fileName={
                                 uploadedImagesDataObj.employeeId.fileName
                               }
@@ -4659,7 +4726,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     <View>
                       <View style={styles.select_image_bck_vw}>
                         <ImageSelectItem
-                          disabled={!isEdit}
+                          disabled={!isInputsEditable()}
                           name={"Last 3 months payslip"}
                           onPress={() =>
                             dispatch(setImagePicker("UPLOAD_3_MONTHS_PAYSLIP"))
@@ -4669,13 +4736,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       {uploadedImagesDataObj.payslips?.fileName ? (
                         <View style={{ flexDirection: "row" }}>
                           <TouchableOpacity
-                            disabled={
-                              userData.isManager
-                                ? isEdit
-                                  ? false
-                                  : true
-                                : false
-                            }
+                            disabled={!isInputsEditable()}
                             style={{
                               width: "20%",
                               height: 30,
@@ -4706,13 +4767,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           </TouchableOpacity>
                           <View style={{ width: "80%" }}>
                             <DisplaySelectedImage
-                              disabled={
-                                userData.isManager
-                                  ? isEdit
-                                    ? false
-                                    : true
-                                  : false
-                              }
+                              disabled={!isInputsEditable()}
                               fileName={uploadedImagesDataObj.payslips.fileName}
                               from={"3_MONTHS_PAYSLIP"}
                             />
@@ -4728,7 +4783,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     <View>
                       <View style={styles.select_image_bck_vw}>
                         <ImageSelectItem
-                          disabled={!isEdit}
+                          disabled={!isInputsEditable()}
                           name={"Patta Pass Book"}
                           onPress={() =>
                             dispatch(setImagePicker("UPLOAD_PATTA_PASS_BOOK"))
@@ -4738,13 +4793,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         {uploadedImagesDataObj.pattaPassBook?.fileName ? (
                         <View style={{ flexDirection: "row" }}>
                           <TouchableOpacity
-                            disabled={
-                              userData.isManager
-                                ? isEdit
-                                  ? false
-                                  : true
-                                : false
-                            }
+                            disabled={!isInputsEditable()}
                             style={{
                               width: "20%",
                               height: 30,
@@ -4775,14 +4824,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           </TouchableOpacity>
                           <View style={{ width: "80%" }}>
                             <DisplaySelectedImage
-                              disabled={
-                                userData.isManager
-                                  ? isEdit
-                                    ? false
-                                    : true
-                                  : false
-                              }
-                                fileName={uploadedImagesDataObj.pattaPassBook.fileName}
+                              disabled={!isInputsEditable()}
+                              fileName={uploadedImagesDataObj.pattaPassBook.fileName}
                               from={"PATTA_PASS_BOOK"}
                             />
                           </View>
@@ -4797,7 +4840,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     <View>
                       <View style={styles.select_image_bck_vw}>
                         <ImageSelectItem
-                          disabled={!isEdit}
+                          disabled={!isInputsEditable()}
                           name={"Pension Letter"}
                           onPress={() =>
                             dispatch(setImagePicker("UPLOAD_PENSION_LETTER"))
@@ -4807,13 +4850,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       {uploadedImagesDataObj.pension?.fileName ? (
                         <View style={{ flexDirection: "row" }}>
                           <TouchableOpacity
-                            disabled={
-                              userData.isManager
-                                ? isEdit
-                                  ? false
-                                  : true
-                                : false
-                            }
+                            disabled={!isInputsEditable()}
                             style={{
                               width: "20%",
                               height: 30,
@@ -4842,13 +4879,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           </TouchableOpacity>
                           <View style={{ width: "80%" }}>
                             <DisplaySelectedImage
-                              disabled={
-                                userData.isManager
-                                  ? isEdit
-                                    ? false
-                                    : true
-                                  : false
-                              }
+                              disabled={!isInputsEditable()}
                               fileName={uploadedImagesDataObj.pension.fileName}
                               from={"PENSION_LETTER"}
                             />
@@ -4864,7 +4895,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     <View>
                       <View style={styles.select_image_bck_vw}>
                         <ImageSelectItem
-                          disabled={!isEdit}
+                          disabled={!isInputsEditable()}
                           name={"IMA Certificate"}
                           onPress={() =>
                             dispatch(setImagePicker("UPLOAD_IMA_CERTIFICATE"))
@@ -4874,13 +4905,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       {uploadedImagesDataObj.imaCertificate?.fileName ? (
                         <View style={{ flexDirection: "row" }}>
                           <TouchableOpacity
-                            disabled={
-                              userData.isManager
-                                ? isEdit
-                                  ? false
-                                  : true
-                                : false
-                            }
+                            disabled={!isInputsEditable()}
                             style={{
                               width: "20%",
                               height: 30,
@@ -4913,13 +4938,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           </TouchableOpacity>
                           <View style={{ width: "80%" }}>
                             <DisplaySelectedImage
-                              disabled={
-                                userData.isManager
-                                  ? isEdit
-                                    ? false
-                                    : true
-                                  : false
-                              }
+                              disabled={!isInputsEditable()}
                               fileName={
                                 uploadedImagesDataObj.imaCertificate.fileName
                               }
@@ -4937,7 +4956,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     <View>
                       <View style={styles.select_image_bck_vw}>
                         <ImageSelectItem
-                          disabled={!isEdit}
+                          disabled={!isInputsEditable()}
                           name={"Leasing Confirmation"}
                           onPress={() =>
                             dispatch(
@@ -4949,13 +4968,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         {uploadedImagesDataObj.leasingConfirmationLetter?.fileName ? (
                         <View style={{ flexDirection: "row" }}>
                           <TouchableOpacity
-                            disabled={
-                              userData.isManager
-                                ? isEdit
-                                  ? false
-                                  : true
-                                : false
-                            }
+                            disabled={!isInputsEditable()}
                             style={{
                               width: "20%",
                               height: 30,
@@ -4988,13 +5001,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           </TouchableOpacity>
                           <View style={{ width: "80%" }}>
                             <DisplaySelectedImage
-                              disabled={
-                                userData.isManager
-                                  ? isEdit
-                                    ? false
-                                    : true
-                                  : false
-                              }
+                              disabled={!isInputsEditable()}
                               fileName={
                                 uploadedImagesDataObj.leasingConfirmationLetter.fileName
                               }
@@ -5012,7 +5019,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     <View>
                       <View style={styles.select_image_bck_vw}>
                         <ImageSelectItem
-                          disabled={!isEdit}
+                          disabled={!isInputsEditable()}
                           name={"Address Proof"}
                           onPress={() =>
                             dispatch(setImagePicker("UPLOAD_ADDRESS_PROOF"))
@@ -5105,6 +5112,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     <View>
                       <DropDownSelectionItem
                         label={"Customer Type Category"}
+                        disabled={!isInputsEditable()}
                         value={selector.customer_type_category}
                         onPress={() =>
                           showDropDownModelMethod(
@@ -5124,6 +5132,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   selector.customer_type_category == "B2C" ? (
                     <View>
                       <TextinputComp
+                        disabled={!isInputsEditable()}
                         style={styles.textInputStyle}
                         value={selector.gstin_number}
                         maxLength={15}
@@ -5166,7 +5175,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         onPress={() =>
                           dispatch(setImagePicker("UPLOAD_RELATION_PROOF"))
                         }
-                        disabled={!isEdit}
+                        disabled={!isInputsEditable()}
                       />
                     </View>
                     {uploadedImagesDataObj.relationshipProof?.fileName ? (
@@ -5180,7 +5189,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             justifyContent: "center",
                             alignItems: "center",
                           }}
-                          disabled={!isEdit}
+                          disabled={!isInputsEditable()}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.relationshipProof
@@ -5319,13 +5328,15 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       }}
                     >
                       <TextInput
-                        editable={isEdit}
+                        editable={isInputsEditable()}
                         value={taxPercent}
                         style={[
                           {
                             fontSize: 14,
                             fontWeight: "400",
-                            color: isEdit ? Colors.BLACK : Colors.GRAY,
+                            color: isInputsEditable()
+                              ? Colors.BLACK
+                              : Colors.GRAY,
                           },
                         ]}
                         keyboardType={"number-pad"}
@@ -5355,7 +5366,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   <View style={styles.symbolview}>
                     <View style={{ width: "70%" }}>
                       <DropDownSelectionItem
-                        disabled={!isEdit}
+                        disabled={!isInputsEditable()}
                         label={"Insurance Type"}
                         value={selector.insurance_type}
                         onPress={() =>
@@ -5384,7 +5395,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             ? selector.add_on_insurance
                             : ""
                         }
-                        //disabled={!selector.insurance_type}
                         onPress={() =>
                           showDropDownModelMethod(
                             "INSURENCE_ADD_ONS",
@@ -5407,7 +5417,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   <View style={styles.symbolview}>
                     <View style={{ width: "70%" }}>
                       <DropDownSelectionItem
-                        disabled={!isEdit}
+                        disabled={!isInputsEditable()}
                         label={"Warranty"}
                         value={selector.warranty}
                         onPress={() =>
@@ -5422,7 +5432,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   <Text style={GlobalStyle.underline}></Text>
 
                   <CheckboxTextAndAmountComp
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     title={"Handling Charges:"}
                     amount={
                       handlingChargSlctd
@@ -5443,7 +5453,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   <Text style={GlobalStyle.underline}></Text>
 
                   <CheckboxTextAndAmountComp
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     title={"Essential Kit:"}
                     amount={
                       essentialKitSlctd
@@ -5470,7 +5480,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   <Text style={GlobalStyle.underline}></Text>
 
                   <Pressable
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     onPress={() =>
                       navigation.navigate(
                         AppNavigator.EmsStackIdentifiers.paidAccessories,
@@ -5513,7 +5523,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ) : null}
 
                   <CheckboxTextAndAmountComp
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     title={"Fast Tag:"}
                     amount={
                       fastTagSlctd
@@ -5577,7 +5587,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ]}
                 >
                   <TextinputComp
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     style={styles.offerPriceTextInput}
                     label={"Consumer Offer:"}
                     value={selector.consumer_offer}
@@ -5595,7 +5605,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   />
                   <Text style={GlobalStyle.underline}></Text>
                   <TextinputComp
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     style={styles.offerPriceTextInput}
                     label={"Exchange Offer:"}
                     value={selector.exchange_offer}
@@ -5613,7 +5623,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   />
                   <Text style={GlobalStyle.underline}></Text>
                   <TextinputComp
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     style={styles.offerPriceTextInput}
                     label={"Corporate Offer:"}
                     value={selector.corporate_offer}
@@ -5631,7 +5641,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   />
                   <Text style={GlobalStyle.underline}></Text>
                   <TextinputComp
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     style={styles.offerPriceTextInput}
                     label={"Promotional Offer:"}
                     value={selector.promotional_offer}
@@ -5649,7 +5659,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   />
                   <Text style={GlobalStyle.underline}></Text>
                   <TextinputComp
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     style={styles.offerPriceTextInput}
                     label={"Cash Discount:"}
                     value={selector.cash_discount}
@@ -5667,7 +5677,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   />
                   <Text style={GlobalStyle.underline}></Text>
                   <TextinputComp
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     style={styles.offerPriceTextInput}
                     label={"Foc Accessories:"}
                     value={selector.for_accessories}
@@ -5685,7 +5695,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   />
                   <Text style={GlobalStyle.underline}></Text>
                   <TextinputComp
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     style={styles.offerPriceTextInput}
                     label={"Insurance Discount:"}
                     value={selector.insurance_discount}
@@ -5703,7 +5713,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   />
                   <Text style={GlobalStyle.underline}></Text>
                   <TextinputComp
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     style={styles.offerPriceTextInput}
                     label={"Accessories Discount:"}
                     value={selector.accessories_discount}
@@ -5748,7 +5758,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     </View>
                                 </View> */}
                   <TextinputComp
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     style={styles.offerPriceTextInput}
                     label={"Additional Offer 1:"}
                     value={selector.additional_offer_1}
@@ -5766,7 +5776,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   />
                   <Text style={GlobalStyle.underline}></Text>
                   <TextinputComp
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     style={styles.offerPriceTextInput}
                     label={"Additional Offer 2:"}
                     value={selector.additional_offer_2}
@@ -5812,7 +5822,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ]}
                 >
                   <DropDownSelectionItem
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     label={"Retail Finance*"}
                     value={selector.retail_finance}
                     onPress={() =>
@@ -5838,7 +5848,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   {selector.retail_finance === "Out House" ? (
                     <View>
                       <TextinputComp
-                        disabled={!isEdit}
+                        disabled={!isInputsEditable()}
                         style={{ height: 65, width: "100%" }}
                         label={"Bank/Finance Name"}
                         value={selector.bank_or_finance_name}
@@ -5854,7 +5864,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       <Text style={GlobalStyle.underline}></Text>
 
                       <TextinputComp
-                        disabled={!isEdit}
+                        disabled={!isInputsEditable()}
                         style={{ height: 65, width: "100%" }}
                         label={"Location"}
                         value={selector.location}
@@ -5871,7 +5881,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   {selector.retail_finance === "Leasing" && (
                     <View>
                       <TextinputComp
-                        disabled={!isEdit}
+                        disabled={!isInputsEditable()}
                         style={{ height: 65, width: "100%" }}
                         label={"Leasing Name"}
                         maxLength={50}
@@ -5891,7 +5901,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                   {selector.retail_finance === "In House" && (
                     <DropDownSelectionItem
-                      disabled={!isEdit}
+                      disabled={!isInputsEditable()}
                       label={"Finance Category"}
                       value={selector.finance_category}
                       onPress={() =>
@@ -5906,7 +5916,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   {selector.retail_finance === "In House" && (
                     <View>
                       <TextinputComp
-                        disabled={!isEdit}
+                        disabled={!isInputsEditable()}
                         style={{ height: 65, width: "100%" }}
                         label={"Down Payment"}
                         value={selector.down_payment}
@@ -5927,7 +5937,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   {selector.retail_finance === "In House" && (
                     <View>
                       <TextinputComp
-                        disabled={!isEdit}
+                        disabled={!isInputsEditable()}
                         style={{ height: 65, width: "100%" }}
                         label={"Loan Amount"}
                         keyboardType={"number-pad"}
@@ -5948,7 +5958,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       />
                       <Text style={GlobalStyle.underline}></Text>
                       <TextinputComp
-                        disabled={!isEdit}
+                        disabled={!isInputsEditable()}
                         style={{ height: 65, width: "100%" }}
                         label={"Rate of Interest"}
                         keyboardType={"number-pad"}
@@ -5974,7 +5984,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   {selector.retail_finance === "Out House" && (
                     <View>
                       <TextinputComp
-                        disabled={!isEdit}
+                        disabled={!isInputsEditable()}
                         style={{ height: 65, width: "100%" }}
                         label={"Loan Amount"}
                         keyboardType={"number-pad"}
@@ -5995,7 +6005,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       />
                       <Text style={GlobalStyle.underline}></Text>
                       <TextinputComp
-                        disabled={!isEdit}
+                        disabled={!isInputsEditable()}
                         style={{ height: 65, width: "100%" }}
                         label={"Rate of Interest"}
                         keyboardType={"number-pad"}
@@ -6022,7 +6032,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   {selector.retail_finance === "In House" && (
                     <View>
                       <DropDownSelectionItem
-                        disabled={!isEdit}
+                        disabled={!isInputsEditable()}
                         label={"Bank/Financer"}
                         value={selector.bank_or_finance}
                         onPress={() =>
@@ -6034,7 +6044,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       />
 
                       <TextinputComp
-                        disabled={!isEdit}
+                        disabled={!isInputsEditable()}
                         style={{ height: 65, width: "100%" }}
                         label={"Loan of Tenure(Months)"}
                         value={selector.loan_of_tenure}
@@ -6057,7 +6067,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       <Text style={GlobalStyle.underline}></Text>
 
                       <TextinputComp
-                        disabled={!isEdit}
+                        disabled={!isInputsEditable()}
                         style={{ height: 65, width: "100%" }}
                         label={"EMI"}
                         value={selector.emi}
@@ -6071,7 +6081,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       <Text style={GlobalStyle.underline}></Text>
 
                       <DropDownSelectionItem
-                        disabled={!isEdit}
+                        disabled={!isInputsEditable()}
                         label={"Approx Annual Income"}
                         value={selector.approx_annual_income}
                         onPress={() =>
@@ -6104,7 +6114,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ]}
                 >
                   <TextinputComp
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     style={{ height: 65, width: "100%" }}
                     value={selector.booking_amount}
                     label={"Booking Amount*"}
@@ -6132,7 +6142,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ></Text>
 
                   <DropDownSelectionItem
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     label={"Payment At"}
                     value={selector.payment_at}
                     onPress={() =>
@@ -6142,7 +6152,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   <Text style={GlobalStyle.underline} />
 
                   <DropDownSelectionItem
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     label={"Booking Payment Mode*"}
                     value={selector.booking_payment_mode}
                     onPress={() =>
@@ -6184,7 +6194,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ]}
                 >
                   <DateSelectItem
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     label={"Customer Preferred Date"}
                     value={selector.customer_preferred_date}
                     onPress={() =>
@@ -6193,7 +6203,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   />
                   <Text style={GlobalStyle.underline} />
                   <TextinputComp
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     style={{ height: 65, width: "100%" }}
                     label={"Occasion"}
                     value={selector.occasion}
@@ -6206,7 +6216,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   />
                   <Text style={GlobalStyle.underline}></Text>
                   <DateSelectItem
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     label={"Tentative Delivery Date"}
                     value={selector.tentative_delivery_date}
                     onPress={() =>
@@ -6215,7 +6225,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   />
                   <Text style={GlobalStyle.underline} />
                   <TextinputComp
-                    disabled={!isEdit}
+                    disabled={!isInputsEditable()}
                     style={{ height: 65, width: "100%" }}
                     label={"Delivery Location"}
                     maxLength={50}
@@ -6255,6 +6265,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     <TextinputComp
                       style={styles.textInputStyle}
                       value={selector.reject_remarks}
+                      disabled={!isRejectRemarkEnable()}
                       label={"Remarks"}
                       onChangeText={(text) =>
                         dispatch(
@@ -6294,7 +6305,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     <View>
                       <View style={styles.select_image_bck_vw}>
                         <ImageSelectItem
-                          name={"Receipt Doc"}
+                          name={"Receipt Doc*"}
                           onPress={() =>
                             dispatch(setImagePicker("RECEIPT_DOC"))
                           }
@@ -6527,52 +6538,25 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 {/* // 11.Reject */}
               </List.AccordionGroup>
 
-              {!isDropSelected &&
-                showSubmitDropBtn &&
-                !userData.isManager &&
-                !userData.isPreBookingApprover &&
-                selector.booking_amount !== "" && (
-                  <View style={styles.actionBtnView}>
-                    <Button
-                      mode="contained"
-                      style={{ width: 120 }}
-                      color={Colors.BLACK}
-                      // disabled={selector.isLoading}
-                      labelStyle={{ textTransform: "none" }}
-                      onPress={() => setIsDropSelected(true)}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      mode="contained"
-                      color={Colors.RED}
-                      disabled={selector.isLoading}
-                      labelStyle={{ textTransform: "none" }}
-                      onPress={submitClicked}
-                    >
-                      SUBMIT
-                    </Button>
-                  </View>
-                )}
-
               {showApproveRejectBtn &&
+                !isLeadCreatedBySelf() &&
                 userData.isPreBookingApprover &&
                 !isDropSelected && (
                   <View style={styles.actionBtnView}>
-                    <Button
-                      mode="contained"
-                      style={{ width: 120 }}
-                      color={Colors.GREEN}
-                      // disabled={selector.isLoading}
-                      labelStyle={{ textTransform: "none" }}
-                      onPress={() => approveOrRejectMethod("APPROVE")}
-                    >
-                      Approve
-                    </Button>
+                    {!isRejectSelected && (
+                      <Button
+                        mode="contained"
+                        style={{ width: 120 }}
+                        color={Colors.GREEN}
+                        labelStyle={{ textTransform: "none" }}
+                        onPress={() => approveOrRejectMethod("APPROVE")}
+                      >
+                        Approve
+                      </Button>
+                    )}
                     <Button
                       mode="contained"
                       color={Colors.RED}
-                      // disabled={selector.isLoading}
                       labelStyle={{ textTransform: "none" }}
                       onPress={() =>
                         isRejectSelected
@@ -6580,65 +6564,57 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           : setIsRejectSelected(true)
                       }
                     >
-                      {isRejectSelected ? "Send" : "Reject"}
+                      {isRejectSelected ? "Submit" : "Reject"}
                     </Button>
                   </View>
                 )}
-              {!isDropSelected && !isEdit && userData.isManager && (
+
+              {isEditButtonShow && (
                 <View style={styles.actionBtnView}>
                   <Button
                     mode="contained"
                     color={Colors.RED}
-                    //disabled={selector.isLoading}
                     labelStyle={{ textTransform: "none" }}
                     onPress={() => {
                       setIsEdit(true);
                       setShowApproveRejectBtn(true);
+                      // new conditions
+                      setIsEditButtonShow(false);
+                      setIsSubmitCancelButtonShow(true);
                     }}
                   >
                     EDIT
                   </Button>
                 </View>
               )}
+
+              {isSubmitShow() && (
+                <View style={styles.actionBtnView}>
+                  <Button
+                    mode="contained"
+                    style={{ width: 120 }}
+                    color={Colors.BLACK}
+                    labelStyle={{ textTransform: "none" }}
+                    onPress={() => setIsDropSelected(true)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    mode="contained"
+                    color={Colors.RED}
+                    disabled={selector.isLoading}
+                    labelStyle={{ textTransform: "none" }}
+                    onPress={submitClicked}
+                  >
+                    SUBMIT
+                  </Button>
+                </View>
+              )}
+
               {showPrebookingPaymentSection &&
                 !userData.isManager &&
                 !isDropSelected && (
                   <>
-                    {isEdit ? (
-                      <View style={styles.actionBtnView}>
-                        <Button
-                          mode="contained"
-                          style={{ width: 120 }}
-                          color={Colors.BLACK}
-                          // disabled={selector.isLoading}
-                          labelStyle={{ textTransform: "none" }}
-                          onPress={() => setIsDropSelected(true)}
-                        >
-                          Cancel
-                        </Button>
-                        <Button
-                          mode="contained"
-                          color={Colors.RED}
-                          disabled={selector.isLoading}
-                          labelStyle={{ textTransform: "none" }}
-                          onPress={submitClicked}
-                        >
-                          SUBMIT
-                        </Button>
-                      </View>
-                    ) : (
-                      <View style={styles.actionBtnView}>
-                        <Button
-                          mode="contained"
-                          color={Colors.RED}
-                          //disabled={selector.isLoading}
-                          labelStyle={{ textTransform: "none" }}
-                          onPress={() => setIsEdit(true)}
-                        >
-                          EDIT
-                        </Button>
-                      </View>
-                    )}
                     {!isEdit && uploadedImagesDataObj.receipt?.fileName && (
                       <View style={styles.actionBtnView}>
                         <Button

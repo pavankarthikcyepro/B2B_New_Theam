@@ -1518,16 +1518,16 @@ const prebookingFormSlice = createSlice({
       state.isLoading = true;
     });
     builder.addCase(getOnRoadPriceDtoListApi.fulfilled, (state, action) => {
-      // console.log("S getOnRoadPriceDtoListApi: ", JSON.stringify(action.payload));
       if (action.payload.dmsEntity) {
-
         const dmsOnRoadPriceDtoList = action.payload.dmsEntity.dmsOnRoadPriceDtoList;
-        state.on_road_price_dto_list_response = dmsOnRoadPriceDtoList;
-        if (dmsOnRoadPriceDtoList.length > 0) {
         
-
-          const dataObj = dmsOnRoadPriceDtoList[0];
-          console.log('dataObjdataObj',dmsOnRoadPriceDtoList);
+        if (dmsOnRoadPriceDtoList.length > 0) {
+          let newArr: any = [
+            dmsOnRoadPriceDtoList[dmsOnRoadPriceDtoList.length - 1],
+          ];
+          state.on_road_price_dto_list_response = newArr;
+          
+          const dataObj = dmsOnRoadPriceDtoList[dmsOnRoadPriceDtoList.length - 1];
           state.insurance_type = dataObj.insuranceType ? dataObj.insuranceType : "";
           state.warranty = dataObj.warrantyName ? dataObj.warrantyName : "";
 
@@ -1543,7 +1543,6 @@ const prebookingFormSlice = createSlice({
             });
             state.add_on_insurance = addOnNames;
           }
-
           
           state.consumer_offer = dataObj.specialScheme ? dataObj.specialScheme.toString() : "";
           state.exchange_offer = dataObj.exchangeOffers ? dataObj.exchangeOffers.toString() : "";

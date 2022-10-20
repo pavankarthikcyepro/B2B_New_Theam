@@ -762,7 +762,7 @@ const TargetScreen = ({route}) => {
                                             marginTop: 12,
                                             width: '100%'
                                         }}>
-                                            <Text style={{fontSize: 12, fontWeight: '600'}}>{item.empName}</Text>
+                                            <Text style={{fontSize: 12, fontWeight: '600', textTransform: "capitalize"}}>{item.empName}</Text>
                                             <Pressable onPress={() => {
                                                 navigation.navigate(AppNavigator.HomeStackIdentifiers.sourceModel,
                                                     {
@@ -1447,22 +1447,22 @@ const TargetScreen = ({route}) => {
 
                                     <View style={{flexDirection: 'row', height: 40}}>
                                         <View style={{
-                                            width: 60,
+                                            width: 100,
                                             minHeight: 40,
                                             justifyContent: 'space-between',
-                                            alignItems: 'center',
                                             flexDirection: 'row',
                                             backgroundColor: Colors.RED
                                         }}>
+                                            <View />
                                             <View style={{justifyContent: 'center', alignItems: 'center', marginLeft: 6}}>
                                                 <Text style={[styles.grandTotalText, {
                                                     color: Colors.WHITE,
                                                     fontSize: 12,
                                                 }]}>Total</Text>
                                             </View>
-                                            <View >
+                                            <View style={{alignSelf: "flex-end"}} >
                                                 <Text style={{
-                                                    fontSize: 6,
+                                                    fontSize: 10,
                                                     fontWeight: 'bold',
                                                     paddingVertical: 6,
                                                     paddingRight: 2,
@@ -1470,7 +1470,7 @@ const TargetScreen = ({route}) => {
                                                     color: Colors.WHITE
                                                 }}>ACH</Text>
                                                 <Text style={{
-                                                    fontSize: 6,
+                                                    fontSize: 10,
                                                     fontWeight: 'bold',
                                                     paddingVertical: 6,
                                                     height: 20,
@@ -2013,7 +2013,7 @@ export default TargetScreen;
 
 export const RenderLevel1NameView = ({level, item, branchName = '', color, titleClick}) => {
     return (
-        <View style={{width: 60, justifyContent: 'center', textAlign: 'center', display: 'flex', flexDirection: 'row'}}>
+        <View style={{width: 100, justifyContent: 'center', textAlign: 'center', display: 'flex', flexDirection: 'row'}}>
             <View style={{justifyContent: 'center', alignItems: 'center'}}>
                 <TouchableOpacity style={{
                     width: 30,
@@ -2043,16 +2043,13 @@ export const RenderLevel1NameView = ({level, item, branchName = '', color, title
                 </View>}
             </View>
             <View style={{
-                width: '25%',
+                // width: '25%',
                 justifyContent: 'center',
                 textAlign: 'center',
                 alignItems: 'center',
-                display: 'flex',
-                flexDirection: 'column',
-                marginRight: 5
             }}>
-                <Text style={{fontSize: 6, fontWeight: 'bold', paddingVertical: 6, height: 25}}>ACH</Text>
-                <Text style={{fontSize: 6, fontWeight: 'bold', paddingVertical: 6, height: 20}}>TGT</Text>
+                <Text style={{fontSize: 10, fontWeight: 'bold', paddingVertical: 6, height: 25}}>ACH</Text>
+                <Text style={{fontSize: 10, fontWeight: 'bold', paddingVertical: 6, height: 20}}>TGT</Text>
             </View>
         </View>
     )
