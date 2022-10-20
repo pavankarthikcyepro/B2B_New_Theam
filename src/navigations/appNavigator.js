@@ -78,6 +78,9 @@ import ProformaScreen from "../scenes/mainScenes/EMS/ProformaScreen";
 import leaderBoardScreen from "../scenes/mainScenes/Home/leaderBoardScreen";
 import branchRankingScreen from "../scenes/mainScenes/Home/branchRankingScreen";
 import SourceModel from "../scenes/mainScenes/Home/TabScreens/components/EmployeeView/SourceModel";
+import LiveLeadsScreen from "../scenes/mainScenes/LiveLeads";
+import { EMSTopTabNavigatorTwo } from "./emsTopTabNavigator";
+import { AppNavigator } from ".";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -225,7 +228,8 @@ export const DrawerStackIdentifiers = {
     taskManagement: "TASK_MANAGEMENT",
     taskTransfer: "TASK_TRANSFER",
     evtbrlReport: "EVTBRL_REPORT",
-    dropAnalysis:'DROP_ANALYSIS'
+    dropAnalysis:'DROP_ANALYSIS',
+    liveLeads: 'LIVE_LEADS',
 };
 
 export const TabStackIdentifiers = {
@@ -359,7 +363,9 @@ const HomeStackNavigator = ({ navigation }) => {
             <HomeStack.Screen
                 name={HomeStackIdentifiers.sourceModel}
                 component={SourceModel}
-                options={{ title: "Source/Model" }}
+                options={{
+                    title: "Source/Model"
+                }}
             />
         </HomeStack.Navigator>
     );
@@ -375,7 +381,7 @@ const EmsStackNavigator = ({ navigation }) => {
       >
         <EmsStack.Screen
           name="EMS"
-          component={EMSScreen}
+          component={EMSTopTabNavigatorTwo}
           options={{
             title: "EMS",
             headerLeft: () => <MenuIcon navigation={navigation} />,
@@ -673,6 +679,13 @@ const TabNavigator = ({ navigation, route }) => {
                 name={TabStackIdentifiers.ems}
                 component={EmsStackNavigator}
                 options={{ title: "EMS" }}
+                // listeners={({ navigation, route }) => ({
+                //     tabPress: e => {
+                //         if (route.state && route.state.routeNames.length > 0) {
+                //             navigation.navigate(AppNavigator.TabStackIdentifiers.myTask)
+                //         }
+                //     },
+                // })}
             />
             <Tab.Screen
                 name={TabStackIdentifiers.myTask}
@@ -859,6 +872,24 @@ const DropAnalysisStackNavigator = ({ navigation }) => {
     );
 };
 
+const LiveLeadsStack = createStackNavigator();
+
+const LiveLeadsStackNavigator = ({ navigation }) => {
+    return (
+        <LiveLeadsStack.Navigator initialRouteName={"LIVE_LEADS"}
+                                  screenOptions={screeOptionStyle}>
+            <LiveLeadsStack.Screen
+                name={"LIVE_LEADS"}
+                component={LiveLeadsScreen}
+                options={{
+                    title: "Live Leads",
+                    headerLeft: () => <MenuIcon navigation={navigation} />
+                }}
+            />
+        </LiveLeadsStack.Navigator>
+    );
+};
+
 const TaskManagementStack = createStackNavigator();
 
 const TaskManagementStackNavigator = ({ navigation }) => {
@@ -1037,6 +1068,10 @@ const MainStackDrawerNavigator = () => {
             <MainDrawerNavigator.Screen
                 name={DrawerStackIdentifiers.dropAnalysis}
                 component={DropAnalysisStackNavigator}
+            />
+            <MainDrawerNavigator.Screen
+                name={DrawerStackIdentifiers.liveLeads}
+                component={LiveLeadsStackNavigator}
             />
             <MainDrawerNavigator.Screen
                 name={DrawerStackIdentifiers.taskTransfer}

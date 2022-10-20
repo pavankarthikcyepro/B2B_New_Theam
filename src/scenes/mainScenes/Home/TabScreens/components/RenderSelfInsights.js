@@ -4,6 +4,7 @@ import {IconButton, ProgressBar} from "react-native-paper";
 import {Colors} from "../../../../../styles";
 import moment from "moment/moment";
 import {achievementPercentage} from "../../../../../utils/helperFunctions";
+import {AppNavigator} from "../../../../../navigations";
 
 export const RenderSelfInsights = (args) => {
     const color = [
@@ -21,13 +22,13 @@ export const RenderSelfInsights = (args) => {
     const currentDate = moment().format(dateFormat)
     const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
     const dateDiff = ((new Date(monthLastDate).getTime() - new Date(currentDate).getTime()) / (1000 * 60 * 60 * 24));
-    const {data, type} = args;
-    const enq = data.find(x => x.paramName === 'Enquiry');
+    const {data, type, navigation, moduleType} = args;
+    const enq = data && data.find(x => x && x.paramName === 'Enquiry');
     return (
         data.map((item, index) => {
             if (item){
             return (
-                <View style={{flexDirection: "row", marginLeft: 8}} key={index}>
+                <View style={{flexDirection: "row", marginLeft: 8}} key={`${item.paramShortName}_${index}`}>
                     <View style={{width: "10%", justifyContent: "center", marginTop: 5}}>
                         <Text>{item.paramShortName}</Text>
                     </View>
@@ -42,7 +43,18 @@ export const RenderSelfInsights = (args) => {
                         borderTopLeftRadius: 3,
                         borderBottomLeftRadius: 3
                     }}>
-                        <Text
+                        <Text  onPress={()=>{
+                            let param = item.paramName;
+                            if (param == "Enquiry" || param == "Booking" || param == "INVOICE") {
+                                navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
+                                setTimeout(() => {
+                                    navigation.navigate("LEADS", {
+                                        param: param == "INVOICE" ? "Retail" : param,
+                                        moduleType
+                                    })
+                                }, 1000);
+                            }
+                        }}
                             style={{color: "#fff"}}>{type === 0 ? item.achievment : achievementPercentage(item.achievment, item.target, item.paramName, enq.achievment)}
                         </Text>
                     </View>
@@ -181,7 +193,7 @@ export const RenderSelfInsights = (args) => {
                 </View>
             )
             }else{
-                return <View/>
+                return <View key={index}/>
             }
         })
     )

@@ -17,6 +17,7 @@ import { DashboadFilterModalComp } from "./dashboardFilterModalComp";
 import { LineGraphComp } from "./lineGraphComp";
 import { HeaderComp } from "./headerComp";
 import {LeadsFilterComp} from './LeadsFilterComp';
+import { SingleLeadSelectComp } from "./SingleLeadSelectComp";
 
 export {
     ButtonComp,
@@ -36,5 +37,6 @@ export {
     DashboadFilterModalComp,
     LineGraphComp,
     HeaderComp,
-    LeadsFilterComp
+    LeadsFilterComp,
+    SingleLeadSelectComp
 };

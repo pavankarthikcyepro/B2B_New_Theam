@@ -245,6 +245,9 @@ const SideMenuScreen = ({ navigation }) => {
             case 113:
                 navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis);
                 break;
+            case 114:
+                navigation.navigate(AppNavigator.DrawerStackIdentifiers.liveLeads);
+                break;
             case 112:
                 signOutClicked();
                 break;

@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Colors } from '../../../../styles';
 import { convertTimeStampToDateString, callNumber, navigatetoCallWebView } from '../../../../utils/helperFunctions';
 import { IconButton } from "react-native-paper";
@@ -42,28 +42,27 @@ const IconComp = ({ iconName, onPress }) => {
     )
 }
 
- const callWebViewRecord = async({navigator,phone, uniqueId, type}) =>{
-    try{
+const callWebViewRecord = async ({ navigator, phone, uniqueId, type }) => {
+    try {
         let extensionId = await AsyncStore.getData(AsyncStore.Keys.EXTENSION_ID);
         var password = await AsyncStore.getData(AsyncStore.Keys.EXTENSSION_PWD);
         password = await encodeURIComponent(password)
-       var uri = 'https://ardemoiipl.s3.ap-south-1.amazonaws.com/call/webphone/click2call.html?u=' + extensionId + '&p=' + password + '&c=' + phone + '&type=' + type + '&uniqueId=' + uniqueId
+        var uri = 'https://ardemoiipl.s3.ap-south-1.amazonaws.com/call/webphone/click2call.html?u=' + extensionId + '&p=' + password + '&c=' + phone + '&type=' + type + '&uniqueId=' + uniqueId
 
-      // await alert("phone" + phone + "  type" + type + "  uniqueId" + uniqueId + "  userName" + extensionId + "  pwd " + password)
- //alert(uri)
- console.log("call recording uri=", uri)
-        if(extensionId && extensionId != null && extensionId != ''){
+        // await alert("phone" + phone + "  type" + type + "  uniqueId" + uniqueId + "  userName" + extensionId + "  pwd " + password)
+        //alert(uri)
+        console.log("call recording uri=", uri)
+        if (extensionId && extensionId != null && extensionId != '') {
             var granted = await navigatetoCallWebView();
             console.log("granted status", granted)
 
-            if (granted)
-            {
-                    navigator.navigate(AppNavigator.EmsStackIdentifiers.webViewComp, {
+            if (granted) {
+                navigator.navigate(AppNavigator.EmsStackIdentifiers.webViewComp, {
                     phone: phone,
                     type: type,
                     uniqueId: uniqueId,
                     userName: extensionId,
-                    password:password,
+                    password: password,
                     url: uri
                 })
             }
@@ -71,10 +70,10 @@ const IconComp = ({ iconName, onPress }) => {
 
         }
         else callNumber(phone)
-       // alert(phone + uniqueId + "/" + type + "/" + password)
+        // alert(phone + uniqueId + "/" + type + "/" + password)
 
-    }catch(error){
-      console.log("call record issue",error)
+    } catch (error) {
+        console.log("call record issue", error)
     }
 
 
@@ -82,9 +81,9 @@ const IconComp = ({ iconName, onPress }) => {
 
 export const MyTaskNewItem = ({ from = "MY_TASKS", navigator, type, uniqueId, name, status, created, dmsLead, phone, source, model, leadStatus = '', leadStage = '', needStatus = '', enqCat = '', onItemPress, onDocPress }) => {
     let date = "";
-    if (from =="MY_TASKS") {
+    if (from == "MY_TASKS") {
         date = moment(created, "YYYY-MM-DD hh-mm-s").format("DD/MM/YYYY h:mm a");
-    }else {
+    } else {
         date = convertTimeStampToDateString(created);
     }
 
@@ -98,11 +97,11 @@ export const MyTaskNewItem = ({ from = "MY_TASKS", navigator, type, uniqueId, na
 
     function getStageColor(leadStage, leadStatus) {
         return leadStatus === "PREENQUIRYCOMPLETED" ||
-        (leadStatus === "ENQUIRYCOMPLETED" &&
-            leadStage === "ENQUIRY") ||
-        (leadStatus === "PREBOOKINGCOMPLETED" &&
-            leadStage === "PREBOOKING") ||
-        leadStatus === "BOOKINGCOMPLETED"
+            (leadStatus === "ENQUIRYCOMPLETED" &&
+                leadStage === "ENQUIRY") ||
+            (leadStatus === "PREBOOKINGCOMPLETED" &&
+                leadStage === "PREBOOKING") ||
+            leadStatus === "BOOKINGCOMPLETED"
             ? "#18a835"
             : "#f29a22";
     }
@@ -126,102 +125,108 @@ export const MyTaskNewItem = ({ from = "MY_TASKS", navigator, type, uniqueId, na
     }
 
     return (
-      <TouchableOpacity onPress={onItemPress} style={styles.section}>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            position: "relative"
-          }}
-        >
-          <View style={{ width: "70%" }}>
-            <View style={{ flexDirection: "row" }}>
-              <View style={{ maxWidth: "73%" }}>
-                <Text style={styles.text1}>{name}</Text>
-              </View>
-              {/*<Text style={styles.catText}>{enqCat}</Text>*/}
-            </View>
-              <Text style={styles.text2}>{date}</Text>
-              <Text style={styles.text2}>{source + " - " + dmsLead}</Text>
-            <Text style={styles.text2}>{phone}</Text>
-              <>
-                  {from !== 'PRE_ENQUIRY' &&
-                      <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
-                          <>
-                              {enqCat !== '' && enqCat?.length > 0 &&
-                                  <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-                                      <Text style={[styles.text3, {color: getCategoryTextColor(enqCat)}]}>{enqCat}</Text>
-                                      <Text style={{fontWeight: '600', color: Colors.BLACK}}> | </Text>
-                                  </View>
-                              }
-                          </>
-                          <Text style={[styles.text3, {color: getStageColor(leadStage, leadStatus)}]}>{leadStage === 'PREBOOKING' ? 'BOOKING APPROVAL' : leadStage}</Text>
-                      </View>
-                  }
-              </>
-          </View>
-          <View style={{ width: "30%", alignItems: "center", }}>
-             <View style={{justifyContent: 'center', alignItems: 'center', flexDirection: 'row'}}>
-                 <>
-                     {needStatus === "YES" && from === 'PRE_ENQUIRY' && (
-                         <View
-                             style={{
-                                 height: 16,
-                                 width: 16,
-                                 borderRadius: 4,
-                                 backgroundColor:
-                                     leadStatus === "PREENQUIRYCOMPLETED" ||
-                                     (leadStatus === "ENQUIRYCOMPLETED" &&
-                                         leadStage === "ENQUIRY") ||
-                                     (leadStatus === "PREBOOKINGCOMPLETED" &&
-                                         leadStage === "PREBOOKING") ||
-                                     leadStatus === "BOOKINGCOMPLETED"
-                                         ? "#18a835"
-                                         : "#f29a22",
-                             }}
-                         >
-                         </View>
-                     )}
-                 </>
-                 <View style={styles.modal}>
-                     <Text style={styles.text4}>{model}</Text>
-                     {/* <Text style={styles.text4}>{"Jeep Compact SUV"}</Text> */}
-                 </View>
-             </View>
-            {/* <View style={{ height: 8 }}></View> */}
+        <TouchableOpacity onPress={onItemPress} style={styles.section}>
             <View
-              style={{
-                flexDirection: "row",
-                width: "100%",
-                justifyContent: "space-evenly",
-              }}
+                style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    position: "relative"
+                }}
             >
-              <IconComp
-                iconName={"format-list-bulleted-square"}
-                onPress={onDocPress}
-              />
-              <View style={{ padding: 8 }} />
-              <IconComp
-                iconName={"phone-outline"}
-                onPress={() =>
-                  callWebViewRecord({
-                    navigator,
-                    phone,
-                    uniqueId,
-                    type,
-                  })
-                }
-              />
-              <View style={{ padding: 8 }} />
-              <IconComp
-                iconName={"whatsapp"}
-                onPress={() => sendWhatsApp(phone)}
-              />
+                <View style={{ width: "70%" }}>
+                    <View style={{ flexDirection: "row" }}>
+                        <View style={{ maxWidth: "73%" }}>
+                            <Text style={styles.text1}>{name}</Text>
+                        </View>
+                        {/*<Text style={styles.catText}>{enqCat}</Text>*/}
+                    </View>
+                    <Text style={styles.text2}>{date}</Text>
+                    <Text style={styles.text2}>{source + " - " + dmsLead}</Text>
+                    <Text style={styles.text2}>{phone}</Text>
+                    <>
+                        {from !== 'PRE_ENQUIRY' &&
+                            <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                                <>
+                                    {enqCat !== '' && enqCat?.length > 0 &&
+                                        <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                                            <Text style={[styles.text3, { color: getCategoryTextColor(enqCat) }]}>{enqCat}</Text>
+                                            <Text style={{ fontWeight: '600', color: Colors.BLACK }}> | </Text>
+                                        </View>
+                                    }
+                                </>
+                                <Text style={[styles.text3, { color: getStageColor(leadStage, leadStatus) }]}>{leadStage === 'PREBOOKING' ? 'BOOKING APPROVAL' : leadStage}</Text>
+                            </View>
+                        }
+                    </>
+                </View>
+                <View style={{ width: "30%", alignItems: "center", }}>
+                    <View style={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }}>
+                        <>
+                            {needStatus === "YES" && from === 'PRE_ENQUIRY' && (
+                                <View
+                                    style={{
+                                        height: 16,
+                                        width: 16,
+                                        borderRadius: 4,
+                                        backgroundColor:
+                                            leadStatus === "PREENQUIRYCOMPLETED" ||
+                                                (leadStatus === "ENQUIRYCOMPLETED" &&
+                                                    leadStage === "ENQUIRY") ||
+                                                (leadStatus === "PREBOOKINGCOMPLETED" &&
+                                                    leadStage === "PREBOOKING") ||
+                                                leadStatus === "BOOKINGCOMPLETED"
+                                                ? "#18a835"
+                                                : "#f29a22",
+                                    }}
+                                >
+                                </View>
+                            )}
+                        </>
+                        <View style={styles.modal}>
+                            <Text style={styles.text4}>{model}</Text>
+                            {/* <Text style={styles.text4}>{"Jeep Compact SUV"}</Text> */}
+                        </View>
+                    </View>
+                    {/* <View style={{ height: 8 }}></View> */}
+                    <View
+                        style={{
+                            flexDirection: "row",
+                            width: "100%",
+                            justifyContent: "space-evenly",
+                        }}
+                    >
+                        <IconComp
+                            iconName={"format-list-bulleted-square"}
+                            onPress={() => { 
+                                leadStage == "INVOICE" || 
+                                leadStage == "DELIVERY" || 
+                                leadStage == "PREDELIVERY" ? 
+                                alert("You Don't have Permission") : 
+                                onDocPress() }}
+                        />
+                        <View style={{ padding: 8 }} />
+                        <IconComp
+                            iconName={"phone-outline"}
+                            onPress={() =>
+                                leadStage == "INVOICE" || leadStage == "DELIVERY" || leadStage == "PREDELIVERY" ? alert("You Don't have Permission") :
+                                    callWebViewRecord({
+                                        navigator,
+                                        phone,
+                                        uniqueId,
+                                        type,
+                                    })
+                            }
+                        />
+                        <View style={{ padding: 8 }} />
+                        <IconComp
+                            iconName={"whatsapp"}
+                            onPress={() => leadStage == "INVOICE" || leadStage == "DELIVERY" || leadStage == "PREDELIVERY" ? alert("You Don't have Permission") : sendWhatsApp(phone)}
+                        />
+                    </View>
+                </View>
             </View>
-          </View>
-        </View>
-      </TouchableOpacity>
+        </TouchableOpacity>
     );
 }
 
