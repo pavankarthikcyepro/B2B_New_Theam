@@ -338,16 +338,19 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
     // Edit buttons shows
     useEffect(() => {
-      if (selector?.pre_booking_details_response?.dmsLeadDto) {
+      if (
+        selector &&
+        selector.pre_booking_details_response &&
+        selector.pre_booking_details_response.dmsLeadDto
+      ) {
         const { leadStatus } = selector.pre_booking_details_response.dmsLeadDto;
 
         let isEditFlag = false;
 
-        if (uploadedImagesDataObj.receipt?.fileName) {
+        if (uploadedImagesDataObj.receipt && uploadedImagesDataObj.receipt.fileName) {
           isEditFlag = false;
         } else if (
-          (leadStatus === "PREBOOKINGCOMPLETED" ||
-            leadStatus === "REJECTED") &&
+          (leadStatus === "PREBOOKINGCOMPLETED" || leadStatus === "REJECTED") &&
           !isDropSelected
         ) {
           if (!userData.isManager || isLeadCreatedBySelf()) {
@@ -361,13 +364,21 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           setIsEditButtonShow(false);
         }
       }
-    }, [selector?.pre_booking_details_response, uploadedImagesDataObj]);
+    }, [selector.pre_booking_details_response, uploadedImagesDataObj]);
 
     // Check for lead created by manager
     const isLeadCreatedBySelf = () => {
       let isCreatedBy = false;
-      if(userData && selector?.pre_booking_details_response?.dmsLeadDto){
-        if(userData.employeeName == selector.pre_booking_details_response.dmsLeadDto.createdBy){
+      if (
+        userData &&
+        selector &&
+        selector.pre_booking_details_response &&
+        selector.pre_booking_details_response.dmsLeadDto
+      ) {
+        if (
+          userData.employeeName ==
+          selector.pre_booking_details_response.dmsLeadDto.createdBy
+        ) {
           isCreatedBy = true;
         }
       }
@@ -381,7 +392,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       if (!isDropSelected){
         if (isSubmitCancelButtonShow) {
           isSubmitFlag = true;
-        } else if (selector?.pre_booking_details_response?.dmsLeadDto) {
+        } else if (
+          selector &&
+          selector.pre_booking_details_response &&
+          selector.pre_booking_details_response.dmsLeadDto
+        ) {
           const { leadStatus } =
             selector.pre_booking_details_response.dmsLeadDto;
 
@@ -391,7 +406,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           ) {
             if (!userData.isManager || isLeadCreatedBySelf()) {
               isSubmitFlag = true;
-            } 
+            }
           }
         }
       }
@@ -401,7 +416,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     // Check for Input Fields Editable
     const isInputsEditable = () => {
       let isInputEditFlag = false;
-      if (selector?.pre_booking_details_response?.dmsLeadDto) {
+      if (
+        selector &&
+        selector.pre_booking_details_response &&
+        selector.pre_booking_details_response.dmsLeadDto
+      ) {
         const { leadStatus } = selector.pre_booking_details_response.dmsLeadDto;
         if (!userData.isManager || isLeadCreatedBySelf()) {
           if (leadStatus === "ENQUIRYCOMPLETED") {
