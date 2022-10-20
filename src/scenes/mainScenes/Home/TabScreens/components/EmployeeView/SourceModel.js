@@ -13,6 +13,7 @@ import PercentageToggleControl from "./PercentageToggleControl";
 import URL from "../../../../../../networking/endpoints";
 import { useDispatch, useSelector } from "react-redux";
 import { getSourceModelDataForSelf } from "../../../../../../redux/homeReducer";
+import SegmentedControl from "@react-native-segmented-control/segmented-control";
 
 const SourceModel = ({ route, navigation }) => {
   const dispatch = useDispatch();
@@ -25,6 +26,8 @@ const SourceModel = ({ route, navigation }) => {
   const [isSourceIndex, setIsSourceIndex] = useState(0);
   const [displayType, setDisplayType] = useState(0);
   const [sourceModelTotals, setSourceModelTotals] = useState({});
+  const [toggleParamsIndex, setToggleParamsIndex] = useState(0);
+  const [toggleParamsMetaData, setToggleParamsMetaData] = useState([]);
 
   useEffect(async () => {
     navigation.setOptions({
@@ -79,6 +82,13 @@ const SourceModel = ({ route, navigation }) => {
   }, [empId]);
 
   useEffect(() => {
+    setToggleParamsIndex(0);
+    let data = [...paramsMetadata];
+    data = data.filter((x) => x.toggleIndex === 0);
+    setToggleParamsMetaData([...data]);
+  }, [isSourceIndex]);
+
+  useEffect(() => {
     if (selector.sourceModelData) {
       const json = selector.sourceModelData;
       const sourceData = [];
@@ -94,17 +104,50 @@ const SourceModel = ({ route, navigation }) => {
             sourceData.push(x);
           }
         });
-      const sourceUnique = new Set(sourceData.map((x) => x.source));
-      const modelUnique = new Set(modelData.map((x) => x.model));
+
+        for (let i = 0; i < paramsMetadata.length; i++) {
+          for (let j = 0; j < sourceData.length; j++) {
+            if (sourceData[j].paramName === paramsMetadata[i].paramName) {
+              let temp = Object.assign({}, sourceData[j]);
+              temp["toggleIndex"] = paramsMetadata[i].toggleIndex;
+              sourceData[j] = temp;
+            }
+          }
+        }
+
+        for (let i = 0; i < paramsMetadata.length; i++) {
+          for (let j = 0; j < modelData.length; j++) {
+            if (modelData[j].paramName === paramsMetadata[i].paramName) {
+              let temp = Object.assign({}, modelData[j]);
+              temp["toggleIndex"] = paramsMetadata[i].toggleIndex;
+              modelData[j] = temp;
+            }
+          }
+        }
+
+        let newSourceData = [...sourceData];
+        let newModelData = [...modelData];
+
+        if (toggleParamsIndex !== 2) {
+          newSourceData = newSourceData.filter(
+            (x) => x.toggleIndex === toggleParamsIndex
+          );
+          newModelData = newModelData.filter(
+            (x) => x.toggleIndex === toggleParamsIndex
+          );
+        }
+
+      const sourceUnique = new Set(newSourceData.map((x) => x.source));
+      const modelUnique = new Set(newModelData.map((x) => x.model));
       setLeadSourceKeys([...sourceUnique]);
       setVehicleModelKeys([...modelUnique]);
-      const groupedSources = getData([...sourceData], 0);
+      const groupedSources = getData([...newSourceData], 0);
       setLeadSource(groupedSources);
-      const groupedModels = getData([...modelData], 1);
+      const groupedModels = getData([...newModelData], 1);
       setVehicleModel(groupedModels);
       // getTotal(0);
     }
-  }, [selector.sourceModelData]);
+  }, [selector.sourceModelData, toggleParamsIndex]);
 
   useEffect(() => {
     if (leadSource) {
@@ -114,20 +157,18 @@ const SourceModel = ({ route, navigation }) => {
 
   const getTotal = (type) => {
     const keys = type === 0 ? leadSourceKeys : vehicleModelKeys;
-    const data = type === 0 ? leadSource : vehicleModel;
-    const totals = {
-      Enquiry: 0,
-      "Test Drive": 0,
-      "Home Visit": 0,
-      Booking: 0,
-      INVOICE: 0,
-      Exchange: 0,
-      Finance: 0,
-      Insurance: 0,
-      EXTENDEDWARRANTY: 0,
-      Accessories: 0,
-    };
-    // {e: 0, t: 0, v: 0, b: 0, r: 0, f: 0, i: 0, exg: 0, exw: 0, acc: 0};
+    let data = type === 0 ? leadSource : vehicleModel;
+    
+    let newData = paramsMetadata;
+    if (toggleParamsIndex !== 2) {
+      newData = newData.filter((x) => x.toggleIndex === toggleParamsIndex);
+    }
+
+    let totals = {};
+    for (let i = 0; i < newData.length; i++) {
+      totals[newData[i].paramName] = 0;
+    }
+
     keys.map((x) => {
       data[x].forEach((d) => {
         totals[d.paramName] = +totals[d.paramName] + +d.achievment;
@@ -135,6 +176,7 @@ const SourceModel = ({ route, navigation }) => {
     });
     setSourceModelTotals({ ...totals });
   };
+  
   const paramsMetadata = [
     {
       color: "#FA03B9",
@@ -280,6 +322,7 @@ const SourceModel = ({ route, navigation }) => {
                 if (isSourceIndex !== 0) {
                   setIsSourceIndex(0);
                   getTotal(0);
+                  setToggleParamsIndex(0);
                 }
               }}
               style={[
@@ -305,6 +348,7 @@ const SourceModel = ({ route, navigation }) => {
                 if (isSourceIndex === 0) {
                   setIsSourceIndex(1);
                   getTotal(1);
+                  setToggleParamsIndex(0);
                 }
               }}
               style={[
@@ -328,8 +372,50 @@ const SourceModel = ({ route, navigation }) => {
           </View>
         </View>
         <View style={styles.sourceModelContainer}>
-          <View style={styles.percentageToggleView}>
-            <PercentageToggleControl toggleChange={(x) => setDisplayType(x)} />
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              borderBottomWidth: 2,
+              borderBottomColor: Colors.RED,
+              paddingBottom: 8,
+            }}
+          >
+            <SegmentedControl
+              style={{
+                marginHorizontal: 4,
+                justifyContent: "center",
+                alignSelf: "flex-end",
+                height: 24,
+                marginTop: 8,
+                width: "75%",
+              }}
+              values={["ETVBRL", "Allied", "View All"]}
+              selectedIndex={toggleParamsIndex}
+              tintColor={Colors.RED}
+              fontStyle={{ color: Colors.BLACK, fontSize: 10 }}
+              activeFontStyle={{ color: Colors.WHITE, fontSize: 10 }}
+              onChange={(event) => {
+                const index = event.nativeEvent.selectedSegmentIndex;
+                let data = [...paramsMetadata];
+                if (index !== 2) {
+                  data = data.filter((x) => x.toggleIndex === index);
+                } else {
+                  data = [...paramsMetadata];
+                }
+                setToggleParamsMetaData([...data]);
+                setToggleParamsIndex(index);
+              }}
+            />
+            <View
+              style={{ height: 24, marginTop: 5, width: "20%", marginLeft: 4 }}
+            >
+              <View style={styles.percentageToggleView}>
+                <PercentageToggleControl
+                  toggleChange={(x) => setDisplayType(x)}
+                />
+              </View>
+            </View>
           </View>
           <View style={{ height: "85%" }}>
             <ScrollView>
@@ -346,7 +432,7 @@ const SourceModel = ({ route, navigation }) => {
                     {/* TOP Header view */}
                     <View key={"headers"} style={[styles.flexRow]}>
                       <View style={[styles.flexRow, { height: 20 }]}>
-                        {paramsMetadata.map((param, i) => {
+                        {toggleParamsMetaData.map((param, i) => {
                           return (
                             <View
                               key={`${param.paramName}__${i}`}
