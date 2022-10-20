@@ -50,10 +50,10 @@ export const RenderEmployeeParameters = (parameter) => {
                                                     empId: parameter.item.empId,
                                                     orgId: parameter.item.orgId,
                                                     branchId: parameter.item.branchId,
-                                                    moduleType
-                                                }
+                                                },
+                                                moduleType
                                             })
-                                        }, 10);
+                                        }, 1000);
                                     }
                                 }} style={[styles.totalText1, { color: Colors.RED }]}>
                                     {selectedParameter ?

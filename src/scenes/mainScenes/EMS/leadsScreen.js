@@ -139,12 +139,12 @@ const LeadsScreen = ({ route, navigation }) => {
 
     const setFromDateState = date => {
         fromDateRef.current = date;
-        setSelectedFromDate(date);
+        setSelectedFromDate(x => date);
     }
 
     const setToDateState = date => {
         toDateRef.current = date;
-        setSelectedToDate(date);
+        setSelectedToDate(x => date);
     }
 
     useEffect(() => {
@@ -184,9 +184,9 @@ const LeadsScreen = ({ route, navigation }) => {
     useEffect(async () => {
         // Get Data From Server
         let isMounted = true;
-        setFromDateState(lastMonthFirstDate);
-        const tomorrowDate = moment().add(1, "day").format(dateFormat)
-        setToDateState(currentDate);
+        // setFromDateState(lastMonthFirstDate);
+        // const tomorrowDate = moment().add(1, "day").format(dateFormat)
+        // setToDateState(currentDate);
         const employeeData = await AsyncStore.getData(
             AsyncStore.Keys.LOGIN_EMPLOYEE
         );
@@ -209,6 +209,15 @@ const LeadsScreen = ({ route, navigation }) => {
 
 
     useEffect(() => {
+        if (route?.params) {
+            const liveLeadsStartDate = route?.params?.moduleType === 'live-leads' ? '2021-01-01' : lastMonthFirstDate;
+            const liveLeadsEndDate = route?.params?.moduleType === 'live-leads' ? moment().format(dateFormat) : currentDate;
+            setFromDateState(liveLeadsStartDate);
+            setToDateState(liveLeadsEndDate);
+        } else {
+            setFromDateState(lastMonthFirstDate);
+            setToDateState(currentDate);
+        }
         if (isFocused) {
             Promise.all([dispatch(getMenu()), dispatch(getStatus())]).then(async ([res, res2]) => {
                 setLoader(true);
@@ -290,9 +299,9 @@ const LeadsScreen = ({ route, navigation }) => {
         setLeadsFilterData(newArr);
         setSubMenu([]);
         setLeadsFilterDropDownText('All');
-        setFromDateState(lastMonthFirstDate);
-        const tomorrowDate = moment().add(1, "day").format(dateFormat)
-        setToDateState(currentDate);
+        // setFromDateState(lastMonthFirstDate);
+        // const tomorrowDate = moment().add(1, "day").format(dateFormat)
+        // setToDateState(currentDate);
         setLeadsFilterData(tempStores);
         const newArr = tempStores.map(function (x) {
             x.checked = false;
@@ -301,8 +310,8 @@ const LeadsScreen = ({ route, navigation }) => {
         setTempLeadStage(leadStage);
         setTempLeadStatus([]);
         onTempFliter(newArr, null, [], [], [], lastMonthFirstDate, currentDate, leadStage, []);
-        return
-        await applyLeadsFilter(newArr, lastMonthFirstDate, currentDate);
+        // return
+        // await applyLeadsFilter(newArr, lastMonthFirstDate, currentDate);
     }
 
     const getPayloadData = (leadType, empId, startDate, endDate, offSet = 0, modelFilters = [], categoryFilters = [], sourceFilters = []) => {
@@ -352,7 +361,7 @@ const LeadsScreen = ({ route, navigation }) => {
     }
 
     function isEmpty(obj) {
-        return Object.keys(obj).length === 0;
+        return obj && Object.keys(obj).length === 0;
     }
 
     const applySelectedFilters = payload => {
@@ -395,11 +404,11 @@ const LeadsScreen = ({ route, navigation }) => {
         setTempCategoryList(categoryFilters);
         setTempSourceList(sourceFilters);
         onTempFliter(tempFilterPayload, isEmpty(tempEmployee) ? null : tempEmployee, modelFilters, categoryFilters, sourceFilters, selectedFromDate, selectedToDate, tempLeadStage, tempLeadStatus);
-        return
-        // // Make Server call
-        // const payload2 = getPayloadData(employeeId, selectedFromDate, selectedToDate, 0, modelFilters, categoryFilters, sourceFilters)
-        // dispatch(getEnquiryList(payload2));
-        applyLeadsFilter(leadsFilterData, selectedFromDate, selectedToDate, modelFilters, categoryFilters, sourceFilters)
+        // return
+        // // // Make Server call
+        // // const payload2 = getPayloadData(employeeId, selectedFromDate, selectedToDate, 0, modelFilters, categoryFilters, sourceFilters)
+        // // dispatch(getEnquiryList(payload2));
+        // applyLeadsFilter(leadsFilterData, selectedFromDate, selectedToDate, modelFilters, categoryFilters, sourceFilters)
     }
 
     const applyLeadsFilter = async (data, startDate, endDate, modelFilters = [], categoryFilters = [], sourceFilters = []) => {
@@ -501,7 +510,8 @@ const LeadsScreen = ({ route, navigation }) => {
         setLeadsSubMenuFilterDropDownText('Select Sub Menu');
     }
 
-    const onTempFliter = async (item, employeeDetail = {}, modelData, categoryFilters, sourceData, from, to, defLeadStage, defLeadStatus) => {
+    const onTempFliter = async (item, employeeDetail = {}, modelData, categoryFilters,
+                                sourceData, from, to, defLeadStage, defLeadStatus) => {
         setSearchedData([]);
         setLoader(true);
         const employeeData = await AsyncStore.getData(
@@ -636,11 +646,13 @@ const LeadsScreen = ({ route, navigation }) => {
         updateSelectedDate(from, 'FROM_DATE');
         updateSelectedDate(to, 'TO_DATE');
         setShowDatePicker(false);
-        onTempFliter(tempFilterPayload, isEmpty(tempEmployee) ? null : tempEmployee, tempVehicleModelList, tempCategoryList, tempSourceList, from, to);
-        return
-        setTimeout(() => {
-            applyLeadsFilter(leadsFilterData, from, to);
-        }, 500);
+        console.log('live leads: from to: ', from, to);
+        onTempFliter(tempFilterPayload, isEmpty(tempEmployee) ? null : tempEmployee,
+            tempVehicleModelList, tempCategoryList, tempSourceList, from, to, tempLeadStage, tempLeadStatus);
+        // return
+        // setTimeout(() => {
+        //     applyLeadsFilter(leadsFilterData, from, to);
+        // }, 500);
     }
 
     const onRefresh = async () => {
