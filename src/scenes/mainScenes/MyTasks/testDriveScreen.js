@@ -1334,8 +1334,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                     </View>
                     {uploadedImagesDataObj.dlBackUrl ? (
                       <View style={{ flexDirection: "row" }}>
-                         <TouchableOpacity
-                           
+                        <TouchableOpacity
                           style={{
                             width: "20%",
                             height: 30,
@@ -1344,7 +1343,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                             justifyContent: "center",
                             alignItems: "center",
                           }}
-                            onPress={() => {
+                          onPress={() => {
                             if (uploadedImagesDataObj.dlBackUrl?.documentPath) {
                               setImagePath(
                                 uploadedImagesDataObj.dlBackUrl?.documentPath
@@ -1361,13 +1360,13 @@ const TestDriveScreen = ({ route, navigation }) => {
                           >
                             Preview
                           </Text>
-                         </TouchableOpacity>
-                         <View style={{ width: "80%" }}>
-                            <DisplaySelectedImage
-                              fileName={uploadedImagesDataObj.dlBackUrl.fileName}
-                              from={"DLBACKURL"}
-                           />
-                         </View>
+                        </TouchableOpacity>
+                        <View style={{ width: "80%" }}>
+                          <DisplaySelectedImage
+                            fileName={uploadedImagesDataObj.dlBackUrl.fileName}
+                            from={"DLBACKURL"}
+                          />
+                        </View>
                       </View>
                     ) : null}
                   </View>
@@ -1376,7 +1375,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 <Text style={GlobalStyle.underline}></Text>
 
                 <DateSelectItem
-                  label={"Customer Preffered Date"}
+                  label={"Customer Preferred Date*"}
                   value={selector.customer_preferred_date}
                   // disabled={!isRecordEditable}
                   disabled={false}
@@ -1413,7 +1412,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                   }
                 />
                 <DateSelectItem
-                  label={"Customer Preffered Time"}
+                  label={"Customer Preferred Time*"}
                   value={selector.customer_preferred_time}
                   // disabled={!isRecordEditable}
                   disabled={false}
@@ -1435,7 +1434,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 {/* <View style={{ flexDirection: "row" }}>
                                 <View style={{ width: "50%" }}> */}
                 <DateSelectItem
-                  label={"Actual start Time"}
+                  label={"Actual start Time*"}
                   value={selector.actual_start_time}
                   // disabled={!isRecordEditable}
                   disabled={false}
@@ -1457,7 +1456,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 {/* </View>
                                 <View style={{ width: "50%" }}> */}
                 <DateSelectItem
-                  label={"Actual End Time"}
+                  label={"Actual End Time*"}
                   value={selector.actual_end_time}
                   disabled={false}
                   // disabled={!isRecordEditable}
