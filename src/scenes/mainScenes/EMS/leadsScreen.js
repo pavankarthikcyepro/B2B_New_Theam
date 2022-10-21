@@ -710,6 +710,7 @@ const LeadsScreen = ({ route, navigation }) => {
                         </View>
                         <DateRangePicker
                             initialRange={[selectedFromDate, selectedToDate]}
+                            maxDate={currentDate}
                             onSuccess={(from, to) => {
                                 applyDateFilter(from, to);
                             }}
