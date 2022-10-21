@@ -278,7 +278,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   useEffect(() => {
     const interval = setInterval(() => {
       // if (enqDetails?.leadStage === "ENQUIRY" && enqDetails?.leadStatus === null) {
-      // updateEnquiry();
+      updateEnquiry();
       // }
     }, 5000);
     return () => {

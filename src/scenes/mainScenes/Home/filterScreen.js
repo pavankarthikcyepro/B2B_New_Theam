@@ -50,7 +50,7 @@ const FilterScreen = ({ navigation }) => {
     const [fromDate, setFromDate] = useState("");
     const [toDate, setToDate] = useState("");
     const [nameKeyList, setNameKeyList] = useState([]);
-    const [userData, setUserData] = useState({ branchId: "", orgId: "", employeeId: "", employeeName: "" })
+    const [userData, setUserData] = useState({ branchId: "", orgId: "", employeeId: "", employeeName: "", primaryDesignation:"" })
     const [employeeTitleNameList, setEmloyeeTitleNameList] = useState([]);
     const [employeeDropDownDataLocal, setEmployeeDropDownDataLocal] = useState({});
     const [dropDownFrom, setDropDownFrom] = useState("");
@@ -64,7 +64,7 @@ const FilterScreen = ({ navigation }) => {
         const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
-            setUserData({ branchId: jsonObj.branchId, orgId: jsonObj.orgId, employeeId: jsonObj.empId, employeeName: jsonObj.empName })
+            setUserData({ branchId: jsonObj.branchId, orgId: jsonObj.orgId, employeeId: jsonObj.empId, employeeName: jsonObj.empName ,primaryDesignation:jsonObj.primaryDesignation})
         }
     }
 
@@ -340,7 +340,7 @@ const FilterScreen = ({ navigation }) => {
             navigation.goBack();
         }
         else {
-            navigation.goBack(); // NEED TO COMMENT FOR ASSOCIATE FILTER
+            // navigation.goBack(); // NEED TO COMMENT FOR ASSOCIATE FILTER
         }
     }
 
