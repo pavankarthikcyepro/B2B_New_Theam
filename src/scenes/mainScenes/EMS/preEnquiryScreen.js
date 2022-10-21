@@ -22,6 +22,7 @@ import {
 } from "../../../jsonData/enquiryFormScreenJsonData";
 import { MyTaskNewItem } from '../MyTasks/components/MyTasksNewItem';
 import { getLeadsList, getStatus } from '../../../redux/leaddropReducer';
+import { useIsFocused } from '@react-navigation/native';
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().add(0, "day").endOf('month').format(dateFormat)
@@ -59,6 +60,7 @@ const PreEnquiryScreen = ({ navigation }) => {
     const fromDateRef = React.useRef(selectedFromDate);
     const toDateRef = React.useRef(selectedToDate);
 
+    const isFocused = useIsFocused();
 
     const setMyState = data => {
         empIdStateRef.current = data.empId;
@@ -77,43 +79,6 @@ const PreEnquiryScreen = ({ navigation }) => {
         setSelectedToDate(date);
     }
 
-
-    useEffect(async () => {
-        setLoader(true);
-        // Get Data From Server
-        let isMounted = true;
-        setFromDateState(lastMonthFirstDate);
-        const tomorrowDate = moment().add(1, "day").format(dateFormat)
-        setToDateState(currentDate);
-
-        const employeeData = await AsyncStore.getData(
-            AsyncStore.Keys.LOGIN_EMPLOYEE
-        );
-        if (employeeData) {
-            const jsonObj = JSON.parse(employeeData);
-            setEmployeeId(jsonObj.empId);
-            setOrgId(jsonObj.orgId);
-        }
-        Promise.all([dispatch(getStatus())]).then((res) => {
-            let contact = res[0].payload.filter((e) => e.menu == "Contact");
-            let newIndex = contact[0].allLeadsSubstagesEntity;
-            setDefualtLeadStage(newIndex[0].leadStage ? newIndex[0].leadStage : []);
-            setdefualtLeadStatus(newIndex[0].leadStatus ? newIndex[0].leadStatus : []);
-            getDataFromDB(newIndex[0].leadStage ? newIndex[0].leadStage : [], newIndex[0].leadStatus ? newIndex[0].leadStatus : []);
-        }).catch((err) => {
-            console.log(err);
-            setLoader(false);
-        })      
-        // getAsyncData().then(data => {
-        //     if (isMounted) {
-        //         setMyState(data);
-        //         getPreEnquiryListFromServer(empIdStateRef.current, lastMonthFirstDate, currentDate);
-        //     }
-        // });
-
-        // return () => { isMounted = false };
-    }, [])
-
     const getDataFromDB = async (leadStage, leadStatus) => {
         const employeeData = await AsyncStore.getData(
             AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -124,8 +89,8 @@ const PreEnquiryScreen = ({ navigation }) => {
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
             // setEmployeeId(jsonObj.empId);
-            onTempFliter(jsonObj.empId, lastMonthFirstDate, currentDate, [], [], [], leadStage, leadStatus);
-            // getPreEnquiryListFromServer(jsonObj.empId, lastMonthFirstDate, currentDate);
+            // onTempFliter(jsonObj.empId, lastMonthFirstDate, currentDate, [], [], [], leadStage, leadStatus);
+            getPreEnquiryListFromServer(jsonObj.empId, lastMonthFirstDate, currentDate);
         }
     }
 
@@ -150,7 +115,7 @@ const PreEnquiryScreen = ({ navigation }) => {
             const tomorrowDate = moment().add(1, "day").format(dateFormat)
             setToDateState(currentDate);
             console.log("DATE &&&&", fromDateRef.current, toDateRef.current, lastMonthFirstDate, currentDate)
-        });
+            getDataFromDB()});
 
         // return () => {
         //     unsubscribe;
@@ -287,7 +252,6 @@ const PreEnquiryScreen = ({ navigation }) => {
                 "leadStage": leadStage ? leadStage : defualtLeadStage,
                 "leadStatus": leadStatus ? leadStatus : defualtLeadStatus
             };
-            console.log("sjsjhsjhsjhjsjhs", newPayload);
             Promise.all([dispatch(getLeadsList(newPayload))]).then((response) => {
                 setLoader(false);
                 let newData = response[0].payload?.dmsEntity?.leadDtoPage?.content;
@@ -335,13 +299,13 @@ const PreEnquiryScreen = ({ navigation }) => {
         switch (key) {
             case "FROM_DATE":
                 setFromDateState(formatDate);
-                onTempFliter(employeeId, formatDate, selectedToDate, vehicleModelList, categoryList, sourceList);
-                // getPreEnquiryListFromServer(employeeId, formatDate, selectedToDate);
+                // onTempFliter(employeeId, formatDate, selectedToDate, vehicleModelList, categoryList, sourceList);
+                getPreEnquiryListFromServer(employeeId, formatDate, selectedToDate);
                 break;
             case "TO_DATE":
                 setToDateState(formatDate);
-                onTempFliter(employeeId, selectedFromDate, formatDate, vehicleModelList, categoryList, sourceList)
-                // getPreEnquiryListFromServer(employeeId, selectedFromDate, formatDate);
+                // onTempFliter(employeeId, selectedFromDate, formatDate, vehicleModelList, categoryList, sourceList)
+                getPreEnquiryListFromServer(employeeId, selectedFromDate, formatDate);
                 break;
         }
     }
@@ -386,9 +350,8 @@ const PreEnquiryScreen = ({ navigation }) => {
         setCategoryList([...categoryFilters])
         setVehicleModelList([...modelFilters]);
         setSourceList([...sourceFilters]);
-        console.log("shsjhsjhsjhsjs", modelFilters, categoryFilters, sourceFilters);
-        onTempFliter(employeeId, selectedFromDate, selectedToDate, modelFilters, categoryFilters, sourceFilters);
-        return
+        // onTempFliter(employeeId, selectedFromDate, selectedToDate, modelFilters, categoryFilters, sourceFilters);
+        // return
         // Make Server call
         const payload2 = getPayloadData(employeeId, selectedFromDate, selectedToDate, 0, modelFilters, categoryFilters, sourceFilters)
 
@@ -496,8 +459,8 @@ const PreEnquiryScreen = ({ navigation }) => {
                             refreshControl={(
                                 <RefreshControl
                                     refreshing={selector.isLoading}
-                                    onRefresh={() => onTempFliter(employeeId, selectedFromDate, selectedToDate, vehicleModelList, categoryList, sourceList)}
-                                    // onRefresh={() => getPreEnquiryListFromServer(employeeId, selectedFromDate, selectedToDate)}
+                                    // onRefresh={() => onTempFliter(employeeId, selectedFromDate, selectedToDate, vehicleModelList, categoryList, sourceList)}
+                                    onRefresh={() => getPreEnquiryListFromServer(employeeId, selectedFromDate, selectedToDate)}
                                     progressViewOffset={200}
                                 />
                             )}
