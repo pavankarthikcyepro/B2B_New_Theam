@@ -7,10 +7,11 @@ const XDate = require('xdate');
 type Props = {
     initialRange: React.PropTypes.array.isRequired,
     onSuccess: React.PropTypes.func.isRequired,
+    maxDate
 };
 export default class DateRangePicker extends Component<Props> {
 
-    state = {isFromDatePicked: false, isToDatePicked: false, markedDates: {}}
+    state = {isFromDatePicked: false, isToDatePicked: false, markedDates: {}, maxDate: ''}
 
     componentDidMount() { this.setupInitialRange() }
 
@@ -58,11 +59,12 @@ export default class DateRangePicker extends Component<Props> {
     setupInitialRange = () => {
         if (!this.props.initialRange) return
         let [fromDate, toDate] = this.props.initialRange
+        let maxDate = this.props.maxDate;
         console.log(fromDate + '||' + toDate);
         console.log('props: ', this.props);
         let markedDates = {[fromDate]: {startingDay: true, color: this.props.theme.markColor, textColor: this.props.theme.markTextColor}}
         let [mMarkedDates, range] = this.setupMarkedDates(fromDate, toDate, markedDates)
-        this.setState({markedDates: mMarkedDates, fromDate: fromDate})
+        this.setState({markedDates: mMarkedDates, fromDate: fromDate, maxDate})
     }
 
     render() {
@@ -71,6 +73,7 @@ export default class DateRangePicker extends Component<Props> {
                       markingType={'period'}
                       current={this.state.fromDate}
                       markedDates={this.state.markedDates}
+                      maxDate={this.state.maxDate}
                       onDayPress={(day) => {this.onDayPress(day)}}/>
         )
     }
