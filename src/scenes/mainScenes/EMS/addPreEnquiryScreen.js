@@ -618,6 +618,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         setIsSubmitEnable(true);
       });
   };
+  
 
     const makeCreatePreEnquiry = (refNumber, addressObj) => {
         const dmsContactDtoObj = {
