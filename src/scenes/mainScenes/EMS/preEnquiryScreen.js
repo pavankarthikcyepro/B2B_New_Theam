@@ -101,16 +101,17 @@ const PreEnquiryScreen = ({ route, navigation }) => {
             setEmployeeId(jsonObj.empId);
             setOrgId(jsonObj.orgId);
         }
-        Promise.all([dispatch(getStatus())]).then((res) => {
-            let contact = res[0].payload.filter((e) => e.menu == "Contact");
-            let newIndex = contact[0].allLeadsSubstagesEntity;
-            setDefualtLeadStage(newIndex[0].leadStage ? newIndex[0].leadStage : []);
-            setdefualtLeadStatus(newIndex[0].leadStatus ? newIndex[0].leadStatus : []);
-            getDataFromDB(newIndex[0].leadStage ? newIndex[0].leadStage : [], newIndex[0].leadStatus ? newIndex[0].leadStatus : []);
-        }).catch((err) => {
-            console.log(err);
-            setLoader(false);
-        })
+        // Promise.all([dispatch(getStatus())]).then((res) => {
+        //     let contact = res[0].payload.filter((e) => e.menu === "Contact");
+        //     let newIndex = contact[0].allLeadsSubstagesEntity;
+        //     setDefualtLeadStage(newIndex[0].leadStage ? newIndex[0].leadStage : []);
+        //     setdefualtLeadStatus(newIndex[0].leadStatus ? newIndex[0].leadStatus : []);
+        //     console.log('GDFDB: 1');
+        //     getDataFromDB(newIndex[0].leadStage ? newIndex[0].leadStage : [], newIndex[0].leadStatus ? newIndex[0].leadStatus : []);
+        // }).catch((err) => {
+        //     console.log(err);
+        //     setLoader(false);
+        // })
         // getAsyncData().then(data => {
         //     if (isMounted) {
         //         setMyState(data);
@@ -126,13 +127,23 @@ const PreEnquiryScreen = ({ route, navigation }) => {
             AsyncStore.Keys.LOGIN_EMPLOYEE
         );
         const dateFormat = "YYYY-MM-DD";
-        const currentDate = moment().add(0, "day").format(dateFormat)
-        const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+        // const currentDate = moment().add(0, "day").format(dateFormat)
+        let currentDateLocal = currentDate;
+        let lastMonthFirstDateLocal = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+        if (route && route.params && route.params.moduleType) {
+            lastMonthFirstDateLocal = route?.params?.moduleType === 'live-leads' ? '2021-01-01' : lastMonthFirstDateLocal;
+            currentDateLocal = route?.params?.moduleType === 'live-leads' ? moment().format(dateFormat) : currentDate;
+            setFromDateState(lastMonthFirstDateLocal);
+            setToDateState(currentDateLocal);
+        } else {
+            setFromDateState(lastMonthFirstDate);
+            setToDateState(currentDate);
+        }
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
             // setEmployeeId(jsonObj.empId);
             // onTempFliter(jsonObj.empId, lastMonthFirstDate, currentDate, [], [], [], leadStage, leadStatus);
-            getPreEnquiryListFromServer(jsonObj.empId, lastMonthFirstDate, currentDate);
+            getPreEnquiryListFromServer(jsonObj.empId, lastMonthFirstDateLocal, currentDateLocal);
         }
     }
 
@@ -153,7 +164,7 @@ const PreEnquiryScreen = ({ route, navigation }) => {
             // getAsyncData(lastMonthFirstDate, currentDate).then(data => {
             //     console.log(data)
             // });
-            if (route?.params) {
+            if (route && route.params && route.params.moduleType) {
                 const liveLeadsStartDate = route?.params?.moduleType === 'live-leads' ? '2021-01-01' : lastMonthFirstDate;
                 const liveLeadsEndDate = route?.params?.moduleType === 'live-leads' ? moment().format(dateFormat) : currentDate;
                 setFromDateState(liveLeadsStartDate);
@@ -162,9 +173,6 @@ const PreEnquiryScreen = ({ route, navigation }) => {
                 setFromDateState(lastMonthFirstDate);
                 setToDateState(currentDate);
             }
-            // setFromDateState(lastMonthFirstDate);
-            // const tomorrowDate = moment().add(1, "day").format(dateFormat)
-            // setToDateState(currentDate);
             console.log("DATE &&&&", fromDateRef.current, toDateRef.current, lastMonthFirstDate, currentDate)
             getDataFromDB()});
 
@@ -405,7 +413,6 @@ const PreEnquiryScreen = ({ route, navigation }) => {
         // return
         // Make Server call
         const payload2 = getPayloadData(employeeId, selectedFromDate, selectedToDate, 0, modelFilters, categoryFilters, sourceFilters)
-
         dispatch(getPreEnquiryData(payload2));
     }
 

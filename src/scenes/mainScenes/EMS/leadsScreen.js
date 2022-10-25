@@ -254,7 +254,7 @@ const LeadsScreen = ({ route, navigation }) => {
         const newArr = tempStores.map(function (x) {
             x.checked = false;
             return x
-        });;
+        });
         setTempLeadStage(leadStage);
         setTempLeadStatus([]);
         onTempFliter(newArr, null, [], [], [], lastMonthFirstDate, currentDate, leadStage, []);
@@ -300,10 +300,14 @@ const LeadsScreen = ({ route, navigation }) => {
             case "FROM_DATE":
                 setFromDateState(formatDate);
                 // getEnquiryListFromServer(employeeId, formatDate, selectedToDate);
+                onTempFliter(tempFilterPayload, isEmpty(tempEmployee) ? null : tempEmployee,
+                    tempVehicleModelList, tempCategoryList, tempSourceList, formatDate, selectedToDate, tempLeadStage, tempLeadStatus);
                 break;
             case "TO_DATE":
                 setToDateState(formatDate);
                 // getEnquiryListFromServer(employeeId, selectedFromDate, formatDate);
+                onTempFliter(tempFilterPayload, isEmpty(tempEmployee) ? null : tempEmployee,
+                    tempVehicleModelList, tempCategoryList, tempSourceList, selectedFromDate, formatDate, tempLeadStage, tempLeadStatus);
                 break;
         }
     }
@@ -614,9 +618,9 @@ const LeadsScreen = ({ route, navigation }) => {
         updateSelectedDate(from, 'FROM_DATE');
         updateSelectedDate(to, 'TO_DATE');
         setShowDatePicker(false);
-        console.log('live leads: from to: ', from, to);
-        onTempFliter(tempFilterPayload, isEmpty(tempEmployee) ? null : tempEmployee,
-            tempVehicleModelList, tempCategoryList, tempSourceList, from, to, tempLeadStage, tempLeadStatus);
+        // console.log('live leads: from to: ', from, to);
+        // onTempFliter(tempFilterPayload, isEmpty(tempEmployee) ? null : tempEmployee,
+        //     tempVehicleModelList, tempCategoryList, tempSourceList, from, to, tempLeadStage, tempLeadStatus);
         // return
         // setTimeout(() => {
         //     applyLeadsFilter(leadsFilterData, from, to);
@@ -665,7 +669,7 @@ const LeadsScreen = ({ route, navigation }) => {
                 visible={showDatePicker}
                 mode={"date"}
                 maximumDate={new Date(liveLeadsEndDate.toString())}
-                value={new Date(Date.now())}
+                value={new Date()}
                 onChange={(event, selectedDate) => {
                     console.log("date: ", selectedDate);
                     setShowDatePicker(false)
