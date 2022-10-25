@@ -114,17 +114,22 @@ const ListComponent = ({ route, navigation }) => {
       myTaskList: [],
     },
   ];
+ useEffect(() => {
+   setSelectedFilter("TODAY");
+   setIndex(0);
+   initialTask("TODAY");
+ }, []);
 
-  useEffect(() => {
-    navigation.addListener("focus", () => {
-      console.log("CALLED %%%");
-      setSelectedFilter("TODAY");
-      setIndex(0);
-      // setMyTasksData([...defaultData]);
-      // setMyTeamsData([...defaultData])
-      initialTask("TODAY");
-    });
-  }, [navigation]);
+  // useEffect(() => {
+  //   navigation.addListener("focus", () => {
+  //     console.log("CALLED %%%");
+  //     setSelectedFilter("TODAY");
+  //     setIndex(0);
+  //     // setMyTasksData([...defaultData]);
+  //     // setMyTeamsData([...defaultData])
+  //     initialTask("TODAY");
+  //   });
+  // }, [navigation]);
 
   useEffect(() => {
     console.log("CALLED USE");
