@@ -808,7 +808,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
                                 <>
                                     {isTeamPresent && !selector.isDSE &&
                                         <View style={{ flexDirection: 'row', marginBottom: 15, justifyContent: 'center', alignItems: 'center' }}>
-                                            <View style={{ flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 28, marginTop: 10, justifyContent: 'center', width: '80%' }}>
+                                            <View style={{ flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 40, marginTop: 10, justifyContent: 'center', width: '80%' }}>
 
                                                 <TouchableOpacity onPress={() => {
                                                     // setIsTeam(true)
@@ -846,7 +846,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
                                 <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                                     <View style={{
                                         width: '95%',
-                                        minHeight: 400,
+                                        minHeight: 40,
                                         shadowColor: Colors.DARK_GRAY,
                                         shadowOffset: {
                                             width: 0,

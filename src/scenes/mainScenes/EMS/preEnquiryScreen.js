@@ -27,8 +27,8 @@ const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().add(0, "day").endOf('month').format(dateFormat)
 const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
 
-const PreEnquiryScreen = ({ navigation }) => {
-
+const PreEnquiryScreen = ({ route, navigation }) => {
+    const moduleType = route?.params?.moduleType ? route?.params?.moduleType : null;
     const selector = useSelector(state => state.preEnquiryReducer);
     const appSelector = useSelector(state => state.appReducer);
     const { vehicle_model_list_for_filters, source_of_enquiry_list } = useSelector(state => state.homeReducer);
@@ -53,7 +53,7 @@ const PreEnquiryScreen = ({ navigation }) => {
     const [tempVehicleModelList, setTempVehicleModelList] = useState([]);
     const [tempSourceList, setTempSourceList] = useState([]);
     const [tempCategoryList, setTempCategoryList] = useState([]);
-    
+
     const orgIdStateRef = React.useRef(orgId);
     const empIdStateRef = React.useRef(employeeId);
     const fromDateRef = React.useRef(selectedFromDate);
@@ -77,14 +77,19 @@ const PreEnquiryScreen = ({ navigation }) => {
         setSelectedToDate(date);
     }
 
+    // useEffect(() => {
+    //     if (route && route.params) {
+    //         alert('---> ' + moduleType);
+    //     }
+    // }, [route])
 
     useEffect(async () => {
         setLoader(true);
         // Get Data From Server
         let isMounted = true;
-        setFromDateState(lastMonthFirstDate);
-        const tomorrowDate = moment().add(1, "day").format(dateFormat)
-        setToDateState(currentDate);
+        // setFromDateState(lastMonthFirstDate);
+        // const tomorrowDate = moment().add(1, "day").format(dateFormat)
+        // setToDateState(currentDate);
 
         const employeeData = await AsyncStore.getData(
             AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -103,7 +108,7 @@ const PreEnquiryScreen = ({ navigation }) => {
         }).catch((err) => {
             console.log(err);
             setLoader(false);
-        })      
+        })
         // getAsyncData().then(data => {
         //     if (isMounted) {
         //         setMyState(data);
@@ -146,9 +151,18 @@ const PreEnquiryScreen = ({ navigation }) => {
             // getAsyncData(lastMonthFirstDate, currentDate).then(data => {
             //     console.log(data)
             // });
-            setFromDateState(lastMonthFirstDate);
-            const tomorrowDate = moment().add(1, "day").format(dateFormat)
-            setToDateState(currentDate);
+            if (route?.params) {
+                const liveLeadsStartDate = route?.params?.moduleType === 'live-leads' ? '2021-01-01' : lastMonthFirstDate;
+                const liveLeadsEndDate = route?.params?.moduleType === 'live-leads' ? moment().format(dateFormat) : currentDate;
+                setFromDateState(liveLeadsStartDate);
+                setToDateState(liveLeadsEndDate);
+            } else {
+                setFromDateState(lastMonthFirstDate);
+                setToDateState(currentDate);
+            }
+            // setFromDateState(lastMonthFirstDate);
+            // const tomorrowDate = moment().add(1, "day").format(dateFormat)
+            // setToDateState(currentDate);
             console.log("DATE &&&&", fromDateRef.current, toDateRef.current, lastMonthFirstDate, currentDate)
         });
 
@@ -417,13 +431,15 @@ const PreEnquiryScreen = ({ navigation }) => {
         dispatch(updateIsSearch(true));
     };
 
+    const liveLeadsEndDate = route?.params?.moduleType === 'live-leads' ? moment().format(dateFormat) : currentDate;
     return (
         <SafeAreaView style={styles.conatiner}>
 
             <DatePickerComponent
                 visible={showDatePicker}
                 mode={"date"}
-                value={new Date(Date.now())}
+                maximumDate={new Date(liveLeadsEndDate.toString())}
+                value={new Date(Date.now()) + 9}
                 onChange={(event, selectedDate) => {
                     console.log("date: ", selectedDate);
                     setShowDatePicker(false)
