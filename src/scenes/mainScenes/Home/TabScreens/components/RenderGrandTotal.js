@@ -19,8 +19,10 @@ export const RenderGrandTotal = (parameter) => {
                                 style={[styles.totalText1, {marginBottom: 0, color: Colors.WHITE}]}>{displayType === 0 ? Number(selectedParameter.achievment) :
                                 achievementPercentage(selectedParameter.achievment, selectedParameter.target, param, enquiryParameter.achievment)}
                             </Text>
-                            <Text
-                                style={[styles.totalText, {width: moduleType === 'live-leads' ? 70 : (param === 'Accessories' ? 65 : 56), color: Colors.WHITE, backgroundColor: Colors.MAROON}]}>{Number(selectedParameter.target)}</Text>
+                            {moduleType !== 'live-leads' &&
+                                <Text
+                                    style={[styles.totalText, {width: moduleType === 'live-leads' ? 70 : (param === 'Accessories' ? 65 : 56), color: Colors.WHITE, backgroundColor: Colors.MAROON}]}>{Number(selectedParameter.target)}</Text>
+                            }
                         </View>
                     )
                 })

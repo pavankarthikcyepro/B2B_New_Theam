@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Dimensions, Image, Pressable, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {Dimensions, FlatList, Pressable, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {LoaderComponent} from "../../../components";
 import {useDispatch, useSelector} from 'react-redux';
 import moment from 'moment';
@@ -11,18 +11,15 @@ import {Colors} from "../../../styles";
 import {
     delegateTask,
     getEmployeesList,
-    getNewTargetParametersAllData,
     getReportingManagerList,
     getUserWiseTargetParameters,
 } from "../../../redux/liveLeadsReducer";
 import {useNavigation} from "@react-navigation/native";
-import SegmentedControl from "@react-native-segmented-control/segmented-control";
-import {IconButton} from "react-native-paper";
+import {Card, IconButton} from "react-native-paper";
 import {RenderGrandTotal} from "../Home/TabScreens/components/RenderGrandTotal";
 import {RenderEmployeeParameters} from "../Home/TabScreens/components/RenderEmployeeParameters";
-import {RenderSelfInsights} from "../Home/TabScreens/components/RenderSelfInsights";
-import PercentageToggleControl from "../Home/TabScreens/components/EmployeeView/PercentageToggleControl";
 import {AppNavigator} from "../../../navigations";
+import {EmsTopTabNavigatorIdentifiers, EMSTopTabNavigatorTwo} from "../../../navigations/emsTopTabNavigator";
 
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 100) / 5;
@@ -50,6 +47,8 @@ const ParametersScreen = ({route}) => {
     const [togglePercentage, setTogglePercentage] = useState(0);
     const [toggleParamsIndex, setToggleParamsIndex] = useState(0);
     const [toggleParamsMetaData, setToggleParamsMetaData] = useState([]);
+
+    const color = ["#9f31bf", "#00b1ff", "#fb03b9", "#ffa239", "#d12a78", "#0800ff", "#1f93ab", "#ec3466"];
 
     const paramsMetadata = [
         // 'Enquiry', 'Test Drive', 'Home Visit', 'Booking', 'INVOICE', 'Finance', 'Insurance', 'Exchange', 'EXTENDEDWARRANTY', 'Accessories'
@@ -128,7 +127,7 @@ const ParametersScreen = ({route}) => {
                 setEnqData(tempEnq[0])
             }
 
-             let tempCon = [];
+            let tempCon = [];
             tempCon = dashboardSelfParamsData.filter((item) => {
                 return item.paramName.toLowerCase() === 'preenquiry'
             })
@@ -234,7 +233,8 @@ const ParametersScreen = ({route}) => {
     const renderData = (item, color) => {
         return (
             <View style={{flexDirection: 'row', backgroundColor: Colors.BORDER_COLOR}}>
-                <RenderEmployeeParameters item={item} displayType={togglePercentage} params={toggleParamsMetaData} navigation={navigation} moduleType={'live-leads'}/>
+                <RenderEmployeeParameters item={item} displayType={togglePercentage} params={toggleParamsMetaData}
+                                          navigation={navigation} moduleType={'live-leads'}/>
             </View>
         )
     }
@@ -317,6 +317,68 @@ const ParametersScreen = ({route}) => {
         }
     }
 
+    const paramNameLabels = {preenquiry: 'Contacts', invoice: 'Retail'};
+
+    function convertParamNameLabels(paramName) {
+        paramName = paramName ? paramName : '';
+        if (paramNameLabels.hasOwnProperty(paramName.toLowerCase())) {
+            paramName = paramNameLabels[paramName.toLowerCase()];
+        }
+        return paramName;
+    }
+
+    function navigateToEmsScreen(item) {
+        const leads = ['enquiry', 'booking', 'invoice'];
+        const {paramName} = item;
+        const isContact = paramName.toLowerCase() === 'preenquiry';
+        const isLead = leads.includes(paramName.toLowerCase());
+        if (isLead) {
+            navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
+            setTimeout(() => {
+                navigation.navigate("LEADS", {
+                    param: paramName === "INVOICE" ? "Retail" : paramName,
+                    moduleType: 'live-leads'
+                })
+            }, 1000);
+        } else if (isContact) {
+            navigation.navigate(EmsTopTabNavigatorIdentifiers.preEnquiry, {
+                moduleType: 'live-leads'
+            });
+        }
+    }
+
+    const renderSelfInsightsView = (item, index) => {
+        return (
+            <Card style={[styles.paramCard, {
+                borderColor: color[index % color.length]
+            }]}>
+                <View
+                      style={styles.insightParamsContainer}>
+                    <Text
+                        style={styles.insightParamsLabel}>{convertParamNameLabels(item?.paramName)}</Text>
+                    <Text style={[styles.achievementCountView, {textDecorationLine: item?.achievment && item?.achievment > 0  ? 'underline' : 'none'
+                    }]} onPress={() => navigateToEmsScreen(item)}>{item?.achievment}</Text>
+                    <View></View>
+                </View>
+            </Card>
+            // <View
+            //     style={{flexDirection: 'row', justifyContent: 'space-between', marginVertical: 8, marginHorizontal: 8, alignItems: 'center'}}>
+            //     <Text
+            //         style={{width: '40%'}}>{convertParamNameLabels(item?.paramName)}</Text>
+            //     <Text style={{ minWidth: 45,
+            //         height: 25,
+            //         borderColor: color[index % color.length],
+            //         borderWidth: 1,
+            //         borderRadius: 8,
+            //         justifyContent: "center",
+            //         alignItems: "center",
+            //         textAlign: 'center',
+            //         paddingTop: 4}} onPress={() => navigateToEmsScreen(item)}>{item?.achievment}</Text>
+            //     <View></View>
+            // </View>
+        )
+    }
+
     return (
         <>
             <View style={styles.container}>
@@ -327,8 +389,8 @@ const ParametersScreen = ({route}) => {
                             flexDirection: 'row',
                             alignItems: 'center',
                             justifyContent: 'flex-end',
-                            borderBottomWidth: 2,
-                            borderBottomColor: Colors.RED,
+                            // borderBottomWidth: 2,
+                            // borderBottomColor: Colors.RED,
                             paddingBottom: 8
                         }}>
                             {/*<SegmentedControl*/}
@@ -357,11 +419,11 @@ const ParametersScreen = ({route}) => {
                             {/*        setToggleParamsIndex(index);*/}
                             {/*    }}*/}
                             {/*/>*/}
-                            <View style={{height: 24, width: '20%', marginLeft: 4}}>
-                                <View style={styles.percentageToggleView}>
-                                    <PercentageToggleControl toggleChange={(x) => setTogglePercentage(x)}/>
-                                </View>
-                            </View>
+                            {/*<View style={{height: 24, width: '20%', marginLeft: 4}}>*/}
+                            {/*    <View style={styles.percentageToggleView}>*/}
+                            {/*        <PercentageToggleControl toggleChange={(x) => setTogglePercentage(x)}/>*/}
+                            {/*    </View>*/}
+                            {/*</View>*/}
                         </View>
 
                         <ScrollView contentContainerStyle={{paddingRight: 0, flexDirection: 'column'}}
@@ -681,17 +743,18 @@ const ParametersScreen = ({route}) => {
                                                                                         innerItem2.isOpenInner && innerItem2.employeeTargetAchievements.length > 0 &&
                                                                                         innerItem2.employeeTargetAchievements.map((innerItem3, innerIndex3) => {
                                                                                             return (
-                                                                                                <View key={innerIndex3} style={[{
-                                                                                                    width: '98%',
-                                                                                                    minHeight: 40,
-                                                                                                    flexDirection: 'column',
-                                                                                                }, innerItem3.isOpenInner && {
-                                                                                                    borderRadius: 10,
-                                                                                                    borderWidth: 1,
-                                                                                                    borderColor: '#EC3466',
-                                                                                                    backgroundColor: '#FFFFFF',
-                                                                                                    marginHorizontal: 5
-                                                                                                }]}>
+                                                                                                <View key={innerIndex3}
+                                                                                                      style={[{
+                                                                                                          width: '98%',
+                                                                                                          minHeight: 40,
+                                                                                                          flexDirection: 'column',
+                                                                                                      }, innerItem3.isOpenInner && {
+                                                                                                          borderRadius: 10,
+                                                                                                          borderWidth: 1,
+                                                                                                          borderColor: '#EC3466',
+                                                                                                          backgroundColor: '#FFFFFF',
+                                                                                                          marginHorizontal: 5
+                                                                                                      }]}>
                                                                                                     <View style={{
                                                                                                         paddingHorizontal: 4,
                                                                                                         display: 'flex',
@@ -792,18 +855,19 @@ const ParametersScreen = ({route}) => {
                                                                                                         innerItem3.isOpenInner && innerItem3.employeeTargetAchievements.length > 0 &&
                                                                                                         innerItem3.employeeTargetAchievements.map((innerItem4, innerIndex4) => {
                                                                                                             return (
-                                                                                                                <View key={innerIndex4}
-                                                                                                                      style={[{
-                                                                                                                          width: '98%',
-                                                                                                                          minHeight: 40,
-                                                                                                                          flexDirection: 'column',
-                                                                                                                      }, innerItem4.isOpenInner && {
-                                                                                                                          borderRadius: 10,
-                                                                                                                          borderWidth: 1,
-                                                                                                                          borderColor: '#1C95A6',
-                                                                                                                          backgroundColor: '#EEEEEE',
-                                                                                                                          marginHorizontal: 5
-                                                                                                                      }]}>
+                                                                                                                <View
+                                                                                                                    key={innerIndex4}
+                                                                                                                    style={[{
+                                                                                                                        width: '98%',
+                                                                                                                        minHeight: 40,
+                                                                                                                        flexDirection: 'column',
+                                                                                                                    }, innerItem4.isOpenInner && {
+                                                                                                                        borderRadius: 10,
+                                                                                                                        borderWidth: 1,
+                                                                                                                        borderColor: '#1C95A6',
+                                                                                                                        backgroundColor: '#EEEEEE',
+                                                                                                                        marginHorizontal: 5
+                                                                                                                    }]}>
                                                                                                                     <View
                                                                                                                         style={{flexDirection: 'row'}}>
                                                                                                                         <RenderLevel1NameView
@@ -874,18 +938,19 @@ const ParametersScreen = ({route}) => {
                                                                                                                         innerItem4.isOpenInner && innerItem4.employeeTargetAchievements.length > 0 &&
                                                                                                                         innerItem4.employeeTargetAchievements.map((innerItem5, innerIndex5) => {
                                                                                                                             return (
-                                                                                                                                <View key={innerIndex5}
-                                                                                                                                      style={[{
-                                                                                                                                          width: '98%',
-                                                                                                                                          minHeight: 40,
-                                                                                                                                          flexDirection: 'column',
-                                                                                                                                      }, innerItem5.isOpenInner && {
-                                                                                                                                          borderRadius: 10,
-                                                                                                                                          borderWidth: 1,
-                                                                                                                                          borderColor: '#C62159',
-                                                                                                                                          backgroundColor: '#FFFFFF',
-                                                                                                                                          marginHorizontal: 5
-                                                                                                                                      }]}>
+                                                                                                                                <View
+                                                                                                                                    key={innerIndex5}
+                                                                                                                                    style={[{
+                                                                                                                                        width: '98%',
+                                                                                                                                        minHeight: 40,
+                                                                                                                                        flexDirection: 'column',
+                                                                                                                                    }, innerItem5.isOpenInner && {
+                                                                                                                                        borderRadius: 10,
+                                                                                                                                        borderWidth: 1,
+                                                                                                                                        borderColor: '#C62159',
+                                                                                                                                        backgroundColor: '#FFFFFF',
+                                                                                                                                        marginHorizontal: 5
+                                                                                                                                    }]}>
                                                                                                                                     <View
                                                                                                                                         style={{flexDirection: 'row'}}>
                                                                                                                                         <RenderLevel1NameView
@@ -956,18 +1021,19 @@ const ParametersScreen = ({route}) => {
                                                                                                                                         innerItem5.isOpenInner && innerItem5.employeeTargetAchievements.length > 0 &&
                                                                                                                                         innerItem5.employeeTargetAchievements.map((innerItem6, innerIndex6) => {
                                                                                                                                             return (
-                                                                                                                                                <View key={innerIndex6}
-                                                                                                                                                      style={[{
-                                                                                                                                                          width: '98%',
-                                                                                                                                                          minHeight: 40,
-                                                                                                                                                          flexDirection: 'column',
-                                                                                                                                                      }, innerItem6.isOpenInner && {
-                                                                                                                                                          borderRadius: 10,
-                                                                                                                                                          borderWidth: 1,
-                                                                                                                                                          borderColor: '#C62159',
-                                                                                                                                                          backgroundColor: '#FFFFFF',
-                                                                                                                                                          marginHorizontal: 5
-                                                                                                                                                      }]}>
+                                                                                                                                                <View
+                                                                                                                                                    key={innerIndex6}
+                                                                                                                                                    style={[{
+                                                                                                                                                        width: '98%',
+                                                                                                                                                        minHeight: 40,
+                                                                                                                                                        flexDirection: 'column',
+                                                                                                                                                    }, innerItem6.isOpenInner && {
+                                                                                                                                                        borderRadius: 10,
+                                                                                                                                                        borderWidth: 1,
+                                                                                                                                                        borderColor: '#C62159',
+                                                                                                                                                        backgroundColor: '#FFFFFF',
+                                                                                                                                                        marginHorizontal: 5
+                                                                                                                                                    }]}>
                                                                                                                                                     <View
                                                                                                                                                         style={{flexDirection: 'row'}}>
                                                                                                                                                         <RenderLevel1NameView
@@ -1095,29 +1161,30 @@ const ParametersScreen = ({route}) => {
                                             flexDirection: 'row',
                                             backgroundColor: Colors.RED
                                         }}>
-                                            <View style={{justifyContent: 'center', alignItems: 'center', marginLeft: 6}}>
+                                            <View
+                                                style={{justifyContent: 'center', alignItems: 'center', marginLeft: 6}}>
                                                 <Text style={[styles.grandTotalText, {
                                                     color: Colors.WHITE,
                                                     fontSize: 12,
                                                 }]}>Total</Text>
                                             </View>
-                                            <View >
-                                                <Text style={{
-                                                    fontSize: 6,
-                                                    fontWeight: 'bold',
-                                                    paddingVertical: 6,
-                                                    paddingRight: 2,
-                                                    height: 20,
-                                                    color: Colors.WHITE
-                                                }}>ACH</Text>
-                                                <Text style={{
-                                                    fontSize: 6,
-                                                    fontWeight: 'bold',
-                                                    paddingVertical: 6,
-                                                    height: 20,
-                                                    color: Colors.WHITE
-                                                }}>TGT</Text>
-                                            </View>
+                                            {/*<View>*/}
+                                            {/*    <Text style={{*/}
+                                            {/*        fontSize: 6,*/}
+                                            {/*        fontWeight: 'bold',*/}
+                                            {/*        paddingVertical: 6,*/}
+                                            {/*        paddingRight: 2,*/}
+                                            {/*        height: 20,*/}
+                                            {/*        color: Colors.WHITE*/}
+                                            {/*    }}>CNT</Text>*/}
+                                            {/*    <Text style={{*/}
+                                            {/*        fontSize: 6,*/}
+                                            {/*        fontWeight: 'bold',*/}
+                                            {/*        paddingVertical: 6,*/}
+                                            {/*        height: 20,*/}
+                                            {/*        color: Colors.WHITE*/}
+                                            {/*    }}>TGT</Text>*/}
+                                            {/*</View>*/}
                                         </View>
                                         <View style={{
                                             minHeight: 40,
@@ -1141,170 +1208,42 @@ const ParametersScreen = ({route}) => {
                     </View>
                 ) : ( // IF Self or insights
                     <>
-                        <View style={{flexDirection: "row", marginVertical: 8}}>
-                            <View style={{
-                                width: "62%",
-                                justifyContent: "flex-start",
-                                alignItems: 'center',
-                                height: 15,
-                                flexDirection: "row",
-                                paddingRight: 16
+                        <View style={{margin: 16}}>
+                            <Pressable style={{alignSelf: 'flex-end'}} onPress={() => {
+                                navigation.navigate(AppNavigator.HomeStackIdentifiers.sourceModel, {
+                                    empId: selector.login_employee_details.empId,
+                                    headerTitle: 'Source/Model',
+                                    loggedInEmpId: selector.login_employee_details.empId,
+                                    type: selector.isDSE ? 'SELF' : 'INSIGHTS',
+                                    moduleType: 'live-leads'
+                                })
                             }}>
-                                <View style={[styles.percentageToggleView, {marginVertical: -8}]}>
-                                    <PercentageToggleControl toggleChange={(x) => setTogglePercentage(x)}/>
-                                </View>
-                                <Pressable style={{alignSelf: 'flex-end'}} onPress={() => {
-                                    navigation.navigate(AppNavigator.HomeStackIdentifiers.sourceModel, {
-                                        empId: selector.login_employee_details.empId,
-                                        headerTitle: 'Source/Model',
-                                        loggedInEmpId: selector.login_employee_details.empId,
-                                        type: selector.isDSE ? 'SELF' : 'INSIGHTS',
-                                        moduleType: 'live-leads'
-                                    })
-                                }}>
-                                    <Text style={{
-                                        fontSize: 12,
-                                        fontWeight: '600',
-                                        color: Colors.BLUE,
-                                        marginLeft: 8,
-                                        textDecorationLine: 'underline'
-                                    }}>Source/Model</Text>
-                                </Pressable>
-                            </View>
-                            <View style={{width: "30%", flexDirection: "row"}}>
-                                <Text style={{fontSize: 14, fontWeight: "600"}}>Balance</Text>
-                                <View style={{marginRight: 15}}></View>
-                                <Text style={{fontSize: 14, fontWeight: "600"}}>AR/Day</Text>
-                            </View>
+                                <Text style={{
+                                    fontSize: 12,
+                                    fontWeight: '600',
+                                    color: Colors.BLUE,
+                                    marginLeft: 8,
+                                    textDecorationLine: 'underline'
+                                }}>Source/Model</Text>
+                            </Pressable>
                         </View>
-                        <>
-                            <View>
-                                <View style={{
-                                    width: "42%",
-                                    marginLeft: '12%',
-                                    marginBottom: -6,
-                                    flexDirection: "row",
-                                    justifyContent: 'space-between'
-                                }}>
-                                    <Text style={{fontSize: 8}}>ACH</Text>
-                                    <Text style={{fontSize: 8}}>TGT</Text>
-                                </View>
-                                <RenderSelfInsights data={selfInsightsData} type={togglePercentage} navigation={navigation} moduleType={'live-leads'}/>
-                            </View>
-                        </>
-                        <View
-                            style={{ flexDirection: "row", marginTop: 16, justifyContent: "space-between", marginHorizontal: 8 }}
-                        >
-                            <View style={{ flexGrow: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
 
-                                <View style={styles.statWrap}>
-                                    <Text
-                                        style={{
-                                            marginLeft: 10,
-                                            fontSize: 16,
-                                            fontWeight: "600",
-                                            flexDirection: "row",
-                                        }}
-                                    >
-                                        E2B
-                                    </Text>
-                                    {bookingData !== null && enqData !== null ? (
-                                        <Text
-                                            style={{
-                                                color:
-                                                    Math.floor(
-                                                        (parseInt(bookingData?.achievment) /
-                                                            parseInt(enqData?.achievment)) *
-                                                        100
-                                                    ) > 40
-                                                        ? "#14ce40"
-                                                        : "#ff0000",
-                                                fontSize: 12,
-                                                marginRight: 4
-                                            }}
-                                        >
-                                            {parseInt(bookingData?.achievment) === 0 ||
-                                            parseInt(enqData?.achievment) === 0
-                                                ? 0
-                                                : Math.round(
-                                                    (parseInt(bookingData?.achievment) /
-                                                        parseInt(enqData?.achievment)) *
-                                                    100
-                                                )}
-                                            %
-                                        </Text>
-                                    ) : (
-                                        <Text
-                                            style={{
-                                                color: "#ff0000",
-                                                fontSize: 12,
-                                            }}
-                                        >
-                                            0%
-                                        </Text>
-                                    )}
-                                </View>
-
-                                <View style={styles.statWrap}>
-                                    <Text
-                                        style={{
-                                            marginLeft: 10,
-                                            fontSize: 16,
-                                            fontWeight: "600",
-                                            flexDirection: "row",
-                                        }}
-                                    >
-                                        E2R
-                                    </Text>
-                                    {retailData !== null && enqData !== null ? (
-                                        <Text
-                                            style={{
-                                                color:
-                                                    Math.floor(
-                                                        (parseInt(retailData?.achievment) /
-                                                            parseInt(enqData?.achievment)) *
-                                                        100
-                                                    ) > 40
-                                                        ? "#14ce40"
-                                                        : "#ff0000",
-                                                fontSize: 12,
-                                                marginRight: 4
-                                            }}
-                                        >
-                                            {parseInt(retailData?.achievment) === 0 ||
-                                            parseInt(enqData?.achievment) === 0
-                                                ? 0
-                                                : Math.round(
-                                                    (parseInt(retailData?.achievment) /
-                                                        parseInt(enqData?.achievment)) *
-                                                    100
-                                                )}
-                                            %
-                                        </Text>
-                                    ) : (
-                                        <Text
-                                            style={{
-                                                color: "#ff0000",
-                                                fontSize: 12,
-                                            }}
-                                        >
-                                            0%
-                                        </Text>
-                                    )}
-                                </View>
-
-
-                            {/*    */}
-                            </View>
-
+                        <View>
+                            {/*<RenderSelfInsights data={selfInsightsData} type={togglePercentage} navigation={navigation} moduleType={'live-leads'}/>*/}
+                            {
+                                selfInsightsData && selfInsightsData.length > 0 &&
+                                            <FlatList data={selfInsightsData}
+                                                      keyExtractor={(item, index) => index.toString()}
+                                                      renderItem={({ item, index }) => renderSelfInsightsView(item, index)} />
+                            }
                         </View>
-                        <View style={{ height: 20 }}></View>
                     </>
                 )}
             </View>
             {!selector.isLoading ? null : <LoaderComponent
                 visible={selector.isLoading}
-                onRequestClose={() => { }}
+                onRequestClose={() => {
+                }}
             />}
         </>
     );
@@ -1353,8 +1292,7 @@ export const RenderLevel1NameView = ({level, item, branchName = '', color, title
                 flexDirection: 'column',
                 marginRight: 5,
             }}>
-                <Text style={{fontSize: 6, fontWeight: 'bold', paddingVertical: 6, height: 25}}>ACH</Text>
-                <Text style={{fontSize: 6, fontWeight: 'bold', paddingVertical: 6, height: 20}}>TGT</Text>
+                <Text style={{fontSize: 6, fontWeight: 'bold', paddingVertical: 6, height: 25}}>CNT</Text>
             </View>
         </View>
     )
@@ -1416,5 +1354,22 @@ const styles = StyleSheet.create({
         alignItems: 'flex-end',
         marginVertical: 8,
         paddingHorizontal: 12
+    },
+    insightParamsContainer: {
+        marginHorizontal: 16,
+    },
+    insightParamsLabel: {
+    },
+    achievementCountView: {
+        marginTop: 6,
+        fontSize: 24,
+    },
+    paramCard: {
+        padding: 8,
+        margin: 16,
+        borderWidth: 1,
+        // height: '75%',
+        width: '90%'
     }
+
 })
