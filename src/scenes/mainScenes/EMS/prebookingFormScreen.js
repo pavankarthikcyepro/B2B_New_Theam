@@ -1708,24 +1708,24 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         return;
       }
 
-      let isAddressSelected = false;
+      // let isAddressSelected = false;
 
-      if (defaultAddress) {
-        isAddressSelected = true;
-      } else {
-        for (let i = 0; i < addressData.length; i++) {
-          if (addressData[i].value == selector.defaultAddress) {
-            isAddressSelected = true;
-          }
-        }
-      }
+      // if (defaultAddress) {
+      //   isAddressSelected = true;
+      // } else {
+      //   for (let i = 0; i < addressData.length; i++) {
+      //     if (addressData[i].value == selector.defaultAddress) {
+      //       isAddressSelected = true;
+      //     }
+      //   }
+      // }
       
-      if (!isAddressSelected){
-        scrollToPos(2);
-        setOpenAccordian("2");
-        showToast("please select address");
-        return;
-      };
+      // if (!isAddressSelected){
+      //   scrollToPos(2);
+      //   setOpenAccordian("2");
+      //   showToast("please select address");
+      //   return;
+      // };
 
       if (selector.urban_or_rural == 0) {
         scrollToPos(2);
@@ -3739,7 +3739,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         maxHeight={300}
                         labelField="label"
                         valueField="value"
-                        placeholder={"Select address*"}
+                        placeholder={"Select address"}
                         searchPlaceholder="Search..."
                         value={defaultAddress}
                         // onFocus={() => setIsFocus(true)}
