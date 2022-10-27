@@ -3177,7 +3177,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       value={selector.age}
                       label={"Age"}
                       keyboardType={"phone-pad"}
-                      maxLength={10}
+                      maxLength={5}
                       onChangeText={(text) =>
                         dispatch(setPersonalIntro({ key: "AGE", text: text }))
                       }
@@ -3484,12 +3484,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 />
 
                 <DropDownSelectionItem
-                  label={"What is prime expectation from the car?"}
+                  label={"What is prime expectation from the Vehicle?"}
                   value={selector.prime_expectation_from_car}
                   onPress={() =>
                     showDropDownModelMethod(
                       "PRIME_EXPECTATION_CAR",
-                      "What is prime expectation from the car?"
+                      "What is prime expectation from the Vehicle?"
                     )
                   }
                 />
