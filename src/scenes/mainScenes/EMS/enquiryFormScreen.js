@@ -2245,7 +2245,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const goToParentScreen = () => {
     getMyTasksListFromServer();
-    navigation.navigate(EmsTopTabNavigatorIdentifiers.leads);
+    navigation.navigate(EmsTopTabNavigatorIdentifiers.leads, {
+      fromScreen: "proceedToBookingApproval",
+    });
     dispatch(preClearState());
     dispatch(clearState2());
     clearState();
