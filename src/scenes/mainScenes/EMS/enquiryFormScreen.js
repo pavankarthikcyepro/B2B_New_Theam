@@ -366,6 +366,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     dispatch(clearState());
     navigation.goBack();
   };
+  
+  const goToLeadScreen = () => {
+    clearLocalData();
+    dispatch(clearState());
+    navigation.navigate(EmsTopTabNavigatorIdentifiers.leads, {
+      fromScreen: "enquiry",
+    });
+  };
 
   useEffect(() => {
     return () => {
@@ -2343,9 +2351,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         // getEnquiryListFromServer();
       } else if (typeOfActionDispatched === "UPDATE_ENQUIRY") {
         showToastSucess("Successfully Enquiry Updated");
-        clearLocalData();
-        dispatch(clearState());
-        navigation.goBack();
+        goToLeadScreen();
       }
     }
   }, [selector.update_enquiry_details_response]);
@@ -2416,7 +2422,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         {
           text: "OK",
           onPress: () => {
-            goParentScreen();
+            goToLeadScreen();
           },
         },
       ]);
@@ -3149,7 +3155,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     ></Text>
                   </>
                 ) : null}
-                
+
                 <DropDownSelectionItem
                   label={"Relation"}
                   value={selector.relation}

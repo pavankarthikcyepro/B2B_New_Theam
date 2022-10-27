@@ -177,7 +177,9 @@ const LeadsScreen = ({ route, navigation }) => {
         route &&
         route.params &&
         route.params.fromScreen &&
-        route.params.fromScreen === "contacts"
+        (route.params.fromScreen === "contacts" ||
+          route.params.fromScreen === "enquiry" ||
+          route.params.fromScreen === "bookingApproval")
       ) {
         setLoader(true);
         onRefresh();

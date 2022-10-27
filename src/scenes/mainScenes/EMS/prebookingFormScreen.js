@@ -469,6 +469,16 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         clearLocalData()
         navigation.goBack();
     };
+    
+    const goToLeadScreen = () => {
+        dispatch(clearState());
+        setTotalOnRoadPriceAfterDiscount(0);
+        setTotalOnRoadPrice(0)
+        clearLocalData()
+        navigation.navigate(EmsTopTabNavigatorIdentifiers.leads, {
+          fromScreen: "bookingApproval",
+        });
+    };
 
     useEffect(() => {
     handleRetailFinanceFields();
@@ -2377,19 +2387,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 // getPreBookingListFromServer();
             } else if (typeOfActionDispatched === "UPDATE_PRE_BOOKING") {
                 showToastSucess("Successfully Sent for Manager Approval");
-                dispatch(clearState());
-                clearLocalData();
-                navigation.goBack();
+                goToLeadScreen();
             } else if (typeOfActionDispatched === "APPROVE") {
                 showToastSucess("Booking Approval Approved");
-                dispatch(clearState());
-                clearLocalData();
-                navigation.goBack();
+                goToLeadScreen();
             } else if (typeOfActionDispatched === "REJECT") {
                 showToastSucess("Booking Approval Rejected");
-                dispatch(clearState());
-                clearLocalData();
-                navigation.goBack();
+                goToLeadScreen();
             }
         }
     }, [selector.update_pre_booking_details_response]);
@@ -2727,21 +2731,21 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     };
 
     useEffect(() => {
-        if (selector.pre_booking_drop_response_status === "success"){
-            Alert.alert(
-                "Sent For Approval",
-                `Pre Booking Number: ${selector.refNo}`,
-                [
-                    {
-                        text: "OK",
-                        onPress: () => {
-                            goParentScreen()
-                        },
-                    },
-                ]
-            );
-        }
-    }, [selector.pre_booking_drop_response_status])
+      if (selector.pre_booking_drop_response_status === "success") {
+        Alert.alert(
+          "Sent For Approval",
+          `Pre Booking Number: ${selector.refNo}`,
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                goToLeadScreen();
+              },
+            },
+          ]
+        );
+      }
+    }, [selector.pre_booking_drop_response_status]);
 
     const proceedToBookingClicked = async () => {
         const employeeData = await AsyncStore.getData(
