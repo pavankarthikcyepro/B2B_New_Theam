@@ -348,7 +348,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
         let isEditFlag = false;
 
-        if (uploadedImagesDataObj.receipt && uploadedImagesDataObj.receipt.fileName) {
+        if (
+          uploadedImagesDataObj.receipt &&
+          uploadedImagesDataObj.receipt.fileName
+        ) {
           isEditFlag = false;
         } else if (
           (leadStatus === "PREBOOKINGCOMPLETED" || leadStatus === "REJECTED") &&
@@ -365,7 +368,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           setIsEditButtonShow(false);
         }
       }
-    }, [selector.pre_booking_details_response, uploadedImagesDataObj]);
+    }, [selector.pre_booking_details_response, uploadedImagesDataObj.receipt]);
+    // }, [selector.pre_booking_details_response, uploadedImagesDataObj]);
 
     // Check for lead created by manager
     const isLeadCreatedBySelf = () => {
