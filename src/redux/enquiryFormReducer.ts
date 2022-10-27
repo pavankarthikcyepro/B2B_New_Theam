@@ -5,13 +5,17 @@ import {
   Relation_Data_Obj,
   Gender_Data_Obj,
 } from "../jsonData/enquiryFormScreenJsonData";
-import { convertDateStringToMillisecondsUsingMoment, convertTimeStampToDateString } from "../utils/helperFunctions";
+import {
+  convertDateStringToMillisecondsUsingMoment,
+  convertTimeStampToDateString,
+  convertToDate,
+} from "../utils/helperFunctions";
 import moment from "moment";
 import { showToastRedAlert, showToast } from "../utils/toast";
 import {
   CustomerTypesObj,
   CustomerTypesObj21,
-  CustomerTypesObj22
+  CustomerTypesObj22,
 } from "../jsonData/preEnquiryScreenJsonData";
 import { Alert } from "react-native";
 
@@ -27,17 +31,20 @@ export const getEnquiryDetailsApi = createAsyncThunk(
 
     // // }
 
-
     const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
     const json = await response.json();
 
-    console.log("ENQ DETAILS @@@: ", URL.ENQUIRY_DETAILS(universalId), JSON.stringify(json));
+    console.log(
+      "ENQ DETAILS @@@: ",
+      URL.ENQUIRY_DETAILS(universalId),
+      JSON.stringify(json)
+    );
 
     if (!response.ok) {
       return rejectWithValue(json);
     }
 
-    return json.dmsEntity
+    return json.dmsEntity;
     // if (leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY')
     // {
     //   // if (json.dmsEntity.hasOwnProperty("dmsLeadDto")) {
@@ -104,7 +111,9 @@ export const getEnquiryDetailsApiAuto = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/getEnquiryDetailsApiAuto",
   async ({ universalId, leadStage, leadStatus }, { rejectWithValue }) => {
     // try {
-    const autoSaveResponse = await client.get(URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId));
+    const autoSaveResponse = await client.get(
+      URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId)
+    );
     const autoSavejson = await autoSaveResponse.json();
     console.log("URL$$$: ", URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId));
     console.log("ENQ DETAILS: ", JSON.stringify(autoSavejson));
@@ -112,13 +121,16 @@ export const getEnquiryDetailsApiAuto = createAsyncThunk(
 
     // }
 
-
     const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
     const json = await response.json();
 
-    console.log("ENQ DETAILS @@@: ", URL.ENQUIRY_DETAILS(universalId), JSON.stringify(json));
+    console.log(
+      "ENQ DETAILS @@@: ",
+      URL.ENQUIRY_DETAILS(universalId),
+      JSON.stringify(json)
+    );
 
-    if (leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY') {
+    if (leadStatus === "ENQUIRYCOMPLETED" && leadStage === "ENQUIRY") {
       // if (json.dmsEntity.hasOwnProperty("dmsLeadDto")) {
       //   console.log("autoSavejson is true")
       // }
@@ -131,9 +143,8 @@ export const getEnquiryDetailsApiAuto = createAsyncThunk(
       // } else {
       //   return json.dmsEntity
       // }
-      return json.dmsEntity
-    }
-    else {
+      return json.dmsEntity;
+    } else {
       // if (autoSavejson.hasOwnProperty("dmsLeadDto")) {
       //   console.log("autoSavejson is true")
       // }
@@ -145,11 +156,10 @@ export const getEnquiryDetailsApiAuto = createAsyncThunk(
         if (autoSavejson.hasOwnProperty("dmsLeadDto")) {
           return autoSavejson;
         } else {
-          return json.dmsEntity
+          return json.dmsEntity;
         }
-      }
-      else {
-        json.dmsEntity
+      } else {
+        json.dmsEntity;
       }
     }
     // console.log("enquirey lead", json);
@@ -182,7 +192,9 @@ export const getEnquiryDetailsApiAuto = createAsyncThunk(
 export const getAutoSaveEnquiryDetailsApi = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/getAutoSaveEnquiryDetailsApi",
   async (universalId, { rejectWithValue }) => {
-    const response = await client.get(URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId));
+    const response = await client.get(
+      URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId)
+    );
     const json = await response.json();
     console.log("auto save details", json);
 
@@ -195,8 +207,9 @@ export const getAutoSaveEnquiryDetailsApi = createAsyncThunk(
 export const getLogoNameApi = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/getLogoNameApi",
   async (data, { rejectWithValue }) => {
-
-    const response = await client.get(URL.PROFORMA_LOGO_NAME(data.orgId, data.branchId));
+    const response = await client.get(
+      URL.PROFORMA_LOGO_NAME(data.orgId, data.branchId)
+    );
     const json = await response.json();
 
     if (!response.ok) {
@@ -208,7 +221,9 @@ export const getLogoNameApi = createAsyncThunk(
 export const getProformaModelApi = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/getProformaModelApi",
   async (universalId, { rejectWithValue }) => {
-    const response = await client.get(URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId));
+    const response = await client.get(
+      URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId)
+    );
     const json = await response.json();
     console.log("auto save details", json);
 
@@ -221,7 +236,7 @@ export const getProformaModelApi = createAsyncThunk(
 export const postProformaInvoiceDetails = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/postProformaInvoiceDetails",
   async (payload, { rejectWithValue }) => {
-    console.log("Proforma", JSON.stringify(payload))
+    console.log("Proforma", JSON.stringify(payload));
     const response = await client.post(URL.SAVE_PROFORMA_DETAILS(), payload);
     const json = await response.json();
 
@@ -231,29 +246,55 @@ export const postProformaInvoiceDetails = createAsyncThunk(
     return json;
   }
 );
-export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk("ENQUIRY_FORM_SLICE/getOnRoadPriceAndInsurenceDetailsApi", async (payload, { rejectWithValue }) => {
-  console.log("proforma:", URL.GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS(payload["varientId"], payload["orgId"]), JSON.stringify(payload));
-  //console.log("proforma", URL.PROFORMA_LOGO_NAME(data.orgId, data.branchId));
+export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/getOnRoadPriceAndInsurenceDetailsApi",
+  async (payload, { rejectWithValue }) => {
+    console.log(
+      "proforma:",
+      URL.GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS(
+        payload["varientId"],
+        payload["orgId"]
+      ),
+      JSON.stringify(payload)
+    );
+    //console.log("proforma", URL.PROFORMA_LOGO_NAME(data.orgId, data.branchId));
 
-  const response = await client.get(URL.GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS(payload["varientId"], payload["orgId"]));
-  try {
-    const json = await response.json();
-    // console.log("INSURANCE:", JSON.stringify(json));
+    const response = await client.get(
+      URL.GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS(
+        payload["varientId"],
+        payload["orgId"]
+      )
+    );
+    try {
+      const json = await response.json();
+      // console.log("INSURANCE:", JSON.stringify(json));
 
-    if (response.status != 200) {
-      return rejectWithValue(json);
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      showToastRedAlert(
+        `Value not found for varient id: ${payload["varientId"]} and org id: ${payload["orgId"]}`
+      );
+      console.error(
+        "PRE-BOOKING getOnRoadPriceAndInsurenceDetailsApi JSON parse error: ",
+        error + " : " + JSON.stringify(response)
+      );
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
     }
-    return json;
-  } catch (error) {
-    showToastRedAlert(`Value not found for varient id: ${payload["varientId"]} and org id: ${payload["orgId"]}`)
-    console.error("PRE-BOOKING getOnRoadPriceAndInsurenceDetailsApi JSON parse error: ", error + " : " + JSON.stringify(response));
-    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
   }
-})
+);
 export const updateEnquiryDetailsApi = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/updateEnquiryDetailsApi",
   async (payload, { rejectWithValue }) => {
-    console.log("ENQ PAY:", URL.UPDATE_ENQUIRY_DETAILS(), JSON.stringify(payload));
+    console.log(
+      "ENQ PAY:",
+      URL.UPDATE_ENQUIRY_DETAILS(),
+      JSON.stringify(payload)
+    );
 
     const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
     const json = await response.json();
@@ -269,7 +310,11 @@ export const updateEnquiryDetailsApi = createAsyncThunk(
 export const autoSaveEnquiryDetailsApi = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/autoSaveEnquiryDetailsApi",
   async (payload, { rejectWithValue }) => {
-    console.log("ENQ PAY:", URL.UPDATE_ENQUIRY_DETAILS(), JSON.stringify(payload));
+    console.log(
+      "ENQ PAY:",
+      URL.UPDATE_ENQUIRY_DETAILS(),
+      JSON.stringify(payload)
+    );
 
     const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
     const json = await response.json();
@@ -281,20 +326,23 @@ export const autoSaveEnquiryDetailsApi = createAsyncThunk(
   }
 );
 
-export const customerLeadRef = createAsyncThunk("CONFIRMED_PRE_ENQUIRY/customerLeadRef", async (payload, { rejectWithValue }) => {
-  const response = await client.post(URL.CUSTOMER_LEAD_REFERENCE(), payload)
-  const json = await response.json()
+export const customerLeadRef = createAsyncThunk(
+  "CONFIRMED_PRE_ENQUIRY/customerLeadRef",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.CUSTOMER_LEAD_REFERENCE(), payload);
+    const json = await response.json();
 
-  if (!response.ok) {
-    return rejectWithValue(json);
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
   }
-  return json;
-})
+);
 
 export const updateEnquiryDetailsApiAutoSave = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/updateEnquiryDetailsApiAutoSave",
   async (payload, { rejectWithValue }) => {
-    console.log("form payload", payload)
+    console.log("form payload", payload);
     const response = await client.post(URL.AUTO_SAVE(), payload);
     const json = await response.json();
     console.log("SUCCESS:");
@@ -306,7 +354,8 @@ export const updateEnquiryDetailsApiAutoSave = createAsyncThunk(
   }
 );
 
-export const updateRef = createAsyncThunk("ENQUIRY_FORM_SLICE/updateRef",
+export const updateRef = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/updateRef",
   async (payload, { rejectWithValue }) => {
     const response = await client.post(URL.UPDATE_REF(), payload);
     try {
@@ -320,8 +369,13 @@ export const updateRef = createAsyncThunk("ENQUIRY_FORM_SLICE/updateRef",
       }
       return response;
     } catch (error) {
-      console.error("getPrebookingDetailsApi JSON parse error: ", error + " : " + JSON.stringify(response));
-      return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
+      console.error(
+        "getPrebookingDetailsApi JSON parse error: ",
+        error + " : " + JSON.stringify(response)
+      );
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
     }
   }
 );
@@ -411,7 +465,7 @@ const initialState = {
   insurance_type: "",
   add_on_insurance: "",
   addOnPrice: 0,
-    warranty: "",
+  warranty: "",
   //personal Intro
   gender_types_data: [],
   relation_types_data: [],
@@ -559,9 +613,9 @@ const initialState = {
   customer_types_response: null,
   isAddressSet: false,
   isOpened: false,
-  refNo: '',
+  refNo: "",
   rmfgYear: null,
-}
+};
 
 const enquiryDetailsOverViewSlice = createSlice({
   name: "ENQUIRY_FORM_SLICE",
@@ -584,41 +638,41 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.customer_types_response = null;
       state.employee_id = "";
       state.gstin_number = "";
-      state.expected_delivery_date = ''
-      state.a_make = ""
-      state.a_model = ""
-      state.a_make_other_name = ""
-      state.a_model_other_name = ""
-      state.a_varient = ""
-      state.a_color = ""
-      state.a_reg_no = ""
+      state.expected_delivery_date = "";
+      state.a_make = "";
+      state.a_model = "";
+      state.a_make_other_name = "";
+      state.a_model_other_name = "";
+      state.a_varient = "";
+      state.a_color = "";
+      state.a_reg_no = "";
       // Replacement Buyer
-      state.r_reg_no = ""
-      state.r_varient = ""
-      state.r_color = ""
-      state.r_make = ""
-      state.r_model = ""
-      state.r_make_other_name = ""
-      state.r_model_other_name = ""
-      state.r_fuel_type = ""
-      state.r_transmission_type = ""
-      state.r_mfg_year = ""
-      state.r_kms_driven_or_odometer_reading = ""
-      state.r_expected_price = ""
-      state.r_registration_date = ""
-      state.r_registration_validity_date = ""
-      state.r_hypothication_checked = false
-      state.r_hypothication_name = ""
-      state.r_hypothication_branch = ""
-      state.r_insurence_checked = false
-      state.r_insurence_company_name = ""
-      state.r_insurence_expiry_date = ""
-      state.r_insurence_type = ""
-      state.r_insurence_from_date = ""
-      state.r_insurence_to_date = ""
-      state.r_insurence_document_checked = false
+      state.r_reg_no = "";
+      state.r_varient = "";
+      state.r_color = "";
+      state.r_make = "";
+      state.r_model = "";
+      state.r_make_other_name = "";
+      state.r_model_other_name = "";
+      state.r_fuel_type = "";
+      state.r_transmission_type = "";
+      state.r_mfg_year = "";
+      state.r_kms_driven_or_odometer_reading = "";
+      state.r_expected_price = "";
+      state.r_registration_date = "";
+      state.r_registration_validity_date = "";
+      state.r_hypothication_checked = false;
+      state.r_hypothication_name = "";
+      state.r_hypothication_branch = "";
+      state.r_insurence_checked = false;
+      state.r_insurence_company_name = "";
+      state.r_insurence_expiry_date = "";
+      state.r_insurence_type = "";
+      state.r_insurence_from_date = "";
+      state.r_insurence_to_date = "";
+      state.r_insurence_document_checked = false;
       state.dmsLeadProducts = [];
-      state.refNo = ''
+      state.refNo = "";
     },
     clearState2: (state, action) => {
       state.enableEdit = false;
@@ -636,41 +690,41 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.customer_types_response = null;
       state.employee_id = "";
       state.gstin_number = "";
-      state.expected_delivery_date = ''
-      state.a_make = ""
-      state.a_model = ""
-      state.a_make_other_name = ""
-      state.a_model_other_name = ""
-      state.a_varient = ""
-      state.a_color = ""
-      state.a_reg_no = ""
+      state.expected_delivery_date = "";
+      state.a_make = "";
+      state.a_model = "";
+      state.a_make_other_name = "";
+      state.a_model_other_name = "";
+      state.a_varient = "";
+      state.a_color = "";
+      state.a_reg_no = "";
       // Replacement Buyer
-      state.r_reg_no = ""
-      state.r_varient = ""
-      state.r_color = ""
-      state.r_make = ""
-      state.r_model = ""
-      state.r_make_other_name = ""
-      state.r_model_other_name = ""
-      state.r_fuel_type = ""
-      state.r_transmission_type = ""
-      state.r_mfg_year = ""
-      state.r_kms_driven_or_odometer_reading = ""
-      state.r_expected_price = ""
-      state.r_registration_date = ""
-      state.r_registration_validity_date = ""
-      state.r_hypothication_checked = false
-      state.r_hypothication_name = ""
-      state.r_hypothication_branch = ""
-      state.r_insurence_checked = false
-      state.r_insurence_company_name = ""
-      state.r_insurence_expiry_date = ""
-      state.r_insurence_type = ""
-      state.r_insurence_from_date = ""
-      state.r_insurence_to_date = ""
-      state.r_insurence_document_checked = false
+      state.r_reg_no = "";
+      state.r_varient = "";
+      state.r_color = "";
+      state.r_make = "";
+      state.r_model = "";
+      state.r_make_other_name = "";
+      state.r_model_other_name = "";
+      state.r_fuel_type = "";
+      state.r_transmission_type = "";
+      state.r_mfg_year = "";
+      state.r_kms_driven_or_odometer_reading = "";
+      state.r_expected_price = "";
+      state.r_registration_date = "";
+      state.r_registration_validity_date = "";
+      state.r_hypothication_checked = false;
+      state.r_hypothication_name = "";
+      state.r_hypothication_branch = "";
+      state.r_insurence_checked = false;
+      state.r_insurence_company_name = "";
+      state.r_insurence_expiry_date = "";
+      state.r_insurence_type = "";
+      state.r_insurence_from_date = "";
+      state.r_insurence_to_date = "";
+      state.r_insurence_document_checked = false;
       state.dmsLeadProducts = [];
-      state.refNo = '';
+      state.refNo = "";
     },
     setEditable: (state, action) => {
       console.log("pressed");
@@ -691,11 +745,9 @@ const enquiryDetailsOverViewSlice = createSlice({
           // state.customer_type_list = CustomerTypesObj21[value.toLowerCase()]
           if (+orgId == 21) {
             state.customer_types_data = CustomerTypesObj21[value.toLowerCase()];
-          }
-          else if (+orgId == 22) {
+          } else if (+orgId == 22) {
             state.customer_types_data = CustomerTypesObj22[value.toLowerCase()];
-          }
-          else {
+          } else {
             state.customer_types_data = CustomerTypesObj[value.toLowerCase()];
           }
           break;
@@ -707,7 +759,6 @@ const enquiryDetailsOverViewSlice = createSlice({
           break;
         case "SALUTATION":
           if (state.salutation !== value) {
-
             const genderData = Gender_Data_Obj[value.toLowerCase()];
             state.gender = genderData.length > 0 ? genderData[0].name : "";
             state.relation = "";
@@ -850,9 +901,16 @@ const enquiryDetailsOverViewSlice = createSlice({
           break;
         case "ANNIVERSARY_DATE":
           if (state.dateOfBirth) {
-            let dobArr = state.dateOfBirth.split('/')
-            console.log(new Date(state.dateOfBirth), new Date(Number(dobArr[2]), Number(dobArr[1]), Number(dobArr[0])));
-            state.minDate = new Date(Number(dobArr[2]) + 1, Number(dobArr[1]), Number(dobArr[0]));
+            let dobArr = state.dateOfBirth.split("/");
+            console.log(
+              new Date(state.dateOfBirth),
+              new Date(Number(dobArr[2]), Number(dobArr[1]), Number(dobArr[0]))
+            );
+            state.minDate = new Date(
+              Number(dobArr[2]) + 1,
+              Number(dobArr[1]),
+              Number(dobArr[0])
+            );
           } else {
             state.minDate = null;
           }
@@ -894,7 +952,7 @@ const enquiryDetailsOverViewSlice = createSlice({
       // alert(JSON.stringify(action.payload))
       const data = action.payload;
       console.log("updatedmsLeadProduct: ", JSON.stringify(action.payload));
-      state.dmsLeadProducts = data
+      state.dmsLeadProducts = data;
     },
     updateSelectedDate: (state, action: PayloadAction<PersonalIntroModel>) => {
       const { key, text } = action.payload;
@@ -934,7 +992,8 @@ const enquiryDetailsOverViewSlice = createSlice({
           }
 
           state.enquiry_category = categoryType;
-          state.expected_delivery_date = convertDateStringToMillisecondsUsingMoment(text).toString();
+          state.expected_delivery_date =
+            convertDateStringToMillisecondsUsingMoment(text).toString();
           // state.expected_delivery_date = selectedDate;
           break;
         case "R_MFG_YEAR":
@@ -947,7 +1006,8 @@ const enquiryDetailsOverViewSlice = createSlice({
           state.r_registration_validity_date = selectedDate;
           break;
         case "R_INSURENCE_POLICIY_EXPIRY_DATE":
-          state.r_insurence_expiry_date = convertDateStringToMillisecondsUsingMoment(text).toString();
+          state.r_insurence_expiry_date =
+            convertDateStringToMillisecondsUsingMoment(text).toString();
           // state.r_insurence_expiry_date = selectedDate;
           break;
         case "R_INSURENCE_FROM_DATE":
@@ -1103,7 +1163,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     },
     setCustomerProfile: (state, action: PayloadAction<PersonalIntroModel>) => {
       const { key, text } = action.payload;
-      console.log('arey======> key ', key, text)
+      console.log("arey======> key ", key, text);
       switch (key) {
         case "OCCUPATION":
           state.occupation = text;
@@ -1305,43 +1365,46 @@ const enquiryDetailsOverViewSlice = createSlice({
       const dms_C_Or_A_Dto = action.payload;
 
       if (dms_C_Or_A_Dto.email && dms_C_Or_A_Dto.email != "") {
-        state.email = dms_C_Or_A_Dto.email
+        state.email = dms_C_Or_A_Dto.email;
       }
 
       if (dms_C_Or_A_Dto.firstName && dms_C_Or_A_Dto.firstName != "") {
-        state.firstName = dms_C_Or_A_Dto.firstName
+        state.firstName = dms_C_Or_A_Dto.firstName;
       }
 
       if (dms_C_Or_A_Dto.lastName && dms_C_Or_A_Dto.lastName != "") {
-        state.lastName = dms_C_Or_A_Dto.lastName
+        state.lastName = dms_C_Or_A_Dto.lastName;
       }
 
       if (dms_C_Or_A_Dto.phone && dms_C_Or_A_Dto.phone != "") {
-        state.mobile = dms_C_Or_A_Dto.phone
+        state.mobile = dms_C_Or_A_Dto.phone;
       }
 
-      if (dms_C_Or_A_Dto.secondaryPhone && dms_C_Or_A_Dto.secondaryPhone != "") {
-        state.alterMobile = dms_C_Or_A_Dto.secondaryPhone
+      if (
+        dms_C_Or_A_Dto.secondaryPhone &&
+        dms_C_Or_A_Dto.secondaryPhone != ""
+      ) {
+        state.alterMobile = dms_C_Or_A_Dto.secondaryPhone;
       }
 
       if (dms_C_Or_A_Dto.gender && dms_C_Or_A_Dto.gender != "") {
-        state.gender = dms_C_Or_A_Dto.gender
+        state.gender = dms_C_Or_A_Dto.gender;
       }
 
       if (dms_C_Or_A_Dto.relation && dms_C_Or_A_Dto.relation != "") {
-        state.relation = dms_C_Or_A_Dto.relation
+        state.relation = dms_C_Or_A_Dto.relation;
       }
 
       if (dms_C_Or_A_Dto.salutation && dms_C_Or_A_Dto.salutation != "") {
-        state.salutation = dms_C_Or_A_Dto.salutation
+        state.salutation = dms_C_Or_A_Dto.salutation;
       }
 
       if (dms_C_Or_A_Dto.relationName && dms_C_Or_A_Dto.relationName != "") {
-        state.relationName = dms_C_Or_A_Dto.relationName
+        state.relationName = dms_C_Or_A_Dto.relationName;
       }
 
       if (dms_C_Or_A_Dto.age && dms_C_Or_A_Dto.age != "") {
-        state.age = dms_C_Or_A_Dto.age
+        state.age = dms_C_Or_A_Dto.age;
       }
 
       if (state.salutation) {
@@ -1352,15 +1415,18 @@ const enquiryDetailsOverViewSlice = createSlice({
       }
 
       if (dms_C_Or_A_Dto.dateOfBirth && dms_C_Or_A_Dto.dateOfBirth != "") {
-        const dateOfBirth = dms_C_Or_A_Dto.dateOfBirth
+        const dateOfBirth = dms_C_Or_A_Dto.dateOfBirth;
         state.dateOfBirth = convertTimeStampToDateString(
           dateOfBirth,
           "DD/MM/YYYY"
         );
       }
 
-      if (dms_C_Or_A_Dto.anniversaryDate && dms_C_Or_A_Dto.anniversaryDate != "") {
-        const anniversaryDate = dms_C_Or_A_Dto.anniversaryDate
+      if (
+        dms_C_Or_A_Dto.anniversaryDate &&
+        dms_C_Or_A_Dto.anniversaryDate != ""
+      ) {
+        const anniversaryDate = dms_C_Or_A_Dto.anniversaryDate;
         state.anniversaryDate = convertTimeStampToDateString(
           anniversaryDate,
           "DD/MM/YYYY"
@@ -1368,59 +1434,84 @@ const enquiryDetailsOverViewSlice = createSlice({
       }
 
       if (dms_C_Or_A_Dto.annualRevenue && dms_C_Or_A_Dto.annualRevenue != "") {
-        state.approx_annual_income = dms_C_Or_A_Dto.annualRevenue
+        state.approx_annual_income = dms_C_Or_A_Dto.annualRevenue;
       }
 
       if (dms_C_Or_A_Dto.company && dms_C_Or_A_Dto.company != "") {
-        state.company_name = dms_C_Or_A_Dto.company
+        state.company_name = dms_C_Or_A_Dto.company;
       }
 
       if (dms_C_Or_A_Dto.customerType && dms_C_Or_A_Dto.customerType != "") {
-        state.customer_type = dms_C_Or_A_Dto.customerType
+        state.customer_type = dms_C_Or_A_Dto.customerType;
       }
 
       if (dms_C_Or_A_Dto.designation && dms_C_Or_A_Dto.designation != "") {
-        state.designation = dms_C_Or_A_Dto.designation
+        state.designation = dms_C_Or_A_Dto.designation;
       }
 
-      if (dms_C_Or_A_Dto.kmsTravelledInMonth && dms_C_Or_A_Dto.kmsTravelledInMonth != "") {
-        state.kms_travelled_month = dms_C_Or_A_Dto.kmsTravelledInMonth
+      if (
+        dms_C_Or_A_Dto.kmsTravelledInMonth &&
+        dms_C_Or_A_Dto.kmsTravelledInMonth != ""
+      ) {
+        state.kms_travelled_month = dms_C_Or_A_Dto.kmsTravelledInMonth;
       }
 
-      if (dms_C_Or_A_Dto.membersInFamily && dms_C_Or_A_Dto.membersInFamily != "") {
-        state.members = dms_C_Or_A_Dto.membersInFamily
+      if (
+        dms_C_Or_A_Dto.membersInFamily &&
+        dms_C_Or_A_Dto.membersInFamily != ""
+      ) {
+        state.members = dms_C_Or_A_Dto.membersInFamily;
       }
 
       if (dms_C_Or_A_Dto.occupation && dms_C_Or_A_Dto.occupation != "") {
-        state.occupation = dms_C_Or_A_Dto.occupation
+        state.occupation = dms_C_Or_A_Dto.occupation;
       }
 
-      if (dms_C_Or_A_Dto.primeExpectationFromCar && dms_C_Or_A_Dto.primeExpectationFromCar != "") {
-        state.prime_expectation_from_car = dms_C_Or_A_Dto.primeExpectationFromCar
+      if (
+        dms_C_Or_A_Dto.primeExpectationFromCar &&
+        dms_C_Or_A_Dto.primeExpectationFromCar != ""
+      ) {
+        state.prime_expectation_from_car =
+          dms_C_Or_A_Dto.primeExpectationFromCar;
       }
 
       if (dms_C_Or_A_Dto.whoDrives && dms_C_Or_A_Dto.whoDrives != "") {
-        state.who_drives = dms_C_Or_A_Dto.whoDrives
+        state.who_drives = dms_C_Or_A_Dto.whoDrives;
       }
 
-      if (dms_C_Or_A_Dto.referedByFirstname && dms_C_Or_A_Dto.referedByFirstname != "") {
-        state.rf_by_first_name = dms_C_Or_A_Dto.referedByFirstname
+      if (
+        dms_C_Or_A_Dto.referedByFirstname &&
+        dms_C_Or_A_Dto.referedByFirstname != ""
+      ) {
+        state.rf_by_first_name = dms_C_Or_A_Dto.referedByFirstname;
       }
 
-      if (dms_C_Or_A_Dto.referedByLastname && dms_C_Or_A_Dto.referedByLastname != "") {
-        state.rf_by_last_name = dms_C_Or_A_Dto.referedByLastname
+      if (
+        dms_C_Or_A_Dto.referedByLastname &&
+        dms_C_Or_A_Dto.referedByLastname != ""
+      ) {
+        state.rf_by_last_name = dms_C_Or_A_Dto.referedByLastname;
       }
 
-      if (dms_C_Or_A_Dto.refferedMobileNo && dms_C_Or_A_Dto.refferedMobileNo != "") {
-        state.rf_by_mobile = dms_C_Or_A_Dto.refferedMobileNo
+      if (
+        dms_C_Or_A_Dto.refferedMobileNo &&
+        dms_C_Or_A_Dto.refferedMobileNo != ""
+      ) {
+        state.rf_by_mobile = dms_C_Or_A_Dto.refferedMobileNo;
       }
 
-      if (dms_C_Or_A_Dto.refferedSource && dms_C_Or_A_Dto.refferedSource != "") {
-        state.rf_by_source = dms_C_Or_A_Dto.refferedSource
+      if (
+        dms_C_Or_A_Dto.refferedSource &&
+        dms_C_Or_A_Dto.refferedSource != ""
+      ) {
+        state.rf_by_source = dms_C_Or_A_Dto.refferedSource;
       }
 
-      if (dms_C_Or_A_Dto.reffered_Sourcelocation && dms_C_Or_A_Dto.reffered_Sourcelocation != "") {
-        state.rf_by_source_location = dms_C_Or_A_Dto.reffered_Sourcelocation
+      if (
+        dms_C_Or_A_Dto.reffered_Sourcelocation &&
+        dms_C_Or_A_Dto.reffered_Sourcelocation != ""
+      ) {
+        state.rf_by_source_location = dms_C_Or_A_Dto.reffered_Sourcelocation;
       }
     },
     updateDmsLeadDtoData: (state, action) => {
@@ -1428,15 +1519,15 @@ const enquiryDetailsOverViewSlice = createSlice({
       console.log("updateDmsLeadDtoData: ", JSON.stringify(action.payload));
 
       if (dmsLeadDto.buyerType && dmsLeadDto.buyerType != "") {
-        state.buyer_type = dmsLeadDto.buyerType
+        state.buyer_type = dmsLeadDto.buyerType;
       }
 
       if (dmsLeadDto.enquiryCategory && dmsLeadDto.enquiryCategory != "") {
-        state.enquiry_category = dmsLeadDto.enquiryCategory
+        state.enquiry_category = dmsLeadDto.enquiryCategory;
       }
 
       if (dmsLeadDto.enquirySegment && dmsLeadDto.enquirySegment != "") {
-        state.enquiry_segment = dmsLeadDto.enquirySegment
+        state.enquiry_segment = dmsLeadDto.enquirySegment;
       }
 
       if (state.customer_types_response && state.enquiry_segment) {
@@ -1445,27 +1536,30 @@ const enquiryDetailsOverViewSlice = createSlice({
       }
 
       if (dmsLeadDto.enquirySource && dmsLeadDto.enquirySource != "") {
-        state.source_of_enquiry = dmsLeadDto.enquirySource
+        state.source_of_enquiry = dmsLeadDto.enquirySource;
       }
 
       if (dmsLeadDto.subSource && dmsLeadDto.subSource != "") {
-        state.sub_source_of_enquiry = dmsLeadDto.subSource
+        state.sub_source_of_enquiry = dmsLeadDto.subSource;
       }
 
       if (dmsLeadDto.gstNumber && dmsLeadDto.gstNumber != "") {
-        state.gstin_number = dmsLeadDto.gstNumber
+        state.gstin_number = dmsLeadDto.gstNumber;
       }
 
       if (dmsLeadDto.eventCode && dmsLeadDto.eventCode != "") {
-        state.event_code = dmsLeadDto.eventCode
+        state.event_code = dmsLeadDto.eventCode;
       }
 
-      if (dmsLeadDto.dmsExpectedDeliveryDate && dmsLeadDto.dmsExpectedDeliveryDate != "") {
-        const deliveryDate = dmsLeadDto.dmsExpectedDeliveryDate
+      if (
+        dmsLeadDto.dmsExpectedDeliveryDate &&
+        dmsLeadDto.dmsExpectedDeliveryDate != ""
+      ) {
+        const deliveryDate = dmsLeadDto.dmsExpectedDeliveryDate;
         state.expected_delivery_date = deliveryDate;
       }
       if (dmsLeadDto.model && dmsLeadDto.model != "") {
-        state.model = dmsLeadDto.model
+        state.model = dmsLeadDto.model;
       }
 
       if (dmsLeadDto.dmsLeadProducts && dmsLeadDto.dmsLeadProducts.length != 0)
@@ -1479,37 +1573,36 @@ const enquiryDetailsOverViewSlice = createSlice({
       if (dmsAddresses.length == 2) {
         dmsAddresses.forEach((address) => {
           if (address.addressType === "Communication") {
-
             if (address.pincode && address.pincode != "") {
-              state.pincode = address.pincode
+              state.pincode = address.pincode;
             }
 
             if (address.houseNo && address.houseNo != "") {
-              state.houseNum = address.houseNo
+              state.houseNum = address.houseNo;
             }
 
             if (address.street && address.street != "") {
-              state.streetName = address.street
+              state.streetName = address.street;
             }
 
             if (address.village && address.village != "") {
-              state.village = address.village
+              state.village = address.village;
             }
 
             if (address.mandal && address.mandal != "") {
-              state.mandal = address.mandal
+              state.mandal = address.mandal;
             }
 
             if (address.city && address.city != "") {
-              state.city = address.city
+              state.city = address.city;
             }
 
             if (address.district && address.district != "") {
-              state.district = address.district
+              state.district = address.district;
             }
 
             if (address.state && address.state != "") {
-              state.state = address.state
+              state.state = address.state;
             }
 
             let urbanOrRural = 0;
@@ -1520,37 +1613,36 @@ const enquiryDetailsOverViewSlice = createSlice({
             }
             state.urban_or_rural = urbanOrRural;
           } else if (address.addressType === "Permanent") {
-
             if (address.pincode && address.pincode != "") {
-              state.p_pincode = address.pincode
+              state.p_pincode = address.pincode;
             }
 
             if (address.houseNo && address.houseNo != "") {
-              state.p_houseNum = address.houseNo
+              state.p_houseNum = address.houseNo;
             }
 
             if (address.street && address.street != "") {
-              state.p_streetName = address.street
+              state.p_streetName = address.street;
             }
 
             if (address.village && address.village != "") {
-              state.p_village = address.village
+              state.p_village = address.village;
             }
 
             if (address.mandal && address.mandal != "") {
-              state.p_mandal = address.mandal
+              state.p_mandal = address.mandal;
             }
 
             if (address.city && address.city != "") {
-              state.p_city = address.city
+              state.p_city = address.city;
             }
 
             if (address.district && address.district != "") {
-              state.p_district = address.district
+              state.p_district = address.district;
             }
 
             if (address.state && address.state != "") {
-              state.p_state = address.state
+              state.p_state = address.state;
             }
 
             let urbanOrRural = 0;
@@ -1573,7 +1665,7 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.p_city = "";
       state.p_district = "";
       state.p_state = "";
-      state.p_urban_or_rural = 0
+      state.p_urban_or_rural = 0;
     },
     updateModelSelectionData: (state, action) => {
       const dmsLeadProducts = action.payload;
@@ -1607,16 +1699,13 @@ const enquiryDetailsOverViewSlice = createSlice({
       try {
         if (dmsLeadProducts && dmsLeadProducts.length != 0) {
           state.dmsLeadProducts = dmsLeadProducts;
-        }
-        else {
-          state.dmsLeadProducts = []
+        } else {
+          state.dmsLeadProducts = [];
         }
         state.model_drop_down_data_update_statu = "update";
       } catch (error) {
         // alert(error)
       }
-
-
     },
     updateFinancialData: (state, action) => {
       const dmsfinancedetails = action.payload;
@@ -1626,51 +1715,51 @@ const enquiryDetailsOverViewSlice = createSlice({
       }
 
       if (dataObj.financeType && dataObj.financeType != "") {
-        state.retail_finance = dataObj.financeType
+        state.retail_finance = dataObj.financeType;
       }
 
       if (dataObj.financeCategory && dataObj.financeCategory != "") {
-        state.finance_category = dataObj.financeCategory
+        state.finance_category = dataObj.financeCategory;
       }
 
       if (dataObj.downPayment && dataObj.downPayment != "") {
-        state.down_payment = dataObj.downPayment.toString()
+        state.down_payment = dataObj.downPayment.toString();
       }
 
       if (dataObj.loanAmount && dataObj.loanAmount != "") {
-        state.loan_amount = dataObj.loanAmount.toString()
+        state.loan_amount = dataObj.loanAmount.toString();
       }
 
       if (dataObj.financeCompany && dataObj.financeCompany != "") {
-        state.bank_or_finance = dataObj.financeCompany
+        state.bank_or_finance = dataObj.financeCompany;
       }
 
       if (dataObj.financeCompany && dataObj.financeCompany != "") {
-        state.bank_or_finance_name = dataObj.financeCompany
+        state.bank_or_finance_name = dataObj.financeCompany;
       }
 
       if (dataObj.rateOfInterest && dataObj.rateOfInterest != "") {
-        state.rate_of_interest = dataObj.rateOfInterest
+        state.rate_of_interest = dataObj.rateOfInterest;
       }
 
       if (dataObj.expectedTenureYears && dataObj.expectedTenureYears != "") {
-        state.loan_of_tenure = dataObj.expectedTenureYears
+        state.loan_of_tenure = dataObj.expectedTenureYears;
       }
 
       if (dataObj.emi && dataObj.emi != "") {
-        state.emi = dataObj.emi.toString()
+        state.emi = dataObj.emi.toString();
       }
 
       if (dataObj.annualIncome && dataObj.annualIncome != "") {
-        state.approx_annual_income = dataObj.annualIncome
+        state.approx_annual_income = dataObj.annualIncome;
       }
 
       if (dataObj.location && dataObj.location != "") {
-        state.location = dataObj.location
+        state.location = dataObj.location;
       }
 
       if (dataObj.financeCompany && dataObj.financeCompany != "") {
-        state.leashing_name = dataObj.financeCompany
+        state.leashing_name = dataObj.financeCompany;
       }
     },
     updateCustomerNeedAnalysisData: (state, action) => {
@@ -1679,64 +1768,77 @@ const enquiryDetailsOverViewSlice = createSlice({
       if (dmsLeadScoreCards.length > 0) {
         dataObj = { ...dmsLeadScoreCards[0] };
       }
-      if (dataObj.lookingForAnyOtherBrand && dataObj.lookingForAnyOtherBrand != "") {
-        state.c_looking_for_any_other_brand_checked = dataObj.lookingForAnyOtherBrand
+      if (
+        dataObj.lookingForAnyOtherBrand &&
+        dataObj.lookingForAnyOtherBrand != ""
+      ) {
+        state.c_looking_for_any_other_brand_checked =
+          dataObj.lookingForAnyOtherBrand;
       }
 
       if (dataObj.brand && dataObj.brand != "") {
-        state.c_make = dataObj.brand
+        state.c_make = dataObj.brand;
       }
 
       if (dataObj.model && dataObj.model != "") {
-        state.c_model = dataObj.model
+        state.c_model = dataObj.model;
       }
 
       if (dataObj.otherMake && dataObj.otherMake != "") {
-        state.c_make_other_name = dataObj.otherMake
+        state.c_make_other_name = dataObj.otherMake;
       }
 
       if (dataObj.otherModel && dataObj.otherModel != "") {
-        state.c_model_other_name = dataObj.otherModel
+        state.c_model_other_name = dataObj.otherModel;
       }
 
       if (dataObj.variant && dataObj.variant != "") {
-        state.c_variant = dataObj.variant
+        state.c_variant = dataObj.variant;
       }
 
       if (dataObj.color && dataObj.color != "") {
-        state.c_color = dataObj.color
+        state.c_color = dataObj.color;
       }
 
       if (dataObj.fuel && dataObj.fuel != "") {
-        state.c_fuel_type = dataObj.fuel
+        state.c_fuel_type = dataObj.fuel;
       }
       // TODO:- Need to check transmission type in response
       if (dataObj.transmissionType && dataObj.transmissionType != "") {
-        state.c_transmission_type = dataObj.transmissionType
+        state.c_transmission_type = dataObj.transmissionType;
       }
 
       if (dataObj.priceRange && dataObj.priceRange != "") {
-        state.c_price_range = dataObj.priceRange
+        state.c_price_range = dataObj.priceRange;
       }
 
-      if (dataObj.onRoadPriceanyDifference && dataObj.onRoadPriceanyDifference != "") {
-        state.c_on_road_price = dataObj.onRoadPriceanyDifference
+      if (
+        dataObj.onRoadPriceanyDifference &&
+        dataObj.onRoadPriceanyDifference != ""
+      ) {
+        state.c_on_road_price = dataObj.onRoadPriceanyDifference;
       }
 
       if (dataObj.dealershipName && dataObj.dealershipName != "") {
-        state.c_dealership_name = dataObj.dealershipName
+        state.c_dealership_name = dataObj.dealershipName;
       }
 
       if (dataObj.dealershipLocation && dataObj.dealershipLocation != "") {
-        state.c_dealership_location = dataObj.dealershipLocation
+        state.c_dealership_location = dataObj.dealershipLocation;
       }
 
-      if (dataObj.decisionPendingReason && dataObj.decisionPendingReason != "") {
-        state.c_dealership_pending_reason = dataObj.decisionPendingReason
+      if (
+        dataObj.decisionPendingReason &&
+        dataObj.decisionPendingReason != ""
+      ) {
+        state.c_dealership_pending_reason = dataObj.decisionPendingReason;
       }
 
-      if (dataObj.voiceofCustomerRemarks && dataObj.voiceofCustomerRemarks != "") {
-        state.c_voice_of_customer_remarks = dataObj.voiceofCustomerRemarks
+      if (
+        dataObj.voiceofCustomerRemarks &&
+        dataObj.voiceofCustomerRemarks != ""
+      ) {
+        state.c_voice_of_customer_remarks = dataObj.voiceofCustomerRemarks;
       }
     },
     updateAdditionalOrReplacementBuyerData: (state, action) => {
@@ -1752,7 +1854,10 @@ const enquiryDetailsOverViewSlice = createSlice({
         state.a_varient = dataObj.varient ? dataObj.varient : "";
         state.a_color = dataObj.color ? dataObj.color : "";
         state.a_reg_no = dataObj.regNo ? dataObj.regNo : "";
-      } else if (dataObj.buyerType === "Replacement Buyer" || dataObj.buyerType === "Exchange Buyer") {
+      } else if (
+        dataObj.buyerType === "Replacement Buyer" ||
+        dataObj.buyerType === "Exchange Buyer"
+      ) {
         state.r_reg_no = dataObj.regNo ? dataObj.regNo : "";
         state.r_make = dataObj.brand ? dataObj.brand : "";
         state.r_model = dataObj.model ? dataObj.model : "";
@@ -1769,9 +1874,8 @@ const enquiryDetailsOverViewSlice = createSlice({
           : "";
         state.rmfgYear = yearOfManfac;
         if (isNaN(yearOfManfac)) {
-          state.r_mfg_year = yearOfManfac
-        }
-        else {
+          state.r_mfg_year = yearOfManfac;
+        } else {
           state.r_mfg_year = convertTimeStampToDateString(
             yearOfManfac,
             "MM-YYYY"
@@ -1800,18 +1904,16 @@ const enquiryDetailsOverViewSlice = createSlice({
         const registrationDate = dataObj.registrationDate
           ? dataObj.registrationDate
           : "";
-        state.r_registration_date = convertTimeStampToDateString(
-          registrationDate,
-          "DD/MM/YYYY"
-        );
+
+        state.r_registration_date =
+          convertToDate(registrationDate, "DD/MM/YYYY") || registrationDate;
 
         const registrationValidityDate = dataObj.registrationValidityDate
           ? dataObj.registrationValidityDate
           : "";
-        state.r_registration_validity_date = convertTimeStampToDateString(
-          registrationValidityDate,
-          "DD/MM/YYYY"
-        );
+        state.r_registration_validity_date =
+          convertToDate(registrationValidityDate, "DD/MM/YYYY") ||
+          registrationValidityDate;
 
         state.r_insurence_checked = dataObj.insuranceAvailable
           ? dataObj.insuranceAvailable === "true"
@@ -1834,17 +1936,13 @@ const enquiryDetailsOverViewSlice = createSlice({
         const insurenceFromDate = dataObj.insuranceFromDate
           ? dataObj.insuranceFromDate
           : "";
-        state.r_insurence_from_date = convertTimeStampToDateString(
-          insurenceFromDate,
-          "DD/MM/YYYY"
-        );
+        state.r_insurence_from_date =
+          convertToDate(insurenceFromDate, "DD/MM/YYYY") || insurenceFromDate;
         const insurenceToDate = dataObj.insuranceToDate
           ? dataObj.insuranceToDate
           : "";
-        state.r_insurence_to_date = convertTimeStampToDateString(
-          insurenceToDate,
-          "DD/MM/YYYY"
-        );
+        state.r_insurence_to_date =
+          convertToDate(insurenceToDate, "DD/MM/YYYY") || insurenceToDate;
       }
     },
     updateDmsAttachmentDetails: (state, action) => {
@@ -1886,34 +1984,36 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.get_pending_tasks_response_list = [];
     },
     updateAddressByPincode: (state, action) => {
+      console.log("pincode action", action);
 
-      console.log("pincode action", action)
+      state.village = action.payload.Block || "";
 
-      state.village = action.payload.Block || ""
-
-      state.mandal = state.mandal ? state.mandal : action.payload.Mandal || ""
+      state.mandal = state.mandal ? state.mandal : action.payload.Mandal || "";
       // state.mandal = action.payload.Block || ""
-      state.city = action.payload.District || ""
-      state.district = action.payload.District || ""
-      state.state = action.payload.State || ""
-      state.isAddressSet = true
+      state.city = action.payload.District || "";
+      state.district = action.payload.District || "";
+      state.state = action.payload.State || "";
+      state.isAddressSet = true;
       if (state.is_permanent_address_same === "YES") {
-        state.p_village = action.payload.Block || ""
-        state.p_mandal = state.mandal ? state.mandal : action.payload.Mandal || ""
+        state.p_village = action.payload.Block || "";
+        state.p_mandal = state.mandal
+          ? state.mandal
+          : action.payload.Mandal || "";
         // state.mandal = action.payload.Block || ""
-        state.p_city = action.payload.District || ""
-        state.p_district = action.payload.District || ""
-        state.p_state = action.payload.State || ""
+        state.p_city = action.payload.District || "";
+        state.p_district = action.payload.District || "";
+        state.p_state = action.payload.State || "";
       }
     },
     updateAddressByPincode2: (state, action) => {
-
-      state.p_village = action.payload.Block || ""
-      state.p_mandal = state.p_mandal ? state.p_mandal : action.payload.Mandal || ""
+      state.p_village = action.payload.Block || "";
+      state.p_mandal = state.p_mandal
+        ? state.p_mandal
+        : action.payload.Mandal || "";
       // state.mandal = action.payload.Block || ""
-      state.p_city = action.payload.District || ""
-      state.p_district = action.payload.District || ""
-      state.p_state = action.payload.State || ""
+      state.p_city = action.payload.District || "";
+      state.p_district = action.payload.District || "";
+      state.p_state = action.payload.State || "";
       // state.isAddressSet = true
     },
     updateRefNo: (state, action) => {
@@ -1928,9 +2028,9 @@ const enquiryDetailsOverViewSlice = createSlice({
     builder.addCase(getEnquiryDetailsApi.fulfilled, (state, action) => {
       // if (action.payload.dmsEntity) {
       //  state.enquiry_details_response = action.payload.dmsEntity;
-      console.log("action.payload", action.payload)
+      console.log("action.payload", action.payload);
       state.enquiry_details_response = action.payload;
-      state.isOpened = true
+      state.isOpened = true;
       // }
       state.isLoading = false;
     });
@@ -1938,76 +2038,86 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.isLoading = false;
     });
     builder.addCase(getLogoNameApi.pending, (state) => {
-      console.log("proforma pending")
+      console.log("proforma pending");
       state.isLoading = true;
     });
     builder.addCase(getLogoNameApi.fulfilled, (state, action) => {
       // if (action.payload.dmsEntity) {
       //  state.enquiry_details_response = action.payload.dmsEntity;
-      const data = action.payload
+      const data = action.payload;
       if (data && data.orgName) {
-        state.proforma_orgName = data.orgName
-        state.proforma_logo = data.url
-        state.proforma_branch = data.branchName
-        state.proforma_city = data.city
-        state.proforma_state = data.state
-        state.proforma_pincode = data.pincode
+        state.proforma_orgName = data.orgName;
+        state.proforma_logo = data.url;
+        state.proforma_branch = data.branchName;
+        state.proforma_city = data.city;
+        state.proforma_state = data.state;
+        state.proforma_pincode = data.pincode;
       }
       state.isLoading = false;
-
     });
     builder.addCase(getLogoNameApi.rejected, (state, action) => {
-
       state.isLoading = false;
     });
-    builder.addCase(getOnRoadPriceAndInsurenceDetailsApi.pending, (state, action) => {
-      state.vehicle_on_road_price_insurence_details_response = null;
-      state.isLoading = true;
-    })
-    builder.addCase(getOnRoadPriceAndInsurenceDetailsApi.fulfilled, (state, action) => {
-      console.log("proforma action.payload", action.payload)
-
-      if (action.payload) {
-        state.vehicle_on_road_price_insurence_details_response = action.payload;
-        if (action.payload.insuranceAddOn.length > 0) {
-          let addOnNames = "", price = 0;
-          console.log('ADD-ONS: ', JSON.stringify(action.payload.insuranceAddOn));
-
-          action.payload.insuranceAddOn.forEach((element, index) => {
-            addOnNames += element.add_on_price[0].document_name + ((index + 1) < action.payload.insuranceAddOn.length ? ", " : "");
-            price += Number(element.add_on_price[0].cost)
-          });
-          // state.add_on_insurance = addOnNames;
-          if (state.insurance_type !== '' && state.add_on_insurance) {
-            state.addOnPrice = price;
-          }
-
-        }
+    builder.addCase(
+      getOnRoadPriceAndInsurenceDetailsApi.pending,
+      (state, action) => {
+        state.vehicle_on_road_price_insurence_details_response = null;
+        state.isLoading = true;
       }
-      state.isLoading = false;
-    })
-    builder.addCase(getOnRoadPriceAndInsurenceDetailsApi.rejected, (state, action) => {
+    );
+    builder.addCase(
+      getOnRoadPriceAndInsurenceDetailsApi.fulfilled,
+      (state, action) => {
+        console.log("proforma action.payload", action.payload);
 
-      state.vehicle_on_road_price_insurence_details_response = null;
-      state.isLoading = false;
-    })
+        if (action.payload) {
+          state.vehicle_on_road_price_insurence_details_response =
+            action.payload;
+          if (action.payload.insuranceAddOn.length > 0) {
+            let addOnNames = "",
+              price = 0;
+            console.log(
+              "ADD-ONS: ",
+              JSON.stringify(action.payload.insuranceAddOn)
+            );
+
+            action.payload.insuranceAddOn.forEach((element, index) => {
+              addOnNames +=
+                element.add_on_price[0].document_name +
+                (index + 1 < action.payload.insuranceAddOn.length ? ", " : "");
+              price += Number(element.add_on_price[0].cost);
+            });
+            // state.add_on_insurance = addOnNames;
+            if (state.insurance_type !== "" && state.add_on_insurance) {
+              state.addOnPrice = price;
+            }
+          }
+        }
+        state.isLoading = false;
+      }
+    );
+    builder.addCase(
+      getOnRoadPriceAndInsurenceDetailsApi.rejected,
+      (state, action) => {
+        state.vehicle_on_road_price_insurence_details_response = null;
+        state.isLoading = false;
+      }
+    );
     builder.addCase(postProformaInvoiceDetails.pending, (state) => {
-      console.log("proforma on road pending")
-
+      console.log("proforma on road pending");
     });
     builder.addCase(postProformaInvoiceDetails.fulfilled, (state, action) => {
       // if (action.payload.dmsEntity) {
       //  state.enquiry_details_response = action.payload.dmsEntity;
-      console.log("action.payload auto", action.payload)
+      console.log("action.payload auto", action.payload);
       if (action.payload && action.payload.crmUniversalId)
-        showToast("Successfully updated")
+        showToast("Successfully updated");
       // state.enquiry_details_response = action.payload;
       // state.isOpened = true
       // }
     });
     builder.addCase(postProformaInvoiceDetails.rejected, (state, action) => {
-      console.log("proforma rejected", action)
-
+      console.log("proforma rejected", action);
     });
     builder.addCase(getEnquiryDetailsApiAuto.pending, (state) => {
       state.isLoading = true;
@@ -2016,9 +2126,9 @@ const enquiryDetailsOverViewSlice = createSlice({
     builder.addCase(getEnquiryDetailsApiAuto.fulfilled, (state, action) => {
       // if (action.payload.dmsEntity) {
       //  state.enquiry_details_response = action.payload.dmsEntity;
-      console.log("action.payload auto", action.payload)
+      console.log("action.payload auto", action.payload);
       state.enquiry_details_response = action.payload;
-      state.isOpened = true
+      state.isOpened = true;
       // }
       state.isLoading = false;
     });
@@ -2141,23 +2251,23 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.isLoading = false;
     });
     //update ref number
-    builder.addCase(updateRef.pending, (state, action) => {
-
-    });
-    builder.addCase(updateRef.fulfilled, (state, action) => {
-
-    });
-    builder.addCase(updateRef.rejected, (state, action) => {
-
-    });
-    builder.addCase(updateEnquiryDetailsApiAutoSave.pending, (state, action) => {
-    });
-    builder.addCase(updateEnquiryDetailsApiAutoSave.fulfilled, (state, action) => {
-      state.isLoading = false;
-    });
-    builder.addCase(updateEnquiryDetailsApiAutoSave.rejected, (state, action) => {
-
-    });
+    builder.addCase(updateRef.pending, (state, action) => {});
+    builder.addCase(updateRef.fulfilled, (state, action) => {});
+    builder.addCase(updateRef.rejected, (state, action) => {});
+    builder.addCase(
+      updateEnquiryDetailsApiAutoSave.pending,
+      (state, action) => {}
+    );
+    builder.addCase(
+      updateEnquiryDetailsApiAutoSave.fulfilled,
+      (state, action) => {
+        state.isLoading = false;
+      }
+    );
+    builder.addCase(
+      updateEnquiryDetailsApiAutoSave.rejected,
+      (state, action) => {}
+    );
   },
 });
 
@@ -2193,6 +2303,6 @@ export const {
   updateStatus,
   clearPermanentAddr,
   updateAddressByPincode2,
-  updatedmsLeadProduct
+  updatedmsLeadProduct,
 } = enquiryDetailsOverViewSlice.actions;
 export default enquiryDetailsOverViewSlice.reducer;

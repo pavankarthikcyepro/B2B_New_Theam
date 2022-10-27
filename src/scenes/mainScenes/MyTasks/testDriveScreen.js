@@ -380,9 +380,9 @@ const TestDriveScreen = ({ route, navigation }) => {
                 setHandleActionButtons(3);
             } else if (taskStatus === "APPROVED" && taskName === "Test Drive") {
                 console.log("INSIDE B");
-            //     setHandleActionButtons(2);
-            // } else if (taskStatus === "CANCELLED") {
-                setHandleActionButtons(5);
+                setHandleActionButtons(2);              //
+            } else if (taskStatus === "CANCELLED") {    //
+                setHandleActionButtons(5);           
             }
             else if (taskStatus === "ASSIGNED" && taskName === "Test Drive") {
                 setHandleActionButtons(1);
@@ -1508,6 +1508,11 @@ const TestDriveScreen = ({ route, navigation }) => {
             )}
             {handleActionButtons === 2 && (
               <View style={styles.view1}>
+                <LocalButtonComp
+                  title={"Close"}
+                  // disabled={selector.isLoading}
+                  onPress={() => navigation.goBack()}
+                />
                 <LocalButtonComp
                   title={"Cancel"}
                   // disabled={selector.isLoading}
