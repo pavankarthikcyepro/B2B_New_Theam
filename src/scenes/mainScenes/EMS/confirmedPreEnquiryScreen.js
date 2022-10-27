@@ -463,7 +463,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
 
     const goToEnquiry = () => {
         getPreEnquiryListFromServer();
-        navigation.navigate(EmsTopTabNavigatorIdentifiers.leads);
+        navigation.navigate(EmsTopTabNavigatorIdentifiers.leads, {fromScreen : "contacts"});
         dispatch(clearState());
     }
 
