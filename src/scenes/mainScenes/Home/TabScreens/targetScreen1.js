@@ -732,7 +732,7 @@ const TargetScreen = ({route}) => {
                                 paddingBottom: 4,
                                 borderBottomColor: Colors.GRAY
                             }}>
-                                <View style={{width: 60, height: 20, marginRight: 5}}>
+                                <View style={{width: 100, height: 20, marginRight: 5}}>
 
                                 </View>
                                 <View style={{width: '100%', height: 20, flexDirection: 'row'}}>

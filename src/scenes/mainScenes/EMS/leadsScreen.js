@@ -14,7 +14,13 @@ import {
 } from "react-native";
 import { Button, IconButton, Searchbar } from "react-native-paper";
 import { EmptyListView } from "../../../pureComponents";
-import { LeadsFilterComp, SingleLeadSelectComp, SortAndFilterComp } from "../../../components";
+import {
+    DatePickerComponent,
+    DateRangeComp,
+    LeadsFilterComp,
+    SingleLeadSelectComp,
+    SortAndFilterComp
+} from "../../../components";
 import { useDispatch, useSelector } from "react-redux";
 import { Colors, GlobalStyle } from "../../../styles";
 import { AppNavigator } from '../../../navigations';
@@ -78,64 +84,6 @@ const LeadsScreen = ({ route, navigation }) => {
     const empIdStateRef = React.useRef(employeeId);
     const fromDateRef = React.useRef(selectedFromDate);
     const toDateRef = React.useRef(selectedToDate);
-
-    const leadsFilterDataMain = [
-        // {
-        //     id: 0,
-        //     title: "All",
-        //     checked: false
-        // },
-        {
-            id: 1,
-            title: "Enquiry",
-            checked: false
-        },
-        {
-            id: 2,
-            title: "Booking",
-            checked: false
-        },
-        {
-            id: 3,
-            title: "Retail",
-            checked: false
-        },
-        {
-            id: 4,
-            title: "Delivery",
-            checked: false
-        },
-
-    ]
-
-    const leadsFilterDataMainTemp = [
-        // {
-        //     id: 0,
-        //     title: "All",
-        //     checked: false
-        // },
-        {
-            id: 1,
-            title: "Enquiry",
-            checked: false
-        },
-        {
-            id: 2,
-            title: "Booking",
-            checked: false
-        },
-        {
-            id: 3,
-            title: "Retail",
-            checked: false
-        },
-        {
-            id: 4,
-            title: "Delivery",
-            checked: false
-        },
-
-    ]
 
     const setFromDateState = date => {
         fromDateRef.current = date;
@@ -225,7 +173,7 @@ const LeadsScreen = ({ route, navigation }) => {
                 let path2 = res2.payload;
                 let leadStage = [];
                 let leadStatus = [];
-                let newAre = path2.filter(e => e.menu !== "Contact");
+                let newAre = path2 && path2.filter(e => e.menu !== "Contact");
                 for (let i = 0; i < newAre.length; i++) {
                     let x = newAre[i].allLeadsSubstagesEntity;
                     for (let j = 0; j < x.length; j++) {
@@ -306,7 +254,7 @@ const LeadsScreen = ({ route, navigation }) => {
         const newArr = tempStores.map(function (x) {
             x.checked = false;
             return x
-        });;
+        });
         setTempLeadStage(leadStage);
         setTempLeadStatus([]);
         onTempFliter(newArr, null, [], [], [], lastMonthFirstDate, currentDate, leadStage, []);
@@ -352,10 +300,14 @@ const LeadsScreen = ({ route, navigation }) => {
             case "FROM_DATE":
                 setFromDateState(formatDate);
                 // getEnquiryListFromServer(employeeId, formatDate, selectedToDate);
+                onTempFliter(tempFilterPayload, isEmpty(tempEmployee) ? null : tempEmployee,
+                    tempVehicleModelList, tempCategoryList, tempSourceList, formatDate, selectedToDate, tempLeadStage, tempLeadStatus);
                 break;
             case "TO_DATE":
                 setToDateState(formatDate);
                 // getEnquiryListFromServer(employeeId, selectedFromDate, formatDate);
+                onTempFliter(tempFilterPayload, isEmpty(tempEmployee) ? null : tempEmployee,
+                    tempVehicleModelList, tempCategoryList, tempSourceList, selectedFromDate, formatDate, tempLeadStage, tempLeadStatus);
                 break;
         }
     }
@@ -479,16 +431,36 @@ const LeadsScreen = ({ route, navigation }) => {
                 let path = response[0]?.payload[0]?.allLeadsSubstagesEntity;
                 if (getAllData) {
                     setSearchedData([]);
-                    const newArr = path.map(object => {
-                        if (object.subMenu == "ALL") {
+                    // const newArr = path.map(object => {
+                    //     if (object.subMenu == "ALL") {
+                    //         return { ...object, checked: true };
+                    //     }
+                    //     return object;
+                    // });
+                    // setTempFilterPayload(newArr);
+                    // onTempFliter(newArr, employeeDetail,);
+                    // setSubMenu(newArr);
+                    // setLeadsSubMenuFilterDropDownText("ALL");
+
+
+                    const x = path.map(object => {
+                        if (object.subMenu === item) {
                             return { ...object, checked: true };
                         }
                         return object;
                     });
-                    setTempFilterPayload(newArr);
-                    onTempFliter(newArr, employeeDetail,);
-                    setSubMenu(newArr);
-                    setLeadsSubMenuFilterDropDownText("ALL");
+                    setSubMenu([...x]);
+                    setTempFilterPayload(x);
+                    onTempFliter(x, isEmpty(tempEmployee) ? null : tempEmployee, tempVehicleModelList, tempCategoryList, tempSourceList, selectedFromDate, selectedToDate);
+                    setLeadsSubMenuFilterVisible(false);
+                    const data = x.filter(y => y.checked);
+                    if (data.length === subMenu.length) {
+                        setLeadsSubMenuFilterDropDownText('All')
+                    } else {
+                        const names = data.map(y => y?.subMenu);
+                        setLeadsSubMenuFilterDropDownText(names.toString() ? names.toString() : "Select Sub Menu");
+                    }
+
 
                 } else if (path.length == 1) {
                     // getFliteredList(path[0]);
@@ -601,7 +573,7 @@ const LeadsScreen = ({ route, navigation }) => {
                 "model": modelData ? model : [],
                 "categoryType": categoryFilters ? categoryType : [],
                 "sourceOfEnquiry": sourceData ? sourceOfEnquiry : [],
-                "empId": employeeDetail ? route.params.employeeDetail.empId : jsonObj.empId,
+                "empId": employeeDetail ? route?.params?.employeeDetail?.empId : jsonObj.empId,
                 "status": "",
                 "offset": 0,
                 "limit": 500,
@@ -646,9 +618,9 @@ const LeadsScreen = ({ route, navigation }) => {
         updateSelectedDate(from, 'FROM_DATE');
         updateSelectedDate(to, 'TO_DATE');
         setShowDatePicker(false);
-        console.log('live leads: from to: ', from, to);
-        onTempFliter(tempFilterPayload, isEmpty(tempEmployee) ? null : tempEmployee,
-            tempVehicleModelList, tempCategoryList, tempSourceList, from, to, tempLeadStage, tempLeadStatus);
+        // console.log('live leads: from to: ', from, to);
+        // onTempFliter(tempFilterPayload, isEmpty(tempEmployee) ? null : tempEmployee,
+        //     tempVehicleModelList, tempCategoryList, tempSourceList, from, to, tempLeadStage, tempLeadStatus);
         // return
         // setTimeout(() => {
         //     applyLeadsFilter(leadsFilterData, from, to);
@@ -688,35 +660,29 @@ const LeadsScreen = ({ route, navigation }) => {
         });
     }
 
+    // const liveLeadsStartDate = route?.params?.moduleType === 'live-leads' ? '2021-01-01' : lastMonthFirstDate;
+    const liveLeadsEndDate = route?.params?.moduleType === 'live-leads' ? moment().format(dateFormat) : currentDate;
+
     return (
         <SafeAreaView style={styles.container}>
-            <Modal
-                animationType={Platform.OS === "ios" ? 'slide' : 'fade'}
-                transparent={true}
+            <DatePickerComponent
                 visible={showDatePicker}
-                onRequestClose={() => {
+                mode={"date"}
+                maximumDate={new Date(liveLeadsEndDate.toString())}
+                value={new Date()}
+                onChange={(event, selectedDate) => {
+                    console.log("date: ", selectedDate);
+                    setShowDatePicker(false)
+                    if (Platform.OS === "android") {
+                        if (selectedDate) {
+                            updateSelectedDate(selectedDate, datePickerId);
+                        }
+                    } else {
+                        updateSelectedDate(selectedDate, datePickerId);
+                    }
                 }}
-            >
-                <SafeAreaView style={styles.calContainer}>
-                    <View style={styles.calView1}>
-                        <View style={styles.calView2}>
-                            <Button
-                                mode="text"
-                                labelStyle={{ textTransform: 'none', color: Colors.RED }}
-                                onPress={() => setShowDatePicker(false)}
-                            >
-                                Close
-                            </Button>
-                        </View>
-                        <DateRangePicker
-                            initialRange={[selectedFromDate, selectedToDate]}
-                            onSuccess={(from, to) => {
-                                applyDateFilter(from, to);
-                            }}
-                            theme={{ markColor: Colors.RED, markTextColor: 'white' }} />
-                    </View>
-                </SafeAreaView>
-            </Modal>
+                onRequestClose={() => setShowDatePicker(false)}
+            />
             <View>
                 <SingleLeadSelectComp visible={leadsFilterVisible} modelList={leadsFilterData} submitCallback={(x) => {
                     setLeadsFilterData([...x]);
@@ -774,64 +740,33 @@ const LeadsScreen = ({ route, navigation }) => {
             />
 
             <View style={styles.view1}>
-                <View style={{ width: "30%" }}>
-                    <View
-                        style={{
-                            flexDirection: "row",
-                            justifyContent: "space-around",
-                            paddingVertical: 10,
-                        }}
-                    >
-                        <View>
-                            <Pressable onPress={() => showDatePickerMethod('FROM_DATE')}>
-                                <View style={{
-                                    borderColor: Colors.GRAY,
-                                    borderWidth: 0.5,
-                                    borderRadius: 4,
-                                    backgroundColor: Colors.WHITE,
-                                    paddingHorizontal: 5,
-                                    height: 50,
-                                    justifyContent: 'center'
-                                }}>
-                                    <Text style={{ fontSize: 12, fontWeight: '400', color: Colors.GRAY }}>Date
-                                        range</Text>
-                                    <View style={{
-                                        flexDirection: 'row',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center'
-                                    }}>
-                                        <View>
-                                            <Text style={{
-                                                fontSize: 12,
-                                                fontWeight: '400',
-                                                color: '2022-08-23' ? Colors.BLACK : Colors.GRAY
-                                            }}>{selectedFromDate ? selectedFromDate : moment(new Date()).format(dateFormat)
-                                                }</Text>
-                                            <Text style={{
-                                                fontSize: 12,
-                                                fontWeight: '400',
-                                                color: '2022-08-23' ? Colors.BLACK : Colors.GRAY
-                                            }}>{selectedToDate ? selectedToDate : moment(new Date()).format(dateFormat)}</Text>
-                                        </View>
-                                        <IconButton
-                                            icon={"calendar-month"}
-                                            size={20}
-                                            style={{ margin: 0 }}
-                                            color={Colors.RED}
-                                        />
-                                    </View>
-                                </View>
-                            </Pressable>
-                        </View>
+                    <View style={{ width: "80%" }}>
+                        <DateRangeComp
+                            fromDate={selectedFromDate}
+                            toDate={selectedToDate}
+                            fromDateClicked={() => showDatePickerMethod("FROM_DATE")}
+                            toDateClicked={() => showDatePickerMethod("TO_DATE")}
+                        />
                     </View>
-                </View>
-                <View style={{ width: '45%' }}>
+                    <Pressable onPress={() => setSortAndFilterVisible(true)}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <Text style={styles.text1}>{'Filter'}</Text>
+                            <IconButton icon={'filter-outline'} size={20} color={Colors.RED} style={{ margin: 0, padding: 0 }} />
+                        </View>
+                    </Pressable>
+            </View>
+            <View style={{flexDirection: 'row', justifyContent: 'space-between',
+                borderColor: Colors.LIGHT_GRAY,
+                paddingHorizontal: 6,
+                paddingBottom: 4,
+                backgroundColor: Colors.WHITE, marginTop: -6}}>
+                <View style={{width: subMenu?.length > 1 ? '45%' : '100%'}}>
                     <Pressable onPress={() => {
                         setLeadsFilterVisible(true);
                     }}>
                         <View style={{
                             borderWidth: 0.5,
-                            borderColor: Colors.RED,
+                            borderColor: Colors.BORDER_COLOR,
                             borderRadius: 4,
                             flexDirection: 'row',
                             justifyContent: 'space-between',
@@ -845,35 +780,28 @@ const LeadsScreen = ({ route, navigation }) => {
                         </View>
                     </Pressable>
                 </View>
-                <Pressable onPress={() => setSortAndFilterVisible(true)}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Text style={styles.text1}>{'Filter'}</Text>
-                        <IconButton icon={'filter-outline'} size={20} color={Colors.RED}
-                            style={{ margin: 0, padding: 0 }} />
-                    </View>
-                </Pressable>
-            </View>
-            {subMenu?.length > 1 &&
-                <View style={{ width: '90%', alignSelf: "center", backgroundColor: 'white', marginBottom: 5 }}>
-                    <Pressable onPress={() => {
-                        setLeadsSubMenuFilterVisible(true);
-                    }}>
-                        <View style={{
-                            borderWidth: 0.5,
-                            borderColor: Colors.RED,
-                            borderRadius: 4,
-                            flexDirection: 'row',
-                            justifyContent: 'space-between',
-                            alignItems: 'center'
+                {subMenu?.length > 1 &&
+                    <View style={{ width: '50%', alignSelf: "center", backgroundColor: 'white', marginBottom: 5 }}>
+                        <Pressable onPress={() => {
+                            setLeadsSubMenuFilterVisible(true);
                         }}>
-                            <Text style={{ width: '70%', paddingHorizontal: 4, paddingVertical: 2, fontSize: 12, fontWeight: "600" }}
-                                numberOfLines={2}>{leadsSubMenuFilterDropDownText}</Text>
-                            <IconButton icon={leadsSubMenuFilterVisible ? 'chevron-up' : 'chevron-down'} size={20}
-                                color={Colors.RED}
-                                style={{ margin: 0, padding: 0, width: '10%' }} />
-                        </View>
-                    </Pressable>
-                </View>}
+                            <View style={{
+                                borderWidth: 0.5,
+                                borderColor: Colors.BORDER_COLOR,
+                                borderRadius: 4,
+                                flexDirection: 'row',
+                                justifyContent: 'space-between',
+                                alignItems: 'center'
+                            }}>
+                                <Text style={{ width: '70%', paddingHorizontal: 4, paddingVertical: 2, fontSize: 12, fontWeight: "600" }}
+                                      numberOfLines={2}>{leadsSubMenuFilterDropDownText}</Text>
+                                <IconButton icon={leadsSubMenuFilterVisible ? 'chevron-up' : 'chevron-down'} size={20}
+                                            color={Colors.RED}
+                                            style={{ margin: 0, padding: 0, width: '10%' }} />
+                            </View>
+                        </Pressable>
+                    </View>}
+            </View>
             <View>
 
                 <Searchbar
