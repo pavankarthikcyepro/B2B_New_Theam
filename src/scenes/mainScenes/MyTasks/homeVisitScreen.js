@@ -344,6 +344,13 @@ const HomeVisitScreen = ({ route, navigation }) => {
     }
   }, [selector.validate_otp_response_status])
 
+  const isViewMode = () => {
+    if (route?.params?.taskStatus === "CLOSED") {
+      return true;
+    }
+    return false;
+  };
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -383,12 +390,14 @@ const HomeVisitScreen = ({ route, navigation }) => {
             </Text>
             <View style={styles.view2}>
               <RadioTextItem
+                disabled={isViewMode()}
                 label={"Showroom address"}
                 value={"Showroom address"}
                 status={addressType === 1 ? true : false}
                 onPress={() => setAddressType(1)}
               />
               <RadioTextItem
+                disabled={isViewMode()}
                 label={"Customer address"}
                 value={"Customer address"}
                 status={addressType === 2 ? true : false}
@@ -412,14 +421,19 @@ const HomeVisitScreen = ({ route, navigation }) => {
                 <Text style={GlobalStyle.underline}></Text>
               </View>
             )}
-            <View style={{ position: 'relative' }}>
-              {selector.reason !== '' &&
-                <View style={{ position: 'absolute', top: 0, left: 10, zIndex: 99 }}>
-                  <Text style={{ fontSize: 13, color: Colors.GRAY }}>Reason*</Text>
+            <View style={{ position: "relative" }}>
+              {selector.reason !== "" && (
+                <View
+                  style={{ position: "absolute", top: 0, left: 10, zIndex: 99 }}
+                >
+                  <Text style={{ fontSize: 13, color: Colors.GRAY }}>
+                    Reason*
+                  </Text>
                 </View>
-              }
+              )}
               <Dropdown
-                style={[styles.dropdownContainer,]}
+                disable={isViewMode()}
+                style={[styles.dropdownContainer]}
                 placeholderStyle={styles.placeholderStyle}
                 selectedTextStyle={styles.selectedTextStyle}
                 inputSearchStyle={styles.inputSearchStyle}
@@ -434,27 +448,41 @@ const HomeVisitScreen = ({ route, navigation }) => {
                 value={defaultReasonIndex}
                 // onFocus={() => setIsFocus(true)}
                 // onBlur={() => setIsFocus(false)}
-                onChange={val => {
+                onChange={(val) => {
                   console.log("£££", val);
-                  dispatch(setHomeVisitDetails({ key: "REASON", text: val.value }));
+                  dispatch(
+                    setHomeVisitDetails({ key: "REASON", text: val.value })
+                  );
                 }}
               />
-              <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.reason === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
+              <Text
+                style={[
+                  GlobalStyle.underline,
+                  {
+                    backgroundColor:
+                      isSubmitPress && selector.reason === ""
+                        ? "red"
+                        : "rgba(208, 212, 214, 0.7)",
+                  },
+                ]}
+              ></Text>
             </View>
-            {selector.reason === 'Others' &&
+            {selector.reason === "Others" && (
               <TextinputComp
+                disabled={isViewMode()}
                 style={styles.textInputStyle}
                 label={"Other reason"}
-              autoCapitalize="words"
+                autoCapitalize="words"
                 value={otherReason}
                 maxLength={50}
                 onChangeText={(text) => {
-                  setOtherReason(text)
+                  setOtherReason(text);
                 }}
               />
-            }
+            )}
             <Text style={GlobalStyle.underline}></Text>
             <TextinputComp
+              disabled={isViewMode()}
               style={styles.textInputStyle}
               label={"Customer Remarks*"}
               autoCapitalize="words"
@@ -466,8 +494,19 @@ const HomeVisitScreen = ({ route, navigation }) => {
                 )
               }
             />
-            <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.customer_remarks === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
+            <Text
+              style={[
+                GlobalStyle.underline,
+                {
+                  backgroundColor:
+                    isSubmitPress && selector.customer_remarks === ""
+                      ? "red"
+                      : "rgba(208, 212, 214, 0.7)",
+                },
+              ]}
+            ></Text>
             <TextinputComp
+              disabled={isViewMode()}
               style={styles.textInputStyle}
               label={"Employee Remarks*"}
               autoCapitalize="words"
@@ -479,17 +518,40 @@ const HomeVisitScreen = ({ route, navigation }) => {
                 )
               }
             />
-            <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.employee_remarks === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
+            <Text
+              style={[
+                GlobalStyle.underline,
+                {
+                  backgroundColor:
+                    isSubmitPress && selector.employee_remarks === ""
+                      ? "red"
+                      : "rgba(208, 212, 214, 0.7)",
+                },
+              ]}
+            ></Text>
             <DateSelectItem
+              disabled={isViewMode()}
               label={"Actual Start Date"}
               value={selector.actual_start_time}
               onPress={() => dispatch(setDatePicker("ACTUAL_START_TIME"))}
-            //  value={selector.expected_delivery_date}
-            // onPress={() =>
-            // dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
+              //  value={selector.expected_delivery_date}
+              // onPress={() =>
+              // dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
             />
-            <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && (selector.actual_start_time === '' || isDateError) ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
+            <Text
+              style={[
+                GlobalStyle.underline,
+                {
+                  backgroundColor:
+                    isSubmitPress &&
+                    (selector.actual_start_time === "" || isDateError)
+                      ? "red"
+                      : "rgba(208, 212, 214, 0.7)",
+                },
+              ]}
+            ></Text>
             <DateSelectItem
+              disabled={isViewMode()}
               label={"Actual End Date"}
               value={selector.actual_end_time}
               onPress={() => dispatch(setDatePicker("ACTUAL_END_TIME"))}
@@ -498,9 +560,22 @@ const HomeVisitScreen = ({ route, navigation }) => {
           </View>
 
           {isCloseSelected ? (
-            <View style={{ marginTop: 20, paddingHorizontal: otpViewHorizontalPadding }}>
-              <View style={{ height: 60, justifyContent: 'center', alignItems: "center" }}>
-                <Text style={{ textAlign: "center" }}>{"We have sent an OTP to mobile number, please verify"}</Text>
+            <View
+              style={{
+                marginTop: 20,
+                paddingHorizontal: otpViewHorizontalPadding,
+              }}
+            >
+              <View
+                style={{
+                  height: 60,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Text style={{ textAlign: "center" }}>
+                  {"We have sent an OTP to mobile number, please verify"}
+                </Text>
               </View>
               <CodeField
                 ref={ref}
@@ -516,17 +591,17 @@ const HomeVisitScreen = ({ route, navigation }) => {
                   <Text
                     key={index}
                     style={[otpStyles.cell, isFocused && otpStyles.focusCell]}
-                    onLayout={getCellOnLayoutHandler(index)}>
+                    onLayout={getCellOnLayoutHandler(index)}
+                  >
                     {symbol || (isFocused ? <Cursor /> : null)}
                   </Text>
                 )}
               />
             </View>
           ) : null}
-
         </View>
 
-        {!isCloseSelected ? (
+        {!isCloseSelected && !isViewMode() ? (
           // <View style={styles.view1}>
           //   <Button
           //     mode="contained"
