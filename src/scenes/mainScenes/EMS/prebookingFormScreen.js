@@ -3403,6 +3403,29 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       },
                     ]}
                   ></Text>
+                  {selector.enquiry_segment.toLowerCase() === "personal" ? (
+                    <View>
+                      <DropDownSelectionItem
+                        disabled={!isInputsEditable()}
+                        label={"Gender*"}
+                        value={selector.gender}
+                        onPress={() =>
+                          showDropDownModelMethod("GENDER", "Gender")
+                        }
+                      />
+                      <Text
+                        style={[
+                          GlobalStyle.underline,
+                          {
+                            backgroundColor:
+                              isSubmitPress && selector.gender === ""
+                                ? "red"
+                                : "rgba(208, 212, 214, 0.7)",
+                          },
+                        ]}
+                      ></Text>
+                    </View>
+                  ) : null}
                   <TextinputComp
                     disabled={!isInputsEditable()}
                     style={{ height: 65, width: "100%" }}
@@ -3510,25 +3533,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ></Text>
                   {selector.enquiry_segment.toLowerCase() === "personal" ? (
                     <View>
-                      <DropDownSelectionItem
-                        disabled={!isInputsEditable()}
-                        label={"Gender*"}
-                        value={selector.gender}
-                        onPress={() =>
-                          showDropDownModelMethod("GENDER", "Gender")
-                        }
-                      />
-                      <Text
-                        style={[
-                          GlobalStyle.underline,
-                          {
-                            backgroundColor:
-                              isSubmitPress && selector.gender === ""
-                                ? "red"
-                                : "rgba(208, 212, 214, 0.7)",
-                          },
-                        ]}
-                      ></Text>
                       <DateSelectItem
                         disabled={!isInputsEditable()}
                         label={"Date Of Birth*"}
