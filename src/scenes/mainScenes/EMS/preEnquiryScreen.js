@@ -440,153 +440,207 @@ const PreEnquiryScreen = ({ route, navigation }) => {
 
     const liveLeadsEndDate = route?.params?.moduleType === 'live-leads' ? moment().format(dateFormat) : currentDate;
     return (
-        <SafeAreaView style={styles.conatiner}>
+      <SafeAreaView style={styles.conatiner}>
+        <DatePickerComponent
+          visible={showDatePicker}
+          mode={"date"}
+          maximumDate={new Date(liveLeadsEndDate.toString())}
+          value={new Date()}
+          onChange={(event, selectedDate) => {
+            console.log("date: ", selectedDate);
+            setShowDatePicker(false);
+            if (Platform.OS === "android") {
+              if (selectedDate) {
+                updateSelectedDate(selectedDate, datePickerId);
+              }
+            } else {
+              updateSelectedDate(selectedDate, datePickerId);
+            }
+          }}
+          onRequestClose={() => setShowDatePicker(false)}
+        />
 
-            <DatePickerComponent
-                visible={showDatePicker}
-                mode={"date"}
-                maximumDate={new Date(liveLeadsEndDate.toString())}
-                value={new Date(Date.now()) + 9}
-                onChange={(event, selectedDate) => {
-                    console.log("date: ", selectedDate);
-                    setShowDatePicker(false)
-                    if (Platform.OS === "android") {
-                        if (selectedDate) {
-                            updateSelectedDate(selectedDate, datePickerId);
-                        }
-                    } else {
-                        updateSelectedDate(selectedDate, datePickerId);
-                    }
-                }}
-                onRequestClose={() => setShowDatePicker(false)}
-            />
-
-            {/* <CallUserComponent
+        {/* <CallUserComponent
                 visible={selector.modelVisible}
                 onRequestClose={() => dispatch(callPressed())}
             /> */}
 
-            <SortAndFilterComp
-                visible={sortAndFilterVisible}
-                // categoryList={categoryList}
-                modelList={vehicleModelList}
-                sourceList={sourceList}
-                submitCallback={(payload) => {
-                    // console.log("payload: ", payload);
-                    applySelectedFilters(payload);
-                    setSortAndFilterVisible(false);
-                }}
-                onRequestClose={() => {
-                    setSortAndFilterVisible(false);
-                }}
-            />
+        <SortAndFilterComp
+          visible={sortAndFilterVisible}
+          // categoryList={categoryList}
+          modelList={vehicleModelList}
+          sourceList={sourceList}
+          submitCallback={(payload) => {
+            // console.log("payload: ", payload);
+            applySelectedFilters(payload);
+            setSortAndFilterVisible(false);
+          }}
+          onRequestClose={() => {
+            setSortAndFilterVisible(false);
+          }}
+        />
 
-            <View style={{ flex: 1, paddingHorizontal: 10, paddingTop: 5 }}>
-
-                <View style={styles.view1}>
-                    <View style={{ width: "80%" }}>
-                        <DateRangeComp
-                            fromDate={selectedFromDate}
-                            toDate={selectedToDate}
-                            fromDateClicked={() => showDatePickerMethod("FROM_DATE")}
-                            toDateClicked={() => showDatePickerMethod("TO_DATE")}
-                        />
-                    </View>
-                    <Pressable onPress={() => setSortAndFilterVisible(true)}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <Text style={styles.text1}>{'Filter'}</Text>
-                            <IconButton icon={'filter-outline'} size={20} color={Colors.RED} style={{ margin: 0, padding: 0 }} />
-                        </View>
-                    </Pressable>
-                </View>
-                {/* // filter */}
-                {/*Search View*/}
-                <View>
-                    <Searchbar
-                        placeholder="Search"
-                        onChangeText={onChangeSearch}
-                        value={searchQuery}
-                        style={styles.searchBar}
-                    />
-                </View>
-
-                {searchedData && searchedData.length === 0 ? <EmptyListView title={'No Data Found'} isLoading={selector.isLoading} /> :
-                    <View style={[{ backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10 }]}>
-                        <FlatList
-                            data={searchedData}
-                            extraData={searchedData}
-                            keyExtractor={(item, index) => index.toString()}
-                            refreshControl={(
-                                <RefreshControl
-                                    refreshing={selector.isLoading}
-                                    // onRefresh={() => onTempFliter(employeeId, selectedFromDate, selectedToDate, vehicleModelList, categoryList, sourceList)}
-                                    onRefresh={() => getPreEnquiryListFromServer(employeeId, selectedFromDate, selectedToDate)}
-                                    progressViewOffset={200}
-                                />
-                            )}
-                            showsVerticalScrollIndicator={false}
-                            onEndReachedThreshold={0}
-                            // onEndReached={() => {
-                            //     if (appSelector.searchKey === ''){
-                            //         getMorePreEnquiryListFromServer()
-                            //     }
-                            // }}
-                            ListFooterComponent={renderFooter}
-                            renderItem={({ item, index }) => {
-
-                                let color = Colors.WHITE;
-                                if (index % 2 != 0) {
-                                    color = Colors.LIGHT_GRAY;
-                                }
-
-                                return (
-                                    <>
-                                        <View>
-                                            <MyTaskNewItem
-                                                from='PRE_ENQUIRY'
-                                                name={getFirstLetterUpperCase(item.firstName) + " " + getFirstLetterUpperCase(item.lastName)}
-                                                navigator={navigation}
-                                                uniqueId={item.leadId}
-                                                type='PreEnq'
-                                                status={""}
-                                                created={item.createdDate}
-                                                dmsLead={item.createdBy}
-                                                phone={item.phone}
-                                                source={item.enquirySource}
-                                                model={item.model}
-                                                leadStatus={item.leadStatus}
-                                                needStatus={"YES"}
-                                                onItemPress={() => {
-                                                    console.log("ENQ: ", JSON.stringify(item));
-                                                    navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, { universalId: item.universalId, itemData: item })
-                                                }}
-                                                onDocPress={() => {
-                                                    console.log("ITEM:", JSON.stringify(item));
-                                                    navigation.navigate(AppNavigator.EmsStackIdentifiers.confirmedPreEnq, { itemData: item, fromCreatePreEnquiry: false })
-                                                }}
-                                            />
-                                        </View>
-                                    </>
-                                )
-                            }}
-                        />
-                    </View>
-                }
-
-                <View style={[styles.addView, GlobalStyle.shadow, { justifyContent: 'center', alignItems: 'center' }]}>
-                    <View style={{ width: 60, height: 60, borderRadius: 30, backgroundColor: '#FFFFFF' }}>
-                        <Pressable onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.addPreEnq, { fromEdit: false })}>
-                            {/* <View style={[GlobalStyle.shadow, { height: 60, width: 60, borderRadius: 30, shadowRadius: 5 }]}> */}
-                            {/* <VectorImage source={CREATE_NEW} width={60} height={60} color={"rgba(76,24,197,0.8)"} /> */}
-                            <CREATE_NEW width={60} height={60} fill={"rgba(255,21,107,6)"} />
-                            {/* </View> */}
-                        </Pressable>
-                    </View>
-                </View>
-
+        <View style={{ flex: 1, paddingHorizontal: 10, paddingTop: 5 }}>
+          <View style={styles.view1}>
+            <View style={{ width: "80%" }}>
+              <DateRangeComp
+                fromDate={selectedFromDate}
+                toDate={selectedToDate}
+                fromDateClicked={() => showDatePickerMethod("FROM_DATE")}
+                toDateClicked={() => showDatePickerMethod("TO_DATE")}
+              />
             </View>
-        </SafeAreaView >
-    )
+            <Pressable onPress={() => setSortAndFilterVisible(true)}>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Text style={styles.text1}>{"Filter"}</Text>
+                <IconButton
+                  icon={"filter-outline"}
+                  size={20}
+                  color={Colors.RED}
+                  style={{ margin: 0, padding: 0 }}
+                />
+              </View>
+            </Pressable>
+          </View>
+          {/* // filter */}
+          {/*Search View*/}
+          <View>
+            <Searchbar
+              placeholder="Search"
+              onChangeText={onChangeSearch}
+              value={searchQuery}
+              style={styles.searchBar}
+            />
+          </View>
+
+          {searchedData && searchedData.length === 0 ? (
+            <EmptyListView
+              title={"No Data Found"}
+              isLoading={selector.isLoading}
+            />
+          ) : (
+            <View
+              style={[
+                {
+                  backgroundColor: Colors.LIGHT_GRAY,
+                  flex: 1,
+                  marginBottom: 10,
+                },
+              ]}
+            >
+              <FlatList
+                data={searchedData}
+                extraData={searchedData}
+                keyExtractor={(item, index) => index.toString()}
+                refreshControl={
+                  <RefreshControl
+                    refreshing={selector.isLoading}
+                    // onRefresh={() => onTempFliter(employeeId, selectedFromDate, selectedToDate, vehicleModelList, categoryList, sourceList)}
+                    onRefresh={() =>
+                      getPreEnquiryListFromServer(
+                        employeeId,
+                        selectedFromDate,
+                        selectedToDate
+                      )
+                    }
+                    progressViewOffset={200}
+                  />
+                }
+                showsVerticalScrollIndicator={false}
+                onEndReachedThreshold={0}
+                // onEndReached={() => {
+                //     if (appSelector.searchKey === ''){
+                //         getMorePreEnquiryListFromServer()
+                //     }
+                // }}
+                ListFooterComponent={renderFooter}
+                renderItem={({ item, index }) => {
+                  let color = Colors.WHITE;
+                  if (index % 2 != 0) {
+                    color = Colors.LIGHT_GRAY;
+                  }
+
+                  return (
+                    <>
+                      <View>
+                        <MyTaskNewItem
+                          from="PRE_ENQUIRY"
+                          name={
+                            getFirstLetterUpperCase(item.firstName) +
+                            " " +
+                            getFirstLetterUpperCase(item.lastName)
+                          }
+                          navigator={navigation}
+                          uniqueId={item.leadId}
+                          type="PreEnq"
+                          status={""}
+                          created={item.createdDate}
+                          dmsLead={item.createdBy}
+                          phone={item.phone}
+                          source={item.enquirySource}
+                          model={item.model}
+                          leadStatus={item.leadStatus}
+                          needStatus={"YES"}
+                          onItemPress={() => {
+                            console.log("ENQ: ", JSON.stringify(item));
+                            navigation.navigate(
+                              AppNavigator.EmsStackIdentifiers.task360,
+                              { universalId: item.universalId, itemData: item }
+                            );
+                          }}
+                          onDocPress={() => {
+                            console.log("ITEM:", JSON.stringify(item));
+                            navigation.navigate(
+                              AppNavigator.EmsStackIdentifiers.confirmedPreEnq,
+                              { itemData: item, fromCreatePreEnquiry: false }
+                            );
+                          }}
+                        />
+                      </View>
+                    </>
+                  );
+                }}
+              />
+            </View>
+          )}
+
+          <View
+            style={[
+              styles.addView,
+              GlobalStyle.shadow,
+              { justifyContent: "center", alignItems: "center" },
+            ]}
+          >
+            <View
+              style={{
+                width: 60,
+                height: 60,
+                borderRadius: 30,
+                backgroundColor: "#FFFFFF",
+              }}
+            >
+              <Pressable
+                onPress={() =>
+                  navigation.navigate(
+                    AppNavigator.EmsStackIdentifiers.addPreEnq,
+                    { fromEdit: false }
+                  )
+                }
+              >
+                {/* <View style={[GlobalStyle.shadow, { height: 60, width: 60, borderRadius: 30, shadowRadius: 5 }]}> */}
+                {/* <VectorImage source={CREATE_NEW} width={60} height={60} color={"rgba(76,24,197,0.8)"} /> */}
+                <CREATE_NEW
+                  width={60}
+                  height={60}
+                  fill={"rgba(255,21,107,6)"}
+                />
+                {/* </View> */}
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </SafeAreaView>
+    );
 }
 
 export default PreEnquiryScreen;
