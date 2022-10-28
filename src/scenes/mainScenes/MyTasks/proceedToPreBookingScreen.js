@@ -390,153 +390,180 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
         )
     }
 
-    return (
-        <KeyboardAvoidingView
-            style={{
-                flex: 1,
-                flexDirection: "column",
-            }}
-            behavior={Platform.OS == "ios" ? "padding" : "height"}
-            enabled
-            keyboardVerticalOffset={100}
-        >
-            <SafeAreaView style={[styles.container]}>
+    const isViewMode = () => {
+      if (route?.params?.taskStatus === "CLOSED") {
+        return true;
+      }
+      return false;
+    };
 
-                <DropDownComponant
-                    visible={showDropDownModel}
-                    headerTitle={dropDownTitle}
-                    data={dataForDropDown}
-                    onRequestClose={() => setShowDropDownModel(false)}
-                    selectedItems={(item) => {
-                        setShowDropDownModel(false);
-                        if (dropDownKey === "DROP_REASON") {
-                            const payload = {
-                                "bu": userData.orgId,
-                                "dropdownType": identifier == "PROCEED_TO_BOOKING" ? "PreBook_Lost_Com_Sub_Reas" : "PreEnq_Lost_Com_Sub_Reas",
-                                "parentId": item.id
-                            }
-                            dispatch(getDropSubReasonDataApi(payload))
-                            setDropReason(item.name);
-                        }
-                        if (dropDownKey === "DROP_SUB_REASON") {
-                            setDropSubReason(item.name);
-                        }
-                    }}
+    return (
+      <KeyboardAvoidingView
+        style={{
+          flex: 1,
+          flexDirection: "column",
+        }}
+        behavior={Platform.OS == "ios" ? "padding" : "height"}
+        enabled
+        keyboardVerticalOffset={100}
+      >
+        <SafeAreaView style={[styles.container]}>
+          <DropDownComponant
+            visible={showDropDownModel}
+            headerTitle={dropDownTitle}
+            data={dataForDropDown}
+            onRequestClose={() => setShowDropDownModel(false)}
+            selectedItems={(item) => {
+              setShowDropDownModel(false);
+              if (dropDownKey === "DROP_REASON") {
+                const payload = {
+                  bu: userData.orgId,
+                  dropdownType:
+                    identifier == "PROCEED_TO_BOOKING"
+                      ? "PreBook_Lost_Com_Sub_Reas"
+                      : "PreEnq_Lost_Com_Sub_Reas",
+                  parentId: item.id,
+                };
+                dispatch(getDropSubReasonDataApi(payload));
+                setDropReason(item.name);
+              }
+              if (dropDownKey === "DROP_SUB_REASON") {
+                setDropSubReason(item.name);
+              }
+            }}
+          />
+
+          <View style={{ padding: 15 }}>
+            {isDropSelected && (
+              <View
+                style={[GlobalStyle.shadow, { backgroundColor: Colors.WHITE }]}
+              >
+                <DropDownSelectionItem
+                  label={"Drop Reason"}
+                  disabled={isViewMode()}
+                  value={dropReason}
+                  onPress={() =>
+                    showDropDownMethod("DROP_REASON", "Select Drop Reason")
+                  }
                 />
 
-                <View style={{ padding: 15 }}>
-                    {isDropSelected && (
-                        <View style={[GlobalStyle.shadow, { backgroundColor: Colors.WHITE }]}>
+                <DropDownSelectionItem
+                  label={"Drop Sub Reason"}
+                  disabled={isViewMode()}
+                  value={dropSubReason}
+                  onPress={() =>
+                    showDropDownMethod(
+                      "DROP_SUB_REASON",
+                      "Select Drop Sub Reason"
+                    )
+                  }
+                />
 
-                            <DropDownSelectionItem
-                                label={"Drop Reason"}
-                                value={dropReason}
-                                onPress={() => showDropDownMethod("DROP_REASON", "Select Drop Reason")}
-                            />
-
-                            <DropDownSelectionItem
-                                label={"Drop Sub Reason"}
-                                value={dropSubReason}
-                                onPress={() => showDropDownMethod("DROP_SUB_REASON", "Select Drop Sub Reason")}
-                            />
-
-                            {FirstDependencyArray.includes(dropReason) && (
-                                <View>
-                                    <TextinputComp
-                                        style={styles.textInputStyle}
-                                        label={"Brand Name"}
-                                        value={brandName}
-                                        onChangeText={(text) => setBrandName(text)}
-                                    />
-                                    <Text style={GlobalStyle.underline}></Text>
-                                </View>
-                            )}
-
-                            {SecondDependencyArray.includes(dropReason) && (
-                                <View>
-                                    <TextinputComp
-                                        style={styles.textInputStyle}
-                                        label={"Dealer Name"}
-                                        value={dealerName}
-                                        onChangeText={(text) => setDealerName(text)}
-                                    />
-                                    <Text style={GlobalStyle.underline}></Text>
-                                    <TextinputComp
-                                        style={styles.textInputStyle}
-                                        label={"Location"}
-                                        value={location}
-                                        onChangeText={(text) => setLocation(text)}
-                                    />
-                                    <Text style={GlobalStyle.underline}></Text>
-
-                                </View>
-                            )}
-
-                            {FirstDependencyArray.includes(dropReason) && (
-                                <View>
-                                    <TextinputComp
-                                        style={styles.textInputStyle}
-                                        label={"Model"}
-                                        value={model}
-                                        onChangeText={(text) => setModel(text)}
-                                    />
-                                    <Text style={GlobalStyle.underline}></Text>
-                                </View>
-                            )}
-
-                            <TextinputComp
-                                style={styles.textInputStyle}
-                                label={"Remarks"}
-                                keyboardType={"default"}
-                                value={dropRemarks}
-                                onChangeText={(text) => setDropRemarks(text)}
-                            />
-                            <Text style={GlobalStyle.underline}></Text>
-                        </View>
-                    )}
-                </View>
-
-                {!isDropSelected && (
-                    <View style={styles.view1}>
-                        <Button
-                            mode="contained"
-                            color={Colors.RED}
-                            labelStyle={{ textTransform: "none" }}
-                            // disabled={selector.isLoading}
-                            onPress={() => setIsDropSelected(true)}
-                        >
-                            Drop
-                        </Button>
-                        <Button
-                            mode="contained"
-                            color={Colors.RED}
-                            labelStyle={{ textTransform: "none" }}
-                            // disabled={selector.isLoading}
-                            onPress={proceedToPreBookingClicked}
-                        >
-                            {identifier === "PROCEED_TO_BOOKING" ? "Proceed To Booking View" : "Proceed to Booking approval"}
-                        </Button>
-                    </View>
+                {FirstDependencyArray.includes(dropReason) && (
+                  <View>
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      disabled={isViewMode()}
+                      label={"Brand Name"}
+                      value={brandName}
+                      onChangeText={(text) => setBrandName(text)}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                  </View>
                 )}
-                {isDropSelected && (
-                    <View style={styles.view1}>
-                        <Button
-                            mode="contained"
-                            color={Colors.RED}
-                            labelStyle={{ textTransform: "none" }}
-                            // disabled={selector.isLoading}
-                            onPress={proceedToCancellation}
-                        >
-                            Proceed To Cancellation
-                        </Button>
-                    </View>
+
+                {SecondDependencyArray.includes(dropReason) && (
+                  <View>
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      disabled={isViewMode()}
+                      label={"Dealer Name"}
+                      value={dealerName}
+                      onChangeText={(text) => setDealerName(text)}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      disabled={isViewMode()}
+                      label={"Location"}
+                      value={location}
+                      onChangeText={(text) => setLocation(text)}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                  </View>
                 )}
-            </SafeAreaView>
-            {!selector.isLoading ? null : <LoaderComponent
-                visible={selector.isLoading}
-                onRequestClose={() => { }}
-            />}
-        </KeyboardAvoidingView>
+
+                {FirstDependencyArray.includes(dropReason) && (
+                  <View>
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      disabled={isViewMode()}
+                      label={"Model"}
+                      value={model}
+                      onChangeText={(text) => setModel(text)}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                  </View>
+                )}
+
+                <TextinputComp
+                  style={styles.textInputStyle}
+                  disabled={isViewMode()}
+                  label={"Remarks"}
+                  keyboardType={"default"}
+                  value={dropRemarks}
+                  onChangeText={(text) => setDropRemarks(text)}
+                />
+                <Text style={GlobalStyle.underline}></Text>
+              </View>
+            )}
+          </View>
+
+          {!isDropSelected && !isViewMode() && (
+            <View style={styles.view1}>
+              <Button
+                mode="contained"
+                color={Colors.RED}
+                labelStyle={{ textTransform: "none" }}
+                // disabled={selector.isLoading}
+                onPress={() => setIsDropSelected(true)}
+              >
+                Drop
+              </Button>
+              <Button
+                mode="contained"
+                color={Colors.RED}
+                labelStyle={{ textTransform: "none" }}
+                // disabled={selector.isLoading}
+                onPress={proceedToPreBookingClicked}
+              >
+                {identifier === "PROCEED_TO_BOOKING"
+                  ? "Proceed To Booking View"
+                  : "Proceed to Booking approval"}
+              </Button>
+            </View>
+          )}
+          {isDropSelected && !isViewMode() && (
+            <View style={styles.view1}>
+              <Button
+                mode="contained"
+                color={Colors.RED}
+                labelStyle={{ textTransform: "none" }}
+                // disabled={selector.isLoading}
+                onPress={proceedToCancellation}
+              >
+                Proceed To Cancellation
+              </Button>
+            </View>
+          )}
+        </SafeAreaView>
+        {!selector.isLoading ? null : (
+          <LoaderComponent
+            visible={selector.isLoading}
+            onRequestClose={() => {}}
+          />
+        )}
+      </KeyboardAvoidingView>
     );
 };
 

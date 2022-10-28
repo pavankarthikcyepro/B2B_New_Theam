@@ -135,6 +135,7 @@ import {
     EnquiryTypes21,
     EnquiryTypes22
 } from "../../../jsonData/preEnquiryScreenJsonData";
+import { EmsTopTabNavigatorIdentifiers } from "../../../navigations/emsTopTabNavigator";
 
 const rupeeSymbol = "\u20B9";
 
@@ -347,7 +348,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
         let isEditFlag = false;
 
-        if (uploadedImagesDataObj.receipt && uploadedImagesDataObj.receipt.fileName) {
+        if (
+          uploadedImagesDataObj.receipt &&
+          uploadedImagesDataObj.receipt.fileName
+        ) {
           isEditFlag = false;
         } else if (
           (leadStatus === "PREBOOKINGCOMPLETED" || leadStatus === "REJECTED") &&
@@ -364,7 +368,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           setIsEditButtonShow(false);
         }
       }
-    }, [selector.pre_booking_details_response, uploadedImagesDataObj]);
+    }, [selector.pre_booking_details_response, uploadedImagesDataObj.receipt]);
 
     // Check for lead created by manager
     const isLeadCreatedBySelf = () => {
@@ -468,6 +472,16 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         setTotalOnRoadPrice(0)
         clearLocalData()
         navigation.goBack();
+    };
+    
+    const goToLeadScreen = () => {
+        dispatch(clearState());
+        setTotalOnRoadPriceAfterDiscount(0);
+        setTotalOnRoadPrice(0)
+        clearLocalData()
+        navigation.navigate(EmsTopTabNavigatorIdentifiers.leads, {
+          fromScreen: "bookingApproval",
+        });
     };
 
     useEffect(() => {
@@ -1698,24 +1712,24 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         return;
       }
 
-      let isAddressSelected = false;
+      // let isAddressSelected = false;
 
-      if (defaultAddress) {
-        isAddressSelected = true;
-      } else {
-        for (let i = 0; i < addressData.length; i++) {
-          if (addressData[i].value == selector.defaultAddress) {
-            isAddressSelected = true;
-          }
-        }
-      }
+      // if (defaultAddress) {
+      //   isAddressSelected = true;
+      // } else {
+      //   for (let i = 0; i < addressData.length; i++) {
+      //     if (addressData[i].value == selector.defaultAddress) {
+      //       isAddressSelected = true;
+      //     }
+      //   }
+      // }
       
-      if (!isAddressSelected){
-        scrollToPos(2);
-        setOpenAccordian("2");
-        showToast("please select address");
-        return;
-      };
+      // if (!isAddressSelected){
+      //   scrollToPos(2);
+      //   setOpenAccordian("2");
+      //   showToast("please select address");
+      //   return;
+      // };
 
       if (selector.urban_or_rural == 0) {
         scrollToPos(2);
@@ -2377,19 +2391,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 // getPreBookingListFromServer();
             } else if (typeOfActionDispatched === "UPDATE_PRE_BOOKING") {
                 showToastSucess("Successfully Sent for Manager Approval");
-                dispatch(clearState());
-                clearLocalData();
-                navigation.goBack();
+                goToLeadScreen();
             } else if (typeOfActionDispatched === "APPROVE") {
                 showToastSucess("Booking Approval Approved");
-                dispatch(clearState());
-                clearLocalData();
-                navigation.goBack();
+                goToLeadScreen();
             } else if (typeOfActionDispatched === "REJECT") {
                 showToastSucess("Booking Approval Rejected");
-                dispatch(clearState());
-                clearLocalData();
-                navigation.goBack();
+                goToLeadScreen();
             }
         }
     }, [selector.update_pre_booking_details_response]);
@@ -2727,21 +2735,21 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     };
 
     useEffect(() => {
-        if (selector.pre_booking_drop_response_status === "success"){
-            Alert.alert(
-                "Sent For Approval",
-                `Pre Booking Number: ${selector.refNo}`,
-                [
-                    {
-                        text: "OK",
-                        onPress: () => {
-                            goParentScreen()
-                        },
-                    },
-                ]
-            );
-        }
-    }, [selector.pre_booking_drop_response_status])
+      if (selector.pre_booking_drop_response_status === "success") {
+        Alert.alert(
+          "Sent For Approval",
+          `Pre Booking Number: ${selector.refNo}`,
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                goToLeadScreen();
+              },
+            },
+          ]
+        );
+      }
+    }, [selector.pre_booking_drop_response_status]);
 
     const proceedToBookingClicked = async () => {
         const employeeData = await AsyncStore.getData(
@@ -3735,7 +3743,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         maxHeight={300}
                         labelField="label"
                         valueField="value"
-                        placeholder={"Select address*"}
+                        placeholder={"Select address"}
                         searchPlaceholder="Search..."
                         value={defaultAddress}
                         // onFocus={() => setIsFocus(true)}

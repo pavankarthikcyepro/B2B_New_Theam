@@ -1010,6 +1010,13 @@ const TestDriveScreen = ({ route, navigation }) => {
         }
     }, [selector.validate_otp_response_status])
 
+    const isViewMode = () => {
+      if (route?.params?.taskStatus === "CLOSED") {
+        return true;
+      }
+      return false;
+    };
+
     return (
       <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
         <ImagePickerComponent
@@ -1109,8 +1116,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                   style={{ height: 65, width: "100%" }}
                   value={name}
                   label={"Name*"}
-                  editable={true}
-                  disabled={false}
+                  disabled={isViewMode()}
                   onChangeText={(text) => setName(text)}
                 />
                 <Text
@@ -1129,8 +1135,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                   value={email}
                   label={"Email ID"}
                   keyboardType={"email-address"}
-                  editable={true}
-                  disabled={false}
+                  disabled={isViewMode()}
                   onChangeText={(text) => setEmail(text)}
                 />
                 <Text style={[GlobalStyle.underline]}></Text>
@@ -1140,8 +1145,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                   label={"Mobile Number*"}
                   maxLength={10}
                   keyboardType={"phone-pad"}
-                  editable={true}
-                  disabled={false}
+                  disabled={isViewMode()}
                   onChangeText={(text) => setMobileNumber(text)}
                 />
                 <Text
@@ -1164,7 +1168,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                       : ""
                   }
                   // disabled={!isRecordEditable}
-                  disabled={false}
+                  disabled={isViewMode()}
                   onPress={() => showDropDownModelMethod("MODEL", "Model")}
                 />
                 <Text
@@ -1186,7 +1190,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                       : ""
                   }
                   // disabled={!isRecordEditable}
-                  disabled={false}
+                  disabled={isViewMode()}
                   onPress={() => showDropDownModelMethod("VARIENT", "Varient")}
                 />
                 <Text
@@ -1226,12 +1230,14 @@ const TestDriveScreen = ({ route, navigation }) => {
                     label={"Showroom address"}
                     value={"Showroom address"}
                     status={addressType === 1}
+                    disabled={isViewMode()}
                     onPress={() => setAddressType(1)}
                   />
                   <RadioTextItem
                     label={"Customer address"}
                     value={"Customer address"}
                     status={addressType === 2}
+                    disabled={isViewMode()}
                     onPress={() => setAddressType(2)}
                   />
                 </View>
@@ -1242,6 +1248,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                     <TextinputComp
                       style={{ height: 65, maxHeight: 100, width: "100%" }}
                       value={customerAddress}
+                      disabled={isViewMode()}
                       label={"Customer Address"}
                       multiline={true}
                       numberOfLines={4}
@@ -1262,12 +1269,14 @@ const TestDriveScreen = ({ route, navigation }) => {
                   }}
                 >
                   <RadioTextItem
+                    disabled={isViewMode()}
                     label={"Yes"}
                     value={"Yes"}
                     status={customerHavingDrivingLicense === 1}
                     onPress={() => setCustomerHavingDrivingLicense(1)}
                   />
                   <RadioTextItem
+                    disabled={isViewMode()}
                     label={"No"}
                     value={"No"}
                     status={customerHavingDrivingLicense === 2}
@@ -1282,6 +1291,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                         onPress={() =>
                           showImagePickerMethod("DRIVING_LICENSE_FRONT")
                         }
+                        disabled={isViewMode()}
                       />
                     </View>
                     {uploadedImagesDataObj.dlFrontUrl ? (
@@ -1330,6 +1340,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                         onPress={() =>
                           showImagePickerMethod("DRIVING_LICENSE_BACK")
                         }
+                        disabled={isViewMode()}
                       />
                     </View>
                     {uploadedImagesDataObj.dlBackUrl ? (
@@ -1378,7 +1389,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                   label={"Customer Preferred Date*"}
                   value={selector.customer_preferred_date}
                   // disabled={!isRecordEditable}
-                  disabled={false}
+                  disabled={isViewMode()}
                   onPress={() =>
                     showDatePickerModelMethod("PREFERRED_DATE", "date")
                   }
@@ -1403,7 +1414,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                   label={"List of Drivers"}
                   value={selectedDriverDetails.name}
                   // disabled={!isRecordEditable}
-                  disabled={false}
+                  disabled={isViewMode()}
                   onPress={() =>
                     showDropDownModelMethod(
                       "LIST_OF_DRIVERS",
@@ -1415,7 +1426,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                   label={"Customer Preferred Time*"}
                   value={selector.customer_preferred_time}
                   // disabled={!isRecordEditable}
-                  disabled={false}
+                  disabled={isViewMode()}
                   onPress={() =>
                     showDatePickerModelMethod("CUSTOMER_PREFERRED_TIME", "time")
                   }
@@ -1437,7 +1448,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                   label={"Actual start Time*"}
                   value={selector.actual_start_time}
                   // disabled={!isRecordEditable}
-                  disabled={false}
+                  disabled={isViewMode()}
                   onPress={() =>
                     showDatePickerModelMethod("ACTUAL_START_TIME", "time")
                   }
@@ -1458,7 +1469,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 <DateSelectItem
                   label={"Actual End Time*"}
                   value={selector.actual_end_time}
-                  disabled={false}
+                  disabled={isViewMode()}
                   // disabled={!isRecordEditable}
                   onPress={() =>
                     showDatePickerModelMethod("ACTUAL_END_TIME", "time")
@@ -1490,7 +1501,7 @@ const TestDriveScreen = ({ route, navigation }) => {
               </View>
             </View>
 
-            {handleActionButtons === 1 && (
+            {handleActionButtons === 1 && !isViewMode() && (
               <View style={styles.view1}>
                 <LocalButtonComp
                   title={"Close"}
@@ -1506,7 +1517,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 />
               </View>
             )}
-            {handleActionButtons === 2 && (
+            {handleActionButtons === 2 && !isViewMode() && (
               <View style={styles.view1}>
                 <LocalButtonComp
                   title={"Close"}
@@ -1520,7 +1531,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 />
               </View>
             )}
-            {handleActionButtons === 3 && (
+            {handleActionButtons === 3 && !isViewMode() && (
               <View style={styles.view1}>
                 <LocalButtonComp
                   title={"Reject"}
@@ -1539,7 +1550,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 />
               </View>
             )}
-            {handleActionButtons === 4 && (
+            {handleActionButtons === 4 && !isViewMode() && (
               <View style={styles.view1}>
                 <LocalButtonComp
                   title={"Close"}

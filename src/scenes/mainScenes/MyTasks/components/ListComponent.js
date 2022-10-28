@@ -36,6 +36,7 @@ import {
 } from "../../../../redux/mytaskReducer";
 import moment from "moment";
 import { showToast } from "../../../../utils/toast";
+import { useIsFocused } from "@react-navigation/native";
 
 const screenWidth = Dimensions.get("window").width;
 const item1Width = screenWidth - 10;
@@ -67,6 +68,7 @@ const taskNames = [
 ];
 
 const ListComponent = ({ route, navigation }) => {
+  const isFocused = useIsFocused();
   const [index, setIndex] = useState(0);
   const [myTasksData, setMyTasksData] = useState([]);
   const [myTeamsData, setMyTeamsData] = useState([]);
@@ -76,6 +78,13 @@ const ListComponent = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.mytaskReducer);
   const homeSelector = useSelector((state) => state.homeReducer);
+
+  useEffect(() => {
+    if (isFocused) {
+      initialTask(selectedFilter);
+    }
+  }, [isFocused]);
+  
 
   const defaultData = [
     {
@@ -119,7 +128,7 @@ const ListComponent = ({ route, navigation }) => {
    setIndex(0);
    initialTask("TODAY");
  }, []);
-
+ 
   // useEffect(() => {
   //   navigation.addListener("focus", () => {
   //     console.log("CALLED %%%");
@@ -139,7 +148,7 @@ const ListComponent = ({ route, navigation }) => {
   }, [index]);
 
   const initialTask = async (selectedFilterLocal) => {
-    console.log("CALLED: ", selectedFilterLocal);
+     console.log("CALLED: ", selectedFilterLocal);
     try {
       const employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
