@@ -3030,7 +3030,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               expandedId={openAccordian}
               onAccordionPress={(expandedId) => updateAccordian(expandedId)}
             >
-              {leadStatus === "ENQUIRYCOMPLETED" && leadStage === "ENQUIRY" ? (
+              {/* {leadStatus === "ENQUIRYCOMPLETED" && leadStage === "ENQUIRY" ? (
                 <List.Accordion
                   id={"10"}
                   title={"Proforma Invoice"}
@@ -3058,7 +3058,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   />
                 </List.Accordion>
               ) : null}
-              <View style={styles.space}></View>
+              <View style={styles.space}></View> */}
 
               {/* 1. Personal Intro */}
               <List.Accordion
