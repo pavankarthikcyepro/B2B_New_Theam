@@ -502,6 +502,7 @@ const LeadsScreen = ({ route, navigation }) => {
     const onTempFliter = async (item, employeeDetail = {}, modelData, categoryFilters,
                                 sourceData, from, to, defLeadStage, defLeadStatus) => {
         setSearchedData([]);
+        setLeadsList([]);
         setLoader(true);
         const employeeData = await AsyncStore.getData(
             AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -601,6 +602,7 @@ const LeadsScreen = ({ route, navigation }) => {
                 setLoader(false);
                 let newData = response[0].payload?.dmsEntity?.leadDtoPage?.content;
                 setSearchedData(newData);
+                setLeadsList(newData);
             })
                 .catch((error) => {
                     setLoader(false);
