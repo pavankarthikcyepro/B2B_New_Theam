@@ -485,113 +485,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     };
 
     useEffect(() => {
-    handleRetailFinanceFields();
-
-  }, [selector.retail_finance])
-  const handleRetailFinanceFields = () => {
-    if (selector.retail_finance === 'In House') {
-      dispatch(
-        setFinancialDetails({
-          key: "BANK_R_FINANCE_NAME",
-          text: '',
-        })
-      )
-       dispatch(
-         setFinancialDetails({
-           key: "LOAN_AMOUNT_OUT",
-           text: '',
-         })
-       );
-       dispatch(
-         setFinancialDetails({
-           key: "BANK_FINANCE",
-           text: selector.bank_or_finance,
-         })
-       );
-
-       dispatch(
-         setFinancialDetails({
-           key: "LEASHING_NAME",
-           text: '',
-         })
-       );
-    }
-    else if (selector.retail_finance === 'Out House') {
-      dispatch(
-        setFinancialDetails({
-          key: "BANK_R_FINANCE_NAME",
-          text: selector.bank_or_finance_name,
-        })
-      );
-        dispatch(
-          setFinancialDetails({
-            key: "BANK_FINANCE",
-            text: '',
-          })
-        );
-       dispatch(
-         setFinancialDetails({
-           key: "LOAN_AMOUNT_OUT",
-           text: selector.loan_amount,
-         })
-       );
-
-      dispatch(
-        setFinancialDetails({
-          key: "RATE_OF_INTEREST",
-          text: selector.rate_of_interest,
-        })
-      );
-    }
-    else if (selector.retail_finance === "Leasing") {
-      dispatch(
-        setFinancialDetails({
-          key: "BANK_R_FINANCE_NAME",
-          text: '',
-        })
-      );
-      dispatch(
-        setFinancialDetails({
-          key: "BANK_FINANCE",
-          text: "",
-        })
-      );
-      dispatch(
-        setFinancialDetails({
-          key: "LEASHING_NAME",
-          text: selector.leashing_name,
-        })
-      );
-    }
-    else {
-      dispatch(
-        setFinancialDetails({
-          key: "BANK_R_FINANCE_NAME",
-          text: selector.bank_or_finance_name,
-        })
-      );
-      dispatch(
-        setFinancialDetails({
-          key: "LOAN_AMOUNT",
-          text: selector.loan_amount,
-        })
-      );
-       dispatch(
-         setFinancialDetails({
-           key: "LOAN_AMOUNT_OUT",
-           text: selector.loan_amount,
-         })
-       );
-      dispatch(
-        setFinancialDetails({
-          key: "RATE_OF_INTEREST",
-          text: selector.rate_of_interest,
-        })
-      );
-    }
-
-  }
-    useEffect(() => {
         setComponentAppear(true);
         getAsyncstoreData();
         getBranchId();
@@ -3353,10 +3246,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
               dropDownKey === "RETAIL_FINANCE"
             ) {
               dispatch(
-                setFinancialDetails({
-                  key: "RATE_OF_INTEREST",
-                  text: "",
-                })
+                setFinancialDetails({ key: "BANK_R_FINANCE_NAME", text: "" })
+              );
+              dispatch(setFinancialDetails({ key: "LOAN_AMOUNT", text: "" }));
+              dispatch(
+                setFinancialDetails({ key: "RATE_OF_INTEREST", text: "" })
               );
             }
 
@@ -4798,7 +4692,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           }
                         />
                       </View>
-                        {uploadedImagesDataObj.pattaPassBook?.fileName ? (
+                      {uploadedImagesDataObj.pattaPassBook?.fileName ? (
                         <View style={{ flexDirection: "row" }}>
                           <TouchableOpacity
                             disabled={!isInputsEditable()}
@@ -4812,10 +4706,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             }}
                             onPress={() => {
                               if (
-                                uploadedImagesDataObj.pattaPassBook?.documentPath
+                                uploadedImagesDataObj.pattaPassBook
+                                  ?.documentPath
                               ) {
                                 setImagePath(
-                                  uploadedImagesDataObj.pattaPassBook?.documentPath
+                                  uploadedImagesDataObj.pattaPassBook
+                                    ?.documentPath
                                 );
                               }
                             }}
@@ -4833,14 +4729,55 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           <View style={{ width: "80%" }}>
                             <DisplaySelectedImage
                               disabled={!isInputsEditable()}
-                              fileName={uploadedImagesDataObj.pattaPassBook.fileName}
+                              fileName={
+                                uploadedImagesDataObj.pattaPassBook.fileName
+                              }
                               from={"PATTA_PASS_BOOK"}
                             />
                           </View>
                         </View>
-                        ) : uploadedImagesDataObj?.pattaPassBook?.fileName ? (
-                          <View style={{ flexDirection: "row" }}>
-                            <TouchableOpacity
+                      ) : uploadedImagesDataObj?.pattaPassBook?.fileName ? (
+                        <View style={{ flexDirection: "row" }}>
+                          <TouchableOpacity
+                            disabled={
+                              userData.isManager
+                                ? isEdit
+                                  ? false
+                                  : true
+                                : false
+                            }
+                            style={{
+                              width: "20%",
+                              height: 30,
+                              backgroundColor: Colors.SKY_BLUE,
+                              borderRadius: 4,
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                            onPress={() => {
+                              if (
+                                uploadedImagesDataObj?.pattaPassBook
+                                  ?.documentPath
+                              ) {
+                                setImagePath(
+                                  uploadedImagesDataObj?.pattaPassBook
+                                    ?.documentPath
+                                );
+                              }
+                            }}
+                          >
+                            <Text
+                              style={{
+                                color: Colors.WHITE,
+                                fontSize: 14,
+                                fontWeight: "600",
+                              }}
+                            >
+                              Preview
+                            </Text>
+                          </TouchableOpacity>
+                          <View style={{ width: "80%" }}>
+                            <DisplaySelectedImage
                               disabled={
                                 userData.isManager
                                   ? isEdit
@@ -4848,49 +4785,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     : true
                                   : false
                               }
-                              style={{
-                                width: "20%",
-                                height: 30,
-                                backgroundColor: Colors.SKY_BLUE,
-                                borderRadius: 4,
-                                justifyContent: "center",
-                                alignItems: "center",
-                              }}
-                              onPress={() => {
-                                if (
-                                  uploadedImagesDataObj?.pattaPassBook?.documentPath
-                                ) {
-                                  setImagePath(
-                                    uploadedImagesDataObj?.pattaPassBook?.documentPath
-                                  );
-                                }
-                              }}
-                            >
-                              <Text
-                                style={{
-                                  color: Colors.WHITE,
-                                  fontSize: 14,
-                                  fontWeight: "600",
-                                }}
-                              >
-                                Preview
-                              </Text>
-                            </TouchableOpacity>
-                            <View style={{ width: "80%" }}>
-                              <DisplaySelectedImage
-                                disabled={
-                                  userData.isManager
-                                    ? isEdit
-                                      ? false
-                                      : true
-                                    : false
-                                }
-                                  fileName={uploadedImagesDataObj?.pattaPassBook?.fileName}
-                                from={"PATTA_PASS_BOOK"}
-                              />
-                            </View>
+                              fileName={
+                                uploadedImagesDataObj?.pattaPassBook?.fileName
+                              }
+                              from={"PATTA_PASS_BOOK"}
+                            />
                           </View>
-                        ) : null}
+                        </View>
+                      ) : null}
                     </View>
                   ) : null}
 
@@ -5025,7 +4927,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           }
                         />
                       </View>
-                        {uploadedImagesDataObj.leasingConfirmationLetter?.fileName ? (
+                      {uploadedImagesDataObj.leasingConfirmationLetter
+                        ?.fileName ? (
                         <View style={{ flexDirection: "row" }}>
                           <TouchableOpacity
                             disabled={!isInputsEditable()}
@@ -5043,8 +4946,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                   ?.documentPath
                               ) {
                                 setImagePath(
-                                  uploadedImagesDataObj.leasingConfirmationLetter
-                                    ?.documentPath
+                                  uploadedImagesDataObj
+                                    .leasingConfirmationLetter?.documentPath
                                 );
                               }
                             }}
@@ -5063,54 +4966,57 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             <DisplaySelectedImage
                               disabled={!isInputsEditable()}
                               fileName={
-                                uploadedImagesDataObj.leasingConfirmationLetter.fileName
+                                uploadedImagesDataObj.leasingConfirmationLetter
+                                  .fileName
                               }
                               from={"LEASING_CONFIRMATION"}
                             />
                           </View>
                         </View>
-                        ) : uploadedImagesDataObj.leasingConfirmationLetter ? (
-                          <View style={{ flexDirection: "row" }}>
-                            <TouchableOpacity
+                      ) : uploadedImagesDataObj.leasingConfirmationLetter ? (
+                        <View style={{ flexDirection: "row" }}>
+                          <TouchableOpacity
+                            style={{
+                              width: "20%",
+                              height: 30,
+                              backgroundColor: Colors.SKY_BLUE,
+                              borderRadius: 4,
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                            onPress={() => {
+                              if (
+                                uploadedImagesDataObj.leasingConfirmationLetter
+                                  ?.documentPath
+                              ) {
+                                setImagePath(
+                                  uploadedImagesDataObj
+                                    .leasingConfirmationLetter?.documentPath
+                                );
+                              }
+                            }}
+                          >
+                            <Text
                               style={{
-                                width: "20%",
-                                height: 30,
-                                backgroundColor: Colors.SKY_BLUE,
-                                borderRadius: 4,
-                                justifyContent: "center",
-                                alignItems: "center",
-                              }}
-                              onPress={() => {
-                                if (
-                                  uploadedImagesDataObj.leasingConfirmationLetter?.documentPath
-                                ) {
-                                  setImagePath(
-                                    uploadedImagesDataObj.leasingConfirmationLetter
-                                      ?.documentPath
-                                  );
-                                }
+                                color: Colors.WHITE,
+                                fontSize: 14,
+                                fontWeight: "600",
                               }}
                             >
-                              <Text
-                                style={{
-                                  color: Colors.WHITE,
-                                  fontSize: 14,
-                                  fontWeight: "600",
-                                }}
-                              >
-                                Preview
-                              </Text>
-                            </TouchableOpacity>
-                            <View style={{ width: "80%" }}>
-                              <DisplaySelectedImage
-                                fileName={
-                                  uploadedImagesDataObj.leasingConfirmationLetter.fileName
-                                }
-                                from={"LEASING_CONFIRMATION"}
-                              />
-                            </View>
+                              Preview
+                            </Text>
+                          </TouchableOpacity>
+                          <View style={{ width: "80%" }}>
+                            <DisplaySelectedImage
+                              fileName={
+                                uploadedImagesDataObj.leasingConfirmationLetter
+                                  .fileName
+                              }
+                              from={"LEASING_CONFIRMATION"}
+                            />
                           </View>
-                        ) : null}
+                        </View>
+                      ) : null}
                     </View>
                   ) : null}
 
