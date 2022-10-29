@@ -31,7 +31,7 @@ export const RenderSelfInsights = (args) => {
             return (
                 <View style={{flexDirection: "row", marginLeft: 8}} key={`${item.paramShortName}_${index}`}>
                     <View style={{width: "10%", justifyContent: "center", marginTop: 5}}>
-                        <Text style={{fontSize: item.paramName === 'DROPPED' ? 11 : 12}}>{item.paramShortName}</Text>
+                        <Text>{item.paramName === 'DROPPED' ? 'Lost' : item.paramShortName}</Text>
                     </View>
                     <View style={{
                         width: item.paramName === 'Accessories' ? '12%' : "10%",
