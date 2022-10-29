@@ -251,7 +251,7 @@ const TargetScreen = ({route}) => {
                 setLostLeadsData(tempDropped[0])
             }
 
-            setSelfInsightsData([tempEnq[0], tempTD[0], tempVisit[0], tempBooking[0], tempRetail[0], tempEXG[0], tempFin[0], tempIns[0], tempExw[0], tempAcc[0], tempDropped[0]])
+            setSelfInsightsData([tempEnq[0], tempTD[0], tempVisit[0], tempBooking[0], tempRetail[0], tempDropped[0], tempEXG[0], tempFin[0], tempIns[0], tempExw[0], tempAcc[0]])
 
         } else {
         }
