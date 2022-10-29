@@ -80,12 +80,12 @@ const TargetScreen = ({route}) => {
         {color: '#9E31BE', paramName: 'Home Visit', shortName: 'Visit', initial: 'V', toggleIndex: 0},
         {color: '#1C95A6', paramName: 'Booking', shortName: 'Bkg', initial: 'B', toggleIndex: 0},
         {color: '#C62159', paramName: 'INVOICE', shortName: 'Retail', initial: 'R', toggleIndex: 0},
+        {color: '#C62159', paramName: 'DROPPED', shortName: 'Lost', initial: 'DRP', toggleIndex: 0},
         {color: '#9E31BE', paramName: 'Exchange', shortName: 'Exg', initial: 'Ex', toggleIndex: 1},
         {color: '#EC3466', paramName: 'Finance', shortName: 'Fin', initial: 'F', toggleIndex: 1},
         {color: '#1C95A6', paramName: 'Insurance', shortName: 'Ins', initial: 'I', toggleIndex: 1},
         {color: '#1C95A6', paramName: 'EXTENDEDWARRANTY', shortName: 'ExW', initial: 'ExW', toggleIndex: 1},
         {color: '#C62159', paramName: 'Accessories', shortName: 'Acc', initial: 'A', toggleIndex: 1},
-        {color: '#C62159', paramName: 'DROPPED', shortName: 'Lost Leads', initial: 'DRP', toggleIndex: 1},
     ]
 
     const getEmployeeListFromServer = async (user) => {

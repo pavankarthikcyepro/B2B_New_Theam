@@ -232,6 +232,13 @@ const SourceModel = ({ route, navigation }) => {
       toggleIndex: 0,
     },
     {
+      color: "#C62159",
+      paramName: "DROPPED",
+      shortName: "Lost",
+      initial: "DRP",
+      toggleIndex: 0,
+    },
+    {
       color: "#9E31BE",
       paramName: "Exchange",
       shortName: "Exg",
@@ -265,14 +272,7 @@ const SourceModel = ({ route, navigation }) => {
       shortName: "Acc",
       initial: "A",
       toggleIndex: 1,
-    },
-    {
-      color: "#C62159",
-      paramName: "DROPPED",
-      shortName: "Lost Leads",
-      initial: "DRP",
-      toggleIndex: 1,
-    },
+    }
   ];
 
   const getData = (data, type) => {
@@ -470,9 +470,7 @@ const SourceModel = ({ route, navigation }) => {
                                 },
                               ]}
                             >
-                              <Text style={{ color: param.color,
-                                fontSize: param.paramName === 'DROPPED' ? 11 : 12
-                              }}>
+                              <Text style={{ color: param.color}}>
                                 {param.shortName}
                               </Text>
                             </View>
@@ -492,7 +490,7 @@ const SourceModel = ({ route, navigation }) => {
                                   key={`${index}`}
                                   style={[
                                     styles.justifyAlignCenter,
-                                    { width: x === 'DROPPED' ? 85 : 60 },
+                                    { width: 60 },
                                   ]}
                                 >
                                   <Text style={{ color: Colors.WHITE }}>
