@@ -221,7 +221,6 @@ export const getUserWiseTargetParameters = createAsyncThunk("HOME/getUserWiseTar
 })
 
 export const getTargetParametersEmpDataInsights = createAsyncThunk("HOME/getTargetParametersEmpDataInsights", async (payload: any, { rejectWithValue }) => {
-    console.log("ADMIN=======> insights: ", payload)
     const response = await client.post(URL.GET_TOTAL_TARGET_PARAMS(), payload);
     const json = await response.json();
     if (!response.ok) {
@@ -231,7 +230,6 @@ export const getTargetParametersEmpDataInsights = createAsyncThunk("HOME/getTarg
 })
 
 export const getTargetParametersEmpData = createAsyncThunk("HOME/getTargetParametersEmpData", async (payload: any, { rejectWithValue }) => {
-    console.log("ADMIN=======> self: ", payload)
     const response = await client.post(URL.GET_TARGET_PARAMS_EMP(), payload);
     const json = await response.json();
     if (!response.ok) {
@@ -920,7 +918,7 @@ export const homeSlice = createSlice({
                       "kjskskkkssksksjkjksjksjksjkjkjksjk",
                       action.payload
                     );
-                    
+
                     state.insights_target_parameters_data = action.payload;
                     AsyncStore.storeData('TARGET_EMP', JSON.stringify(action.payload))
                 }

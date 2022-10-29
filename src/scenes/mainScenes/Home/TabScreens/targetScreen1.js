@@ -49,6 +49,7 @@ const TargetScreen = ({route}) => {
     const [insData, setInsData] = useState(null);
     const [exwData, setExwData] = useState(null);
     const [accData, setAccData] = useState(null);
+    const [lostLeadsData, setLostLeadsData] = useState(null);
     const [selfInsightsData, setSelfInsightsData] = useState([]);
 
     const [dateDiff, setDateDiff] = useState(null);
@@ -84,6 +85,7 @@ const TargetScreen = ({route}) => {
         {color: '#1C95A6', paramName: 'Insurance', shortName: 'Ins', initial: 'I', toggleIndex: 1},
         {color: '#1C95A6', paramName: 'EXTENDEDWARRANTY', shortName: 'ExW', initial: 'ExW', toggleIndex: 1},
         {color: '#C62159', paramName: 'Accessories', shortName: 'Acc', initial: 'A', toggleIndex: 1},
+        {color: '#C62159', paramName: 'DROPPED', shortName: 'Lost Leads', initial: 'DRP', toggleIndex: 1},
     ]
 
     const getEmployeeListFromServer = async (user) => {
@@ -240,7 +242,16 @@ const TargetScreen = ({route}) => {
                 setAccData(tempAcc[0])
             }
 
-            setSelfInsightsData([tempEnq[0], tempTD[0], tempVisit[0], tempBooking[0], tempRetail[0], tempEXG[0], tempFin[0], tempIns[0], tempExw[0], tempAcc[0]])
+            let tempDropped = [];
+            tempDropped = dashboardSelfParamsData.filter((item) => {
+                return item.paramName.toLowerCase() === 'dropped'
+            })
+            if (tempDropped.length > 0) {
+
+                setLostLeadsData(tempDropped[0])
+            }
+
+            setSelfInsightsData([tempEnq[0], tempTD[0], tempVisit[0], tempBooking[0], tempRetail[0], tempEXG[0], tempFin[0], tempIns[0], tempExw[0], tempAcc[0], tempDropped[0]])
 
         } else {
         }
@@ -361,7 +372,7 @@ const TargetScreen = ({route}) => {
     // Main Dashboard params Data
     const renderData = (item, color) => {
         return (
-            <View style={{flexDirection: 'row', backgroundColor: Colors.BORDER_COLOR}}>
+            <View key={item.empId} style={{flexDirection: 'row', backgroundColor: Colors.BORDER_COLOR}}>
                 <RenderEmployeeParameters item={item} displayType={togglePercentage} params={toggleParamsMetaData} navigation={navigation} moduleType={'home'}/>
             </View>
         )
@@ -739,10 +750,12 @@ const TargetScreen = ({route}) => {
                                     {
                                         toggleParamsMetaData.map(param => {
                                             return (
-                                                <View style={styles.itemBox} key={param.shortName}>
+                                                <View style={[styles.itemBox,
+                                                    {width: param.paramName === 'DROPPED' ? 60 : 55}]}
+                                                      key={param.shortName}>
                                                     <Text style={{
                                                         color: param.color,
-                                                        fontSize: 12
+                                                        fontSize: param.paramName === 'DROPPED' ? 11 : 12
                                                     }}>{param.shortName}</Text>
                                                 </View>
                                             )
@@ -1538,7 +1551,7 @@ const TargetScreen = ({route}) => {
                             <View>
                                 <View style={{
                                     width: "42%",
-                                    marginLeft: '12%',
+                                    marginLeft: '14%',
                                     marginBottom: -6,
                                     flexDirection: "row",
                                     justifyContent: 'space-between'

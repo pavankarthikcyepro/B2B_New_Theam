@@ -123,7 +123,6 @@ const SourceModel = ({ route, navigation }) => {
             sourceData.push(x);
           }
         });
-
         for (let i = 0; i < paramsMetadata.length; i++) {
           for (let j = 0; j < sourceData.length; j++) {
             if (sourceData[j].paramName === paramsMetadata[i].paramName) {
@@ -177,7 +176,7 @@ const SourceModel = ({ route, navigation }) => {
   const getTotal = (type) => {
     const keys = type === 0 ? leadSourceKeys : vehicleModelKeys;
     let data = type === 0 ? leadSource : vehicleModel;
-    
+
     let newData = paramsMetadata;
     if (toggleParamsIndex !== 2) {
       newData = newData.filter((x) => x.toggleIndex === toggleParamsIndex);
@@ -195,7 +194,7 @@ const SourceModel = ({ route, navigation }) => {
     });
     setSourceModelTotals({ ...totals });
   };
-  
+
   const paramsMetadata = [
     {
       color: "#FA03B9",
@@ -265,6 +264,13 @@ const SourceModel = ({ route, navigation }) => {
       paramName: "Accessories",
       shortName: "Acc",
       initial: "A",
+      toggleIndex: 1,
+    },
+    {
+      color: "#C62159",
+      paramName: "DROPPED",
+      shortName: "Lost Leads",
+      initial: "DRP",
       toggleIndex: 1,
     },
   ];
@@ -464,7 +470,9 @@ const SourceModel = ({ route, navigation }) => {
                                 },
                               ]}
                             >
-                              <Text style={{ color: param.color }}>
+                              <Text style={{ color: param.color,
+                                fontSize: param.paramName === 'DROPPED' ? 11 : 12
+                              }}>
                                 {param.shortName}
                               </Text>
                             </View>
@@ -484,7 +492,7 @@ const SourceModel = ({ route, navigation }) => {
                                   key={`${index}`}
                                   style={[
                                     styles.justifyAlignCenter,
-                                    { width: 60 },
+                                    { width: x === 'DROPPED' ? 85 : 60 },
                                   ]}
                                 >
                                   <Text style={{ color: Colors.WHITE }}>
