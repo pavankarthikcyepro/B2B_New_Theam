@@ -359,8 +359,20 @@ const TestDriveScreen = ({ route, navigation }) => {
 
     useEffect(() => {
       if (selector.test_drive_appointment_details_response) {
-        const { vehicleId, varientId } =
-          selector.test_drive_appointment_details_response.vehicleInfo;
+        let vehicleId =
+          selector.test_drive_appointment_details_response.vehicleId;
+        let varientId =
+          selector.test_drive_appointment_details_response.varientId;
+
+        if (selector.test_drive_appointment_details_response.vehicleInfo) {
+          vehicleId =
+            selector.test_drive_appointment_details_response.vehicleInfo
+              .vehicleId;
+          varientId =
+            selector.test_drive_appointment_details_response.vehicleInfo
+              .varientId;
+        }
+
         const selectedModel = selector.test_drive_vehicle_list.filter(
           (item) => {
             return item.varientId === varientId && item.vehicleId === vehicleId;
