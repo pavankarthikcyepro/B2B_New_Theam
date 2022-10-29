@@ -32,6 +32,7 @@ export const RenderEmployeeParameters = (parameter) => {
 
     function navigateToEmsScreen(param) {
         const leads = ['enquiry', 'booking', 'invoice'];
+        const isDropped = param.toLowerCase() === 'dropped';
         const isContact = param.toLowerCase() === 'preenquiry';
         const isLead = leads.includes(param.toLowerCase());
         if (isLead) {
@@ -52,6 +53,8 @@ export const RenderEmployeeParameters = (parameter) => {
             navigation.navigate(EmsTopTabNavigatorIdentifiers.preEnquiry, {
                 moduleType: 'live-leads'
             });
+        } else if (isDropped) {
+            navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis);
         }
     }
 
@@ -66,54 +69,35 @@ export const RenderEmployeeParameters = (parameter) => {
                     return (
                         <>
                             {moduleType !== 'live-leads' ?
-                                <View key={param}
-                                      style={[styles.itemBox, {width: moduleType === 'live-leads' ? 68 : (param === "Accessories" ? 65 : 55)}]}>
-                                    <View style={{justifyContent: 'center', alignItems: 'center', height: 23}}>
-                                        <Text onPress={() => {
-                                            if (param == "Enquiry" || param == "Booking" || param == "INVOICE") {
-                                                navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
-                                                setTimeout(() => {
-                                                    navigation.navigate("LEADS", {
-                                                        param: param == "INVOICE" ? "Retail" : param,
-                                                        employeeDetail: {
-                                                            empName: parameter.item.empName,
-                                                            empId: parameter.item.empId,
-                                                            orgId: parameter.item.orgId,
-                                                            branchId: parameter.item.branchId,
-                                                        },
-                                                        moduleType
-                                                    })
-                                                }, 1000);
-                                            }
-                                        }} style={[styles.totalText1, {color: Colors.RED}]}>
-                                            {selectedParameter ?
-                                                displayType === 0 ? selectedParameter.achievment :
-                                                    selectedParameter.target > 0 ? achievementPercentage(selectedParameter.achievment, selectedParameter.target, param, enquiryParameter.achievment) :
-                                                        selectedParameter.achievment
-                                                : 0}
-                                        </Text>
-                                    </View>
-                                    {/*<View style={{height: 1, backgroundColor: 'black'}}/>*/}
-                                    <Text style={[styles.totalText, {
-                                        width: moduleType === 'live-leads' ? 66 : (param === "Accessories" ? 63 : 53),
-                                        backgroundColor: 'lightgray'
-                                    }]}>
-                                        {selectedParameter && selectedParameter.target ? Number(selectedParameter.target) : 0}
+                                <View key={param} style={[styles.itemBox, {width: param === "Accessories" ? 65 : 55}]}>
+                                <View style={{justifyContent: 'center', alignItems: 'center', height: 23}}>
+                                    <Text onPress={() => navigateToEmsScreen(param)} style={[styles.totalText1, {color: Colors.RED}]}>
+                                        {selectedParameter ?
+                                            displayType === 0 ? selectedParameter.achievment :
+                                                selectedParameter.target > 0 ? achievementPercentage(selectedParameter.achievment, selectedParameter.target, param, enquiryParameter.achievment) :
+                                                    selectedParameter.achievment
+                                            : 0}
                                     </Text>
                                 </View>
-                                :
-                                <View key={param}
-                                      style={[styles.itemBox, {width: 68}]}>
-                                    <View style={{justifyContent: 'center', alignItems: 'center', height: 23}}>
-                                        <Text onPress={() => navigateToEmsScreen(param)} style={[styles.totalText1, {color: Colors.RED}]}>
-                                            {selectedParameter ?
-                                                displayType === 0 ? selectedParameter.achievment :
-                                                    selectedParameter.target > 0 ? achievementPercentage(selectedParameter.achievment, selectedParameter.target, param, enquiryParameter.achievment) :
-                                                        selectedParameter.achievment
-                                                : 0}
-                                        </Text>
-                                    </View>
+                                <Text style={[styles.totalText, {
+                                    width: moduleType === 'live-leads' ? 66 : (param === "Accessories" ? 63 : 53),
+                                    backgroundColor: 'lightgray'
+                                }]}>
+                                    {selectedParameter && selectedParameter.target ? Number(selectedParameter.target) : 0}
+                                </Text>
+                            </View> : <View key={param}
+                                            style={[styles.itemBox, {width: 68}]}>
+                                <View style={{justifyContent: 'center', alignItems: 'center', height: 23}}>
+                                    <Text onPress={() => navigateToEmsScreen(param)}
+                                          style={[styles.totalText1, {color: Colors.RED}]}>
+                                        {selectedParameter ?
+                                            displayType === 0 ? selectedParameter.achievment :
+                                                selectedParameter.target > 0 ? achievementPercentage(selectedParameter.achievment, selectedParameter.target, param, enquiryParameter.achievment) :
+                                                    selectedParameter.achievment
+                                            : 0}
+                                    </Text>
                                 </View>
+                            </View>
                             }
                         </>
                     );

@@ -16,6 +16,7 @@ export const RenderSelfInsights = (args) => {
         "#0800ff",
         "#1f93ab",
         "#ec3466",
+        "#ec3466",
     ];
 
     const dateFormat = "YYYY-MM-DD";
@@ -30,7 +31,7 @@ export const RenderSelfInsights = (args) => {
             return (
                 <View style={{flexDirection: "row", marginLeft: 8}} key={`${item.paramShortName}_${index}`}>
                     <View style={{width: "10%", justifyContent: "center", marginTop: 5}}>
-                        <Text>{item.paramShortName}</Text>
+                        <Text style={{fontSize: item.paramName === 'DROPPED' ? 11 : 12}}>{item.paramShortName}</Text>
                     </View>
                     <View style={{
                         width: item.paramName === 'Accessories' ? '12%' : "10%",
@@ -53,6 +54,8 @@ export const RenderSelfInsights = (args) => {
                                         moduleType: 'home'
                                     })
                                 }, 1000);
+                            } else if (param === 'DROPPED') {
+                                navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis)
                             }
                         }}
                             style={{color: "#fff"}}>{type === 0 ? item.achievment : achievementPercentage(item.achievment, item.target, item.paramName, enq.achievment)}
