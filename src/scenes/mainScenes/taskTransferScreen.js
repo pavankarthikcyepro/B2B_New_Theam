@@ -526,14 +526,24 @@ const TaskTranferScreen = () => {
               }
             }}
           />
-          <Text>{item.customerName}</Text>
-          <Text>{item.mobileNumber}</Text>
-          <Text>
-            {moment(item.createdOn).format("MMMM Do YYYY, h:mm:ss a")}
-          </Text>
-          <Text>{item.taskStatus}</Text>
-          <Text>{item.employeeName}</Text>
-        </View>
+            <View style={styles.equalGrid}>
+              <Text>{item.customerName}</Text>
+            </View>
+            <View style={styles.equalGrid}>
+              <Text>{item.mobileNumber}</Text>
+            </View>
+            <View style={styles.equalGrid}>
+              <Text>
+                {moment(item.createdOn).format("MMMM Do YYYY, h:mm:ss a")}
+              </Text>
+            </View>
+            <View style={styles.equalGrid}>
+              <Text>{item.taskStatus}</Text>
+            </View>
+            <View style={styles.equalGrid}>
+              <Text>{item.employeeName}</Text>
+            </View>
+          </View>
       </TouchableOpacity>
     );
   };
@@ -1073,4 +1083,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  equalGrid:{
+    // width: "20%",
+    flex:1,
+    paddingHorizontal:5,
+    alignItems:"center"
+  }
 });

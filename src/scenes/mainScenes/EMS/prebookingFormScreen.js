@@ -239,6 +239,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         isManager: false,
         editEnable: false,
         isPreBookingApprover: false,
+        isSelfManager: ""
     });
     const [showDropDownModel, setShowDropDownModel] = useState(false);
     const [showMultipleDropDownData, setShowMultipleDropDownData] =
@@ -539,6 +540,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             isManager: false,
             editEnable: false,
             isPreBookingApprover: false,
+            isSelfManager: ""
         });
         setShowDropDownModel(false);
         setShowMultipleDropDownData(false);
@@ -877,6 +879,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 isManager: isManager,
                 editEnable: editEnable,
                 isPreBookingApprover: isPreBookingApprover,
+                isSelfManager: jsonObj.isSelfManager
             });
 
             const payload = {
@@ -974,9 +977,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             const dmsLeadDto = selector.pre_booking_details_response.dmsLeadDto;
             dispatch(getOnRoadPriceDtoListApi(dmsLeadDto.id));
             //if (dmsLeadDto.leadStatus === "ENQUIRYCOMPLETED" || dmsLeadDto.leadStatus === "SENTFORAPPROVAL" || dmsLeadDto.leadStatus === "REJECTED") {
+          console.log("INSIsssDE ", dmsLeadDto.leadStatus);
 
             if (dmsLeadDto.leadStatus === "ENQUIRYCOMPLETED" || dmsLeadDto.leadStatus === "REJECTED") {
-                console.log("INSIDE ", dmsLeadDto.leadStatus);
+                // console.log("INSIDE ", dmsLeadDto.leadStatus);
                 setShowSubmitDropBtn(true);
             }
 
@@ -988,6 +992,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 // Get Payment Details
                 dispatch(getPaymentDetailsApi(dmsLeadDto.id));
                 dispatch(getBookingAmountDetailsApi(dmsLeadDto.id));
+                setShowApproveRejectBtn(false);
             }
             if (dmsLeadDto.leadStatus === "REJECTED") {
                 setIsRejectSelected(true)
@@ -6579,6 +6584,36 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     </Button>
                   </View>
                 )}
+
+              {showApproveRejectBtn && userData.isSelfManager == "Y"  ? 
+              (
+                  <View style={styles.actionBtnView}>
+                    {!isRejectSelected && (
+                      <Button
+                        mode="contained"
+                        style={{ width: 120 }}
+                        color={Colors.GREEN}
+                        labelStyle={{ textTransform: "none" }}
+                        onPress={() => approveOrRejectMethod("APPROVE")}
+                      >
+                        Approve
+                      </Button>
+                    )}
+                    <Button
+                      mode="contained"
+                      color={Colors.RED}
+                      labelStyle={{ textTransform: "none" }}
+                      onPress={() =>
+                        isRejectSelected
+                          ? approveOrRejectMethod("REJECT")
+                          : setIsRejectSelected(true)
+                      }
+                    >
+                      {isRejectSelected ? "Submit" : "Reject"}
+                    </Button>
+                  </View>
+              )
+            :null}
 
               {isEditButtonShow && (
                 <View style={styles.actionBtnView}>
