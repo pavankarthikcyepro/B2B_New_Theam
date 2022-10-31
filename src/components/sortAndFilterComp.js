@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Modal, SafeAreaView, StyleSheet, View, Dimensions, Text, TouchableOpacity, FlatList, Pressable, Platform } from 'react-native';
 import { Colors, GlobalStyle } from '../styles';
 import { IconButton, Checkbox, Button, RadioButton } from 'react-native-paper';
+import SegmentedControl from "@react-native-segmented-control/segmented-control";
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -23,7 +24,7 @@ const dummyData = [
         title: "Source of Enquiry",
         subtitle: ""
     },
-   
+
 ]
 
 const listSideMenu = [
@@ -59,23 +60,51 @@ const radioDummyData = [
 ]
 
 const SortAndFilterComp = ({ visible = false, categoryList = [], modelList = [], sourceList = [],firstName = [],lastName = [], mobileNumber = [], onRequestClose, submitCallback }) => {
-
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [selectedRadioIndex, setSelectedRadioIndex] = useState("0");
     const [localModelList, setLocalModelList] = useState(modelList);
     const [localSourceOfEnquiryList, setLocalSourceOfEnquiryList] = useState(sourceList);
     const [localCategoryList, setLocalCategoryList] = useState(categoryList);
- 
+    const [segmentedControlData, setSegmentedControlData] = useState(dummyData);
 
-    itemSelected = (selectedItem, itemIndex) => {
+    useEffect(() => {
+        if (!!visible) {
+            const data = [...dummyData];
+            dummyData.forEach(a => {
+                if (a.title === 'Category Type' && localCategoryList.length < 1) {
+                    data.splice(0, 1);
+                    setSegmentedControlData(x => data);
+                } else {
+                    setSegmentedControlData(x => data);
+                }
+            })
+        }
+    }, [visible])
 
+    const itemSelected = (selectedItem, itemIndex) => {
         if (selectedIndex === 0) {
+            if (localCategoryList.length < 1) {
+                let models = [...localModelList];
+                let selectedObject = { ...models[itemIndex] };
+                selectedObject.isChecked = !selectedObject.isChecked;
+                models[itemIndex] = selectedObject;
+                setLocalModelList([...models]);
+                return;
+            }
           let categoryList = [...localCategoryList];
           let selectedObject = { ...categoryList[itemIndex] };
           selectedObject.isChecked = !selectedObject.isChecked;
           categoryList[itemIndex] = selectedObject;
           setLocalCategoryList([...categoryList]);
         } else if (selectedIndex === 1) {
+            if (localCategoryList.length < 1) {
+                let sources = [...localSourceOfEnquiryList];
+                let selectedObject = { ...sources[itemIndex] };
+                selectedObject.isChecked = !selectedObject.isChecked;
+                sources[itemIndex] = selectedObject;
+                setLocalSourceOfEnquiryList([...sources]);
+                return;
+            }
           let models = [...localModelList];
           let selectedObject = { ...models[itemIndex] };
           selectedObject.isChecked = !selectedObject.isChecked;
@@ -90,7 +119,7 @@ const SortAndFilterComp = ({ visible = false, categoryList = [], modelList = [],
         }
     }
 
-    clearAllClicked = () => {
+    const clearAllClicked = () => {
 
         const updatedCategoryList = localCategoryList.map((item, index) => {
             let newObj = { ...item };
@@ -122,16 +151,16 @@ const SortAndFilterComp = ({ visible = false, categoryList = [], modelList = [],
           //     return newObj;
           //   }
           // );
-          
+
     }
 
-    applyButtonClicked = () => {
+    const applyButtonClicked = () => {
 
         const payload = {
             category: localCategoryList,
             source: localSourceOfEnquiryList,
             model: localModelList,
-          
+
         }
         submitCallback(payload);
     }
@@ -159,10 +188,15 @@ const SortAndFilterComp = ({ visible = false, categoryList = [], modelList = [],
                 style={{ backgroundColor: Colors.WHITE, height: viewHeight }}
               >
                 <View style={styles.view1}>
-                  <Text style={styles.text1}>{"Sort and Filter"}</Text>
+                  {/*<Text style={styles.text1}>{"Sort and Filter"}</Text>*/}
+                  <View></View>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      <Text style={styles.text1}>{'Filter'}</Text>
+                      <IconButton icon={'filter-outline'} size={20} color={Colors.RED} style={{ margin: 0, padding: 0 }} />
+                  </View>
                   <IconButton
                     icon={"close"}
-                    color={Colors.DARK_GRAY}
+                    color={Colors.RED}
                     size={20}
                     onPress={onRequestClose}
                   />
@@ -170,52 +204,68 @@ const SortAndFilterComp = ({ visible = false, categoryList = [], modelList = [],
                 <Text style={GlobalStyle.underline}></Text>
                 <View
                   style={{
-                    flexDirection: "row",
                     width: "100%",
                     height: viewHeight - 150,
                   }}
                 >
                   {/* // Left Menu */}
-                  <View
-                    style={{ width: "35%", backgroundColor: Colors.LIGHT_GRAY }}
-                  >
-                    <FlatList
-                      key={"SIDE_MENU"}
-                      data={dummyData}
-                      keyExtractor={(item, index) => index.toString()}
-                      renderItem={({ item, index }) => {
-                       return item.title == "Category Type" && localCategoryList.length < 1 ? null :
-                         (
-                          <Pressable onPress={() => setSelectedIndex(index)}>
-                            <View
-                              style={[
-                                styles.itemView,
-                                {
-                                  backgroundColor:
-                                    selectedIndex === index
-                                      ? Colors.WHITE
-                                      : Colors.LIGHT_GRAY,
-                                },
-                              ]}
-                            >
-                              <Text style={styles.text2}>{item.title}</Text>
-                              {item.subtitle ? (
-                                <Text style={styles.text3}>
-                                  {item.subtitle}
-                                </Text>
-                              ) : null}
-                            </View>
-                          </Pressable>
-                        )
-                         
-                      }}
-                    />
+                  <View style={{ backgroundColor: Colors.LIGHT_GRAY }}>
+                      <SegmentedControl
+                          style={{
+                              marginHorizontal: 4,
+                              justifyContent: 'center',
+                              alignSelf: 'center',
+                              height: 28,
+                              marginVertical: 8,
+                              width: '90%'
+                          }}
+                          values={segmentedControlData.map((x) => (x.title))}
+                          selectedIndex={selectedIndex}
+                          tintColor={Colors.RED}
+                          fontStyle={{color: Colors.BLACK}}
+                          activeFontStyle={{color: Colors.WHITE, fontSize: 12}}
+                          onChange={event => {
+                              const index = event.nativeEvent.selectedSegmentIndex;
+                              setSelectedIndex(index);
+                          }}
+                      />
+                    {/*<FlatList*/}
+                    {/*  key={"SIDE_MENU"}*/}
+                    {/*  data={dummyData}*/}
+                    {/*  keyExtractor={(item, index) => index.toString()}*/}
+                    {/*  renderItem={({ item, index }) => {*/}
+                    {/*   return item.title === "Category Type" && localCategoryList.length < 1 ? null :*/}
+                    {/*     (*/}
+                    {/*      <Pressable onPress={() => setSelectedIndex(index)}>*/}
+                    {/*        <View*/}
+                    {/*          style={[*/}
+                    {/*            styles.itemView,*/}
+                    {/*            {*/}
+                    {/*              backgroundColor:*/}
+                    {/*                selectedIndex === index*/}
+                    {/*                  ? Colors.WHITE*/}
+                    {/*                  : Colors.LIGHT_GRAY,*/}
+                    {/*            },*/}
+                    {/*          ]}*/}
+                    {/*        >*/}
+                    {/*          <Text style={styles.text2}>{item.title}</Text>*/}
+                    {/*          {item.subtitle ? (*/}
+                    {/*            <Text style={styles.text3}>*/}
+                    {/*              {item.subtitle}*/}
+                    {/*            </Text>*/}
+                    {/*          ) : null}*/}
+                    {/*        </View>*/}
+                    {/*      </Pressable>*/}
+                    {/*    )*/}
+
+                    {/*  }}*/}
+                    {/*/>*/}
                   </View>
                   {/* // Right Content */}
                   <View
                     style={{
-                      width: "65%",
                       paddingLeft: 10,
+                        height: '85%',
                       backgroundColor: Colors.WHITE,
                     }}
                   >
@@ -223,7 +273,7 @@ const SortAndFilterComp = ({ visible = false, categoryList = [], modelList = [],
                       <View>
                         <FlatList
                           key={"CATEGORY_LIST"}
-                          data={localCategoryList}
+                          data={localCategoryList.length < 1 ? localModelList : localCategoryList}
                           keyExtractor={(item, index) => index.toString()}
                           renderItem={({ item, index }) => {
                             return (
@@ -242,7 +292,7 @@ const SortAndFilterComp = ({ visible = false, categoryList = [], modelList = [],
                                       { color: Colors.BLACK },
                                     ]}
                                   >
-                                    {item.name}
+                                    {localCategoryList.length < 1 ? item.value : item.name}
                                   </Text>
                                 </View>
                               </TouchableOpacity>
@@ -255,7 +305,7 @@ const SortAndFilterComp = ({ visible = false, categoryList = [], modelList = [],
                       <View>
                         <FlatList
                           key={"MODEL_LIST"}
-                          data={localModelList}
+                          data={localCategoryList.length < 1 ? localSourceOfEnquiryList : localModelList}
                           keyExtractor={(item, index) => index.toString()}
                           renderItem={({ item, index }) => {
                             console.log("item", item)
@@ -275,7 +325,7 @@ const SortAndFilterComp = ({ visible = false, categoryList = [], modelList = [],
                                       { color: Colors.BLACK },
                                     ]}
                                   >
-                                    {item.value}
+                                    {localCategoryList.length < 1 ? item.name : item.value}
                                   </Text>
                                 </View>
                               </TouchableOpacity>
@@ -316,7 +366,7 @@ const SortAndFilterComp = ({ visible = false, categoryList = [], modelList = [],
                         />
                       </View>
                     )}
-                    
+
                   </View>
                 </View>
                 <Text style={GlobalStyle.underline}></Text>
@@ -374,7 +424,8 @@ const styles = StyleSheet.create({
     },
     text1: {
         fontSize: 16,
-        fontWeight: '600'
+        fontWeight: '600',
+        color: Colors.RED
     },
     view2: {
         flexDirection: 'row',
@@ -382,7 +433,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         height: 50,
         marginTop: 10,
-        marginBottom: 25
+        marginBottom: 25,
+        backgroundColor: Colors.WHITE
     },
     itemView: {
         paddingVertical: 20,

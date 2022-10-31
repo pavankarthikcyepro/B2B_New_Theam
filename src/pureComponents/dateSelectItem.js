@@ -8,7 +8,7 @@ export const DateSelectItem = ({ label, value, disabled = false, onPress }) => {
         <Pressable onPress={onPress} disabled={disabled}>
             <View style={styles.container}>
                 <Text style={styles.label}>{value ? label : ""}</Text>
-                <View style={[styles.view3, { paddingBottom: value ? 0 : 20 }]}>
+                <View style={[styles.view3]}>
                     <Text style={[styles.text3, { color: value ? (disabled ? Colors.GRAY : Colors.BLACK) : Colors.GRAY }]}>{value ? value : label}</Text>
                     <IconButton
                         icon="calendar-range"
@@ -24,7 +24,7 @@ export const DateSelectItem = ({ label, value, disabled = false, onPress }) => {
 
 const styles = StyleSheet.create({
     container: {
-        height: 65,
+        height: 50,
         backgroundColor: Colors.WHITE,
         justifyContent: 'flex-end'
     },
@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     },
     view3: {
         maxWidth: '100%',
-        height: 40,
+        height: 30,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',

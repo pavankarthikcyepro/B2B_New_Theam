@@ -409,7 +409,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
             {addressType === 2 && (
               <View>
                 <TextinputComp
-                  style={{ height: 65, maxHeight: 100, width: "100%" }}
+                  style={{ height: 50, maxHeight: 100, width: "100%" }}
                   value={customerAddress}
                   label={"Customer Address"}
                   multiline={true}
@@ -712,7 +712,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   textInputStyle: {
-    height: 65,
+    height: 50,
     width: "100%",
   },
   view1: {
@@ -766,13 +766,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   chooseAddressTextStyle: {
-    padding: 10,
+    paddingHorizontal: 10,
+    paddingTop: 10,
     justifyContent: "center",
     color: Colors.GRAY,
   },
   view2: {
     flexDirection: "row",
     paddingLeft: 12,
-    paddingBottom: 5,
+    paddingBottom: 2,
   },
 });

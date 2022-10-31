@@ -429,7 +429,7 @@ const TargetScreen = ({route}) => {
                     if (tempRawData.length > 0) {
 
                         for (let i = 0; i < tempRawData.length; i++) {
-                            tempRawData[i].empName = tempRawData[i].empName,
+                            // tempRawData[i].empName = tempRawData[i].empName,
                                 tempRawData[i] = {
                                     ...tempRawData[i],
                                     isOpenInner: false,
@@ -441,7 +441,6 @@ const TargetScreen = ({route}) => {
                             }
                         }
                     }
-                    // alert(JSON.stringify(localData))
                     setAllParameters([...localData])
                 })
 
@@ -458,237 +457,6 @@ const TargetScreen = ({route}) => {
 
     return (
         <>
-            {/*<Modal*/}
-            {/*    visible={showShuffleModal}*/}
-            {/*    animationType={'fade'}*/}
-            {/*    transparent={true}*/}
-            {/*    onRequestClose={() => setShowShuffleModal(false)}*/}
-            {/*>*/}
-            {/*    <View style={{*/}
-            {/*        flex: 1,*/}
-            {/*        justifyContent: "center",*/}
-            {/*        alignItems: "center",*/}
-            {/*        backgroundColor: 'rgba(0, 0, 0, 0.5)',*/}
-            {/*        paddingHorizontal: 20*/}
-            {/*    }}>*/}
-            {/*        <View*/}
-            {/*            style={{*/}
-            {/*                width: "95%",*/}
-            {/*                height: "30%",*/}
-            {/*                alignSelf: "center",*/}
-            {/*                backgroundColor: "white",*/}
-            {/*                borderRadius: 8,*/}
-            {/*            }}*/}
-            {/*        >*/}
-            {/*            <View*/}
-            {/*                style={{*/}
-            {/*                    flexDirection: "row",*/}
-            {/*                    justifyContent: "space-between",*/}
-            {/*                    borderWidth: 1,*/}
-            {/*                    borderColor: "#d1d1d1",*/}
-            {/*                    backgroundColor: "#d1d1d1",*/}
-            {/*                    borderTopEndRadius: 8,*/}
-            {/*                    borderTopStartRadius: 8,*/}
-            {/*                }}*/}
-            {/*            >*/}
-            {/*                <Text style={{fontSize: 17, fontWeight: "500", margin: 10}}>*/}
-            {/*                    Team Shuffle*/}
-            {/*                </Text>*/}
-
-            {/*                <TouchableOpacity*/}
-            {/*                    activeOpacity={0.6}*/}
-            {/*                    onPress={() => {*/}
-            {/*                        setShowShuffleModal(false);*/}
-            {/*                        setHeaderTitle(*/}
-            {/*                            "Selected employees has Active tasks. Please delegate to another employee"*/}
-            {/*                        );*/}
-            {/*                        setDropDownPlaceHolder("Employees");*/}
-            {/*                        setDelegateButtonClick(false);*/}
-            {/*                        setEmployeeDropdownList([]);*/}
-            {/*                        setReoprtingManagerDropdownList([]);*/}
-            {/*                    }}*/}
-            {/*                >*/}
-            {/*                    <CloseIcon*/}
-            {/*                        style={{margin: 10}}*/}
-            {/*                        name="close"*/}
-            {/*                        color={Colors.BLACK}*/}
-            {/*                        size={20}*/}
-            {/*                    />*/}
-            {/*                </TouchableOpacity>*/}
-            {/*            </View>*/}
-
-            {/*            <Text*/}
-            {/*                style={{color: Colors.GRAY, marginLeft: 12, marginTop: 5}}*/}
-            {/*            >*/}
-            {/*                {headerTitle}*/}
-            {/*            </Text>*/}
-            {/*            <Dropdown*/}
-            {/*                style={styles.dropdownContainer}*/}
-            {/*                placeholderStyle={styles.placeholderStyle}*/}
-            {/*                selectedTextStyle={styles.selectedTextStyle}*/}
-            {/*                inputSearchStyle={styles.inputSearchStyle}*/}
-            {/*                iconStyle={styles.iconStyle}*/}
-            {/*                data={*/}
-            {/*                    delegateButtonClick*/}
-            {/*                        ? reoprtingManagerDropdownList*/}
-            {/*                        : employeeDropdownList*/}
-            {/*                }*/}
-            {/*                search*/}
-            {/*                maxHeight={300}*/}
-            {/*                labelField="label"*/}
-            {/*                valueField="value"*/}
-            {/*                placeholder={dropDownPlaceHolder}*/}
-            {/*                searchPlaceholder="Search..."*/}
-            {/*                renderRightIcon={() => (*/}
-            {/*                    <Image*/}
-            {/*                        style={{height: 5, width: 10}}*/}
-            {/*                        source={require("../../../../assets/images/Polygon.png")}*/}
-            {/*                    />*/}
-            {/*                )}*/}
-            {/*                onChange={async (item) => {*/}
-            {/*                    if (delegateButtonClick) {*/}
-            {/*                        setReoprtingManagerListDropdownItem(item.value);*/}
-            {/*                    } else {*/}
-            {/*                        setEmployeeListDropdownItem(item.value);*/}
-            {/*                    }*/}
-            {/*                }}*/}
-            {/*            />*/}
-
-            {/*            <LoaderComponent*/}
-            {/*                visible={selector.isLoading}*/}
-            {/*                onRequestClose={() => {*/}
-            {/*                }}*/}
-            {/*            />*/}
-
-            {/*            <View style={{*/}
-            {/*                position: 'absolute',*/}
-            {/*                left: 0,*/}
-            {/*                right: 0,*/}
-            {/*                bottom: 0,*/}
-            {/*                marginBottom: 10,*/}
-            {/*                flexDirection: 'row',*/}
-            {/*                width: '95%',*/}
-            {/*                justifyContent: 'space-around'*/}
-            {/*            }}>*/}
-            {/*                {dropDownPlaceHolder === 'Employees' ?*/}
-            {/*                    <View style={{flexDirection: 'row', width: '95%', justifyContent: 'space-around'}}>*/}
-            {/*                        <TouchableOpacity activeOpacity={0.6} style={{*/}
-            {/*                            padding: 5,*/}
-            {/*                            borderRadius: 6,*/}
-            {/*                            borderColor: Colors.RED,*/}
-            {/*                            borderWidth: 0.8,*/}
-            {/*                            width: '43%',*/}
-            {/*                            alignItems: 'center',*/}
-            {/*                            justifyContent: 'center',*/}
-            {/*                            marginLeft: 18,*/}
-            {/*                            marginRight: 12,*/}
-            {/*                            backgroundColor: Colors.RED,*/}
-            {/*                            height: 40*/}
-            {/*                        }} onPress={() => {*/}
-            {/*                            // updateEmployeeData();*/}
-            {/*                            if (employeeListDropdownItem !== 0) {*/}
-            {/*                                setDelegateButtonClick(true);*/}
-            {/*                                setHeaderTitle('Reporting Managers');*/}
-            {/*                                setDropDownPlaceHolder(state => state = 'Reporting Manager');*/}
-            {/*                                getReportingManagerListFromServer(selectedUser);*/}
-            {/*                            }*/}
-            {/*                        }}>*/}
-            {/*                            <Text style={{*/}
-            {/*                                fontSize: 13,*/}
-            {/*                                fontWeight: '300',*/}
-            {/*                                color: Colors.WHITE*/}
-            {/*                            }}>DELEGATE</Text>*/}
-            {/*                        </TouchableOpacity>*/}
-
-            {/*                        <TouchableOpacity activeOpacity={0.6} style={{*/}
-            {/*                            padding: 5,*/}
-            {/*                            borderRadius: 6,*/}
-            {/*                            borderColor: Colors.RED,*/}
-            {/*                            borderWidth: 0.8,*/}
-            {/*                            width: '43%',*/}
-            {/*                            alignItems: 'center',*/}
-            {/*                            justifyContent: 'center',*/}
-            {/*                            backgroundColor: Colors.RED,*/}
-            {/*                            height: 40*/}
-            {/*                        }} onPress={() => {*/}
-            {/*                            if (employeeListDropdownItem !== 0) {*/}
-            {/*                                setHeaderTitle('Reporting Managers');*/}
-            {/*                                setDropDownPlaceHolder('Reporting Manager');*/}
-            {/*                                setDelegateButtonClick(true);*/}
-            {/*                                getReportingManagerListFromServer(selectedUser);*/}
-            {/*                            }*/}
-            {/*                        }}>*/}
-            {/*                            <Text style={{fontSize: 13, fontWeight: '300', color: Colors.WHITE}}>NEXT</Text>*/}
-            {/*                        </TouchableOpacity>*/}
-            {/*                    </View> :*/}
-            {/*                    <View style={{position: 'absolute', right: 0, bottom: 0}}>*/}
-            {/*                        <TouchableOpacity activeOpacity={0.6} style={{*/}
-            {/*                            padding: 5,*/}
-            {/*                            borderRadius: 6,*/}
-            {/*                            borderColor: Colors.RED,*/}
-            {/*                            borderWidth: 0.8,*/}
-            {/*                            width: 80,*/}
-            {/*                            alignItems: 'center',*/}
-            {/*                            justifyContent: 'center',*/}
-            {/*                            marginLeft: 18,*/}
-            {/*                            marginRight: 12,*/}
-            {/*                            backgroundColor: Colors.RED,*/}
-            {/*                            height: 40*/}
-            {/*                        }} onPress={() => {*/}
-            {/*                            if (reoprtingManagerListDropdownItem !== 0) {*/}
-            {/*                                updateEmployeeData();*/}
-            {/*                                setShowShuffleModal(false);*/}
-            {/*                                setHeaderTitle('Selected employees has Active tasks. Please delegate to another employee');*/}
-            {/*                                setDropDownPlaceHolder('Employees');*/}
-            {/*                                setDelegateButtonClick(false);*/}
-            {/*                                setEmployeeDropdownList([]);*/}
-            {/*                                setReoprtingManagerDropdownList([]);*/}
-            {/*                            }*/}
-            {/*                        }}>*/}
-            {/*                            <Text*/}
-            {/*                                style={{fontSize: 13, fontWeight: '300', color: Colors.WHITE}}>SUBMIT</Text>*/}
-            {/*                        </TouchableOpacity>*/}
-            {/*                    </View>}*/}
-            {/*            </View>*/}
-            {/*        </View>*/}
-            {/*    </View>*/}
-
-            {/*</Modal>*/}
-
-            {/*<Modal*/}
-            {/*    animationType={'fade'}*/}
-            {/*    transparent={true}*/}
-            {/*    visible={false}*/}
-            {/*    onRequestClose={() => setSelectedName('')}*/}
-            {/*>*/}
-            {/*    <View style={{*/}
-            {/*        flex: 1,*/}
-            {/*        justifyContent: "center",*/}
-            {/*        alignItems: "flex-start",*/}
-            {/*        // backgroundColor: 'rgba(0, 0, 0, 0.5)',*/}
-            {/*        paddingHorizontal: 20*/}
-            {/*    }}>*/}
-            {/*        <View style={{*/}
-            {/*            maxWidth: '90%',*/}
-            {/*            minHeight: 50,*/}
-            {/*            justifyContent: 'center',*/}
-            {/*            alignItems: 'center',*/}
-            {/*            backgroundColor: '#fff',*/}
-            {/*            borderRadius: 10,*/}
-            {/*            paddingVertical: 10,*/}
-            {/*            paddingHorizontal: 15,*/}
-            {/*            borderWidth: 1,*/}
-            {/*            borderColor: '#0c0c0c'*/}
-            {/*        }}>*/}
-            {/*            <Text style={{*/}
-            {/*                fontSize: 16,*/}
-            {/*                color: '#0c0c0c',*/}
-            {/*                fontWeight: 'bold',*/}
-            {/*                textAlign: 'center'*/}
-            {/*            }}>{selectedName}</Text>*/}
-            {/*        </View>*/}
-            {/*    </View>*/}
-            {/*</Modal>*/}
             <View style={styles.container}>
                 {selector.isTeam ? (
                     <View>
@@ -743,7 +511,7 @@ const TargetScreen = ({route}) => {
                                 paddingBottom: 4,
                                 borderBottomColor: Colors.GRAY
                             }}>
-                                <View style={{width: 100, height: 20, marginRight: 5}}>
+                                <View style={{width: 80, height: 20, marginRight: 5}}>
 
                                 </View>
                                 <View style={{width: '100%', height: 20, flexDirection: 'row'}}>
@@ -791,14 +559,16 @@ const TargetScreen = ({route}) => {
                                                     fontSize: 12,
                                                     fontWeight: '600',
                                                     color: Colors.BLUE,
+                                                    textDecorationLine: 'underline'
                                                 }}>Source/Model</Text>
                                             </Pressable>
                                         </View>
                                         {/*Source/Model View END */}
                                         <View style={[{flexDirection: 'row'}, item.isOpenInner && {
                                             borderRadius: 10,
-                                            borderWidth: 1,
+                                            borderWidth: 2,
                                             borderColor: '#C62159',
+                                            marginHorizontal: 6
                                         }]}>
 
                                             {/*RIGHT SIDE VIEW*/}
@@ -806,7 +576,7 @@ const TargetScreen = ({route}) => {
                                                 width: '100%',
                                                 minHeight: 40,
                                                 flexDirection: 'column',
-                                                paddingHorizontal: 5,
+                                                paddingHorizontal: 2,
                                             }]}>
                                                 <View style={{width: '100%', minHeight: 40, flexDirection: 'row'}}>
                                                     <RenderLevel1NameView level={0} item={item}
@@ -827,8 +597,8 @@ const TargetScreen = ({route}) => {
                                                                 flexDirection: 'column',
                                                             }, innerItem1.isOpenInner && {
                                                                 borderRadius: 10,
-                                                                borderWidth: 1,
-                                                                borderColor: '#F59D00',
+                                                                borderWidth: 2,
+                                                                borderColor: Colors.YELLOW,
                                                                 backgroundColor: '#FFFFFF'
                                                             }]}>
                                                                 <View style={[{
@@ -859,7 +629,8 @@ const TargetScreen = ({route}) => {
                                                                                 fontSize: 12,
                                                                                 fontWeight: '600',
                                                                                 color: Colors.BLUE,
-                                                                                marginLeft: 8
+                                                                                marginLeft: 8,
+                                                                                textDecorationLine: 'underline'
                                                                             }}>Source/Model</Text>
                                                                         </Pressable>
                                                                     </View>
@@ -867,7 +638,7 @@ const TargetScreen = ({route}) => {
                                                                     <View style={{flexDirection: 'row'}}>
                                                                         <RenderLevel1NameView level={1}
                                                                                               item={innerItem1}
-                                                                                              color={'#F59D00'}
+                                                                                              color={Colors.YELLOW}
                                                                                               titleClick={async () => {
                                                                                                   setSelectedName(innerItem1.empName);
                                                                                                   setTimeout(() => {
@@ -945,7 +716,7 @@ const TargetScreen = ({route}) => {
                                                                                     flexDirection: 'column',
                                                                                 }, innerItem2.isOpenInner && {
                                                                                     borderRadius: 10,
-                                                                                    borderWidth: 1,
+                                                                                    borderWidth: 2,
                                                                                     borderColor: '#2C97DE',
                                                                                     backgroundColor: '#EEEEEE',
                                                                                     marginHorizontal: 5
@@ -973,7 +744,8 @@ const TargetScreen = ({route}) => {
                                                                                                 fontSize: 12,
                                                                                                 fontWeight: '600',
                                                                                                 color: Colors.BLUE,
-                                                                                                marginLeft: 8
+                                                                                                marginLeft: 8,
+                                                                                                textDecorationLine: 'underline'
                                                                                             }}>Source/Model</Text>
                                                                                         </Pressable>
                                                                                     </View>
@@ -1089,7 +861,8 @@ const TargetScreen = ({route}) => {
                                                                                                                     fontSize: 12,
                                                                                                                     fontWeight: '600',
                                                                                                                     color: Colors.BLUE,
-                                                                                                                    marginLeft: 8
+                                                                                                                    marginLeft: 8,
+                                                                                                                    textDecorationLine: 'underline'
                                                                                                                 }}>Source/Model</Text>
                                                                                                         </Pressable>
                                                                                                     </View>
@@ -1454,13 +1227,14 @@ const TargetScreen = ({route}) => {
                                             fontWeight: '600',
                                             color: Colors.BLUE,
                                             marginLeft: 8,
-                                            paddingRight: 12
+                                            paddingRight: 12,
+                                            textDecorationLine: 'underline'
                                         }}>Source/Model</Text>
                                     </Pressable>
 
                                     <View style={{flexDirection: 'row', height: 40}}>
                                         <View style={{
-                                            width: 100,
+                                            width: 80,
                                             minHeight: 40,
                                             justifyContent: 'space-between',
                                             flexDirection: 'row',
@@ -2026,7 +1800,7 @@ export default TargetScreen;
 
 export const RenderLevel1NameView = ({level, item, branchName = '', color, titleClick}) => {
     return (
-        <View style={{width: 100, justifyContent: 'center', textAlign: 'center', display: 'flex', flexDirection: 'row'}}>
+        <View style={{width: 80, justifyContent: 'center', textAlign: 'center', display: 'flex', flexDirection: 'row'}}>
             <View style={{justifyContent: 'center', alignItems: 'center'}}>
                 <TouchableOpacity style={{
                     width: 30,
