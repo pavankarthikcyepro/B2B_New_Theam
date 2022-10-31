@@ -31,12 +31,12 @@ const data = [
     screen: 106,
     pngIcon: require("../assets/images/Target_Planning-01.png"),
   },
-  {
-    title: "Task Management",
-    icon: CUSTOMER_RELATIONSHIP_STR,
-    screen: 108,
-    pngIcon: require("../assets/images/Task_Management-01.png"),
-  },
+  // {
+  //   title: "Task Management",
+  //   icon: CUSTOMER_RELATIONSHIP_STR,
+  //   screen: 108,
+  //   pngIcon: require("../assets/images/Task_Management-01.png"),
+  // },
   // {
   //   title: "Upcoming Deliveries",
   //   icon: BOOKING_TRACKER_STR,
@@ -62,7 +62,7 @@ const data = [
   //   pngIcon: require('../assets/images/Team_Shuffle-01.png')
   // },
   {
-    title: "Digital Payment",
+    title: "QR Code",
     icon: BOOKING_TRACKER_STR,
     screen: 105,
     pngIcon: require("../assets/images/Digital_Payment-01.png"),
@@ -121,11 +121,11 @@ const dataForManager = [
     icon: CUSTOMER_RELATIONSHIP_STR,
     screen: 106,
   },
-  {
-    title: "Task Management",
-    icon: CUSTOMER_RELATIONSHIP_STR,
-    screen: 108,
-  },
+  // {
+  //   title: "Task Management",
+  //   icon: CUSTOMER_RELATIONSHIP_STR,
+  //   screen: 108,
+  // },
   // {
   //   title: "Upcoming Deliveries",
   //   icon: BOOKING_TRACKER_STR,
@@ -147,7 +147,7 @@ const dataForManager = [
   //   screen: 109,
   // },
   {
-    title: "Digital Payment",
+    title: "QR Code",
     icon: QR_CODE_STR,
     screen: 105,
   },
