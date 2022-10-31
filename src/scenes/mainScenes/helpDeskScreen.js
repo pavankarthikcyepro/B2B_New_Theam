@@ -52,7 +52,7 @@ const HelpDeskScreen = () => {
                   <View style={styles.rowItem}>
                     <Text numberOfLines={1} style={{width: '85%', paddingStart: 4}}>{item.label}</Text>
                     <IconButton
-                        color={Colors.SKY_LIGHT_BLUE_COLOR}
+                        color={Colors.RED}
                         icon={item.icon}
                         onPress={() => Linking.openURL(item.url)}
                     />
