@@ -67,6 +67,7 @@ const teleCollerMenu = [
 ];
 const ShowRoomMenu = [
     "Home",
+    'Live Leads',
     "Settings",
     "Digital Payment",
     "Target Planning",
@@ -77,6 +78,7 @@ const ShowRoomMenu = [
 ];
 const MDMenu = [
   "Home",
+  'Live Leads',
   "Settings",
   "Digital Payment",
   "Target Planning",
