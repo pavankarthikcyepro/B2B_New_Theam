@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -14,11 +15,13 @@ import URL from "../../../../../../networking/endpoints";
 import { useDispatch, useSelector } from "react-redux";
 import { getSourceModelDataForSelf } from "../../../../../../redux/homeReducer";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
+import {IconButton} from "react-native-paper";
+import {AppNavigator} from "../../../../../../navigations";
 
 const SourceModel = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.homeReducer);
-  const { empId, loggedInEmpId, headerTitle, orgId, type } = route.params;
+  const { empId, loggedInEmpId, headerTitle, orgId, type, moduleType } = route.params;
   const [leadSource, setLeadSource] = useState([]);
   const [vehicleModel, setVehicleModel] = useState([]);
   const [leadSourceKeys, setLeadSourceKeys] = useState([]);
@@ -28,6 +31,22 @@ const SourceModel = ({ route, navigation }) => {
   const [sourceModelTotals, setSourceModelTotals] = useState({});
   const [toggleParamsIndex, setToggleParamsIndex] = useState(0);
   const [toggleParamsMetaData, setToggleParamsMetaData] = useState([]);
+
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+          <IconButton
+              icon="arrow-left"
+              color={Colors.WHITE}
+              size={30}
+              onPress={() => {
+                moduleType === 'live-leads' ? navigation.navigate(AppNavigator.DrawerStackIdentifiers.liveLeads) : navigation.pop();
+              }}
+          />
+      )
+    })
+  }, [navigation])
 
   useEffect(async () => {
     navigation.setOptions({
@@ -104,7 +123,6 @@ const SourceModel = ({ route, navigation }) => {
             sourceData.push(x);
           }
         });
-
         for (let i = 0; i < paramsMetadata.length; i++) {
           for (let j = 0; j < sourceData.length; j++) {
             if (sourceData[j].paramName === paramsMetadata[i].paramName) {
@@ -158,7 +176,7 @@ const SourceModel = ({ route, navigation }) => {
   const getTotal = (type) => {
     const keys = type === 0 ? leadSourceKeys : vehicleModelKeys;
     let data = type === 0 ? leadSource : vehicleModel;
-    
+
     let newData = paramsMetadata;
     if (toggleParamsIndex !== 2) {
       newData = newData.filter((x) => x.toggleIndex === toggleParamsIndex);
@@ -176,7 +194,7 @@ const SourceModel = ({ route, navigation }) => {
     });
     setSourceModelTotals({ ...totals });
   };
-  
+
   const paramsMetadata = [
     {
       color: "#FA03B9",
@@ -214,6 +232,13 @@ const SourceModel = ({ route, navigation }) => {
       toggleIndex: 0,
     },
     {
+      color: "#C62159",
+      paramName: "DROPPED",
+      shortName: "Lost",
+      initial: "DRP",
+      toggleIndex: 0,
+    },
+    {
       color: "#9E31BE",
       paramName: "Exchange",
       shortName: "Exg",
@@ -247,7 +272,7 @@ const SourceModel = ({ route, navigation }) => {
       shortName: "Acc",
       initial: "A",
       toggleIndex: 1,
-    },
+    }
   ];
 
   const getData = (data, type) => {
@@ -445,7 +470,7 @@ const SourceModel = ({ route, navigation }) => {
                                 },
                               ]}
                             >
-                              <Text style={{ color: param.color }}>
+                              <Text style={{ color: param.color}}>
                                 {param.shortName}
                               </Text>
                             </View>

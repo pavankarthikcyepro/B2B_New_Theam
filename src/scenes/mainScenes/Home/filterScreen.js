@@ -4,7 +4,7 @@ import { SafeAreaView, View, Text, StyleSheet, FlatList, Dimensions, Image, Pres
 import { Colors } from '../../../styles';
 import { IconButton } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
-import { } from '../../../redux/homeReducer';
+import { getTargetParametersEmpDataInsights } from '../../../redux/homeReducer';
 import * as AsyncStore from '../../../asyncStore';
 import { DatePickerComponent, DropDownComponant } from '../../../components';
 import { DateSelectItem, DropDownSelectionItem } from '../../../pureComponents';
@@ -50,7 +50,7 @@ const FilterScreen = ({ navigation }) => {
     const [fromDate, setFromDate] = useState("");
     const [toDate, setToDate] = useState("");
     const [nameKeyList, setNameKeyList] = useState([]);
-    const [userData, setUserData] = useState({ branchId: "", orgId: "", employeeId: "", employeeName: "" })
+    const [userData, setUserData] = useState({ branchId: "", orgId: "", employeeId: "", employeeName: "", primaryDesignation:"" })
     const [employeeTitleNameList, setEmloyeeTitleNameList] = useState([]);
     const [employeeDropDownDataLocal, setEmployeeDropDownDataLocal] = useState({});
     const [dropDownFrom, setDropDownFrom] = useState("");
@@ -64,7 +64,7 @@ const FilterScreen = ({ navigation }) => {
         const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
-            setUserData({ branchId: jsonObj.branchId, orgId: jsonObj.orgId, employeeId: jsonObj.empId, employeeName: jsonObj.empName })
+            setUserData({ branchId: jsonObj.branchId, orgId: jsonObj.orgId, employeeId: jsonObj.empId, employeeName: jsonObj.empName ,primaryDesignation:jsonObj.primaryDesignation})
         }
     }
 
@@ -327,7 +327,8 @@ const FilterScreen = ({ navigation }) => {
                 dispatch(getSalesData(payload2)),
                 dispatch(getSalesComparisonData(payload2)),
                 // // Target Params Data
-                dispatch(getTargetParametersData(payload2))
+                dispatch(getTargetParametersData(payload2)),
+                // dispatch(getTargetParametersEmpDataInsights(payload2))  // Added to filter an Home Screen's INSIGHT
             ]).then(() => {
                 console.log("SUCCESS");
             }).catch(() => {
@@ -340,7 +341,7 @@ const FilterScreen = ({ navigation }) => {
             navigation.goBack();
         }
         else {
-            navigation.goBack(); // NEED TO COMMENT FOR ASSOCIATE FILTER
+            // navigation.goBack(); // NEED TO COMMENT FOR ASSOCIATE FILTER
         }
     }
 

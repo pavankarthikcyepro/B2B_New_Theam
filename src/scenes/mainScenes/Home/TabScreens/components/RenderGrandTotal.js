@@ -5,7 +5,7 @@ import {achievementPercentage} from "../../../../../utils/helperFunctions";
 
 export const RenderGrandTotal = (parameter) => {
     // const paramsData = ['Enquiry', 'Test Drive', 'Home Visit', 'Booking', 'INVOICE', 'Finance', 'Insurance', 'Exchange', 'EXTENDEDWARRANTY', 'Accessories'];
-    const {params, totalParams, displayType} = parameter;
+    const {params, totalParams, displayType, moduleType} = parameter;
     const paramsData = params.map(({paramName}) => paramName);
     return (
         <>
@@ -14,13 +14,15 @@ export const RenderGrandTotal = (parameter) => {
                     const selectedParameter = totalParams.filter((item) => item.paramName === param)[0];
                     const enquiryParameter = totalParams.filter((item) => item.paramName === 'Enquiry')[0];
                     return (
-                        <View key={param} style={[styles.itemBox, {width: param === 'Accessories' ? 65 : 56, backgroundColor: Colors.RED}]}>
+                        <View key={param} style={[styles.itemBox, {width: moduleType === 'live-leads' ? 70 : (param === 'Accessories' ? 65 : 56), backgroundColor: Colors.RED}]}>
                             <Text
                                 style={[styles.totalText1, {marginBottom: 0, color: Colors.WHITE}]}>{displayType === 0 ? Number(selectedParameter.achievment) :
                                 achievementPercentage(selectedParameter.achievment, selectedParameter.target, param, enquiryParameter.achievment)}
                             </Text>
-                            <Text
-                                style={[styles.totalText, {width: param === 'Accessories' ? 65 : 56, color: Colors.WHITE, backgroundColor: Colors.MAROON}]}>{Number(selectedParameter.target)}</Text>
+                            {moduleType !== 'live-leads' &&
+                                <Text
+                                    style={[styles.totalText, {width: moduleType === 'live-leads' ? 70 : (param === 'Accessories' ? 65 : 56), color: Colors.WHITE, backgroundColor: Colors.MAROON}]}>{Number(selectedParameter.target)}</Text>
+                            }
                         </View>
                     )
                 })

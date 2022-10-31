@@ -1,69 +1,57 @@
-
-import React, { useState, useEffect, useLayoutEffect } from 'react';
-import { SafeAreaView, View, Text, StyleSheet, FlatList, Dimensions, Pressable, Alert, TouchableOpacity, ScrollView, Keyboard, Image, Platform } from 'react-native';
-import { Colors, GlobalStyle } from '../../../styles';
-import { IconButton, Card, Button } from 'react-native-paper';
-import VectorImage from 'react-native-vector-image';
-import { useDispatch, useSelector } from 'react-redux';
-import { FILTER, SPEED } from '../../../assets/svg';
-import { DateItem } from '../../../pureComponents/dateItem';
-import { AppNavigator } from '../../../navigations';
+import React, {useEffect, useLayoutEffect, useState} from 'react';
 import {
-    dateSelected,
-    showDateModal,
-    getCustomerTypeList,
-    getSourceOfEnquiryList,
-    getVehicalModalList,
-    getOrganaizationHirarchyList,
-    getLeadSourceTableList,
-    getVehicleModelTableList,
-    getEventTableList,
-    getTaskTableList,
-    getLostDropChartData,
-    getTargetParametersData,
-    getTargetParametersAllData,
-    getTargetParametersEmpData,
-    getSalesData,
-    getSalesComparisonData,
-    getDealerRanking,
-    getGroupDealerRanking,
-    updateIsTeam,
-    updateIsTeamPresent,
-    getBranchIds,
+    View,
+    Text,
+    Keyboard,
+    Platform,
+    SafeAreaView,
+    FlatList,
+    TouchableOpacity,
+    Image,
+    StyleSheet
+} from 'react-native';
+import {useDispatch, useSelector} from "react-redux";
+import * as AsyncStore from "../../../asyncStore";
+import empData from "../../../get_target_params_for_emp.json";
+import allData from "../../../get_target_params_for_all_emps.json";
+import targetData from "../../../get_target_params.json";
+import {
     downloadFile,
-    updateIsMD,
+    getBranchIds,
+    getCustomerTypeList,
+    getDealerRanking,
+    getEventTableList,
+    getGroupDealerRanking,
+    getLeadSourceTableList,
+    getMenuList, getNewTargetParametersAllData,
+    getOrganaizationHirarchyList,
+    getSalesComparisonData,
+    getSalesData,
+    getSourceOfEnquiryList,
+    getTargetParametersData,
+    getTargetParametersEmpData,
+    getTargetParametersEmpDataInsights,
+    getTaskTableList, getTotalTargetParametersData,
+    getVehicalModalList,
+    getVehicleModelTableList,
     updateIsDSE,
-    updateTargetData,
-    getNewTargetParametersAllData,
-    getTotalTargetParametersData, getTargetParametersEmpDataInsights
-} from '../../../redux/homeReducer';
-import { getCallRecordingCredentials } from '../../../redux/callRecordingReducer'
-import {
-    updateData,
-    updateIsManager,
-} from '../../../redux/sideMenuReducer';
-import * as acctionCreator from '../../../redux/targetSettingsReducer';
-import { DateRangeComp, DatePickerComponent, SortAndFilterComp } from '../../../components';
-import { DateModalComp } from "../../../components/dateModalComp";
-import { getMenuList } from '../../../redux/homeReducer';
-import { DashboardTopTabNavigator } from '../../../navigations/dashboardTopTabNavigator';
-import { DashboardTopTabNavigatorNew } from '../../../navigations/dashboardTopTabNavigatorNew';
-import { HomeStackIdentifiers } from '../../../navigations/appNavigator';
-import * as AsyncStore from '../../../asyncStore';
-import moment from 'moment';
-import { TargetAchivementComp } from './targetAchivementComp';
-import { HeaderComp, DropDownComponant, LoaderComponent } from '../../../components';
-import { TargetDropdown } from "../../../pureComponents";
-import RNFetchBlob from 'rn-fetch-blob'
+    updateIsMD, updateIsTeam,
+    updateIsTeamPresent,
+    updateTargetData
+} from "../../../redux/liveLeadsReducer";
+import {AppNavigator} from "../../../navigations";
+import {getCallRecordingCredentials} from "../../../redux/callRecordingReducer";
+import moment from "moment/moment";
+import {updateIsManager} from "../../../redux/sideMenuReducer";
+import RNFetchBlob from "rn-fetch-blob";
+import {DropDownComponant, HeaderComp, LoaderComponent} from "../../../components";
+import {Colors} from "../../../styles";
+import {DashboardTopTabNavigatorNew} from "../../../navigations/dashboardTopTabNavigatorNew";
+import ParametersScreen from "./parametersScreen";
 
-import empData from '../../../get_target_params_for_emp.json'
-import allData from '../../../get_target_params_for_all_emps.json'
-import targetData from '../../../get_target_params.json'
-
-const HomeScreen = ({ route, navigation }) => {
-    const selector = useSelector((state) => state.homeReducer);
+const LiveLeadsScreen = ({ route, navigation }) => {
+    const selector = useSelector(state => state.liveLeadsReducer);
     const dispatch = useDispatch();
-    const [salesDataAry, setSalesDataAry] = useState([]);
     const [selectedBranchName, setSelectedBranchName] = useState("");
 
     const [dropDownKey, setDropDownKey] = useState("");
@@ -82,16 +70,17 @@ const HomeScreen = ({ route, navigation }) => {
     const [headerText, setHeaderText] = useState('');
     const [isButtonPresent, setIsButtonPresent] = useState(false);
     const [loading, setLoading] = useState(false);
-
+    let numk = 0;
     useLayoutEffect(() => {
         navigation.addListener('focus', () => {
-            setTargetData().then(r => console.log(r));  //Commented to resolved filter issue for Home Screen
+            setTargetData().then(r => console.log(r));
         })
 
     }, [navigation]);
 
     const setTargetData = async () => {
-        console.log("TTTTT CALLED: ", await AsyncStore.getData('TARGET_EMP'));
+        numk++;
+        console.log("TTTTT CALLED: ", numk,  await AsyncStore.getData('TARGET_EMP'));
         let obj = {
             empData: await AsyncStore.getData('TARGET_EMP') ? JSON.parse(await AsyncStore.getData('TARGET_EMP')) : empData,
             allEmpData: await AsyncStore.getData('TARGET_EMP_ALL') ? JSON.parse(await AsyncStore.getData('TARGET_EMP_ALL')) : allData.employeeTargetAchievements,
@@ -128,7 +117,7 @@ const HomeScreen = ({ route, navigation }) => {
             }
         } else {
         }
-    }, [selector.insights_target_parameters_data]) //selector.self_target_parameters_data
+    }, [selector.insights_target_parameters_data]) //selector.insights_target_parameters_data
 
     useEffect(async () => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
@@ -177,16 +166,17 @@ const HomeScreen = ({ route, navigation }) => {
 
     useEffect(async () => {
         // if (await AsyncStore.getData(AsyncStore.Keys.IS_LOGIN) === 'true'){
-            updateBranchNameInHeader()
-            getMenuListFromServer();
-            getCustomerType()
-            checkLoginUserAndEnableReportButton();
-            getLoginEmployeeDetailsFromAsyn();
+        updateBranchNameInHeader()
+        getMenuListFromServer();
+        getCustomerType()
+        checkLoginUserAndEnableReportButton();
+        console.log('data for home =========> 2')
+        getLoginEmployeeDetailsFromAsyn();
         // }
 
         const unsubscribe = navigation.addListener('focus', () => {
-            updateBranchNameInHeader()           //Commented to resolved filter issue for Home Screen
-            getLoginEmployeeDetailsFromAsyn();   //Commented to resolved filter issue for Home Screen
+            updateBranchNameInHeader()
+            getLoginEmployeeDetailsFromAsyn();
         });
 
         return unsubscribe;
@@ -235,7 +225,7 @@ const HomeScreen = ({ route, navigation }) => {
 
 
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-         //console.log("SSSSSSSSSSSSSSSSSSSSS$$$$$ LOGIN EMP:", employeeData);
+        //console.log("SSSSSSSSSSSSSSSSSSSSS$$$$$ LOGIN EMP:", employeeData);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
             let findMdArr = [];
@@ -298,7 +288,12 @@ const HomeScreen = ({ route, navigation }) => {
                 console.log('I did everything!');
             });
             console.log("LOGIN DATA:>>>>>>>>>>>>>>>>>>>>>>>>>", JSON.stringify(jsonObj.hrmsRole));
-            if (jsonObj?.hrmsRole === "Admin" || jsonObj?.hrmsRole === "Admin Prod" || jsonObj?.hrmsRole === "App Admin" || jsonObj?.hrmsRole === "Manager" || jsonObj?.hrmsRole === "TL" || jsonObj?.hrmsRole === "General Manager" || jsonObj?.hrmsRole === "branch manager" || jsonObj?.hrmsRole === "Testdrive_Manager" || jsonObj?.hrmsRole === "MD" || jsonObj?.hrmsRole === "Business Head" || jsonObj?.hrmsRole === "Sales Manager" || jsonObj?.hrmsRole === "Sales Head"){
+            if (jsonObj?.hrmsRole === "Admin" || jsonObj?.hrmsRole === "Admin Prod" ||
+                jsonObj?.hrmsRole === "App Admin" || jsonObj?.hrmsRole === "Manager" ||
+                jsonObj?.hrmsRole === "TL" || jsonObj?.hrmsRole === "General Manager" ||
+                jsonObj?.hrmsRole === "branch manager" || jsonObj?.hrmsRole === "Testdrive_Manager" ||
+                jsonObj?.hrmsRole === "MD" || jsonObj?.hrmsRole === "Business Head" ||
+                jsonObj?.hrmsRole === "Sales Manager" || jsonObj?.hrmsRole === "Sales Head") {
                 dispatch(updateIsTeamPresent(true))
                 setIsTeamPresent(true)
                 if (jsonObj?.hrmsRole === 'MD' || jsonObj?.hrmsRole === "App Admin" ) {
@@ -316,9 +311,9 @@ const HomeScreen = ({ route, navigation }) => {
                 const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
                 const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
                 const payload = {
-                    "endDate": monthLastDate,
+                    "endDate": currentDate,
                     "loggedInEmpId": jsonObj.empId,
-                    "startDate": monthFirstDate,
+                    "startDate": '2021-01-01',
                     "levelSelected": null,
                     "empId": jsonObj.empId,
                 }
@@ -335,6 +330,7 @@ const HomeScreen = ({ route, navigation }) => {
 
             if (jsonObj?.hrmsRole.toLowerCase().includes('dse')) {
                 dispatch(updateIsDSE(true))
+                dispatch(updateIsTeam(false))
             }
             else {
                 dispatch(updateIsDSE(false))
@@ -352,49 +348,52 @@ const HomeScreen = ({ route, navigation }) => {
                     setRoles(rolesArr)
                 }
             }
+            console.log('data for home =========> 1 ')
+
             getDashboadTableDataFromServer(jsonObj.empId);
         }
     }
-
-    const getHomeData = async() => {
-        let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-        // console.log("$$$$$ LOGIN EMP:", employeeData);
-        if (employeeData) {
-            const jsonObj = JSON.parse(employeeData);
-            const dateFormat = "YYYY-MM-DD";
-            const currentDate = moment().format(dateFormat)
-            const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
-            const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
-            const payload = {
-                "endDate": monthLastDate,
-                "loggedInEmpId": jsonObj.empId,
-                "startDate": monthFirstDate,
-                "levelSelected": null,
-                "empId": jsonObj.empId
-            }
-                if(isTeamPresent){
-                    dispatch(getTargetParametersData({
-                        ...payload,
-                        "pageNo": 0,
-                        "size": 5,
-                    })),
-                        getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
-                            .then(x => console.log(`getAllTargetParametersDataFromServer:: success: ${x}`))
-                            .catch(y => console.log(`getAllTargetParametersDataFromServer:: error: ${y}`));
-                }
-                else{
-                    getTargetParametersDataFromServer(payload).catch(y=> console.log('getTargetParametersDataFromServer:: home/index.js: ', y));
-                }
-        }
-    }
+    //
+    // const getHomeData = async() => {
+    //     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    //     // console.log("$$$$$ LOGIN EMP:", employeeData);
+    //     if (employeeData) {
+    //         const jsonObj = JSON.parse(employeeData);
+    //         const dateFormat = "YYYY-MM-DD";
+    //         const currentDate = moment().format(dateFormat)
+    //         const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+    //         const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+    //         const payload = {
+    //             "endDate": monthLastDate,
+    //             "loggedInEmpId": jsonObj.empId,
+    //             "startDate": monthFirstDate,
+    //             "levelSelected": null,
+    //             "empId": jsonObj.empId
+    //         }
+    //         if(isTeamPresent){
+    //             dispatch(getTargetParametersData({
+    //                 ...payload,
+    //                 "pageNo": 0,
+    //                 "size": 5,
+    //             })),
+    //                 getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
+    //                     .then(x => console.log(`getAllTargetParametersDataFromServer:: success: ${x}`))
+    //                     .catch(y => console.log(`getAllTargetParametersDataFromServer:: error: ${y}`));
+    //         }
+    //         else{
+    //             getTargetParametersDataFromServer(payload).catch(y=> console.log('getTargetParametersDataFromServer:: home/index.js: ', y));
+    //         }
+    //     }
+    // }
 
     const getDashboadTableDataFromServer = (empId) => {
+        console.log('data for home =========> ')
         const dateFormat = "YYYY-MM-DD";
         const currentDate = moment().format(dateFormat)
         const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
         const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
         const payload = {
-            "endDate": monthLastDate,
+            "endDate": currentDate,
             "loggedInEmpId": empId,
             "startDate": monthFirstDate,
             "levelSelected": null,
@@ -407,10 +406,11 @@ const HomeScreen = ({ route, navigation }) => {
             dispatch(getEventTableList(payload)),
             // dispatch(getLostDropChartData(payload))
         ]).then(() => {
-            console.log("getDashboadTableDataFromServer");
+            console.log("getDashboadTableDataFromServer()");
         });
 
         getTaskTableDataFromServer(empId, payload);
+        payload.startDate = '2021-01-01'; // for live leads
         getTargetParametersDataFromServer(payload).catch(y=> console.log('587 home/index.js: ', y));
     }
 
@@ -439,7 +439,7 @@ const HomeScreen = ({ route, navigation }) => {
             const allRoles = ["Admin", "Admin Prod", "App Admin", "Manager", "TL", "General Manager",
                 "branch manager", "Testdrive_Manager", "MD", "Business Head","Sales Manager"]
             if (allRoles.includes(jsonObj?.hrmsRole)) {
-              isTeamPresentLocal = true;
+                isTeamPresentLocal = true;
             }
         }
 
@@ -487,12 +487,12 @@ const HomeScreen = ({ route, navigation }) => {
             "size": 100,
         }
         Promise.allSettled([
-           //dispatch(getTargetParametersAllData(payload1)),
-          dispatch(getTotalTargetParametersData(payload2)),
-          dispatch(getNewTargetParametersAllData(payload2)),
-          dispatch(isTeamPresentLocal ? getTargetParametersEmpDataInsights(payload1) : getTargetParametersEmpData(payload1))
+            //dispatch(getTargetParametersAllData(payload1)),
+            dispatch(getTotalTargetParametersData(payload2)), // grand total
+            dispatch(getNewTargetParametersAllData(payload2)), // TEAM
+            dispatch(isTeamPresentLocal ? getTargetParametersEmpDataInsights(payload1) : getTargetParametersEmpData(payload1))
         ]).then(() => {
-          console.log("I did everything!");
+            console.log("I did everything!");
         }).catch(y => {
             console.log("I did everything!!!: ", y);
         });
@@ -502,7 +502,7 @@ const HomeScreen = ({ route, navigation }) => {
         if (Object.keys(selector.sales_data).length > 0) {
             const dataObj = selector.sales_data;
             const data = [dataObj.liveBookings, dataObj.complaints, dataObj.deliveries, dataObj.dropRevenue, dataObj.pendingOrders]
-            setSalesDataAry(data);
+            // setSalesDataAry(data);
         }
     }, [selector.sales_data])
 
@@ -656,9 +656,9 @@ const HomeScreen = ({ route, navigation }) => {
                     RNFetchBlob.android.actionViewIntent(res.path());
                     // do some magic here
                 }).catch((err) => {
-                    console.error(err);
-                    setLoading(false)
-                })
+                console.error(err);
+                setLoading(false)
+            })
         }
         if (Platform.OS === 'ios') {
             options = {
@@ -707,13 +707,6 @@ const HomeScreen = ({ route, navigation }) => {
                     setDropDownData({ key: dropDownKey, value: item.name, id: item.id })
                 }}
             />
-            <HeaderComp
-                title={headerText}
-                branchName={selectedBranchName}
-              menuClicked={() => navigation.openDrawer()}
-                branchClicked={() => moveToSelectBranch()}
-                filterClicked={() => moveToFilter()}
-            />
             <View style={{ flex: 1, paddingHorizontal: 10 }}>
                 <FlatList
                     data={[1, 2, 3]}
@@ -725,86 +718,86 @@ const HomeScreen = ({ route, navigation }) => {
                         if (index === 0) {
                             return (
                                 <>
-                                    {isButtonPresent &&
-                                        <View style={{ width: '100%', alignItems: 'flex-end', marginBottom: 15 }}>
-                                            <TouchableOpacity style={{ width: 130, height: 30, backgroundColor: Colors.RED, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={downloadFileFromServer1}>
-                                                <Text style={{ fontSize: 14, fontWeight: '600', color: '#fff' }}>ETVBRL Report</Text>
-                                            </TouchableOpacity>
-                                        </View>
-                                    }
+                                    {/*{isButtonPresent &&*/}
+                                    {/*    <View style={{ width: '100%', alignItems: 'flex-end', marginBottom: 15 }}>*/}
+                                    {/*        <TouchableOpacity style={{ width: 130, height: 30, backgroundColor: Colors.RED, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={downloadFileFromServer1}>*/}
+                                    {/*            <Text style={{ fontSize: 14, fontWeight: '600', color: '#fff' }}>ETVBRL Report</Text>*/}
+                                    {/*        </TouchableOpacity>*/}
+                                    {/*    </View>*/}
+                                    {/*}*/}
                                     {!selector.isMD &&
                                         <>
-                                        <View style={styles.rankView}>
-                                            <View style={styles.rankBox}>
-                                                <Text style={styles.rankHeadingText}>Dealer Ranking</Text>
-                                                <View style={{
-                                                    flexDirection: 'row'
-                                                }}>
-                                                    <TouchableOpacity style={styles.rankIconBox} onPress={() => {
-                                                        navigation.navigate(AppNavigator.HomeStackIdentifiers.leaderboard)
-                                                     }}>
-                                                        <Image style={styles.rankIcon} source={require("../../../assets/images/perform_rank.png")} />
-                                                    </TouchableOpacity>
+                                            <View style={styles.rankView}>
+                                                <View style={styles.rankBox}>
+                                                    <Text style={styles.rankHeadingText}>Dealer Ranking</Text>
                                                     <View style={{
-                                                        marginTop: 5,
-                                                        marginLeft: 3
+                                                        flexDirection: 'row'
                                                     }}>
-                                                        {groupDealerRank !== null &&
-                                                            <Text style={styles.rankText}>{groupDealerRank}/{groupDealerCount}</Text>
-                                                        }
+                                                        <TouchableOpacity style={styles.rankIconBox} onPress={() => {
+                                                            navigation.navigate(AppNavigator.HomeStackIdentifiers.leaderboard)
+                                                        }}>
+                                                            <Image style={styles.rankIcon} source={require("../../../assets/images/perform_rank.png")} />
+                                                        </TouchableOpacity>
+                                                        <View style={{
+                                                            marginTop: 5,
+                                                            marginLeft: 3
+                                                        }}>
+                                                            {groupDealerRank !== null &&
+                                                                <Text style={styles.rankText}>{groupDealerRank}/{groupDealerCount}</Text>
+                                                            }
+                                                        </View>
                                                     </View>
                                                 </View>
-                                            </View>
 
-                                            <View style={styles.rankBox}>
-                                                <Text style={styles.rankHeadingText}>Branch Ranking</Text>
-                                                <View style={{
-                                                    flexDirection: 'row'
-                                                }}>
-                                                    <TouchableOpacity style={styles.rankIconBox} onPress={() => {
-                                                        navigation.navigate(AppNavigator.HomeStackIdentifiers.branchRanking)
-                                                    }}>
-                                                        <Image style={styles.rankIcon} source={require("../../../assets/images/perform_rank.png")} />
-                                                    </TouchableOpacity>
+                                                <View style={styles.rankBox}>
+                                                    <Text style={styles.rankHeadingText}>Branch Ranking</Text>
                                                     <View style={{
-                                                        marginTop: 5,
-                                                        marginLeft: 3,
+                                                        flexDirection: 'row'
                                                     }}>
-                                                        {dealerRank !== null &&
-                                                            <View style={{ flexDirection: 'row' }}>
-                                                                <Text style={[styles.rankText]}>{dealerRank}</Text>
-                                                                <Text style={[styles.rankText]}>/{dealerCount}</Text>
-                                                            </View>
-                                                        }
+                                                        <TouchableOpacity style={styles.rankIconBox} onPress={() => {
+                                                            navigation.navigate(AppNavigator.HomeStackIdentifiers.branchRanking)
+                                                        }}>
+                                                            <Image style={styles.rankIcon} source={require("../../../assets/images/perform_rank.png")} />
+                                                        </TouchableOpacity>
+                                                        <View style={{
+                                                            marginTop: 5,
+                                                            marginLeft: 3,
+                                                        }}>
+                                                            {dealerRank !== null &&
+                                                                <View style={{ flexDirection: 'row' }}>
+                                                                    <Text style={[styles.rankText]}>{dealerRank}</Text>
+                                                                    <Text style={[styles.rankText]}>/{dealerCount}</Text>
+                                                                </View>
+                                                            }
+                                                        </View>
                                                     </View>
                                                 </View>
-                                            </View>
-                                            <View style={styles.rankBox}>
-                                                <Text style={styles.rankHeadingText}>Retails</Text>
-                                                <View style={{
-                                                    flexDirection: 'row'
-                                                }}>
-                                                    <View style={styles.rankIconBox}>
-                                                        <Image style={styles.rankIcon} source={require("../../../assets/images/retail.png")} />
-                                                    </View>
+                                                <View style={styles.rankBox}>
+                                                    <Text style={styles.rankHeadingText}>Retails</Text>
                                                     <View style={{
-                                                        marginTop: 5,
-                                                        marginLeft: 5,
+                                                        flexDirection: 'row'
                                                     }}>
+                                                        <View style={styles.rankIconBox}>
+                                                            <Image style={styles.rankIcon} source={require("../../../assets/images/retail.png")} />
+                                                        </View>
+                                                        <View style={{
+                                                            marginTop: 5,
+                                                            marginLeft: 5,
+                                                        }}>
 
                                                             <View style={{ flexDirection: 'row' }}>
                                                                 <Text style={[styles.rankText, { color: 'red' }]}>{retailData?.achievment}</Text>
                                                                 <Text style={[styles.rankText]}>/{retailData?.target}</Text>
                                                             </View>
-                                                        <View style={{
-                                                            marginTop: 5
-                                                        }}>
-                                                            <Text style={styles.baseText}>Ach v/s Tar</Text>
+                                                            <View style={{
+                                                                marginTop: 5
+                                                            }}>
+                                                                <Text style={styles.baseText}>Ach v/s Tar</Text>
+                                                            </View>
                                                         </View>
                                                     </View>
                                                 </View>
                                             </View>
-                                        </View>
                                         </>
                                     }
                                 </>
@@ -815,7 +808,7 @@ const HomeScreen = ({ route, navigation }) => {
                                 <>
                                     {isTeamPresent && !selector.isDSE &&
                                         <View style={{ flexDirection: 'row', marginBottom: 15, justifyContent: 'center', alignItems: 'center' }}>
-                                            <View style={{ flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 28, marginTop: 10, justifyContent: 'center', width: '80%' }}>
+                                            <View style={{ flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 40, marginTop: 10, justifyContent: 'center', width: '80%' }}>
 
                                                 <TouchableOpacity onPress={() => {
                                                     // setIsTeam(true)
@@ -853,7 +846,7 @@ const HomeScreen = ({ route, navigation }) => {
                                 <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                                     <View style={{
                                         width: '95%',
-                                        minHeight: 400,
+                                        minHeight: 40,
                                         shadowColor: Colors.DARK_GRAY,
                                         shadowOffset: {
                                             width: 0,
@@ -864,7 +857,7 @@ const HomeScreen = ({ route, navigation }) => {
                                         marginHorizontal: 20
                                     }}>
                                         {(selector.target_parameters_data.length > 0 || (isTeamPresent && selector.all_target_parameters_data.length > 0)) &&
-                                            <DashboardTopTabNavigatorNew />
+                                            <ParametersScreen />
                                         }
                                     </View>
                                 </View>
@@ -876,9 +869,10 @@ const HomeScreen = ({ route, navigation }) => {
             <LoaderComponent visible={loading} />
         </SafeAreaView>
     );
-};
+}
 
-export default HomeScreen;
+export default LiveLeadsScreen;
+
 
 const styles = StyleSheet.create({
     container: {

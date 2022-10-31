@@ -46,7 +46,7 @@ const dates = [
     },
 ];
 
-export const getMenuList = createAsyncThunk("HOME/getMenuList", async (name, { rejectWithValue }) => {
+export const getMenuList = createAsyncThunk("LIVE_LEADS/getMenuList", async (name, { rejectWithValue }) => {
 
     const response = await client.get(URL.MENULIST_API(name))
     const json = await response.json()
@@ -56,11 +56,10 @@ export const getMenuList = createAsyncThunk("HOME/getMenuList", async (name, { r
     return json;
 })
 
-export const getOrganaizationHirarchyList = createAsyncThunk("HOME/getOrganaizationHirarchyList", async (payload: any, { rejectWithValue }) => {
+export const getOrganaizationHirarchyList = createAsyncThunk("LIVE_LEADS/getOrganaizationHirarchyList", async (payload: any, { rejectWithValue }) => {
 
     const response = await client.get(URL.ORG_HIRARCHY(payload.orgId, payload.branchId))
     const json = await response.json()
-    // console.log("$$$$ DATA $$$$$:", JSON.stringify(json));
 
     if (!response.ok) {
         return rejectWithValue(json);
@@ -68,7 +67,7 @@ export const getOrganaizationHirarchyList = createAsyncThunk("HOME/getOrganaizat
     return json;
 })
 
-export const getCustomerTypeList = createAsyncThunk("HOME/getCustomerTypeList", async (ordId, { rejectWithValue }) => {
+export const getCustomerTypeList = createAsyncThunk("LIVE_LEADS/getCustomerTypeList", async (ordId, { rejectWithValue }) => {
 
     const response = await client.get(URL.CUSTOMER_TYPE(ordId))
     const json = await response.json()
@@ -78,7 +77,7 @@ export const getCustomerTypeList = createAsyncThunk("HOME/getCustomerTypeList", 
     return json;
 })
 
-export const getSourceOfEnquiryList = createAsyncThunk("HOME/getSourceOfEnquiryList", async (orgId, { rejectWithValue }) => {
+export const getSourceOfEnquiryList = createAsyncThunk("LIVE_LEADS/getSourceOfEnquiryList", async (orgId, { rejectWithValue }) => {
 
     const response = await client.get(URL.GET_SOURCE_OF_ENQUIRY(orgId))
     const json = await response.json()
@@ -88,7 +87,7 @@ export const getSourceOfEnquiryList = createAsyncThunk("HOME/getSourceOfEnquiryL
     return json;
 })
 
-export const getVehicalModalList = createAsyncThunk("HOME/getVehicalModalList", async (payload: any, { rejectWithValue }) => {
+export const getVehicalModalList = createAsyncThunk("LIVE_LEADS/getVehicalModalList", async (payload: any, { rejectWithValue }) => {
 
     const response = await client.post(URL.GET_VEHICAL_MODAL(), payload)
     const json = await response.json()
@@ -98,7 +97,7 @@ export const getVehicalModalList = createAsyncThunk("HOME/getVehicalModalList", 
     return json;
 })
 
-export const getLeadSourceTableList = createAsyncThunk("HOME/getLeadSourceTableList", async (payload: any, { rejectWithValue }) => {
+export const getLeadSourceTableList = createAsyncThunk("LIVE_LEADS/getLeadSourceTableList", async (payload: any, { rejectWithValue }) => {
 
     const response = await client.post(URL.LEAD_SOURCE_DATA(), payload)
     const json = await response.json()
@@ -108,7 +107,7 @@ export const getLeadSourceTableList = createAsyncThunk("HOME/getLeadSourceTableL
     return json;
 })
 
-export const getVehicleModelTableList = createAsyncThunk("HOME/getVehicleModelTableList", async (payload: any, { rejectWithValue }) => {
+export const getVehicleModelTableList = createAsyncThunk("LIVE_LEADS/getVehicleModelTableList", async (payload: any, { rejectWithValue }) => {
 
     const response = await client.post(URL.VEHICLE_MODEL_DATA(), payload)
     const json = await response.json()
@@ -118,7 +117,7 @@ export const getVehicleModelTableList = createAsyncThunk("HOME/getVehicleModelTa
     return json;
 })
 
-export const getEventTableList = createAsyncThunk("HOME/getEventTableList", async (payload: any, { rejectWithValue }) => {
+export const getEventTableList = createAsyncThunk("LIVE_LEADS/getEventTableList", async (payload: any, { rejectWithValue }) => {
 
     const response = await client.post(URL.EVENT_DATA(), payload)
     const json = await response.json()
@@ -128,7 +127,7 @@ export const getEventTableList = createAsyncThunk("HOME/getEventTableList", asyn
     return json;
 })
 
-export const getTaskTableList = createAsyncThunk("HOME/getTaskTableList", async (payload: any, { rejectWithValue }) => {
+export const getTaskTableList = createAsyncThunk("LIVE_LEADS/getTaskTableList", async (payload: any, { rejectWithValue }) => {
 
     const response = await client.post(URL.TASKS_DATA(), payload)
     const json = await response.json()
@@ -138,7 +137,7 @@ export const getTaskTableList = createAsyncThunk("HOME/getTaskTableList", async 
     return json;
 })
 
-export const getLostDropChartData = createAsyncThunk("HOME/getLostDropChartData", async (payload: any, { rejectWithValue }) => {
+export const getLostDropChartData = createAsyncThunk("LIVE_LEADS/getLostDropChartData", async (payload: any, { rejectWithValue }) => {
 
     const response = await client.post(URL.GET_LOST_DROP_CHART_DATA(), payload)
     const json = await response.json()
@@ -148,16 +147,14 @@ export const getLostDropChartData = createAsyncThunk("HOME/getLostDropChartData"
     return json;
 })
 
-export const getTargetParametersData = createAsyncThunk("HOME/getTargetParametersData", async (payload: any, { rejectWithValue }) => {
-    // console.log("PAYLOAD:", payload);
+export const getTargetParametersData = createAsyncThunk("LIVE_LEADS/getTargetParametersData", async (payload: any, { rejectWithValue }) => {
     if (payload.isTeamPresent) {
         delete payload.isTeamPresent;
     }
-    const response = await client.post(URL.GET_TARGET_PARAMS(), payload)
+    // const response = await client.post(URL.GET_TARGET_PARAMS(), payload)
+    const response = await client.post(URL.GET_LIVE_LEADS_INSIGHTS(), payload)
     const json = await response.json()
-    console.log("homeReducer", payload, URL.GET_TARGET_PARAMS());
 
-    // console.log("&&&&&& TARGET DATA:", JSON.stringify(json));
 
     if (!response.ok) {
         return rejectWithValue(json);
@@ -165,13 +162,11 @@ export const getTargetParametersData = createAsyncThunk("HOME/getTargetParameter
     return json;
 })
 
-export const getTargetParametersAllData = createAsyncThunk("HOME/getTargetParametersAllData", async (payload: any, { rejectWithValue }) => {
-    // console.log("PAYLOAD:", payload);
+// TEAM
+export const getTargetParametersAllData = createAsyncThunk("LIVE_LEADS/getTargetParametersAllData", async (payload: any, { rejectWithValue }) => {
 
-    const response = await client.post(URL.GET_TARGET_PARAMS_ALL(), payload)
+    const response = await client.post(URL.GET_LIVE_LEADS_TEAM(), payload)
     const json = await response.json()
-
-    // console.log("&&&&&& DATA $$$$$$$:", JSON.stringify(json));
 
     if (!response.ok) {
         return rejectWithValue(json);
@@ -179,49 +174,41 @@ export const getTargetParametersAllData = createAsyncThunk("HOME/getTargetParame
     return json;
 })
 
-export const getNewTargetParametersAllData = createAsyncThunk("HOME/getNewTargetParametersAllData", async (payload: any, { rejectWithValue }) => {
-    console.log("TEAM PAYLOAD:", URL.GET_TEAMS_TARGET_PARAMS(), payload);
+export const getNewTargetParametersAllData = createAsyncThunk("LIVE_LEADS/getNewTargetParametersAllData", async (payload: any, { rejectWithValue }) => {
+
+    const response = await client.post(URL.GET_LIVE_LEADS_TEAM(), payload)
+    const json = await response.json()
+
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+// grand total for teams
+export const getTotalTargetParametersData = createAsyncThunk("LIVE_LEADS/getTotalTargetParametersData", async (payload: any, { rejectWithValue }) => {
+    const response = await client.post(URL.GET_LIVE_LEADS_INSIGHTS(), payload);
+    const json = await response.json()
+
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+export const getUserWiseTargetParameters = createAsyncThunk("LIVE_LEADS/getUserWiseTargetParameters", async (payload: any, { rejectWithValue }) => {
 
     const response = await client.post(URL.GET_TEAMS_TARGET_PARAMS(), payload)
     const json = await response.json()
 
-    console.log("&&&&&& DATA $$$$$$$:", JSON.stringify(json));
-
     if (!response.ok) {
         return rejectWithValue(json);
     }
     return json;
 })
 
-export const getTotalTargetParametersData = createAsyncThunk("HOME/getTotalTargetParametersData", async (payload: any, { rejectWithValue }) => {
-   console.log("PAYLOAD=========>:", payload);
-    const response = await client.post(URL.GET_TARGET_PARAMS(), payload);
-    const json = await response.json()
-
-    console.log("&&&&&& DATA $$$$$$$:", JSON.stringify(json));
-
-    if (!response.ok) {
-        return rejectWithValue(json);
-    }
-    return json;
-})
-
-export const getUserWiseTargetParameters = createAsyncThunk("HOME/getUserWiseTargetParameters", async (payload: any, { rejectWithValue }) => {
-    // console.log("PAYLOAD:", payload);
-
-    const response = await client.post(URL.GET_TEAMS_TARGET_PARAMS(), payload)
-    const json = await response.json()
-
-    // console.log("&&&&&& DATA $$$$$$$:", JSON.stringify(json));
-
-    if (!response.ok) {
-        return rejectWithValue(json);
-    }
-    return json;
-})
-
-export const getTargetParametersEmpDataInsights = createAsyncThunk("HOME/getTargetParametersEmpDataInsights", async (payload: any, { rejectWithValue }) => {
-    const response = await client.post(URL.GET_TOTAL_TARGET_PARAMS(), payload);
+export const getTargetParametersEmpDataInsights = createAsyncThunk("LIVE_LEADS/getTargetParametersEmpDataInsights", async (payload: any, { rejectWithValue }) => {
+    const response = await client.post(URL.GET_LIVE_LEADS_INSIGHTS(), payload);
     const json = await response.json();
     if (!response.ok) {
         return rejectWithValue(json);
@@ -229,47 +216,20 @@ export const getTargetParametersEmpDataInsights = createAsyncThunk("HOME/getTarg
     return json;
 })
 
-export const getTargetParametersEmpData = createAsyncThunk("HOME/getTargetParametersEmpData", async (payload: any, { rejectWithValue }) => {
-    const response = await client.post(URL.GET_TARGET_PARAMS_EMP(), payload);
+// self
+export const getTargetParametersEmpData = createAsyncThunk("LIVE_LEADS/getTargetParametersEmpData", async (payload: any, { rejectWithValue }) => {
+    const response = await client.post(URL.GET_LIVE_LEADS_SELF(), payload);
     const json = await response.json();
     if (!response.ok) {
     return rejectWithValue(json);
     }
  return json;
-
-
-// if(payload.isTeamPresent == true){
-//   const url1 = URL.GET_TOTAL_TARGET_PARAMS();
-//   const response = await client.post(url1, payload);
-//   const json = await response.json();
-
-//       delete payload.isTeamPresent;
-
-//   if (!response.ok) {
-//     return rejectWithValue(json);
-//   }
-//   return json;
-// }
-// else if(payload.isTeamPresent == false){
-//  const url1 = URL.GET_TARGET_PARAMS_EMP();
-//  const response = await client.post(url1, payload);
-//  const json = await response.json();
-//  delete payload.isTeamPresent;
-//  if (!response.ok) {
-//    return rejectWithValue(json);
-//  }
-//  return json;
-// }
-
-    // console.log("&&&&&& DATA SELF $$$$$$$:", JSON.stringify(json));
 })
 
-export const getGroupDealerRanking = createAsyncThunk("HOME/getGroupDealerRanking", async (payload: any, { rejectWithValue }) => {
-    console.log("%%%%DEALER", URL.GET_TARGET_GROUP_RANKING(payload.orgId), payload.payload);
+export const getGroupDealerRanking = createAsyncThunk("LIVE_LEADS/getGroupDealerRanking", async (payload: any, { rejectWithValue }) => {
 
     const response = await client.post(URL.GET_TARGET_GROUP_RANKING(payload.orgId), payload.payload)
     const json = await response.json()
-    console.log("&&&&&& DATA:", json);
 
     if (!response.ok) {
         return rejectWithValue(json);
@@ -277,12 +237,9 @@ export const getGroupDealerRanking = createAsyncThunk("HOME/getGroupDealerRankin
     return json;
 })
 
-export const getDealerRanking = createAsyncThunk("HOME/getDealerRanking", async (payload: any, { rejectWithValue }) => {
-    console.log({payload})
-    console.log("%%%BRANCH", URL.GET_TARGET_RANKING(payload.orgId, payload.branchId), payload.payload);
+export const getDealerRanking = createAsyncThunk("LIVE_LEADS/getDealerRanking", async (payload: any, { rejectWithValue }) => {
     const response = await client.post(URL.GET_TARGET_RANKING(payload.orgId, payload.branchId), payload.payload)
     const json = await response.json()
-    // console.log("&&&&&& DATA GET_TARGET_RANKING:", json);
 
     if (!response.ok) {
         return rejectWithValue(json);
@@ -290,7 +247,7 @@ export const getDealerRanking = createAsyncThunk("HOME/getDealerRanking", async 
     return json;
 })
 
-export const getEmployeesDropDownData = createAsyncThunk("HOME/getEmployeesDropDownData", async (payload: any, { rejectWithValue }) => {
+export const getEmployeesDropDownData = createAsyncThunk("LIVE_LEADS/getEmployeesDropDownData", async (payload: any, { rejectWithValue }) => {
 
     const response = await client.post(URL.GET_EMPLOYEES_DROP_DOWN_DATA(payload.orgId, payload.empId), payload.selectedIds)
     const json = await response.json()
@@ -301,7 +258,7 @@ export const getEmployeesDropDownData = createAsyncThunk("HOME/getEmployeesDropD
     return json;
 })
 
-export const getSalesData = createAsyncThunk("HOME/getSalesData", async (payload: any, { rejectWithValue }) => {
+export const getSalesData = createAsyncThunk("LIVE_LEADS/getSalesData", async (payload: any, { rejectWithValue }) => {
 
     const response = await client.post(URL.GET_SALES_DATA(), payload)
     const json = await response.json()
@@ -311,7 +268,7 @@ export const getSalesData = createAsyncThunk("HOME/getSalesData", async (payload
     return json;
 })
 
-export const getSalesComparisonData = createAsyncThunk("HOME/getSalesComparisonData", async (payload: any, { rejectWithValue }) => {
+export const getSalesComparisonData = createAsyncThunk("LIVE_LEADS/getSalesComparisonData", async (payload: any, { rejectWithValue }) => {
 
     const response = await client.post(URL.GET_SALES_COMPARISON_DATA(), payload)
     const json = await response.json()
@@ -321,12 +278,10 @@ export const getSalesComparisonData = createAsyncThunk("HOME/getSalesComparisonD
     return json;
 })
 
-export const getBranchIds = createAsyncThunk("HOME/getBranchIds", async (payload: any, { rejectWithValue }) => {
-    // console.log("CALLED");
+export const getBranchIds = createAsyncThunk("LIVE_LEADS/getBranchIds", async (payload: any, { rejectWithValue }) => {
 
     const response = await client.get(URL.GET_BRANCH())
     const json = await response.json()
-    // console.log("SUCCESS:", json);
 
     if (!response.ok) {
         return rejectWithValue(json);
@@ -334,11 +289,10 @@ export const getBranchIds = createAsyncThunk("HOME/getBranchIds", async (payload
     return json;
 })
 
-export const downloadFile = createAsyncThunk("HOME/downloadFile", async (payload: any, { rejectWithValue }) => {
+export const downloadFile = createAsyncThunk("LIVE_LEADS/downloadFile", async (payload: any, { rejectWithValue }) => {
 
     const response = await client.post(URL.DOWNLOAD_FILE(), payload)
     const json = await response.json()
-    // console.log("DOWNLOAD: ", json);
 
     if (!response.ok) {
         return rejectWithValue(json);
@@ -347,13 +301,11 @@ export const downloadFile = createAsyncThunk("HOME/downloadFile", async (payload
 })
 
 
-export const updateIsTeam = createAsyncThunk("HOME/updateIsTeam", async (payload: any) => {
-    // console.log("PPP", payload);
-
+export const updateIsTeam = createAsyncThunk("LIVE_LEADS/updateIsTeam", async (payload: any) => {
     return payload;
 })
 
-export const getEmployeesList = createAsyncThunk("HOME/getEmployeesList", async (payload, { rejectWithValue }) => {
+export const getEmployeesList = createAsyncThunk("LIVE_LEADS/getEmployeesList", async (payload, { rejectWithValue }) => {
     const response = await client.get(URL.GET_EMPLOYEE_LIST(
         payload["empId"]));
     const json = await response.json();
@@ -391,7 +343,7 @@ export const getDesignationDropdown = createAsyncThunk("TASK_TRANSFER/getDesigna
     return json;
 });
 
-export const getReportingManagerList = createAsyncThunk("HOME/getReportingManagerList", async (orgID, { rejectWithValue }) => {
+export const getReportingManagerList = createAsyncThunk("LIVE_LEADS/getReportingManagerList", async (orgID, { rejectWithValue }) => {
     const response = await client.get(URL.GET_REPORTING_MANAGER_LIST(orgID))
     const json = await response.json();
     if (!response.ok) {
@@ -400,15 +352,7 @@ export const getReportingManagerList = createAsyncThunk("HOME/getReportingManage
     return json;
 })
 
-export const delegateTask = createAsyncThunk("HOME/delegateTask", async (payload, { rejectWithValue }) => {
-    console.log("EMP URL:", URL.TRANSFER_TASK(
-        payload["fromUserId"],
-        payload["toUserId"]
-    ), {
-        fromEmpId: payload["fromUserId"].toString(),
-        toEmpId: payload["toUserId"].toString()
-    });
-
+export const delegateTask = createAsyncThunk("LIVE_LEADS/delegateTask", async (payload, { rejectWithValue }) => {
     const response = await client.post(URL.TRANSFER_TASK(
         payload["fromUserId"],
         payload["toUserId"]
@@ -423,7 +367,7 @@ export const delegateTask = createAsyncThunk("HOME/delegateTask", async (payload
     return json;
 });
 
-export const updateEmployeeDataBasedOnDelegate = createAsyncThunk("HOME/updateEmployeeDataBasedOnDelegate", async (body, { rejectWithValue }) => {
+export const updateEmployeeDataBasedOnDelegate = createAsyncThunk("LIVE_LEADS/updateEmployeeDataBasedOnDelegate", async (body, { rejectWithValue }) => {
     const response = await client.put(URL.EMPLOYEE_DATA_UPDATE(body["empID"], body["managerID"]))
     const json = await response.json()
     if (!response.ok) {
@@ -432,7 +376,7 @@ export const updateEmployeeDataBasedOnDelegate = createAsyncThunk("HOME/updateEm
     return json;
 })
 
-export const getLeaderBoardList = createAsyncThunk("HOME/getLeaderBoardList", async (payload: any, { rejectWithValue }) => {
+export const getLeaderBoardList = createAsyncThunk("LIVE_LEADS/getLeaderBoardList", async (payload: any, { rejectWithValue }) => {
     const response = await client.post(URL.GET_LEADERBOARD_DATA(payload.orgId), payload)
     const json = await response.json();
     if (!response.ok) {
@@ -441,7 +385,7 @@ export const getLeaderBoardList = createAsyncThunk("HOME/getLeaderBoardList", as
     return json;
 })
 
-export const getBranchRanksList = createAsyncThunk("HOME/getBranchRanksList", async (payload, { rejectWithValue }) => {
+export const getBranchRanksList = createAsyncThunk("LIVE_LEADS/getBranchRanksList", async (payload, { rejectWithValue }) => {
     const response = await client.post(URL.GET_BRANCH_RANKING_DATA(payload.orgId, payload.branchId), payload);
     const json = await response.json();
     if (!response.ok) {
@@ -450,52 +394,19 @@ export const getBranchRanksList = createAsyncThunk("HOME/getBranchRanksList", as
     return json;
 })
 
-export const getSourceModelDataForSelf = createAsyncThunk("HOME/getSourceModelDataForSelf", async (data: any, { rejectWithValue }) => {
+export const getSourceModelDataForSelf = createAsyncThunk("LIVE_LEADS/getSourceModelDataForSelf", async (data: any, { rejectWithValue }) => {
     const {type, payload} = data;
-    console.log(']oiuyuiop[: ', data.type);
     const url = type === 'SELF' ? URL.MODEL_SOURCE_SELF() : type === 'INSIGHTS' ? URL.MODEL_SOURCE_INSIGHTS() : URL.MODEL_SOURCE_TEAM();
 
-    console.log("]oiuyuiop[: =========>:", url);
     const response = await client.post(url, payload);
     const json = await response.json()
 
-    console.log("&&&&&& DATA $$$$$$$:", JSON.stringify(json));
-
     if (!response.ok) {
         return rejectWithValue(json);
     }
     return json;
 })
 
-export const getSourceModelDataForInsights = createAsyncThunk("HOME/getSourceModelDataForInsights", async (data: any, { rejectWithValue }) => {
-    const payload = data.payload;
-
-    console.log("PAYLOAD=========>:", payload);
-    const response = await client.post(URL.MODEL_SOURCE_INSIGHTS(), payload);
-    const json = await response.json()
-
-    console.log("&&&&&& DATA $$$$$$$:", JSON.stringify(json));
-
-    if (!response.ok) {
-        return rejectWithValue(json);
-    }
-    return json;
-})
-
-export const getSourceModelDataForTeam = createAsyncThunk("HOME/getSourceModelDataForTeam", async (data: any, { rejectWithValue }) => {
-    const payload = data.payload;
-
-    console.log("PAYLOAD=========>:", payload);
-    const response = await client.post(URL.MODEL_SOURCE_TEAM(), payload);
-    const json = await response.json()
-
-    console.log("&&&&&& DATA $$$$$$$:", JSON.stringify(json));
-
-    if (!response.ok) {
-        return rejectWithValue(json);
-    }
-    return json;
-})
 
 const AVAILABLE_SCREENS = [
     {
@@ -508,8 +419,8 @@ const AVAILABLE_SCREENS = [
     }
 ]
 
-export const homeSlice = createSlice({
-    name: "HOME",
+export const liveLeadsSlice = createSlice({
+    name: "LIVE_LEADS",
     initialState: {
         serchtext: "",
         employeeId: "",
@@ -572,8 +483,6 @@ export const homeSlice = createSlice({
             state.isDSE = action.payload;
         },
         updateTargetData: (state, action) => {
-            console.log("CALLED REDUX:", action.payload);
-
             state.target_parameters_data = action.payload.targetData;
             state.all_target_parameters_data = action.payload.allTargetData;
             // state.all_emp_parameters_data = action.payload.allEmpData;
@@ -632,7 +541,6 @@ export const homeSlice = createSlice({
                 state.branchesList = [];
             })
             .addCase(getMenuList.fulfilled, (state, action) => {
-                // console.log('menu_list: ', JSON.stringify(action.payload));
                 const dmsEntityObj = action.payload.dmsEntity;
                 const menuList = dmsEntityObj.menuList;
 
@@ -659,12 +567,9 @@ export const homeSlice = createSlice({
                 state.branchesList = [];
             })
             .addCase(updateIsTeam.fulfilled, (state, action) => {
-                // console.log("TEAM: ", action.payload);
-
                 state.isTeam = action.payload;
             })
             .addCase(getCustomerTypeList.fulfilled, (state, action) => {
-                //console.log('customer_type_list: ', action.payload);
                 const data = action.payload;
                 let typeList = [];
                 data.forEach(item => {
@@ -677,7 +582,6 @@ export const homeSlice = createSlice({
                 state.source_of_enquiry_list = [];
             })
             .addCase(getSourceOfEnquiryList.fulfilled, (state, action) => {
-                //console.log("getSourceOfEnquiryList S: ", JSON.stringify(action.payload))
                 if (action.payload) {
                     const sourceList = action.payload;
                     let modalList = [];
@@ -697,7 +601,6 @@ export const homeSlice = createSlice({
                 state.vehicle_model_list_for_filters = [];
             })
             .addCase(getVehicalModalList.fulfilled, (state, action) => {
-                //console.log("getSourceOfEnquiryList S: ", JSON.stringify(action.payload))
                 if (action.payload) {
                     const modalList = action.payload;
                     let sourceList = [];
@@ -717,20 +620,17 @@ export const homeSlice = createSlice({
 
             })
             .addCase(getOrganaizationHirarchyList.fulfilled, (state, action) => {
-                // console.log("S getOrganaizationHirarchyList: ", JSON.stringify(action.payload));
                 if (action.payload) {
                     state.filter_drop_down_data = action.payload;
                 }
             })
             .addCase(getOrganaizationHirarchyList.rejected, (state, action) => {
-                // console.log("F getOrganaizationHirarchyList: ", JSON.stringify(action.payload));
             })
             // Get Lead Source Table List
             .addCase(getLeadSourceTableList.pending, (state, action) => {
                 state.lead_source_table_data = [];
             })
             .addCase(getLeadSourceTableList.fulfilled, (state, action) => {
-                //console.log("S getLeadSourceTableList: ", JSON.stringify(action.payload));
                 if (action.payload) {
                     state.lead_source_table_data = action.payload;
                 }
@@ -743,7 +643,6 @@ export const homeSlice = createSlice({
                 state.vehicle_model_table_data = [];
             })
             .addCase(getVehicleModelTableList.fulfilled, (state, action) => {
-                //console.log("S getVehicleModelTableList: ", JSON.stringify(action.payload));
                 if (action.payload) {
                     state.vehicle_model_table_data = action.payload;
                 }
@@ -756,7 +655,6 @@ export const homeSlice = createSlice({
                 state.events_table_data = [];
             })
             .addCase(getEventTableList.fulfilled, (state, action) => {
-                // console.log("S getEventTableList: ", JSON.stringify(action.payload));
                 if (action.payload) {
                     state.events_table_data = action.payload;
                 }
@@ -769,7 +667,6 @@ export const homeSlice = createSlice({
                 state.task_table_data = {};
             })
             .addCase(getTaskTableList.fulfilled, (state, action) => {
-                //console.log("S getTaskTableList: ", JSON.stringify(action.payload));
                 if (action.payload) {
                     state.task_table_data = action.payload;
                 }
@@ -782,7 +679,6 @@ export const homeSlice = createSlice({
                 state.lost_drop_chart_data = {};
             })
             .addCase(getLostDropChartData.fulfilled, (state, action) => {
-                //console.log("S getLostDropChartData: ", JSON.stringify(action.payload));
                 if (action.payload) {
                     state.lost_drop_chart_data = action.payload;
                 }
@@ -792,18 +688,20 @@ export const homeSlice = createSlice({
             })
             // Get Target Parameters Data
             .addCase(getTargetParametersData.pending, (state, action) => {
-                // state.target_parameters_data = [];
+                state.target_parameters_data = [];
+                state.isLoading = true;
             })
             .addCase(getTargetParametersData.fulfilled, (state, action) => {
                 if (action.payload) {
-                    // state.target_parameters_data = [];
-                    console.log("actionqweertyuioppooooooooo",action.payload )
+                    state.target_parameters_data = [];
                     state.target_parameters_data = action.payload;
                     AsyncStore.storeData('TARGET_DATA', JSON.stringify(action.payload))
                 }
+                // state.isLoading = false;
             })
             .addCase(getTargetParametersData.rejected, (state, action) => {
-                // state.target_parameters_data = [];
+                state.target_parameters_data = [];
+                // state.isLoading = false;
             })
             .addCase(getTargetParametersAllData.pending, (state, action) => {
                 // state.all_target_parameters_data = [];
@@ -811,11 +709,9 @@ export const homeSlice = createSlice({
             })
             .addCase(getTargetParametersAllData.fulfilled, (state, action) => {
                 if (action.payload) {
-                    // console.log("^%$%&*^&*^&*&*& SET %&&&*%^$%&*&^%", JSON.stringify(action.payload.overallTargetAchivements));
 
                     // state.all_target_parameters_data = [];
                     // state.all_emp_parameters_data = [];
-                    // console.log(action.payload.employeeTargetAchievements, "dashboard")
                     state.isTeamPresent = action.payload.employeeTargetAchievements.length > 1;
                     state.all_target_parameters_data = action.payload.overallTargetAchivements;
                     state.all_emp_parameters_data = action.payload.employeeTargetAchievements;
@@ -868,7 +764,6 @@ export const homeSlice = createSlice({
                 state.sales_data = {};
             })
             .addCase(getSalesData.fulfilled, (state, action) => {
-                // console.log("S getSalesData: ", JSON.stringify(action.payload));
                 if (action.payload) {
                     state.sales_data = action.payload;
                 }
@@ -881,7 +776,6 @@ export const homeSlice = createSlice({
                 state.sales_comparison_data = [];
             })
             .addCase(getSalesComparisonData.fulfilled, (state, action) => {
-                //console.log("S getSalesComparisonData: ", JSON.stringify(action.payload));
                 if (action.payload) {
                     state.sales_comparison_data = action.payload;
                 }
@@ -890,37 +784,40 @@ export const homeSlice = createSlice({
                 state.sales_comparison_data = [];
             })
             .addCase(getTargetParametersEmpData.pending, (state, action) => {
-                //state.self_target_parameters_data = [];
+                state.self_target_parameters_data = empData;
                 state.isLoading = true;
             })
             .addCase(getTargetParametersEmpData.fulfilled, (state, action) => {
-                //console.log("S getSalesComparisonData: ", JSON.stringify(action.payload));
-                //console.log("ACT=======>",action.payload)
                 if (action.payload) {
-                    state.self_target_parameters_data = action.payload;
-                    AsyncStore.storeData('TARGET_EMP', JSON.stringify(action.payload))
+                    const payloadData = [...action.payload];
+                    payloadData.forEach(x => {
+                        const {data, ...rest} = x;
+                        x = rest;
+                    })
+                    state.self_target_parameters_data = payloadData;
+                    AsyncStore.storeData('TARGET_EMP', JSON.stringify(payloadData))
                 } else{
                     state.self_target_parameters_data = empData
                 }
                 state.isLoading = false;
             })
             .addCase(getTargetParametersEmpData.rejected, (state, action) => {
-                //state.self_target_parameters_data = [];
+                state.self_target_parameters_data = empData;
                 state.isLoading = false;
             })
             .addCase(getTargetParametersEmpDataInsights.pending, (state, action) => {
-                //state.self_target_parameters_data = [];
+                state.insights_target_parameters_data = empData;
                 state.isLoading = true;
             })
             .addCase(getTargetParametersEmpDataInsights.fulfilled, (state, action) => {
                 if (action.payload) {
-                    console.log(
-                      "kjskskkkssksksjkjksjksjksjkjkjksjk",
-                      action.payload
-                    );
-
-                    state.insights_target_parameters_data = action.payload;
-                    AsyncStore.storeData('TARGET_EMP', JSON.stringify(action.payload))
+                    const payloadData = [...action.payload];
+                    payloadData.forEach(x => {
+                        const {data, ...rest} = x;
+                        x = rest;
+                    })
+                    state.insights_target_parameters_data = payloadData;
+                    AsyncStore.storeData('TARGET_EMP', JSON.stringify(payloadData))
                 }
                 state.isLoading = false;
             })
@@ -935,11 +832,9 @@ export const homeSlice = createSlice({
             })
             .addCase(getNewTargetParametersAllData.fulfilled, (state, action) => {
                 if (action.payload) {
-                    // console.log("^%$%&*^&*^&*&*& SET %&&&*%^$%&*&^%", JSON.stringify(action.payload.overallTargetAchivements));
 
                     // state.all_target_parameters_data = [];
                     // state.all_emp_parameters_data = [];
-                    // console.log(action.payload.employeeTargetAchievements, "dashboard")
                     state.isTeamPresent = action.payload.employeeTargetAchievements.length > 1;
                     state.all_target_parameters_data = action.payload.overallTargetAchivements;
                     state.all_emp_parameters_data = action.payload.employeeTargetAchievements;
@@ -953,15 +848,13 @@ export const homeSlice = createSlice({
             })
 
             .addCase(getTotalTargetParametersData.pending, (state, action) => {
- if (action.payload) {
-   console.log("TOTAL DATA PEN: ", JSON.stringify(action.payload));
+                 if (action.payload) {
 
-   state.totalParameters = action.payload;
- }
+                   state.totalParameters = action.payload;
+                 }
             })
             .addCase(getTotalTargetParametersData.fulfilled, (state, action) => {
                 if (action.payload) {
-                    console.log("TOTAL DATA: ", JSON.stringify(action.payload));
                     state.totalParameters = action.payload;
                 }
             })
@@ -974,76 +867,70 @@ export const homeSlice = createSlice({
                 state.isLoading = true;
             })
             .addCase(getEmployeesList.fulfilled, (state, action) => {
-                console.log("S getEmployeesList: ", JSON.stringify(action.payload));
                 if (action.payload) {
                     const dataObj = action.payload;
                     // state.employee_list = dataObj ? dataObj.dmsEntity.employees : [];
                     state.employee_list = dataObj ? dataObj : [];
-                    state.isLoading = false;
-                    console.log("IS LOADING: ", state.isLoading);
+                    // state.isLoading = false;
                 }
             })
             .addCase(getEmployeesList.rejected, (state, action) => {
                 // state.employee_list = [];
-                state.isLoading = false;
+                // state.isLoading = false;
             })
             .addCase(getReportingManagerList.pending, (state, action) => {
                 // state.reporting_manager_list = [];
                 state.isLoading = true;
             })
             .addCase(getReportingManagerList.fulfilled, (state, action) => {
-                //console.log("S getEmployeesList: ", JSON.stringify(action.payload));
                 if (action.payload) {
                     const dataObj = action.payload;
                     state.reporting_manager_list = dataObj ? dataObj : [];
-                    state.isLoading = false;
+                    // state.isLoading = false;
                 }
             })
             .addCase(getReportingManagerList.rejected, (state, action) => {
                 // state.reporting_manager_list = [];
-                state.isLoading = false;
+                // state.isLoading = false;
             })
             .addCase(updateEmployeeDataBasedOnDelegate.pending, (state) => {
                 state.isLoading = true;
             })
             .addCase(updateEmployeeDataBasedOnDelegate.fulfilled, (state, action) => {
-                // console.log("res2: ", action.payload);
                 const dataObj = action.payload;
-                    state.isLoading = false;
+                    // state.isLoading = false;
                 if (action.payload.success){
                     showToast("Successfully updated")
                 }
             })
             .addCase(updateEmployeeDataBasedOnDelegate.rejected, (state, action) => {
-                state.isLoading = false;
+                // state.isLoading = false;
             })
             .addCase(getLeaderBoardList.pending, (state) => {
                 state.isLoading = true;
             })
             .addCase(getLeaderBoardList.fulfilled, (state, action) => {
-                // console.log("res2: ", action.payload);
                 const dataObj = action.payload;
                 state.leaderboard_list = dataObj ? dataObj : [];
                 if(!dataObj || dataObj.length === 0)
                 showToast('No data available')
-                state.isLoading = false;
+                // state.isLoading = false;
             })
             .addCase(getLeaderBoardList.rejected, (state, action) => {
-                state.isLoading = false;
+                // state.isLoading = false;
             })
             .addCase(getBranchRanksList.pending, (state) => {
                 state.isLoading = true;
             })
             .addCase(getBranchRanksList.fulfilled, (state, action) => {
-                // console.log("res2: ", action.payload);
                 const dataObj = action.payload;
                 state.branchrank_list = dataObj ? dataObj : [];
                 if (!dataObj || dataObj.length === 0)
                     showToast('No data available')
-                state.isLoading = false;
+                // state.isLoading = false;
             })
             .addCase(getBranchRanksList.rejected, (state, action) => {
-                state.isLoading = false;
+                // state.isLoading = false;
             })
             .addCase(getSourceModelDataForSelf.pending, (state, action) => {
                 state.isLoading = true;
@@ -1052,7 +939,6 @@ export const homeSlice = createSlice({
             .addCase(getSourceModelDataForSelf.fulfilled, (state, action) => {
                 state.isLoading = false;
                 if (action.payload) {
-                    console.log("TOTAL DATA: ", JSON.stringify(action.payload));
                     state.sourceModelData = action.payload;
                 }
             })
@@ -1072,7 +958,7 @@ export const homeSlice = createSlice({
             // state.isLoading = false;
         })
         builder.addCase(getDeptDropdown.rejected, (state, action) => {
-            state.isLoading = false;
+            // state.isLoading = false;
         })
 
         // Get Designation List
@@ -1087,11 +973,11 @@ export const homeSlice = createSlice({
             // state.isLoading = false;
         })
         builder.addCase(getDesignationDropdown.rejected, (state, action) => {
-            state.isLoading = false;
+            // state.isLoading = false;
         })
     }
 });
 
-export const { dateSelected, updateFilterDropDownData, updateIsTeamPresent, updateIsMD, updateIsDSE, clearState, updateTargetData } = homeSlice.actions;
-export default homeSlice.reducer;
+export const { dateSelected, updateFilterDropDownData, updateIsTeamPresent, updateIsMD, updateIsDSE, clearState, updateTargetData } = liveLeadsSlice.actions;
+export default liveLeadsSlice.reducer;
 

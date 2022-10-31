@@ -277,6 +277,8 @@ const TestDriveScreen = ({ route, navigation }) => {
                         } else {
                             primaryModel = dmsLeadProducts[0];
                         }
+
+                        
                         const {model, variant, fuel, transimmisionType} = primaryModel;
                         setSelectedVehicleDetails({
                             model,
@@ -296,29 +298,39 @@ const TestDriveScreen = ({ route, navigation }) => {
 
     // Handle Task Details Response
     useEffect(() => {
-        if (selector.test_drive_vehicle_list_for_drop_down.length > 0 && selectedVehicleDetails?.varient !== '') {
-            let tempObj = { ...selectedVehicleDetails };
-            let findModel = [];
-            console.log("MODELS: ", selector.test_drive_vehicle_list_for_drop_down);
-            findModel = selector.test_drive_vehicle_list_for_drop_down.filter((item) => {
-                return item.varientName === selectedVehicleDetails.varient || item.model === selectedVehicleDetails.model
-            })
-            if (findModel.length > 0) {
-                console.log('find model: ', findModel)
-                tempObj.vehicleId = findModel[0].vehicleId;
-                tempObj.varientId = findModel[0].varientId;
+        if (
+          selector.test_drive_vehicle_list_for_drop_down.length > 0 &&
+          selectedVehicleDetails?.varient !== ""
+        ) {
+          let tempObj = { ...selectedVehicleDetails };
+          let findModel = [];
+          findModel = selector.test_drive_vehicle_list_for_drop_down.filter(
+            (item) => {
+              return (
+                item.varientName === selectedVehicleDetails.varient ||
+                item.model === selectedVehicleDetails.model
+              );
+            }
+          );
+          if (findModel.length > 0) {
+            tempObj.vehicleId = findModel[0].vehicleId;
+            tempObj.varientId = findModel[0].varientId;
 
-                if (selector.test_drive_varients_obj_for_drop_down[findModel[0].model]) {
-                    const varientsData =
-                        selector.test_drive_varients_obj_for_drop_down[findModel[0].model];
-                    setVarientListForDropDown(varientsData);
-                }
+            if (
+              selector.test_drive_varients_obj_for_drop_down[findModel[0].model]
+            ) {
+              const varientsData =
+                selector.test_drive_varients_obj_for_drop_down[
+                  findModel[0].model
+                ];
+              setVarientListForDropDown(varientsData);
             }
-            else{
-                tempObj.fuelType = '';
-                tempObj.transType = '';
-            }
-            setSelectedVehicleDetails(tempObj)
+          } else {
+            tempObj.fuelType = "";
+            tempObj.transType = "";
+          }
+
+          setSelectedVehicleDetails(tempObj);
         }
     }, [selector.test_drive_vehicle_list_for_drop_down]);
 
@@ -329,39 +341,68 @@ const TestDriveScreen = ({ route, navigation }) => {
     }, [selector.task_details_response, taskStatusAndName])
 
     const getTestDriveAppointmentDetailsFromServer = async () => {
-        if (selector.task_details_response.entityModuleId) {
-            const employeeData = await AsyncStore.getData(
-                AsyncStore.Keys.LOGIN_EMPLOYEE
-            );
-            if (employeeData) {
-                const jsonObj = JSON.parse(employeeData);
-                const payload = {
-                    barnchId: selectedBranchId,
-                    orgId: jsonObj.orgId,
-                    entityModuleId: selector.task_details_response.entityModuleId,
-                };
-                console.log("getTestDriveAppointmentDetailsApi PAYLOAD:", payload);
-                dispatch(getTestDriveAppointmentDetailsApi(payload));
-            }
-
+      if (selector.task_details_response.entityModuleId) {
+        const employeeData = await AsyncStore.getData(
+          AsyncStore.Keys.LOGIN_EMPLOYEE
+        );
+        if (employeeData) {
+          const jsonObj = JSON.parse(employeeData);
+          const payload = {
+            barnchId: selectedBranchId,
+            orgId: jsonObj.orgId,
+            entityModuleId: selector.task_details_response.entityModuleId,
+          };
+          dispatch(getTestDriveAppointmentDetailsApi(payload));
         }
+      }
     };
 
     useEffect(() => {
-        if (selector.test_drive_appointment_details_response) {
-            const {status, vehicleId, varientId} = selector.test_drive_appointment_details_response; // /testdrive/history?branchId
-            if (status === "SENT_FOR_APPROVAL") {
-                const selectedModel = selector.test_drive_vehicle_list.filter((item) => { // demoVehicle/vehicles?branchId
-                    return item.varientId === varientId && item.vehicleId === vehicleId
-                })
-                if (selectedModel.length > 0) {
-                        const {fuelType, model, transmission_type, varientName, varientId, vehicleId} = selectedModel[0].vehicleInfo;
-                        setSelectedVehicleDetails({varient: varientName, fuelType, model, transType: transmission_type, varientId, vehicleId});
-                }
-            }
-            setIsRecordEditable(false);
-            updateTaskDetails(selector.test_drive_appointment_details_response)
+      if (selector.test_drive_appointment_details_response) {
+        let vehicleId =
+          selector.test_drive_appointment_details_response.vehicleId;
+        let varientId =
+          selector.test_drive_appointment_details_response.varientId;
+
+        if (selector.test_drive_appointment_details_response.vehicleInfo) {
+          vehicleId =
+            selector.test_drive_appointment_details_response.vehicleInfo
+              .vehicleId;
+          varientId =
+            selector.test_drive_appointment_details_response.vehicleInfo
+              .varientId;
         }
+
+        const selectedModel = selector.test_drive_vehicle_list.filter(
+          (item) => {
+            return item.varientId === varientId && item.vehicleId === vehicleId;
+          }
+        );
+
+        if (selectedModel.length > 0) {
+          const {
+            fuelType,
+            model,
+            transmission_type,
+            varientName,
+            varientId,
+            vehicleId,
+          } = selectedModel[0].vehicleInfo;
+
+          setTimeout(() => {
+            setSelectedVehicleDetails({
+              varient: varientName,
+              fuelType,
+              model,
+              transType: transmission_type,
+              varientId,
+              vehicleId,
+            });
+          }, 2000);
+        }
+        setIsRecordEditable(false);
+        updateTaskDetails(selector.test_drive_appointment_details_response);
+      }
     }, [selector.test_drive_appointment_details_response]);
 
     useEffect(() => {
@@ -380,7 +421,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 setHandleActionButtons(3);
             } else if (taskStatus === "APPROVED" && taskName === "Test Drive") {
                 console.log("INSIDE B");
-                setHandleActionButtons(2);              //
+                setHandleActionButtons(4);              //
             } else if (taskStatus === "CANCELLED") {    //
                 setHandleActionButtons(5);           
             }
@@ -848,7 +889,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                     text: "OK",
                     onPress: () => {
                         dispatch(clearState());
-                        navigation.goBack();
+                        navigation.popToTop();
                     },
                 },
             ],
@@ -1010,6 +1051,13 @@ const TestDriveScreen = ({ route, navigation }) => {
         }
     }, [selector.validate_otp_response_status])
 
+    const isViewMode = () => {
+      if (route?.params?.taskStatus === "CLOSED") {
+        return true;
+      }
+      return false;
+    };
+
     return (
       <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
         <ImagePickerComponent
@@ -1109,8 +1157,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                   style={{ height: 65, width: "100%" }}
                   value={name}
                   label={"Name*"}
-                  editable={true}
-                  disabled={false}
+                  disabled={isViewMode()}
                   onChangeText={(text) => setName(text)}
                 />
                 <Text
@@ -1129,8 +1176,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                   value={email}
                   label={"Email ID"}
                   keyboardType={"email-address"}
-                  editable={true}
-                  disabled={false}
+                  disabled={isViewMode()}
                   onChangeText={(text) => setEmail(text)}
                 />
                 <Text style={[GlobalStyle.underline]}></Text>
@@ -1140,8 +1186,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                   label={"Mobile Number*"}
                   maxLength={10}
                   keyboardType={"phone-pad"}
-                  editable={true}
-                  disabled={false}
+                  disabled={isViewMode()}
                   onChangeText={(text) => setMobileNumber(text)}
                 />
                 <Text
@@ -1164,7 +1209,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                       : ""
                   }
                   // disabled={!isRecordEditable}
-                  disabled={false}
+                  disabled={isViewMode()}
                   onPress={() => showDropDownModelMethod("MODEL", "Model")}
                 />
                 <Text
@@ -1186,7 +1231,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                       : ""
                   }
                   // disabled={!isRecordEditable}
-                  disabled={false}
+                  disabled={isViewMode()}
                   onPress={() => showDropDownModelMethod("VARIENT", "Varient")}
                 />
                 <Text
@@ -1226,12 +1271,14 @@ const TestDriveScreen = ({ route, navigation }) => {
                     label={"Showroom address"}
                     value={"Showroom address"}
                     status={addressType === 1}
+                    disabled={isViewMode()}
                     onPress={() => setAddressType(1)}
                   />
                   <RadioTextItem
                     label={"Customer address"}
                     value={"Customer address"}
                     status={addressType === 2}
+                    disabled={isViewMode()}
                     onPress={() => setAddressType(2)}
                   />
                 </View>
@@ -1242,6 +1289,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                     <TextinputComp
                       style={{ height: 65, maxHeight: 100, width: "100%" }}
                       value={customerAddress}
+                      disabled={isViewMode()}
                       label={"Customer Address"}
                       multiline={true}
                       numberOfLines={4}
@@ -1262,12 +1310,14 @@ const TestDriveScreen = ({ route, navigation }) => {
                   }}
                 >
                   <RadioTextItem
+                    disabled={isViewMode()}
                     label={"Yes"}
                     value={"Yes"}
                     status={customerHavingDrivingLicense === 1}
                     onPress={() => setCustomerHavingDrivingLicense(1)}
                   />
                   <RadioTextItem
+                    disabled={isViewMode()}
                     label={"No"}
                     value={"No"}
                     status={customerHavingDrivingLicense === 2}
@@ -1282,6 +1332,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                         onPress={() =>
                           showImagePickerMethod("DRIVING_LICENSE_FRONT")
                         }
+                        disabled={isViewMode()}
                       />
                     </View>
                     {uploadedImagesDataObj.dlFrontUrl ? (
@@ -1330,6 +1381,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                         onPress={() =>
                           showImagePickerMethod("DRIVING_LICENSE_BACK")
                         }
+                        disabled={isViewMode()}
                       />
                     </View>
                     {uploadedImagesDataObj.dlBackUrl ? (
@@ -1378,7 +1430,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                   label={"Customer Preferred Date*"}
                   value={selector.customer_preferred_date}
                   // disabled={!isRecordEditable}
-                  disabled={false}
+                  disabled={isViewMode()}
                   onPress={() =>
                     showDatePickerModelMethod("PREFERRED_DATE", "date")
                   }
@@ -1403,7 +1455,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                   label={"List of Drivers"}
                   value={selectedDriverDetails.name}
                   // disabled={!isRecordEditable}
-                  disabled={false}
+                  disabled={isViewMode()}
                   onPress={() =>
                     showDropDownModelMethod(
                       "LIST_OF_DRIVERS",
@@ -1415,7 +1467,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                   label={"Customer Preferred Time*"}
                   value={selector.customer_preferred_time}
                   // disabled={!isRecordEditable}
-                  disabled={false}
+                  disabled={isViewMode()}
                   onPress={() =>
                     showDatePickerModelMethod("CUSTOMER_PREFERRED_TIME", "time")
                   }
@@ -1437,7 +1489,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                   label={"Actual start Time*"}
                   value={selector.actual_start_time}
                   // disabled={!isRecordEditable}
-                  disabled={false}
+                  disabled={isViewMode()}
                   onPress={() =>
                     showDatePickerModelMethod("ACTUAL_START_TIME", "time")
                   }
@@ -1458,7 +1510,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 <DateSelectItem
                   label={"Actual End Time*"}
                   value={selector.actual_end_time}
-                  disabled={false}
+                  disabled={isViewMode()}
                   // disabled={!isRecordEditable}
                   onPress={() =>
                     showDatePickerModelMethod("ACTUAL_END_TIME", "time")
@@ -1490,7 +1542,7 @@ const TestDriveScreen = ({ route, navigation }) => {
               </View>
             </View>
 
-            {handleActionButtons === 1 && (
+            {handleActionButtons === 1 && !isViewMode() && (
               <View style={styles.view1}>
                 <LocalButtonComp
                   title={"Close"}
@@ -1506,7 +1558,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 />
               </View>
             )}
-            {handleActionButtons === 2 && (
+            {handleActionButtons === 2 && !isViewMode() && (
               <View style={styles.view1}>
                 <LocalButtonComp
                   title={"Close"}
@@ -1520,7 +1572,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 />
               </View>
             )}
-            {handleActionButtons === 3 && (
+            {handleActionButtons === 3 && !isViewMode() && (
               <View style={styles.view1}>
                 <LocalButtonComp
                   title={"Reject"}
@@ -1539,7 +1591,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 />
               </View>
             )}
-            {handleActionButtons === 4 && (
+            {handleActionButtons === 4 && !isViewMode() && (
               <View style={styles.view1}>
                 <LocalButtonComp
                   title={"Close"}

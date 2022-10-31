@@ -135,6 +135,7 @@ import {
     EnquiryTypes21,
     EnquiryTypes22
 } from "../../../jsonData/preEnquiryScreenJsonData";
+import { EmsTopTabNavigatorIdentifiers } from "../../../navigations/emsTopTabNavigator";
 
 const rupeeSymbol = "\u20B9";
 
@@ -338,16 +339,22 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
     // Edit buttons shows
     useEffect(() => {
-      if (selector?.pre_booking_details_response?.dmsLeadDto) {
+      if (
+        selector &&
+        selector.pre_booking_details_response &&
+        selector.pre_booking_details_response.dmsLeadDto
+      ) {
         const { leadStatus } = selector.pre_booking_details_response.dmsLeadDto;
 
         let isEditFlag = false;
 
-        if (uploadedImagesDataObj.receipt?.fileName) {
+        if (
+          uploadedImagesDataObj.receipt &&
+          uploadedImagesDataObj.receipt.fileName
+        ) {
           isEditFlag = false;
         } else if (
-          (leadStatus === "PREBOOKINGCOMPLETED" ||
-            leadStatus === "REJECTED") &&
+          (leadStatus === "PREBOOKINGCOMPLETED" || leadStatus === "REJECTED") &&
           !isDropSelected
         ) {
           if (!userData.isManager || isLeadCreatedBySelf()) {
@@ -361,13 +368,21 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           setIsEditButtonShow(false);
         }
       }
-    }, [selector?.pre_booking_details_response, uploadedImagesDataObj]);
+    }, [selector.pre_booking_details_response, uploadedImagesDataObj.receipt]);
 
     // Check for lead created by manager
     const isLeadCreatedBySelf = () => {
       let isCreatedBy = false;
-      if(userData && selector?.pre_booking_details_response?.dmsLeadDto){
-        if(userData.employeeName == selector.pre_booking_details_response.dmsLeadDto.createdBy){
+      if (
+        userData &&
+        selector &&
+        selector.pre_booking_details_response &&
+        selector.pre_booking_details_response.dmsLeadDto
+      ) {
+        if (
+          userData.employeeName ==
+          selector.pre_booking_details_response.dmsLeadDto.createdBy
+        ) {
           isCreatedBy = true;
         }
       }
@@ -381,7 +396,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       if (!isDropSelected){
         if (isSubmitCancelButtonShow) {
           isSubmitFlag = true;
-        } else if (selector?.pre_booking_details_response?.dmsLeadDto) {
+        } else if (
+          selector &&
+          selector.pre_booking_details_response &&
+          selector.pre_booking_details_response.dmsLeadDto
+        ) {
           const { leadStatus } =
             selector.pre_booking_details_response.dmsLeadDto;
 
@@ -391,7 +410,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           ) {
             if (!userData.isManager || isLeadCreatedBySelf()) {
               isSubmitFlag = true;
-            } 
+            }
           }
         }
       }
@@ -401,7 +420,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     // Check for Input Fields Editable
     const isInputsEditable = () => {
       let isInputEditFlag = false;
-      if (selector?.pre_booking_details_response?.dmsLeadDto) {
+      if (
+        selector &&
+        selector.pre_booking_details_response &&
+        selector.pre_booking_details_response.dmsLeadDto
+      ) {
         const { leadStatus } = selector.pre_booking_details_response.dmsLeadDto;
         if (!userData.isManager || isLeadCreatedBySelf()) {
           if (leadStatus === "ENQUIRYCOMPLETED") {
@@ -450,114 +473,17 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         clearLocalData()
         navigation.goBack();
     };
+    
+    const goToLeadScreen = () => {
+        dispatch(clearState());
+        setTotalOnRoadPriceAfterDiscount(0);
+        setTotalOnRoadPrice(0)
+        clearLocalData()
+        navigation.navigate(EmsTopTabNavigatorIdentifiers.leads, {
+          fromScreen: "bookingApproval",
+        });
+    };
 
-    useEffect(() => {
-    handleRetailFinanceFields();
-
-  }, [selector.retail_finance])
-  const handleRetailFinanceFields = () => {
-    if (selector.retail_finance === 'In House') {
-      dispatch(
-        setFinancialDetails({
-          key: "BANK_R_FINANCE_NAME",
-          text: '',
-        })
-      )
-       dispatch(
-         setFinancialDetails({
-           key: "LOAN_AMOUNT_OUT",
-           text: '',
-         })
-       );
-       dispatch(
-         setFinancialDetails({
-           key: "BANK_FINANCE",
-           text: selector.bank_or_finance,
-         })
-       );
-
-       dispatch(
-         setFinancialDetails({
-           key: "LEASHING_NAME",
-           text: '',
-         })
-       );
-    }
-    else if (selector.retail_finance === 'Out House') {
-      dispatch(
-        setFinancialDetails({
-          key: "BANK_R_FINANCE_NAME",
-          text: selector.bank_or_finance_name,
-        })
-      );
-        dispatch(
-          setFinancialDetails({
-            key: "BANK_FINANCE",
-            text: '',
-          })
-        );
-       dispatch(
-         setFinancialDetails({
-           key: "LOAN_AMOUNT_OUT",
-           text: selector.loan_amount,
-         })
-       );
-
-      dispatch(
-        setFinancialDetails({
-          key: "RATE_OF_INTEREST",
-          text: selector.rate_of_interest,
-        })
-      );
-    }
-    else if (selector.retail_finance === "Leasing") {
-      dispatch(
-        setFinancialDetails({
-          key: "BANK_R_FINANCE_NAME",
-          text: '',
-        })
-      );
-      dispatch(
-        setFinancialDetails({
-          key: "BANK_FINANCE",
-          text: "",
-        })
-      );
-      dispatch(
-        setFinancialDetails({
-          key: "LEASHING_NAME",
-          text: selector.leashing_name,
-        })
-      );
-    }
-    else {
-      dispatch(
-        setFinancialDetails({
-          key: "BANK_R_FINANCE_NAME",
-          text: selector.bank_or_finance_name,
-        })
-      );
-      dispatch(
-        setFinancialDetails({
-          key: "LOAN_AMOUNT",
-          text: selector.loan_amount,
-        })
-      );
-       dispatch(
-         setFinancialDetails({
-           key: "LOAN_AMOUNT_OUT",
-           text: selector.loan_amount,
-         })
-       );
-      dispatch(
-        setFinancialDetails({
-          key: "RATE_OF_INTEREST",
-          text: selector.rate_of_interest,
-        })
-      );
-    }
-
-  }
     useEffect(() => {
         setComponentAppear(true);
         getAsyncstoreData();
@@ -1679,24 +1605,24 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         return;
       }
 
-      let isAddressSelected = false;
+      // let isAddressSelected = false;
 
-      if (defaultAddress) {
-        isAddressSelected = true;
-      } else {
-        for (let i = 0; i < addressData.length; i++) {
-          if (addressData[i].value == selector.defaultAddress) {
-            isAddressSelected = true;
-          }
-        }
-      }
+      // if (defaultAddress) {
+      //   isAddressSelected = true;
+      // } else {
+      //   for (let i = 0; i < addressData.length; i++) {
+      //     if (addressData[i].value == selector.defaultAddress) {
+      //       isAddressSelected = true;
+      //     }
+      //   }
+      // }
       
-      if (!isAddressSelected){
-        scrollToPos(2);
-        setOpenAccordian("2");
-        showToast("please select address");
-        return;
-      };
+      // if (!isAddressSelected){
+      //   scrollToPos(2);
+      //   setOpenAccordian("2");
+      //   showToast("please select address");
+      //   return;
+      // };
 
       if (selector.urban_or_rural == 0) {
         scrollToPos(2);
@@ -2358,19 +2284,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 // getPreBookingListFromServer();
             } else if (typeOfActionDispatched === "UPDATE_PRE_BOOKING") {
                 showToastSucess("Successfully Sent for Manager Approval");
-                dispatch(clearState());
-                clearLocalData();
-                navigation.goBack();
+                goToLeadScreen();
             } else if (typeOfActionDispatched === "APPROVE") {
                 showToastSucess("Booking Approval Approved");
-                dispatch(clearState());
-                clearLocalData();
-                navigation.goBack();
+                goToLeadScreen();
             } else if (typeOfActionDispatched === "REJECT") {
                 showToastSucess("Booking Approval Rejected");
-                dispatch(clearState());
-                clearLocalData();
-                navigation.goBack();
+                goToLeadScreen();
             }
         }
     }, [selector.update_pre_booking_details_response]);
@@ -2708,21 +2628,21 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     };
 
     useEffect(() => {
-        if (selector.pre_booking_drop_response_status === "success"){
-            Alert.alert(
-                "Sent For Approval",
-                `Pre Booking Number: ${selector.refNo}`,
-                [
-                    {
-                        text: "OK",
-                        onPress: () => {
-                            goParentScreen()
-                        },
-                    },
-                ]
-            );
-        }
-    }, [selector.pre_booking_drop_response_status])
+      if (selector.pre_booking_drop_response_status === "success") {
+        Alert.alert(
+          "Sent For Approval",
+          `Pre Booking Number: ${selector.refNo}`,
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                goToLeadScreen();
+              },
+            },
+          ]
+        );
+      }
+    }, [selector.pre_booking_drop_response_status]);
 
     const proceedToBookingClicked = async () => {
         const employeeData = await AsyncStore.getData(
@@ -3326,10 +3246,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
               dropDownKey === "RETAIL_FINANCE"
             ) {
               dispatch(
-                setFinancialDetails({
-                  key: "RATE_OF_INTEREST",
-                  text: "",
-                })
+                setFinancialDetails({ key: "BANK_R_FINANCE_NAME", text: "" })
+              );
+              dispatch(setFinancialDetails({ key: "LOAN_AMOUNT", text: "" }));
+              dispatch(
+                setFinancialDetails({ key: "RATE_OF_INTEREST", text: "" })
               );
             }
 
@@ -3482,6 +3403,29 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       },
                     ]}
                   ></Text>
+                  {selector.enquiry_segment.toLowerCase() === "personal" ? (
+                    <View>
+                      <DropDownSelectionItem
+                        disabled={!isInputsEditable()}
+                        label={"Gender*"}
+                        value={selector.gender}
+                        onPress={() =>
+                          showDropDownModelMethod("GENDER", "Gender")
+                        }
+                      />
+                      <Text
+                        style={[
+                          GlobalStyle.underline,
+                          {
+                            backgroundColor:
+                              isSubmitPress && selector.gender === ""
+                                ? "red"
+                                : "rgba(208, 212, 214, 0.7)",
+                          },
+                        ]}
+                      ></Text>
+                    </View>
+                  ) : null}
                   <TextinputComp
                     disabled={!isInputsEditable()}
                     style={{ height: 65, width: "100%" }}
@@ -3589,25 +3533,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ></Text>
                   {selector.enquiry_segment.toLowerCase() === "personal" ? (
                     <View>
-                      <DropDownSelectionItem
-                        disabled={!isInputsEditable()}
-                        label={"Gender*"}
-                        value={selector.gender}
-                        onPress={() =>
-                          showDropDownModelMethod("GENDER", "Gender")
-                        }
-                      />
-                      <Text
-                        style={[
-                          GlobalStyle.underline,
-                          {
-                            backgroundColor:
-                              isSubmitPress && selector.gender === ""
-                                ? "red"
-                                : "rgba(208, 212, 214, 0.7)",
-                          },
-                        ]}
-                      ></Text>
                       <DateSelectItem
                         disabled={!isInputsEditable()}
                         label={"Date Of Birth*"}
@@ -3716,7 +3641,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         maxHeight={300}
                         labelField="label"
                         valueField="value"
-                        placeholder={"Select address*"}
+                        placeholder={"Select address"}
                         searchPlaceholder="Search..."
                         value={defaultAddress}
                         // onFocus={() => setIsFocus(true)}
@@ -4771,7 +4696,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           }
                         />
                       </View>
-                      {uploadedImagesDataObj.passbook?.fileName ? (
+                      {uploadedImagesDataObj.pattaPassBook?.fileName ? (
                         <View style={{ flexDirection: "row" }}>
                           <TouchableOpacity
                             disabled={!isInputsEditable()}
@@ -4785,10 +4710,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             }}
                             onPress={() => {
                               if (
-                                uploadedImagesDataObj.passbook?.documentPath
+                                uploadedImagesDataObj.pattaPassBook
+                                  ?.documentPath
                               ) {
                                 setImagePath(
-                                  uploadedImagesDataObj.passbook?.documentPath
+                                  uploadedImagesDataObj.pattaPassBook
+                                    ?.documentPath
                                 );
                               }
                             }}
@@ -4806,14 +4733,55 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           <View style={{ width: "80%" }}>
                             <DisplaySelectedImage
                               disabled={!isInputsEditable()}
-                              fileName={uploadedImagesDataObj.passbook.fileName}
+                              fileName={
+                                uploadedImagesDataObj.pattaPassBook.fileName
+                              }
                               from={"PATTA_PASS_BOOK"}
                             />
                           </View>
                         </View>
-                        ) : uploadedImagesDataObj?.pattaPassBook?.fileName ? (
-                          <View style={{ flexDirection: "row" }}>
-                            <TouchableOpacity
+                      ) : uploadedImagesDataObj?.pattaPassBook?.fileName ? (
+                        <View style={{ flexDirection: "row" }}>
+                          <TouchableOpacity
+                            disabled={
+                              userData.isManager
+                                ? isEdit
+                                  ? false
+                                  : true
+                                : false
+                            }
+                            style={{
+                              width: "20%",
+                              height: 30,
+                              backgroundColor: Colors.SKY_BLUE,
+                              borderRadius: 4,
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                            onPress={() => {
+                              if (
+                                uploadedImagesDataObj?.pattaPassBook
+                                  ?.documentPath
+                              ) {
+                                setImagePath(
+                                  uploadedImagesDataObj?.pattaPassBook
+                                    ?.documentPath
+                                );
+                              }
+                            }}
+                          >
+                            <Text
+                              style={{
+                                color: Colors.WHITE,
+                                fontSize: 14,
+                                fontWeight: "600",
+                              }}
+                            >
+                              Preview
+                            </Text>
+                          </TouchableOpacity>
+                          <View style={{ width: "80%" }}>
+                            <DisplaySelectedImage
                               disabled={
                                 userData.isManager
                                   ? isEdit
@@ -4821,49 +4789,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     : true
                                   : false
                               }
-                              style={{
-                                width: "20%",
-                                height: 30,
-                                backgroundColor: Colors.SKY_BLUE,
-                                borderRadius: 4,
-                                justifyContent: "center",
-                                alignItems: "center",
-                              }}
-                              onPress={() => {
-                                if (
-                                  uploadedImagesDataObj?.pattaPassBook?.documentPath
-                                ) {
-                                  setImagePath(
-                                    uploadedImagesDataObj?.pattaPassBook?.documentPath
-                                  );
-                                }
-                              }}
-                            >
-                              <Text
-                                style={{
-                                  color: Colors.WHITE,
-                                  fontSize: 14,
-                                  fontWeight: "600",
-                                }}
-                              >
-                                Preview
-                              </Text>
-                            </TouchableOpacity>
-                            <View style={{ width: "80%" }}>
-                              <DisplaySelectedImage
-                                disabled={
-                                  userData.isManager
-                                    ? isEdit
-                                      ? false
-                                      : true
-                                    : false
-                                }
-                                  fileName={uploadedImagesDataObj?.pattaPassBook?.fileName}
-                                from={"PATTA_PASS_BOOK"}
-                              />
-                            </View>
+                              fileName={
+                                uploadedImagesDataObj?.pattaPassBook?.fileName
+                              }
+                              from={"PATTA_PASS_BOOK"}
+                            />
                           </View>
-                        ) : null}
+                        </View>
+                      ) : null}
                     </View>
                   ) : null}
 
@@ -4998,7 +4931,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           }
                         />
                       </View>
-                      {uploadedImagesDataObj.leasingConfirm?.fileName ? (
+                      {uploadedImagesDataObj.leasingConfirmationLetter
+                        ?.fileName ? (
                         <View style={{ flexDirection: "row" }}>
                           <TouchableOpacity
                             disabled={!isInputsEditable()}
@@ -5012,12 +4946,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             }}
                             onPress={() => {
                               if (
-                                uploadedImagesDataObj.leasingConfirm
+                                uploadedImagesDataObj.leasingConfirmationLetter
                                   ?.documentPath
                               ) {
                                 setImagePath(
-                                  uploadedImagesDataObj.leasingConfirm
-                                    ?.documentPath
+                                  uploadedImagesDataObj
+                                    .leasingConfirmationLetter?.documentPath
                                 );
                               }
                             }}
@@ -5036,54 +4970,57 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             <DisplaySelectedImage
                               disabled={!isInputsEditable()}
                               fileName={
-                                uploadedImagesDataObj.leasingConfirm.fileName
+                                uploadedImagesDataObj.leasingConfirmationLetter
+                                  .fileName
                               }
                               from={"LEASING_CONFIRMATION"}
                             />
                           </View>
                         </View>
-                        ) : uploadedImagesDataObj.leasingConfirmationLetter ? (
-                          <View style={{ flexDirection: "row" }}>
-                            <TouchableOpacity
+                      ) : uploadedImagesDataObj.leasingConfirmationLetter ? (
+                        <View style={{ flexDirection: "row" }}>
+                          <TouchableOpacity
+                            style={{
+                              width: "20%",
+                              height: 30,
+                              backgroundColor: Colors.SKY_BLUE,
+                              borderRadius: 4,
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                            onPress={() => {
+                              if (
+                                uploadedImagesDataObj.leasingConfirmationLetter
+                                  ?.documentPath
+                              ) {
+                                setImagePath(
+                                  uploadedImagesDataObj
+                                    .leasingConfirmationLetter?.documentPath
+                                );
+                              }
+                            }}
+                          >
+                            <Text
                               style={{
-                                width: "20%",
-                                height: 30,
-                                backgroundColor: Colors.SKY_BLUE,
-                                borderRadius: 4,
-                                justifyContent: "center",
-                                alignItems: "center",
-                              }}
-                              onPress={() => {
-                                if (
-                                  uploadedImagesDataObj.leasingConfirmationLetter?.documentPath
-                                ) {
-                                  setImagePath(
-                                    uploadedImagesDataObj.leasingConfirmationLetter
-                                      ?.documentPath
-                                  );
-                                }
+                                color: Colors.WHITE,
+                                fontSize: 14,
+                                fontWeight: "600",
                               }}
                             >
-                              <Text
-                                style={{
-                                  color: Colors.WHITE,
-                                  fontSize: 14,
-                                  fontWeight: "600",
-                                }}
-                              >
-                                Preview
-                              </Text>
-                            </TouchableOpacity>
-                            <View style={{ width: "80%" }}>
-                              <DisplaySelectedImage
-                                fileName={
-                                  uploadedImagesDataObj.leasingConfirmationLetter.fileName
-                                }
-                                from={"LEASING_CONFIRMATION"}
-                              />
-                            </View>
+                              Preview
+                            </Text>
+                          </TouchableOpacity>
+                          <View style={{ width: "80%" }}>
+                            <DisplaySelectedImage
+                              fileName={
+                                uploadedImagesDataObj.leasingConfirmationLetter
+                                  .fileName
+                              }
+                              from={"LEASING_CONFIRMATION"}
+                            />
                           </View>
-                        ) : null}
+                        </View>
+                      ) : null}
                     </View>
                   ) : null}
 

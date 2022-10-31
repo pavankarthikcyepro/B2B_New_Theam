@@ -67,6 +67,7 @@ const teleCollerMenu = [
 ];
 const ShowRoomMenu = [
     "Home",
+    'Live Leads',
     "Settings",
     "Digital Payment",
     "Target Planning",
@@ -77,6 +78,7 @@ const ShowRoomMenu = [
 ];
 const MDMenu = [
   "Home",
+  'Live Leads',
   "Settings",
   "Digital Payment",
   "Target Planning",
@@ -244,6 +246,9 @@ const SideMenuScreen = ({ navigation }) => {
                 break;
             case 113:
                 navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis);
+                break;
+            case 114:
+                navigation.navigate(AppNavigator.DrawerStackIdentifiers.liveLeads);
                 break;
             case 112:
                 signOutClicked();
