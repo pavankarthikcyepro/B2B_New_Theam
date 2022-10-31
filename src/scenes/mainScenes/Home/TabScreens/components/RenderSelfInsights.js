@@ -54,7 +54,13 @@ export const RenderSelfInsights = (args) => {
                                         moduleType: 'home'
                                     })
                                 }, 1000);
-                            } else if (param === 'DROPPED') {
+                            } else if (param == "Home Visit" || param == "Test Drive") {
+                                navigation.jumpTo(AppNavigator.TabStackIdentifiers.myTask, { screen: "CLOSED" });
+                                setTimeout(() => {
+                                    navigation.navigate("CLOSED")
+                                }, 500);
+                            }
+                             else if (param === 'DROPPED') {
                                 navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis)
                             }
                         }}
