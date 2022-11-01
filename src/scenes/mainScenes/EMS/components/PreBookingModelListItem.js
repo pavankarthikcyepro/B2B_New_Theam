@@ -95,6 +95,7 @@ export const PreBookingModelListitemCom = ({
     orgId: "",
     employeeId: "",
     employeeName: "",
+    isSelfManager: ""
   });
   const [selectedCarVarientsData, setSelectedCarVarientsData] = useState({
     varientList: [],
@@ -170,6 +171,7 @@ export const PreBookingModelListitemCom = ({
           orgId: jsonObj.orgId,
           employeeId: jsonObj.employeeId,
           employeeName: jsonObj.empName,
+          isSelfManager: jsonObj.isSelfManager
         });
         getCarModelListFromServer(jsonObj.orgId);
         updateVariantModelsData(item.model, false);
@@ -693,7 +695,7 @@ export const PreBookingModelListitemCom = ({
           ]}></Text>
         <TextinputComp
           style={{ height: 65, width: "100%" }}
-          label={"Fuel Type*"}
+          label={userData.isSelfManager == "Y" ? "Range*" : "Fuel Type*"}
           editable={false}
           value={carFuelType}
           disabled={disabled}
@@ -702,7 +704,7 @@ export const PreBookingModelListitemCom = ({
 
         <TextinputComp
           style={{ height: 65, width: "100%" }}
-          label={"Transmission Type*"}
+          label={userData.isSelfManager == "Y" ? "Battery Type*" : "Transmission Type*"}
           editable={false}
           value={carTransmissionType}
           disabled={disabled}

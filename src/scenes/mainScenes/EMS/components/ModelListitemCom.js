@@ -1,33 +1,33 @@
 import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 import {
-    SafeAreaView,
-    StyleSheet,
-    View,
-    Text,
-    ScrollView,
-    Pressable,
-    Keyboard,
-    ActivityIndicator,
-    KeyboardAvoidingView,
-    Alert,
-    BackHandler,
-    Image,
-    TouchableOpacity,
-    Modal
+  SafeAreaView,
+  StyleSheet,
+  View,
+  Text,
+  ScrollView,
+  Pressable,
+  Keyboard,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Alert,
+  BackHandler,
+  Image,
+  TouchableOpacity,
+  Modal
 } from "react-native";
 import {
-    DefaultTheme,
-    Checkbox,
-    IconButton,
-    List,
-    Button,
-    ToggleButton, Switch
+  DefaultTheme,
+  Checkbox,
+  IconButton,
+  List,
+  Button,
+  ToggleButton, Switch
 } from "react-native-paper";
 import {
-    showAlertMessage,
-    showToast,
-    showToastRedAlert,
-    showToastSucess,
+  showAlertMessage,
+  showToast,
+  showToastRedAlert,
+  showToastSucess,
 } from "../../../../utils/toast";
 import { Colors, GlobalStyle } from "../../../../styles";
 import * as AsyncStore from "../../../../asyncStore";
@@ -35,30 +35,30 @@ import * as AsyncStore from "../../../../asyncStore";
 import VectorImage from "react-native-vector-image";
 import { useDispatch, useSelector } from "react-redux";
 import {
-    TextinputComp,
-    DropDownComponant,
-    DatePickerComponent,
+  TextinputComp,
+  DropDownComponant,
+  DatePickerComponent,
 } from "../../../../components";
 import {
-    convertDateStringToMilliseconds,
-    convertDateStringToMillisecondsUsingMoment,
-    emiCalculator,
-    GetCarModelList,
-    GetDropList,
-    GetFinanceBanksList,
-    PincodeDetails,
-    PincodeDetailsNew
+  convertDateStringToMilliseconds,
+  convertDateStringToMillisecondsUsingMoment,
+  emiCalculator,
+  GetCarModelList,
+  GetDropList,
+  GetFinanceBanksList,
+  PincodeDetails,
+  PincodeDetailsNew
 } from "../../../../utils/helperFunctions";
 import {
-    RadioTextItem,
-    DropDownSelectionItem,
-    ImageSelectItem,
-    DateSelectItem,
+  RadioTextItem,
+  DropDownSelectionItem,
+  ImageSelectItem,
+  DateSelectItem,
 } from "../../../../pureComponents";
 import {
-    setDropDownData,
-    updateFuelAndTransmissionType,
-    updatedmsLeadProduct
+  setDropDownData,
+  updateFuelAndTransmissionType,
+  updatedmsLeadProduct
 } from "../../../../redux/enquiryFormReducer";
 import { useNavigation } from '@react-navigation/native';
 export const ModelListitemCom = ({
@@ -94,6 +94,7 @@ export const ModelListitemCom = ({
     orgId: "",
     employeeId: "",
     employeeName: "",
+    isSelfManager: ""
   });
   const [selectedCarVarientsData, setSelectedCarVarientsData] = useState({
     varientList: [],
@@ -170,6 +171,7 @@ export const ModelListitemCom = ({
           orgId: jsonObj.orgId,
           employeeId: jsonObj.employeeId,
           employeeName: jsonObj.empName,
+          isSelfManager: jsonObj.isSelfManager
         });
         getCarModelListFromServer(jsonObj.orgId);
         updateVariantModelsData(item.model, false);
@@ -405,7 +407,7 @@ export const ModelListitemCom = ({
       return variants;
       // await console.log("VARIANTS=====", JSON.stringify(variants))
       // alert(JSON.stringify(variants))
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const setInitialColors = (selectedVarientName, varientList) => {
@@ -469,7 +471,7 @@ export const ModelListitemCom = ({
           setInitialColors(item?.variant, selectedCarVarientsData.varientList);
         }
         // }
-      } catch (error) {}
+      } catch (error) { }
     }
   }, [selectedCarVarientsData]);
 
@@ -640,7 +642,7 @@ export const ModelListitemCom = ({
               color={isOnlyOne ? Colors.DARK_GRAY : Colors.PINK}
               size={25}
               disabled={isOnlyOne}
-              //  onPress={alert("delete")}
+            //  onPress={alert("delete")}
             />
           </TouchableOpacity>
         </View>
@@ -695,7 +697,7 @@ export const ModelListitemCom = ({
         ></Text>
         <TextinputComp
           style={{ height: 65, width: "100%" }}
-          label={"Fuel Type*"}
+          label={userData.isSelfManager == "Y" ? "Range*" : "Fuel Type*"}
           editable={false}
           value={carFuelType}
         />
@@ -703,7 +705,7 @@ export const ModelListitemCom = ({
 
         <TextinputComp
           style={{ height: 65, width: "100%" }}
-          label={"Transmission Type*"}
+          label={userData.isSelfManager == "Y" ? "Battery Type*" : "Transmission Type*"}
           editable={false}
           value={carTransmissionType}
         />
