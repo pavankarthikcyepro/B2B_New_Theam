@@ -180,6 +180,7 @@ const LeadsScreen = ({ route, navigation }) => {
         (route.params.fromScreen === "contacts" ||
           route.params.fromScreen === "enquiry" ||
           route.params.fromScreen === "proceedToBookingApproval" ||
+          route.params.fromScreen === "booking" ||
           route.params.fromScreen === "bookingApproval")
       ) {
         setLoader(true);
