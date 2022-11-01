@@ -84,7 +84,7 @@ const ListComponent = ({ route, navigation }) => {
       initialTask(selectedFilter);
     }
   }, [isFocused]);
-  
+
 
   const defaultData = [
     {
@@ -128,7 +128,7 @@ const ListComponent = ({ route, navigation }) => {
    setIndex(0);
    initialTask("TODAY");
  }, []);
- 
+
   // useEffect(() => {
   //   navigation.addListener("focus", () => {
   //     console.log("CALLED %%%");

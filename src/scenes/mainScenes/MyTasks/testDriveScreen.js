@@ -278,7 +278,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                             primaryModel = dmsLeadProducts[0];
                         }
 
-                        
+
                         const {model, variant, fuel, transimmisionType} = primaryModel;
                         setSelectedVehicleDetails({
                             model,
@@ -423,7 +423,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 console.log("INSIDE B");
                 setHandleActionButtons(4);              //
             } else if (taskStatus === "CANCELLED") {    //
-                setHandleActionButtons(5);           
+                setHandleActionButtons(5);
             }
             else if (taskStatus === "ASSIGNED" && taskName === "Test Drive") {
                 setHandleActionButtons(1);
@@ -652,7 +652,7 @@ const TestDriveScreen = ({ route, navigation }) => {
             showToast("Please select time");
             return;
         }
-        
+
         const preferredTime = moment(selector.customer_preferred_time, "HH:mm");
         const startTime = moment(selector.actual_start_time, "HH:mm");
         const endTime = moment(selector.actual_end_time, "HH:mm");
@@ -1154,7 +1154,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 ]}
               >
                 <TextinputComp
-                  style={{ height: 65, width: "100%" }}
+                  style={styles.textInputStyle}
                   value={name}
                   label={"Name*"}
                   disabled={isViewMode()}
@@ -1172,7 +1172,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                   ]}
                 ></Text>
                 <TextinputComp
-                  style={{ height: 65, width: "100%" }}
+                  style={styles.textInputStyle}
                   value={email}
                   label={"Email ID"}
                   keyboardType={"email-address"}
@@ -1181,7 +1181,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 />
                 <Text style={[GlobalStyle.underline]}></Text>
                 <TextinputComp
-                  style={{ height: 65, width: "100%" }}
+                  style={styles.textInputStyle}
                   value={mobileNumber}
                   label={"Mobile Number*"}
                   maxLength={10}
@@ -1246,7 +1246,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                   ]}
                 ></Text>
                 <TextinputComp
-                  style={{ height: 65, width: "100%" }}
+                  style={styles.textInputStyle}
                   label={"Fuel Type"}
                   value={selectedVehicleDetails.fuelType}
                   editable={false}
@@ -1255,7 +1255,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 <Text style={GlobalStyle.underline}></Text>
 
                 <TextinputComp
-                  style={{ height: 65, width: "100%" }}
+                  style={styles.textInputStyle}
                   label={"Transmission Type"}
                   value={selectedVehicleDetails.transType}
                   editable={false}

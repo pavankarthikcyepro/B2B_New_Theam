@@ -25,6 +25,7 @@ export const RenderSelfInsights = (args) => {
     const dateDiff = ((new Date(monthLastDate).getTime() - new Date(currentDate).getTime()) / (1000 * 60 * 60 * 24));
     const {data, type, navigation} = args;
     const enq = data && data.find(x => x && x.paramName === 'Enquiry');
+    const navigableParams = ['Enquiry', 'Booking', 'INVOICE', 'DROPPED', 'Test Drive', 'Home Visit'];
     return (
         data.map((item, index) => {
             if (item){
@@ -46,11 +47,11 @@ export const RenderSelfInsights = (args) => {
                     }}>
                         <Text  onPress={()=>{
                             let param = item.paramName;
-                            if (param == "Enquiry" || param == "Booking" || param == "INVOICE") {
+                            if (param === "Enquiry" || param === "Booking" || param === "INVOICE") {
                                 navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
                                 setTimeout(() => {
                                     navigation.navigate("LEADS", {
-                                        param: param == "INVOICE" ? "Retail" : param,
+                                        param: param === "INVOICE" ? "Retail" : param,
                                         moduleType: 'home'
                                     })
                                 }, 1000);
@@ -62,9 +63,15 @@ export const RenderSelfInsights = (args) => {
                             }
                              else if (param === 'DROPPED') {
                                 navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis)
+                            } else if (param === 'Test Drive' || param === 'Home Visit' ){
+                                navigation.navigate(AppNavigator.TabStackIdentifiers.myTask);
+                                setTimeout(() => {
+                                    navigation.navigate("CLOSED")
+                                }, 750);
                             }
                         }}
-                            style={{color: "#fff"}}>{type === 0 ? item.achievment : achievementPercentage(item.achievment, item.target, item.paramName, enq.achievment)}
+                            style={{color: "#fff", textDecorationLine: navigableParams.includes(item.paramName) ? 'underline' : 'none'}}>
+                            {type === 0 ? item.achievment : achievementPercentage(item.achievment, item.target, item.paramName, enq.achievment)}
                         </Text>
                     </View>
                     <View style={{

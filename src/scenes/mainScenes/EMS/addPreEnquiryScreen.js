@@ -1000,7 +1000,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
 
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={Platform.OS == "ios" ? "padding" : "height"}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         enabled
         keyboardVerticalOffset={100}
       >
@@ -1011,8 +1011,8 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
           contentContainerStyle={{ padding: 10 }}
           style={{ flex: 1 }}
         >
-          <Text style={styles.text1}>{"Create New Contact"}</Text>
           <View style={styles.view1}>
+          <Text style={styles.text1}>{"Create New Contact"}</Text>
             {/* <View style={{ flexDirection: "row", alignItems: "center" }}>
               <Checkbox.Android
                 status={
@@ -1417,8 +1417,8 @@ const styles = StyleSheet.create({
   view1: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "flex-end",
-    height: 60,
+    justifyContent: "space-between",
+    height: 40,
   },
   view2: {
     marginTop: 10,
@@ -1435,7 +1435,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.GRAY,
   },
   textInputComp: {
-    height: 65,
+    height: 50,
   },
   noEventsText: {
     fontSize: 12,

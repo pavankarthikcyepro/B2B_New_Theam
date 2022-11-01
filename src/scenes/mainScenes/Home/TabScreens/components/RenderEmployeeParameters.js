@@ -29,6 +29,7 @@ export const RenderEmployeeParameters = (parameter) => {
 
     const {params, item, color, displayType, navigation, moduleType} = parameter;
     const paramsData = params.map(({paramName}) => paramName);
+    const navigableParams = ['PreEnquiry', 'Enquiry', 'Booking', 'INVOICE', 'DROPPED', 'Test Drive', 'Home Visit'];
 
     function navigateToEmsScreen(param) {
         const leads = ['enquiry', 'booking', 'invoice'];
@@ -55,6 +56,11 @@ export const RenderEmployeeParameters = (parameter) => {
             });
         } else if (isDropped) {
             navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis);
+        } else if (param === 'Test Drive' || param === 'Home Visit' ){
+            navigation.navigate(AppNavigator.TabStackIdentifiers.myTask);
+            setTimeout(() => {
+                navigation.navigate("CLOSED")
+            }, 750);
         }
     }
 
@@ -71,7 +77,8 @@ export const RenderEmployeeParameters = (parameter) => {
                             {moduleType !== 'live-leads' ?
                                 <View key={param} style={[styles.itemBox, {width: param === "Accessories" ? 65 : 55}]}>
                                 <View style={{justifyContent: 'center', alignItems: 'center', height: 23}}>
-                                    <Text onPress={() => navigateToEmsScreen(param)} style={[styles.totalText1, {color: Colors.RED}]}>
+                                    <Text onPress={() => navigateToEmsScreen(param)} style={[styles.totalText1, {color: Colors.RED,
+                                        textDecorationLine: navigableParams.includes(param) ? 'underline' : 'none'}]}>
                                         {selectedParameter ?
                                             displayType === 0 ? selectedParameter.achievment :
                                                 selectedParameter.target > 0 ? achievementPercentage(selectedParameter.achievment, selectedParameter.target, param, enquiryParameter.achievment) :
@@ -89,7 +96,8 @@ export const RenderEmployeeParameters = (parameter) => {
                                             style={[styles.itemBox, {width: 68}]}>
                                 <View style={{justifyContent: 'center', alignItems: 'center', height: 23}}>
                                     <Text onPress={() => navigateToEmsScreen(param)}
-                                          style={[styles.totalText1, {color: Colors.RED}]}>
+                                          style={[styles.totalText1, {color: Colors.RED,
+                                              textDecorationLine: navigableParams.includes(param) ? 'underline' : 'none'}]}>
                                         {selectedParameter ?
                                             displayType === 0 ? selectedParameter.achievment :
                                                 selectedParameter.target > 0 ? achievementPercentage(selectedParameter.achievment, selectedParameter.target, param, enquiryParameter.achievment) :

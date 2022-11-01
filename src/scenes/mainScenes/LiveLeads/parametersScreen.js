@@ -341,9 +341,12 @@ const ParametersScreen = ({route}) => {
                 })
             }, 1000);
         } else if (isContact) {
-            navigation.navigate(EmsTopTabNavigatorIdentifiers.preEnquiry, {
-                moduleType: 'live-leads'
-            });
+            navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
+            setTimeout(() => {
+                navigation.navigate(EmsTopTabNavigatorIdentifiers.preEnquiry, {
+                    moduleType: 'live-leads'
+                });
+            }, 500);
         }
     }
 

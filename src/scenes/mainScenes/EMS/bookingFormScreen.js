@@ -997,7 +997,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                     }
                 }
             }
-            
+
         }
     };
 
@@ -1044,7 +1044,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                         })
                     );
                 }
-                
+
                 setCarColorsData([...newArray]);
             }
         }
@@ -1521,7 +1521,7 @@ const BookingFormScreen = ({ route, navigation }) => {
             }
             return object;
         }
-        
+
     };
 
     const proceedToCancelPreBooking = async () => {
@@ -1572,7 +1572,7 @@ const BookingFormScreen = ({ route, navigation }) => {
             dispatch(dropPreBooingApi(payload));
             dispatch(updatePrebookingDetailsApi(enquiryDetailsObj));
         }
-        
+
     };
 
     const proceedToBookingClicked = () => {
@@ -1978,7 +1978,7 @@ const BookingFormScreen = ({ route, navigation }) => {
             };
             dispatch(getDropSubReasonDataApi(payload));
         }
-        
+
     }
     return (
         <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
@@ -2117,7 +2117,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 />
 
                                 <TextinputComp
-                                    style={{ height: 65, width: "100%" }}
+                                    style={styles.textInputStyle}
                                     value={selector.first_name}
                                     label={"First Name*"}
                                     maxLength={50}
@@ -2133,7 +2133,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 />
                                 <Text style={GlobalStyle.underline}></Text>
                                 <TextinputComp
-                                    style={{ height: 65, width: "100%" }}
+                                    style={styles.textInputStyle}
                                     value={selector.last_name}
                                     label={"Last Name*"}
                                     keyboardType={"default"}
@@ -2148,7 +2148,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 />
                                 <Text style={GlobalStyle.underline}></Text>
                                 <TextinputComp
-                                    style={{ height: 65, width: "100%" }}
+                                    style={styles.textInputStyle}
                                     value={selector.mobile}
                                     // editable={false}
                                     disabled={true}
@@ -2159,7 +2159,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 />
                                 <Text style={GlobalStyle.underline}></Text>
                                 <TextinputComp
-                                    style={{ height: 65, width: "100%" }}
+                                    style={styles.textInputStyle}
                                     value={selector.email}
                                     label={"Email ID*"}
                                     disabled={true}
@@ -2205,7 +2205,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                             onPress={() => dispatch(setDatePicker("DATE_OF_BIRTH"))}
                                         />
                                         <TextinputComp
-                                            style={{ height: 65, width: "100%" }}
+                                            style={styles.textInputStyle}
                                             value={selector.age}
                                             label={"Age"}
                                             maxLength={3}
@@ -2647,7 +2647,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                     onPress={() => showDropDownModelMethod("COLOR", "Color")}
                                 />
                                 <TextinputComp
-                                    style={{ height: 65, width: "100%" }}
+                                    style={styles.textInputStyle}
                                     value={selector.fuel_type}
                                     label={"Fuel Type*"}
                                     disabled={true}
@@ -2655,7 +2655,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 />
                                 <Text style={GlobalStyle.underline}></Text>
                                 <TextinputComp
-                                    style={{ height: 65, width: "100%" }}
+                                    style={styles.textInputStyle}
                                     value={selector.transmission_type}
                                     label={"Transmission Type*"}
                                     disabled={true}
@@ -3145,7 +3145,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                             editable={false}
                                             style={[{ fontSize: 14, fontWeight: "400", }]}
                                             keyboardType={"number-pad"}
-                                           
+
                                             onChangeText={(text) => {
                                                 setTaxPercent(text);
                                                 if (text !== '') {
@@ -3605,7 +3605,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 {selector.retail_finance === "Out House" ? (
                                     <View>
                                         <TextinputComp
-                                            style={{ height: 65, width: "100%" }}
+                                            style={styles.textInputStyle}
                                             label={"Bank/Finance Name"}
                                             disabled={true}
                                             value={selector.bank_or_finance_name}
@@ -3621,7 +3621,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                         <Text style={GlobalStyle.underline}></Text>
 
                                         <TextinputComp
-                                            style={{ height: 65, width: "100%" }}
+                                            style={styles.textInputStyle}
                                             label={"Location"}
                                             value={selector.location}
                                             disabled={true}
@@ -3638,7 +3638,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 {selector.retail_finance === "Leasing" && (
                                     <View>
                                         <TextinputComp
-                                            style={{ height: 65, width: "100%" }}
+                                            style={styles.textInputStyle}
                                             label={"Leasing Name"}
                                             maxLength={50}
                                             disabled={true}
@@ -3673,7 +3673,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 {selector.retail_finance === "In House" && (
                                     <View>
                                         <TextinputComp
-                                            style={{ height: 65, width: "100%" }}
+                                            style={styles.textInputStyle}
                                             label={"Down Payment*"}
                                             value={selector.down_payment}
                                             disabled={true}
@@ -3714,7 +3714,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                     selector.retail_finance === "Out House") && (
                                         <View>
                                             <TextinputComp
-                                                style={{ height: 65, width: "100%" }}
+                                                style={styles.textInputStyle}
                                                 label={"Loan Amount*"}
                                                 disabled={true}
                                                 keyboardType={"number-pad"}
@@ -3736,7 +3736,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                             />
                                             <Text style={GlobalStyle.underline}></Text>
                                             <TextinputComp
-                                                style={{ height: 65, width: "100%" }}
+                                                style={styles.textInputStyle}
                                                 label={"Rate of Interest*"}
                                                 keyboardType={"number-pad"}
                                                 disabled={true}
@@ -3772,7 +3772,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                         />
 
                                         <TextinputComp
-                                            style={{ height: 65, width: "100%" }}
+                                            style={styles.textInputStyle}
                                             label={"Loan of Tenure(Months)"}
                                             value={selector.loan_of_tenure}
                                             disabled={true}
@@ -3795,7 +3795,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                         <Text style={GlobalStyle.underline}></Text>
 
                                         <TextinputComp
-                                            style={{ height: 65, width: "100%" }}
+                                            style={styles.textInputStyle}
                                             label={"EMI*"}
                                             value={selector.emi}
                                             disabled={true}
@@ -3844,7 +3844,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 ]}
                             >
                                 <TextinputComp
-                                    style={{ height: 65, width: "100%" }}
+                                    style={styles.textInputStyle}
                                     value={selector.booking_amount}
                                     label={"Booking Amount*"}
                                     keyboardType={"number-pad"}
@@ -3912,7 +3912,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                     }
                                 />
                                 <TextinputComp
-                                    style={{ height: 65, width: "100%" }}
+                                    style={styles.textInputStyle}
                                     label={"Occasion"}
                                     disabled={true}
                                     value={selector.occasion}
@@ -3933,7 +3933,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                     }
                                 />
                                 <TextinputComp
-                                    style={{ height: 65, width: "100%" }}
+                                    style={styles.textInputStyle}
                                     label={"Delivery Location"}
                                     disabled={true}
                                     maxLength={50}
@@ -4272,7 +4272,7 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.WHITE,
     },
     textInputStyle: {
-        height: 65,
+        height: 50,
         width: "100%",
     },
     accordianTitleStyle: {

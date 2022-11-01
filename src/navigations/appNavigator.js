@@ -174,7 +174,7 @@ const LeadAge = () => {
     const dispatch = useDispatch();
 
     return (
-        <View style={{ width: 110, height: 30, borderRadius: 15, backgroundColor: Colors.RED, justifyContent: 'center', alignItems: 'center', marginRight: 5, flexDirection: 'row'}}>
+        <View style={{ width: 110, height: 30, borderRadius: 15, borderColor: Colors.RED, borderWidth: 1, justifyContent: 'center', alignItems: 'center', marginRight: 5, flexDirection: 'row'}}>
             <Image source={require('../assets/images/calendar.png')} style={{width: 20, height: 20}} />
             <Text style={{ fontSize: 15, fontWeight: '600', color: '#fff', marginLeft: 5 }}>{`${selector.leadAge} ${selector.leadAge > 1 ? 'days' : 'day'}`}</Text>
             {/* <Text style={{ fontSize: 15, fontWeight: '600', color: '#fff' }}>200 days</Text> */}
@@ -802,7 +802,7 @@ const DigitalPaymentStackNavigator = ({ navigation }) => {
                 name={"DIGITAL_PAYMENT_SCREEN"}
                 component={DigitalPaymentScreen}
                 options={{
-                    title: "Digital Payment",
+                    title: "QR Code",
                     headerLeft: () => <MenuIcon navigation={navigation} />,
                 }}
             />

@@ -6,6 +6,7 @@ import { IconButton } from "react-native-paper";
 import moment from "moment";
 import { AppNavigator, AuthNavigator } from "../../../../navigations";
 import * as AsyncStore from '../../../../asyncStore';
+import {showToastRedAlert} from "../../../../utils/toast";
 
 
 
@@ -28,10 +29,11 @@ const statusBgColors = {
     },
 }
 
-const IconComp = ({ iconName, onPress }) => {
+const IconComp = ({ iconName, onPress, opacity = 1 }) => {
     return (
         <TouchableOpacity onPress={onPress}>
-            <View style={{ width: 35, height: 35, justifyContent: "center", alignItems: "center", borderWidth: 1, borderColor: "#002C5F", borderRadius: 5 }}>
+            <View style={{ width: 35, height: 35, justifyContent: "center", alignItems: "center", borderWidth: 1,
+                borderColor: "#002C5F", borderRadius: 5, opacity }}>
                 <IconButton
                     icon={iconName}
                     color={Colors.GREEN}
@@ -124,6 +126,11 @@ export const MyTaskNewItem = ({ from = "MY_TASKS", navigator, type, uniqueId, na
         return color;
     }
 
+    const cannotEditLead = () => {
+        const leadStages = ['INVOICE', 'DELIVERY', 'PREDELIVERY'];
+        return leadStages.includes(leadStage);
+    }
+
     return (
         <TouchableOpacity onPress={onItemPress} style={styles.section}>
             <View
@@ -198,18 +205,20 @@ export const MyTaskNewItem = ({ from = "MY_TASKS", navigator, type, uniqueId, na
                     >
                         <IconComp
                             iconName={"format-list-bulleted-square"}
-                            onPress={() => { 
-                                leadStage == "INVOICE" || 
-                                leadStage == "DELIVERY" || 
-                                leadStage == "PREDELIVERY" ? 
-                                alert("You Don't have Permission") : 
+                            disabled={true}
+                            opacity={cannotEditLead() ? 0.5 : 1}
+                            onPress={() => {
+                                cannotEditLead() ?
+                                showToastRedAlert("You don't have Permission"):
                                 onDocPress() }}
                         />
                         <View style={{ padding: 8 }} />
                         <IconComp
                             iconName={"phone-outline"}
+                            opacity={cannotEditLead() ? 0.5 : 1}
                             onPress={() =>
-                                leadStage == "INVOICE" || leadStage == "DELIVERY" || leadStage == "PREDELIVERY" ? alert("You Don't have Permission") :
+                                cannotEditLead() ?
+                                    showToastRedAlert("You don't have Permission") :
                                     callWebViewRecord({
                                         navigator,
                                         phone,
@@ -221,7 +230,8 @@ export const MyTaskNewItem = ({ from = "MY_TASKS", navigator, type, uniqueId, na
                         <View style={{ padding: 8 }} />
                         <IconComp
                             iconName={"whatsapp"}
-                            onPress={() => leadStage == "INVOICE" || leadStage == "DELIVERY" || leadStage == "PREDELIVERY" ? alert("You Don't have Permission") : sendWhatsApp(phone)}
+                            opacity={cannotEditLead() ? 0.5 : 1}
+                            onPress={() => cannotEditLead() ? showToastRedAlert("You don't have Permission") : sendWhatsApp(phone)}
                         />
                     </View>
                 </View>

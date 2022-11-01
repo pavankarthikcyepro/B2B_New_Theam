@@ -50,7 +50,7 @@ const receptionMenu = [
     "Digital Payment",
     "Target Planning",
     "Helpdesk",
-    "Task Management",
+    // "Task Management",
     "Drop Analysis",
     "Task Transfer",
     "Sign Out"
@@ -61,7 +61,7 @@ const teleCollerMenu = [
     "Digital Payment",
     "Target Planning",
     "Helpdesk",
-    "Task Management",
+    // "Task Management",
     "Drop Analysis",
     "Sign Out"
 ];
@@ -72,7 +72,7 @@ const ShowRoomMenu = [
     "Digital Payment",
     "Target Planning",
     "Helpdesk",
-    "Task Management",
+    // "Task Management",
     "Drop Analysis",
     "Sign Out"
 ];
@@ -83,7 +83,7 @@ const MDMenu = [
   "Digital Payment",
   "Target Planning",
   "Helpdesk",
-  "Task Management",
+  // "Task Management",
   "Task Transfer",
   "Drop Analysis",
   "Sign Out"
