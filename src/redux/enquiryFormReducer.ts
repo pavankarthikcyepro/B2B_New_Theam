@@ -1906,14 +1906,18 @@ const enquiryDetailsOverViewSlice = createSlice({
           : "";
 
         state.r_registration_date =
-          convertToDate(registrationDate, "DD/MM/YYYY") || registrationDate;
+          convertTimeStampToDateString(registrationDate, "DD/MM/YYYY") ||
+          registrationDate;
 
         const registrationValidityDate = dataObj.registrationValidityDate
           ? dataObj.registrationValidityDate
           : "";
+
         state.r_registration_validity_date =
-          convertToDate(registrationValidityDate, "DD/MM/YYYY") ||
-          registrationValidityDate;
+          convertTimeStampToDateString(
+            registrationValidityDate,
+            "DD/MM/YYYY"
+          ) || registrationValidityDate;
 
         state.r_insurence_checked = dataObj.insuranceAvailable
           ? dataObj.insuranceAvailable === "true"
@@ -1937,12 +1941,12 @@ const enquiryDetailsOverViewSlice = createSlice({
           ? dataObj.insuranceFromDate
           : "";
         state.r_insurence_from_date =
-          convertToDate(insurenceFromDate, "DD/MM/YYYY") || insurenceFromDate;
+          convertTimeStampToDateString(insurenceFromDate, "DD/MM/YYYY") || insurenceFromDate;
         const insurenceToDate = dataObj.insuranceToDate
           ? dataObj.insuranceToDate
           : "";
         state.r_insurence_to_date =
-          convertToDate(insurenceToDate, "DD/MM/YYYY") || insurenceToDate;
+          convertTimeStampToDateString(insurenceToDate, "DD/MM/YYYY") || insurenceToDate;
       }
     },
     updateDmsAttachmentDetails: (state, action) => {
