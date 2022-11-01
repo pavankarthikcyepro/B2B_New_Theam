@@ -91,6 +91,7 @@ const TestDriveScreen = ({ route, navigation }) => {
         orgId: "",
         employeeId: "",
         employeeName: "",
+        isSelfManager: ""
     });
     const [selectedBranchId, setSelectedBranchId] = useState("");
     const [showDatePickerModel, setShowDatePickerModel] = useState(false);
@@ -192,6 +193,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                     orgId: jsonObj.orgId,
                     employeeId: jsonObj.empId,
                     employeeName: jsonObj.empName,
+                    isSelfManager: jsonObj.isSelfManager
                 });
 
                 // Get Branch Id
@@ -1247,7 +1249,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 ></Text>
                 <TextinputComp
                   style={styles.textInputStyle}
-                  label={"Fuel Type"}
+                  label={userData.isSelfManager == "Y" ? "Range" : "Fuel Type"}
                   value={selectedVehicleDetails.fuelType}
                   editable={false}
                   disabled={true}
@@ -1256,7 +1258,7 @@ const TestDriveScreen = ({ route, navigation }) => {
 
                 <TextinputComp
                   style={styles.textInputStyle}
-                  label={"Transmission Type"}
+                  label={userData.isSelfManager == "Y" ? "Battery Type" : "Transmission Type"}
                   value={selectedVehicleDetails.transType}
                   editable={false}
                   disabled={true}

@@ -213,6 +213,7 @@ const BookingFormScreen = ({ route, navigation }) => {
         isManager: false,
         editEnable: false,
         isPreBookingApprover: false,
+        isSelfManager: ""
     });
     const [showDropDownModel, setShowDropDownModel] = useState(false);
     const [showMultipleDropDownData, setShowMultipleDropDownData] =
@@ -300,6 +301,7 @@ const BookingFormScreen = ({ route, navigation }) => {
             isManager: false,
             editEnable: false,
             isPreBookingApprover: false,
+            isSelfManager: ""
         });
         setShowDropDownModel(false);
         setShowMultipleDropDownData(false);
@@ -525,14 +527,15 @@ const BookingFormScreen = ({ route, navigation }) => {
                 editEnable = true;
                 isPreBookingApprover = true;
             }
-            // setUserData({
-            //     orgId: jsonObj.orgId,
-            //     employeeId: jsonObj.empId,
-            //     employeeName: jsonObj.empName,
-            //     isManager: isManager,
-            //     editEnable: editEnable,
-            //     isPreBookingApprover: isPreBookingApprover,
-            // });
+            setUserData({
+                orgId: jsonObj.orgId,
+                employeeId: jsonObj.empId,
+                employeeName: jsonObj.empName,
+                isManager: isManager,
+                editEnable: editEnable,
+                isPreBookingApprover: isPreBookingApprover,
+                isSelfManager: jsonObj.isSelfManager
+            });
 
             const payload = {
                 bu: jsonObj.orgId,
@@ -2649,7 +2652,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 <TextinputComp
                                     style={styles.textInputStyle}
                                     value={selector.fuel_type}
-                                    label={"Fuel Type*"}
+                                    label={userData.isSelfManager == "Y" ? "Range*" : "Fuel Type*"}
                                     disabled={true}
                                     editable={false}
                                 />
@@ -2657,7 +2660,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 <TextinputComp
                                     style={styles.textInputStyle}
                                     value={selector.transmission_type}
-                                    label={"Transmission Type*"}
+                                    label={userData.isSelfManager == "Y" ? "Battery Type*" : "Transmission Type*"}
                                     disabled={true}
                                     editable={false}
                                 />

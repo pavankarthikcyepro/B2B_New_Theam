@@ -1,11 +1,11 @@
-import React, {useEffect, useState} from "react";
-import {Dimensions, FlatList, Pressable, StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import {LoaderComponent} from "../../../components";
-import {useDispatch, useSelector} from 'react-redux';
+import React, { useEffect, useState } from "react";
+import { Dimensions, FlatList, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { LoaderComponent } from "../../../components";
+import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 import * as AsyncStore from '../../../asyncStore';
-import {ScrollView} from "react-native-gesture-handler";
-import {Colors} from "../../../styles";
+import { ScrollView } from "react-native-gesture-handler";
+import { Colors } from "../../../styles";
 
 
 import {
@@ -14,17 +14,17 @@ import {
     getReportingManagerList,
     getUserWiseTargetParameters,
 } from "../../../redux/liveLeadsReducer";
-import {useNavigation} from "@react-navigation/native";
-import {Card, IconButton} from "react-native-paper";
-import {RenderGrandTotal} from "../Home/TabScreens/components/RenderGrandTotal";
-import {RenderEmployeeParameters} from "../Home/TabScreens/components/RenderEmployeeParameters";
-import {AppNavigator} from "../../../navigations";
-import {EmsTopTabNavigatorIdentifiers, EMSTopTabNavigatorTwo} from "../../../navigations/emsTopTabNavigator";
+import { useNavigation } from "@react-navigation/native";
+import { Card, IconButton } from "react-native-paper";
+import { RenderGrandTotal } from "../Home/TabScreens/components/RenderGrandTotal";
+import { RenderEmployeeParameters } from "../Home/TabScreens/components/RenderEmployeeParameters";
+import { AppNavigator } from "../../../navigations";
+import { EmsTopTabNavigatorIdentifiers, EMSTopTabNavigatorTwo } from "../../../navigations/emsTopTabNavigator";
 
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 100) / 5;
 
-const ParametersScreen = ({route}) => {
+const ParametersScreen = ({ route }) => {
     const navigation = useNavigation();
     const selector = useSelector((state) => state.liveLeadsReducer);
     const dispatch = useDispatch();
@@ -52,12 +52,12 @@ const ParametersScreen = ({route}) => {
 
     const paramsMetadata = [
         // 'Enquiry', 'Test Drive', 'Home Visit', 'Booking', 'INVOICE', 'Finance', 'Insurance', 'Exchange', 'EXTENDEDWARRANTY', 'Accessories'
-        {color: '#FA03B9', paramName: 'PreEnquiry', shortName: 'Con', initial: 'C', toggleIndex: 0},
-        {color: '#FA03B9', paramName: 'Enquiry', shortName: 'Enq', initial: 'E', toggleIndex: 0},
+        { color: '#FA03B9', paramName: 'PreEnquiry', shortName: 'Con', initial: 'C', toggleIndex: 0 },
+        { color: '#FA03B9', paramName: 'Enquiry', shortName: 'Enq', initial: 'E', toggleIndex: 0 },
         // {color: '#FA03B9', paramName: 'Test Drive', shortName: 'TD', initial: 'T', toggleIndex: 0},
         // {color: '#9E31BE', paramName: 'Home Visit', shortName: 'Visit', initial: 'V', toggleIndex: 0},
-        {color: '#1C95A6', paramName: 'Booking', shortName: 'Bkg', initial: 'B', toggleIndex: 0},
-        {color: '#C62159', paramName: 'INVOICE', shortName: 'Retail', initial: 'R', toggleIndex: 0},
+        { color: '#1C95A6', paramName: 'Booking', shortName: 'Bkg', initial: 'B', toggleIndex: 0 },
+        { color: '#C62159', paramName: 'INVOICE', shortName: 'Retail', initial: 'R', toggleIndex: 0 },
         // {color: '#9E31BE', paramName: 'Exchange', shortName: 'Exg', initial: 'Ex', toggleIndex: 1},
         // {color: '#EC3466', paramName: 'Finance', shortName: 'Fin', initial: 'F', toggleIndex: 1},
         // {color: '#1C95A6', paramName: 'Insurance', shortName: 'Ins', initial: 'I', toggleIndex: 1},
@@ -99,7 +99,7 @@ const ParametersScreen = ({route}) => {
                 return item.paramName.toLowerCase() === 'invoice'
             })
             if (tempRetail.length > 0) {
-                const params = {...tempRetail[0]};
+                const params = { ...tempRetail[0] };
                 params.paramShortName = 'Ret';
                 tempRetail[0] = params;
                 setRetailData(tempRetail[0]);
@@ -110,7 +110,7 @@ const ParametersScreen = ({route}) => {
                 return item.paramName.toLowerCase() === 'booking'
             })
             if (tempBooking.length > 0) {
-                const params = {...tempBooking[0]};
+                const params = { ...tempBooking[0] };
                 params.paramShortName = 'Bkg';
                 tempBooking[0] = params;
                 setBookingData(tempBooking[0])
@@ -121,7 +121,7 @@ const ParametersScreen = ({route}) => {
                 return item.paramName.toLowerCase() === 'enquiry'
             })
             if (tempEnq.length > 0) {
-                const params = {...tempEnq[0]};
+                const params = { ...tempEnq[0] };
                 params.paramShortName = 'Enq';
                 tempEnq[0] = params;
                 setEnqData(tempEnq[0])
@@ -132,7 +132,7 @@ const ParametersScreen = ({route}) => {
                 return item.paramName.toLowerCase() === 'preenquiry'
             })
             if (tempCon.length > 0) {
-                const params = {...tempCon[0]};
+                const params = { ...tempCon[0] };
                 params.paramShortName = 'Con';
                 tempCon[0] = params;
                 setContactData(tempCon[0])
@@ -232,9 +232,9 @@ const ParametersScreen = ({route}) => {
     // Main Dashboard params Data
     const renderData = (item, color) => {
         return (
-            <View style={{flexDirection: 'row', backgroundColor: Colors.BORDER_COLOR}}>
+            <View style={{ flexDirection: 'row', backgroundColor: Colors.BORDER_COLOR }}>
                 <RenderEmployeeParameters item={item} displayType={togglePercentage} params={toggleParamsMetaData}
-                                          navigation={navigation} moduleType={'live-leads'}/>
+                    navigation={navigation} moduleType={'live-leads'} />
             </View>
         )
     }
@@ -317,7 +317,7 @@ const ParametersScreen = ({route}) => {
         }
     }
 
-    const paramNameLabels = {preenquiry: 'Contacts', invoice: 'Retail'};
+    const paramNameLabels = { preenquiry: 'Contacts', invoice: 'Retail' };
 
     function convertParamNameLabels(paramName) {
         paramName = paramName ? paramName : '';
@@ -329,7 +329,7 @@ const ParametersScreen = ({route}) => {
 
     function navigateToEmsScreen(item) {
         const leads = ['enquiry', 'booking', 'invoice'];
-        const {paramName} = item;
+        const { paramName } = item;
         const isContact = paramName.toLowerCase() === 'preenquiry';
         const isLead = leads.includes(paramName.toLowerCase());
         if (isLead) {
@@ -356,11 +356,12 @@ const ParametersScreen = ({route}) => {
                 borderColor: color[index % color.length]
             }]}>
                 <View
-                      style={styles.insightParamsContainer}>
+                    style={styles.insightParamsContainer}>
                     <Text
                         style={styles.insightParamsLabel}>{convertParamNameLabels(item?.paramName)}</Text>
-                    <Text style={[styles.achievementCountView, {textDecorationLine: item?.achievment && item?.achievment > 0  ? 'underline' : 'none'
-                    }]} onPress={() => navigateToEmsScreen(item)}>{item?.achievment}</Text>
+                    <Text style={[styles.achievementCountView, {
+                        textDecorationLine: item?.achievment && item?.achievment > 0 ? 'underline' : 'none'
+                    }]} onPress={() => item?.achievment && item?.achievment > 0 ? navigateToEmsScreen(item) : null}>{item?.achievment && item?.achievment > 0 ? item?.achievment : 0}</Text>
                     <View></View>
                 </View>
             </Card>
@@ -429,8 +430,8 @@ const ParametersScreen = ({route}) => {
                             {/*</View>*/}
                         </View>
 
-                        <ScrollView contentContainerStyle={{paddingRight: 0, flexDirection: 'column'}}
-                                    horizontal={true} directionalLockEnabled={true}>
+                        <ScrollView contentContainerStyle={{ paddingRight: 0, flexDirection: 'column' }}
+                            horizontal={true} directionalLockEnabled={true}>
                             {/* TOP Header view */}
                             <View key={'headers'} style={{
                                 flexDirection: 'row',
@@ -438,10 +439,10 @@ const ParametersScreen = ({route}) => {
                                 paddingBottom: 4,
                                 borderBottomColor: Colors.GRAY
                             }}>
-                                <View style={{width: 70, height: 20, marginRight: 5}}>
+                                <View style={{ width: 70, height: 20, marginRight: 5 }}>
 
                                 </View>
-                                <View style={{width: '100%', height: 20, flexDirection: 'row'}}>
+                                <View style={{ width: '100%', height: 20, flexDirection: 'row' }}>
                                     {
                                         toggleParamsMetaData.map(param => {
                                             return (
@@ -468,7 +469,7 @@ const ParametersScreen = ({route}) => {
                                             marginTop: 12,
                                             width: '100%'
                                         }}>
-                                            <Text style={{fontSize: 12, fontWeight: '600'}}>{item.empName}</Text>
+                                            <Text style={{ fontSize: 12, fontWeight: '600' }}>{item.empName}</Text>
                                             <Pressable onPress={() => {
                                                 navigation.navigate(AppNavigator.HomeStackIdentifiers.sourceModel,
                                                     {
@@ -488,7 +489,7 @@ const ParametersScreen = ({route}) => {
                                             </Pressable>
                                         </View>
                                         {/*Source/Model View END */}
-                                        <View style={[{flexDirection: 'row'}, item.isOpenInner && {
+                                        <View style={[{ flexDirection: 'row' }, item.isOpenInner && {
                                             borderRadius: 10,
                                             borderWidth: 1,
                                             borderColor: '#C62159',
@@ -501,13 +502,13 @@ const ParametersScreen = ({route}) => {
                                                 flexDirection: 'column',
                                                 paddingHorizontal: 5,
                                             }]}>
-                                                <View style={{width: '100%', minHeight: 40, flexDirection: 'row'}}>
+                                                <View style={{ width: '100%', minHeight: 40, flexDirection: 'row' }}>
                                                     <RenderLevel1NameView level={0} item={item}
-                                                                          branchName={getBranchName(item.branchId)}
-                                                                          color={'#C62159'}
-                                                                          titleClick={async () => {
-                                                                              await onEmployeeNameClick(item, index)
-                                                                          }}/>
+                                                        branchName={getBranchName(item.branchId)}
+                                                        color={'#C62159'}
+                                                        titleClick={async () => {
+                                                            await onEmployeeNameClick(item, index)
+                                                        }} />
                                                     {renderData(item, '#C62159')}
                                                 </View>
 
@@ -557,75 +558,75 @@ const ParametersScreen = ({route}) => {
                                                                         </Pressable>
                                                                     </View>
                                                                     {/*Source/Model View END */}
-                                                                    <View style={{flexDirection: 'row'}}>
+                                                                    <View style={{ flexDirection: 'row' }}>
                                                                         <RenderLevel1NameView level={1}
-                                                                                              item={innerItem1}
-                                                                                              color={'#F59D00'}
-                                                                                              titleClick={async () => {
-                                                                                                  setSelectedName(innerItem1.empName);
-                                                                                                  setTimeout(() => {
-                                                                                                      setSelectedName('')
-                                                                                                  }, 900);
-                                                                                                  let localData = [...allParameters];
-                                                                                                  let current = localData[index].employeeTargetAchievements[innerIndex1].isOpenInner;
-                                                                                                  for (let i = 0; i < localData[index].employeeTargetAchievements.length; i++) {
-                                                                                                      localData[index].employeeTargetAchievements[i].isOpenInner = false;
-                                                                                                      if (i === localData[index].employeeTargetAchievements.length - 1) {
-                                                                                                          localData[index].employeeTargetAchievements[innerIndex1].isOpenInner = !current;
-                                                                                                      }
-                                                                                                  }
+                                                                            item={innerItem1}
+                                                                            color={'#F59D00'}
+                                                                            titleClick={async () => {
+                                                                                setSelectedName(innerItem1.empName);
+                                                                                setTimeout(() => {
+                                                                                    setSelectedName('')
+                                                                                }, 900);
+                                                                                let localData = [...allParameters];
+                                                                                let current = localData[index].employeeTargetAchievements[innerIndex1].isOpenInner;
+                                                                                for (let i = 0; i < localData[index].employeeTargetAchievements.length; i++) {
+                                                                                    localData[index].employeeTargetAchievements[i].isOpenInner = false;
+                                                                                    if (i === localData[index].employeeTargetAchievements.length - 1) {
+                                                                                        localData[index].employeeTargetAchievements[innerIndex1].isOpenInner = !current;
+                                                                                    }
+                                                                                }
 
-                                                                                                  if (!current) {
-                                                                                                      let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-                                                                                                      if (employeeData) {
-                                                                                                          const jsonObj = JSON.parse(employeeData);
-                                                                                                          const dateFormat = "YYYY-MM-DD";
-                                                                                                          const currentDate = moment().format(dateFormat)
-                                                                                                          const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
-                                                                                                          const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
-                                                                                                          let payload = {
-                                                                                                              "orgId": jsonObj.orgId,
-                                                                                                              "selectedEmpId": innerItem1.empId,
-                                                                                                              "endDate": currentDate,
-                                                                                                              "loggedInEmpId": jsonObj.empId,
-                                                                                                              "empId": innerItem1.empId,
-                                                                                                              "startDate": monthFirstDate,
-                                                                                                              "levelSelected": null,
-                                                                                                              "pageNo": 0,
-                                                                                                              "size": 100
-                                                                                                          }
-                                                                                                          Promise.all([
-                                                                                                              dispatch(getUserWiseTargetParameters(payload))
-                                                                                                          ]).then((res) => {
-                                                                                                              let tempRawData = [];
-                                                                                                              tempRawData = res[0]?.payload?.employeeTargetAchievements.filter((item) => item.empId !== innerItem1.empId);
-                                                                                                              if (tempRawData.length > 0) {
-                                                                                                                  for (let i = 0; i < tempRawData.length; i++) {
-                                                                                                                      tempRawData[i] = {
-                                                                                                                          ...tempRawData[i],
-                                                                                                                          isOpenInner: false,
-                                                                                                                          employeeTargetAchievements: []
-                                                                                                                      }
-                                                                                                                      if (i === tempRawData.length - 1) {
-                                                                                                                          localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements = tempRawData;
-                                                                                                                      }
-                                                                                                                  }
-                                                                                                              }
-                                                                                                              setAllParameters([...localData])
-                                                                                                          })
+                                                                                if (!current) {
+                                                                                    let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+                                                                                    if (employeeData) {
+                                                                                        const jsonObj = JSON.parse(employeeData);
+                                                                                        const dateFormat = "YYYY-MM-DD";
+                                                                                        const currentDate = moment().format(dateFormat)
+                                                                                        const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+                                                                                        const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+                                                                                        let payload = {
+                                                                                            "orgId": jsonObj.orgId,
+                                                                                            "selectedEmpId": innerItem1.empId,
+                                                                                            "endDate": currentDate,
+                                                                                            "loggedInEmpId": jsonObj.empId,
+                                                                                            "empId": innerItem1.empId,
+                                                                                            "startDate": monthFirstDate,
+                                                                                            "levelSelected": null,
+                                                                                            "pageNo": 0,
+                                                                                            "size": 100
+                                                                                        }
+                                                                                        Promise.all([
+                                                                                            dispatch(getUserWiseTargetParameters(payload))
+                                                                                        ]).then((res) => {
+                                                                                            let tempRawData = [];
+                                                                                            tempRawData = res[0]?.payload?.employeeTargetAchievements.filter((item) => item.empId !== innerItem1.empId);
+                                                                                            if (tempRawData.length > 0) {
+                                                                                                for (let i = 0; i < tempRawData.length; i++) {
+                                                                                                    tempRawData[i] = {
+                                                                                                        ...tempRawData[i],
+                                                                                                        isOpenInner: false,
+                                                                                                        employeeTargetAchievements: []
+                                                                                                    }
+                                                                                                    if (i === tempRawData.length - 1) {
+                                                                                                        localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements = tempRawData;
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                            setAllParameters([...localData])
+                                                                                        })
 
-                                                                                                          // if (localData[index].employeeTargetAchievements.length > 0) {
-                                                                                                          //   for (let j = 0; j < localData[index].employeeTargetAchievements.length; j++) {
-                                                                                                          //     localData[index].employeeTargetAchievements[j].isOpenInner = false;
-                                                                                                          //   }
-                                                                                                          // }
-                                                                                                          // setAllParameters([...localData])
-                                                                                                      }
-                                                                                                  } else {
-                                                                                                      setAllParameters([...localData])
-                                                                                                  }
-                                                                                                  // setAllParameters([...localData])
-                                                                                              }}/>
+                                                                                        // if (localData[index].employeeTargetAchievements.length > 0) {
+                                                                                        //   for (let j = 0; j < localData[index].employeeTargetAchievements.length; j++) {
+                                                                                        //     localData[index].employeeTargetAchievements[j].isOpenInner = false;
+                                                                                        //   }
+                                                                                        // }
+                                                                                        // setAllParameters([...localData])
+                                                                                    }
+                                                                                } else {
+                                                                                    setAllParameters([...localData])
+                                                                                }
+                                                                                // setAllParameters([...localData])
+                                                                            }} />
                                                                         {renderData(innerItem1, '#F59D00')}
                                                                     </View>
                                                                     {
@@ -671,75 +672,75 @@ const ParametersScreen = ({route}) => {
                                                                                         </Pressable>
                                                                                     </View>
                                                                                     <View
-                                                                                        style={{flexDirection: 'row'}}>
+                                                                                        style={{ flexDirection: 'row' }}>
                                                                                         <RenderLevel1NameView level={2}
-                                                                                                              item={innerItem2}
-                                                                                                              color={'#2C97DE'}
-                                                                                                              titleClick={async () => {
-                                                                                                                  setSelectedName(innerItem2.empName);
-                                                                                                                  setTimeout(() => {
-                                                                                                                      setSelectedName('')
-                                                                                                                  }, 900);
-                                                                                                                  let localData = [...allParameters];
-                                                                                                                  let current = localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].isOpenInner;
-                                                                                                                  for (let i = 0; i < localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements.length; i++) {
-                                                                                                                      localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[i].isOpenInner = false;
-                                                                                                                      if (i === localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements.length - 1) {
-                                                                                                                          localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].isOpenInner = !current;
-                                                                                                                      }
-                                                                                                                  }
+                                                                                            item={innerItem2}
+                                                                                            color={'#2C97DE'}
+                                                                                            titleClick={async () => {
+                                                                                                setSelectedName(innerItem2.empName);
+                                                                                                setTimeout(() => {
+                                                                                                    setSelectedName('')
+                                                                                                }, 900);
+                                                                                                let localData = [...allParameters];
+                                                                                                let current = localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].isOpenInner;
+                                                                                                for (let i = 0; i < localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements.length; i++) {
+                                                                                                    localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[i].isOpenInner = false;
+                                                                                                    if (i === localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements.length - 1) {
+                                                                                                        localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].isOpenInner = !current;
+                                                                                                    }
+                                                                                                }
 
-                                                                                                                  if (!current) {
-                                                                                                                      let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-                                                                                                                      if (employeeData) {
-                                                                                                                          const jsonObj = JSON.parse(employeeData);
-                                                                                                                          const dateFormat = "YYYY-MM-DD";
-                                                                                                                          const currentDate = moment().format(dateFormat)
-                                                                                                                          const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
-                                                                                                                          const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
-                                                                                                                          let payload = {
-                                                                                                                              "orgId": jsonObj.orgId,
-                                                                                                                              "selectedEmpId": innerItem2.empId,
-                                                                                                                              "endDate": currentDate,
-                                                                                                                              "loggedInEmpId": jsonObj.empId,
-                                                                                                                              "empId": innerItem2.empId,
-                                                                                                                              "startDate": monthFirstDate,
-                                                                                                                              "levelSelected": null,
-                                                                                                                              "pageNo": 0,
-                                                                                                                              "size": 100
-                                                                                                                          }
-                                                                                                                          Promise.all([
-                                                                                                                              dispatch(getUserWiseTargetParameters(payload))
-                                                                                                                          ]).then((res) => {
-                                                                                                                              let tempRawData = [];
-                                                                                                                              tempRawData = res[0]?.payload?.employeeTargetAchievements.filter((item) => item.empId !== innerItem2.empId);
-                                                                                                                              if (tempRawData.length > 0) {
-                                                                                                                                  for (let i = 0; i < tempRawData.length; i++) {
-                                                                                                                                      tempRawData[i] = {
-                                                                                                                                          ...tempRawData[i],
-                                                                                                                                          isOpenInner: false,
-                                                                                                                                          employeeTargetAchievements: []
-                                                                                                                                      }
-                                                                                                                                      if (i === tempRawData.length - 1) {
-                                                                                                                                          localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements = tempRawData;
-                                                                                                                                      }
-                                                                                                                                  }
-                                                                                                                              }
-                                                                                                                              setAllParameters([...localData])
-                                                                                                                          })
+                                                                                                if (!current) {
+                                                                                                    let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+                                                                                                    if (employeeData) {
+                                                                                                        const jsonObj = JSON.parse(employeeData);
+                                                                                                        const dateFormat = "YYYY-MM-DD";
+                                                                                                        const currentDate = moment().format(dateFormat)
+                                                                                                        const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+                                                                                                        const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+                                                                                                        let payload = {
+                                                                                                            "orgId": jsonObj.orgId,
+                                                                                                            "selectedEmpId": innerItem2.empId,
+                                                                                                            "endDate": currentDate,
+                                                                                                            "loggedInEmpId": jsonObj.empId,
+                                                                                                            "empId": innerItem2.empId,
+                                                                                                            "startDate": monthFirstDate,
+                                                                                                            "levelSelected": null,
+                                                                                                            "pageNo": 0,
+                                                                                                            "size": 100
+                                                                                                        }
+                                                                                                        Promise.all([
+                                                                                                            dispatch(getUserWiseTargetParameters(payload))
+                                                                                                        ]).then((res) => {
+                                                                                                            let tempRawData = [];
+                                                                                                            tempRawData = res[0]?.payload?.employeeTargetAchievements.filter((item) => item.empId !== innerItem2.empId);
+                                                                                                            if (tempRawData.length > 0) {
+                                                                                                                for (let i = 0; i < tempRawData.length; i++) {
+                                                                                                                    tempRawData[i] = {
+                                                                                                                        ...tempRawData[i],
+                                                                                                                        isOpenInner: false,
+                                                                                                                        employeeTargetAchievements: []
+                                                                                                                    }
+                                                                                                                    if (i === tempRawData.length - 1) {
+                                                                                                                        localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements = tempRawData;
+                                                                                                                    }
+                                                                                                                }
+                                                                                                            }
+                                                                                                            setAllParameters([...localData])
+                                                                                                        })
 
-                                                                                                                          // if (localData[index].employeeTargetAchievements.length > 0) {
-                                                                                                                          //   for (let j = 0; j < localData[index].employeeTargetAchievements.length; j++) {
-                                                                                                                          //     localData[index].employeeTargetAchievements[j].isOpenInner = false;
-                                                                                                                          //   }
-                                                                                                                          // }
-                                                                                                                          // setAllParameters([...localData])
-                                                                                                                      }
-                                                                                                                  } else {
-                                                                                                                      setAllParameters([...localData])
-                                                                                                                  }
-                                                                                                                  // setAllParameters([...localData])
-                                                                                                              }}/>
+                                                                                                        // if (localData[index].employeeTargetAchievements.length > 0) {
+                                                                                                        //   for (let j = 0; j < localData[index].employeeTargetAchievements.length; j++) {
+                                                                                                        //     localData[index].employeeTargetAchievements[j].isOpenInner = false;
+                                                                                                        //   }
+                                                                                                        // }
+                                                                                                        // setAllParameters([...localData])
+                                                                                                    }
+                                                                                                } else {
+                                                                                                    setAllParameters([...localData])
+                                                                                                }
+                                                                                                // setAllParameters([...localData])
+                                                                                            }} />
                                                                                         {renderData(innerItem2, '#2C97DE')}
                                                                                     </View>
                                                                                     {
@@ -747,17 +748,17 @@ const ParametersScreen = ({route}) => {
                                                                                         innerItem2.employeeTargetAchievements.map((innerItem3, innerIndex3) => {
                                                                                             return (
                                                                                                 <View key={innerIndex3}
-                                                                                                      style={[{
-                                                                                                          width: '98%',
-                                                                                                          minHeight: 40,
-                                                                                                          flexDirection: 'column',
-                                                                                                      }, innerItem3.isOpenInner && {
-                                                                                                          borderRadius: 10,
-                                                                                                          borderWidth: 1,
-                                                                                                          borderColor: '#EC3466',
-                                                                                                          backgroundColor: '#FFFFFF',
-                                                                                                          marginHorizontal: 5
-                                                                                                      }]}>
+                                                                                                    style={[{
+                                                                                                        width: '98%',
+                                                                                                        minHeight: 40,
+                                                                                                        flexDirection: 'column',
+                                                                                                    }, innerItem3.isOpenInner && {
+                                                                                                        borderRadius: 10,
+                                                                                                        borderWidth: 1,
+                                                                                                        borderColor: '#EC3466',
+                                                                                                        backgroundColor: '#FFFFFF',
+                                                                                                        marginHorizontal: 5
+                                                                                                    }]}>
                                                                                                     <View style={{
                                                                                                         paddingHorizontal: 4,
                                                                                                         display: 'flex',
@@ -788,7 +789,7 @@ const ParametersScreen = ({route}) => {
                                                                                                         </Pressable>
                                                                                                     </View>
                                                                                                     <View
-                                                                                                        style={{flexDirection: 'row'}}>
+                                                                                                        style={{ flexDirection: 'row' }}>
                                                                                                         <RenderLevel1NameView
                                                                                                             level={3}
                                                                                                             item={innerItem3}
@@ -850,7 +851,7 @@ const ParametersScreen = ({route}) => {
                                                                                                                     setAllParameters([...localData])
                                                                                                                 }
                                                                                                                 // setAllParameters([...localData])
-                                                                                                            }}/>
+                                                                                                            }} />
 
                                                                                                         {renderData(innerItem3, '#EC3466')}
                                                                                                     </View>
@@ -872,7 +873,7 @@ const ParametersScreen = ({route}) => {
                                                                                                                         marginHorizontal: 5
                                                                                                                     }]}>
                                                                                                                     <View
-                                                                                                                        style={{flexDirection: 'row'}}>
+                                                                                                                        style={{ flexDirection: 'row' }}>
                                                                                                                         <RenderLevel1NameView
                                                                                                                             level={4}
                                                                                                                             item={innerItem4}
@@ -934,7 +935,7 @@ const ParametersScreen = ({route}) => {
                                                                                                                                     setAllParameters([...localData])
                                                                                                                                 }
                                                                                                                                 // setAllParameters([...localData])
-                                                                                                                            }}/>
+                                                                                                                            }} />
                                                                                                                         {renderData(innerItem4, '#1C95A6')}
                                                                                                                     </View>
                                                                                                                     {
@@ -955,7 +956,7 @@ const ParametersScreen = ({route}) => {
                                                                                                                                         marginHorizontal: 5
                                                                                                                                     }]}>
                                                                                                                                     <View
-                                                                                                                                        style={{flexDirection: 'row'}}>
+                                                                                                                                        style={{ flexDirection: 'row' }}>
                                                                                                                                         <RenderLevel1NameView
                                                                                                                                             level={5}
                                                                                                                                             item={innerItem5}
@@ -1017,7 +1018,7 @@ const ParametersScreen = ({route}) => {
                                                                                                                                                     setAllParameters([...localData])
                                                                                                                                                 }
                                                                                                                                                 // setAllParameters([...localData])
-                                                                                                                                            }}/>
+                                                                                                                                            }} />
                                                                                                                                         {renderData(innerItem5, '#C62159')}
                                                                                                                                     </View>
                                                                                                                                     {
@@ -1038,7 +1039,7 @@ const ParametersScreen = ({route}) => {
                                                                                                                                                         marginHorizontal: 5
                                                                                                                                                     }]}>
                                                                                                                                                     <View
-                                                                                                                                                        style={{flexDirection: 'row'}}>
+                                                                                                                                                        style={{ flexDirection: 'row' }}>
                                                                                                                                                         <RenderLevel1NameView
                                                                                                                                                             level={6}
                                                                                                                                                             item={innerItem6}
@@ -1100,7 +1101,7 @@ const ParametersScreen = ({route}) => {
                                                                                                                                                                     setAllParameters([...localData])
                                                                                                                                                                 }
                                                                                                                                                                 // setAllParameters([...localData])
-                                                                                                                                                            }}/>
+                                                                                                                                                            }} />
                                                                                                                                                         {renderData(innerItem6, '#C62159')}
                                                                                                                                                     </View>
                                                                                                                                                 </View>
@@ -1137,7 +1138,7 @@ const ParametersScreen = ({route}) => {
                             {/* Grand Total Section */}
                             {selector.totalParameters.length > 0 &&
                                 <View>
-                                    <Pressable style={{alignSelf: 'flex-end'}} onPress={() => {
+                                    <Pressable style={{ alignSelf: 'flex-end' }} onPress={() => {
                                         navigation.navigate(AppNavigator.HomeStackIdentifiers.sourceModel, {
                                             empId: selector.login_employee_details.empId,
                                             headerTitle: 'Grand Total',
@@ -1155,7 +1156,7 @@ const ParametersScreen = ({route}) => {
                                         }}>Source/Model</Text>
                                     </Pressable>
 
-                                    <View style={{flexDirection: 'row', height: 40}}>
+                                    <View style={{ flexDirection: 'row', height: 40 }}>
                                         <View style={{
                                             width: 70,
                                             minHeight: 40,
@@ -1165,7 +1166,7 @@ const ParametersScreen = ({route}) => {
                                             backgroundColor: Colors.RED
                                         }}>
                                             <View
-                                                style={{justifyContent: 'center', alignItems: 'center', marginLeft: 6}}>
+                                                style={{ justifyContent: 'center', alignItems: 'center', marginLeft: 6 }}>
                                                 <Text style={[styles.grandTotalText, {
                                                     color: Colors.WHITE,
                                                     fontSize: 12,
@@ -1198,9 +1199,9 @@ const ParametersScreen = ({route}) => {
                                                 flexDirection: 'row',
                                             }}>
                                                 <RenderGrandTotal totalParams={selector.totalParameters}
-                                                                  displayType={togglePercentage}
-                                                                  params={toggleParamsMetaData}
-                                                                  moduleType={'live-leads'}
+                                                    displayType={togglePercentage}
+                                                    params={toggleParamsMetaData}
+                                                    moduleType={'live-leads'}
                                                 />
                                             </View>
                                         </View>
@@ -1211,8 +1212,8 @@ const ParametersScreen = ({route}) => {
                     </View>
                 ) : ( // IF Self or insights
                     <>
-                        <View style={{margin: 16}}>
-                            <Pressable style={{alignSelf: 'flex-end'}} onPress={() => {
+                        <View style={{ margin: 16 }}>
+                            <Pressable style={{ alignSelf: 'flex-end' }} onPress={() => {
                                 navigation.navigate(AppNavigator.HomeStackIdentifiers.sourceModel, {
                                     empId: selector.login_employee_details.empId,
                                     headerTitle: 'Source/Model',
@@ -1235,9 +1236,9 @@ const ParametersScreen = ({route}) => {
                             {/*<RenderSelfInsights data={selfInsightsData} type={togglePercentage} navigation={navigation} moduleType={'live-leads'}/>*/}
                             {
                                 selfInsightsData && selfInsightsData.length > 0 &&
-                                            <FlatList data={selfInsightsData}
-                                                      keyExtractor={(item, index) => index.toString()}
-                                                      renderItem={({ item, index }) => renderSelfInsightsView(item, index)} />
+                                <FlatList data={selfInsightsData}
+                                    keyExtractor={(item, index) => index.toString()}
+                                    renderItem={({ item, index }) => renderSelfInsightsView(item, index)} />
                             }
                         </View>
                     </>
@@ -1255,10 +1256,10 @@ const ParametersScreen = ({route}) => {
 export default ParametersScreen;
 
 
-export const RenderLevel1NameView = ({level, item, branchName = '', color, titleClick}) => {
+export const RenderLevel1NameView = ({ level, item, branchName = '', color, titleClick }) => {
     return (
-        <View style={{width: 70, justifyContent: 'center', textAlign: 'center', display: 'flex', flexDirection: 'row'}}>
-            <View style={{justifyContent: 'center', alignItems: 'center'}}>
+        <View style={{ width: 70, justifyContent: 'center', textAlign: 'center', display: 'flex', flexDirection: 'row' }}>
+            <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                 <TouchableOpacity style={{
                     width: 30,
                     height: 30,
@@ -1269,21 +1270,21 @@ export const RenderLevel1NameView = ({level, item, branchName = '', color, title
                     marginTop: 5,
                     marginBottom: 5
                 }}
-                                  onPress={titleClick}>
+                    onPress={titleClick}>
                     <Text style={{
                         fontSize: 14,
                         color: '#fff'
                     }}>{item.empName.charAt(0)}</Text>
                 </TouchableOpacity>
-                {level === 0 && !!branchName && <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                {level === 0 && !!branchName && <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <IconButton
                         icon="map-marker"
-                        style={{padding: 0, margin: 0}}
+                        style={{ padding: 0, margin: 0 }}
                         color={Colors.BLACK}
                         size={8}
                     />
-                    <Text style={{fontSize: 8}}
-                          numberOfLines={2}>{branchName}</Text>
+                    <Text style={{ fontSize: 8 }}
+                        numberOfLines={2}>{branchName}</Text>
                 </View>}
             </View>
             <View style={{
@@ -1295,7 +1296,7 @@ export const RenderLevel1NameView = ({level, item, branchName = '', color, title
                 flexDirection: 'column',
                 marginRight: 5,
             }}>
-                <Text style={{fontSize: 6, fontWeight: 'bold', paddingVertical: 6, height: 25}}>CNT</Text>
+                <Text style={{ fontSize: 6, fontWeight: 'bold', paddingVertical: 6, height: 25 }}>CNT</Text>
             </View>
         </View>
     )
@@ -1313,7 +1314,7 @@ const styles = StyleSheet.create({
         width: '48%',
         justifyContent: 'space-between', alignItems: 'center', height: 30, backgroundColor: "#F5F5F5"
     },
-    itemBox: {width: 68, height: 30, justifyContent: 'center', alignItems: 'center'},
+    itemBox: { width: 68, height: 30, justifyContent: 'center', alignItems: 'center' },
     shuffleBGView: {
         width: 30,
         height: 30,
@@ -1349,9 +1350,9 @@ const styles = StyleSheet.create({
         width: 20,
         height: 20,
     },
-    grandTotalText: {color: '#fff', fontWeight: 'bold', fontSize: 15},
-    totalView: {minHeight: 40, alignItems: 'center', justifyContent: 'center'},
-    totalText: {fontSize: 12, color: '#000', fontWeight: '500', textAlign: 'center'},
+    grandTotalText: { color: '#fff', fontWeight: 'bold', fontSize: 15 },
+    totalView: { minHeight: 40, alignItems: 'center', justifyContent: 'center' },
+    totalText: { fontSize: 12, color: '#000', fontWeight: '500', textAlign: 'center' },
     percentageToggleView: {
         justifyContent: 'center',
         alignItems: 'flex-end',

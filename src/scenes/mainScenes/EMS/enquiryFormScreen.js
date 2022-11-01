@@ -208,6 +208,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     orgId: "",
     employeeId: "",
     employeeName: "",
+    isSelfManager: ""
   });
   const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
   const [modelsList, setModelsList] = useState([]);
@@ -334,6 +335,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       orgId: "",
       employeeId: "",
       employeeName: "",
+      isSelfManager: ""
     });
     setUploadedImagesDataObj({});
     setTypeOfActionDispatched("");
@@ -457,6 +459,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         orgId: jsonObj.orgId,
         employeeId: jsonObj.empId,
         employeeName: jsonObj.empName,
+        isSelfManager: jsonObj.isSelfManager
       });
       getCarModelListFromServer(jsonObj.orgId);
 
@@ -5241,14 +5244,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <Text style={GlobalStyle.underline}></Text>
 
                     <DropDownSelectionItem
-                      label={"Fuel Type"}
+                      label={userData.isSelfManager == "Y" ? "Range" : "Fuel Type"}
                       value={selector.c_fuel_type}
                       onPress={() =>
                         showDropDownModelMethod("C_FUEL_TYPE", "Fuel Type")
                       }
                     />
                     <DropDownSelectionItem
-                      label={"Transmission Type"}
+                      label={userData.isSelfManager == "Y" ? "Battery Type" : "Transmission Type"}
                       value={selector.c_transmission_type}
                       onPress={() =>
                         showDropDownModelMethod(
@@ -5665,14 +5668,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   <Text style={GlobalStyle.underline}></Text>
 
                   <DropDownSelectionItem
-                    label={"Fuel Type"}
+                    label={userData.isSelfManager == "Y" ? "Range" : "Fuel Type"}
                     value={selector.r_fuel_type}
                     onPress={() =>
                       showDropDownModelMethod("R_FUEL_TYPE", "Fuel Type")
                     }
                   />
                   <DropDownSelectionItem
-                    label={"Transmission Type"}
+                    label={userData.isSelfManager == "Y" ? "Battery Type" : "Transmission Type"}
                     value={selector.r_transmission_type}
                     onPress={() =>
                       showDropDownModelMethod(
