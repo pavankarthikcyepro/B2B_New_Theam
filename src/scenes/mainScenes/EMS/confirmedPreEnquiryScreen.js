@@ -608,7 +608,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                 <ScrollView
                     automaticallyAdjustContentInsets={true}
                     bounces={true}
-                    contentContainerStyle={{ padding: 10 }}
+                    contentContainerStyle={{ paddingHorizontal: 10 }}
                     style={{ flex: 1 }}
                 >
                     <View style={styles.view1}>
@@ -623,14 +623,14 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
 
                     <View style={[{ borderRadius: 6 }]}>
                         <TextinputComp
-                            style={{ height: 70 }}
+                            style={{ height: 50 }}
                             value={itemData.firstName + ' ' + itemData.lastName}
                             label={'Customer Name'}
                             editable={false}
                         />
                         <Text style={styles.devider}></Text>
                         <TextinputComp
-                            style={{ height: 70 }}
+                            style={{ height: 50 }}
                             value={itemData.phone}
                             label={'Mobile Number'}
                             editable={false}
@@ -638,7 +638,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                         <Text style={styles.devider}></Text>
 
                         <TextinputComp
-                            style={{ height: 70 }}
+                            style={{ height: 50 }}
                             value={convertTimeStampToDateString(
                                 itemData.createdDate
                             )}
@@ -648,7 +648,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                         <Text style={styles.devider}></Text>
 
                         <TextinputComp
-                            style={{ height: 70 }}
+                            style={{ height: 50 }}
                             value={itemData.enquirySource}
                             label={"Source of Contact"}
                             editable={false}
@@ -656,7 +656,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                         <Text style={styles.devider}></Text>
 
                         <TextinputComp
-                            style={{ height: 70 }}
+                            style={{ height: 50 }}
                             value={itemData.model}
                             label={'Model'}
                             editable={false}
@@ -664,7 +664,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                         <Text style={styles.devider}></Text>
 
                         <TextinputComp
-                            style={{ height: 70 }}
+                            style={{ height: 50 }}
                             value={checkForLeadStage()}
                             label={'Status'}
                             editable={false}

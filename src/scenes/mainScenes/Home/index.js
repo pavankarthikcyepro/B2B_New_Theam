@@ -793,7 +793,7 @@ const HomeScreen = ({ route, navigation }) => {
                                                     }}>
 
                                                             <View style={{ flexDirection: 'row' }}>
-                                                                <Text style={[styles.rankText, { color: 'red' }]}>{retailData?.achievment}</Text>
+                                                                <Text style={[styles.rankText, { color: Colors.RED }]}>{retailData?.achievment}</Text>
                                                                 <Text style={[styles.rankText]}>/{retailData?.target}</Text>
                                                             </View>
                                                         <View style={{

@@ -239,6 +239,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         isManager: false,
         editEnable: false,
         isPreBookingApprover: false,
+        isSelfManager: ""
     });
     const [showDropDownModel, setShowDropDownModel] = useState(false);
     const [showMultipleDropDownData, setShowMultipleDropDownData] =
@@ -333,7 +334,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     const [isEdit, setIsEdit] = useState(false);
     const [isReciptDocUpload, setIsReciptDocUpload] = useState(false);
     const [isSubmitPress, setIsSubmitPress] = useState(false);
-    
+
     const [isEditButtonShow, setIsEditButtonShow] = useState(false);
     const [isSubmitCancelButtonShow, setIsSubmitCancelButtonShow] = useState(false);
 
@@ -473,7 +474,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         clearLocalData()
         navigation.goBack();
     };
-    
+
     const goToLeadScreen = () => {
         dispatch(clearState());
         setTotalOnRoadPriceAfterDiscount(0);
@@ -539,6 +540,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             isManager: false,
             editEnable: false,
             isPreBookingApprover: false,
+            isSelfManager: ""
         });
         setShowDropDownModel(false);
         setShowMultipleDropDownData(false);
@@ -877,6 +879,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 isManager: isManager,
                 editEnable: editEnable,
                 isPreBookingApprover: isPreBookingApprover,
+                isSelfManager: jsonObj.isSelfManager
             });
 
             const payload = {
@@ -974,9 +977,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             const dmsLeadDto = selector.pre_booking_details_response.dmsLeadDto;
             dispatch(getOnRoadPriceDtoListApi(dmsLeadDto.id));
             //if (dmsLeadDto.leadStatus === "ENQUIRYCOMPLETED" || dmsLeadDto.leadStatus === "SENTFORAPPROVAL" || dmsLeadDto.leadStatus === "REJECTED") {
+          console.log("INSIsssDE ", dmsLeadDto.leadStatus);
 
             if (dmsLeadDto.leadStatus === "ENQUIRYCOMPLETED" || dmsLeadDto.leadStatus === "REJECTED") {
-                console.log("INSIDE ", dmsLeadDto.leadStatus);
+                // console.log("INSIDE ", dmsLeadDto.leadStatus);
                 setShowSubmitDropBtn(true);
             }
 
@@ -988,6 +992,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 // Get Payment Details
                 dispatch(getPaymentDetailsApi(dmsLeadDto.id));
                 dispatch(getBookingAmountDetailsApi(dmsLeadDto.id));
+                setShowApproveRejectBtn(false);
             }
             if (dmsLeadDto.leadStatus === "REJECTED") {
                 setIsRejectSelected(true)
@@ -1616,7 +1621,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       //     }
       //   }
       // }
-      
+
       // if (!isAddressSelected){
       //   scrollToPos(2);
       //   setOpenAccordian("2");
@@ -3333,28 +3338,58 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     styles.accordianBorder,
                   ]}
                 >
-                  <DropDownSelectionItem
-                    label={"Salutation*"}
-                    disabled={!isInputsEditable()}
-                    value={selector.salutation}
-                    onPress={() =>
-                      showDropDownModelMethod("SALUTATION", "Salutation")
-                    }
-                  />
-                  {/* <Text style={GlobalStyle.underline} /> */}
-                  <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress && selector.salutation === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
+                <View style={{flexDirection: 'row', display: 'flex', justifyContent: 'space-between', backgroundColor: Colors.WHITE}}>
+                    <View style={{width: selector.enquiry_segment.toLowerCase() === "personal" ? '45%' : '100%'}}>
+                        <DropDownSelectionItem
+                            label={"Salutation*"}
+                            disabled={!isInputsEditable()}
+                            value={selector.salutation}
+                            onPress={() =>
+                                showDropDownModelMethod("SALUTATION", "Salutation")
+                            }
+                        />
+                        {/* <Text style={GlobalStyle.underline} /> */}
+                        <Text
+                            style={[
+                                GlobalStyle.underline,
+                                {
+                                    backgroundColor:
+                                        isSubmitPress && selector.salutation === ""
+                                            ? "red"
+                                            : "rgba(208, 212, 214, 0.7)",
+                                },
+                            ]}
+                        ></Text>
+                    </View>
+                    <View style={{width: '45%'}}>
+                        {selector.enquiry_segment.toLowerCase() === "personal" ? (
+                            <View>
+                                <DropDownSelectionItem
+                                    disabled={!isInputsEditable()}
+                                    label={"Gender*"}
+                                    value={selector.gender}
+                                    onPress={() =>
+                                        showDropDownModelMethod("GENDER", "Gender")
+                                    }
+                                />
+                                <Text
+                                    style={[
+                                        GlobalStyle.underline,
+                                        {
+                                            backgroundColor:
+                                                isSubmitPress && selector.gender === ""
+                                                    ? "red"
+                                                    : "rgba(208, 212, 214, 0.7)",
+                                        },
+                                    ]}
+                                ></Text>
+                            </View>
+                        ) : null}
+                    </View>
+                </View>
+
                   <TextinputComp
-                    style={{ height: 65, width: "100%" }}
+                    style={styles.textInputStyle}
                     disabled={!isInputsEditable()}
                     value={selector.first_name}
                     label={"First Name*"}
@@ -3380,7 +3415,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ></Text>
                   <TextinputComp
                     disabled={!isInputsEditable()}
-                    style={{ height: 65, width: "100%" }}
+                    style={styles.textInputStyle}
                     value={selector.last_name}
                     label={"Last Name*"}
                     keyboardType={"default"}
@@ -3403,32 +3438,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       },
                     ]}
                   ></Text>
-                  {selector.enquiry_segment.toLowerCase() === "personal" ? (
-                    <View>
-                      <DropDownSelectionItem
-                        disabled={!isInputsEditable()}
-                        label={"Gender*"}
-                        value={selector.gender}
-                        onPress={() =>
-                          showDropDownModelMethod("GENDER", "Gender")
-                        }
-                      />
-                      <Text
-                        style={[
-                          GlobalStyle.underline,
-                          {
-                            backgroundColor:
-                              isSubmitPress && selector.gender === ""
-                                ? "red"
-                                : "rgba(208, 212, 214, 0.7)",
-                          },
-                        ]}
-                      ></Text>
-                    </View>
-                  ) : null}
                   <TextinputComp
                     disabled={!isInputsEditable()}
-                    style={{ height: 65, width: "100%" }}
+                    style={styles.textInputStyle}
                     value={selector.mobile}
                     editable={false}
                     label={"Mobile Number*"}
@@ -3452,7 +3464,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ></Text>
                   <TextinputComp
                     disabled={!isInputsEditable()}
-                    style={{ height: 65, width: "100%" }}
+                    style={styles.textInputStyle}
                     value={selector.email}
                     label={"Email ID*"}
                     keyboardType={"email-address"}
@@ -3533,37 +3545,46 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ></Text>
                   {selector.enquiry_segment.toLowerCase() === "personal" ? (
                     <View>
-                      <DateSelectItem
-                        disabled={!isInputsEditable()}
-                        label={"Date Of Birth*"}
-                        value={selector.date_of_birth}
-                        onPress={() => dispatch(setDatePicker("DATE_OF_BIRTH"))}
-                      />
-                      <Text
-                        style={[
-                          GlobalStyle.underline,
-                          {
-                            backgroundColor:
-                              isSubmitPress && selector.date_of_birth === ""
-                                ? "red"
-                                : "rgba(208, 212, 214, 0.7)",
-                          },
-                        ]}
-                      ></Text>
-                      <TextinputComp
-                        disabled={!isInputsEditable()}
-                        style={{ height: 65, width: "100%" }}
-                        value={selector.age}
-                        label={"Age"}
-                        maxLength={3}
-                        keyboardType={"number-pad"}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setCustomerDetails({ key: "AGE", text: text })
-                          )
-                        }
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
+                        <View style={{flexDirection: 'row', display: 'flex', justifyContent: 'space-between', backgroundColor: Colors.WHITE}}>
+                          <View style={{width: '45%'}}>
+                            <DateSelectItem
+                                disabled={!isInputsEditable()}
+                                label={"Date Of Birth*"}
+                                value={selector.date_of_birth}
+                                onPress={() => dispatch(setDatePicker("DATE_OF_BIRTH"))}
+                            />
+                            <Text
+                                style={[
+                                    GlobalStyle.underline,
+                                    {
+                                        backgroundColor:
+                                            isSubmitPress && selector.date_of_birth === ""
+                                                ? "red"
+                                                : "rgba(208, 212, 214, 0.7)",
+                                    },
+                                ]}
+                            ></Text>
+                          </View>
+                          <View style={{width: '45%'}}>
+                            <TextinputComp
+                                disabled={!isInputsEditable()}
+                                style={styles.textInputStyle}
+                                value={selector.age}
+                                label={"Age"}
+                                maxLength={3}
+                                keyboardType={"number-pad"}
+                                onChangeText={(text) =>
+                                    dispatch(
+                                        setCustomerDetails({ key: "AGE", text: text })
+                                    )
+                                }
+                            />
+                            <Text style={GlobalStyle.underline}></Text>
+                          </View>
+
+                        </View>
+
+
                       <DropDownSelectionItem
                         disabled={!isInputsEditable()}
                         label={"Marital Status"}
@@ -5860,7 +5881,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     <View>
                       <TextinputComp
                         disabled={!isInputsEditable()}
-                        style={{ height: 65, width: "100%" }}
+                        style={styles.textInputStyle}
                         label={"Bank/Finance Name"}
                         value={selector.bank_or_finance_name}
                         onChangeText={(text) =>
@@ -5876,7 +5897,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                       <TextinputComp
                         disabled={!isInputsEditable()}
-                        style={{ height: 65, width: "100%" }}
+                        style={styles.textInputStyle}
                         label={"Location"}
                         value={selector.location}
                         onChangeText={(text) =>
@@ -5893,7 +5914,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     <View>
                       <TextinputComp
                         disabled={!isInputsEditable()}
-                        style={{ height: 65, width: "100%" }}
+                        style={styles.textInputStyle}
                         label={"Leasing Name"}
                         maxLength={50}
                         value={selector.leashing_name}
@@ -5928,7 +5949,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     <View>
                       <TextinputComp
                         disabled={!isInputsEditable()}
-                        style={{ height: 65, width: "100%" }}
+                        style={styles.textInputStyle}
                         label={"Down Payment"}
                         value={selector.down_payment}
                         keyboardType={"number-pad"}
@@ -5949,7 +5970,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     <View>
                       <TextinputComp
                         disabled={!isInputsEditable()}
-                        style={{ height: 65, width: "100%" }}
+                        style={styles.textInputStyle}
                         label={"Loan Amount"}
                         keyboardType={"number-pad"}
                         value={selector.loan_amount}
@@ -5970,7 +5991,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       <Text style={GlobalStyle.underline}></Text>
                       <TextinputComp
                         disabled={!isInputsEditable()}
-                        style={{ height: 65, width: "100%" }}
+                        style={styles.textInputStyle}
                         label={"Rate of Interest"}
                         keyboardType={"number-pad"}
                         value={selector.rate_of_interest}
@@ -5996,7 +6017,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     <View>
                       <TextinputComp
                         disabled={!isInputsEditable()}
-                        style={{ height: 65, width: "100%" }}
+                        style={styles.textInputStyle}
                         label={"Loan Amount"}
                         keyboardType={"number-pad"}
                         value={selector.loan_amount}
@@ -6017,7 +6038,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       <Text style={GlobalStyle.underline}></Text>
                       <TextinputComp
                         disabled={!isInputsEditable()}
-                        style={{ height: 65, width: "100%" }}
+                        style={styles.textInputStyle}
                         label={"Rate of Interest"}
                         keyboardType={"number-pad"}
                         value={selector.rate_of_interest}
@@ -6056,7 +6077,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                       <TextinputComp
                         disabled={!isInputsEditable()}
-                        style={{ height: 65, width: "100%" }}
+                        style={styles.textInputStyle}
                         label={"Loan of Tenure(Months)"}
                         value={selector.loan_of_tenure}
                         keyboardType={"number-pad"}
@@ -6079,7 +6100,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                       <TextinputComp
                         disabled={!isInputsEditable()}
-                        style={{ height: 65, width: "100%" }}
+                        style={styles.textInputStyle}
                         label={"EMI"}
                         value={selector.emi}
                         keyboardType={"number-pad"}
@@ -6126,7 +6147,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 >
                   <TextinputComp
                     disabled={!isInputsEditable()}
-                    style={{ height: 65, width: "100%" }}
+                    style={styles.textInputStyle}
                     value={selector.booking_amount}
                     label={"Booking Amount*"}
                     keyboardType={"number-pad"}
@@ -6215,7 +6236,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   <Text style={GlobalStyle.underline} />
                   <TextinputComp
                     disabled={!isInputsEditable()}
-                    style={{ height: 65, width: "100%" }}
+                    style={styles.textInputStyle}
                     label={"Occasion"}
                     value={selector.occasion}
                     maxLength={50}
@@ -6237,7 +6258,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   <Text style={GlobalStyle.underline} />
                   <TextinputComp
                     disabled={!isInputsEditable()}
-                    style={{ height: 65, width: "100%" }}
+                    style={styles.textInputStyle}
                     label={"Delivery Location"}
                     maxLength={50}
                     value={selector.delivery_location}
@@ -6580,6 +6601,36 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   </View>
                 )}
 
+              {showApproveRejectBtn && userData.isSelfManager == "Y"  ? 
+              (
+                  <View style={styles.actionBtnView}>
+                    {!isRejectSelected && (
+                      <Button
+                        mode="contained"
+                        style={{ width: 120 }}
+                        color={Colors.GREEN}
+                        labelStyle={{ textTransform: "none" }}
+                        onPress={() => approveOrRejectMethod("APPROVE")}
+                      >
+                        Approve
+                      </Button>
+                    )}
+                    <Button
+                      mode="contained"
+                      color={Colors.RED}
+                      labelStyle={{ textTransform: "none" }}
+                      onPress={() =>
+                        isRejectSelected
+                          ? approveOrRejectMethod("REJECT")
+                          : setIsRejectSelected(true)
+                      }
+                    >
+                      {isRejectSelected ? "Submit" : "Reject"}
+                    </Button>
+                  </View>
+              )
+            :null}
+
               {isEditButtonShow && (
                 <View style={styles.actionBtnView}>
                   <Button
@@ -6778,7 +6829,7 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.WHITE,
     },
     textInputStyle: {
-        height: 65,
+        height: 50,
         width: "100%",
     },
     accordianTitleStyle: {

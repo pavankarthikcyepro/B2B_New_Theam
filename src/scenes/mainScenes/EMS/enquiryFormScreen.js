@@ -366,7 +366,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     dispatch(clearState());
     navigation.goBack();
   };
-  
+
   const goToLeadScreen = () => {
     clearLocalData();
     dispatch(clearState());
@@ -3078,38 +3078,66 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   styles.accordianBorder,
                 ]}
               >
-                <DropDownSelectionItem
-                  label={"Salutation"}
-                  value={selector.salutation}
-                  onPress={() =>
-                    showDropDownModelMethod("SALUTATION", "Select Salutation")
-                  }
-                />
-                <Text style={GlobalStyle.underline} />
+                <View style={{flexDirection: 'row', display: 'flex', justifyContent: 'space-between', backgroundColor: Colors.WHITE}}>
+                 <View style={{width: selector.enquiry_segment.toLowerCase() === "personal" ? '45%' : '100%'}}>
+                   <DropDownSelectionItem
+                       label={"Salutation"}
+                       value={selector.salutation}
+                       onPress={() =>
+                           showDropDownModelMethod("SALUTATION", "Select Salutation")
+                       }
+                   />
+                   <Text style={GlobalStyle.underline} />
+                 </View>
+                  <View style={{width: '45%'}}>
+                    {selector.enquiry_segment.toLowerCase() === "personal" ? (
+                        <>
+                          <DropDownSelectionItem
+                              label={"Gender*"}
+                              value={selector.gender}
+                              onPress={() =>
+                                  showDropDownModelMethod("GENDER", "Gender")
+                              }
+                          />
 
+                          <Text
+                              style={[
+                                GlobalStyle.underline,
+                                {
+                                  backgroundColor:
+                                      isSubmitPress && selector.gender === ""
+                                          ? "red"
+                                          : "rgba(208, 212, 214, 0.7)",
+                                },
+                              ]}
+                          ></Text>
+                        </>
+                    ) : null}
+                  </View>
+                </View>
                 <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.firstName}
-                  label={"First Name*"}
-                  autoCapitalize="words"
-                  keyboardType={"default"}
-                  // editable={false}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setPersonalIntro({ key: "FIRST_NAME", text: text })
-                    )
-                  }
+                    style={styles.textInputStyle}
+                    value={selector.firstName}
+                    label={"First Name*"}
+                    autoCapitalize="words"
+                    keyboardType={"default"}
+                    // editable={false}
+                    onChangeText={(text) =>
+                        dispatch(
+                            setPersonalIntro({ key: "FIRST_NAME", text: text })
+                        )
+                    }
                 />
                 <Text
-                  style={[
-                    GlobalStyle.underline,
-                    {
-                      backgroundColor:
-                        isSubmitPress && selector.firstName === ""
-                          ? "red"
-                          : "rgba(208, 212, 214, 0.7)",
-                    },
-                  ]}
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                            isSubmitPress && selector.firstName === ""
+                                ? "red"
+                                : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
                 ></Text>
                 <TextinputComp
                   style={styles.textInputStyle}
@@ -3134,51 +3162,34 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   ]}
                 ></Text>
 
-                {selector.enquiry_segment.toLowerCase() == "personal" ? (
-                  <>
+                <View style={{flexDirection: 'row', display: 'flex', justifyContent: 'space-between', backgroundColor: Colors.WHITE}}>
+                  <View style={{width: '45%'}}>
                     <DropDownSelectionItem
-                      label={"Gender*"}
-                      value={selector.gender}
-                      onPress={() =>
-                        showDropDownModelMethod("GENDER", "Gender")
-                      }
+                        label={"Relation"}
+                        value={selector.relation}
+                        onPress={() =>
+                            showDropDownModelMethod("RELATION", "Relation")
+                        }
                     />
+                  </View>
+                  <View style={{width: '45%'}}>
+                    <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.relationName}
+                        label={"Relation Name"}
+                        autoCapitalize="words"
+                        keyboardType={"default"}
+                        maxLength={50}
+                        onChangeText={(text) =>
+                            dispatch(
+                                setPersonalIntro({ key: "RELATION_NAME", text: text })
+                            )
+                        }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                  </View>
+                </View>
 
-                    <Text
-                      style={[
-                        GlobalStyle.underline,
-                        {
-                          backgroundColor:
-                            isSubmitPress && selector.gender === ""
-                              ? "red"
-                              : "rgba(208, 212, 214, 0.7)",
-                        },
-                      ]}
-                    ></Text>
-                  </>
-                ) : null}
-
-                <DropDownSelectionItem
-                  label={"Relation"}
-                  value={selector.relation}
-                  onPress={() =>
-                    showDropDownModelMethod("RELATION", "Relation")
-                  }
-                />
-
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.relationName}
-                  label={"Relation Name"}
-                  autoCapitalize="words"
-                  keyboardType={"default"}
-                  maxLength={50}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setPersonalIntro({ key: "RELATION_NAME", text: text })
-                    )
-                  }
-                />
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.mobile}
@@ -3229,22 +3240,29 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {selector.enquiry_segment.toLowerCase() == "personal" ? (
                   <View>
-                    <DateSelectItem
-                      label={"Date Of Birth"}
-                      value={selector.dateOfBirth}
-                      onPress={() => dispatch(setDatePicker("DATE_OF_BIRTH"))}
-                    />
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      value={selector?.age?.toString()}
-                      label={"Age"}
-                      keyboardType={"phone-pad"}
-                      maxLength={5}
-                      onChangeText={(text) =>
-                        dispatch(setPersonalIntro({ key: "AGE", text: text }))
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
+
+                    <View style={{flexDirection: 'row', display: 'flex', justifyContent: 'space-between', backgroundColor: Colors.WHITE}}>
+                      <View style={{width: '45%'}}>
+                        <DateSelectItem
+                            label={"Date Of Birth"}
+                            value={selector.dateOfBirth}
+                            onPress={() => dispatch(setDatePicker("DATE_OF_BIRTH"))}
+                        />
+                      </View>
+                      <View style={{width: '45%'}}>
+                        <TextinputComp
+                            style={styles.textInputStyle}
+                            value={selector?.age?.toString()}
+                            label={"Age"}
+                            keyboardType={"phone-pad"}
+                            maxLength={5}
+                            onChangeText={(text) =>
+                                dispatch(setPersonalIntro({ key: "AGE", text: text }))
+                            }
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                      </View>
+                    </View>
                     <DateSelectItem
                       label={"Anniversary Date"}
                       value={selector.anniversaryDate}
@@ -4122,7 +4140,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           index={index}
                           item={item}
                           isSubmitPress={isSubmitPress}
-                          isOnlyOne={carModelsList.length == 1 ? true : false}
+                          isOnlyOne={carModelsList.length === 1 ? true : false}
                           onChangeSubmit={() => setIsSubmitPress(false)}
                         />
 
@@ -6143,7 +6161,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   textInputStyle: {
-    height: 65,
+    height: 50,
     width: "100%",
   },
   space: {
@@ -6199,7 +6217,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.WHITE,
   },
   actionBtnView: {
-    marginTop: 80,
+    marginTop: 8,
     flexDirection: "row",
     justifyContent: "space-evenly",
     alignItems: "center",
