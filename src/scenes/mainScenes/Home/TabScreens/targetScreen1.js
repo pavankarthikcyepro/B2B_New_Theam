@@ -1800,8 +1800,8 @@ export default TargetScreen;
 
 export const RenderLevel1NameView = ({level, item, branchName = '', color, titleClick}) => {
     return (
-        <View style={{width: 80, justifyContent: 'center', textAlign: 'center', display: 'flex', flexDirection: 'row'}}>
-            <View style={{justifyContent: 'center', alignItems: 'center'}}>
+        <View style={{width: 100, justifyContent: 'center', textAlign: 'center', display: 'flex', flexDirection: 'row',flex:1}}>
+            <View style={{ width: 60,justifyContent: 'center', alignItems: 'center'}}>
                 <TouchableOpacity style={{
                     width: 30,
                     height: 30,
@@ -1834,6 +1834,7 @@ export const RenderLevel1NameView = ({level, item, branchName = '', color, title
                 justifyContent: 'center',
                 textAlign: 'center',
                 alignItems: 'center',
+                flex:1
             }}>
                 <Text style={{fontSize: 10, fontWeight: 'bold', paddingVertical: 6, height: 25}}>ACH</Text>
                 <Text style={{fontSize: 10, fontWeight: 'bold', paddingVertical: 6, height: 20}}>TGT</Text>
