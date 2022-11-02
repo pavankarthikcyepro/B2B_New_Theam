@@ -459,10 +459,11 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
     else if (identifier === "PROCEED_TO_BOOKING") {
       console.log("INSIDE ", identifier);
       navigation.popToTop();
-      navigation.navigate('EMS_TAB')
-      navigation.navigate(EmsTopTabNavigatorIdentifiers.leads)
-    }
-    else {
+      navigation.navigate("EMS_TAB");
+      navigation.navigate(EmsTopTabNavigatorIdentifiers.leads, {
+        fromScreen: "booking",
+      });
+    } else {
       navigation.popToTop();
     }
     dispatch(clearState());
