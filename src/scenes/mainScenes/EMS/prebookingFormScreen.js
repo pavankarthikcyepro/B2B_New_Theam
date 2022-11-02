@@ -338,6 +338,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     const [isEditButtonShow, setIsEditButtonShow] = useState(false);
     const [isSubmitCancelButtonShow, setIsSubmitCancelButtonShow] = useState(false);
 
+    const [resgistrationChargesType, setResgistrationChargesType]= useState([]);
+    const [selectedRegistrationCharges, setSelectedResgistragrationCharges]= useState({});
+
     // Edit buttons shows
     useEffect(() => {
       if (
@@ -630,6 +633,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         selectedPaidAccessoriesPrice,
         selector.vechicle_registration,
         taxPercent,
+        selectedRegistrationCharges
     ]);
 
     useEffect(() => {
@@ -712,7 +716,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         selector.accessories_discount,
         selector.additional_offer_1,
         selector.additional_offer_2,
-        totalOnRoadPrice
+        totalOnRoadPrice,
+        selector.registrationCharges
     ]);
 
     const getBranchId = () => {
@@ -1207,6 +1212,27 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 }
             }
 
+          const allResgistrationCharges = selector.vehicle_on_road_price_insurence_details_response
+            .registration || {};
+          function isEmpty(obj) {
+            return Object.keys(obj).length === 0;
+          }
+          if (!isEmpty(allResgistrationCharges)){
+            let x = Object.keys(allResgistrationCharges);
+            let newArray =[];
+            for (let i = 0; i < x.length; i++) {
+              let ladel = x[i].toString();
+              
+              let temp = { "name": ladel, "cost": allResgistrationCharges[ladel] };
+              if (selector.registrationCharges !== 0) {
+                if (selector.registrationCharges === allResgistrationCharges[ladel]) {
+                  setSelectedResgistragrationCharges(temp);
+                }
+              }
+              newArray.push(temp);             
+            }
+            setResgistrationChargesType(newArray);
+          }
             setPriceInformationData({
                 ...selector.vehicle_on_road_price_insurence_details_response,
             });
@@ -1320,6 +1346,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             break;
           case "VEHICLE_TYPE":
             setDataForDropDown([...Vehicle_Types]);
+            break;
+          case "RESGISTRATION_CHARGES":
+            setDataForDropDown([...resgistrationChargesType]);
             break;
           case "CUSTOMER_TYPE_CATEGORY":
             setDataForDropDown([...Customer_Category_Types]);
@@ -1436,6 +1465,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         setLifeTaxAmount(lifeTax);
         totalPrice += lifeTax;
         totalPrice += priceInfomationData.registration_charges;
+        totalPrice += selectedRegistrationCharges?.cost || 0;
         totalPrice += selectedInsurencePrice;
         if (selector.insurance_type !== '') {
             totalPrice += selectedAddOnsPrice;
@@ -1474,6 +1504,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         totalPrice -= Number(selector.accessories_discount);
         totalPrice -= Number(selector.additional_offer_1);
         totalPrice -= Number(selector.additional_offer_2);
+        totalPrice -= Number(selector.registrationCharges);
         // if (accDiscount !== '') {
         //     totalPrice -= Number(accDiscount);
         // }
@@ -1886,8 +1917,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       postOnRoadPriceTable.onRoadPrice = totalOnRoadPrice;
       postOnRoadPriceTable.finalPrice = totalOnRoadPriceAfterDiscount;
       postOnRoadPriceTable.promotionalOffers = selector.promotional_offer;
-      postOnRoadPriceTable.registrationCharges =
-        priceInfomationData.registration_charges;
+      // postOnRoadPriceTable.registrationCharges =
+      //   priceInfomationData.registration_charges;
+      postOnRoadPriceTable.registrationCharges = selectedRegistrationCharges?.cost ? selectedRegistrationCharges?.cost : 0;
+      postOnRoadPriceTable.registrationType = selectedRegistrationCharges?.name ? selectedRegistrationCharges?.name : "";
       postOnRoadPriceTable.specialScheme = selector.consumer_offer;
       postOnRoadPriceTable.exchangeOffers = selector.exchange_offer;
       postOnRoadPriceTable.tcs = tcsAmount;
@@ -3196,6 +3229,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           multiple={showMultipleDropDownData}
           onRequestClose={() => setShowDropDownModel(false)}
           selectedItems={(item) => {
+            console.log("SSSSSS",item);
             setShowDropDownModel(false);
             setShowMultipleDropDownData(false);
             if (dropDownKey === "MODEL") {
@@ -3244,6 +3278,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 setDropDownData({ key: dropDownKey, value: names, id: "" })
               );
               return;
+            } else if (dropDownKey === "RESGISTRATION_CHARGES"){
+              setSelectedResgistragrationCharges(item);
             }
 
             if (
@@ -5373,10 +5409,29 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                   <Text style={GlobalStyle.underline}></Text>
 
-                  <TextAndAmountComp
+                  <View style={styles.symbolview}>
+                    <View style={{ width: "70%" }}>
+                      <DropDownSelectionItem
+                        disabled={!isInputsEditable()}
+                        label={"Registration Charges:"}
+                        value={selectedRegistrationCharges?.name}
+                        onPress={() =>
+                          showDropDownModelMethod(
+                            "RESGISTRATION_CHARGES",
+                            "Registration Charges"
+                          )
+                        }
+                      />
+                    </View>
+
+                    <Text style={styles.shadowText}>
+                      {rupeeSymbol + " " + `${selectedRegistrationCharges?.cost ? selectedRegistrationCharges?.cost : '0.00' }`}
+                    </Text>
+                  </View>
+                  {/* <TextAndAmountComp
                     title={"Registration Charges:"}
                     amount={priceInfomationData.registration_charges.toFixed(2)}
-                  />
+                  /> */}
                   <Text style={GlobalStyle.underline}></Text>
 
                   <View style={styles.symbolview}>

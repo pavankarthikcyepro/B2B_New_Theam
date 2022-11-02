@@ -472,6 +472,7 @@ const prebookingFormSlice = createSlice({
     accessories_discount: "",
     insurance_discount: "",
     isAddressSet: false,
+    registrationCharges: 0
   },
   reducers: {
     clearState: (state, action) => {
@@ -1554,7 +1555,7 @@ const prebookingFormSlice = createSlice({
           state.additional_offer_2 = dataObj.additionalOffer2 ? dataObj.additionalOffer2.toString() : "";
           state.insurance_discount = dataObj.insuranceDiscount ? dataObj.insuranceDiscount.toString() : "";
           state.accessories_discount = dataObj.accessoriesDiscount ? dataObj.accessoriesDiscount.toString() : "";
-
+          state.registrationCharges = dataObj.registrationCharges ? dataObj.registrationCharges : 0;
           // console.log('corporate_offercorporate_offer',dataObj.corporateOffer.toString());
           
         }
