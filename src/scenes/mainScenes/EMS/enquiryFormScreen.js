@@ -126,6 +126,7 @@ import {
   emiCalculator,
   GetCarModelList,
   GetDropList,
+  GetEnquiryCarModelList,
   GetFinanceBanksList,
   PincodeDetails,
   PincodeDetailsNew,
@@ -240,6 +241,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const [currentLocation, setCurrentLocation] = useState(null);
   const [authToken, setAuthToken] = useState("");
+  
+  const [makerData, setMakerData] = useState([]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -484,17 +487,18 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const getCarModelListFromServer = (orgId) => {
     // Call Api
-    GetCarModelList(orgId)
+    GetEnquiryCarModelList(orgId)
       .then(
         (resolve) => {
           let modalList = [];
           if (resolve.length > 0) {
+            setMakerData([...resolve]);
             resolve.forEach((item) => {
               modalList.push({
-                id: item.vehicleId,
-                name: item.model,
+                id: item.id,
                 isChecked: false,
                 ...item,
+                name: item.status,
               });
             });
           }
@@ -2518,7 +2522,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         setDataForDropDown([...Approx_Auual_Income_Types]);
         break;
       case "C_MAKE":
-        setDataForDropDown([...All_Car_Brands]);
+        setDataForDropDown([...makerData]);
         break;
       case "C_MODEL":
         setDataForDropDown([...c_model_types]);
@@ -2631,9 +2635,19 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const updateModelTypesForCustomerNeedAnalysis = (brandName, dropDownKey) => {
     let modelsData = [];
-    All_Car_Brands.forEach((item) => {
-      if (item.name === brandName) {
-        modelsData = item.models;
+    makerData.forEach((item) => {
+      if (item.otherMaker === brandName) {
+        let newArr = item.othermodels;
+        let finalArr = [];
+        newArr.forEach((newItem) => {
+          let newObj = {
+            ...newItem,
+            name: newItem.otherModel,
+          };
+          finalArr.push(newObj);
+        });
+
+        modelsData = finalArr;
       }
     });
     // alert("color")
