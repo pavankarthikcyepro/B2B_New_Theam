@@ -24,30 +24,56 @@ export const RenderSourceModelParameters = (parameter) => {
         }
     }
 
-    const {params, item, color, displayType} = parameter;
+    const { params, item, color, displayType, moduleType } = parameter;
     // const paramsData = params.map(({paramName}) => paramName);
     return (
         <>
             {
                 paramsData.map((param, i) => {
-                    console.log('PARAM:---> ', param);
-                    const selectedParameter = item.targetAchievements.filter((x) => x.paramName === param)[0];
-                    const enquiryParameter = item.targetAchievements.filter((item) => item.paramName === 'Enquiry')[0];
+                    if (moduleType === "live-leads") {
+                        if (param === "INVOICE" ||
+                            param === "Enquiry" ||
+                            param === "Booking") {
+                            console.log('PARAM:---> ', param);
+                            const selectedParameter = item.targetAchievements.filter((x) => x.paramName === param)[0];
+                            const enquiryParameter = item.targetAchievements.filter((item) => item.paramName === 'Enquiry')[0];
 
-                    if (selectedParameter) {
-                        const elementColor = getColor(Number(selectedParameter.achievment), Number(selectedParameter.target));
-                        return (
-                            <View key={`${param}_${i}`} style={[styles.itemBox, {width: param === "Accessories" ? 80 : 60}]}>
-                                <Text style={[styles.totalText1, {color: elementColor}]}>
-                                    {selectedParameter ?
-                                        displayType === 0 ? selectedParameter.achievment :
-                                            selectedParameter.target > 0 ? achievementPercentage(selectedParameter.achievment, selectedParameter.target, param, enquiryParameter.achievment) :
-                                                selectedParameter.achievment
-                                        : 0}
-                                </Text>
-                            </View>
-                        );
+                            if (selectedParameter) {
+                                const elementColor = getColor(Number(selectedParameter.achievment), Number(selectedParameter.target));
+                                return (
+                                    <View key={`${param}_${i}`} style={[styles.itemBox, { width: param === "Accessories" ? 80 : 60 }]}>
+                                        <Text style={[styles.totalText1, { color: elementColor }]}>
+                                            {selectedParameter ?
+                                                displayType === 0 ? selectedParameter.achievment :
+                                                    selectedParameter.target > 0 ? achievementPercentage(selectedParameter.achievment, selectedParameter.target, param, enquiryParameter.achievment) :
+                                                        selectedParameter.achievment
+                                                : 0}
+                                        </Text>
+                                    </View>
+                                );
+                            }
+                        }
+                    }else{
+                        console.log('PARAM:---> ', param);
+                        const selectedParameter = item.targetAchievements.filter((x) => x.paramName === param)[0];
+                        const enquiryParameter = item.targetAchievements.filter((item) => item.paramName === 'Enquiry')[0];
+
+                        if (selectedParameter) {
+                            const elementColor = getColor(Number(selectedParameter.achievment), Number(selectedParameter.target));
+                            return (
+                                <View key={`${param}_${i}`} style={[styles.itemBox, { width: param === "Accessories" ? 80 : 60 }]}>
+                                    <Text style={[styles.totalText1, { color: elementColor }]}>
+                                        {selectedParameter ?
+                                            displayType === 0 ? selectedParameter.achievment :
+                                                selectedParameter.target > 0 ? achievementPercentage(selectedParameter.achievment, selectedParameter.target, param, enquiryParameter.achievment) :
+                                                    selectedParameter.achievment
+                                            : 0}
+                                    </Text>
+                                </View>
+                            );
+                        }
                     }
+                    
                 })
             }
         </>

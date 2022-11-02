@@ -15,13 +15,14 @@ import URL from "../../../../../../networking/endpoints";
 import { useDispatch, useSelector } from "react-redux";
 import { getSourceModelDataForSelf } from "../../../../../../redux/homeReducer";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
-import {IconButton} from "react-native-paper";
-import {AppNavigator} from "../../../../../../navigations";
+import { IconButton } from "react-native-paper";
+import { AppNavigator } from "../../../../../../navigations";
 
 const SourceModel = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.homeReducer);
-  const { empId, loggedInEmpId, headerTitle, orgId, type, moduleType } = route.params;
+  const { empId, loggedInEmpId, headerTitle, orgId, type, moduleType } =
+    route.params;
   const [leadSource, setLeadSource] = useState([]);
   const [vehicleModel, setVehicleModel] = useState([]);
   const [leadSourceKeys, setLeadSourceKeys] = useState([]);
@@ -32,21 +33,24 @@ const SourceModel = ({ route, navigation }) => {
   const [toggleParamsIndex, setToggleParamsIndex] = useState(0);
   const [toggleParamsMetaData, setToggleParamsMetaData] = useState([]);
 
-
   useEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-          <IconButton
-              icon="arrow-left"
-              color={Colors.WHITE}
-              size={30}
-              onPress={() => {
-                moduleType === 'live-leads' ? navigation.navigate(AppNavigator.DrawerStackIdentifiers.liveLeads) : navigation.pop();
-              }}
-          />
-      )
-    })
-  }, [navigation])
+        <IconButton
+          icon="arrow-left"
+          color={Colors.WHITE}
+          size={30}
+          onPress={() => {
+            moduleType === "live-leads"
+              ? navigation.navigate(
+                  AppNavigator.DrawerStackIdentifiers.liveLeads
+                )
+              : navigation.pop();
+          }}
+        />
+      ),
+    });
+  }, [navigation]);
 
   useEffect(async () => {
     navigation.setOptions({
@@ -123,37 +127,37 @@ const SourceModel = ({ route, navigation }) => {
             sourceData.push(x);
           }
         });
-        for (let i = 0; i < paramsMetadata.length; i++) {
-          for (let j = 0; j < sourceData.length; j++) {
-            if (sourceData[j].paramName === paramsMetadata[i].paramName) {
-              let temp = Object.assign({}, sourceData[j]);
-              temp["toggleIndex"] = paramsMetadata[i].toggleIndex;
-              sourceData[j] = temp;
-            }
+      for (let i = 0; i < paramsMetadata.length; i++) {
+        for (let j = 0; j < sourceData.length; j++) {
+          if (sourceData[j].paramName === paramsMetadata[i].paramName) {
+            let temp = Object.assign({}, sourceData[j]);
+            temp["toggleIndex"] = paramsMetadata[i].toggleIndex;
+            sourceData[j] = temp;
           }
         }
+      }
 
-        for (let i = 0; i < paramsMetadata.length; i++) {
-          for (let j = 0; j < modelData.length; j++) {
-            if (modelData[j].paramName === paramsMetadata[i].paramName) {
-              let temp = Object.assign({}, modelData[j]);
-              temp["toggleIndex"] = paramsMetadata[i].toggleIndex;
-              modelData[j] = temp;
-            }
+      for (let i = 0; i < paramsMetadata.length; i++) {
+        for (let j = 0; j < modelData.length; j++) {
+          if (modelData[j].paramName === paramsMetadata[i].paramName) {
+            let temp = Object.assign({}, modelData[j]);
+            temp["toggleIndex"] = paramsMetadata[i].toggleIndex;
+            modelData[j] = temp;
           }
         }
+      }
 
-        let newSourceData = [...sourceData];
-        let newModelData = [...modelData];
+      let newSourceData = [...sourceData];
+      let newModelData = [...modelData];
 
-        if (toggleParamsIndex !== 2) {
-          newSourceData = newSourceData.filter(
-            (x) => x.toggleIndex === toggleParamsIndex
-          );
-          newModelData = newModelData.filter(
-            (x) => x.toggleIndex === toggleParamsIndex
-          );
-        }
+      if (toggleParamsIndex !== 2) {
+        newSourceData = newSourceData.filter(
+          (x) => x.toggleIndex === toggleParamsIndex
+        );
+        newModelData = newModelData.filter(
+          (x) => x.toggleIndex === toggleParamsIndex
+        );
+      }
 
       const sourceUnique = new Set(newSourceData.map((x) => x.source));
       const modelUnique = new Set(newModelData.map((x) => x.model));
@@ -272,7 +276,7 @@ const SourceModel = ({ route, navigation }) => {
       shortName: "Acc",
       initial: "A",
       toggleIndex: 1,
-    }
+    },
   ];
 
   const getData = (data, type) => {
@@ -302,11 +306,11 @@ const SourceModel = ({ route, navigation }) => {
                     <RenderSourceModelParameters
                       item={{ targetAchievements: data[x] }}
                       displayType={displayType}
+                      moduleType={moduleType}
                     />
                   )}
                 </View>
-              </View>
-            );
+              </View>);
           })}
       </>
     );
@@ -406,33 +410,35 @@ const SourceModel = ({ route, navigation }) => {
               paddingBottom: 8,
             }}
           >
-            <SegmentedControl
-              style={{
-                marginHorizontal: 4,
-                justifyContent: "center",
-                alignSelf: "flex-end",
-                height: 24,
-                marginTop: 8,
-                width: "75%",
-              }}
-              values={["ETVBRL", "Allied", "View All"]}
-              selectedIndex={toggleParamsIndex}
-              tintColor={Colors.RED}
-              fontStyle={{ color: Colors.BLACK, fontSize: 10 }}
-              activeFontStyle={{ color: Colors.WHITE, fontSize: 10 }}
-              onChange={(event) => {
-                const index = event.nativeEvent.selectedSegmentIndex;
-                let data = [...paramsMetadata];
-                if (index !== 2) {
-                  data = data.filter((x) => x.toggleIndex === index);
-                } else {
-                  data = [...paramsMetadata];
-                }
-                setToggleParamsMetaData([...data]);
-                setToggleParamsIndex(index);
-              }}
-            />
-            <View
+            {moduleType !== "live-leads" && (
+              <>
+              <SegmentedControl
+                style={{
+                  marginHorizontal: 4,
+                  justifyContent: "center",
+                  alignSelf: "flex-end",
+                  height: 24,
+                  marginTop: 8,
+                  width: "75%",
+                }}
+                values={["ETVBRL", "Allied", "View All"]}
+                selectedIndex={toggleParamsIndex}
+                tintColor={Colors.RED}
+                fontStyle={{ color: Colors.BLACK, fontSize: 10 }}
+                activeFontStyle={{ color: Colors.WHITE, fontSize: 10 }}
+                onChange={(event) => {
+                  const index = event.nativeEvent.selectedSegmentIndex;
+                  let data = [...paramsMetadata];
+                  if (index !== 2) {
+                    data = data.filter((x) => x.toggleIndex === index);
+                  } else {
+                    data = [...paramsMetadata];
+                  }
+                  setToggleParamsMetaData([...data]);
+                  setToggleParamsIndex(index);
+                }}
+              />
+               <View
               style={{ height: 24, marginTop: 5, width: "20%", marginLeft: 4 }}
             >
               <View style={styles.percentageToggleView}>
@@ -441,6 +447,8 @@ const SourceModel = ({ route, navigation }) => {
                 />
               </View>
             </View>
+            </>
+            )}
           </View>
           <View style={{ height: "85%" }}>
             <ScrollView>
@@ -458,23 +466,53 @@ const SourceModel = ({ route, navigation }) => {
                     <View key={"headers"} style={[styles.flexRow]}>
                       <View style={[styles.flexRow, { height: 20 }]}>
                         {toggleParamsMetaData.map((param, i) => {
-                          return (
-                            <View
-                              key={`${param.paramName}__${i}`}
-                              style={[
-                                styles.flexRow,
-                                styles.justifyAlignCenter,
-                                {
-                                  width:
-                                    param.paramName === "Accessories" ? 80 : 60,
-                                },
-                              ]}
-                            >
-                              <Text style={{ color: param.color}}>
-                                {param.shortName}
-                              </Text>
-                            </View>
-                          );
+                          if (moduleType === "live-leads") {
+                            if (
+                              param.paramName === "INVOICE" ||
+                              param.paramName === "Enquiry" ||
+                              param.paramName === "Booking"
+                            ) {
+                              return (
+                                <View
+                                  key={`${param.paramName}__${i}`}
+                                  style={[
+                                    styles.flexRow,
+                                    styles.justifyAlignCenter,
+                                    {
+                                      width:
+                                        param.paramName === "Accessories"
+                                          ? 80
+                                          : 60,
+                                    },
+                                  ]}
+                                >
+                                  <Text style={{ color: param.color }}>
+                                    {param.shortName}
+                                  </Text>
+                                </View>
+                              );
+                            }
+                          } else {
+                            return (
+                              <View
+                                key={`${param.paramName}__${i}`}
+                                style={[
+                                  styles.flexRow,
+                                  styles.justifyAlignCenter,
+                                  {
+                                    width:
+                                      param.paramName === "Accessories"
+                                        ? 80
+                                        : 60,
+                                  },
+                                ]}
+                              >
+                                <Text style={{ color: param.color }}>
+                                  {param.shortName}
+                                </Text>
+                              </View>
+                            );
+                          }
                         })}
                       </View>
                     </View>
@@ -485,19 +523,41 @@ const SourceModel = ({ route, navigation }) => {
                         <View style={styles.paramsTotalContainerSubView}>
                           <View style={styles.paramsTotalContainer}>
                             {Object.keys(sourceModelTotals).map((x, index) => {
-                              return (
-                                <View
-                                  key={`${index}`}
-                                  style={[
-                                    styles.justifyAlignCenter,
-                                    { width: 60 },
-                                  ]}
-                                >
-                                  <Text style={{ color: Colors.WHITE }}>
-                                    {sourceModelTotals[x]}
-                                  </Text>
-                                </View>
-                              );
+                              if (moduleType === "live-leads") {
+                                if (
+                                  x === "INVOICE" ||
+                                  x === "Enquiry" ||
+                                  x === "Booking"
+                                ) {
+                                  return (
+                                    <View
+                                      key={`${index}`}
+                                      style={[
+                                        styles.justifyAlignCenter,
+                                        { width: 60 },
+                                      ]}
+                                    >
+                                      <Text style={{ color: Colors.WHITE }}>
+                                        {sourceModelTotals[x]}
+                                      </Text>
+                                    </View>
+                                  );
+                                }
+                              } else {
+                                return (
+                                  <View
+                                    key={`${index}`}
+                                    style={[
+                                      styles.justifyAlignCenter,
+                                      { width: 60 },
+                                    ]}
+                                  >
+                                    <Text style={{ color: Colors.WHITE }}>
+                                      {sourceModelTotals[x]}
+                                    </Text>
+                                  </View>
+                                );
+                              }
                             })}
                           </View>
                         </View>
