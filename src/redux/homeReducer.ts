@@ -451,11 +451,18 @@ export const getBranchRanksList = createAsyncThunk("HOME/getBranchRanksList", as
 })
 
 export const getSourceModelDataForSelf = createAsyncThunk("HOME/getSourceModelDataForSelf", async (data: any, { rejectWithValue }) => {
-    const {type, payload} = data;
+    const {type, payload, key} = data;
     console.log(']oiuyuiop[: ', data.type);
-    const url = type === 'SELF' ? URL.MODEL_SOURCE_SELF() : type === 'INSIGHTS' ? URL.MODEL_SOURCE_INSIGHTS() : URL.MODEL_SOURCE_TEAM();
+    const url =
+      type === "SELF"
+        ? key == "LIVE-LEADS"
+          ? URL.GET_LIVE_LEADS_MODEL_SOURCE_SELF()
+          : URL.MODEL_SOURCE_SELF()
+        : type === "INSIGHTS"
+        ? URL.MODEL_SOURCE_INSIGHTS()
+        : URL.MODEL_SOURCE_TEAM();
 
-    console.log("]oiuyuiop[: =========>:", url);
+    console.log("]oiuyuiop[: =========>:", url, payload);
     const response = await client.post(url, payload);
     const json = await response.json()
 

@@ -71,10 +71,12 @@ const SourceModel = ({ route, navigation }) => {
       .format(dateFormat);
 
     let payload = {
-      endDate: monthLastDate,
+      // endDate: monthLastDate,
+      endDate: moduleType === "live-leads" ? currentDate: monthLastDate,
       loggedInEmpId: loggedInEmpId,
       empId: empId,
-      startDate: monthFirstDate,
+      // startDate: monthFirstDate,
+      startDate: moduleType === "live-leads" ? '2021-01-01' : monthFirstDate,
       levelSelected: null,
     };
 
@@ -101,8 +103,9 @@ const SourceModel = ({ route, navigation }) => {
         };
         break;
     }
-    dispatch(getSourceModelDataForSelf({ type, payload }));
-  }, [empId]);
+    let key = moduleType !== "live-leads" ? "" :"LIVE-LEADS";
+    dispatch(getSourceModelDataForSelf({ type, payload, key}));
+  }, [empId,navigation]);
 
   useEffect(() => {
     setToggleParamsIndex(0);
@@ -200,6 +203,13 @@ const SourceModel = ({ route, navigation }) => {
   };
 
   const paramsMetadata = [
+    {
+      color: "#FA03B9",
+      paramName: "PreEnquiry",
+      shortName: "Con",
+      initial: "C",
+      toggleIndex: 0,
+    },
     {
       color: "#FA03B9",
       paramName: "Enquiry",
@@ -470,7 +480,8 @@ const SourceModel = ({ route, navigation }) => {
                             if (
                               param.paramName === "INVOICE" ||
                               param.paramName === "Enquiry" ||
-                              param.paramName === "Booking"
+                              param.paramName === "Booking" ||
+                              param.paramName === "PreEnquiry"
                             ) {
                               return (
                                 <View
@@ -493,25 +504,27 @@ const SourceModel = ({ route, navigation }) => {
                               );
                             }
                           } else {
-                            return (
-                              <View
-                                key={`${param.paramName}__${i}`}
-                                style={[
-                                  styles.flexRow,
-                                  styles.justifyAlignCenter,
-                                  {
-                                    width:
-                                      param.paramName === "Accessories"
-                                        ? 80
-                                        : 60,
-                                  },
-                                ]}
-                              >
-                                <Text style={{ color: param.color }}>
-                                  {param.shortName}
-                                </Text>
-                              </View>
-                            );
+                            if (param.paramName !== "PreEnquiry") {
+                              return (
+                                <View
+                                  key={`${param.paramName}__${i}`}
+                                  style={[
+                                    styles.flexRow,
+                                    styles.justifyAlignCenter,
+                                    {
+                                      width:
+                                        param.paramName === "Accessories"
+                                          ? 80
+                                          : 60,
+                                    },
+                                  ]}
+                                >
+                                  <Text style={{ color: param.color }}>
+                                    {param.shortName}
+                                  </Text>
+                                </View>
+                              );
+                            }
                           }
                         })}
                       </View>
@@ -527,7 +540,8 @@ const SourceModel = ({ route, navigation }) => {
                                 if (
                                   x === "INVOICE" ||
                                   x === "Enquiry" ||
-                                  x === "Booking"
+                                  x === "Booking" ||
+                                  x === "PreEnquiry"
                                 ) {
                                   return (
                                     <View
@@ -544,19 +558,21 @@ const SourceModel = ({ route, navigation }) => {
                                   );
                                 }
                               } else {
-                                return (
-                                  <View
-                                    key={`${index}`}
-                                    style={[
-                                      styles.justifyAlignCenter,
-                                      { width: 60 },
-                                    ]}
-                                  >
-                                    <Text style={{ color: Colors.WHITE }}>
-                                      {sourceModelTotals[x]}
-                                    </Text>
-                                  </View>
-                                );
+                                if (x !== "PreEnquiry") {
+                                  return (
+                                    <View
+                                      key={`${index}`}
+                                      style={[
+                                        styles.justifyAlignCenter,
+                                        { width: 60 },
+                                      ]}
+                                    >
+                                      <Text style={{ color: Colors.WHITE }}>
+                                        {sourceModelTotals[x]}
+                                      </Text>
+                                    </View>
+                                  );
+                                }
                               }
                             })}
                           </View>
