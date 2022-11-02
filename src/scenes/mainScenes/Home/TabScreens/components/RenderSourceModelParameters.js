@@ -6,7 +6,7 @@ const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 100) / 5;
 
 export const RenderSourceModelParameters = (parameter) => {
-    const paramsData = ['Enquiry', 'Test Drive', 'Home Visit', 'Booking', 'INVOICE', 'DROPPED', 'Exchange', 'Finance', 'Insurance', 'EXTENDEDWARRANTY', 'Accessories'];
+    const paramsData = ['PreEnquiry','Enquiry', 'Test Drive', 'Home Visit', 'Booking', 'INVOICE', 'DROPPED', 'Exchange', 'Finance', 'Insurance', 'EXTENDEDWARRANTY', 'Accessories'];
 
     const getColor = (ach, tar) => {
         if (ach > 0 && tar === 0) {
@@ -33,7 +33,8 @@ export const RenderSourceModelParameters = (parameter) => {
                     if (moduleType === "live-leads") {
                         if (param === "INVOICE" ||
                             param === "Enquiry" ||
-                            param === "Booking") {
+                            param === "Booking" ||
+                            param === "PreEnquiry") {
                             console.log('PARAM:---> ', param);
                             const selectedParameter = item.targetAchievements.filter((x) => x.paramName === param)[0];
                             const enquiryParameter = item.targetAchievements.filter((item) => item.paramName === 'Enquiry')[0];

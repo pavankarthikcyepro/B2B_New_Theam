@@ -428,6 +428,7 @@ const URL = {
     return `${salesGap}/target-update`;
   },
   MODEL_SOURCE_SELF: () => `${dashboard}/v2/get_target_params_for_emp_model_source`,
+  GET_LIVE_LEADS_MODEL_SOURCE_SELF: () => `${dashboardLiveLeads}/dashboard/v2/get_target_params_for_emp_model_source`,
   MODEL_SOURCE_INSIGHTS: () => `${dashboard}/v2/get_target_params_model_source`,
   MODEL_SOURCE_TEAM: () => `${dashboard}/v4/get_target_params_for_all_emps_model_source`,
   GET_LIVE_LEADS_SELF: () => `${dashboardLiveLeads}/dashboard/v2/get_target_params_for_emp`,
