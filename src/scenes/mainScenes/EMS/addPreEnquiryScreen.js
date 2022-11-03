@@ -758,9 +758,20 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
   }, [selector.updateEnquiryStatus, selector.create_enquiry_response_obj]);
 
   const updatePreEneuquiryDetails = () => {
+    const { dmsAddressList } = route.params.preEnquiryDetails;
     let url = sales_url;
     let dmsAccountOrContactDto = {};
     let dmsLeadDto = {};
+    let newDmsAddressList = [];
+
+    // for (let i = 0; i < newDmsAddressList.length; i++) {
+    //   newDmsAddressList[i].pincode = selector.pincode;
+    // }
+
+    dmsAddressList.forEach((item) => {
+      let newObj = { ...item, pincode: selector.pincode };
+      newDmsAddressList.push(newObj);
+    });
 
     if (existingPreEnquiryDetails.hasOwnProperty("dmsContactDto")) {
       url = url + "/contact?allocateDse=" + selector.create_enquiry_checked;
@@ -770,21 +781,21 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       dmsAccountOrContactDto = { ...existingPreEnquiryDetails.dmsAccountDto };
     }
 
-        dmsAccountOrContactDto.firstName = selector.firstName;
-        dmsAccountOrContactDto.lastName = selector.lastName;
-        dmsAccountOrContactDto.email = selector.email;
-        dmsAccountOrContactDto.phone = selector.mobile;
-        dmsAccountOrContactDto.secondaryPhone = selector.alterMobile;
-        dmsAccountOrContactDto.model = selector.carModel;
-        dmsAccountOrContactDto.company = selector.companyName
-          ? selector.companyName
-          : selector.other;
-        dmsAccountOrContactDto.otherCustomerType = selector.other;
+    dmsAccountOrContactDto.firstName = selector.firstName;
+    dmsAccountOrContactDto.lastName = selector.lastName;
+    dmsAccountOrContactDto.email = selector.email;
+    dmsAccountOrContactDto.phone = selector.mobile;
+    dmsAccountOrContactDto.secondaryPhone = selector.alterMobile;
+    dmsAccountOrContactDto.model = selector.carModel;
+    dmsAccountOrContactDto.company = selector.companyName
+      ? selector.companyName
+      : selector.other;
+    dmsAccountOrContactDto.otherCustomerType = selector.other;
 
-        dmsAccountOrContactDto.customerType = selector.customerType;
-        dmsAccountOrContactDto.enquirySource = selector.sourceOfEnquiryId;
-        dmsAccountOrContactDto.subSource = selector.subSourceOfEnquiryId;
-        dmsAccountOrContactDto.pincode = selector.pincode;
+    dmsAccountOrContactDto.customerType = selector.customerType;
+    dmsAccountOrContactDto.enquirySource = selector.sourceOfEnquiryId;
+    dmsAccountOrContactDto.subSource = selector.subSourceOfEnquiryId;
+    dmsAccountOrContactDto.pincode = selector.pincode;
 
     if (existingPreEnquiryDetails.hasOwnProperty("dmsLeadDto")) {
       dmsLeadDto = { ...existingPreEnquiryDetails.dmsLeadDto };
@@ -800,11 +811,11 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       dmsLeadDto.subSourceOfEnquiry = selector.subSourceOfEnquiryId;
       dmsLeadDto.enquirySource = selector.sourceOfEnquiry;
       dmsLeadDto.subSource = selector.subSourceOfEnquiry;
-      dmsLeadDto.pincode = selector.pincode;
-             dmsAccountOrContactDto.company = selector.companyName
-               ? selector.companyName
-               : selector.other;
-            dmsAccountOrContactDto.otherCustomerType = selector.other;
+      dmsLeadDto.dmsAddresses = newDmsAddressList;
+      dmsAccountOrContactDto.company = selector.companyName
+        ? selector.companyName
+        : selector.other;
+      dmsAccountOrContactDto.otherCustomerType = selector.other;
     }
 
     let formData = {};
@@ -814,6 +825,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         dmsLeadDto: dmsLeadDto,
         dmsEmployeeAllocationDtos:
           existingPreEnquiryDetails.dmsEmployeeAllocationDtos,
+        dmsAddressList: newDmsAddressList,
       };
     } else {
       formData = {
@@ -821,10 +833,9 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         dmsLeadDto: dmsLeadDto,
         dmsEmployeeAllocationDtos:
           existingPreEnquiryDetails.dmsEmployeeAllocationDtos,
+        dmsAddressList: newDmsAddressList,
       };
     }
-
-    console.log("formData: ", formData);
 
     let dataObj = {
       url: url,
