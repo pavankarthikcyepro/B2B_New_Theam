@@ -1188,7 +1188,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                   label={"Mobile Number*"}
                   maxLength={10}
                   keyboardType={"phone-pad"}
-                  disabled={isViewMode()}
+                  disabled={true}
                   onChangeText={(text) => setMobileNumber(text)}
                 />
                 <Text
