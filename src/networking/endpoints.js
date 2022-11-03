@@ -52,6 +52,7 @@ export const getLeaderBoardData = "http://automatestaging-724985329.ap-south-1.e
 export const getBranchRankingData = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/dashboard/v2/get_emp_target_ranking"
 export const deleteModelCard = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/lead"
 export const dashboardLiveLeads = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8083";
+export const profileImageUpdate = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic";
 
 const URL = {
   LOGIN: () => hrms_url + "/emplogin",
