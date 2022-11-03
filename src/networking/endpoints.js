@@ -50,6 +50,7 @@ export const getReportingMangerList = "http://automatestaging-724985329.ap-south
 export const updateEmployeeTaskDelegate = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employees/emp"
 export const getLeaderBoardData = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/dashboard/v2/get_emp_target_ranking/org"
 export const getBranchRankingData = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/dashboard/v2/get_emp_target_ranking"
+export const getEnquiryVehicleModelData = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Other_Maker_AllDetails";
 export const deleteModelCard = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/lead"
 export const dashboardLiveLeads = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8083";
 
@@ -74,6 +75,11 @@ const URL = {
   VEHICLE_MODELS: (orgId) => {
     return (
       vehicleInfoService_url + "/api/vehicle_details/?organizationId=" + orgId
+    );
+  },
+  ENQUIRY_VEHICLE_MODELS: (orgId) => {
+    return (
+      getEnquiryVehicleModelData + "?organizationId=" + orgId
     );
   },
   GET_EMPID: (userName) => {

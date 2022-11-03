@@ -523,6 +523,7 @@ const TargetScreen = ({route}) => {
                       borderBottomWidth: 0.5,
                       paddingBottom: 4,
                       borderBottomColor: Colors.GRAY,
+                      marginLeft: 18
                     }}
                   >
                     <View
