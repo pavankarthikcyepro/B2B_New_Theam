@@ -70,44 +70,118 @@ export const RenderEmployeeParameters = (parameter) => {
                 paramsData.map((param, index) => {
                     const selectedParameter = item.targetAchievements.filter((x) => x.paramName === param)[0];
                     const enquiryParameter = item.targetAchievements.filter((item) => item.paramName === 'Enquiry')[0];
-
                     // const elementColor = getColor(Number(selectedParameter.achievment), Number(selectedParameter.target));
                     return (
-                        <>
-                            {moduleType !== 'live-leads' ?
-                                <View key={param} style={[styles.itemBox, {width: param === "Accessories" ? 65 : 55}]}>
-                                <View style={{justifyContent: 'center', alignItems: 'center', height: 23}}>
-                                    <Text onPress={() => navigateToEmsScreen(param)} style={[styles.totalText1, {color: Colors.RED,
-                                        textDecorationLine: navigableParams.includes(param) ? 'underline' : 'none'}]}>
-                                        {selectedParameter ?
-                                            displayType === 0 ? selectedParameter.achievment :
-                                                selectedParameter.target > 0 ? achievementPercentage(selectedParameter.achievment, selectedParameter.target, param, enquiryParameter.achievment) :
-                                                    selectedParameter.achievment
-                                            : 0}
-                                    </Text>
-                                </View>
-                                <Text style={[styles.totalText, {
-                                    width: moduleType === 'live-leads' ? 66 : (param === "Accessories" ? 63 : 53),
-                                    backgroundColor: 'lightgray'
-                                }]}>
-                                    {selectedParameter && selectedParameter.target ? Number(selectedParameter.target) : 0}
-                                </Text>
-                            </View> : <View key={param}
-                                            style={[styles.itemBox, {width: 68}]}>
-                                <View style={{justifyContent: 'center', alignItems: 'center', height: 23}}>
-                                    <Text onPress={() => navigateToEmsScreen(param)}
-                                          style={[styles.totalText1, {color: Colors.RED,
-                                              textDecorationLine: navigableParams.includes(param) ? 'underline' : 'none'}]}>
-                                        {selectedParameter ?
-                                            displayType === 0 ? selectedParameter.achievment :
-                                                selectedParameter.target > 0 ? achievementPercentage(selectedParameter.achievment, selectedParameter.target, param, enquiryParameter.achievment) :
-                                                    selectedParameter.achievment
-                                            : 0}
-                                    </Text>
-                                </View>
+                      <>
+                        {moduleType !== "live-leads" ? (
+                          <View
+                            key={param}
+                            style={[
+                              styles.itemBox,
+                              { width: param === "Accessories" ? 65 : 55 },
+                            ]}
+                          >
+                            <View
+                              style={{
+                                justifyContent: "center",
+                                alignItems: "center",
+                                height: 23,
+                              }}
+                            >
+                              <Text
+                                onPress={() => navigateToEmsScreen(param)}
+                                style={[
+                                  styles.totalText1,
+                                  {
+                                    color: Colors.RED,
+                                    textDecorationLine:
+                                      navigableParams.includes(param)
+                                        ? "underline"
+                                        : "none",
+                                  },
+                                ]}
+                              >
+                                {selectedParameter
+                                  ? displayType === 0
+                                    ? selectedParameter.achievment
+                                    : selectedParameter.target > 0
+                                    ? achievementPercentage(
+                                        selectedParameter.achievment,
+                                        selectedParameter.target,
+                                        param,
+                                        enquiryParameter.achievment
+                                      )
+                                    : selectedParameter.achievment
+                                  : 0}
+                              </Text>
                             </View>
-                            }
-                        </>
+                            {selectedParameter.paramName !== "DROPPED" && (
+                              <Text
+                                style={[
+                                  styles.totalText,
+                                  {
+                                    width:
+                                      moduleType === "live-leads"
+                                        ? 66
+                                        : param === "Accessories"
+                                        ? 63
+                                        : 53,
+                                    backgroundColor:
+                                      selectedParameter.paramName !== "DROPPED"
+                                        ? "lightgray"
+                                        : "transparent",
+                                        paddingTop: 4
+                                  },
+                                ]}
+                              >
+                                {selectedParameter && selectedParameter.target
+                                  ? Number(selectedParameter.target)
+                                  : 0}
+                              </Text>
+                            )}
+                          </View>
+                        ) : (
+                          <View
+                            key={param}
+                            style={[styles.itemBox, { width: 68 }]}
+                          >
+                            <View
+                              style={{
+                                justifyContent: "center",
+                                alignItems: "center",
+                                height: 23,
+                              }}
+                            >
+                              <Text
+                                onPress={() => navigateToEmsScreen(param)}
+                                style={[
+                                  styles.totalText1,
+                                  {
+                                    color: Colors.RED,
+                                    textDecorationLine:
+                                      navigableParams.includes(param)
+                                        ? "underline"
+                                        : "none",
+                                  },
+                                ]}
+                              >
+                                {selectedParameter
+                                  ? displayType === 0
+                                    ? selectedParameter.achievment
+                                    : selectedParameter.target > 0
+                                    ? achievementPercentage(
+                                        selectedParameter.achievment,
+                                        selectedParameter.target,
+                                        param,
+                                        enquiryParameter.achievment
+                                      )
+                                    : selectedParameter.achievment
+                                  : 0}
+                              </Text>
+                            </View>
+                          </View>
+                        )}
+                      </>
                     );
                 })
             }
