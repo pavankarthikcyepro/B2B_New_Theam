@@ -523,6 +523,7 @@ const TargetScreen = ({route}) => {
                       borderBottomWidth: 0.5,
                       paddingBottom: 4,
                       borderBottomColor: Colors.GRAY,
+                      marginLeft: 18,
                     }}
                   >
                     <View
@@ -572,7 +573,7 @@ const TargetScreen = ({route}) => {
                               flexDirection: "row",
                               justifyContent: "space-between",
                               marginTop: 12,
-                              width: "100%",
+                              width: Dimensions.get("screen").width - 40,
                             }}
                           >
                             <Text
@@ -647,7 +648,7 @@ const TargetScreen = ({route}) => {
                                   level={0}
                                   item={item}
                                   branchName={getBranchName(item.branchId)}
-                                  color={"#C62159"}
+                                  color={"green"}
                                   titleClick={async () => {
                                     await onEmployeeNameClick(item, index);
                                   }}
@@ -2499,7 +2500,9 @@ const TargetScreen = ({route}) => {
                     })}
                   {/* Grand Total Section */}
                   {selector.totalParameters.length > 0 && (
-                    <View>
+                    <View
+                      style={{ width: Dimensions.get("screen").width - 40 }}
+                    >
                       <Pressable
                         style={{ alignSelf: "flex-end" }}
                         onPress={() => {
@@ -2533,9 +2536,9 @@ const TargetScreen = ({route}) => {
                       <View style={{ flexDirection: "row", height: 40 }}>
                         <View
                           style={{
-                            width: 80,
+                            width: 100,
                             minHeight: 40,
-                            justifyContent: "space-between",
+                            justifyContent: "space-around",
                             flexDirection: "row",
                             backgroundColor: Colors.RED,
                           }}
@@ -2545,7 +2548,6 @@ const TargetScreen = ({route}) => {
                             style={{
                               justifyContent: "center",
                               alignItems: "center",
-                              marginLeft: 6,
                             }}
                           >
                             <Text
