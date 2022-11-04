@@ -1188,7 +1188,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                   label={"Mobile Number*"}
                   maxLength={10}
                   keyboardType={"phone-pad"}
-                  disabled={true}
+                  disabled={isViewMode()}
                   onChangeText={(text) => setMobileNumber(text)}
                 />
                 <Text
@@ -1258,7 +1258,11 @@ const TestDriveScreen = ({ route, navigation }) => {
 
                 <TextinputComp
                   style={styles.textInputStyle}
-                  label={userData.isSelfManager == "Y" ? "Battery Type" : "Transmission Type"}
+                  label={
+                    userData.isSelfManager == "Y"
+                      ? "Battery Type"
+                      : "Transmission Type"
+                  }
                   value={selectedVehicleDetails.transType}
                   editable={false}
                   disabled={true}
