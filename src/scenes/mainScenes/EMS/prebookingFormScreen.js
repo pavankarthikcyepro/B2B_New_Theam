@@ -6033,7 +6033,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         style={{ height: 65, width: "100%" }}
                         label={"Rate of Interest"}
                         keyboardType={"number-pad"}
-                        value={selector.rate_of_interest}
+                        value={selector.rate_of_interest?.toString()}
                         onChangeText={(text) => {
                           // Calculate EMI
                           emiCal(
@@ -6080,7 +6080,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         style={{ height: 65, width: "100%" }}
                         label={"Rate of Interest"}
                         keyboardType={"number-pad"}
-                        value={selector.rate_of_interest}
+                        value={selector.rate_of_interest?.toString()}
                         onChangeText={(text) => {
                           // Calculate EMI
                           emiCal(
@@ -6118,7 +6118,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         disabled={!isInputsEditable()}
                         style={{ height: 65, width: "100%" }}
                         label={"Loan of Tenure(Months)"}
-                        value={selector.loan_of_tenure}
+                        value={selector.loan_of_tenure?.toString()}
                         keyboardType={"number-pad"}
                         onChangeText={(text) => {
                           // Calculate EMI
