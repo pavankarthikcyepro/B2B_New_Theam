@@ -53,6 +53,7 @@ export const getBranchRankingData = "http://automatestaging-724985329.ap-south-1
 export const getEnquiryVehicleModelData = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Other_Maker_AllDetails";
 export const deleteModelCard = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/lead"
 export const dashboardLiveLeads = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8083";
+export const profileImageUpdate = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic";
 
 const URL = {
   LOGIN: () => hrms_url + "/emplogin",

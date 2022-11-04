@@ -9,7 +9,10 @@ import {
     FlatList,
     Pressable,
     Alert,
-    TouchableOpacity
+    TouchableOpacity,
+    Modal,
+    Platform,
+    TouchableWithoutFeedback,
 } from "react-native";
 import { IconButton, Divider, List, Button } from "react-native-paper";
 import { Colors, GlobalStyle } from "../../styles";
@@ -18,13 +21,13 @@ import { useSelector, useDispatch } from "react-redux";
 import { AppNavigator } from "../../navigations";
 import { AuthContext } from "../../utils/authContext";
 import realm from "../../database/realm";
-import * as AsyncStore from '../../asyncStore';
+import * as AsyncStore from "../../asyncStore";
 // import { useNavigation } from '@react-navigation/native';
 import { useIsFocused } from "@react-navigation/native";
 import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 import Entypo from "react-native-vector-icons/FontAwesome";
 import { client } from "../../networking/client";
-import URL from "../../networking/endpoints";
+import URL, { profileImageUpdate } from "../../networking/endpoints";
 
 // import { EVENT_MANAGEMENT, CUSTOMER_RELATIONSHIP, DOCUMENT_WALLET, HOME_LINE, BOOKING_TRACKER } from "../assets/svg";
 
@@ -36,8 +39,18 @@ import BOOKING_TRACKER from "../../assets/images/booking_tracker.svg";
 import QR_CODE from "../../assets/images/qr-code.svg";
 import GROUP from "../../assets/images/Group.svg";
 import TRANSFER from "../../assets/images/Transfer.svg";
-import { BOOKING_TRACKER_STR, CUSTOMER_RELATIONSHIP_STR, DOCUMENT_WALLET_STR, EVENT_MANAGEMENT_STR, HOME_LINE_STR, QR_CODE_STR, GROUP_STR, TRANSFER_STR } from "../../redux/sideMenuReducer";
+import {
+    BOOKING_TRACKER_STR,
+    CUSTOMER_RELATIONSHIP_STR,
+    DOCUMENT_WALLET_STR,
+    EVENT_MANAGEMENT_STR,
+    HOME_LINE_STR,
+    QR_CODE_STR,
+    GROUP_STR,
+    TRANSFER_STR,
+} from "../../redux/sideMenuReducer";
 import { clearState } from "../../redux/homeReducer";
+import ReactNativeModal from "react-native-modal";
 
 const screenWidth = Dimensions.get("window").width;
 const profileWidth = screenWidth / 6;
@@ -53,7 +66,7 @@ const receptionMenu = [
     // "Task Management",
     "Drop Analysis",
     "Task Transfer",
-    "Sign Out"
+    "Sign Out",
 ];
 const teleCollerMenu = [
     "Home",
@@ -63,40 +76,38 @@ const teleCollerMenu = [
     "Helpdesk",
     // "Task Management",
     "Drop Analysis",
-    "Sign Out"
+    "Sign Out",
 ];
 const ShowRoomMenu = [
     "Home",
-    'Live Leads',
+    "Live Leads",
     "Settings",
     "Digital Payment",
     "Target Planning",
     "Helpdesk",
     // "Task Management",
     "Drop Analysis",
-    "Sign Out"
+    "Sign Out",
 ];
 const MDMenu = [
-  "Home",
-  'Live Leads',
-  "Settings",
-  "Digital Payment",
-  "Target Planning",
-  "Helpdesk",
-  // "Task Management",
-  "Task Transfer",
-  "Drop Analysis",
-  "Sign Out"
+    "Home",
+    "Live Leads",
+    "Settings",
+    "Digital Payment",
+    "Target Planning",
+    "Helpdesk",
+    // "Task Management",
+    "Task Transfer",
+    "Drop Analysis",
+    "Sign Out",
 ];
 
 const SideMenuScreen = ({ navigation }) => {
-
     const selector = useSelector((state) => state.sideMenuReducer);
     const homeSelector = useSelector((state) => state.loginReducer);
     const homeSelectorNew = useSelector((state) => state.homeReducer);
     const dispatch = useDispatch();
     // const isFocused = useIsFocused();
-
 
     const { signOut } = React.useContext(AuthContext);
     const [empName, setEmpName] = useState("");
@@ -107,28 +118,30 @@ const SideMenuScreen = ({ navigation }) => {
     const [imageUri, setImageUri] = useState(null);
     const [dataList, setDataList] = useState([]);
     const [userData, setUserData] = useState(null);
-    const [hrmsRole, setHrmsRole] = useState('');
-
+    const [hrmsRole, setHrmsRole] = useState("");
+    const [isExist, setIsExist] = useState(false);
+    const [initialData, setInitialData] = useState({});
+    const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
         getLoginEmployeeData();
         // getProfilePic();
-    }, [])
+    }, []);
 
     useEffect(() => {
-        navigation.addListener('focus', () => {
+        navigation.addListener("focus", () => {
             getUserRole();
-        })
-    }, [navigation])
+        });
+    }, [navigation]);
 
     const getUserRole = async () => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
         // console.log("$$$$$ LOGIN EMP:", employeeData);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
-            setHrmsRole(jsonObj.hrmsRole)
+            setHrmsRole(jsonObj.hrmsRole);
         }
-    }
+    };
 
     // useEffect(() => {
     //     if(userData){
@@ -142,18 +155,16 @@ const SideMenuScreen = ({ navigation }) => {
             updateUserData(jsonObj);
             getProfilePic(jsonObj);
         }
-    }, [homeSelector.login_employee_details])
+    }, [homeSelector.login_employee_details]);
 
     const getLoginEmployeeData = async () => {
-
         const jsonString = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
         if (jsonString) {
             const jsonObj = JSON.parse(jsonString);
             updateUserData(jsonObj);
             getProfilePic(jsonObj);
         }
-    }
-
+    };
 
     const getProfilePic = (userData) => {
         // console.log(`http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`);
@@ -163,43 +174,51 @@ const SideMenuScreen = ({ navigation }) => {
             .then((response) => response.json())
             .then((json) => {
                 setDataList(json);
-                // console.log({json})
                 if (json.length > 0) {
                     setImageUri(json[json.length - 1].documentPath);
+                    setInitialData(json[json.length - 1]);
+                    setIsExist(true);
                 } else {
-                    setImageUri("https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg")
+                    setIsExist(false);
+                    setImageUri(
+                        "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
+                    );
                 }
             })
             .catch((error) => console.error(error));
-    }
+    };
 
     const updateUserData = (jsonObj) => {
         setEmpName(jsonObj.empName);
         setEmail(jsonObj.email);
         setRole(jsonObj.hrmsRole);
         setLocation(jsonObj.branchName);
-        setUserData(jsonObj)
+        setUserData(jsonObj);
         // setUserData(jsonObj)
         getProfilePic(jsonObj);
 
         let newFilterData = [];
         if (jsonObj.hrmsRole === "Reception") {
-            newFilterData = selector.tableData.filter(item => receptionMenu.includes(item.title))
-        }
-        else if (jsonObj.hrmsRole === "Tele Caller") {
-            newFilterData = selector.tableData.filter(item => teleCollerMenu.includes(item.title))
-        }
-        else if (jsonObj.hrmsRole === "Showroom DSE") {
-            newFilterData = selector.tableData.filter(item => ShowRoomMenu.includes(item.title))
-        }
-        else if (jsonObj.hrmsRole === "MD") {
-            newFilterData = selector.tableData.filter(item => MDMenu.includes(item.title))
-        }
-        else {
+            newFilterData = selector.tableData.filter((item) =>
+                receptionMenu.includes(item.title)
+            );
+        } else if (jsonObj.hrmsRole === "Tele Caller") {
+            newFilterData = selector.tableData.filter((item) =>
+                teleCollerMenu.includes(item.title)
+            );
+        } else if (jsonObj.hrmsRole === "Showroom DSE") {
+            newFilterData = selector.tableData.filter((item) =>
+                ShowRoomMenu.includes(item.title)
+            );
+        } else if (jsonObj.hrmsRole === "MD") {
+            newFilterData = selector.tableData.filter((item) =>
+                MDMenu.includes(item.title)
+            );
+        } else {
             newFilterData = selector.tableData;
         }
-        setNewTableData([...newFilterData])
-    }
+        setNewTableData([...newFilterData]);
+    };
 
     const itemSelected = (item) => {
         switch (item.screen) {
@@ -266,15 +285,14 @@ const SideMenuScreen = ({ navigation }) => {
         AsyncStore.storeData(AsyncStore.Keys.LOGIN_EMPLOYEE, "");
         AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_ID, "");
         AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_NAME, "");
-        AsyncStore.storeData(AsyncStore.Keys.EXTENSION_ID, "")
-        AsyncStore.storeData(AsyncStore.Keys.EXTENSSION_PWD, "")
-        AsyncStore.storeData(AsyncStore.Keys.IS_LOGIN, 'false');
-        navigation.closeDrawer()
+        AsyncStore.storeData(AsyncStore.Keys.EXTENSION_ID, "");
+        AsyncStore.storeData(AsyncStore.Keys.EXTENSSION_PWD, "");
+        AsyncStore.storeData(AsyncStore.Keys.IS_LOGIN, "false");
+        navigation.closeDrawer();
         //realm.close();
         dispatch(clearState());
         signOut();
-    }
-
+    };
 
     const selectImage = () => {
         let options = {
@@ -287,6 +305,7 @@ const SideMenuScreen = ({ navigation }) => {
         };
 
         launchImageLibrary(options, (Response) => {
+            setShowModal(false);
             if (Response.didCancel) {
                 Alert.alert("user cancelled");
             } else if (Response.errorMessage) {
@@ -299,25 +318,33 @@ const SideMenuScreen = ({ navigation }) => {
                     uri: uriLink,
                 };
                 // setImageUri(uriObject);
-                console.log({ uriObject })
-                uploadProfile(uriObject);
+                console.log({ uriObject });
+                if (isExist) {
+                    updateProfilePic(uriObject);
+                } else {
+                    uploadProfile(uriObject);
+                }
             }
         });
     };
 
     const uploadProfile = (uri) => {
         const formdata = new FormData();
-        formdata.append('documentType', 'profilePic')
-        formdata.append('file', { type: 'image/jpg', uri: uri.uri, name: "image.jpg" })
+        formdata.append("documentType", "profilePic");
+        formdata.append("file", {
+            type: "image/jpg",
+            uri: uri.uri,
+            name: "image.jpg",
+        });
 
         fetch(
             URL.UPLOAD_PROFILE(userData.empId, userData.orgId, userData.branchId),
             {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Content-Type': 'multipart/form-data'
+                    "Content-Type": "multipart/form-data",
                 },
-                body: formdata
+                body: formdata,
             }
         )
             .then((response) => response.json())
@@ -328,18 +355,105 @@ const SideMenuScreen = ({ navigation }) => {
                     orgId: userData.orgId,
                     fileName: json.fileName,
                     documentPath: json.documentPath,
-                    universalid: json.universalId
-                }
+                    universalid: json.universalId,
+                };
                 const response = await client.post(URL.SAVE_PROFILE(), inputData);
                 const saveProfile = await response.json();
-                console.log("save json", saveProfile.dmsEntity.employeeProfileDtos[0].documentPath);
+                console.log(
+                    "save json",
+                    saveProfile.dmsEntity.employeeProfileDtos[0].documentPath
+                );
                 if (saveProfile.success) {
-                    setImageUri(saveProfile.dmsEntity.employeeProfileDtos[0].documentPath || "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg");
+                    setIsExist(true);
+                    let newInitial = {
+                        id: saveProfile.dmsEntity.employeeProfileDtos[0].id,
+                        universalid: json?.universalId,
+                    };
+                    setInitialData(newInitial);
+                    setImageUri(
+                        saveProfile.dmsEntity.employeeProfileDtos[0].documentPath ||
+                        "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
+                    );
                 }
                 // setDataList(json);
             })
             .catch((error) => console.error(error));
-    }
+    };
+
+    const updateProfilePic = async (uri) => {
+        try {
+            let newPayload = {
+                ownerId: userData.empId,
+                branchId: userData.branchId,
+                orgId: userData.orgId,
+                id: initialData.id,
+                fileName: "image.jpg",
+                documentPath: uri.uri,
+                universalid: initialData.universalId,
+            };
+            const response = await client.post(
+                profileImageUpdate + "/update",
+                newPayload
+            );
+            const saveProfile = await response.json();
+            setImageUri(
+                saveProfile.dmsEntity.employeeProfileDtos[0].documentPath ||
+                "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
+            );
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    const deleteProfilePic = async () => {
+        AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
+            if (token.length > 0) {
+                fetch(profileImageUpdate + "/delete?id=" + initialData?.id, {
+                    method: "DELETE",
+                    headers: {
+                        Accept: "application/json",
+                        "Content-Type": "application/json",
+                        "auth-token": token,
+                    },
+                    body: JSON.stringify(),
+                })
+                    .then((response) => response.json())
+                    .then((json) => {
+                        if (json?.success) {
+                            setImageUri(
+                                "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
+                            );
+                            setIsExist(false);
+                            setShowModal(false);
+                        }
+                    })
+                    .catch((error) => {
+                        setShowModal(false);
+                        console.error(error);
+                    });
+            }
+        });
+
+        // try {
+        //     // let newPayload = {
+        //     //     ownerId: userData.empId,
+        //     //     branchId: userData.branchId,
+        //     //     orgId: userData.orgId,
+        //     //     id: initialData.id,
+        //     //     fileName: "image.jpg",
+        //     //     documentPath: uri.uri,
+        //     //     universalid: initialData.universalId,
+        //     // };
+        //     const response = await client.post(profileImageUpdate + "/delete");
+        //     const saveProfile = await response.json();
+        //     // setImageUri(
+        //     //     saveProfile.dmsEntity.employeeProfileDtos[0].documentPath ||
+        //     //     "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
+        //     // );
+        // } catch (err) {
+        //     console.log(err);
+        // }
+    };
 
     return (
         <SafeAreaView style={styles.container}>
@@ -359,9 +473,34 @@ const SideMenuScreen = ({ navigation }) => {
                     </Text>
                 </Text>
             </View> */}
+
             <View style={styles.profileContainerView}>
+                <ReactNativeModal onBackdropPress={() => { setShowModal(false) }} transparent={true} visible={showModal} >
+                    <View style={styles.newModalContainer}>
+                            <TouchableWithoutFeedback style={styles.actionButtonContainer} onPress={() => { }}>
+                                <>
+                                    <Button
+                                        onPress={deleteProfilePic}
+                                        disabled={isExist ? false : true}
+                                        color="black"
+                                    >
+                                        {"Delete Image"}
+                                    </Button>
+                                    <View style={styles.divider} />
+                                    <Button
+                                        onPress={() => {
+                                            selectImage();
+                                        }}
+                                        color="black"
+                                    >
+                                        {"Upload Image"}
+                                    </Button>
+                                </>
+                            </TouchableWithoutFeedback>
+                        </View>
+                </ReactNativeModal>
                 <View style={styles.profileBgVw}>
-                    <TouchableOpacity onPress={selectImage}>
+                    <TouchableOpacity onPress={() => setShowModal(true)}>
                         <View style={styles.editButton}>
                             <Entypo size={12} name="pencil" color={Colors.WHITE} />
                         </View>
@@ -377,6 +516,7 @@ const SideMenuScreen = ({ navigation }) => {
                         // source={imageUri}
                         //  source={require("../../assets/images/bently.png")}
                         />
+
                     </TouchableOpacity>
                     <View style={styles.profilDetailes}>
                         <Text style={styles.nameStyle}>{empName}</Text>
@@ -387,43 +527,31 @@ const SideMenuScreen = ({ navigation }) => {
                 <View style={{ marginTop: 10 }}>
                     <Text style={styles.text2}>
                         {"Email:  "}
-                        <Text style={[styles.text2, { color: Colors.GRAY, fontWeight: "bold" }]}>
+                        <Text
+                            style={[styles.text2, { color: Colors.GRAY, fontWeight: "bold" }]}
+                        >
                             {email}
                         </Text>
                     </Text>
                     {/* <Text style={styles.text2}>{"Office Location: " + location}</Text> */}
-                    <Text style={styles.text2}>{"Office Location:  "}
-                        <Text style={{ color: Colors.GRAY, fontWeight: "bold" }}>{location || "No Location Set"}</Text>
+                    <Text style={styles.text2}>
+                        {"Office Location:  "}
+                        <Text style={{ color: Colors.GRAY, fontWeight: "bold" }}>
+                            {location || "No Location Set"}
+                        </Text>
                     </Text>
                 </View>
             </View>
             <Divider />
             {/* {userData !== null && */}
-                <FlatList
-                    data={newTableData}
-                    keyExtractor={(item, index) => index}
-                    renderItem={({ item, index }) => {
-                        return (
-                            <>
-                                {item.title === 'Task Transfer' ?
-                                    (!hrmsRole.toLowerCase().includes('dse') ?
-                                        <Pressable onPress={() => itemSelected(item)}>
-                                            <View
-                                                style={{
-                                                    paddingLeft: 10,
-                                                    height: 55,
-                                                    justifyContent: "center",
-                                                }}
-                                            >
-                                                <View style={{ flexDirection: "row", height: 25, alignItems: "center", paddingLeft: 10, marginBottom: 5 }}>
-                                                    <Image style={{ height: 20, width: 20 }} source={item.pngIcon} />
-                                                    <Text style={{ fontSize: 15, fontWeight: "bold", marginLeft: 25, color: "gray" }}>{item.title}</Text>
-                                                </View>
-                                            </View>
-                                        </Pressable> :
-                                        null
-                                    )
-                                    :
+            <FlatList
+                data={newTableData}
+                keyExtractor={(item, index) => index}
+                renderItem={({ item, index }) => {
+                    return (
+                        <>
+                            {item.title === "Task Transfer" ? (
+                                !hrmsRole.toLowerCase().includes("dse") ? (
                                     <Pressable onPress={() => itemSelected(item)}>
                                         <View
                                             style={{
@@ -432,15 +560,62 @@ const SideMenuScreen = ({ navigation }) => {
                                                 justifyContent: "center",
                                             }}
                                         >
-                                            {/* <List.Item
+                                            <View
+                                                style={{
+                                                    flexDirection: "row",
+                                                    height: 25,
+                                                    alignItems: "center",
+                                                    paddingLeft: 10,
+                                                    marginBottom: 5,
+                                                }}
+                                            >
+                                                <Image
+                                                    style={{ height: 20, width: 20 }}
+                                                    source={item.pngIcon}
+                                                />
+                                                <Text
+                                                    style={{
+                                                        fontSize: 15,
+                                                        fontWeight: "bold",
+                                                        marginLeft: 25,
+                                                        color: "gray",
+                                                    }}
+                                                >
+                                                    {item.title}
+                                                </Text>
+                                            </View>
+                                        </View>
+                                    </Pressable>
+                                ) : null
+                            ) : (
+                                <Pressable onPress={() => itemSelected(item)}>
+                                    <View
+                                        style={{
+                                            paddingLeft: 10,
+                                            height: 55,
+                                            justifyContent: "center",
+                                        }}
+                                    >
+                                        {/* <List.Item
                   title={item.title}
                   titleStyle={{ fontSize: 16, fontWeight: "600" }}
                   left={(props) => <List.Icon {...props} icon="folder" style={{ margin: 0 }} />}
                 /> */}
-                                            <View style={{ flexDirection: "row", height: 25, alignItems: "center", paddingLeft: 10, marginBottom: 5 }}>
-                                                {/* <VectorImage source={item.icon} width={20} height={20} /> */}
-                                                <Image style={{ height: 20, width: 20 }} source={item.pngIcon} />
-                                                {/* {item.icon === EVENT_MANAGEMENT_STR && <EVENT_MANAGEMENT width={20} height={20} color='green' />}
+                                        <View
+                                            style={{
+                                                flexDirection: "row",
+                                                height: 25,
+                                                alignItems: "center",
+                                                paddingLeft: 10,
+                                                marginBottom: 5,
+                                            }}
+                                        >
+                                            {/* <VectorImage source={item.icon} width={20} height={20} /> */}
+                                            <Image
+                                                style={{ height: 20, width: 20 }}
+                                                source={item.pngIcon}
+                                            />
+                                            {/* {item.icon === EVENT_MANAGEMENT_STR && <EVENT_MANAGEMENT width={20} height={20} color='green' />}
                                     {item.icon === CUSTOMER_RELATIONSHIP_STR && <CUSTOMER_RELATIONSHIP width={20} height={20} color={'black'} />}
                                     {item.icon === DOCUMENT_WALLET_STR && <DOCUMENT_WALLET width={20} height={20} color={'black'} />}
                                     {item.icon === HOME_LINE_STR && <HOME_LINE width={20} height={20} color={'black'} />}
@@ -448,16 +623,25 @@ const SideMenuScreen = ({ navigation }) => {
                                     {item.icon === QR_CODE_STR && <QR_CODE width={20} height={20} color={'black'} />}
                                     {item.icon === GROUP_STR && <GROUP width={20} height={20} color={'black'} />}
                                     {item.icon === TRANSFER_STR && <TRANSFER width={20} height={20} color={'black'} />} */}
-                                                <Text style={{ fontSize: 15, fontWeight: "bold", marginLeft: 25, color: "gray" }}>{item.title}</Text>
-                                            </View>
-                                            {/* <Divider /> */}
+                                            <Text
+                                                style={{
+                                                    fontSize: 15,
+                                                    fontWeight: "bold",
+                                                    marginLeft: 25,
+                                                    color: "gray",
+                                                }}
+                                            >
+                                                {item.title}
+                                            </Text>
                                         </View>
-                                    </Pressable>
-                                }
-                            </>
-                        );
-                    }}
-                />
+                                        {/* <Divider /> */}
+                                    </View>
+                                </Pressable>
+                            )}
+                        </>
+                    );
+                }}
+            />
             {/* } */}
             {/* <View style={styles.bottomVw}>
                 <Button
@@ -490,11 +674,11 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         height: 30,
         alignItems: "center",
-        overflow: 'hidden'
+        overflow: "hidden",
     },
     profilDetailes: {
         marginLeft: 10,
-        width: '75%'
+        width: "75%",
     },
     nameStyle: {
         fontSize: 12,
@@ -513,7 +697,7 @@ const styles = StyleSheet.create({
         // justifyContent: "center",
         // alignItems: "center",
         marginVertical: 30,
-        paddingHorizontal: 20
+        paddingHorizontal: 20,
     },
     text2: {
         marginTop: 5,
@@ -528,7 +712,7 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.WHITE,
         // justifyContent: "center",
         alignItems: "center",
-        flexDirection: "row"
+        flexDirection: "row",
     },
     bottomVw: {
         bottom: 0,
@@ -541,6 +725,52 @@ const styles = StyleSheet.create({
         zIndex: 2,
         backgroundColor: "#f81567e3",
         borderRadius: 30,
-        padding: 4
+        padding: 4,
+    },
+    divider: {
+        width: "80%",
+        height: 1,
+        backgroundColor: "black",
+        alignSelf: "center",
+        opacity: 0.5,
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+    },
+    crossButton: {
+        top: "-40%",
+        right: -25,
+        width: 25,
+        height: 25,
+        borderRadius: 25 / 2,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    actionButtonContainer: {
+        // backgroundColor: "white",
+        justifyContent: "space-between",
+        flexDirection: "column",
+    },
+    newModalContainer:{
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: "white",
+        maxHeight: "50%",
+        maxWidth: '100%',
+        borderRadius: 5,
+        borderWidth: 1,
+        borderColor: '#fff',
+        marginTop: "30%",
+        marginLeft: "15%",
+        elevation: 20,
+        shadowColor: '#171717',
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.8,
+        shadowRadius: 3,
+        top: 0,
+        position: "absolute"
     }
 });
