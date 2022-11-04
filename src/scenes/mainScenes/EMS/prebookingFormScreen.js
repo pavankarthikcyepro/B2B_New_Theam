@@ -338,8 +338,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     const [isEditButtonShow, setIsEditButtonShow] = useState(false);
     const [isSubmitCancelButtonShow, setIsSubmitCancelButtonShow] = useState(false);
 
-    const [resgistrationChargesType, setResgistrationChargesType]= useState([]);
-    const [selectedRegistrationCharges, setSelectedResgistragrationCharges]= useState({});
+    const [registrationChargesType, setRegistrationChargesType]= useState([]);
+    const [selectedRegistrationCharges, setSelectedRegistrationCharges]= useState({});
 
     // Edit buttons shows
     useEffect(() => {
@@ -1212,26 +1212,26 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 }
             }
 
-          const allResgistrationCharges = selector.vehicle_on_road_price_insurence_details_response
+          const allRegistrationCharges = selector.vehicle_on_road_price_insurence_details_response
             .registration || {};
           function isEmpty(obj) {
             return Object.keys(obj).length === 0;
           }
-          if (!isEmpty(allResgistrationCharges)){
-            let x = Object.keys(allResgistrationCharges);
+          if (!isEmpty(allRegistrationCharges)){
+            let x = Object.keys(allRegistrationCharges);
             let newArray =[];
             for (let i = 0; i < x.length; i++) {
               let ladel = x[i].toString();
               
-              let temp = { "name": ladel, "cost": allResgistrationCharges[ladel] };
+              let temp = { "name": ladel, "cost": allRegistrationCharges[ladel] };
               if (selector.registrationCharges !== 0) {
-                if (selector.registrationCharges === allResgistrationCharges[ladel]) {
-                  setSelectedResgistragrationCharges(temp);
+                if (selector.registrationCharges === allRegistrationCharges[ladel]) {
+                  setSelectedRegistrationCharges(temp);
                 }
               }
               newArray.push(temp);             
             }
-            setResgistrationChargesType(newArray);
+            setRegistrationChargesType(newArray);
           }
             setPriceInformationData({
                 ...selector.vehicle_on_road_price_insurence_details_response,
@@ -1347,8 +1347,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           case "VEHICLE_TYPE":
             setDataForDropDown([...Vehicle_Types]);
             break;
-          case "RESGISTRATION_CHARGES":
-            setDataForDropDown([...resgistrationChargesType]);
+          case "REGISTRATION_CHARGES":
+            setDataForDropDown([...registrationChargesType]);
             break;
           case "CUSTOMER_TYPE_CATEGORY":
             setDataForDropDown([...Customer_Category_Types]);
@@ -3278,8 +3278,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 setDropDownData({ key: dropDownKey, value: names, id: "" })
               );
               return;
-            } else if (dropDownKey === "RESGISTRATION_CHARGES"){
-              setSelectedResgistragrationCharges(item);
+            } else if (dropDownKey === "REGISTRATION_CHARGES"){
+              setSelectedRegistrationCharges(item);
             }
 
             if (
@@ -5417,7 +5417,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         value={selectedRegistrationCharges?.name}
                         onPress={() =>
                           showDropDownModelMethod(
-                            "RESGISTRATION_CHARGES",
+                            "REGISTRATION_CHARGES",
                             "Registration Charges"
                           )
                         }
