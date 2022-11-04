@@ -77,10 +77,10 @@ export const navigatetoCallWebView = async () => {
       }
     } else return true;
   };
-  const requestCameraPermission = async() =>{
+  const requestCameraPermission = async () => {
 
-    if(Platform.OS === "android"){
-      try{
+    if (Platform.OS === "android") {
+      try {
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.CAMERA,
           {
@@ -90,17 +90,17 @@ export const navigatetoCallWebView = async () => {
         );
         return granted === PermissionsAndroid.RESULTS.GRANTED;
 
-      }catch(error){
+      } catch (error) {
         return false;
       }
-    }else return true;
+    } else return true;
 
   }
   //return requestCameraPermission()
   var granted = await requestCameraPermission()
   var granted2 = await requestMicroPhonePermission()
-  if(granted && granted2)
-  return true
+  if (granted && granted2)
+    return true
   else return false
 
   // (granted)
@@ -130,7 +130,7 @@ export const callNumber = (phone) => {
 
 sendWhatsApp = (phone) => {
   let msg = 'Say Something';
-  let phoneWithCountryCode = '+91'+phone;
+  let phoneWithCountryCode = '+91' + phone;
 
   let mobile = Platform.OS == 'ios' ? phoneWithCountryCode : '+' + phoneWithCountryCode;
   if (mobile) {
@@ -358,7 +358,7 @@ export const GetEnquiryCarModelList = async (orgId, token = "") => {
       })
       .catch((err) => reject([]));
   });
-};
+}; 
 
 export const GetFinanceBanksList = async (orgId, token) => {
   return await new Promise((resolve, reject) => {
@@ -387,6 +387,37 @@ export const GetFinanceBanksList = async (orgId, token) => {
 
 export const GetPaidAccessoriesList = async (vehicleId, orgId, token) => {
   return await new Promise((resolve, reject) => {
+    // const url = URL.GET_PAID_ACCESSORIES_LIST(vehicleId);
+    const url = URL.GET_PAID_ACCESSORIES_LIST2(vehicleId, orgId);
+    fetch(url, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "auth-token": token,
+        // orgId: orgId,
+      },
+    })
+      .then((json) => json.json())
+      .then((res) => {
+        if (res != undefined) {
+          if (res != undefined && res.length > 0) {
+            resolve(res);
+          }
+          else {
+            resolve([]);
+          }
+        } else {
+          reject("Get Paid Acceossories List failed");
+        }
+      })
+      .catch((err) => reject(err));
+  });
+};
+
+
+export const GetPaidAccessoriesList2 = async (vehicleId, orgId, token) => {
+  return await new Promise((resolve, reject) => {
     const url = URL.GET_PAID_ACCESSORIES_LIST(vehicleId);
     fetch(url, {
       method: "GET",
@@ -413,7 +444,7 @@ export const GetPaidAccessoriesList = async (vehicleId, orgId, token) => {
   });
 };
 
-export const GetDropList = async ( orgId, token, type) => {
+export const GetDropList = async (orgId, token, type) => {
   return await new Promise((resolve, reject) => {
     const url = URL.GET_DROP_LIST(orgId, type);
     //console.log("url: ", url);
@@ -431,11 +462,11 @@ export const GetDropList = async ( orgId, token, type) => {
         if (res != undefined && res.length > 0) {
           const updatedData = [];
           res.forEach(obj => {
-            const newObj = {...obj};
+            const newObj = { ...obj };
             if (newObj.status === "Active") {
               newObj.name = newObj.lostReason;
               newObj.sublostreasons.forEach(subObj => {
-                subObj.name =  subObj.subReason
+                subObj.name = subObj.subReason
               })
               updatedData.push(newObj)
             }
@@ -465,5 +496,5 @@ export const achievementPercentage = (achievement, tgt, paramName, enquiryAchiev
   } else {
     target = 0;
   }
-  return target > 0 ? Math.round((achievement/target)*100) : achievement; // if denominator is > 0, display percentage, else no change, display achievement
+  return target > 0 ? Math.round((achievement / target) * 100) : achievement; // if denominator is > 0, display percentage, else no change, display achievement
 }

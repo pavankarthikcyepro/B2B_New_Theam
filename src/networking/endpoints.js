@@ -147,6 +147,12 @@ const URL = {
       `/inventory/accessories/${vehicleId}?pageNo=0&pageSize=100`
     );
   },
+  GET_PAID_ACCESSORIES_LIST2: (vehicleId, orgId) => {
+    return (
+      sales_url +
+      `/allotment/${vehicleId}/${orgId}`
+    );
+  },
   GET_ON_ROAD_PRICE_DTO_LIST: (leadId) => {
     return sales_url + `/on-road-price/lead/${leadId}`;
   },
