@@ -6050,7 +6050,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               {isDropSelected ? (
                 <List.Accordion
                   id={"10"}
-                  title={"Enquiry Drop Section"}
+                  title={"Enquiry Lost Section"}
                   titleStyle={{
                     color: openAccordian === "10" ? Colors.BLACK : Colors.BLACK,
                     fontSize: 16,
