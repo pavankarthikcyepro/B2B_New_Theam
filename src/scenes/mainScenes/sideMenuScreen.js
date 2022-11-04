@@ -477,27 +477,27 @@ const SideMenuScreen = ({ navigation }) => {
             <View style={styles.profileContainerView}>
                 <ReactNativeModal onBackdropPress={() => { setShowModal(false) }} transparent={true} visible={showModal} >
                     <View style={styles.newModalContainer}>
-                            <TouchableWithoutFeedback style={styles.actionButtonContainer} onPress={() => { }}>
-                                <>
-                                    <Button
-                                        onPress={deleteProfilePic}
-                                        disabled={isExist ? false : true}
-                                        color="black"
-                                    >
-                                        {"Delete Image"}
-                                    </Button>
-                                    <View style={styles.divider} />
-                                    <Button
-                                        onPress={() => {
-                                            selectImage();
-                                        }}
-                                        color="black"
-                                    >
-                                        {"Upload Image"}
-                                    </Button>
-                                </>
-                            </TouchableWithoutFeedback>
-                        </View>
+                        <TouchableWithoutFeedback style={styles.actionButtonContainer} onPress={() => { }}>
+                            <>
+                                <Button
+                                    onPress={deleteProfilePic}
+                                    disabled={isExist ? false : true}
+                                    color="black"
+                                >
+                                    {"Delete Image"}
+                                </Button>
+                                <View style={styles.divider} />
+                                <Button
+                                    onPress={() => {
+                                        selectImage();
+                                    }}
+                                    color="black"
+                                >
+                                    {"Upload Image"}
+                                </Button>
+                            </>
+                        </TouchableWithoutFeedback>
+                    </View>
                 </ReactNativeModal>
                 <View style={styles.profileBgVw}>
                     <TouchableOpacity onPress={() => setShowModal(true)}>
