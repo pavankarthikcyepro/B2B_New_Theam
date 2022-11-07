@@ -122,7 +122,7 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
   useEffect(() => {
     navigation.addListener('focus', () => {
       getCurrentLocation()
-      console.log("@@@@@@@@@@@@@@@@@@@@@@");
+      // console.log("@@@@@@@@@@@@@@@@@@@@@@");
       dispatch(getTaskDetailsApi(taskId));
       getAuthToken();
       getAsyncstoreData();

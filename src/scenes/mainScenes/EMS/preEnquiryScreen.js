@@ -491,11 +491,11 @@ const PreEnquiryScreen = ({ route, navigation }) => {
               />
             </View>
             <Pressable onPress={() => setSortAndFilterVisible(true)}>
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', borderColor: Colors.BORDER_COLOR, borderWidth: 1, borderRadius: 4, backgroundColor: Colors.WHITE, paddingLeft: 8, height: 50, justifyContent: 'center' }}>
                 <Text style={styles.text1}>{"Filter"}</Text>
                 <IconButton
                   icon={"filter-outline"}
-                  size={20}
+                  size={16}
                   color={Colors.RED}
                   style={{ margin: 0, padding: 0 }}
                 />

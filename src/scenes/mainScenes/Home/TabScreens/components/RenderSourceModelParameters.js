@@ -6,7 +6,7 @@ const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 100) / 5;
 
 export const RenderSourceModelParameters = (parameter) => {
-    const paramsData = ['PreEnquiry','Enquiry', 'Test Drive', 'Home Visit', 'Booking', 'INVOICE', 'DROPPED', 'Exchange', 'Finance', 'Insurance', 'EXTENDEDWARRANTY', 'Accessories'];
+    const paramsData = ['PreEnquiry','Enquiry', 'Test Drive', 'Home Visit', 'Booking', 'INVOICE', 'Exchange', 'Finance', 'Insurance', 'EXTENDEDWARRANTY', 'Accessories'];
 
     const getColor = (ach, tar) => {
         if (ach > 0 && tar === 0) {
@@ -26,6 +26,9 @@ export const RenderSourceModelParameters = (parameter) => {
 
     const { params, item, color, displayType, moduleType } = parameter;
     // const paramsData = params.map(({paramName}) => paramName);
+    if (moduleType !== 'live-leads') {
+        paramsData.splice(6, 0, 'DROPPED');
+    }
     return (
         <>
             {
@@ -35,7 +38,6 @@ export const RenderSourceModelParameters = (parameter) => {
                             param === "Enquiry" ||
                             param === "Booking" ||
                             param === "PreEnquiry") {
-                            console.log('PARAM:---> ', param);
                             const selectedParameter = item.targetAchievements.filter((x) => x.paramName === param)[0];
                             const enquiryParameter = item.targetAchievements.filter((item) => item.paramName === 'Enquiry')[0];
 
@@ -45,17 +47,20 @@ export const RenderSourceModelParameters = (parameter) => {
                                     <View key={`${param}_${i}`} style={[styles.itemBox, { width: param === "Accessories" ? 80 : 60 }]}>
                                         <Text style={[styles.totalText1, { color: elementColor }]}>
                                             {selectedParameter ?
-                                                displayType === 0 ? selectedParameter.achievment :
-                                                    selectedParameter.target > 0 ? achievementPercentage(selectedParameter.achievment, selectedParameter.target, param, enquiryParameter.achievment) :
+                                                displayType === 0 ? 
+                                                    selectedParameter.achievment :
+                                                    selectedParameter.target > 0 ? 
+                                                        achievementPercentage(selectedParameter.achievment, selectedParameter.target, param, enquiryParameter.achievment) :
                                                         selectedParameter.achievment
-                                                : 0}
+                                                : 
+                                                0
+                                            }
                                         </Text>
                                     </View>
                                 );
                             }
                         }
                     }else{
-                        console.log('PARAM:---> ', param);
                         const selectedParameter = item.targetAchievements.filter((x) => x.paramName === param)[0];
                         const enquiryParameter = item.targetAchievements.filter((item) => item.paramName === 'Enquiry')[0];
 
@@ -74,7 +79,7 @@ export const RenderSourceModelParameters = (parameter) => {
                             );
                         }
                     }
-                    
+
                 })
             }
         </>

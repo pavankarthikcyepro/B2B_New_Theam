@@ -179,7 +179,7 @@ export const getTargetParametersData = createAsyncThunk(
     }
     const response = await client.post(URL.GET_TARGET_PARAMS(), payload);
     const json = await response.json();
-    console.log("homeReducer", payload, URL.GET_TARGET_PARAMS());
+    // console.log("homeReducer", payload, URL.GET_TARGET_PARAMS());
 
     // console.log("&&&&&& TARGET DATA:", JSON.stringify(json));
 
@@ -210,12 +210,12 @@ export const getTargetParametersAllData = createAsyncThunk(
 export const getNewTargetParametersAllData = createAsyncThunk(
   "HOME/getNewTargetParametersAllData",
   async (payload: any, { rejectWithValue }) => {
-    console.log("TEAM PAYLOAD:", URL.GET_TEAMS_TARGET_PARAMS(), payload);
+    // console.log("TEAM PAYLOAD:", URL.GET_TEAMS_TARGET_PARAMS(), payload);
 
     const response = await client.post(URL.GET_TEAMS_TARGET_PARAMS(), payload);
     const json = await response.json();
 
-    console.log("&&&&&& DATA $$$$$$$:", JSON.stringify(json));
+    // console.log("&&&&&& DATA $$$$$$$:", JSON.stringify(json));
 
     if (!response.ok) {
       return rejectWithValue(json);
@@ -227,11 +227,11 @@ export const getNewTargetParametersAllData = createAsyncThunk(
 export const getTotalTargetParametersData = createAsyncThunk(
   "HOME/getTotalTargetParametersData",
   async (payload: any, { rejectWithValue }) => {
-    console.log("PAYLOAD=========>:", payload);
+    // console.log("PAYLOAD=========>:", payload);
     const response = await client.post(URL.GET_TARGET_PARAMS(), payload);
     const json = await response.json();
 
-    console.log("&&&&&& DATA $$$$$$$:", JSON.stringify(json));
+    // console.log("&&&&&& DATA $$$$$$$:", JSON.stringify(json));
 
     if (!response.ok) {
       return rejectWithValue(json);
@@ -309,18 +309,18 @@ export const getTargetParametersEmpData = createAsyncThunk(
 export const getGroupDealerRanking = createAsyncThunk(
   "HOME/getGroupDealerRanking",
   async (payload: any, { rejectWithValue }) => {
-    console.log(
-      "%%%%DEALER",
-      URL.GET_TARGET_GROUP_RANKING(payload.orgId),
-      payload.payload
-    );
+    // console.log(
+    //   "%%%%DEALER",
+    //   URL.GET_TARGET_GROUP_RANKING(payload.orgId),
+    //   payload.payload
+    // );
 
     const response = await client.post(
       URL.GET_TARGET_GROUP_RANKING(payload.orgId),
       payload.payload
     );
     const json = await response.json();
-    console.log("&&&&&& DATA:", json);
+    // console.log("&&&&&& DATA:", json);
 
     if (!response.ok) {
       return rejectWithValue(json);
@@ -332,12 +332,12 @@ export const getGroupDealerRanking = createAsyncThunk(
 export const getDealerRanking = createAsyncThunk(
   "HOME/getDealerRanking",
   async (payload: any, { rejectWithValue }) => {
-    console.log({ payload });
-    console.log(
-      "%%%BRANCH",
-      URL.GET_TARGET_RANKING(payload.orgId, payload.branchId),
-      payload.payload
-    );
+    // console.log({ payload });
+    // console.log(
+    //   "%%%BRANCH",
+    //   URL.GET_TARGET_RANKING(payload.orgId, payload.branchId),
+    //   payload.payload
+    // );
     const response = await client.post(
       URL.GET_TARGET_RANKING(payload.orgId, payload.branchId),
       payload.payload
@@ -499,14 +499,14 @@ export const getReportingManagerList = createAsyncThunk(
 export const delegateTask = createAsyncThunk(
   "HOME/delegateTask",
   async (payload, { rejectWithValue }) => {
-    console.log(
-      "EMP URL:",
-      URL.TRANSFER_TASK(payload["fromUserId"], payload["toUserId"]),
-      {
-        fromEmpId: payload["fromUserId"].toString(),
-        toEmpId: payload["toUserId"].toString(),
-      }
-    );
+    // console.log(
+    //   "EMP URL:",
+    //   URL.TRANSFER_TASK(payload["fromUserId"], payload["toUserId"]),
+    //   {
+    //     fromEmpId: payload["fromUserId"].toString(),
+    //     toEmpId: payload["toUserId"].toString(),
+    //   }
+    // );
 
     const response = await client.post(
       URL.TRANSFER_TASK(payload["fromUserId"], payload["toUserId"]),
@@ -571,7 +571,7 @@ export const getSourceModelDataForSelf = createAsyncThunk(
   "HOME/getSourceModelDataForSelf",
   async (data: any, { rejectWithValue }) => {
     const { type, payload, key } = data;
-    console.log("]oiuyuiop[: ", key);
+    // console.log("]oiuyuiop[: ", key);
     const url =
       type === "SELF"
         ? key == "LIVE-LEADS"
@@ -585,11 +585,11 @@ export const getSourceModelDataForSelf = createAsyncThunk(
         ? URL.GET_LIVE_LEADS_MODEL_SOURCE_TEAM()
         : URL.MODEL_SOURCE_TEAM();
 
-    console.log("]oiuyuiop[: =========>:", url, payload);
+    // console.log("]oiuyuiop[: =========>:", url, payload);
     const response = await client.post(url, payload);
     const json = await response.json();
 
-    console.log("&&&&&& DATA $$$$$$$:", JSON.stringify(json));
+    // console.log("&&&&&& DATA $$$$$$$:", JSON.stringify(json));
 
     if (!response.ok) {
       return rejectWithValue(json);
@@ -603,11 +603,11 @@ export const getSourceModelDataForInsights = createAsyncThunk(
   async (data: any, { rejectWithValue }) => {
     const payload = data.payload;
 
-    console.log("PAYLOAD=========>:", payload);
+    // console.log("PAYLOAD=========>:", payload);
     const response = await client.post(URL.MODEL_SOURCE_INSIGHTS(), payload);
     const json = await response.json();
 
-    console.log("&&&&&& DATA $$$$$$$:", JSON.stringify(json));
+    // console.log("&&&&&& DATA $$$$$$$:", JSON.stringify(json));
 
     if (!response.ok) {
       return rejectWithValue(json);
@@ -621,11 +621,11 @@ export const getSourceModelDataForTeam = createAsyncThunk(
   async (data: any, { rejectWithValue }) => {
     const payload = data.payload;
 
-    console.log("PAYLOAD=========>:", payload);
+    // console.log("PAYLOAD=========>:", payload);
     const response = await client.post(URL.MODEL_SOURCE_TEAM(), payload);
     const json = await response.json();
 
-    console.log("&&&&&& DATA $$$$$$$:", JSON.stringify(json));
+    // console.log("&&&&&& DATA $$$$$$$:", JSON.stringify(json));
 
     if (!response.ok) {
       return rejectWithValue(json);
@@ -709,7 +709,7 @@ export const homeSlice = createSlice({
       state.isDSE = action.payload;
     },
     updateTargetData: (state, action) => {
-      console.log("CALLED REDUX:", action.payload);
+      // console.log("CALLED REDUX:", action.payload);
 
       state.target_parameters_data = action.payload.targetData;
       state.all_target_parameters_data = action.payload.allTargetData;
@@ -937,7 +937,7 @@ export const homeSlice = createSlice({
       .addCase(getTargetParametersData.fulfilled, (state, action) => {
         if (action.payload) {
           // state.target_parameters_data = [];
-          console.log("actionqweertyuioppooooooooo", action.payload);
+          // console.log("actionqweertyuioppooooooooo", action.payload);
           state.target_parameters_data = action.payload;
           AsyncStore.storeData("TARGET_DATA", JSON.stringify(action.payload));
         }
@@ -1065,7 +1065,7 @@ export const homeSlice = createSlice({
         getTargetParametersEmpDataInsights.fulfilled,
         (state, action) => {
           if (action.payload) {
-            console.log("kjskskkkssksksjkjksjksjksjkjkjksjk", action.payload);
+            // console.log("kjskskkkssksksjkjksjksjksjkjkjksjk", action.payload);
 
             state.insights_target_parameters_data = action.payload;
             AsyncStore.storeData("TARGET_EMP", JSON.stringify(action.payload));
@@ -1112,14 +1112,14 @@ export const homeSlice = createSlice({
 
       .addCase(getTotalTargetParametersData.pending, (state, action) => {
         if (action.payload) {
-          console.log("TOTAL DATA PEN: ", JSON.stringify(action.payload));
+          // console.log("TOTAL DATA PEN: ", JSON.stringify(action.payload));
 
           state.totalParameters = action.payload;
         }
       })
       .addCase(getTotalTargetParametersData.fulfilled, (state, action) => {
         if (action.payload) {
-          console.log("TOTAL DATA: ", JSON.stringify(action.payload));
+          // console.log("TOTAL DATA: ", JSON.stringify(action.payload));
           state.totalParameters = action.payload;
         }
       })
@@ -1130,13 +1130,13 @@ export const homeSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(getEmployeesList.fulfilled, (state, action) => {
-        console.log("S getEmployeesList: ", JSON.stringify(action.payload));
+        // console.log("S getEmployeesList: ", JSON.stringify(action.payload));
         if (action.payload) {
           const dataObj = action.payload;
           // state.employee_list = dataObj ? dataObj.dmsEntity.employees : [];
           state.employee_list = dataObj ? dataObj : [];
           state.isLoading = false;
-          console.log("IS LOADING: ", state.isLoading);
+          // console.log("IS LOADING: ", state.isLoading);
         }
       })
       .addCase(getEmployeesList.rejected, (state, action) => {
@@ -1206,7 +1206,7 @@ export const homeSlice = createSlice({
       .addCase(getSourceModelDataForSelf.fulfilled, (state, action) => {
         state.isLoading = false;
         if (action.payload) {
-          console.log("TOTAL DATA: ", JSON.stringify(action.payload));
+          // console.log("TOTAL DATA: ", JSON.stringify(action.payload));
           state.sourceModelData = action.payload;
         }
       })

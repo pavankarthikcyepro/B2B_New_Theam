@@ -2,7 +2,7 @@ import qs from "qs";
 import { Linking, Alert, Platform, PermissionsAndroid } from "react-native";
 import moment from "moment";
 import URL from "../networking/endpoints";
-import { AuthNavigator } from "../navigations";
+import { showToastRedAlert } from '../utils/toast';
 
 export const isMobileNumber = (mobile) => {
   // var regex = /^[1-9]{1}[0-9]{9}$/; // /^\d{10}$/
@@ -120,7 +120,8 @@ export const callNumber = (phone) => {
   Linking.canOpenURL(phoneNumber)
     .then((supported) => {
       if (!supported) {
-        Alert.alert("Phone number is not available");
+        // Alert.alert("Phone number is not available");
+        showToastRedAlert("Phone number is not available");
       } else {
         return Linking.openURL(phoneNumber);
       }
@@ -139,7 +140,8 @@ sendWhatsApp = (phone) => {
       Linking.openURL(url).then((data) => {
         console.log('WhatsApp Opened');
       }).catch(() => {
-        alert('Make sure WhatsApp installed on your device');
+        // alert('Make sure WhatsApp installed on your device');
+        showToastRedAlert('Make sure WhatsApp is installed on your device');
       });
     } else {
       alert('Please insert message to send');

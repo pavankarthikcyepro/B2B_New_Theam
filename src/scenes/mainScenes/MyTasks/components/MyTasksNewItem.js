@@ -9,7 +9,6 @@ import * as AsyncStore from '../../../../asyncStore';
 import {showToastRedAlert} from "../../../../utils/toast";
 
 
-
 const statusBgColors = {
     CANCELLED: {
         color: Colors.RED,
@@ -215,10 +214,9 @@ export const MyTaskNewItem = ({ from = "MY_TASKS", navigator, type, uniqueId, na
                         <View style={{ padding: 8 }} />
                         <IconComp
                             iconName={"phone-outline"}
-                            opacity={cannotEditLead() ? 0.5 : 1}
                             onPress={() =>
-                                cannotEditLead() ?
-                                    showToastRedAlert("You don't have Permission") :
+                                // cannotEditLead() ?
+                                //     showToastRedAlert("You don't have Permission") :
                                     callWebViewRecord({
                                         navigator,
                                         phone,
@@ -230,8 +228,9 @@ export const MyTaskNewItem = ({ from = "MY_TASKS", navigator, type, uniqueId, na
                         <View style={{ padding: 8 }} />
                         <IconComp
                             iconName={"whatsapp"}
-                            opacity={cannotEditLead() ? 0.5 : 1}
-                            onPress={() => cannotEditLead() ? showToastRedAlert("You don't have Permission") : sendWhatsApp(phone)}
+                            onPress={() => 
+                            // cannotEditLead() ? showToastRedAlert("You don't have Permission") : 
+                            sendWhatsApp(phone)}
                         />
                     </View>
                 </View>

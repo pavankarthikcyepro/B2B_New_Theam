@@ -8,7 +8,6 @@ export const getCallRecordingCredentials = createAsyncThunk("CALLRECORDING/getCa
 
     const response = await client.get(URL.GET_CALL_RECORDING_EXTENSIONID(data.empId, data.orgId));
     const json = await response.json()
-    console.log("hello --------------",data.empId +"/"+data.orgId+json)
     if (!response.ok) {
         return rejectWithValue(json);
     }
@@ -40,11 +39,9 @@ export const callrecordingSlice = createSlice({
     extraReducers: (builder) => {
         // Get Complaints List
         builder.addCase(getCallRecordingCredentials.pending, (state, action) => {
-            console.log("S  callrecording data: ", 'pending');
             state.isLoading = true;
         })
         builder.addCase(getCallRecordingCredentials.fulfilled, (state, action) => {
-             console.log("S  callrecording data: ", action.payload);
             if (action.payload) {
                 const dataObj = action.payload;
                 state.user_name = dataObj[0]?.extensionId ? dataObj[0]?.extensionId : "";
@@ -58,7 +55,6 @@ export const callrecordingSlice = createSlice({
             state.isLoading = false;
         })
         builder.addCase(getCallRecordingCredentials.rejected, (state, action) => {
-            console.log("S  callrecording data: ", 'rejected');          
               state.isLoading = false;
         })
         // // Get More Complaints List

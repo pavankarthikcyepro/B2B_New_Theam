@@ -80,7 +80,6 @@ const LiveLeadsScreen = ({ route, navigation }) => {
 
     const setTargetData = async () => {
         numk++;
-        console.log("TTTTT CALLED: ", numk,  await AsyncStore.getData('TARGET_EMP'));
         let obj = {
             empData: await AsyncStore.getData('TARGET_EMP') ? JSON.parse(await AsyncStore.getData('TARGET_EMP')) : empData,
             allEmpData: await AsyncStore.getData('TARGET_EMP_ALL') ? JSON.parse(await AsyncStore.getData('TARGET_EMP_ALL')) : allData.employeeTargetAchievements,
@@ -92,7 +91,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
 
     useEffect(() => {
         if (selector.self_target_parameters_data.length > 0) {
-            console.log("@@@@@@@@@@@@@@@@@@selector.self_target_parameters_data.length$$$$$$", selector.self_target_parameters_data.length);
+            // console.log("@@@@@@@@@@@@@@@@@@selector.self_target_parameters_data.length$$$$$$", selector.self_target_parameters_data.length);
             let tempRetail = [];
             tempRetail = selector.self_target_parameters_data.filter((item) => {
                 return item.paramName.toLowerCase() === 'invoice'
@@ -170,7 +169,6 @@ const LiveLeadsScreen = ({ route, navigation }) => {
         getMenuListFromServer();
         getCustomerType()
         checkLoginUserAndEnableReportButton();
-        console.log('data for home =========> 2')
         getLoginEmployeeDetailsFromAsyn();
         // }
 
@@ -287,7 +285,6 @@ const LiveLeadsScreen = ({ route, navigation }) => {
             ]).then(() => {
                 console.log('I did everything!');
             });
-            console.log("LOGIN DATA:>>>>>>>>>>>>>>>>>>>>>>>>>", JSON.stringify(jsonObj.hrmsRole));
             if (jsonObj?.hrmsRole === "Admin" || jsonObj?.hrmsRole === "Admin Prod" ||
                 jsonObj?.hrmsRole === "App Admin" || jsonObj?.hrmsRole === "Manager" ||
                 jsonObj?.hrmsRole === "TL" || jsonObj?.hrmsRole === "General Manager" ||
@@ -338,7 +335,6 @@ const LiveLeadsScreen = ({ route, navigation }) => {
 
             if (jsonObj?.roles.length > 0) {
                 let rolesArr = [], mdArr = [], dseArr = [];
-                console.log("ROLLS:", jsonObj.roles);
                 rolesArr = jsonObj.roles.filter((item) => {
                     return item === "Admin Prod" || item === "App Admin" || item === "Manager"
                         || item === "TL" || item === "General Manager" || item === "branch manager"
@@ -348,8 +344,6 @@ const LiveLeadsScreen = ({ route, navigation }) => {
                     setRoles(rolesArr)
                 }
             }
-            console.log('data for home =========> 1 ')
-
             getDashboadTableDataFromServer(jsonObj.empId);
         }
     }
@@ -387,7 +381,6 @@ const LiveLeadsScreen = ({ route, navigation }) => {
     // }
 
     const getDashboadTableDataFromServer = (empId) => {
-        console.log('data for home =========> ')
         const dateFormat = "YYYY-MM-DD";
         const currentDate = moment().format(dateFormat)
         const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
@@ -435,7 +428,6 @@ const LiveLeadsScreen = ({ route, navigation }) => {
         let isTeamPresentLocal = false;
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
-            console.log("EMP========>", jsonObj);
             const allRoles = ["Admin", "Admin Prod", "App Admin", "Manager", "TL", "General Manager",
                 "branch manager", "Testdrive_Manager", "MD", "Business Head","Sales Manager"]
             if (allRoles.includes(jsonObj?.hrmsRole)) {
@@ -509,190 +501,6 @@ const LiveLeadsScreen = ({ route, navigation }) => {
     useEffect(() => {
         setIsTeam(selector.isTeam)
     }, [selector.isTeam])
-
-
-    const showDropDownModelMethod = (key, headerText) => {
-        Keyboard.dismiss();
-        switch (key) {
-            case "TARGET_MODEL":
-                setDataForDropDown([
-                    {
-                        id: 1,
-                        name: "Target 1",
-                        isChecked: false,
-                    },
-                    {
-                        id: 2,
-                        name: "Target 2",
-                        isChecked: false,
-                    },
-                    {
-                        id: 3,
-                        name: "Target 3",
-                        isChecked: false,
-                    },
-                ]);
-                break;
-        }
-        setDropDownKey(key);
-        setDropDownTitle(headerText);
-        setShowDropDownModel(true);
-    };
-
-    const downloadFileFromServer = async () => {
-        setLoading(true)
-        Promise.all([
-            dispatch(getBranchIds({}))
-        ]).then(async (res) => {
-            // console.log('DATA', res[0]);
-            let branchIds = []
-            let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-            if (employeeData) {
-                const jsonObj = JSON.parse(employeeData);
-                if (res[0]?.payload.length > 0) {
-                    let braches = res[0]?.payload;
-                    for (let i = 0; i < braches.length; i++) {
-                        branchIds.push(braches[i].id);
-                        if (i == braches.length - 1) {
-                            const dateFormat = "YYYY-MM-DD";
-                            const currentDate = moment().format(dateFormat)
-                            const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
-                            const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
-                            let payload = {
-                                branchIdList: branchIds,
-                                orgId: jsonObj.orgId,
-                                fromDate: monthFirstDate + " 00:00:00",
-                                toDate: monthLastDate + " 23:59:59"
-                            }
-                            // console.log("PAYLOAD:", payload);
-                            Promise.all([
-                                dispatch(downloadFile(payload))
-                            ]).then(async (res) => {
-                                // console.log('DATA', JSON.stringify(res));
-                                if (res[0]?.payload?.downloadUrl) {
-                                    downloadInLocal(res[0]?.payload?.downloadUrl)
-                                }
-                                else {
-                                    setLoading(false)
-                                }
-                            }).catch(() => {
-                                setLoading(false)
-                            })
-                        }
-                    }
-                }
-            }
-
-        }).catch(() => {
-            setLoading(false)
-        })
-    }
-
-
-    const downloadFileFromServer1 = async () => {
-        setLoading(true)
-        Promise.all([
-            dispatch(getBranchIds({}))
-        ]).then(async (res) => {
-            // console.log('DATA', res[0]);
-            let branchIds = []
-            let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-            if (employeeData) {
-                const jsonObj = JSON.parse(employeeData);
-                const dateFormat = "YYYY-MM-DD";
-                const currentDate = moment().format(dateFormat)
-                const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
-                const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
-                let payload7 = {
-                    orgId: jsonObj.orgId,
-                    reportFrequency: "MONTHLY",
-                    reportType: "ORG",
-                    location: "Khammam"
-                }
-                // console.log("PAYLOAD:", payload7);
-                Promise.all([
-                    dispatch(downloadFile(payload7))
-                ]).then(async (res) => {
-                    // console.log('DATA', JSON.stringify(res));
-                    if (res[0]?.payload?.downloadUrl) {
-                        downloadInLocal(res[0]?.payload?.downloadUrl)
-                    }
-                    else {
-                        setLoading(false)
-                    }
-                }).catch(() => {
-                    setLoading(false)
-                })
-            }
-
-        }).catch(() => {
-            setLoading(false)
-        })
-    }
-
-    const downloadInLocal = async (url) => {
-        const { config, fs } = RNFetchBlob;
-        let downloadDir = Platform.select({ ios: fs.dirs.DocumentDir, android: fs.dirs.DownloadDir });
-        let date = new Date();
-        let file_ext = getFileExtention(url);
-        file_ext = '.' + file_ext[0];
-        // console.log({ file_ext })
-        let options = {}
-        if (Platform.OS === 'android') {
-            options = {
-                fileCache: true,
-                addAndroidDownloads: {
-                    useDownloadManager: true, // setting it to true will use the device's native download manager and will be shown in the notification bar.
-                    notification: true,
-                    path: downloadDir + "/ETVBRL_" + Math.floor(date.getTime() + date.getSeconds() / 2) + file_ext, // this is the path where your downloaded file will live in
-                    description: 'Downloading image.'
-                }
-            }
-            config(options)
-                .fetch('GET', url)
-                .then((res) => {
-                    // console.log(JSON.stringify(res), "sucess");
-                    setLoading(false);
-                    RNFetchBlob.android.actionViewIntent(res.path());
-                    // do some magic here
-                }).catch((err) => {
-                console.error(err);
-                setLoading(false)
-            })
-        }
-        if (Platform.OS === 'ios') {
-            options = {
-                fileCache: true,
-                path: downloadDir + "/ETVBRL_" + Math.floor(date.getTime() + date.getSeconds() / 2) + file_ext,
-                // mime: 'application/xlsx',
-                // appendExt: 'xlsx',
-                //path: filePath,
-                //appendExt: fileExt,
-                notification: true,
-            }
-
-            config(options)
-                .fetch('GET', url)
-                .then(res => {
-                    setLoading(false);
-                    setTimeout(() => {
-                        // RNFetchBlob.ios.previewDocument('file://' + res.path());   //<---Property to display iOS option to save file
-                        RNFetchBlob.ios.openDocument(res.data);                      //<---Property to display downloaded file on documaent viewer
-                        // Alert.alert(CONSTANTS.APP_NAME,'File download successfully');
-                    }, 300);
-
-                })
-                .catch(errorMessage => {
-                    setLoading(false);
-                });
-        }
-    }
-
-    const getFileExtention = fileUrl => {
-        // To get the file extension
-        return /[.]/.exec(fileUrl) ?
-            /[^.]+$/.exec(fileUrl) : undefined;
-    };
 
     return (
         <SafeAreaView style={styles.container}>
