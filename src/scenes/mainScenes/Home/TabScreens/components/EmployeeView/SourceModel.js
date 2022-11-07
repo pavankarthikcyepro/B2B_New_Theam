@@ -246,13 +246,6 @@ const SourceModel = ({ route, navigation }) => {
       toggleIndex: 0,
     },
     {
-      color: "#C62159",
-      paramName: "DROPPED",
-      shortName: "Lost",
-      initial: "DRP",
-      toggleIndex: 0,
-    },
-    {
       color: "#9E31BE",
       paramName: "Exchange",
       shortName: "Exg",
@@ -288,6 +281,17 @@ const SourceModel = ({ route, navigation }) => {
       toggleIndex: 1,
     },
   ];
+
+  if (moduleType !== 'live-leads') {
+    paramsMetadata.splice(6, 0,
+        {
+          color: "#C62159",
+          paramName: "DROPPED",
+          shortName: "Lost",
+          initial: "DRP",
+          toggleIndex: 0,
+        })
+  }
 
   const getData = (data, type) => {
     return (

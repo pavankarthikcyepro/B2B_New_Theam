@@ -44,14 +44,16 @@ const styles = StyleSheet.create({
         color: "#fff",
         fontWeight: "bold",
         fontSize: 12,
-        height: 20,
+        height: 25,
         textAlign: "center",
+        paddingTop: 6
     },
     totalText1: {
         color: "#fff",
         fontWeight: "400",
         fontSize: 12,
         height: 20,
+        paddingTop: 2,
         textAlign: "center"
     },
 });

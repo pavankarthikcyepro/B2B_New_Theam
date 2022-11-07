@@ -70,7 +70,9 @@ const DropAnalysisScreen = ({ navigation }) => {
     useEffect(() => {
         if (selector.leadDropList.length > 0) {
             console.log("ENQ DATA: ", JSON.stringify(selector.leadDropList));
-            setSearchedData(selector.leadDropList)
+            let data = [...selector.leadDropList];
+            data = data.filter(x => x.status.toLowerCase() !== 'rejected');
+            setSearchedData(data)
         }
         else {
             setSearchedData([])
@@ -97,8 +99,11 @@ const DropAnalysisScreen = ({ navigation }) => {
             dispatch(updateIsSearch(false))
             if (appSelector.searchKey !== '') {
                 let tempData = []
-                tempData = selector.leadDropList.filter((item) => {
-                    return item.firstName.toLowerCase().includes(appSelector.searchKey.toLowerCase()) || item.lastName.toLowerCase().includes(appSelector.searchKey.toLowerCase())
+                let data = [...selector.leadDropList];
+                data = data.filter(x => x.status.toLowerCase() !== 'rejected');
+                tempData = data.filter((item) => {
+                    return item.firstName.toLowerCase().includes(appSelector.searchKey.toLowerCase()) ||
+                        item.lastName.toLowerCase().includes(appSelector.searchKey.toLowerCase())
                 })
                 setSearchedData([]);
                 setSearchedData(tempData);
@@ -172,7 +177,7 @@ const DropAnalysisScreen = ({ navigation }) => {
             getDropListFromServer(jsonObj.empId, jsonObj.empName, branchId, jsonObj.orgId, lastMonthFirstDate, currentDate);
         }
     }
-   
+
 
     const getDropListFromServer = (empId,empName, branchId,orgId, startDate, endDate) => {
         setisApprovalUIVisible(false)
@@ -206,7 +211,7 @@ const DropAnalysisScreen = ({ navigation }) => {
             renderFooter()
             const payload = getPayloadData(employeeId,employeeName, branchId,orgId, selectedFromDate, selectedToDate, (selector.pageNumber + 1))
             dispatch(getMoreLeadDropList(payload));
-        } 
+        }
 
     }
 
@@ -276,16 +281,16 @@ const DropAnalysisScreen = ({ navigation }) => {
     }
     const updateBulkStatus = async (status)=>{
         if(status === 'reject'){
-            const arr = await selectedItemIds.map(item => 
+            const arr = await selectedItemIds.map(item =>
                 {
                 const dmsLeadDropInfo =
                              {
                                 "leadId": item.dmsLeadDropInfo.leadId,
                                 "leadDropId": item.dmsLeadDropInfo.leadDropId,
                                 "status": "REJECTED"
-                            }                        
+                            }
                 return { dmsLeadDropInfo }
-              
+
                 })
             await dispatch(updateBulkApproval(arr));
         } else dispatch(updateBulkApproval(selectedItemIds));
@@ -364,7 +369,7 @@ const DropAnalysisScreen = ({ navigation }) => {
         }catch(error)
         {
         }
-        
+
 
     }
 
@@ -396,7 +401,7 @@ const DropAnalysisScreen = ({ navigation }) => {
             <View style={[styles.footer, { alignContent:'center', justifyContent:'center'}]}>
                 <View style={{ padding:7,backgroundColor: Colors.WHITE, width: "40%", borderRadius: 10, elevation: 10 }}>
                    <Text style={{color:Colors.BLACK, textAlign:'center', marginBottom:8}}>Approve All</Text>
-                   
+
                     <View style={{ flexDirection: "row", justifyContent: "space-evenly" }}>
 
                        <View style={{flexDirection:'column'}}>
@@ -406,7 +411,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                                 bgColor='#FF0000'
                             />
                         <Text style={{ color: Colors.BLUE, fontSize: 12, margin: 2 }}>Deny</Text>
-                        </View> 
+                        </View>
                         <View style={{ flexDirection: 'column' }}>
                             <IconComp
                                 iconName={'check'}
@@ -414,8 +419,8 @@ const DropAnalysisScreen = ({ navigation }) => {
                                 bgColor='#008000'
                             />
                             <Text style={{ color: Colors.BLUE, fontSize: 12, margin: 2 }}>Approve</Text>
-                        </View> 
-                    </View> 
+                        </View>
+                    </View>
                 </View>
             </View>
         );
@@ -426,7 +431,7 @@ const DropAnalysisScreen = ({ navigation }) => {
     }
 
     return (
-       
+
             <SafeAreaView style={styles.container}>
 
                 {/* <DatePickerComponent
@@ -506,7 +511,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                                 if (index % 2 != 0) {
                                     color = Colors.LIGHT_GRAY;
                                 }
-                                
+
                                 return (
                                     <>
                                         <View>
@@ -535,7 +540,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                         {isManager && renderApprovalUi()}
                     </View>}
             </SafeAreaView>
-   
+
     );
 };
 export default DropAnalysisScreen;

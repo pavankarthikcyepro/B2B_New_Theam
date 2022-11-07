@@ -91,7 +91,6 @@ const HomeScreen = ({ route, navigation }) => {
     }, [navigation]);
 
     const setTargetData = async () => {
-        console.log("TTTTT CALLED: ", await AsyncStore.getData('TARGET_EMP'));
         let obj = {
             empData: await AsyncStore.getData('TARGET_EMP') ? JSON.parse(await AsyncStore.getData('TARGET_EMP')) : empData,
             allEmpData: await AsyncStore.getData('TARGET_EMP_ALL') ? JSON.parse(await AsyncStore.getData('TARGET_EMP_ALL')) : allData.employeeTargetAchievements,
@@ -103,7 +102,6 @@ const HomeScreen = ({ route, navigation }) => {
 
     useEffect(() => {
         if (selector.self_target_parameters_data.length > 0) {
-            console.log("@@@@@@@@@@@@@@@@@@selector.self_target_parameters_data.length$$$$$$", selector.self_target_parameters_data.length);
             let tempRetail = [];
             tempRetail = selector.self_target_parameters_data.filter((item) => {
                 return item.paramName.toLowerCase() === 'invoice'
@@ -141,7 +139,6 @@ const HomeScreen = ({ route, navigation }) => {
                     return item.empId === jsonObj.empId
                 })
                 if (tempArr.length > 0) {
-                    // console.log("RANK", tempArr[0].rank);
                     setDealerRank(tempArr[0].rank)
                 }
                 else {
@@ -157,14 +154,12 @@ const HomeScreen = ({ route, navigation }) => {
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
             if (selector.allGroupDealerData.length > 0) {
-                // console.log("£££££RRRRR:", selector.allGroupDealerData[0]);
                 let tempArr = [], allArray = selector.allGroupDealerData;
                 setGroupDealerCount(selector.allGroupDealerData.length)
                 tempArr = allArray.filter((item) => {
                     return item.empId === jsonObj.empId
                 })
                 if (tempArr.length > 0) {
-                    // console.log("RANK", tempArr[0].rank);
                     setGroupDealerRank(tempArr[0].rank)
                 }
                 else {
@@ -194,7 +189,6 @@ const HomeScreen = ({ route, navigation }) => {
 
     const getCustomerType = async() => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-        // console.log("$$$$$ LOGIN EMP:", employeeData);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
             dispatch(getCustomerTypeList(jsonObj.orgId));
@@ -203,7 +197,6 @@ const HomeScreen = ({ route, navigation }) => {
 
     const updateBranchNameInHeader = async () => {
         await AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_NAME).then((branchName) => {
-            // console.log("branchNameTest: ", branchName)
             if (branchName) {
                 setSelectedBranchName(branchName);
             }
@@ -235,7 +228,6 @@ const HomeScreen = ({ route, navigation }) => {
 
 
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-         //console.log("SSSSSSSSSSSSSSSSSSSSS$$$$$ LOGIN EMP:", employeeData);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
             let findMdArr = [];
@@ -295,9 +287,7 @@ const HomeScreen = ({ route, navigation }) => {
                     orgId: jsonObj.orgId
                 }))
             ]).then(() => {
-                console.log('I did everything!');
             });
-            console.log("LOGIN DATA:>>>>>>>>>>>>>>>>>>>>>>>>>", JSON.stringify(jsonObj.hrmsRole));
             if (jsonObj?.hrmsRole === "Admin" || jsonObj?.hrmsRole === "Admin Prod" || jsonObj?.hrmsRole === "App Admin" || jsonObj?.hrmsRole === "Manager" || jsonObj?.hrmsRole === "TL" || jsonObj?.hrmsRole === "General Manager" || jsonObj?.hrmsRole === "branch manager" || jsonObj?.hrmsRole === "Testdrive_Manager" || jsonObj?.hrmsRole === "MD" || jsonObj?.hrmsRole === "Business Head" || jsonObj?.hrmsRole === "Sales Manager" || jsonObj?.hrmsRole === "Sales Head"){
                 dispatch(updateIsTeamPresent(true))
                 setIsTeamPresent(true)
@@ -310,7 +300,6 @@ const HomeScreen = ({ route, navigation }) => {
                 else {
                     dispatch(updateIsMD(false))
                 }
-                // console.log("%%%%% TEAM:", rolesArr);
                 const dateFormat = "YYYY-MM-DD";
                 const currentDate = moment().format(dateFormat)
                 const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
@@ -342,7 +331,6 @@ const HomeScreen = ({ route, navigation }) => {
 
             if (jsonObj?.roles.length > 0) {
                 let rolesArr = [], mdArr = [], dseArr = [];
-                console.log("ROLLS:", jsonObj.roles);
                 rolesArr = jsonObj.roles.filter((item) => {
                     return item === "Admin Prod" || item === "App Admin" || item === "Manager"
                         || item === "TL" || item === "General Manager" || item === "branch manager"
@@ -358,7 +346,6 @@ const HomeScreen = ({ route, navigation }) => {
 
     const getHomeData = async() => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-        // console.log("$$$$$ LOGIN EMP:", employeeData);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
             const dateFormat = "YYYY-MM-DD";
@@ -407,7 +394,6 @@ const HomeScreen = ({ route, navigation }) => {
             dispatch(getEventTableList(payload)),
             // dispatch(getLostDropChartData(payload))
         ]).then(() => {
-            console.log("getDashboadTableDataFromServer");
         });
 
         getTaskTableDataFromServer(empId, payload);
@@ -425,9 +411,7 @@ const HomeScreen = ({ route, navigation }) => {
             dispatch(getTaskTableList(payload)),
             dispatch(getSalesData(payload)),
             dispatch(getSalesComparisonData(payload))
-        ]).then(() => {
-            console.log("getTaskTableDataFromServer");
-        });
+        ]).then(() => {});
     }
 
     const getTargetParametersDataFromServer = async (payload) => {
@@ -435,7 +419,6 @@ const HomeScreen = ({ route, navigation }) => {
         let isTeamPresentLocal = false;
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
-            console.log("EMP========>", jsonObj);
             const allRoles = ["Admin", "Admin Prod", "App Admin", "Manager", "TL", "General Manager",
                 "branch manager", "Testdrive_Manager", "MD", "Business Head","Sales Manager"]
             if (allRoles.includes(jsonObj?.hrmsRole)) {
@@ -451,11 +434,7 @@ const HomeScreen = ({ route, navigation }) => {
         Promise.allSettled([
             dispatch(getTargetParametersData(payload1)),
             dispatch(!isTeamPresentLocal ? getTargetParametersEmpData(payload1) : getTargetParametersEmpDataInsights(payload1))
-        ]).then(() => {
-            console.log("getTargetParametersDataFromServer");
-        }).catch(y => {
-            console.log("getTargetParametersDataFromServer err: ", y);
-        });
+        ]).then(() => {}).catch(y => {});
     }
 
     const getAllTargetParametersDataFromServer = async (payload, orgId) => {
@@ -491,11 +470,7 @@ const HomeScreen = ({ route, navigation }) => {
           dispatch(getTotalTargetParametersData(payload2)),
           dispatch(getNewTargetParametersAllData(payload2)),
           dispatch(isTeamPresentLocal ? getTargetParametersEmpDataInsights(payload1) : getTargetParametersEmpData(payload1))
-        ]).then(() => {
-          console.log("I did everything!");
-        }).catch(y => {
-            console.log("I did everything!!!: ", y);
-        });
+        ]).then(() => {}).catch(y => {});
     }
 
     useEffect(() => {
@@ -544,7 +519,6 @@ const HomeScreen = ({ route, navigation }) => {
         Promise.all([
             dispatch(getBranchIds({}))
         ]).then(async (res) => {
-            // console.log('DATA', res[0]);
             let branchIds = []
             let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
             if (employeeData) {
@@ -564,11 +538,9 @@ const HomeScreen = ({ route, navigation }) => {
                                 fromDate: monthFirstDate + " 00:00:00",
                                 toDate: monthLastDate + " 23:59:59"
                             }
-                            // console.log("PAYLOAD:", payload);
                             Promise.all([
                                 dispatch(downloadFile(payload))
                             ]).then(async (res) => {
-                                // console.log('DATA', JSON.stringify(res));
                                 if (res[0]?.payload?.downloadUrl) {
                                     downloadInLocal(res[0]?.payload?.downloadUrl)
                                 }
@@ -594,7 +566,6 @@ const HomeScreen = ({ route, navigation }) => {
         Promise.all([
             dispatch(getBranchIds({}))
         ]).then(async (res) => {
-            // console.log('DATA', res[0]);
             let branchIds = []
             let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
             if (employeeData) {
@@ -609,11 +580,9 @@ const HomeScreen = ({ route, navigation }) => {
                     reportType: "ORG",
                     location: "Khammam"
                 }
-                // console.log("PAYLOAD:", payload7);
                 Promise.all([
                     dispatch(downloadFile(payload7))
                 ]).then(async (res) => {
-                    // console.log('DATA', JSON.stringify(res));
                     if (res[0]?.payload?.downloadUrl) {
                         downloadInLocal(res[0]?.payload?.downloadUrl)
                     }
@@ -636,7 +605,6 @@ const HomeScreen = ({ route, navigation }) => {
         let date = new Date();
         let file_ext = getFileExtention(url);
         file_ext = '.' + file_ext[0];
-        // console.log({ file_ext })
         let options = {}
         if (Platform.OS === 'android') {
             options = {
@@ -651,7 +619,6 @@ const HomeScreen = ({ route, navigation }) => {
             config(options)
                 .fetch('GET', url)
                 .then((res) => {
-                    // console.log(JSON.stringify(res), "sucess");
                     setLoading(false);
                     RNFetchBlob.android.actionViewIntent(res.path());
                     // do some magic here
@@ -715,163 +682,150 @@ const HomeScreen = ({ route, navigation }) => {
                 filterClicked={() => moveToFilter()}
             />
             <View style={{ flex: 1, paddingHorizontal: 10 }}>
-                <FlatList
-                    data={[1, 2, 3]}
-                    listKey={"TOP_FLAT_LIST"}
-                    keyExtractor={(item, index) => "TOP" + index.toString()}
-                    showsVerticalScrollIndicator={false}
-                    renderItem={({ item, index }) => {
-
-                        if (index === 0) {
-                            return (
-                                <>
-                                    {isButtonPresent &&
-                                        <View style={{ width: '100%', alignItems: 'flex-end', marginBottom: 15 }}>
-                                            <TouchableOpacity style={{ width: 130, height: 30, backgroundColor: Colors.RED, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={downloadFileFromServer1}>
-                                                <Text style={{ fontSize: 14, fontWeight: '600', color: '#fff' }}>ETVBRL Report</Text>
-                                            </TouchableOpacity>
-                                        </View>
-                                    }
-                                    {!selector.isMD &&
-                                        <>
-                                        <View style={styles.rankView}>
-                                            <View style={styles.rankBox}>
-                                                <Text style={styles.rankHeadingText}>Dealer Ranking</Text>
-                                                <View style={{
-                                                    flexDirection: 'row'
-                                                }}>
-                                                    <TouchableOpacity style={styles.rankIconBox} onPress={() => {
-                                                        navigation.navigate(AppNavigator.HomeStackIdentifiers.leaderboard)
-                                                     }}>
-                                                        <Image style={styles.rankIcon} source={require("../../../assets/images/perform_rank.png")} />
-                                                    </TouchableOpacity>
-                                                    <View style={{
-                                                        marginTop: 5,
-                                                        marginLeft: 3
-                                                    }}>
-                                                        {groupDealerRank !== null &&
-                                                            <Text style={styles.rankText}>{groupDealerRank}/{groupDealerCount}</Text>
-                                                        }
-                                                    </View>
-                                                </View>
-                                            </View>
-
-                                            <View style={styles.rankBox}>
-                                                <Text style={styles.rankHeadingText}>Branch Ranking</Text>
-                                                <View style={{
-                                                    flexDirection: 'row'
-                                                }}>
-                                                    <TouchableOpacity style={styles.rankIconBox} onPress={() => {
-                                                        navigation.navigate(AppNavigator.HomeStackIdentifiers.branchRanking)
-                                                    }}>
-                                                        <Image style={styles.rankIcon} source={require("../../../assets/images/perform_rank.png")} />
-                                                    </TouchableOpacity>
-                                                    <View style={{
-                                                        marginTop: 5,
-                                                        marginLeft: 3,
-                                                    }}>
-                                                        {dealerRank !== null &&
-                                                            <View style={{ flexDirection: 'row' }}>
-                                                                <Text style={[styles.rankText]}>{dealerRank}</Text>
-                                                                <Text style={[styles.rankText]}>/{dealerCount}</Text>
-                                                            </View>
-                                                        }
-                                                    </View>
-                                                </View>
-                                            </View>
-                                            <View style={styles.rankBox}>
-                                                <Text style={styles.rankHeadingText}>Retails</Text>
-                                                <View style={{
-                                                    flexDirection: 'row'
-                                                }}>
-                                                    <View style={styles.rankIconBox}>
-                                                        <Image style={styles.rankIcon} source={require("../../../assets/images/retail.png")} />
-                                                    </View>
-                                                    <View style={{
-                                                        marginTop: 5,
-                                                        marginLeft: 5,
-                                                    }}>
-
-                                                            <View style={{ flexDirection: 'row' }}>
-                                                                <Text style={[styles.rankText, { color: Colors.RED }]}>{retailData?.achievment}</Text>
-                                                                <Text style={[styles.rankText]}>/{retailData?.target}</Text>
-                                                            </View>
-                                                        <View style={{
-                                                            marginTop: 5
-                                                        }}>
-                                                            <Text style={styles.baseText}>Ach v/s Tar</Text>
-                                                        </View>
-                                                    </View>
-                                                </View>
-                                            </View>
-                                        </View>
-                                        </>
-                                    }
-                                </>
-                            )
-                        }
-                        else if (index === 1) {
-                            return (
-                                <>
-                                    {isTeamPresent && !selector.isDSE &&
-                                        <View style={{ flexDirection: 'row', marginBottom: 15, justifyContent: 'center', alignItems: 'center' }}>
-                                            <View style={{ flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 28, marginTop: 10, justifyContent: 'center', width: '80%' }}>
-
-                                                <TouchableOpacity onPress={() => {
-                                                    // setIsTeam(true)
-                                                    dispatch(updateIsTeam(false))
-                                                }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: selector.isTeam ? Colors.WHITE : Colors.RED, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
-                                                    <Text style={{ fontSize: 16, color: selector.isTeam ? Colors.BLACK : Colors.WHITE, fontWeight: '600' }}>Insights</Text>
-                                                </TouchableOpacity>
-                                                <TouchableOpacity onPress={() => {
-                                                    // setIsTeam(false)
-                                                    dispatch(updateIsTeam(true))
-                                                }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: selector.isTeam ? Colors.RED : Colors.WHITE, borderTopRightRadius: 5, borderBottomRightRadius: 5 }}>
-                                                    <Text style={{ fontSize: 16, color: selector.isTeam ? Colors.WHITE : Colors.BLACK, fontWeight: '600' }}>Teams</Text>
-                                                </TouchableOpacity>
-
-                                            </View>
-                                        </View>
-                                    }
-                                    {selector.isDSE &&
-                                        <View style={{ flexDirection: 'row', marginBottom: 15, justifyContent: 'center', alignItems: 'center' }}>
-                                            <View style={{ flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 28, justifyContent: 'center', width: '80%' }}>
-                                                <TouchableOpacity onPress={() => {
-                                                    // setIsTeam(true)
-                                                    dispatch(updateIsTeam(false))
-                                                }} style={{ width: '100%', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.RED, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
-                                                    <Text style={{ fontSize: 16, color: Colors.WHITE, fontWeight: '600' }}>Dashboard</Text>
-                                                </TouchableOpacity>
-                                            </View>
-                                        </View>
-                                    }
-                                </>
-                            )
-                        }
-                        else if (index === 2) {
-                            return (
-                                <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                                    <View style={{
-                                        width: '95%',
-                                        minHeight: 400,
-                                        shadowColor: Colors.DARK_GRAY,
-                                        shadowOffset: {
-                                            width: 0,
-                                            height: 2,
-                                        },
-                                        shadowRadius: 4,
-                                        shadowOpacity: 0.5,
-                                        marginHorizontal: 20
+            {/* 0000 */}
+            <View>
+                {isButtonPresent &&
+                    <View style={{ width: '100%', alignItems: 'flex-end', marginVertical: 6 }}>
+                            <TouchableOpacity style={{ width: 140, height: 30, borderColor: Colors.RED, borderWidth: 1, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={downloadFileFromServer1}>
+                            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                                <IconButton icon={'download'} size={16} color={Colors.RED} style={{ margin: 0, padding: 0 }} />
+                                <Text style={{ fontSize: 14, fontWeight: '600', color: Colors.RED }}>ETVBRL Report</Text>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                }
+                {!selector.isMD &&
+                    <>
+                        <View style={styles.rankView}>
+                            <View style={styles.rankBox}>
+                                <Text style={styles.rankHeadingText}>Dealer Ranking</Text>
+                                <View style={{
+                                    flexDirection: 'row'
+                                }}>
+                                    <TouchableOpacity style={styles.rankIconBox} onPress={() => {
+                                        navigation.navigate(AppNavigator.HomeStackIdentifiers.leaderboard)
                                     }}>
-                                        {(selector.target_parameters_data.length > 0 || (isTeamPresent && selector.all_target_parameters_data.length > 0)) &&
-                                            <DashboardTopTabNavigatorNew />
+                                        <Image style={styles.rankIcon} source={require("../../../assets/images/perform_rank.png")} />
+                                    </TouchableOpacity>
+                                    <View style={{
+                                        marginTop: 5,
+                                        marginLeft: 3
+                                    }}>
+                                        {groupDealerRank !== null &&
+                                            <Text style={styles.rankText}>{groupDealerRank}/{groupDealerCount}</Text>
                                         }
                                     </View>
                                 </View>
-                            )
+                            </View>
+
+                            <View style={styles.rankBox}>
+                                <Text style={styles.rankHeadingText}>Branch Ranking</Text>
+                                <View style={{
+                                    flexDirection: 'row'
+                                }}>
+                                    <TouchableOpacity style={styles.rankIconBox} onPress={() => {
+                                        navigation.navigate(AppNavigator.HomeStackIdentifiers.branchRanking)
+                                    }}>
+                                        <Image style={styles.rankIcon} source={require("../../../assets/images/perform_rank.png")} />
+                                    </TouchableOpacity>
+                                    <View style={{
+                                        marginTop: 5,
+                                        marginLeft: 3,
+                                    }}>
+                                        {dealerRank !== null &&
+                                            <View style={{ flexDirection: 'row' }}>
+                                                <Text style={[styles.rankText]}>{dealerRank}</Text>
+                                                <Text style={[styles.rankText]}>/{dealerCount}</Text>
+                                            </View>
+                                        }
+                                    </View>
+                                </View>
+                            </View>
+                            <View style={styles.rankBox}>
+                                <Text style={styles.rankHeadingText}>Retails</Text>
+                                <View style={{
+                                    flexDirection: 'row'
+                                }}>
+                                    <View style={styles.rankIconBox}>
+                                        <Image style={styles.rankIcon} source={require("../../../assets/images/retail.png")} />
+                                    </View>
+                                    <View style={{
+                                        marginTop: 5,
+                                        marginLeft: 5,
+                                    }}>
+
+                                        <View style={{ flexDirection: 'row' }}>
+                                            <Text style={[styles.rankText, { color: Colors.RED }]}>{retailData?.achievment}</Text>
+                                            <Text style={[styles.rankText]}>/{retailData?.target}</Text>
+                                        </View>
+                                        <View style={{
+                                            marginTop: 5
+                                        }}>
+                                            <Text style={styles.baseText}>Ach v/s Tar</Text>
+                                        </View>
+                                    </View>
+                                </View>
+                            </View>
+                        </View>
+                    </>
+                }
+            </View>
+
+            {/* 1111 */}
+            <View>
+                    {isTeamPresent && !selector.isDSE &&
+                        <View style={{ flexDirection: 'row', marginBottom: 2, justifyContent: 'center', alignItems: 'center' }}>
+                            <View style={{ flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 28, marginTop: 2, justifyContent: 'center', width: '80%' }}>
+
+                                <TouchableOpacity onPress={() => {
+                                    // setIsTeam(true)
+                                    dispatch(updateIsTeam(false))
+                                }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: selector.isTeam ? Colors.WHITE : Colors.RED, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
+                                    <Text style={{ fontSize: 16, color: selector.isTeam ? Colors.BLACK : Colors.WHITE, fontWeight: '600' }}>Insights</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => {
+                                    // setIsTeam(false)
+                                    dispatch(updateIsTeam(true))
+                                }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: selector.isTeam ? Colors.RED : Colors.WHITE, borderTopRightRadius: 5, borderBottomRightRadius: 5 }}>
+                                    <Text style={{ fontSize: 16, color: selector.isTeam ? Colors.WHITE : Colors.BLACK, fontWeight: '600' }}>Teams</Text>
+                                </TouchableOpacity>
+
+                            </View>
+                        </View>
+                    }
+                    {selector.isDSE &&
+                        <View style={{ flexDirection: 'row', marginBottom: 2, justifyContent: 'center', alignItems: 'center' }}>
+                            <View style={{ flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 28, justifyContent: 'center', width: '80%' }}>
+                                <TouchableOpacity onPress={() => {
+                                    // setIsTeam(true)
+                                    dispatch(updateIsTeam(false))
+                                }} style={{ width: '100%', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.RED, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
+                                    <Text style={{ fontSize: 16, color: Colors.WHITE, fontWeight: '600' }}>Dashboard</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    }
+            </View>
+
+            {/* 2222 */}
+                <View style={{marginTop: 8, alignItems: 'center' }}>
+                    <View style={{
+                        shadowColor: Colors.DARK_GRAY,
+                        shadowOffset: {
+                            width: 0,
+                            height: 2,
+                        },
+                        shadowRadius: 4,
+                        shadowOpacity: 0.5,
+                        marginHorizontal: 4,
+                        height: isButtonPresent ? '93%' : '90%'
+                    }}>
+                        {(selector.target_parameters_data.length > 0 || (isTeamPresent && selector.all_target_parameters_data.length > 0)) &&
+                            <DashboardTopTabNavigatorNew />
                         }
-                    }}
-                />
+                    </View>
+                </View>
+
             </View>
             <LoaderComponent visible={loading} />
         </SafeAreaView>

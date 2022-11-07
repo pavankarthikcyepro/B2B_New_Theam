@@ -1212,7 +1212,7 @@ const ParametersScreen = ({ route }) => {
                     </View>
                 ) : ( // IF Self or insights
                     <>
-                        <View style={{ margin: 16 }}>
+                        <View style={{ marginTop: 16, marginHorizontal: 24 }}>
                             <Pressable style={{ alignSelf: 'flex-end' }} onPress={() => {
                                 navigation.navigate(AppNavigator.HomeStackIdentifiers.sourceModel, {
                                     empId: selector.login_employee_details.empId,
@@ -1226,7 +1226,6 @@ const ParametersScreen = ({ route }) => {
                                     fontSize: 12,
                                     fontWeight: '600',
                                     color: Colors.BLUE,
-                                    marginLeft: 8,
                                     textDecorationLine: 'underline'
                                 }}>Source/Model</Text>
                             </Pressable>

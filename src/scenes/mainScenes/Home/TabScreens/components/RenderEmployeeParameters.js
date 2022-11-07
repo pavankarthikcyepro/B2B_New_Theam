@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import {Dimensions, StyleSheet, Text, View} from "react-native";
 import {achievementPercentage} from "../../../../../utils/helperFunctions";
 import {Colors} from "../../../../../styles";
@@ -65,14 +65,14 @@ export const RenderEmployeeParameters = (parameter) => {
     }
 
     return (
-        <>
+      <>
             {
                 paramsData.map((param, index) => {
                     const selectedParameter = item.targetAchievements.filter((x) => x.paramName === param)[0];
                     const enquiryParameter = item.targetAchievements.filter((item) => item.paramName === 'Enquiry')[0];
                     // const elementColor = getColor(Number(selectedParameter.achievment), Number(selectedParameter.target));
                     return (
-                      <>
+                      <Fragment key={`${index}`}>
                         {moduleType !== "live-leads" ? (
                           <View
                             key={param}
@@ -181,11 +181,11 @@ export const RenderEmployeeParameters = (parameter) => {
                             </View>
                           </View>
                         )}
-                      </>
+                      </Fragment>
                     );
                 })
             }
-        </>
+      </>
     )
 
 }

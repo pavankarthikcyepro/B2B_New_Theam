@@ -168,9 +168,14 @@ export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId
 
                         </View>
                     }
-                    {(!isManager || (isManager && dropStatus === 'REJECTED')) &&
+                    {/*{(!isManager || (isManager && dropStatus === 'REJECTED')) &&*/}
+                    {/*    <View style={{ flexDirection: "row", width: "100%", justifyContent: "space-evenly" }}>*/}
+                    {/*    <Text style={{ color: dropStatus === 'DROPPED' ? '#18a835' : '#f29a22', fontSize: 16, fontWeight: 'bold'}}>{dropStatus}</Text>*/}
+                    {/*    </View>*/}
+                    {/*}*/}
+                    {!isManager &&
                         <View style={{ flexDirection: "row", width: "100%", justifyContent: "space-evenly" }}>
-                        <Text style={{ color: dropStatus === 'DROPPED' ? '#18a835' : '#f29a22', fontSize: 16, fontWeight: 'bold'}}>{dropStatus}</Text>
+                        <Text style={{ color: dropStatus === 'DROPPED' ? '#18a835' : Colors.BLUE, fontSize: 16, fontWeight: 'bold'}}>{dropStatus}</Text>
                         </View>
                     }
                 </View>

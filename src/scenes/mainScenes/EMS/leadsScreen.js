@@ -769,9 +769,10 @@ const LeadsScreen = ({ route, navigation }) => {
                         />
                     </View>
                     <Pressable onPress={() => setSortAndFilterVisible(true)}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <View
+                        style={{ flexDirection: 'row', alignItems: 'center', borderColor: Colors.BORDER_COLOR, borderWidth: 1, borderRadius: 4, backgroundColor: Colors.WHITE, paddingLeft: 8, height: 50, justifyContent: 'center' }}>
                             <Text style={styles.text1}>{'Filter'}</Text>
-                            <IconButton icon={'filter-outline'} size={20} color={Colors.RED} style={{ margin: 0, padding: 0 }} />
+                            <IconButton icon={'filter-outline'} size={16} color={Colors.RED} style={{ margin: 0, padding: 0 }} />
                         </View>
                     </Pressable>
             </View>
@@ -792,11 +793,11 @@ const LeadsScreen = ({ route, navigation }) => {
                             justifyContent: 'space-between',
                             alignItems: 'center'
                         }}>
-                            <Text style={{ width: '70%', paddingHorizontal: 5, paddingVertical: 2, fontSize: 12, fontWeight: "600" }}
+                            <Text style={{ width: '80%', paddingHorizontal: 5, paddingVertical: 2, fontSize: 12, fontWeight: "600" }}
                                 numberOfLines={2}>{leadsFilterDropDownText}</Text>
                             <IconButton icon={leadsFilterVisible ? 'chevron-up' : 'chevron-down'} size={20}
                                 color={Colors.RED}
-                                style={{ margin: 0, padding: 0, width: '20%' }} />
+                                style={{ margin: 0, padding: 0 }} />
                         </View>
                     </Pressable>
                 </View>

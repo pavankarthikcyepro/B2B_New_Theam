@@ -148,7 +148,6 @@ const ListComponent = ({ route, navigation }) => {
   }, [index]);
 
   const initialTask = async (selectedFilterLocal) => {
-     console.log("CALLED: ", selectedFilterLocal);
     try {
       const employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -823,7 +822,7 @@ const ListComponent = ({ route, navigation }) => {
               };
             }
 
-            console.log("PAYLOAD COMPLETED: ", payload);
+            // console.log("PAYLOAD COMPLETED: ", payload);
             Promise.all([dispatch(getCompletedMyTasksListApi(payload))]).then(
               (res) => {
                 const todaysData = res[0].payload.completedData[0];

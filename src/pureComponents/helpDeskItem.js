@@ -44,7 +44,6 @@ export const HelpDeskItem = ({ name }) => {
 const styles = StyleSheet.create({
   container: {
     flexDirection: "column",
-    justifyContent: "flex-start",
     alignItems: "flex-start",
     backgroundColor: Colors.WHITE,
     height: 50,

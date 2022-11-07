@@ -282,6 +282,7 @@ const SortAndFilterComp = ({ visible = false, categoryList = [], modelList = [],
                               >
                                 <View style={styles.radiobuttonVw}>
                                   <Checkbox.Android
+                                    color={Colors.RED}
                                     status={
                                       item.isChecked ? "checked" : "unchecked"
                                     }
@@ -315,6 +316,7 @@ const SortAndFilterComp = ({ visible = false, categoryList = [], modelList = [],
                               >
                                 <View style={styles.radiobuttonVw}>
                                   <Checkbox.Android
+                                    color={Colors.RED}
                                     status={
                                       item.isChecked ? "checked" : "unchecked"
                                     }
@@ -347,6 +349,7 @@ const SortAndFilterComp = ({ visible = false, categoryList = [], modelList = [],
                               >
                                 <View style={styles.radiobuttonVw}>
                                   <Checkbox.Android
+                                    color={Colors.RED}
                                     status={
                                       item.isChecked ? "checked" : "unchecked"
                                     }
