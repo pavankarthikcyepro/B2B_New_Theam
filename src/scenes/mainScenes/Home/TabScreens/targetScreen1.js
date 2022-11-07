@@ -660,9 +660,9 @@ const TargetScreen = ({ route }) => {
                                                                                     <View
                                                                                         style={[
                                                                                             {
-                                                                                                width: "100%",
                                                                                                 minHeight: 40,
                                                                                                 flexDirection: "column",
+                                                                                                 width: Dimensions.get("screen").width - 52,
                                                                                             },
                                                                                         ]}>
                                                                                         <View
@@ -741,6 +741,7 @@ const TargetScreen = ({ route }) => {
                                                                                                                     justifyContent:
                                                                                                                         "space-between",
                                                                                                                     paddingVertical: 4,
+                                                                                                                    width: Dimensions.get("screen").width - 40,
                                                                                                                 }}
                                                                                                             >
                                                                                                                 <Text
