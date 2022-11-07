@@ -4366,7 +4366,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       label={"Rate of Interest"}
                       keyboardType={"numeric"}
                       maxLength={10}
-                      value={selector.rate_of_interest}
+                      value={selector.rate_of_interest?.toString()}
                       onChangeText={(text) => {
                         emiCal(
                           selector.loan_amount,
@@ -4400,7 +4400,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       label={"Loan of Tenure(Months)"}
                       keyboardType={"numeric"}
                       maxLength={3}
-                      value={selector.loan_of_tenure}
+                      value={selector.loan_of_tenure?.toString()}
                       onChangeText={(text) => {
                         emiCal(
                           selector.loan_amount,

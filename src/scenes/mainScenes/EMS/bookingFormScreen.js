@@ -290,7 +290,8 @@ const BookingFormScreen = ({ route, navigation }) => {
     const [insuranceDiscount, setInsuranceDiscount] = useState('');
     const [accDiscount, setAccDiscount] = useState('');
     const [initialTotalAmt, setInitialTotalAmt] = useState(0);
-
+    const [registrationChargesType, setRegistrationChargesType] = useState([]);
+    const [selectedRegistrationCharges, setSelectedRegistrationCharges] = useState({});
     const clearLocalData = () => {
         setOpenAccordian(0);
         setComponentAppear(false);
@@ -409,7 +410,7 @@ const BookingFormScreen = ({ route, navigation }) => {
         // })
     }, [navigation]);
 
-    const getCustomerType = async() => {
+    const getCustomerType = async () => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
         // console.log("$$$$$ LOGIN EMP:", employeeData);
         if (employeeData) {
@@ -855,7 +856,27 @@ const BookingFormScreen = ({ route, navigation }) => {
                     }
                 }
             }
+            const allRegistrationCharges = selector.vehicle_on_road_price_insurence_details_response
+                .registration || {};
+            function isEmpty(obj) {
+                return Object.keys(obj).length === 0;
+            }
+            if (!isEmpty(allRegistrationCharges)) {
+                let x = Object.keys(allRegistrationCharges);
+                let newArray = [];
+                for (let i = 0; i < x.length; i++) {
+                    let ladel = x[i].toString();
 
+                    let temp = { "name": ladel, "cost": allRegistrationCharges[ladel] };
+                    if (selector.registrationCharges !== 0) {
+                        if (selector.registrationCharges === allRegistrationCharges[ladel]) {
+                            setSelectedRegistrationCharges(temp);
+                        }
+                    }
+                    newArray.push(temp);
+                }
+                setRegistrationChargesType(newArray);
+            }
             setPriceInformationData({
                 ...selector.vehicle_on_road_price_insurence_details_response,
             });
@@ -939,6 +960,9 @@ const BookingFormScreen = ({ route, navigation }) => {
             case "VEHICLE_TYPE":
                 setDataForDropDown([...Vehicle_Types]);
                 break;
+            case "REGISTRATION_CHARGES":
+                setDataForDropDown([...registrationChargesType]);
+                break;
             case "CUSTOMER_TYPE_CATEGORY":
                 setDataForDropDown([...Customer_Category_Types]);
                 break;
@@ -948,7 +972,7 @@ const BookingFormScreen = ({ route, navigation }) => {
         setShowDropDownModel(true);
     };
 
-    const updateVariantModelsData = async(
+    const updateVariantModelsData = async (
         selectedModelName,
         fromInitialize,
         selectedVarientName
@@ -2240,7 +2264,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 id={"2"}
                                 title={"Communication Address"}
                                 titleStyle={{
-                                    color: openAccordian === "2" ? Colors.BLACK: Colors.BLACK,
+                                    color: openAccordian === "2" ? Colors.BLACK : Colors.BLACK,
                                     fontSize: 16,
                                     fontWeight: "600",
                                 }}
@@ -2278,28 +2302,28 @@ const BookingFormScreen = ({ route, navigation }) => {
                                         value={"urban"}
                                         disabled={true}
                                         status={selector.urban_or_rural === 1 ? true : false}
-                                        // onPress={() =>
-                                        //     dispatch(
-                                        //         setCommunicationAddress({
-                                        //             key: "RURAL_URBAN",
-                                        //             text: "1",
-                                        //         })
-                                        //     )
-                                        // }
+                                    // onPress={() =>
+                                    //     dispatch(
+                                    //         setCommunicationAddress({
+                                    //             key: "RURAL_URBAN",
+                                    //             text: "1",
+                                    //         })
+                                    //     )
+                                    // }
                                     />
                                     <RadioTextItem
                                         label={"Rural"}
                                         value={"rural"}
                                         disabled={true}
                                         status={selector.urban_or_rural === 2 ? true : false}
-                                        // onPress={() =>
-                                        //     dispatch(
-                                        //         setCommunicationAddress({
-                                        //             key: "RURAL_URBAN",
-                                        //             text: "2",
-                                        //         })
-                                        //     )
-                                        // }
+                                    // onPress={() =>
+                                    //     dispatch(
+                                    //         setCommunicationAddress({
+                                    //             key: "RURAL_URBAN",
+                                    //             text: "2",
+                                    //         })
+                                    //     )
+                                    // }
                                     />
                                 </View>
                                 <Text style={GlobalStyle.underline}></Text>
@@ -2420,14 +2444,14 @@ const BookingFormScreen = ({ route, navigation }) => {
                                                 ? true
                                                 : false
                                         }
-                                        // onPress={() =>
-                                        //     dispatch(
-                                        //         setCommunicationAddress({
-                                        //             key: "PERMANENT_ADDRESS",
-                                        //             text: "true",
-                                        //         })
-                                        //     )
-                                        // }
+                                    // onPress={() =>
+                                    //     dispatch(
+                                    //         setCommunicationAddress({
+                                    //             key: "PERMANENT_ADDRESS",
+                                    //             text: "true",
+                                    //         })
+                                    //     )
+                                    // }
                                     />
                                     <RadioTextItem
                                         label={"No"}
@@ -2436,14 +2460,14 @@ const BookingFormScreen = ({ route, navigation }) => {
                                         status={
                                             selector.is_permanent_address_same === "NO" ? true : false
                                         }
-                                        // onPress={() =>
-                                        //     dispatch(
-                                        //         setCommunicationAddress({
-                                        //             key: "PERMANENT_ADDRESS",
-                                        //             text: "false",
-                                        //         })
-                                        //     )
-                                        // }
+                                    // onPress={() =>
+                                    //     dispatch(
+                                    //         setCommunicationAddress({
+                                    //             key: "PERMANENT_ADDRESS",
+                                    //             text: "false",
+                                    //         })
+                                    //     )
+                                    // }
                                     />
                                 </View>
                                 <Text style={GlobalStyle.underline}></Text>
@@ -2473,28 +2497,28 @@ const BookingFormScreen = ({ route, navigation }) => {
                                         value={"urban"}
                                         disabled={true}
                                         status={selector.p_urban_or_rural === 1 ? true : false}
-                                        // onPress={() =>
-                                        //     dispatch(
-                                        //         setCommunicationAddress({
-                                        //             key: "P_RURAL_URBAN",
-                                        //             text: "1",
-                                        //         })
-                                        //     )
-                                        // }
+                                    // onPress={() =>
+                                    //     dispatch(
+                                    //         setCommunicationAddress({
+                                    //             key: "P_RURAL_URBAN",
+                                    //             text: "1",
+                                    //         })
+                                    //     )
+                                    // }
                                     />
                                     <RadioTextItem
                                         label={"Rural"}
                                         value={"rural"}
                                         disabled={true}
                                         status={selector.p_urban_or_rural === 2 ? true : false}
-                                        // onPress={() =>
-                                        //     dispatch(
-                                        //         setCommunicationAddress({
-                                        //             key: "P_RURAL_URBAN",
-                                        //             text: "2",
-                                        //         })
-                                        //     )
-                                        // }
+                                    // onPress={() =>
+                                    //     dispatch(
+                                    //         setCommunicationAddress({
+                                    //             key: "P_RURAL_URBAN",
+                                    //             text: "2",
+                                    //         })
+                                    //     )
+                                    // }
                                     />
                                 </View>
                                 <Text style={GlobalStyle.underline}></Text>
@@ -2812,15 +2836,15 @@ const BookingFormScreen = ({ route, navigation }) => {
                                         <View style={styles.select_image_bck_vw}>
                                             <ImageSelectItem
                                                 name={"Employee ID"}
-                                                    disabled={true}
+                                                disabled={true}
                                                 onPress={() =>
                                                     dispatch(setImagePicker("UPLOAD_EMPLOYEE_ID"))
                                                 }
                                             />
                                         </View>
-                                            {uploadedImagesDataObj.employeeId?.fileName ? (
+                                        {uploadedImagesDataObj.employeeId?.fileName ? (
                                             <DisplaySelectedImage
-                                                    fileName={uploadedImagesDataObj.employeeId.fileName}
+                                                fileName={uploadedImagesDataObj.employeeId.fileName}
                                                 from={"EMPLOYEE_ID"}
                                             />
                                         ) : null}
@@ -2841,9 +2865,9 @@ const BookingFormScreen = ({ route, navigation }) => {
                                                 }
                                             />
                                         </View>
-                                            {uploadedImagesDataObj.payslips ? (
+                                        {uploadedImagesDataObj.payslips ? (
                                             <DisplaySelectedImage
-                                                    fileName={uploadedImagesDataObj.payslips?.fileName}
+                                                fileName={uploadedImagesDataObj.payslips?.fileName}
                                                 from={"3_MONTHS_PAYSLIP"}
                                             />
                                         ) : null}
@@ -3165,11 +3189,29 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 </View>
 
                                 <Text style={GlobalStyle.underline}></Text>
+                                <View style={styles.symbolview}>
+                                    <View style={{ width: "70%" }}>
+                                        <DropDownSelectionItem
+                                            disabled={true}
+                                            label={"Registration Charges:"}
+                                            value={selectedRegistrationCharges?.name}
+                                            onPress={() =>
+                                                showDropDownModelMethod(
+                                                    "REGISTRATION_CHARGES",
+                                                    "Registration Charges"
+                                                )
+                                            }
+                                        />
+                                    </View>
 
-                                <TextAndAmountComp
+                                    <Text style={styles.shadowText}>
+                                        {rupeeSymbol + " " + `${selectedRegistrationCharges?.cost ? selectedRegistrationCharges?.cost : '0.00'}`}
+                                    </Text>
+                                </View>
+                                {/* <TextAndAmountComp
                                     title={"Registration Charges:"}
                                     amount={priceInfomationData.registration_charges.toFixed(2)}
-                                />
+                                /> */}
                                 <Text style={GlobalStyle.underline}></Text>
 
                                 <View style={styles.symbolview}>
@@ -3318,7 +3360,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                             paddingTop: 5,
                                         }}
                                     >
-                                        {selectedPaidAccessoriesList.map((item, index) => {
+                                        {selectedPaidAccessoriesList?.map((item, index) => {
                                             return (
                                                 <Text style={styles.accessoriText} key={"ACC" + index}>
                                                     {item.accessoriesName + " - " + item.amount}
@@ -3335,7 +3377,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                     title={"Fast Tag:"}
                                     disabled={true}
                                     // amount={priceInfomationData.fast_tag.toFixed(2)}
-                                    amount={fastTagSlctd ? priceInfomationData.fast_tag.toFixed(2) : "0.00"}
+                                    amount={fastTagSlctd ? priceInfomationData?.fast_tag?.toFixed(2) : "0.00"}
                                     isChecked={fastTagSlctd}
                                     onPress={() => {
                                         setFastTagSlctd(!fastTagSlctd);

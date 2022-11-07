@@ -83,11 +83,11 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
         return (
           innerItem.accessoriesName === item.partName &&
           Number(innerItem.amount) === Number(item.cost) &&
-          innerItem?.dmsAccessoriesType === item.item
+          innerItem?.dmsAccessoriesType === item.item &&
+          innerItem?.id === item.id
         );
       });
 
-      
       if (find.length > 0) {
         isSelected = true;
         addItemInAsyncStorage(find[0].dmsAccessoriesType, {
