@@ -2534,14 +2534,15 @@ const TargetScreen = ({ route }) => {
                       </Text>
                     </Pressable>
 
-                    <View style={{ flexDirection: "row", height: 40 }}>
+                    <View style={{
+                      flexDirection: "row", height: 40, paddingHorizontal: 2}}>
                       <View
                         style={{
                           width: 100,
                           minHeight: 40,
                           justifyContent: "space-around",
                           flexDirection: "row",
-                          backgroundColor: Colors.RED,
+                          backgroundColor: Colors.RED,              
                         }}
                       >
                         <View />
@@ -3158,7 +3159,7 @@ export default TargetScreen;
 
 export const RenderLevel1NameView = ({ level, item, branchName = '', color, titleClick }) => {
   return (
-    <View style={{ width: 100, justifyContent: 'center', textAlign: 'center', display: 'flex', flexDirection: 'row', flex: 1 }}>
+    <View style={{ width: 100, justifyContent: 'center', textAlign: 'center', display: 'flex', flexDirection: 'row', }}>
       <View style={{ width: 60, justifyContent: 'center', alignItems: 'center' }}>
         <TouchableOpacity style={{
           width: 30,
@@ -3188,7 +3189,7 @@ export const RenderLevel1NameView = ({ level, item, branchName = '', color, titl
         </View>}
       </View>
       <View style={{
-        // width: '25%',
+        width: '25%',
         justifyContent: 'space-around',
         textAlign: 'center',
         alignItems: 'center',
