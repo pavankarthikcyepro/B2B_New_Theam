@@ -346,7 +346,7 @@ const ParametersScreen = ({ route }) => {
                 navigation.navigate(EmsTopTabNavigatorIdentifiers.preEnquiry, {
                     moduleType: 'live-leads'
                 });
-            }, 500);
+            }, 100);
         }
     }
 

@@ -14,7 +14,7 @@ export const RenderGrandTotal = (parameter) => {
                     const selectedParameter = totalParams.filter((item) => item.paramName === param)[0];
                     const enquiryParameter = totalParams.filter((item) => item.paramName === 'Enquiry')[0];
                     return (
-                        <View key={param} style={[styles.itemBox, {width: moduleType === 'live-leads' ? 70 : (param === 'Accessories' ? 65 : 56), backgroundColor: Colors.RED}]}>
+                        <View key={param} style={[styles.itemBox, {width: moduleType === 'live-leads' ? 70 : (param === 'Accessories' ? 60 : 55), backgroundColor: Colors.RED}]}>
                             <Text
                                 style={[styles.totalText1, {marginBottom: 0, color: Colors.WHITE}]}>{displayType === 0 ? Number(selectedParameter.achievment) :
                                 achievementPercentage(selectedParameter.achievment, selectedParameter.target, param, enquiryParameter.achievment)}
