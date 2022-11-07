@@ -133,7 +133,8 @@ const PreEnquiryScreen = ({ route, navigation }) => {
         if (route && route.params && route.params.moduleType) {
             lastMonthFirstDateLocal = route?.params?.moduleType === 'live-leads' ? '2021-01-01' : lastMonthFirstDateLocal;
             currentDateLocal = route?.params?.moduleType === 'live-leads' ? moment().format(dateFormat) : currentDate;
-            setFromDateState(lastMonthFirstDateLocal);
+            // setFromDateState(lastMonthFirstDateLocal);
+            setSelectedFromDate("2021-01-01");
             setToDateState(currentDateLocal);
         } else {
             setFromDateState(lastMonthFirstDate);
