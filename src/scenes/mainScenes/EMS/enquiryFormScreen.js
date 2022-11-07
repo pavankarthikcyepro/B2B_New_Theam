@@ -1956,11 +1956,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dataObj.hypothication = selector.r_hypothication_name;
       dataObj.hypothicationBranch = selector.r_hypothication_branch;
       // Pending
-      dataObj.registrationDate = convertDateStringToMillisecondsUsingMoment(
+      dataObj.registrationDate = moment(
         selector.r_registration_date
       );
       dataObj.registrationValidityDate =
-        convertDateStringToMillisecondsUsingMoment(
+        moment(
           selector.r_registration_validity_date
         );
       dataObj.insuranceAvailable = `${selector.r_insurence_checked}`;
@@ -1968,15 +1968,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         selector.r_insurence_document_checked;
       dataObj.insuranceCompanyName = selector.r_insurence_company_name;
       // Pending
-      dataObj.insuranceExpiryDate = selector.r_insurence_expiry_date
-        ? Number(selector.r_insurence_expiry_date)
+      dataObj.insuranceExpiryDate = selector.r_insurence_to_date
+        ? moment(selector.r_insurence_to_date)
         : "";
       dataObj.insuranceType = selector.r_insurence_type;
       // Pending
-      dataObj.insuranceFromDate = convertDateStringToMillisecondsUsingMoment(
+      dataObj.insuranceFromDate = moment(
         selector.r_insurence_from_date
       );
-      dataObj.insuranceToDate = convertDateStringToMillisecondsUsingMoment(
+      dataObj.insuranceToDate = moment(
         selector.r_insurence_to_date
       );
     }
@@ -3095,66 +3095,83 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   styles.accordianBorder,
                 ]}
               >
-                <View style={{flexDirection: 'row', display: 'flex', justifyContent: 'space-between', backgroundColor: Colors.WHITE}}>
-                 <View style={{width: selector.enquiry_segment.toLowerCase() === "personal" ? '45%' : '100%'}}>
-                   <DropDownSelectionItem
-                       label={"Salutation"}
-                       value={selector.salutation}
-                       onPress={() =>
-                           showDropDownModelMethod("SALUTATION", "Select Salutation")
-                       }
-                   />
-                   <Text style={GlobalStyle.underline} />
-                 </View>
-                  <View style={{width: '45%'}}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    backgroundColor: Colors.WHITE,
+                  }}
+                >
+                  <View
+                    style={{
+                      width:
+                        selector.enquiry_segment.toLowerCase() === "personal"
+                          ? "45%"
+                          : "100%",
+                    }}
+                  >
+                    <DropDownSelectionItem
+                      label={"Salutation"}
+                      value={selector.salutation}
+                      onPress={() =>
+                        showDropDownModelMethod(
+                          "SALUTATION",
+                          "Select Salutation"
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline} />
+                  </View>
+                  <View style={{ width: "45%" }}>
                     {selector.enquiry_segment.toLowerCase() === "personal" ? (
-                        <>
-                          <DropDownSelectionItem
-                              label={"Gender*"}
-                              value={selector.gender}
-                              onPress={() =>
-                                  showDropDownModelMethod("GENDER", "Gender")
-                              }
-                          />
+                      <>
+                        <DropDownSelectionItem
+                          label={"Gender*"}
+                          value={selector.gender}
+                          onPress={() =>
+                            showDropDownModelMethod("GENDER", "Gender")
+                          }
+                        />
 
-                          <Text
-                              style={[
-                                GlobalStyle.underline,
-                                {
-                                  backgroundColor:
-                                      isSubmitPress && selector.gender === ""
-                                          ? "red"
-                                          : "rgba(208, 212, 214, 0.7)",
-                                },
-                              ]}
-                          ></Text>
-                        </>
+                        <Text
+                          style={[
+                            GlobalStyle.underline,
+                            {
+                              backgroundColor:
+                                isSubmitPress && selector.gender === ""
+                                  ? "red"
+                                  : "rgba(208, 212, 214, 0.7)",
+                            },
+                          ]}
+                        ></Text>
+                      </>
                     ) : null}
                   </View>
                 </View>
                 <TextinputComp
-                    style={styles.textInputStyle}
-                    value={selector.firstName}
-                    label={"First Name*"}
-                    autoCapitalize="words"
-                    keyboardType={"default"}
-                    // editable={false}
-                    onChangeText={(text) =>
-                        dispatch(
-                            setPersonalIntro({ key: "FIRST_NAME", text: text })
-                        )
-                    }
+                  style={styles.textInputStyle}
+                  value={selector.firstName}
+                  label={"First Name*"}
+                  autoCapitalize="words"
+                  keyboardType={"default"}
+                  // editable={false}
+                  onChangeText={(text) =>
+                    dispatch(
+                      setPersonalIntro({ key: "FIRST_NAME", text: text })
+                    )
+                  }
                 />
                 <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                            isSubmitPress && selector.firstName === ""
-                                ? "red"
-                                : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
+                  style={[
+                    GlobalStyle.underline,
+                    {
+                      backgroundColor:
+                        isSubmitPress && selector.firstName === ""
+                          ? "red"
+                          : "rgba(208, 212, 214, 0.7)",
+                    },
+                  ]}
                 ></Text>
                 <TextinputComp
                   style={styles.textInputStyle}
@@ -3179,29 +3196,36 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   ]}
                 ></Text>
 
-                <View style={{flexDirection: 'row', display: 'flex', justifyContent: 'space-between', backgroundColor: Colors.WHITE}}>
-                  <View style={{width: '45%'}}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    backgroundColor: Colors.WHITE,
+                  }}
+                >
+                  <View style={{ width: "45%" }}>
                     <DropDownSelectionItem
-                        label={"Relation"}
-                        value={selector.relation}
-                        onPress={() =>
-                            showDropDownModelMethod("RELATION", "Relation")
-                        }
+                      label={"Relation"}
+                      value={selector.relation}
+                      onPress={() =>
+                        showDropDownModelMethod("RELATION", "Relation")
+                      }
                     />
                   </View>
-                  <View style={{width: '45%'}}>
+                  <View style={{ width: "45%" }}>
                     <TextinputComp
-                        style={styles.textInputStyle}
-                        value={selector.relationName}
-                        label={"Relation Name"}
-                        autoCapitalize="words"
-                        keyboardType={"default"}
-                        maxLength={50}
-                        onChangeText={(text) =>
-                            dispatch(
-                                setPersonalIntro({ key: "RELATION_NAME", text: text })
-                            )
-                        }
+                      style={styles.textInputStyle}
+                      value={selector.relationName}
+                      label={"Relation Name"}
+                      autoCapitalize="words"
+                      keyboardType={"default"}
+                      maxLength={50}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setPersonalIntro({ key: "RELATION_NAME", text: text })
+                        )
+                      }
                     />
                     <Text style={GlobalStyle.underline}></Text>
                   </View>
@@ -3257,25 +3281,35 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {selector.enquiry_segment.toLowerCase() == "personal" ? (
                   <View>
-
-                    <View style={{flexDirection: 'row', display: 'flex', justifyContent: 'space-between', backgroundColor: Colors.WHITE}}>
-                      <View style={{width: '45%'}}>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        backgroundColor: Colors.WHITE,
+                      }}
+                    >
+                      <View style={{ width: "45%" }}>
                         <DateSelectItem
-                            label={"Date Of Birth"}
-                            value={selector.dateOfBirth}
-                            onPress={() => dispatch(setDatePicker("DATE_OF_BIRTH"))}
+                          label={"Date Of Birth"}
+                          value={selector.dateOfBirth}
+                          onPress={() =>
+                            dispatch(setDatePicker("DATE_OF_BIRTH"))
+                          }
                         />
                       </View>
-                      <View style={{width: '45%'}}>
+                      <View style={{ width: "45%" }}>
                         <TextinputComp
-                            style={styles.textInputStyle}
-                            value={selector?.age?.toString()}
-                            label={"Age"}
-                            keyboardType={"phone-pad"}
-                            maxLength={5}
-                            onChangeText={(text) =>
-                                dispatch(setPersonalIntro({ key: "AGE", text: text }))
-                            }
+                          style={styles.textInputStyle}
+                          value={selector?.age?.toString()}
+                          label={"Age"}
+                          keyboardType={"phone-pad"}
+                          maxLength={5}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setPersonalIntro({ key: "AGE", text: text })
+                            )
+                          }
                         />
                         <Text style={GlobalStyle.underline}></Text>
                       </View>
@@ -5258,14 +5292,20 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <Text style={GlobalStyle.underline}></Text>
 
                     <DropDownSelectionItem
-                      label={userData.isSelfManager == "Y" ? "Range" : "Fuel Type"}
+                      label={
+                        userData.isSelfManager == "Y" ? "Range" : "Fuel Type"
+                      }
                       value={selector.c_fuel_type}
                       onPress={() =>
                         showDropDownModelMethod("C_FUEL_TYPE", "Fuel Type")
                       }
                     />
                     <DropDownSelectionItem
-                      label={userData.isSelfManager == "Y" ? "Battery Type" : "Transmission Type"}
+                      label={
+                        userData.isSelfManager == "Y"
+                          ? "Battery Type"
+                          : "Transmission Type"
+                      }
                       value={selector.c_transmission_type}
                       onPress={() =>
                         showDropDownModelMethod(
@@ -5682,14 +5722,20 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   <Text style={GlobalStyle.underline}></Text>
 
                   <DropDownSelectionItem
-                    label={userData.isSelfManager == "Y" ? "Range" : "Fuel Type"}
+                    label={
+                      userData.isSelfManager == "Y" ? "Range" : "Fuel Type"
+                    }
                     value={selector.r_fuel_type}
                     onPress={() =>
                       showDropDownModelMethod("R_FUEL_TYPE", "Fuel Type")
                     }
                   />
                   <DropDownSelectionItem
-                    label={userData.isSelfManager == "Y" ? "Battery Type" : "Transmission Type"}
+                    label={
+                      userData.isSelfManager == "Y"
+                        ? "Battery Type"
+                        : "Transmission Type"
+                    }
                     value={selector.r_transmission_type}
                     onPress={() =>
                       showDropDownModelMethod(
@@ -5929,19 +5975,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <View>
                       <DateSelectItem
                         label={"Insurance Policy Expiry Date"}
-                        value={
-                          selector.r_insurence_expiry_date
-                            ? moment(
-                                new Date(
-                                  Number(selector.r_insurence_expiry_date)
-                                )
-                              ).format("DD/MM/YYYY")
-                            : selector.r_insurence_expiry_date
-                        }
+                        value={selector.r_insurence_to_date}
                         onPress={() =>
-                          dispatch(
-                            setDatePicker("R_INSURENCE_POLICIY_EXPIRY_DATE")
-                          )
+                          dispatch(setDatePicker("R_INSURENCE_TO_DATE"))
                         }
                       />
                     </View>
@@ -6014,7 +6050,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               {isDropSelected ? (
                 <List.Accordion
                   id={"10"}
-                  title={"Enquiry Drop Section"}
+                  title={"Enquiry Lost Section"}
                   titleStyle={{
                     color: openAccordian === "10" ? Colors.BLACK : Colors.BLACK,
                     fontSize: 16,

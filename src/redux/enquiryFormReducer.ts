@@ -8,6 +8,7 @@ import {
 import {
   convertDateStringToMillisecondsUsingMoment,
   convertTimeStampToDateString,
+  convertTimeStringToDate,
   convertToDate,
 } from "../utils/helperFunctions";
 import moment from "moment";
@@ -1006,9 +1007,7 @@ const enquiryDetailsOverViewSlice = createSlice({
           state.r_registration_validity_date = selectedDate;
           break;
         case "R_INSURENCE_POLICIY_EXPIRY_DATE":
-          state.r_insurence_expiry_date =
-            convertDateStringToMillisecondsUsingMoment(text).toString();
-          // state.r_insurence_expiry_date = selectedDate;
+          state.r_insurence_expiry_date = selectedDate;
           break;
         case "R_INSURENCE_FROM_DATE":
           state.r_insurence_from_date = selectedDate;
@@ -1906,7 +1905,7 @@ const enquiryDetailsOverViewSlice = createSlice({
           : "";
 
         state.r_registration_date =
-          convertTimeStampToDateString(registrationDate, "DD/MM/YYYY") ||
+          convertTimeStringToDate(registrationDate, "DD/MM/YYYY") ||
           registrationDate;
 
         const registrationValidityDate = dataObj.registrationValidityDate
@@ -1914,10 +1913,8 @@ const enquiryDetailsOverViewSlice = createSlice({
           : "";
 
         state.r_registration_validity_date =
-          convertTimeStampToDateString(
-            registrationValidityDate,
-            "DD/MM/YYYY"
-          ) || registrationValidityDate;
+          convertTimeStringToDate(registrationValidityDate, "DD/MM/YYYY") ||
+          registrationValidityDate;
 
         state.r_insurence_checked = dataObj.insuranceAvailable
           ? dataObj.insuranceAvailable === "true"
@@ -1930,9 +1927,6 @@ const enquiryDetailsOverViewSlice = createSlice({
         state.r_insurence_company_name = dataObj.insuranceCompanyName
           ? dataObj.insuranceCompanyName
           : "";
-        state.r_insurence_expiry_date = dataObj.insuranceExpiryDate
-          ? dataObj.insuranceExpiryDate
-          : "";
         state.r_insurence_type = dataObj.insuranceType
           ? dataObj.insuranceType
           : "";
@@ -1941,12 +1935,17 @@ const enquiryDetailsOverViewSlice = createSlice({
           ? dataObj.insuranceFromDate
           : "";
         state.r_insurence_from_date =
-          convertTimeStampToDateString(insurenceFromDate, "DD/MM/YYYY") || insurenceFromDate;
+          convertTimeStringToDate(insurenceFromDate, "DD/MM/YYYY") ||
+          insurenceFromDate;
         const insurenceToDate = dataObj.insuranceToDate
           ? dataObj.insuranceToDate
           : "";
+        state.r_insurence_expiry_date =
+          convertTimeStringToDate(insurenceToDate, "DD/MM/YYYY") ||
+          insurenceToDate;
         state.r_insurence_to_date =
-          convertTimeStampToDateString(insurenceToDate, "DD/MM/YYYY") || insurenceToDate;
+          convertTimeStringToDate(insurenceToDate, "DD/MM/YYYY") ||
+          insurenceToDate;
       }
     },
     updateDmsAttachmentDetails: (state, action) => {
