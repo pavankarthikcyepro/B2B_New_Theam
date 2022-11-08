@@ -660,9 +660,9 @@ const TargetScreen = ({ route }) => {
                                                                                     <View
                                                                                         style={[
                                                                                             {
-                                                                                                width: "100%",
                                                                                                 minHeight: 40,
                                                                                                 flexDirection: "column",
+                                                                                                 width: Dimensions.get("screen").width - 52,
                                                                                             },
                                                                                         ]}>
                                                                                         <View
@@ -741,6 +741,7 @@ const TargetScreen = ({ route }) => {
                                                                                                                     justifyContent:
                                                                                                                         "space-between",
                                                                                                                     paddingVertical: 4,
+                                                                                                                    width: Dimensions.get("screen").width - 40,
                                                                                                                 }}
                                                                                                             >
                                                                                                                 <Text
@@ -1723,48 +1724,48 @@ export const SourceModelView = ({ style = null, onClick }) => {
 }
 
 export const RenderLevel1NameView = ({ level, item, branchName = '', color, titleClick }) => {
-    return (
-        <View style={{ width: 100, justifyContent: 'center', textAlign: 'center', display: 'flex', flexDirection: 'row', flex: 1 }}>
-            <View style={{ width: 60, justifyContent: 'center', alignItems: 'center' }}>
-                <TouchableOpacity style={{
-                    width: 30,
-                    height: 30,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    backgroundColor: color,
-                    borderRadius: 20,
-                    marginTop: 5,
-                    marginBottom: 5
-                }}
-                    onPress={titleClick}>
-                    <Text style={{
-                        fontSize: 14,
-                        color: '#fff'
-                    }}>{item.empName.charAt(0)}</Text>
-                </TouchableOpacity>
-                {level === 0 && !!branchName && <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <IconButton
-                        icon="map-marker"
-                        style={{ padding: 0, margin: 0 }}
-                        color={Colors.BLACK}
-                        size={8}
-                    />
-                    <Text style={{ fontSize: 8 }}
-                        numberOfLines={2}>{branchName}</Text>
-                </View>}
-            </View>
-            <View style={{
-                // width: '25%',
-                justifyContent: 'space-around',
-                textAlign: 'center',
-                alignItems: 'center',
-                flex: 1
-            }}>
-                <Text style={{ fontSize: 10, fontWeight: 'bold' }}>ACH</Text>
-                <Text style={{ fontSize: 10, fontWeight: 'bold' }}>TGT</Text>
-            </View>
-        </View>
-    )
+  return (
+    <View style={{ width: 100, justifyContent: 'center', textAlign: 'center', display: 'flex', flexDirection: 'row', }}>
+      <View style={{ width: 60, justifyContent: 'center', alignItems: 'center' }}>
+        <TouchableOpacity style={{
+          width: 30,
+          height: 30,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: color,
+          borderRadius: 20,
+          marginTop: 5,
+          marginBottom: 5
+        }}
+          onPress={titleClick}>
+          <Text style={{
+            fontSize: 14,
+            color: '#fff'
+          }}>{item.empName.charAt(0)}</Text>
+        </TouchableOpacity>
+        {level === 0 && !!branchName && <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <IconButton
+            icon="map-marker"
+            style={{ padding: 0, margin: 0 }}
+            color={Colors.BLACK}
+            size={8}
+          />
+          <Text style={{ fontSize: 8 }}
+            numberOfLines={2}>{branchName}</Text>
+        </View>}
+      </View>
+      <View style={{
+        width: '25%',
+        justifyContent: 'space-around',
+        textAlign: 'center',
+        alignItems: 'center',
+        flex: 1
+      }}>
+        <Text style={{ fontSize: 10, fontWeight: 'bold' }}>ACH</Text>
+        <Text style={{ fontSize: 10, fontWeight: 'bold' }}>TGT</Text>
+      </View>
+    </View>
+  )
 }
 
 

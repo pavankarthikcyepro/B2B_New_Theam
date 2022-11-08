@@ -133,7 +133,8 @@ const PreEnquiryScreen = ({ route, navigation }) => {
         if (route && route.params && route.params.moduleType) {
             lastMonthFirstDateLocal = route?.params?.moduleType === 'live-leads' ? '2021-01-01' : lastMonthFirstDateLocal;
             currentDateLocal = route?.params?.moduleType === 'live-leads' ? moment().format(dateFormat) : currentDate;
-            setFromDateState(lastMonthFirstDateLocal);
+            // setFromDateState(lastMonthFirstDateLocal);
+            setSelectedFromDate("2021-01-01");
             setToDateState(currentDateLocal);
         } else {
             setFromDateState(lastMonthFirstDate);
@@ -160,7 +161,7 @@ const PreEnquiryScreen = ({ route, navigation }) => {
     }, [selector.pre_enquiry_list]);
 
     useEffect(() => {
-        navigation.addListener('focus', () => {
+        // navigation.addListener('focus', () => {
             // getAsyncData(lastMonthFirstDate, currentDate).then(data => {
             //     console.log(data)
             // });
@@ -174,12 +175,13 @@ const PreEnquiryScreen = ({ route, navigation }) => {
                 setToDateState(currentDate);
             }
             console.log("DATE &&&&", fromDateRef.current, toDateRef.current, lastMonthFirstDate, currentDate)
-            getDataFromDB()});
+            getDataFromDB()
+          // });
 
         // return () => {
         //     unsubscribe;
         // };
-    }, [navigation]);
+    }, [route.params]);
 
     useEffect(() => {
         if (appSelector.isSearch) {
