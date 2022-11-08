@@ -266,7 +266,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
       showToast("Please Enter employee remarks");
       return;
     }
-
+    console.log("jjjj", selector.task_details_response);
     const newTaskObj = { ...selector.task_details_response };
     newTaskObj.reason = selector.reason === 'Others' ? otherReason : selector.reason;
     newTaskObj.customerRemarks = selector.customer_remarks;
@@ -293,7 +293,21 @@ const HomeVisitScreen = ({ route, navigation }) => {
       }
       newTaskObj.taskStatus = "RESCHEDULED";
     }
+    if (actionType === "UPDATE_TASK"){
+      console.log('selector.actual_start_time', selector.actual_start_time);
+      var momentA = moment(selector.actual_start_time, "DD/MM/YYYY");
+      var momentB = moment(); // current date
+      if (momentA < momentB) {
+        setIsDateError(true)
+        showToast("Start date should not be less than current date");
+        return;
+      }
+      const date = new Date(selector.actual_start_time);
+      newTaskObj.taskActualStartTime = date.getTime();
+      newTaskObj.address = customerAddress;
+    }
     console.log("PAYLOAD:", JSON.stringify(newTaskObj));
+    // return
     dispatch(updateTaskApi(newTaskObj));
     setActionType(actionType);
   };
