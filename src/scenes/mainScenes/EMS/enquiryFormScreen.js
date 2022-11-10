@@ -464,6 +464,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         employeeName: jsonObj.empName,
         isSelfManager: jsonObj.isSelfManager
       });
+      getCarMakeListFromServer(jsonObj.orgId);
       getCarModelListFromServer(jsonObj.orgId);
 
       // Get Token
@@ -490,18 +491,17 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const getCarModelListFromServer = (orgId) => {
     // Call Api
-    GetEnquiryCarModelList(orgId)
+    GetCarModelList(orgId)
       .then(
         (resolve) => {
           let modalList = [];
           if (resolve.length > 0) {
-            setMakerData([...resolve]);
             resolve.forEach((item) => {
               modalList.push({
-                id: item.id,
+                id: item.vehicleId,
+                name: item.model,
                 isChecked: false,
                 ...item,
-                name: item.status,
               });
             });
           }
@@ -530,6 +530,27 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         // Get Enquiry Details
         getEnquiryDetailsFromServer();
       });
+  };
+
+  const getCarMakeListFromServer = (orgId) => {
+    // Call Api
+    GetEnquiryCarModelList(orgId)
+      .then(
+        (resolve) => {
+          let makeList = [];
+          if (resolve.length > 0) {
+            resolve.forEach((item) => {
+              makeList.push({
+                ...item,
+                name: item.otherMaker,
+              });
+            });
+            setMakerData([...makeList]);
+          }
+        },
+        (rejected) => {}
+      )
+      .finally(() => {});
   };
 
   const getInsurenceCompanyNamesFromServer = async (token, orgId) => {
@@ -2537,7 +2558,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         setDataForDropDown([...Transmission_Types]);
         break;
       case "R_MAKE":
-        setDataForDropDown([...All_Car_Brands]);
+        setDataForDropDown([...makerData]);
         break;
       case "R_MODEL":
         setDataForDropDown([...r_model_types]);

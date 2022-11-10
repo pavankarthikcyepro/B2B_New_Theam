@@ -569,7 +569,7 @@ const TargetScreen = ({ route }) => {
                                                                 flexDirection: "row",
                                                                 justifyContent: "space-between",
                                                                 marginTop: 12,
-                                                                width: Dimensions.get("screen").width - 40,
+                                                                width: Dimensions.get("screen").width - 28,
                                                             }}
                                                         >
                                                             <Text
@@ -662,7 +662,7 @@ const TargetScreen = ({ route }) => {
                                                                                             {
                                                                                                 minHeight: 40,
                                                                                                 flexDirection: "column",
-                                                                                                 width: Dimensions.get("screen").width - 52,
+                                                                                                 width: Dimensions.get("screen").width - 40,
                                                                                             },
                                                                                         ]}>
                                                                                         <View
@@ -741,7 +741,7 @@ const TargetScreen = ({ route }) => {
                                                                                                                     justifyContent:
                                                                                                                         "space-between",
                                                                                                                     paddingVertical: 4,
-                                                                                                                    width: Dimensions.get("screen").width - 40,
+                                                                                                                    width: Dimensions.get("screen").width - 30,
                                                                                                                 }}
                                                                                                             >
                                                                                                                 <Text
@@ -1079,7 +1079,7 @@ const TargetScreen = ({ route }) => {
                                 {/* Grand Total Section */}
                                 {selector.totalParameters.length > 0 && (
                                     <View
-                                        style={{ width: Dimensions.get("screen").width - 40 }}
+                                        style={{ width: Dimensions.get("screen").width - 35 }}
                                     >
                                         <SourceModelView style={{ alignSelf: 'flex-end' }} onClick={() => {
                                             navigation.navigate(
