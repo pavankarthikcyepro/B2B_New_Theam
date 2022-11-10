@@ -23,6 +23,7 @@ import {
     getSalesComparisonData
 } from '../../../redux/homeReducer';
 import { showAlertMessage, showToast } from '../../../utils/toast';
+import { AppNavigator } from '../../../navigations';
 
 const screenWidth = Dimensions.get("window").width;
 const buttonWidth = (screenWidth - 100) / 2;
@@ -50,7 +51,7 @@ const FilterScreen = ({ navigation }) => {
     const [fromDate, setFromDate] = useState("");
     const [toDate, setToDate] = useState("");
     const [nameKeyList, setNameKeyList] = useState([]);
-    const [userData, setUserData] = useState({ branchId: "", orgId: "", employeeId: "", employeeName: "", primaryDesignation:"" })
+    const [userData, setUserData] = useState({ branchId: "", orgId: "", employeeId: "", employeeName: "", primaryDesignation: "" })
     const [employeeTitleNameList, setEmloyeeTitleNameList] = useState([]);
     const [employeeDropDownDataLocal, setEmployeeDropDownDataLocal] = useState({});
     const [dropDownFrom, setDropDownFrom] = useState("");
@@ -64,7 +65,7 @@ const FilterScreen = ({ navigation }) => {
         const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
-            setUserData({ branchId: jsonObj.branchId, orgId: jsonObj.orgId, employeeId: jsonObj.empId, employeeName: jsonObj.empName ,primaryDesignation:jsonObj.primaryDesignation})
+            setUserData({ branchId: jsonObj.branchId, orgId: jsonObj.orgId, employeeId: jsonObj.empId, employeeName: jsonObj.empName, primaryDesignation: jsonObj.primaryDesignation })
         }
     }
 
@@ -85,7 +86,13 @@ const FilterScreen = ({ navigation }) => {
         setToDate(monthLastDate);
     }, [selector.filter_drop_down_data])
 
-    const dropDownItemClicked = async (index) => {
+    useEffect(() => {
+        if (nameKeyList.length > 0) {
+            dropDownItemClicked(4, true);
+        }
+    }, [nameKeyList, userData]);
+
+    const dropDownItemClicked = async (index, initalCall = false) => {
         const topRowSelectedIds = [];
         if (index > 0) {
             const topRowData = totalDataObj[nameKeyList[index - 1]].sublevels;
@@ -126,11 +133,24 @@ const FilterScreen = ({ navigation }) => {
         }
         if (index === 4) {
             setDropDownData([...newData])
+            if (initalCall) {
+                let updatedMultipleData = [...newData];
+                const obj = { ...updatedMultipleData[0] };
+                if (obj.selected != undefined) {
+                    obj.selected = !obj.selected;
+                } else {
+                    obj.selected = true;
+                }
+                updatedMultipleData[0] = obj;
+                updateSelectedItems(updatedMultipleData, index, true);
+            } else {
+                updateSelectedItemsForEmployeeDropDown(newData, index);
+            }
         } else {
             setDropDownData([...data])
         }
         setSelectedItemIndex(index);
-        setShowDropDownModel(true);
+        !initalCall && setShowDropDownModel(true);
         setDropDownFrom("ORG_TABLE")
     }
 
@@ -153,7 +173,7 @@ const FilterScreen = ({ navigation }) => {
         setDropDownFrom("EMPLOYEE_TABLE")
     }
 
-    const updateSelectedItems = (data, index) => {
+    const updateSelectedItems = (data, index, initalCall = false) => {
 
         // console.log("index: ", index)
 
@@ -230,6 +250,7 @@ const FilterScreen = ({ navigation }) => {
         totalDataObjLocal[key] = newOBJ;
         // console.log("totalDataObjLocal: ", JSON.stringify(totalDataObjLocal));
         setTotalDataObj({ ...totalDataObjLocal });
+        initalCall && submitBtnClicked(totalDataObjLocal);
     }
 
     const updateSelectedItemsForEmployeeDropDown = (data, index) => {
@@ -262,13 +283,12 @@ const FilterScreen = ({ navigation }) => {
         setTotalDataObj({ ...totalDataObjLocal });
     }
 
-    const submitBtnClicked = () => {
-
+    const submitBtnClicked = (initialData) => {
         let i = 0;
         const selectedIds = [];
         for (i; i < nameKeyList.length; i++) {
             let key = nameKeyList[i];
-            const dataArray = totalDataObj[key].sublevels;
+            const dataArray = initialData ? initialData[key].sublevels : totalDataObj[key].sublevels;
             if (dataArray.length > 0) {
                 dataArray.forEach((item, index) => {
                     if (item.selected != undefined && item.selected == true) {
@@ -328,7 +348,7 @@ const FilterScreen = ({ navigation }) => {
                 dispatch(getSalesComparisonData(payload2)),
                 // // Target Params Data
                 dispatch(getTargetParametersData(payload2)),
-                // dispatch(getTargetParametersEmpDataInsights(payload2))  // Added to filter an Home Screen's INSIGHT
+                dispatch(getTargetParametersEmpDataInsights(payload2))  // Added to filter an Home Screen's INSIGHT
             ]).then(() => {
                 console.log("SUCCESS");
             }).catch(() => {
@@ -339,6 +359,7 @@ const FilterScreen = ({ navigation }) => {
         })
         if (from == "EMPLOYEE") {
             navigation.goBack();
+            // navigation.navigate(AppNavigator.TabStackIdentifiers.home, { screen: "Home", params: { from: 'Filter' }, })
         }
         else {
             // navigation.goBack(); // NEED TO COMMENT FOR ASSOCIATE FILTER
@@ -529,7 +550,8 @@ const FilterScreen = ({ navigation }) => {
                                                         <DropDownSelectionItem
                                                             label={item}
                                                             value={selectedNames}
-                                                            onPress={() => dropDownItemClicked(index)}
+                                                            onPress={() =>
+                                                                dropDownItemClicked(index)}
                                                             takeMinHeight={true}
                                                         />
                                                     </View>

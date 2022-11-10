@@ -424,8 +424,9 @@ const TaskTranferScreen = () => {
     return (
       <TouchableOpacity
         onPress={() => {
+          let newArray = item.item.taskList.sort((a, b) => b?.createdOn - a?.createdOn);
           setShowTrasnferFromDropdowns(true);
-          setChildTaskList(item.item.taskList);
+          setChildTaskList(newArray);
           setTaskNameHeader(item.item.name);
           setShowTaskFlatlist(true);
           setShowTaskList(false);
@@ -698,6 +699,7 @@ const TaskTranferScreen = () => {
               )}
               onChange={async (item) => {
                 console.log("£££", item);
+                setTaskNameHeader("Task Name");
                 setDesignationDropDownItem(item.value);
                 getEmployeeDetailsFromServer(item);
               }}
