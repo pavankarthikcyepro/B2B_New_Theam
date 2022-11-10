@@ -68,8 +68,8 @@ export const RenderEmployeeParameters = (parameter) => {
       <>
             {
                 paramsData.map((param, index) => {
-                    const selectedParameter = item.targetAchievements.filter((x) => x.paramName === param)[0];
-                    const enquiryParameter = item.targetAchievements.filter((item) => item.paramName === 'Enquiry')[0];
+                  const selectedParameter = item?.isOpenInner ? item?.tempTargetAchievements.filter((x) => x.paramName === param)[0] : item.targetAchievements.filter((x) => x.paramName === param)[0];
+                  const enquiryParameter = item?.isOpenInner ? item?.tempTargetAchievements.filter((item) => item.paramName === 'Enquiry')[0] : item.targetAchievements.filter((item) => item.paramName === 'Enquiry')[0];
                     // const elementColor = getColor(Number(selectedParameter.achievment), Number(selectedParameter.target));
                     return (
                       <Fragment key={`${index}`}>

@@ -449,6 +449,7 @@ const URL = {
   GET_LIVE_LEADS_SELF: () => `${dashboardLiveLeads}/dashboard/v2/get_target_params_for_emp`,
   GET_LIVE_LEADS_INSIGHTS: () => `${dashboardLiveLeads}/dashboard/v2/get_target_params`,
   GET_LIVE_LEADS_TEAM: () => `${dashboardLiveLeads}/dashboard/v4/get_target_params_for_all_emps`,
+  GET_TOTAL_OF_TEAM: () => `${dashboard}/v2/get_target_params_immediate_hierarchy`
 }
 
 // bankFinancier, incuranceCompany, enqueryCategory, deliveryCheckList, sublostReason
