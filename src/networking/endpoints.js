@@ -42,6 +42,7 @@ export const lostSubLost = "http://automatestaging-724985329.ap-south-1.elb.amaz
 export const getBranch = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/oh";
 export const downloadFile = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8093/dynamic-reports";
 export const downloadFile1 = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8095/dynamic-reports/etvbrl_report_download";
+export const downloadFile2 = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8095/dynamic-reports/etvbrl_report";
 export const tasktransfer = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/sales-gap/target-dropdown";
 export const getTaskList = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/task-delegation/get_task_list";
 export const getEmployeeData = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8089/role-management/employee/dept-employees";
@@ -356,7 +357,7 @@ const URL = {
     return getBranch + `/data-nodes?orgId=1&levelCode=Level5`;
   },
   DOWNLOAD_FILE: () => {
-    return downloadFile1;
+    return downloadFile2;
   },
   LOCATION_LIST: (orgId) => {
     return `http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/oh/data-nodes?orgId=${orgId}&levelCode=Level4`;
@@ -449,6 +450,7 @@ const URL = {
   GET_LIVE_LEADS_SELF: () => `${dashboardLiveLeads}/dashboard/v2/get_target_params_for_emp`,
   GET_LIVE_LEADS_INSIGHTS: () => `${dashboardLiveLeads}/dashboard/v2/get_target_params`,
   GET_LIVE_LEADS_TEAM: () => `${dashboardLiveLeads}/dashboard/v4/get_target_params_for_all_emps`,
+  GET_TOTAL_OF_TEAM: () => `${dashboard}/v2/get_target_params_immediate_hierarchy`
 }
 
 // bankFinancier, incuranceCompany, enqueryCategory, deliveryCheckList, sublostReason

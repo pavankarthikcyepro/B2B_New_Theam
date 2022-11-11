@@ -257,6 +257,23 @@ export const getUserWiseTargetParameters = createAsyncThunk(
   }
 );
 
+export const getTotalOftheTeam = createAsyncThunk(
+  "HOME/getTotalOftheTeam",
+  async (payload: any, { rejectWithValue }) => {
+    // console.log("PAYLOAD:", payload);
+
+    const response = await client.post(URL.GET_TOTAL_OF_TEAM(), payload);
+    const json = await response.json();
+
+    // console.log("&&&&&& DATA $$$$$$$:", JSON.stringify(json));
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 export const getTargetParametersEmpDataInsights = createAsyncThunk(
   "HOME/getTargetParametersEmpDataInsights",
   async (payload: any, { rejectWithValue }) => {
