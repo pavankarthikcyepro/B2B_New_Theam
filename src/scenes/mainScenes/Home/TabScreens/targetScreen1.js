@@ -662,9 +662,10 @@ const TargetScreen = ({ route }) => {
                                                                                             {
                                                                                                 minHeight: 40,
                                                                                                 flexDirection: "column",
-                                                                                                 width: Dimensions.get("screen").width - 40,
+                                                                                                 width: "98%",
                                                                                             },
                                                                                         ]}>
+                                                                                        <View style={{width: Dimensions.get("screen").width - 40,}}>
                                                                                         <View
                                                                                             style={{
                                                                                                 paddingHorizontal: 4,
@@ -708,6 +709,7 @@ const TargetScreen = ({ route }) => {
                                                                                             />
                                                                                             {renderData(innerItem1, "#F59D00")}
                                                                                         </View>
+                                                                                        </View>
                                                                                         {innerItem1.isOpenInner &&
                                                                                             innerItem1
                                                                                                 .employeeTargetAchievements
@@ -730,6 +732,7 @@ const TargetScreen = ({ route }) => {
                                                                                                                     backgroundColor:
                                                                                                                         "#EEEEEE",
                                                                                                                     marginHorizontal: 5,
+                                                                                                                    overflow: "hidden"
                                                                                                                 },
                                                                                                             ]}
                                                                                                         >
@@ -741,7 +744,7 @@ const TargetScreen = ({ route }) => {
                                                                                                                     justifyContent:
                                                                                                                         "space-between",
                                                                                                                     paddingVertical: 4,
-                                                                                                                    width: Dimensions.get("screen").width - 30,
+                                                                                                                    width: Dimensions.get("screen").width - (innerItem2.isOpenInner ? 47 : 42),
                                                                                                                 }}
                                                                                                             >
                                                                                                                 <Text
