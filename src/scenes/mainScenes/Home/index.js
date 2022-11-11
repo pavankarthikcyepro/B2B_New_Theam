@@ -172,11 +172,11 @@ const HomeScreen = ({ route, navigation }) => {
 
     useEffect(async () => {
         // if (await AsyncStore.getData(AsyncStore.Keys.IS_LOGIN) === 'true'){
-            updateBranchNameInHeader()
-            getMenuListFromServer();
-            getCustomerType()
-            checkLoginUserAndEnableReportButton();
-            getLoginEmployeeDetailsFromAsyn();
+        updateBranchNameInHeader()
+        getMenuListFromServer();
+        getCustomerType()
+        checkLoginUserAndEnableReportButton();
+        getLoginEmployeeDetailsFromAsyn();
         // }
 
         const unsubscribe = navigation.addListener('focus', () => {
@@ -187,7 +187,7 @@ const HomeScreen = ({ route, navigation }) => {
         return unsubscribe;
     }, [navigation]);
 
-    const getCustomerType = async() => {
+    const getCustomerType = async () => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
@@ -288,10 +288,10 @@ const HomeScreen = ({ route, navigation }) => {
                 }))
             ]).then(() => {
             });
-            if (jsonObj?.hrmsRole === "Admin" || jsonObj?.hrmsRole === "Admin Prod" || jsonObj?.hrmsRole === "App Admin" || jsonObj?.hrmsRole === "Manager" || jsonObj?.hrmsRole === "TL" || jsonObj?.hrmsRole === "General Manager" || jsonObj?.hrmsRole === "branch manager" || jsonObj?.hrmsRole === "Testdrive_Manager" || jsonObj?.hrmsRole === "MD" || jsonObj?.hrmsRole === "Business Head" || jsonObj?.hrmsRole === "Sales Manager" || jsonObj?.hrmsRole === "Sales Head"){
+            if (jsonObj?.hrmsRole === "Admin" || jsonObj?.hrmsRole === "Admin Prod" || jsonObj?.hrmsRole === "App Admin" || jsonObj?.hrmsRole === "Manager" || jsonObj?.hrmsRole === "TL" || jsonObj?.hrmsRole === "General Manager" || jsonObj?.hrmsRole === "branch manager" || jsonObj?.hrmsRole === "Testdrive_Manager" || jsonObj?.hrmsRole === "MD" || jsonObj?.hrmsRole === "Business Head" || jsonObj?.hrmsRole === "Sales Manager" || jsonObj?.hrmsRole === "Sales Head") {
                 dispatch(updateIsTeamPresent(true))
                 setIsTeamPresent(true)
-                if (jsonObj?.hrmsRole === 'MD' || jsonObj?.hrmsRole === "App Admin" ) {
+                if (jsonObj?.hrmsRole === 'MD' || jsonObj?.hrmsRole === "App Admin") {
                     dispatch(updateIsMD(true))
                     if (jsonObj?.hrmsRole === 'MD') {
                         setIsButtonPresent(true)
@@ -344,7 +344,7 @@ const HomeScreen = ({ route, navigation }) => {
         }
     }
 
-    const getHomeData = async() => {
+    const getHomeData = async () => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
@@ -359,19 +359,19 @@ const HomeScreen = ({ route, navigation }) => {
                 "levelSelected": null,
                 "empId": jsonObj.empId
             }
-                if(isTeamPresent){
-                    dispatch(getTargetParametersData({
-                        ...payload,
-                        "pageNo": 0,
-                        "size": 5,
-                    })),
-                        getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
-                            .then(x => console.log(`getAllTargetParametersDataFromServer:: success: ${x}`))
-                            .catch(y => console.log(`getAllTargetParametersDataFromServer:: error: ${y}`));
-                }
-                else{
-                    getTargetParametersDataFromServer(payload).catch(y=> console.log('getTargetParametersDataFromServer:: home/index.js: ', y));
-                }
+            if (isTeamPresent) {
+                dispatch(getTargetParametersData({
+                    ...payload,
+                    "pageNo": 0,
+                    "size": 5,
+                })),
+                    getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
+                        .then(x => console.log(`getAllTargetParametersDataFromServer:: success: ${x}`))
+                        .catch(y => console.log(`getAllTargetParametersDataFromServer:: error: ${y}`));
+            }
+            else {
+                getTargetParametersDataFromServer(payload).catch(y => console.log('getTargetParametersDataFromServer:: home/index.js: ', y));
+            }
         }
     }
 
@@ -397,7 +397,7 @@ const HomeScreen = ({ route, navigation }) => {
         });
 
         getTaskTableDataFromServer(empId, payload);
-        getTargetParametersDataFromServer(payload).catch(y=> console.log('587 home/index.js: ', y));
+        getTargetParametersDataFromServer(payload).catch(y => console.log('587 home/index.js: ', y));
     }
 
     const getTaskTableDataFromServer = (empId, oldPayload) => {
@@ -411,7 +411,7 @@ const HomeScreen = ({ route, navigation }) => {
             dispatch(getTaskTableList(payload)),
             dispatch(getSalesData(payload)),
             dispatch(getSalesComparisonData(payload))
-        ]).then(() => {});
+        ]).then(() => { });
     }
 
     const getTargetParametersDataFromServer = async (payload) => {
@@ -420,9 +420,9 @@ const HomeScreen = ({ route, navigation }) => {
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
             const allRoles = ["Admin", "Admin Prod", "App Admin", "Manager", "TL", "General Manager",
-                "branch manager", "Testdrive_Manager", "MD", "Business Head","Sales Manager"]
+                "branch manager", "Testdrive_Manager", "MD", "Business Head", "Sales Manager"]
             if (allRoles.includes(jsonObj?.hrmsRole)) {
-              isTeamPresentLocal = true;
+                isTeamPresentLocal = true;
             }
         }
 
@@ -434,7 +434,7 @@ const HomeScreen = ({ route, navigation }) => {
         Promise.allSettled([
             dispatch(getTargetParametersData(payload1)),
             dispatch(!isTeamPresentLocal ? getTargetParametersEmpData(payload1) : getTargetParametersEmpDataInsights(payload1))
-        ]).then(() => {}).catch(y => {});
+        ]).then(() => { }).catch(y => { });
     }
 
     const getAllTargetParametersDataFromServer = async (payload, orgId) => {
@@ -443,7 +443,7 @@ const HomeScreen = ({ route, navigation }) => {
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
             const allRoles = ["Admin", "Admin Prod", "App Admin", "Manager", "TL", "General Manager",
-                "branch manager", "Testdrive_Manager", "MD", "Business Head","Sales Manager"]
+                "branch manager", "Testdrive_Manager", "MD", "Business Head", "Sales Manager"]
             if (allRoles.includes(jsonObj?.hrmsRole)) {
                 isTeamPresentLocal = true;
             }
@@ -466,11 +466,11 @@ const HomeScreen = ({ route, navigation }) => {
             "size": 100,
         }
         Promise.allSettled([
-           //dispatch(getTargetParametersAllData(payload1)),
-          dispatch(getTotalTargetParametersData(payload2)),
-          dispatch(getNewTargetParametersAllData(payload2)),
-          dispatch(isTeamPresentLocal ? getTargetParametersEmpDataInsights(payload1) : getTargetParametersEmpData(payload1))
-        ]).then(() => {}).catch(y => {});
+            //dispatch(getTargetParametersAllData(payload1)),
+            dispatch(getTotalTargetParametersData(payload2)),
+            dispatch(getNewTargetParametersAllData(payload2)),
+            dispatch(isTeamPresentLocal ? getTargetParametersEmpDataInsights(payload1) : getTargetParametersEmpData(payload1))
+        ]).then(() => { }).catch(y => { });
     }
 
     useEffect(() => {
@@ -580,8 +580,19 @@ const HomeScreen = ({ route, navigation }) => {
                     reportType: "ORG",
                     location: "Khammam"
                 }
+                var date = new Date();
+                var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+                var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0).setHours(23, 59, 59, 999);
+                let dateFormat1 = moment(firstDay).format('YYYY-MM-DD HH:mm:ss');
+                let dateFormat2 = moment(lastDay).format('YYYY-MM-DD HH:mm:ss');
+                let newPayload = {
+                    "branchIdList": [],
+                    "fromDate": dateFormat1,
+                    "orgId": jsonObj.orgId,
+                    "toDate": dateFormat2
+                };
                 Promise.all([
-                    dispatch(downloadFile(payload7))
+                    dispatch(downloadFile(newPayload))
                 ]).then(async (res) => {
                     if (res[0]?.payload?.downloadUrl) {
                         downloadInLocal(res[0]?.payload?.downloadUrl)
@@ -677,102 +688,102 @@ const HomeScreen = ({ route, navigation }) => {
             <HeaderComp
                 title={headerText}
                 branchName={selectedBranchName}
-              menuClicked={() => navigation.openDrawer()}
+                menuClicked={() => navigation.openDrawer()}
                 branchClicked={() => moveToSelectBranch()}
                 filterClicked={() => moveToFilter()}
             />
             <View style={{ flex: 1, paddingHorizontal: 10 }}>
-            {/* 0000 */}
-            <View>
-                {isButtonPresent &&
-                    <View style={{ width: '100%', alignItems: 'flex-end', marginVertical: 6 }}>
+                {/* 0000 */}
+                <View>
+                    {isButtonPresent &&
+                        <View style={{ width: '100%', alignItems: 'flex-end', marginVertical: 6 }}>
                             <TouchableOpacity style={{ width: 140, height: 30, borderColor: Colors.RED, borderWidth: 1, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={downloadFileFromServer1}>
-                            <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                                <IconButton icon={'download'} size={16} color={Colors.RED} style={{ margin: 0, padding: 0 }} />
-                                <Text style={{ fontSize: 14, fontWeight: '600', color: Colors.RED }}>ETVBRL Report</Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                }
-                {!selector.isMD &&
-                    <>
-                        <View style={styles.rankView}>
-                            <View style={styles.rankBox}>
-                                <Text style={styles.rankHeadingText}>Dealer Ranking</Text>
-                                <View style={{
-                                    flexDirection: 'row'
-                                }}>
-                                    <TouchableOpacity style={styles.rankIconBox} onPress={() => {
-                                        navigation.navigate(AppNavigator.HomeStackIdentifiers.leaderboard)
-                                    }}>
-                                        <Image style={styles.rankIcon} source={require("../../../assets/images/perform_rank.png")} />
-                                    </TouchableOpacity>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <IconButton icon={'download'} size={16} color={Colors.RED} style={{ margin: 0, padding: 0 }} />
+                                    <Text style={{ fontSize: 14, fontWeight: '600', color: Colors.RED }}>ETVBRL Report</Text>
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+                    }
+                    {!selector.isMD &&
+                        <>
+                            <View style={styles.rankView}>
+                                <View style={styles.rankBox}>
+                                    <Text style={styles.rankHeadingText}>Dealer Ranking</Text>
                                     <View style={{
-                                        marginTop: 5,
-                                        marginLeft: 3
+                                        flexDirection: 'row'
                                     }}>
-                                        {groupDealerRank !== null &&
-                                            <Text style={styles.rankText}>{groupDealerRank}/{groupDealerCount}</Text>
-                                        }
+                                        <TouchableOpacity style={styles.rankIconBox} onPress={() => {
+                                            navigation.navigate(AppNavigator.HomeStackIdentifiers.leaderboard)
+                                        }}>
+                                            <Image style={styles.rankIcon} source={require("../../../assets/images/perform_rank.png")} />
+                                        </TouchableOpacity>
+                                        <View style={{
+                                            marginTop: 5,
+                                            marginLeft: 3
+                                        }}>
+                                            {groupDealerRank !== null &&
+                                                <Text style={styles.rankText}>{groupDealerRank}/{groupDealerCount}</Text>
+                                            }
+                                        </View>
                                     </View>
                                 </View>
-                            </View>
 
-                            <View style={styles.rankBox}>
-                                <Text style={styles.rankHeadingText}>Branch Ranking</Text>
-                                <View style={{
-                                    flexDirection: 'row'
-                                }}>
-                                    <TouchableOpacity style={styles.rankIconBox} onPress={() => {
-                                        navigation.navigate(AppNavigator.HomeStackIdentifiers.branchRanking)
-                                    }}>
-                                        <Image style={styles.rankIcon} source={require("../../../assets/images/perform_rank.png")} />
-                                    </TouchableOpacity>
+                                <View style={styles.rankBox}>
+                                    <Text style={styles.rankHeadingText}>Branch Ranking</Text>
                                     <View style={{
-                                        marginTop: 5,
-                                        marginLeft: 3,
+                                        flexDirection: 'row'
                                     }}>
-                                        {dealerRank !== null &&
-                                            <View style={{ flexDirection: 'row' }}>
-                                                <Text style={[styles.rankText]}>{dealerRank}</Text>
-                                                <Text style={[styles.rankText]}>/{dealerCount}</Text>
-                                            </View>
-                                        }
+                                        <TouchableOpacity style={styles.rankIconBox} onPress={() => {
+                                            navigation.navigate(AppNavigator.HomeStackIdentifiers.branchRanking)
+                                        }}>
+                                            <Image style={styles.rankIcon} source={require("../../../assets/images/perform_rank.png")} />
+                                        </TouchableOpacity>
+                                        <View style={{
+                                            marginTop: 5,
+                                            marginLeft: 3,
+                                        }}>
+                                            {dealerRank !== null &&
+                                                <View style={{ flexDirection: 'row' }}>
+                                                    <Text style={[styles.rankText]}>{dealerRank}</Text>
+                                                    <Text style={[styles.rankText]}>/{dealerCount}</Text>
+                                                </View>
+                                            }
+                                        </View>
                                     </View>
                                 </View>
-                            </View>
-                            <View style={styles.rankBox}>
-                                <Text style={styles.rankHeadingText}>Retails</Text>
-                                <View style={{
-                                    flexDirection: 'row'
-                                }}>
-                                    <View style={styles.rankIconBox}>
-                                        <Image style={styles.rankIcon} source={require("../../../assets/images/retail.png")} />
-                                    </View>
+                                <View style={styles.rankBox}>
+                                    <Text style={styles.rankHeadingText}>Retails</Text>
                                     <View style={{
-                                        marginTop: 5,
-                                        marginLeft: 5,
+                                        flexDirection: 'row'
                                     }}>
-
-                                        <View style={{ flexDirection: 'row' }}>
-                                            <Text style={[styles.rankText, { color: Colors.RED }]}>{retailData?.achievment}</Text>
-                                            <Text style={[styles.rankText]}>/{retailData?.target}</Text>
+                                        <View style={styles.rankIconBox}>
+                                            <Image style={styles.rankIcon} source={require("../../../assets/images/retail.png")} />
                                         </View>
                                         <View style={{
-                                            marginTop: 5
+                                            marginTop: 5,
+                                            marginLeft: 5,
                                         }}>
-                                            <Text style={styles.baseText}>Ach v/s Tar</Text>
+
+                                            <View style={{ flexDirection: 'row' }}>
+                                                <Text style={[styles.rankText, { color: Colors.RED }]}>{retailData?.achievment}</Text>
+                                                <Text style={[styles.rankText]}>/{retailData?.target}</Text>
+                                            </View>
+                                            <View style={{
+                                                marginTop: 5
+                                            }}>
+                                                <Text style={styles.baseText}>Ach v/s Tar</Text>
+                                            </View>
                                         </View>
                                     </View>
                                 </View>
                             </View>
-                        </View>
-                    </>
-                }
-            </View>
+                        </>
+                    }
+                </View>
 
-            {/* 1111 */}
-            <View>
+                {/* 1111 */}
+                <View>
                     {isTeamPresent && !selector.isDSE &&
                         <View style={{ flexDirection: 'row', marginBottom: 2, justifyContent: 'center', alignItems: 'center' }}>
                             <View style={{ flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 28, marginTop: 2, justifyContent: 'center', width: '80%' }}>
@@ -805,10 +816,10 @@ const HomeScreen = ({ route, navigation }) => {
                             </View>
                         </View>
                     }
-            </View>
+                </View>
 
-            {/* 2222 */}
-                <View style={{marginTop: 8, alignItems: 'center' }}>
+                {/* 2222 */}
+                <View style={{ marginTop: 8, alignItems: 'center' }}>
                     <View style={{
                         shadowColor: Colors.DARK_GRAY,
                         shadowOffset: {
