@@ -527,12 +527,12 @@ const TargetScreen = ({ route }) => {
                                     </View>
                                 </View>
                             </View>
-
+                            
+                            <View style={{height: Dimensions.get("screen").height/1.8}}>
                             <ScrollView
                                 contentContainerStyle={{
                                     paddingRight: 0,
                                     flexDirection: "column",
-                                    height: '100%'
                                 }}
                                 horizontal={true}
                                 directionalLockEnabled={true}
@@ -1204,6 +1204,7 @@ const TargetScreen = ({ route }) => {
                                     </View>
                                 )}
                             </ScrollView>
+                            </View>
                         </View>
                     ) : (
                         // IF Self or insights
