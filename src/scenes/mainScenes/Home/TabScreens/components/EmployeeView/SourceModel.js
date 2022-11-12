@@ -176,14 +176,13 @@ const SourceModel = ({ route, navigation }) => {
 
   useEffect(() => {
     if (leadSource) {
-      getTotal(0);
+      getTotal(isSourceIndex);
     }
   }, [leadSource]);
 
   const getTotal = (type) => {
     const keys = type === 0 ? leadSourceKeys : vehicleModelKeys;
     let data = type === 0 ? leadSource : vehicleModel;
-
     let newData = paramsMetadata;
     if (toggleParamsIndex !== 2) {
       newData = newData.filter((x) => x.toggleIndex === toggleParamsIndex);
