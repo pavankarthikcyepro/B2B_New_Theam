@@ -61,6 +61,7 @@ import {
   PincodeDetails,
 } from "../../../utils/helperFunctions";
 import moment from "moment";
+import { EmsTopTabNavigatorIdentifiers } from "../../../navigations/emsTopTabNavigator";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -212,7 +213,9 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
           text: "No, Thanks",
           style: "cancel",
           onPress: () => {
-            navigation.popToTop();
+            navigation.navigate(EmsTopTabNavigatorIdentifiers.preEnquiry, {
+              isContactRefresh: true
+            });
           },
         },
         {
