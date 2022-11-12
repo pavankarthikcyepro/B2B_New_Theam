@@ -963,7 +963,7 @@ const TargetScreen = ({ route }) => {
                                                         key={innerIndex2}
                                                         style={[
                                                           {
-                                                            width: "98%",
+                                                            width: "100%",
                                                             minHeight: 40,
                                                             flexDirection:
                                                               "column",
