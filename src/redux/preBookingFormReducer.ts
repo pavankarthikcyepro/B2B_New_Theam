@@ -1524,11 +1524,11 @@ const prebookingFormSlice = createSlice({
         
         if (dmsOnRoadPriceDtoList.length > 0) {
           let newArr: any = [
-            dmsOnRoadPriceDtoList[dmsOnRoadPriceDtoList.length - 1],
+            dmsOnRoadPriceDtoList[0],
           ];
           state.on_road_price_dto_list_response = newArr;
           
-          const dataObj = dmsOnRoadPriceDtoList[dmsOnRoadPriceDtoList.length - 1];
+          const dataObj = dmsOnRoadPriceDtoList[0];
           state.insurance_type = dataObj.insuranceType ? dataObj.insuranceType : "";
           state.warranty = dataObj.warrantyName ? dataObj.warrantyName : "";
 
