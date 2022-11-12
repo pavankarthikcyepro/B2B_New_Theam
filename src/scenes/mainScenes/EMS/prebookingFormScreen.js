@@ -1504,14 +1504,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         totalPrice -= Number(selector.accessories_discount);
         totalPrice -= Number(selector.additional_offer_1);
         totalPrice -= Number(selector.additional_offer_2);
-        totalPrice -= Number(selector.registrationCharges);
+        // totalPrice -= Number(selector.registrationCharges);
         // if (accDiscount !== '') {
         //     totalPrice -= Number(accDiscount);
         // }
         // if (insuranceDiscount !== '') {
         //     totalPrice -= Number(insuranceDiscount);
         // }
-        console.log("OFFER DISCOUNT: ", selector.corporate_offer, selector.promotional_offer, );
         setTotalOnRoadPriceAfterDiscount(totalPrice);
     };
 
