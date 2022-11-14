@@ -697,7 +697,6 @@ const TargetScreen = ({ route }) => {
                   </View>
                 </View>
               </View>
-              <View style={{ height: Dimensions.get("screen").height / 1.7 }}>
                 <ScrollView
                   contentContainerStyle={{
                     paddingRight: 0,
@@ -757,7 +756,8 @@ const TargetScreen = ({ route }) => {
                     </View>
                     {/* Employee params section */}
                     <ScrollView
-                      style={{ height: selector.isMD ? "81%" : "80%" }}
+                      style={{ height: Dimensions.get("screen").height / 2.2 }}
+                      // style={{ height: selector.isMD ? "81%" : "80%" }}
                     >
                       {allParameters.length > 0 &&
                         allParameters.map((item, index) => {
@@ -810,7 +810,7 @@ const TargetScreen = ({ route }) => {
                                     borderWidth: 2,
                                     borderColor: "#C62159",
                                     marginHorizontal: 6,
-                                    overflow: "hidden"
+                                    overflow: "hidden",
                                   },
                                 ]}
                               >
@@ -862,7 +862,7 @@ const TargetScreen = ({ route }) => {
                                                 width: "100%",
                                                 minHeight: 40,
                                                 flexDirection: "column",
-                                                overflow: "hidden"
+                                                overflow: "hidden",
                                               },
                                               innerItem1.isOpenInner && {
                                                 borderRadius: 10,
@@ -1569,7 +1569,6 @@ const TargetScreen = ({ route }) => {
                     </View>
                   )}
                 </ScrollView>
-              </View>
             </View>
           ) : (
             // IF Self or insights
