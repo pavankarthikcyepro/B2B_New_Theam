@@ -810,6 +810,7 @@ const TargetScreen = ({ route }) => {
                                     borderWidth: 2,
                                     borderColor: "#C62159",
                                     marginHorizontal: 6,
+                                    overflow: "hidden"
                                   },
                                 ]}
                               >
@@ -861,6 +862,7 @@ const TargetScreen = ({ route }) => {
                                                 width: "100%",
                                                 minHeight: 40,
                                                 flexDirection: "column",
+                                                overflow: "hidden"
                                               },
                                               innerItem1.isOpenInner && {
                                                 borderRadius: 10,
