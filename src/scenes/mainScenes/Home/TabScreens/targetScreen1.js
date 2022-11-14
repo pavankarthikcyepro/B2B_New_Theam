@@ -33,6 +33,8 @@ import { AppNavigator } from "../../../../navigations";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
 import PercentageToggleControl from "./components/EmployeeView/PercentageToggleControl";
 import { IconButton } from "react-native-paper";
+import { client } from "../../../../networking/client";
+import URL from "../../../../networking/endpoints";
 
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 100) / 5;
@@ -479,10 +481,23 @@ const TargetScreen = ({ route }) => {
             ...tempParams[i],
             isOpenInner: false,
             employeeTargetAchievements: [],
+            tempTargetAchievements: tempParams[i]?.targetAchievements,
           };
           // tempParams[i]["isOpenInner"] = false;
           // tempParams[i]["employeeTargetAchievements"] = [];
           if (i === tempParams.length - 1) {
+            setAllParameters([...tempParams]);
+          }
+          let newIds = tempParams.map((emp) => emp.empId);
+          for (let k = 0; k < newIds.length; k++) {
+            const element = newIds[k].toString();
+            let tempPayload = getTotalPayload(employeeData, [element]);
+            const response = await client.post(
+              URL.GET_TOTAL_TARGET_PARAMS(),
+              tempPayload
+            );
+            const json = await response.json();
+            tempParams[k].targetAchievements = json;
             setAllParameters([...tempParams]);
           }
         }
@@ -532,6 +547,29 @@ const TargetScreen = ({ route }) => {
       }
     }
     return branchName;
+  };
+
+  const getTotalPayload = (employeeData, item) => {
+    const jsonObj = JSON.parse(employeeData);
+    const dateFormat = "YYYY-MM-DD";
+    const currentDate = moment().format(dateFormat);
+    const monthFirstDate = moment(currentDate, dateFormat)
+      .subtract(0, "months")
+      .startOf("month")
+      .format(dateFormat);
+    const monthLastDate = moment(currentDate, dateFormat)
+      .subtract(0, "months")
+      .endOf("month")
+      .format(dateFormat);
+    return {
+      endDate: monthLastDate,
+      loggedInEmpId: jsonObj.empId,
+      empId: jsonObj.empId,
+      startDate: monthFirstDate,
+      empSelected: item,
+      pageNo: 0,
+      size: 100,
+    };
   };
 
   const getEmployeePayload = (employeeData, item) => {
@@ -600,7 +638,7 @@ const TargetScreen = ({ route }) => {
       if (employeeData) {
         const payload = getEmployeePayload(employeeData, item);
         Promise.all([dispatch(getUserWiseTargetParameters(payload))]).then(
-          (res) => {
+          async (res) => {
             let tempRawData = [];
             tempRawData = res[0]?.payload?.employeeTargetAchievements.filter(
               (emp) => emp.empId !== item.empId
@@ -608,33 +646,41 @@ const TargetScreen = ({ route }) => {
             let newIds = res[0]?.payload?.employeeTargetAchievements.map(
               (emp) => emp.empId
             );
-            let newPayload = getNewPayloadForTotal(employeeData, item, newIds);
-            let newTotal = [];
-            Promise.all([dispatch(getTotalOftheTeam(newPayload))])
-              .then((res) => {
-                const responseData = res[0].payload;
-                if (tempRawData.length > 0) {
-                  for (let i = 0; i < tempRawData.length; i++) {
-                    // tempRawData[i].empName = tempRawData[i].empName,
-                    tempRawData[i] = {
-                      ...tempRawData[i],
-                      isOpenInner: false,
-                      branchName: getBranchName(tempRawData[i].branchId),
-                      employeeTargetAchievements: [],
-                    };
-                    if (i === tempRawData.length - 1) {
-                      lastParameter[index].employeeTargetAchievements =
-                        tempRawData;
-                      lastParameter[index].tempTargetAchievements =
-                        responseData;
+            if (tempRawData.length > 0) {
+              for (let i = 0; i < tempRawData.length; i++) {
+                // tempRawData[i].empName = tempRawData[i].empName,
+                tempRawData[i] = {
+                  ...tempRawData[i],
+                  isOpenInner: false,
+                  branchName: getBranchName(tempRawData[i].branchId),
+                  employeeTargetAchievements: [],
+                  tempTargetAchievements: tempRawData[i]?.targetAchievements,
+                };
+                if (i === tempRawData.length - 1) {
+                  lastParameter[index].employeeTargetAchievements = tempRawData;
+                  let newIds = tempRawData.map((emp) => emp.empId);
+                  if (newIds.length >= 2) {
+                    for (let i = 0; i < newIds.length; i++) {
+                      const element = newIds[i].toString();
+                      let tempPayload = getTotalPayload(employeeData, [
+                        element,
+                      ]);
+                      const response = await client.post(
+                        URL.GET_TOTAL_TARGET_PARAMS(),
+                        tempPayload
+                      );
+                      const json = await response.json();
+                      if (Array.isArray(json)) {
+                        lastParameter[index].employeeTargetAchievements[
+                          i
+                        ].targetAchievements = json;
+                      }
                     }
                   }
                 }
-                setAllParameters([...localData]);
-              })
-              .catch((err) => {
-                console.log("ERROR", err);
-              });
+              }
+            }
+            setAllParameters([...localData]);
           }
         );
       }

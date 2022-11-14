@@ -198,7 +198,7 @@ export const getTotalTargetParametersData = createAsyncThunk("LIVE_LEADS/getTota
 
 export const getUserWiseTargetParameters = createAsyncThunk("LIVE_LEADS/getUserWiseTargetParameters", async (payload: any, { rejectWithValue }) => {
 
-    const response = await client.post(URL.GET_TEAMS_TARGET_PARAMS(), payload)
+    const response = await client.post(URL.GET_LIVE_LEADS_TEAM(), payload);
     const json = await response.json()
 
     if (!response.ok) {
