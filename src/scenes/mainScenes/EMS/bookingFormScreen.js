@@ -353,6 +353,7 @@ const BookingFormScreen = ({ route, navigation }) => {
         setInsuranceDiscount('');
         setAccDiscount('');
         setInitialTotalAmt(0);
+        setSelectedRegistrationCharges({});
     }
 
     useLayoutEffect(() => {
@@ -450,7 +451,8 @@ const BookingFormScreen = ({ route, navigation }) => {
         selectedWarrentyPrice,
         // selectedPaidAccessoriesPrice,
         selector.vechicle_registration,
-        taxPercent
+        taxPercent,
+        selector.registrationCharges
     ]);
 
     useEffect(() => {
@@ -1107,6 +1109,9 @@ const BookingFormScreen = ({ route, navigation }) => {
 
         if (fastTagSelected) {
             totalPrice += priceInfomationData.fast_tag;
+        }
+        if (selector.registrationCharges) {
+            totalPrice += Number(selector.registrationCharges);
         }
         console.log("LIFE TAX PRICE: ", lifeTax, priceInfomationData.registration_charges, selectedInsurencePrice, selectedAddOnsPrice, selectedWarrentyPrice, handleSelected, priceInfomationData.handling_charges, essentialSelected, priceInfomationData.essential_kit, tcsPrice, fastTagSelected, priceInfomationData.fast_tag, selectedPaidAccessoriesPrice);
         // setTotalOnRoadPriceAfterDiscount(totalPrice - selectedFOCAccessoriesPrice);
