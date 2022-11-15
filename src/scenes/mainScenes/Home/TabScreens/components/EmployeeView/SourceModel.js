@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Pressable,
   ScrollView,
@@ -15,7 +15,7 @@ import URL from "../../../../../../networking/endpoints";
 import { useDispatch, useSelector } from "react-redux";
 import { getSourceModelDataForSelf } from "../../../../../../redux/homeReducer";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
-import { IconButton } from "react-native-paper";
+import { ActivityIndicator, IconButton } from "react-native-paper";
 import { AppNavigator } from "../../../../../../navigations";
 
 const SourceModel = ({ route, navigation }) => {
@@ -32,7 +32,8 @@ const SourceModel = ({ route, navigation }) => {
   const [sourceModelTotals, setSourceModelTotals] = useState({});
   const [toggleParamsIndex, setToggleParamsIndex] = useState(0);
   const [toggleParamsMetaData, setToggleParamsMetaData] = useState([]);
-
+  const [isLoading, setIsLoading] = useState(false);
+const scrollViewRef = useRef();
   useEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
@@ -56,6 +57,7 @@ const SourceModel = ({ route, navigation }) => {
     navigation.setOptions({
       title: headerTitle ? headerTitle : "Source/Model",
     });
+    setIsLoading(true);
     if (isSourceIndex !== 0) {
       setIsSourceIndex(0);
     }
@@ -128,6 +130,7 @@ const SourceModel = ({ route, navigation }) => {
 
   useEffect(() => {
     if (selector.sourceModelData) {
+      setIsLoading(true);
       const json = selector.sourceModelData;
       const sourceData = [];
       const modelData = [];
@@ -182,6 +185,7 @@ const SourceModel = ({ route, navigation }) => {
       const groupedModels = getData([...newModelData], 1);
       setVehicleModel(groupedModels);
       // getTotal(0);
+      setIsLoading(false);
     }
   }, [selector.sourceModelData, toggleParamsIndex]);
 
@@ -358,7 +362,9 @@ const SourceModel = ({ route, navigation }) => {
       </>
     );
   }
-
+function isEmpty(obj) {
+  return Object.keys(obj).length === 0;
+}
   return (
     <>
       <View>
@@ -480,128 +486,140 @@ const SourceModel = ({ route, navigation }) => {
             )}
           </View>
           <View style={{ height: "85%" }}>
-            <ScrollView>
-              <View style={[styles.flexRow, { paddingHorizontal: 6 }]}>
-                <View>
-                  <View style={{ height: 20 }}></View>
-                  {renderTitleColumn()}
-                  <View style={[styles.flexRow, styles.totalTextView]}>
-                    <Text style={styles.totalTitleText}>Total</Text>
-                  </View>
-                </View>
-                <ScrollView horizontal>
+            {isLoading || isEmpty(leadSource) ? (
+              <ActivityIndicator color={Colors.RED} size={"large"} />
+            ) : (
+              <ScrollView>
+                <View style={[styles.flexRow, { paddingHorizontal: 6 }]}>
                   <View>
-                    {/* TOP Header view */}
-                    <View key={"headers"} style={[styles.flexRow]}>
-                      <View style={[styles.flexRow, { height: 20 }]}>
-                        {toggleParamsMetaData.map((param, i) => {
-                          if (moduleType === "live-leads") {
-                            if (
-                              param.paramName === "INVOICE" ||
-                              param.paramName === "Enquiry" ||
-                              param.paramName === "Booking" ||
-                              param.paramName === "PreEnquiry"
-                            ) {
-                              return (
-                                <View
-                                  key={`${param.paramName}__${i}`}
-                                  style={[
-                                    styles.flexRow,
-                                    styles.justifyAlignCenter,
-                                    {
-                                      width:
-                                        param.paramName === "Accessories"
-                                          ? 80
-                                          : 60,
-                                    },
-                                  ]}
-                                >
-                                  <Text style={{ color: param.color }}>
-                                    {param.shortName}
-                                  </Text>
-                                </View>
-                              );
-                            }
-                          } else {
-                            if (param.paramName !== "PreEnquiry") {
-                              return (
-                                <View
-                                  key={`${param.paramName}__${i}`}
-                                  style={[
-                                    styles.flexRow,
-                                    styles.justifyAlignCenter,
-                                    {
-                                      width:
-                                        param.paramName === "Accessories"
-                                          ? 80
-                                          : 60,
-                                    },
-                                  ]}
-                                >
-                                  <Text style={{ color: param.color }}>
-                                    {param.shortName}
-                                  </Text>
-                                </View>
-                              );
-                            }
-                          }
-                        })}
-                      </View>
+                    <View style={{ height: 20 }}></View>
+                    {renderTitleColumn()}
+                    <View style={[styles.flexRow, styles.totalTextView]}>
+                      <Text style={styles.totalTitleText}>Total</Text>
                     </View>
-                    <View>{renderDataView()}</View>
-                    {/* Total section */}
+                  </View>
+                  <ScrollView
+                    ref={scrollViewRef}
+                    onContentSizeChange={(contentWidth, contentHeight) => {
+                      scrollViewRef?.current?.scrollTo({ y: 0, animated: true });
+                    }}
+                    horizontal
+                  >
                     <View>
-                      <View style={styles.paramsTotalContainerView}>
-                        <View style={styles.paramsTotalContainerSubView}>
-                          <View style={styles.paramsTotalContainer}>
-                            {Object.keys(sourceModelTotals).map((x, index) => {
-                              if (moduleType === "live-leads") {
-                                if (
-                                  x === "INVOICE" ||
-                                  x === "Enquiry" ||
-                                  x === "Booking" ||
-                                  x === "PreEnquiry"
-                                ) {
-                                  return (
-                                    <View
-                                      key={`${index}`}
-                                      style={[
-                                        styles.justifyAlignCenter,
-                                        { width: 60 },
-                                      ]}
-                                    >
-                                      <Text style={{ color: Colors.WHITE }}>
-                                        {sourceModelTotals[x]}
-                                      </Text>
-                                    </View>
-                                  );
-                                }
-                              } else {
-                                if (x !== "PreEnquiry") {
-                                  return (
-                                    <View
-                                      key={`${index}`}
-                                      style={[
-                                        styles.justifyAlignCenter,
-                                        { width: 60 },
-                                      ]}
-                                    >
-                                      <Text style={{ color: Colors.WHITE }}>
-                                        {sourceModelTotals[x]}
-                                      </Text>
-                                    </View>
-                                  );
-                                }
+                      {/* TOP Header view */}
+                      <View key={"headers"} style={[styles.flexRow]}>
+                        <View style={[styles.flexRow, { height: 20 }]}>
+                          {toggleParamsMetaData.map((param, i) => {
+                            if (moduleType === "live-leads") {
+                              if (
+                                param.paramName === "INVOICE" ||
+                                param.paramName === "Enquiry" ||
+                                param.paramName === "Booking" ||
+                                param.paramName === "PreEnquiry"
+                              ) {
+                                return (
+                                  <View
+                                    key={`${param.paramName}__${i}`}
+                                    style={[
+                                      styles.flexRow,
+                                      styles.justifyAlignCenter,
+                                      {
+                                        width:
+                                          param.paramName === "Accessories"
+                                            ? 80
+                                            : 60,
+                                      },
+                                    ]}
+                                  >
+                                    <Text style={{ color: param.color }}>
+                                      {param.shortName}
+                                    </Text>
+                                  </View>
+                                );
                               }
-                            })}
+                            } else {
+                              if (param.paramName !== "PreEnquiry") {
+                                return (
+                                  <View
+                                    key={`${param.paramName}__${i}`}
+                                    style={[
+                                      styles.flexRow,
+                                      styles.justifyAlignCenter,
+                                      {
+                                        width:
+                                          param.paramName === "Accessories"
+                                            ? 80
+                                            : 60,
+                                      },
+                                    ]}
+                                  >
+                                    <Text style={{ color: param.color }}>
+                                      {param.shortName}
+                                    </Text>
+                                  </View>
+                                );
+                              }
+                            }
+                          })}
+                        </View>
+                      </View>
+                      <View>{renderDataView()}</View>
+                      {/* Total section */}
+                      <View>
+                        <View style={styles.paramsTotalContainerView}>
+                          <View style={styles.paramsTotalContainerSubView}>
+                            <View style={styles.paramsTotalContainer}>
+                              {Object.keys(sourceModelTotals).map(
+                                (x, index) => {
+                                  if (moduleType === "live-leads") {
+                                    if (
+                                      x === "INVOICE" ||
+                                      x === "Enquiry" ||
+                                      x === "Booking" ||
+                                      x === "PreEnquiry"
+                                    ) {
+                                      return (
+                                        <View
+                                          key={`${index}`}
+                                          style={[
+                                            styles.justifyAlignCenter,
+                                            { width: 60 },
+                                          ]}
+                                        >
+                                          <Text style={{ color: Colors.WHITE }}>
+                                            {sourceModelTotals[x]}
+                                          </Text>
+                                        </View>
+                                      );
+                                    }
+                                  } else {
+                                    if (x !== "PreEnquiry") {
+                                      return (
+                                        <View
+                                          key={`${index}`}
+                                          style={[
+                                            styles.justifyAlignCenter,
+                                            { width: 60 },
+                                          ]}
+                                        >
+                                          <Text style={{ color: Colors.WHITE }}>
+                                            {sourceModelTotals[x]}
+                                          </Text>
+                                        </View>
+                                      );
+                                    }
+                                  }
+                                }
+                              )}
+                            </View>
                           </View>
                         </View>
                       </View>
                     </View>
-                  </View>
-                </ScrollView>
-              </View>
-            </ScrollView>
+                  </ScrollView>
+                </View>
+              </ScrollView>
+            )}
           </View>
         </View>
       </View>
