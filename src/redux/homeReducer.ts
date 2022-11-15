@@ -593,14 +593,14 @@ export const getSourceModelDataForSelf = createAsyncThunk(
       type === "SELF"
         ? key == "LIVE-LEADS"
           ? URL.GET_LIVE_LEADS_MODEL_SOURCE_SELF()
-          : URL.MODEL_SOURCE_SELF()
+          : URL.GET_TOTAL_TARGET_PARAMS() + "_model_source"
         : type === "INSIGHTS"
         ? key == "LIVE-LEADS"
           ? URL.GET_LIVE_LEADS_MODEL_SOURCE_INSIGHTS()
-          : URL.MODEL_SOURCE_INSIGHTS()
+          : URL.GET_TOTAL_TARGET_PARAMS() + "_model_source"
         : key == "LIVE-LEADS"
-        ? URL.GET_LIVE_LEADS_MODEL_SOURCE_TEAM()
-        : URL.MODEL_SOURCE_TEAM();
+        ? URL.GET_LIVE_LEADS_INSIGHTS() + "_model_source"
+        : URL.GET_TOTAL_TARGET_PARAMS() + "_model_source";
 
     // console.log("]oiuyuiop[: =========>:", url, payload);
     const response = await client.post(url, payload);
