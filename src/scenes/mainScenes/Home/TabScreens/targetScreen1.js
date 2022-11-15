@@ -32,7 +32,7 @@ import { useNavigation } from "@react-navigation/native";
 import { AppNavigator } from "../../../../navigations";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
 import PercentageToggleControl from "./components/EmployeeView/PercentageToggleControl";
-import { IconButton } from "react-native-paper";
+import { ActivityIndicator, IconButton } from "react-native-paper";
 import { client } from "../../../../networking/client";
 import URL from "../../../../networking/endpoints";
 
@@ -84,6 +84,7 @@ const TargetScreen = ({ route }) => {
   const [togglePercentage, setTogglePercentage] = useState(0);
   const [toggleParamsIndex, setToggleParamsIndex] = useState(0);
   const [toggleParamsMetaData, setToggleParamsMetaData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const paramsMetadata = [
     // 'Enquiry', 'Test Drive', 'Home Visit', 'Booking', 'INVOICE', 'Finance', 'Insurance', 'Exchange', 'EXTENDEDWARRANTY', 'Accessories'
@@ -467,41 +468,49 @@ const TargetScreen = ({ route }) => {
   }, [selector.reporting_manager_list]);
 
   useEffect(async () => {
-    let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-    if (employeeData) {
-      const jsonObj = JSON.parse(employeeData);
-      if (selector.all_emp_parameters_data.length > 0) {
-        let tempParams = [
-          ...selector.all_emp_parameters_data.filter(
-            (item) => item.empId !== jsonObj.empId
-          ),
-        ];
-        for (let i = 0; i < tempParams.length; i++) {
-          tempParams[i] = {
-            ...tempParams[i],
-            isOpenInner: false,
-            employeeTargetAchievements: [],
-            tempTargetAchievements: tempParams[i]?.targetAchievements,
-          };
-          // tempParams[i]["isOpenInner"] = false;
-          // tempParams[i]["employeeTargetAchievements"] = [];
-          if (i === tempParams.length - 1) {
-            setAllParameters([...tempParams]);
-          }
-          let newIds = tempParams.map((emp) => emp.empId);
-          for (let k = 0; k < newIds.length; k++) {
-            const element = newIds[k].toString();
-            let tempPayload = getTotalPayload(employeeData, element);
-            const response = await client.post(
-              URL.GET_TOTAL_TARGET_PARAMS(),
-              tempPayload
-            );
-            const json = await response.json();
-            tempParams[k].targetAchievements = json;
-            setAllParameters([...tempParams]);
+    setIsLoading(true);
+    try {
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        if (selector.all_emp_parameters_data.length > 0) {
+          let tempParams = [
+            ...selector.all_emp_parameters_data.filter(
+              (item) => item.empId !== jsonObj.empId
+            ),
+          ];
+          for (let i = 0; i < tempParams.length; i++) {
+            tempParams[i] = {
+              ...tempParams[i],
+              isOpenInner: false,
+              employeeTargetAchievements: [],
+              tempTargetAchievements: tempParams[i]?.targetAchievements,
+            };
+            // tempParams[i]["isOpenInner"] = false;
+            // tempParams[i]["employeeTargetAchievements"] = [];
+            if (i === tempParams.length - 1) {
+              setAllParameters([...tempParams]);
+            }
+            let newIds = tempParams.map((emp) => emp.empId);
+            for (let k = 0; k < newIds.length; k++) {
+              const element = newIds[k].toString();
+              let tempPayload = getTotalPayload(employeeData, element);
+              const response = await client.post(
+                URL.GET_TOTAL_TARGET_PARAMS(),
+                tempPayload
+              );
+              const json = await response.json();
+              tempParams[k].targetAchievements = json;
+              setAllParameters([...tempParams]);
+            }
           }
         }
       }
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
     }
   }, [selector.all_emp_parameters_data]);
 
@@ -746,6 +755,7 @@ const TargetScreen = ({ route }) => {
                   </View>
                 </View>
               </View>
+               {isLoading ? <ActivityIndicator color={Colors.RED} size={'large'} style={{ marginTop: 15 }} /> :
               <ScrollView
                 contentContainerStyle={{
                   paddingRight: 0,
@@ -1519,19 +1529,25 @@ const TargetScreen = ({ route }) => {
                   >
                     <SourceModelView
                       style={{ alignSelf: "flex-end" }}
-                      onClick={() => {
-                        navigation.navigate(
-                          AppNavigator.HomeStackIdentifiers.sourceModel,
-                          {
-                            empId: selector.login_employee_details.empId,
-                            headerTitle: "Grand Total",
-                            loggedInEmpId:
-                              selector.login_employee_details.empId,
-                            type: "TEAM",
-                            moduleType: "home",
+                      onClick={async () => {
+                          let employeeData = await AsyncStore.getData(
+                            AsyncStore.Keys.LOGIN_EMPLOYEE
+                          );
+                          if (employeeData) {
+                            const jsonObj = JSON.parse(employeeData);
+                            navigation.navigate(
+                              AppNavigator.HomeStackIdentifiers.sourceModel,
+                              {
+                                empId: selector.login_employee_details.empId,
+                                headerTitle: "Grand Total",
+                                loggedInEmpId: jsonObj.empId,
+                                type: "TEAM",
+                                moduleType: "home",
+                                orgId: selector.login_employee_details.orgId,
+                              }
+                            );
                           }
-                        );
-                      }}
+                        }}
                     />
 
                     <View
@@ -1617,7 +1633,7 @@ const TargetScreen = ({ route }) => {
                     </View>
                   </View>
                 )}
-              </ScrollView>
+              </ScrollView>}
             </View>
           ) : (
             // IF Self or insights
