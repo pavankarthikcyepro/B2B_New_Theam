@@ -72,12 +72,14 @@ const SourceModel = ({ route, navigation }) => {
 
     let payload = {
       // endDate: monthLastDate,
-      endDate: moduleType === "live-leads" ? currentDate: monthLastDate,
-      loggedInEmpId: loggedInEmpId,
+      endDate: moduleType === "live-leads" ? currentDate : monthLastDate,
+      loggedInEmpId: empId,
       empId: empId,
       // startDate: monthFirstDate,
-      startDate: moduleType === "live-leads" ? '2021-01-01' : monthFirstDate,
+      startDate: moduleType === "live-leads" ? "2021-01-01" : monthFirstDate,
       levelSelected: null,
+      page: 0,
+      size: 100,
     };
 
     const urlSelf = URL.MODEL_SOURCE_SELF();
@@ -94,8 +96,8 @@ const SourceModel = ({ route, navigation }) => {
       case "TEAM":
         url = urlTeam;
         const data = {
-          orgId: orgId,
-          selectedEmpId: loggedInEmpId,
+          // orgId: orgId,
+          // selectedEmpId: empId,
         };
         payload = {
           ...payload,
@@ -103,6 +105,16 @@ const SourceModel = ({ route, navigation }) => {
         };
         break;
     }
+    let tempPayload = {
+      orgId: orgId,
+      endDate: moduleType === "live-leads" ? currentDate : monthLastDate,
+      loggedInEmpId: loggedInEmpId,
+      empId: empId,
+      startDate: moduleType === "live-leads" ? "2021-01-01" : monthFirstDate,
+      levelSelected: null,
+      pageNo: 0,
+      size: 100,
+    };
     let key = moduleType !== "live-leads" ? "" :"LIVE-LEADS";
     dispatch(getSourceModelDataForSelf({ type, payload, key}));
   }, [empId,navigation]);
@@ -119,7 +131,7 @@ const SourceModel = ({ route, navigation }) => {
       const json = selector.sourceModelData;
       const sourceData = [];
       const modelData = [];
-      const data = type === "TEAM" ? json.overallTargetAchivements : json;
+      const data = type === "TEAM" ? json : json;
       data &&
         data.length > 0 &&
         data.filter((x) => {
@@ -152,7 +164,6 @@ const SourceModel = ({ route, navigation }) => {
 
       let newSourceData = [...sourceData];
       let newModelData = [...modelData];
-
       if (toggleParamsIndex !== 2) {
         newSourceData = newSourceData.filter(
           (x) => x.toggleIndex === toggleParamsIndex

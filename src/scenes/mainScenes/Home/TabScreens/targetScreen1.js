@@ -32,7 +32,9 @@ import { useNavigation } from "@react-navigation/native";
 import { AppNavigator } from "../../../../navigations";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
 import PercentageToggleControl from "./components/EmployeeView/PercentageToggleControl";
-import { IconButton } from "react-native-paper";
+import { ActivityIndicator, IconButton } from "react-native-paper";
+import { client } from "../../../../networking/client";
+import URL from "../../../../networking/endpoints";
 
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 100) / 5;
@@ -82,6 +84,7 @@ const TargetScreen = ({ route }) => {
   const [togglePercentage, setTogglePercentage] = useState(0);
   const [toggleParamsIndex, setToggleParamsIndex] = useState(0);
   const [toggleParamsMetaData, setToggleParamsMetaData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const paramsMetadata = [
     // 'Enquiry', 'Test Drive', 'Home Visit', 'Booking', 'INVOICE', 'Finance', 'Insurance', 'Exchange', 'EXTENDEDWARRANTY', 'Accessories'
@@ -238,7 +241,7 @@ const TargetScreen = ({ route }) => {
             Promise.allSettled([
               dispatch(getNewTargetParametersAllData(payload2)),
               dispatch(getTotalTargetParametersData(payload2)),
-            ]).then(() => {});
+            ]).then(() => { });
           }
         }
       );
@@ -254,7 +257,7 @@ const TargetScreen = ({ route }) => {
       .format(dateFormat);
     setDateDiff(
       (new Date(monthLastDate).getTime() - new Date(currentDate).getTime()) /
-        (1000 * 60 * 60 * 24)
+      (1000 * 60 * 60 * 24)
     );
 
     const isInsights = selector.isTeamPresent && !selector.isDSE;
@@ -376,7 +379,7 @@ const TargetScreen = ({ route }) => {
         .format(dateFormat);
       setDateDiff(
         (new Date(monthLastDate).getTime() - new Date(currentDate).getTime()) /
-          (1000 * 60 * 60 * 24)
+        (1000 * 60 * 60 * 24)
       );
     });
 
@@ -465,29 +468,51 @@ const TargetScreen = ({ route }) => {
   }, [selector.reporting_manager_list]);
 
   useEffect(async () => {
-    let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-    if (employeeData) {
-      const jsonObj = JSON.parse(employeeData);
-      if (selector.all_emp_parameters_data.length > 0) {
-        let tempParams = [
-          ...selector.all_emp_parameters_data.filter(
-            (item) => item.empId !== jsonObj.empId
-          ),
-        ];
-        for (let i = 0; i < tempParams.length; i++) {
-          tempParams[i] = {
-            ...tempParams[i],
-            isOpenInner: false,
-            employeeTargetAchievements: [],
-          };
-          // tempParams[i]["isOpenInner"] = false;
-          // tempParams[i]["employeeTargetAchievements"] = [];
-          if (i === tempParams.length - 1) {
-            setAllParameters([...tempParams]);
+    setIsLoading(true);
+    try {
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        if (selector.all_emp_parameters_data.length > 0) {
+          let tempParams = [
+            ...selector.all_emp_parameters_data.filter(
+              (item) => item.empId !== jsonObj.empId
+            ),
+          ];
+          for (let i = 0; i < tempParams.length; i++) {
+            tempParams[i] = {
+              ...tempParams[i],
+              isOpenInner: false,
+              employeeTargetAchievements: [],
+              tempTargetAchievements: tempParams[i]?.targetAchievements,
+            };
+            // tempParams[i]["isOpenInner"] = false;
+            // tempParams[i]["employeeTargetAchievements"] = [];
+            if (i === tempParams.length - 1) {
+              setAllParameters([...tempParams]);
+            }
+            let newIds = tempParams.map((emp) => emp.empId);
+            for (let k = 0; k < newIds.length; k++) {
+              const element = newIds[k].toString();
+              let tempPayload = getTotalPayload(employeeData, element);
+              const response = await client.post(
+                URL.GET_TOTAL_TARGET_PARAMS(),
+                tempPayload
+              );
+              const json = await response.json();
+              tempParams[k].targetAchievements = json;
+              setAllParameters([...tempParams]);
+            }
           }
         }
       }
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
     }
+
   }, [selector.all_emp_parameters_data]);
 
   const getColor = (ach, tar) => {
@@ -532,6 +557,32 @@ const TargetScreen = ({ route }) => {
       }
     }
     return branchName;
+  };
+
+  const getTotalPayload = (employeeData, item) => {
+    const jsonObj = JSON.parse(employeeData);
+    const dateFormat = "YYYY-MM-DD";
+    const currentDate = moment().format(dateFormat);
+    const monthFirstDate = moment(currentDate, dateFormat)
+      .subtract(0, "months")
+      .startOf("month")
+      .format(dateFormat);
+    const monthLastDate = moment(currentDate, dateFormat)
+      .subtract(0, "months")
+      .endOf("month")
+      .format(dateFormat);
+    return {
+      endDate: monthLastDate,
+      loggedInEmpId: item,
+      empId: item,
+      startDate: monthFirstDate,
+      // empSelected: item,
+      pageNo: 0,
+      size: 100,
+      orgId: jsonObj.orgId,
+      selectedEmpId: item,
+      levelSelected: null,
+    };
   };
 
   const getEmployeePayload = (employeeData, item) => {
@@ -600,7 +651,7 @@ const TargetScreen = ({ route }) => {
       if (employeeData) {
         const payload = getEmployeePayload(employeeData, item);
         Promise.all([dispatch(getUserWiseTargetParameters(payload))]).then(
-          (res) => {
+          async (res) => {
             let tempRawData = [];
             tempRawData = res[0]?.payload?.employeeTargetAchievements.filter(
               (emp) => emp.empId !== item.empId
@@ -608,33 +659,39 @@ const TargetScreen = ({ route }) => {
             let newIds = res[0]?.payload?.employeeTargetAchievements.map(
               (emp) => emp.empId
             );
-            let newPayload = getNewPayloadForTotal(employeeData, item, newIds);
-            let newTotal = [];
-            Promise.all([dispatch(getTotalOftheTeam(newPayload))])
-              .then((res) => {
-                const responseData = res[0].payload;
-                if (tempRawData.length > 0) {
-                  for (let i = 0; i < tempRawData.length; i++) {
-                    // tempRawData[i].empName = tempRawData[i].empName,
-                    tempRawData[i] = {
-                      ...tempRawData[i],
-                      isOpenInner: false,
-                      branchName: getBranchName(tempRawData[i].branchId),
-                      employeeTargetAchievements: [],
-                    };
-                    if (i === tempRawData.length - 1) {
-                      lastParameter[index].employeeTargetAchievements =
-                        tempRawData;
-                      lastParameter[index].tempTargetAchievements =
-                        responseData;
+            if (tempRawData.length > 0) {
+              for (let i = 0; i < tempRawData.length; i++) {
+                // tempRawData[i].empName = tempRawData[i].empName,
+                tempRawData[i] = {
+                  ...tempRawData[i],
+                  isOpenInner: false,
+                  branchName: getBranchName(tempRawData[i].branchId),
+                  employeeTargetAchievements: [],
+                  tempTargetAchievements: tempRawData[i]?.targetAchievements,
+                };
+                if (i === tempRawData.length - 1) {
+                  lastParameter[index].employeeTargetAchievements = tempRawData;
+                  let newIds = tempRawData.map((emp) => emp.empId);
+                  if (newIds.length >= 2) {
+                    for (let i = 0; i < newIds.length; i++) {
+                      const element = newIds[i].toString();
+                      let tempPayload = getTotalPayload(employeeData, element);
+                      const response = await client.post(
+                        URL.GET_TOTAL_TARGET_PARAMS(),
+                        tempPayload
+                      );
+                      const json = await response.json();
+                      if (Array.isArray(json)) {
+                        lastParameter[index].employeeTargetAchievements[
+                          i
+                        ].targetAchievements = json;
+                      }
                     }
                   }
                 }
-                setAllParameters([...localData]);
-              })
-              .catch((err) => {
-                console.log("ERROR", err);
-              });
+              }
+            }
+            setAllParameters([...localData]);
           }
         );
       }
@@ -697,854 +754,860 @@ const TargetScreen = ({ route }) => {
                   </View>
                 </View>
               </View>
-
-              <ScrollView
-                contentContainerStyle={{
-                  paddingRight: 0,
-                  flexDirection: "column",
-                  height: "100%",
-                }}
-                horizontal={true}
-                directionalLockEnabled={true}
-                showsHorizontalScrollIndicator={false}
-              >
-                <View>
-                  {/* TOP Header view */}
-                  <View
-                    key={"headers"}
-                    style={{
-                      flexDirection: "row",
-                      borderBottomWidth: 0.5,
-                      paddingBottom: 4,
-                      borderBottomColor: Colors.GRAY,
-                      marginLeft: 0,
-                    }}
-                  >
+              {isLoading ? <ActivityIndicator color={Colors.RED} size={'large'} style={{ marginTop: 15 }} /> :
+                <ScrollView
+                  contentContainerStyle={{
+                    paddingRight: 0,
+                    flexDirection: "column",
+                    height: "100%",
+                  }}
+                  horizontal={true}
+                  directionalLockEnabled={true}
+                  showsHorizontalScrollIndicator={false}
+                >
+                  <View>
+                    {/* TOP Header view */}
                     <View
-                      style={{ width: 100, height: 20, marginRight: 5 }}
-                    ></View>
-                    <View
+                      key={"headers"}
                       style={{
-                        width: "100%",
-                        height: 20,
                         flexDirection: "row",
+                        borderBottomWidth: 0.5,
+                        paddingBottom: 4,
+                        borderBottomColor: Colors.GRAY,
+                        marginLeft: 0,
                       }}
                     >
-                      {toggleParamsMetaData.map((param) => {
-                        return (
-                          <View
-                            style={[
-                              styles.itemBox,
-                              {
-                                width: param.paramName === "DROPPED" ? 60 : 55,
-                              },
-                            ]}
-                            key={param.shortName}
-                          >
-                            <Text
-                              style={{
-                                color: param.color,
-                                fontSize:
-                                  param.paramName === "DROPPED" ? 11 : 12,
-                              }}
-                            >
-                              {param.shortName}
-                            </Text>
-                          </View>
-                        );
-                      })}
-                    </View>
-                  </View>
-                  {/* Employee params section */}
-                  <ScrollView style={{ height: selector.isMD ? "81%" : "80%" }}>
-                    {allParameters.length > 0 &&
-                      allParameters.map((item, index) => {
-                        return (
-                          <View key={`${item.empId} ${index}`}>
+                      <View
+                        style={{ width: 100, height: 20, marginRight: 5 }}
+                      ></View>
+                      <View
+                        style={{
+                          width: "100%",
+                          height: 20,
+                          flexDirection: "row",
+                        }}
+                      >
+                        {toggleParamsMetaData.map((param) => {
+                          return (
                             <View
-                              style={{
-                                paddingHorizontal: 8,
-                                display: "flex",
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                                marginTop: 12,
-                                width: Dimensions.get("screen").width - 28,
-                              }}
+                              style={[
+                                styles.itemBox,
+                                {
+                                  width: param.paramName === "DROPPED" ? 60 : 55,
+                                },
+                              ]}
+                              key={param.shortName}
                             >
                               <Text
                                 style={{
-                                  fontSize: 12,
-                                  fontWeight: "600",
-                                  textTransform: "capitalize",
+                                  color: param.color,
+                                  fontSize:
+                                    param.paramName === "DROPPED" ? 11 : 12,
                                 }}
                               >
-                                {item.empName}
+                                {param.shortName}
                               </Text>
-                              <SourceModelView
-                                onClick={() => {
-                                  navigation.navigate(
-                                    AppNavigator.HomeStackIdentifiers
-                                      .sourceModel,
-                                    {
-                                      empId: item.empId,
-                                      headerTitle: item.empName,
-                                      loggedInEmpId:
-                                        selector.login_employee_details.empId,
-                                      orgId:
-                                        selector.login_employee_details.orgId,
-                                      type: "TEAM",
-                                      moduleType: "home",
-                                    }
-                                  );
-                                }}
-                              />
                             </View>
-                            {/*Source/Model View END */}
-                            <View
-                              style={[
-                                { flexDirection: "row" },
-                                item.isOpenInner && {
-                                  borderRadius: 10,
-                                  borderWidth: 2,
-                                  borderColor: "#C62159",
-                                  marginHorizontal: 6,
-                                },
-                              ]}
-                            >
-                              {/*RIGHT SIDE VIEW*/}
+                          );
+                        })}
+                      </View>
+                    </View>
+                    {/* Employee params section */}
+                    <ScrollView style={{ height: selector.isMD ? "81%" : "80%" }}>
+                      {allParameters.length > 0 &&
+                        allParameters.map((item, index) => {
+                          return (
+                            <View key={`${item.empId} ${index}`}>
+                              <View
+                                style={{
+                                  paddingHorizontal: 8,
+                                  display: "flex",
+                                  flexDirection: "row",
+                                  justifyContent: "space-between",
+                                  marginTop: 12,
+                                  width: Dimensions.get("screen").width - 28,
+                                }}
+                              >
+                                <Text
+                                  style={{
+                                    fontSize: 12,
+                                    fontWeight: "600",
+                                    textTransform: "capitalize",
+                                  }}
+                                >
+                                  {item.empName}
+                                </Text>
+                                <SourceModelView
+                                  onClick={() => {
+                                    navigation.navigate(
+                                      AppNavigator.HomeStackIdentifiers
+                                        .sourceModel,
+                                      {
+                                        empId: item.empId,
+                                        headerTitle: item.empName,
+                                        loggedInEmpId:
+                                          selector.login_employee_details.empId,
+                                        orgId:
+                                          selector.login_employee_details.orgId,
+                                        type: "TEAM",
+                                        moduleType: "home",
+                                      }
+                                    );
+                                  }}
+                                />
+                              </View>
+                              {/*Source/Model View END */}
                               <View
                                 style={[
-                                  {
-                                    width: "100%",
-                                    minHeight: 40,
-                                    flexDirection: "column",
-                                    paddingHorizontal: 2,
+                                  { flexDirection: "row" },
+                                  item.isOpenInner && {
+                                    borderRadius: 10,
+                                    borderWidth: 2,
+                                    borderColor: "#C62159",
+                                    marginHorizontal: 6,
                                   },
                                 ]}
                               >
+                                {/*RIGHT SIDE VIEW*/}
                                 <View
-                                  style={{
-                                    width: "100%",
-                                    minHeight: 40,
-                                    flexDirection: "row",
-                                  }}
+                                  style={[
+                                    {
+                                      width: "100%",
+                                      minHeight: 40,
+                                      flexDirection: "column",
+                                      paddingHorizontal: 2,
+                                    },
+                                  ]}
                                 >
-                                  <RenderLevel1NameView
-                                    level={0}
-                                    item={item}
-                                    branchName={getBranchName(item.branchId)}
-                                    color={"#C62159"}
-                                    titleClick={async () => {
-                                      let localData = [...allParameters];
-                                      await onEmployeeNameClick(
-                                        item,
-                                        index,
-                                        localData
-                                      );
+                                  <View
+                                    style={{
+                                      width: "100%",
+                                      minHeight: 40,
+                                      flexDirection: "row",
                                     }}
-                                  />
-                                  {renderData(item, "#C62159")}
-                                </View>
+                                  >
+                                    <RenderLevel1NameView
+                                      level={0}
+                                      item={item}
+                                      branchName={getBranchName(item.branchId)}
+                                      color={"#C62159"}
+                                      titleClick={async () => {
+                                        let localData = [...allParameters];
+                                        await onEmployeeNameClick(
+                                          item,
+                                          index,
+                                          localData
+                                        );
+                                      }}
+                                    />
+                                    {renderData(item, "#C62159")}
+                                  </View>
 
-                                {item.isOpenInner &&
-                                  item.employeeTargetAchievements.length > 0 &&
-                                  item.employeeTargetAchievements.map(
-                                    (innerItem1, innerIndex1) => {
-                                      return (
-                                        <View
-                                          key={innerIndex1}
-                                          style={[
-                                            {
-                                              width: "100%",
-                                              minHeight: 40,
-                                              flexDirection: "column",
-                                            },
-                                            innerItem1.isOpenInner && {
-                                              borderRadius: 10,
-                                              borderWidth: 2,
-                                              borderColor: Colors.CORAL,
-                                              backgroundColor: "#FFFFFF",
-                                            },
-                                          ]}
-                                        >
+                                  {item.isOpenInner &&
+                                    item.employeeTargetAchievements.length > 0 &&
+                                    item.employeeTargetAchievements.map(
+                                      (innerItem1, innerIndex1) => {
+                                        return (
                                           <View
+                                            key={innerIndex1}
                                             style={[
                                               {
+                                                width: "100%",
                                                 minHeight: 40,
                                                 flexDirection: "column",
-                                                width:
-                                                  Dimensions.get("screen")
-                                                    .width - 40,
+                                              },
+                                              innerItem1.isOpenInner && {
+                                                borderRadius: 10,
+                                                borderWidth: 2,
+                                                borderColor: Colors.CORAL,
+                                                backgroundColor: "#FFFFFF",
                                               },
                                             ]}
                                           >
                                             <View
-                                              style={{
-                                                paddingHorizontal: 4,
-                                                display: "flex",
-                                                flexDirection: "row",
-                                                justifyContent: "space-between",
-                                                marginTop: 8,
-                                              }}
+                                              style={[
+                                                {
+                                                  minHeight: 40,
+                                                  flexDirection: "column",
+                                                  width:
+                                                    Dimensions.get("screen")
+                                                      .width - 40,
+                                                },
+                                              ]}
                                             >
-                                              <Text
+                                              <View
                                                 style={{
-                                                  fontSize: 10,
-                                                  fontWeight: "500",
+                                                  paddingHorizontal: 4,
+                                                  display: "flex",
+                                                  flexDirection: "row",
+                                                  justifyContent: "space-between",
+                                                  marginTop: 8,
                                                 }}
                                               >
-                                                {innerItem1.empName}
-                                              </Text>
-                                              <SourceModelView
-                                                onClick={() => {
-                                                  navigation.navigate(
-                                                    AppNavigator
-                                                      .HomeStackIdentifiers
-                                                      .sourceModel,
-                                                    {
-                                                      empId: innerItem1.empId,
-                                                      headerTitle:
-                                                        innerItem1.empName,
-                                                      type: "TEAM",
-                                                      moduleType: "home",
-                                                    }
-                                                  );
-                                                }}
-                                              />
-                                            </View>
-                                            {/*Source/Model View END */}
-                                            <View
-                                              style={{ flexDirection: "row" }}
-                                            >
-                                              <RenderLevel1NameView
-                                                level={1}
-                                                item={innerItem1}
-                                                color={Colors.CORAL}
-                                                titleClick={async () => {
-                                                  const localData = [
-                                                    ...allParameters,
-                                                  ];
-                                                  const localParameter =
-                                                    localData[index]
-                                                      .employeeTargetAchievements;
-                                                  await onEmployeeNameClick(
-                                                    innerItem1,
-                                                    innerIndex1,
-                                                    localParameter
-                                                  );
-                                                }}
-                                              />
-                                              {renderData(
-                                                innerItem1,
-                                                "#F59D00"
-                                              )}
-                                            </View>
-                                            {innerItem1.isOpenInner &&
-                                              innerItem1
-                                                .employeeTargetAchievements
-                                                .length > 0 &&
-                                              innerItem1.employeeTargetAchievements.map(
-                                                (innerItem2, innerIndex2) => {
-                                                  return (
-                                                    <View
-                                                      key={innerIndex2}
-                                                      style={[
-                                                        {
-                                                          width: "98%",
-                                                          minHeight: 40,
-                                                          flexDirection:
-                                                            "column",
-                                                        },
-                                                        innerItem2.isOpenInner && {
-                                                          borderRadius: 10,
-                                                          borderWidth: 2,
-                                                          borderColor:
-                                                            "#2C97DE",
-                                                          backgroundColor:
-                                                            "#EEEEEE",
-                                                          marginHorizontal: 5,
-                                                        },
-                                                      ]}
-                                                    >
+                                                <Text
+                                                  style={{
+                                                    fontSize: 10,
+                                                    fontWeight: "500",
+                                                  }}
+                                                >
+                                                  {innerItem1.empName}
+                                                </Text>
+                                                <SourceModelView
+                                                  onClick={() => {
+                                                    navigation.navigate(
+                                                      AppNavigator
+                                                        .HomeStackIdentifiers
+                                                        .sourceModel,
+                                                      {
+                                                        empId: innerItem1.empId,
+                                                        headerTitle:
+                                                          innerItem1.empName,
+                                                        type: "TEAM",
+                                                        moduleType: "home",
+                                                      }
+                                                    );
+                                                  }}
+                                                />
+                                              </View>
+                                              {/*Source/Model View END */}
+                                              <View
+                                                style={{ flexDirection: "row" }}
+                                              >
+                                                <RenderLevel1NameView
+                                                  level={1}
+                                                  item={innerItem1}
+                                                  color={Colors.CORAL}
+                                                  titleClick={async () => {
+                                                    const localData = [
+                                                      ...allParameters,
+                                                    ];
+                                                    const localParameter =
+                                                      localData[index]
+                                                        .employeeTargetAchievements;
+                                                    await onEmployeeNameClick(
+                                                      innerItem1,
+                                                      innerIndex1,
+                                                      localParameter
+                                                    );
+                                                  }}
+                                                />
+                                                {renderData(
+                                                  innerItem1,
+                                                  "#F59D00"
+                                                )}
+                                              </View>
+                                              {innerItem1.isOpenInner &&
+                                                innerItem1
+                                                  .employeeTargetAchievements
+                                                  .length > 0 &&
+                                                innerItem1.employeeTargetAchievements.map(
+                                                  (innerItem2, innerIndex2) => {
+                                                    return (
                                                       <View
-                                                        style={{
-                                                          paddingHorizontal: 4,
-                                                          display: "flex",
-                                                          flexDirection: "row",
-                                                          justifyContent:
-                                                            "space-between",
-                                                          paddingVertical: 4,
-                                                          width:
-                                                            Dimensions.get(
-                                                              "screen"
-                                                            ).width - 30,
-                                                        }}
+                                                        key={innerIndex2}
+                                                        style={[
+                                                          {
+                                                            width: "98%",
+                                                            minHeight: 40,
+                                                            flexDirection:
+                                                              "column",
+                                                          },
+                                                          innerItem2.isOpenInner && {
+                                                            borderRadius: 10,
+                                                            borderWidth: 2,
+                                                            borderColor:
+                                                              "#2C97DE",
+                                                            backgroundColor:
+                                                              "#EEEEEE",
+                                                            marginHorizontal: 5,
+                                                          },
+                                                        ]}
                                                       >
-                                                        <Text
+                                                        <View
                                                           style={{
-                                                            fontSize: 10,
-                                                            fontWeight: "500",
+                                                            paddingHorizontal: 4,
+                                                            display: "flex",
+                                                            flexDirection: "row",
+                                                            justifyContent:
+                                                              "space-between",
+                                                            paddingVertical: 4,
+                                                            width:
+                                                              Dimensions.get(
+                                                                "screen"
+                                                              ).width - 30,
                                                           }}
                                                         >
-                                                          {innerItem2.empName}
-                                                        </Text>
-                                                        <SourceModelView
-                                                          onClick={() => {
-                                                            navigation.navigate(
-                                                              AppNavigator
-                                                                .HomeStackIdentifiers
-                                                                .sourceModel,
-                                                              {
-                                                                empId:
-                                                                  innerItem2.empId,
-                                                                headerTitle:
-                                                                  innerItem2.empName,
-                                                                type: "TEAM",
-                                                                moduleType:
-                                                                  "home",
-                                                              }
-                                                            );
-                                                          }}
-                                                        />
-                                                      </View>
-                                                      <View
-                                                        style={{
-                                                          flexDirection: "row",
-                                                        }}
-                                                      >
-                                                        <RenderLevel1NameView
-                                                          level={2}
-                                                          item={innerItem2}
-                                                          color={"#2C97DE"}
-                                                          titleClick={async () => {
-                                                            const localData = [
-                                                              ...allParameters,
-                                                            ];
-                                                            const localParameter =
-                                                              localData[index]
-                                                                .employeeTargetAchievements[
-                                                                innerIndex1
-                                                              ]
-                                                                .employeeTargetAchievements;
-                                                            await onEmployeeNameClick(
-                                                              innerItem2,
-                                                              innerIndex2,
-                                                              localParameter
-                                                            );
-                                                          }}
-                                                        />
-                                                        {renderData(
-                                                          innerItem2,
-                                                          "#2C97DE"
-                                                        )}
-                                                      </View>
-                                                      {innerItem2.isOpenInner &&
-                                                        innerItem2
-                                                          .employeeTargetAchievements
-                                                          .length > 0 &&
-                                                        innerItem2.employeeTargetAchievements.map(
-                                                          (
-                                                            innerItem3,
-                                                            innerIndex3
-                                                          ) => {
-                                                            return (
-                                                              <View
-                                                                key={
-                                                                  innerIndex3
+                                                          <Text
+                                                            style={{
+                                                              fontSize: 10,
+                                                              fontWeight: "500",
+                                                            }}
+                                                          >
+                                                            {innerItem2.empName}
+                                                          </Text>
+                                                          <SourceModelView
+                                                            onClick={() => {
+                                                              navigation.navigate(
+                                                                AppNavigator
+                                                                  .HomeStackIdentifiers
+                                                                  .sourceModel,
+                                                                {
+                                                                  empId:
+                                                                    innerItem2.empId,
+                                                                  headerTitle:
+                                                                    innerItem2.empName,
+                                                                  type: "TEAM",
+                                                                  moduleType:
+                                                                    "home",
                                                                 }
-                                                                style={[
-                                                                  {
-                                                                    width:
-                                                                      "98%",
-                                                                    minHeight: 40,
-                                                                    flexDirection:
-                                                                      "column",
-                                                                  },
-                                                                  innerItem3.isOpenInner && {
-                                                                    borderRadius: 10,
-                                                                    borderWidth: 1,
-                                                                    borderColor:
-                                                                      "#EC3466",
-                                                                    backgroundColor:
-                                                                      "#FFFFFF",
-                                                                    marginHorizontal: 5,
-                                                                  },
-                                                                ]}
-                                                              >
+                                                              );
+                                                            }}
+                                                          />
+                                                        </View>
+                                                        <View
+                                                          style={{
+                                                            flexDirection: "row",
+                                                          }}
+                                                        >
+                                                          <RenderLevel1NameView
+                                                            level={2}
+                                                            item={innerItem2}
+                                                            color={"#2C97DE"}
+                                                            titleClick={async () => {
+                                                              const localData = [
+                                                                ...allParameters,
+                                                              ];
+                                                              const localParameter =
+                                                                localData[index]
+                                                                  .employeeTargetAchievements[
+                                                                  innerIndex1
+                                                                ]
+                                                                  .employeeTargetAchievements;
+                                                              await onEmployeeNameClick(
+                                                                innerItem2,
+                                                                innerIndex2,
+                                                                localParameter
+                                                              );
+                                                            }}
+                                                          />
+                                                          {renderData(
+                                                            innerItem2,
+                                                            "#2C97DE"
+                                                          )}
+                                                        </View>
+                                                        {innerItem2.isOpenInner &&
+                                                          innerItem2
+                                                            .employeeTargetAchievements
+                                                            .length > 0 &&
+                                                          innerItem2.employeeTargetAchievements.map(
+                                                            (
+                                                              innerItem3,
+                                                              innerIndex3
+                                                            ) => {
+                                                              return (
                                                                 <View
-                                                                  style={{
-                                                                    paddingHorizontal: 4,
-                                                                    display:
-                                                                      "flex",
-                                                                    flexDirection:
-                                                                      "row",
-                                                                    justifyContent:
-                                                                      "space-between",
-                                                                    paddingVertical: 4,
-                                                                  }}
+                                                                  key={
+                                                                    innerIndex3
+                                                                  }
+                                                                  style={[
+                                                                    {
+                                                                      width:
+                                                                        "98%",
+                                                                      minHeight: 40,
+                                                                      flexDirection:
+                                                                        "column",
+                                                                    },
+                                                                    innerItem3.isOpenInner && {
+                                                                      borderRadius: 10,
+                                                                      borderWidth: 1,
+                                                                      borderColor:
+                                                                        "#EC3466",
+                                                                      backgroundColor:
+                                                                        "#FFFFFF",
+                                                                      marginHorizontal: 5,
+                                                                    },
+                                                                  ]}
                                                                 >
-                                                                  <Text
+                                                                  <View
                                                                     style={{
-                                                                      fontSize: 10,
-                                                                      fontWeight:
-                                                                        "500",
+                                                                      paddingHorizontal: 4,
+                                                                      display:
+                                                                        "flex",
+                                                                      flexDirection:
+                                                                        "row",
+                                                                      justifyContent:
+                                                                        "space-between",
+                                                                      paddingVertical: 4,
                                                                     }}
                                                                   >
-                                                                    {
-                                                                      innerItem3.empName
-                                                                    }
-                                                                  </Text>
-                                                                  <SourceModelView
-                                                                    onClick={() => {
-                                                                      navigation.navigate(
-                                                                        AppNavigator
-                                                                          .HomeStackIdentifiers
-                                                                          .sourceModel,
-                                                                        {
-                                                                          empId:
-                                                                            innerItem3.empId,
-                                                                          headerTitle:
-                                                                            innerItem3.empName,
-                                                                          type: "TEAM",
-                                                                          moduleType:
-                                                                            "home",
-                                                                        }
-                                                                      );
-                                                                    }}
-                                                                  />
-                                                                </View>
-                                                                <View
-                                                                  style={{
-                                                                    flexDirection:
-                                                                      "row",
-                                                                  }}
-                                                                >
-                                                                  <RenderLevel1NameView
-                                                                    level={3}
-                                                                    item={
-                                                                      innerItem3
-                                                                    }
-                                                                    color={
-                                                                      "#EC3466"
-                                                                    }
-                                                                    titleClick={async () => {
-                                                                      const localData =
-                                                                        [
-                                                                          ...allParameters,
-                                                                        ];
-                                                                      const localParameter =
-                                                                        localData[
-                                                                          index
-                                                                        ]
-                                                                          .employeeTargetAchievements[
-                                                                          innerIndex1
-                                                                        ]
-                                                                          .employeeTargetAchievements[
-                                                                          innerIndex2
-                                                                        ]
-                                                                          .employeeTargetAchievements;
-                                                                      await onEmployeeNameClick(
-                                                                        innerItem3,
-                                                                        innerIndex3,
-                                                                        localParameter
-                                                                      );
-                                                                    }}
-                                                                  />
-
-                                                                  {renderData(
-                                                                    innerItem3,
-                                                                    "#EC3466"
-                                                                  )}
-                                                                </View>
-                                                                {innerItem3.isOpenInner &&
-                                                                  innerItem3
-                                                                    .employeeTargetAchievements
-                                                                    .length >
-                                                                    0 &&
-                                                                  innerItem3.employeeTargetAchievements.map(
-                                                                    (
-                                                                      innerItem4,
-                                                                      innerIndex4
-                                                                    ) => {
-                                                                      return (
-                                                                        <View
-                                                                          key={
-                                                                            innerIndex4
+                                                                    <Text
+                                                                      style={{
+                                                                        fontSize: 10,
+                                                                        fontWeight:
+                                                                          "500",
+                                                                      }}
+                                                                    >
+                                                                      {
+                                                                        innerItem3.empName
+                                                                      }
+                                                                    </Text>
+                                                                    <SourceModelView
+                                                                      onClick={() => {
+                                                                        navigation.navigate(
+                                                                          AppNavigator
+                                                                            .HomeStackIdentifiers
+                                                                            .sourceModel,
+                                                                          {
+                                                                            empId:
+                                                                              innerItem3.empId,
+                                                                            headerTitle:
+                                                                              innerItem3.empName,
+                                                                            type: "TEAM",
+                                                                            moduleType:
+                                                                              "home",
                                                                           }
-                                                                          style={[
-                                                                            {
-                                                                              width:
-                                                                                "98%",
-                                                                              minHeight: 40,
-                                                                              flexDirection:
-                                                                                "column",
-                                                                            },
-                                                                            innerItem4.isOpenInner && {
-                                                                              borderRadius: 10,
-                                                                              borderWidth: 1,
-                                                                              borderColor:
-                                                                                "#1C95A6",
-                                                                              backgroundColor:
-                                                                                "#EEEEEE",
-                                                                              marginHorizontal: 5,
-                                                                            },
-                                                                          ]}
-                                                                        >
+                                                                        );
+                                                                      }}
+                                                                    />
+                                                                  </View>
+                                                                  <View
+                                                                    style={{
+                                                                      flexDirection:
+                                                                        "row",
+                                                                    }}
+                                                                  >
+                                                                    <RenderLevel1NameView
+                                                                      level={3}
+                                                                      item={
+                                                                        innerItem3
+                                                                      }
+                                                                      color={
+                                                                        "#EC3466"
+                                                                      }
+                                                                      titleClick={async () => {
+                                                                        const localData =
+                                                                          [
+                                                                            ...allParameters,
+                                                                          ];
+                                                                        const localParameter =
+                                                                          localData[
+                                                                            index
+                                                                          ]
+                                                                            .employeeTargetAchievements[
+                                                                            innerIndex1
+                                                                          ]
+                                                                            .employeeTargetAchievements[
+                                                                            innerIndex2
+                                                                          ]
+                                                                            .employeeTargetAchievements;
+                                                                        await onEmployeeNameClick(
+                                                                          innerItem3,
+                                                                          innerIndex3,
+                                                                          localParameter
+                                                                        );
+                                                                      }}
+                                                                    />
+
+                                                                    {renderData(
+                                                                      innerItem3,
+                                                                      "#EC3466"
+                                                                    )}
+                                                                  </View>
+                                                                  {innerItem3.isOpenInner &&
+                                                                    innerItem3
+                                                                      .employeeTargetAchievements
+                                                                      .length >
+                                                                    0 &&
+                                                                    innerItem3.employeeTargetAchievements.map(
+                                                                      (
+                                                                        innerItem4,
+                                                                        innerIndex4
+                                                                      ) => {
+                                                                        return (
                                                                           <View
-                                                                            style={{
-                                                                              flexDirection:
-                                                                                "row",
-                                                                            }}
+                                                                            key={
+                                                                              innerIndex4
+                                                                            }
+                                                                            style={[
+                                                                              {
+                                                                                width:
+                                                                                  "98%",
+                                                                                minHeight: 40,
+                                                                                flexDirection:
+                                                                                  "column",
+                                                                              },
+                                                                              innerItem4.isOpenInner && {
+                                                                                borderRadius: 10,
+                                                                                borderWidth: 1,
+                                                                                borderColor:
+                                                                                  "#1C95A6",
+                                                                                backgroundColor:
+                                                                                  "#EEEEEE",
+                                                                                marginHorizontal: 5,
+                                                                              },
+                                                                            ]}
                                                                           >
-                                                                            <RenderLevel1NameView
-                                                                              level={
-                                                                                4
-                                                                              }
-                                                                              item={
-                                                                                innerItem4
-                                                                              }
-                                                                              color={
-                                                                                "#1C95A6"
-                                                                              }
-                                                                              titleClick={async () => {
-                                                                                const localData =
-                                                                                  [
-                                                                                    ...allParameters,
-                                                                                  ];
-                                                                                const localParameter =
-                                                                                  localData[
-                                                                                    index
-                                                                                  ]
-                                                                                    .employeeTargetAchievements[
-                                                                                    innerIndex1
-                                                                                  ]
-                                                                                    .employeeTargetAchievements[
-                                                                                    innerIndex2
-                                                                                  ]
-                                                                                    .employeeTargetAchievements[
-                                                                                    innerIndex3
-                                                                                  ]
-                                                                                    .employeeTargetAchievements;
-                                                                                await onEmployeeNameClick(
-                                                                                  innerItem4,
-                                                                                  innerIndex4,
-                                                                                  localParameter
-                                                                                );
+                                                                            <View
+                                                                              style={{
+                                                                                flexDirection:
+                                                                                  "row",
                                                                               }}
-                                                                            />
-                                                                            {renderData(
-                                                                              innerItem4,
-                                                                              "#1C95A6"
-                                                                            )}
-                                                                          </View>
-                                                                          {innerItem4.isOpenInner &&
-                                                                            innerItem4
-                                                                              .employeeTargetAchievements
-                                                                              .length >
+                                                                            >
+                                                                              <RenderLevel1NameView
+                                                                                level={
+                                                                                  4
+                                                                                }
+                                                                                item={
+                                                                                  innerItem4
+                                                                                }
+                                                                                color={
+                                                                                  "#1C95A6"
+                                                                                }
+                                                                                titleClick={async () => {
+                                                                                  const localData =
+                                                                                    [
+                                                                                      ...allParameters,
+                                                                                    ];
+                                                                                  const localParameter =
+                                                                                    localData[
+                                                                                      index
+                                                                                    ]
+                                                                                      .employeeTargetAchievements[
+                                                                                      innerIndex1
+                                                                                    ]
+                                                                                      .employeeTargetAchievements[
+                                                                                      innerIndex2
+                                                                                    ]
+                                                                                      .employeeTargetAchievements[
+                                                                                      innerIndex3
+                                                                                    ]
+                                                                                      .employeeTargetAchievements;
+                                                                                  await onEmployeeNameClick(
+                                                                                    innerItem4,
+                                                                                    innerIndex4,
+                                                                                    localParameter
+                                                                                  );
+                                                                                }}
+                                                                              />
+                                                                              {renderData(
+                                                                                innerItem4,
+                                                                                "#1C95A6"
+                                                                              )}
+                                                                            </View>
+                                                                            {innerItem4.isOpenInner &&
+                                                                              innerItem4
+                                                                                .employeeTargetAchievements
+                                                                                .length >
                                                                               0 &&
-                                                                            innerItem4.employeeTargetAchievements.map(
-                                                                              (
-                                                                                innerItem5,
-                                                                                innerIndex5
-                                                                              ) => {
-                                                                                return (
-                                                                                  <View
-                                                                                    key={
-                                                                                      innerIndex5
-                                                                                    }
-                                                                                    style={[
-                                                                                      {
-                                                                                        width:
-                                                                                          "98%",
-                                                                                        minHeight: 40,
-                                                                                        flexDirection:
-                                                                                          "column",
-                                                                                      },
-                                                                                      innerItem5.isOpenInner && {
-                                                                                        borderRadius: 10,
-                                                                                        borderWidth: 1,
-                                                                                        borderColor:
-                                                                                          "#C62159",
-                                                                                        backgroundColor:
-                                                                                          "#FFFFFF",
-                                                                                        marginHorizontal: 5,
-                                                                                      },
-                                                                                    ]}
-                                                                                  >
+                                                                              innerItem4.employeeTargetAchievements.map(
+                                                                                (
+                                                                                  innerItem5,
+                                                                                  innerIndex5
+                                                                                ) => {
+                                                                                  return (
                                                                                     <View
-                                                                                      style={{
-                                                                                        flexDirection:
-                                                                                          "row",
-                                                                                      }}
+                                                                                      key={
+                                                                                        innerIndex5
+                                                                                      }
+                                                                                      style={[
+                                                                                        {
+                                                                                          width:
+                                                                                            "98%",
+                                                                                          minHeight: 40,
+                                                                                          flexDirection:
+                                                                                            "column",
+                                                                                        },
+                                                                                        innerItem5.isOpenInner && {
+                                                                                          borderRadius: 10,
+                                                                                          borderWidth: 1,
+                                                                                          borderColor:
+                                                                                            "#C62159",
+                                                                                          backgroundColor:
+                                                                                            "#FFFFFF",
+                                                                                          marginHorizontal: 5,
+                                                                                        },
+                                                                                      ]}
                                                                                     >
-                                                                                      <RenderLevel1NameView
-                                                                                        level={
-                                                                                          5
-                                                                                        }
-                                                                                        item={
-                                                                                          innerItem5
-                                                                                        }
-                                                                                        color={
-                                                                                          "#C62159"
-                                                                                        }
-                                                                                        titleClick={async () => {
-                                                                                          const localData =
-                                                                                            [
-                                                                                              ...allParameters,
-                                                                                            ];
-                                                                                          const localParameter =
-                                                                                            localData[
-                                                                                              index
-                                                                                            ]
-                                                                                              .employeeTargetAchievements[
-                                                                                              innerIndex1
-                                                                                            ]
-                                                                                              .employeeTargetAchievements[
-                                                                                              innerIndex2
-                                                                                            ]
-                                                                                              .employeeTargetAchievements[
-                                                                                              innerIndex3
-                                                                                            ]
-                                                                                              .employeeTargetAchievements[
-                                                                                              innerIndex4
-                                                                                            ]
-                                                                                              .employeeTargetAchievements;
-                                                                                          await onEmployeeNameClick(
-                                                                                            innerItem5,
-                                                                                            innerIndex5,
-                                                                                            localParameter
-                                                                                          );
+                                                                                      <View
+                                                                                        style={{
+                                                                                          flexDirection:
+                                                                                            "row",
                                                                                         }}
-                                                                                      />
-                                                                                      {renderData(
-                                                                                        innerItem5,
-                                                                                        "#C62159"
-                                                                                      )}
-                                                                                    </View>
-                                                                                    {innerItem5.isOpenInner &&
-                                                                                      innerItem5
-                                                                                        .employeeTargetAchievements
-                                                                                        .length >
+                                                                                      >
+                                                                                        <RenderLevel1NameView
+                                                                                          level={
+                                                                                            5
+                                                                                          }
+                                                                                          item={
+                                                                                            innerItem5
+                                                                                          }
+                                                                                          color={
+                                                                                            "#C62159"
+                                                                                          }
+                                                                                          titleClick={async () => {
+                                                                                            const localData =
+                                                                                              [
+                                                                                                ...allParameters,
+                                                                                              ];
+                                                                                            const localParameter =
+                                                                                              localData[
+                                                                                                index
+                                                                                              ]
+                                                                                                .employeeTargetAchievements[
+                                                                                                innerIndex1
+                                                                                              ]
+                                                                                                .employeeTargetAchievements[
+                                                                                                innerIndex2
+                                                                                              ]
+                                                                                                .employeeTargetAchievements[
+                                                                                                innerIndex3
+                                                                                              ]
+                                                                                                .employeeTargetAchievements[
+                                                                                                innerIndex4
+                                                                                              ]
+                                                                                                .employeeTargetAchievements;
+                                                                                            await onEmployeeNameClick(
+                                                                                              innerItem5,
+                                                                                              innerIndex5,
+                                                                                              localParameter
+                                                                                            );
+                                                                                          }}
+                                                                                        />
+                                                                                        {renderData(
+                                                                                          innerItem5,
+                                                                                          "#C62159"
+                                                                                        )}
+                                                                                      </View>
+                                                                                      {innerItem5.isOpenInner &&
+                                                                                        innerItem5
+                                                                                          .employeeTargetAchievements
+                                                                                          .length >
                                                                                         0 &&
-                                                                                      innerItem5.employeeTargetAchievements.map(
-                                                                                        (
-                                                                                          innerItem6,
-                                                                                          innerIndex6
-                                                                                        ) => {
-                                                                                          return (
-                                                                                            <View
-                                                                                              key={
-                                                                                                innerIndex6
-                                                                                              }
-                                                                                              style={[
-                                                                                                {
-                                                                                                  width:
-                                                                                                    "98%",
-                                                                                                  minHeight: 40,
-                                                                                                  flexDirection:
-                                                                                                    "column",
-                                                                                                },
-                                                                                                innerItem6.isOpenInner && {
-                                                                                                  borderRadius: 10,
-                                                                                                  borderWidth: 1,
-                                                                                                  borderColor:
-                                                                                                    "#C62159",
-                                                                                                  backgroundColor:
-                                                                                                    "#FFFFFF",
-                                                                                                  marginHorizontal: 5,
-                                                                                                },
-                                                                                              ]}
-                                                                                            >
+                                                                                        innerItem5.employeeTargetAchievements.map(
+                                                                                          (
+                                                                                            innerItem6,
+                                                                                            innerIndex6
+                                                                                          ) => {
+                                                                                            return (
                                                                                               <View
-                                                                                                style={{
-                                                                                                  flexDirection:
-                                                                                                    "row",
-                                                                                                }}
+                                                                                                key={
+                                                                                                  innerIndex6
+                                                                                                }
+                                                                                                style={[
+                                                                                                  {
+                                                                                                    width:
+                                                                                                      "98%",
+                                                                                                    minHeight: 40,
+                                                                                                    flexDirection:
+                                                                                                      "column",
+                                                                                                  },
+                                                                                                  innerItem6.isOpenInner && {
+                                                                                                    borderRadius: 10,
+                                                                                                    borderWidth: 1,
+                                                                                                    borderColor:
+                                                                                                      "#C62159",
+                                                                                                    backgroundColor:
+                                                                                                      "#FFFFFF",
+                                                                                                    marginHorizontal: 5,
+                                                                                                  },
+                                                                                                ]}
                                                                                               >
-                                                                                                <RenderLevel1NameView
-                                                                                                  level={
-                                                                                                    6
-                                                                                                  }
-                                                                                                  item={
-                                                                                                    innerItem6
-                                                                                                  }
-                                                                                                  color={
-                                                                                                    "#C62159"
-                                                                                                  }
-                                                                                                  titleClick={async () => {
-                                                                                                    const localData =
-                                                                                                      [
-                                                                                                        ...allParameters,
-                                                                                                      ];
-                                                                                                    const localParameter =
-                                                                                                      localData[
-                                                                                                        index
-                                                                                                      ]
-                                                                                                        .employeeTargetAchievements[
-                                                                                                        innerIndex1
-                                                                                                      ]
-                                                                                                        .employeeTargetAchievements[
-                                                                                                        innerIndex2
-                                                                                                      ]
-                                                                                                        .employeeTargetAchievements[
-                                                                                                        innerIndex3
-                                                                                                      ]
-                                                                                                        .employeeTargetAchievements[
-                                                                                                        innerIndex4
-                                                                                                      ]
-                                                                                                        .employeeTargetAchievements[
-                                                                                                        innerIndex5
-                                                                                                      ]
-                                                                                                        .employeeTargetAchievements;
-                                                                                                    await onEmployeeNameClick(
-                                                                                                      innerItem6,
-                                                                                                      innerIndex6,
-                                                                                                      localParameter
-                                                                                                    );
+                                                                                                <View
+                                                                                                  style={{
+                                                                                                    flexDirection:
+                                                                                                      "row",
                                                                                                   }}
-                                                                                                />
-                                                                                                {renderData(
-                                                                                                  innerItem6,
-                                                                                                  "#C62159"
-                                                                                                )}
+                                                                                                >
+                                                                                                  <RenderLevel1NameView
+                                                                                                    level={
+                                                                                                      6
+                                                                                                    }
+                                                                                                    item={
+                                                                                                      innerItem6
+                                                                                                    }
+                                                                                                    color={
+                                                                                                      "#C62159"
+                                                                                                    }
+                                                                                                    titleClick={async () => {
+                                                                                                      const localData =
+                                                                                                        [
+                                                                                                          ...allParameters,
+                                                                                                        ];
+                                                                                                      const localParameter =
+                                                                                                        localData[
+                                                                                                          index
+                                                                                                        ]
+                                                                                                          .employeeTargetAchievements[
+                                                                                                          innerIndex1
+                                                                                                        ]
+                                                                                                          .employeeTargetAchievements[
+                                                                                                          innerIndex2
+                                                                                                        ]
+                                                                                                          .employeeTargetAchievements[
+                                                                                                          innerIndex3
+                                                                                                        ]
+                                                                                                          .employeeTargetAchievements[
+                                                                                                          innerIndex4
+                                                                                                        ]
+                                                                                                          .employeeTargetAchievements[
+                                                                                                          innerIndex5
+                                                                                                        ]
+                                                                                                          .employeeTargetAchievements;
+                                                                                                      await onEmployeeNameClick(
+                                                                                                        innerItem6,
+                                                                                                        innerIndex6,
+                                                                                                        localParameter
+                                                                                                      );
+                                                                                                    }}
+                                                                                                  />
+                                                                                                  {renderData(
+                                                                                                    innerItem6,
+                                                                                                    "#C62159"
+                                                                                                  )}
+                                                                                                </View>
                                                                                               </View>
-                                                                                            </View>
-                                                                                          );
-                                                                                        }
-                                                                                      )}
-                                                                                  </View>
-                                                                                );
-                                                                              }
-                                                                            )}
-                                                                        </View>
-                                                                      );
-                                                                    }
-                                                                  )}
-                                                              </View>
-                                                            );
-                                                          }
-                                                        )}
-                                                    </View>
-                                                  );
-                                                }
-                                              )}
+                                                                                            );
+                                                                                          }
+                                                                                        )}
+                                                                                    </View>
+                                                                                  );
+                                                                                }
+                                                                              )}
+                                                                          </View>
+                                                                        );
+                                                                      }
+                                                                    )}
+                                                                </View>
+                                                              );
+                                                            }
+                                                          )}
+                                                      </View>
+                                                    );
+                                                  }
+                                                )}
+                                            </View>
                                           </View>
-                                        </View>
-                                      );
-                                    }
-                                  )}
-                                {/* GET EMPLOYEE TOTAL MAIN ITEM */}
+                                        );
+                                      }
+                                    )}
+                                  {/* GET EMPLOYEE TOTAL MAIN ITEM */}
+                                </View>
                               </View>
                             </View>
-                          </View>
-                        );
-                      })}
-                  </ScrollView>
-                </View>
-                {/* Grand Total Section */}
-                {selector.totalParameters.length > 0 && (
-                  <View style={{ width: Dimensions.get("screen").width - 35 }}>
-                    <SourceModelView
-                      style={{ alignSelf: "flex-end" }}
-                      onClick={() => {
-                        navigation.navigate(
-                          AppNavigator.HomeStackIdentifiers.sourceModel,
-                          {
-                            empId: selector.login_employee_details.empId,
-                            headerTitle: "Grand Total",
-                            loggedInEmpId:
-                              selector.login_employee_details.empId,
-                            type: "TEAM",
-                            moduleType: "home",
+                          );
+                        })}
+                    </ScrollView>
+                  </View>
+                  {/* Grand Total Section */}
+                  {selector.totalParameters.length > 0 && (
+                    <View style={{ width: Dimensions.get("screen").width - 35 }}>
+                      <SourceModelView
+                        style={{ alignSelf: "flex-end" }}
+                        onClick={async () => {
+                          let employeeData = await AsyncStore.getData(
+                            AsyncStore.Keys.LOGIN_EMPLOYEE
+                          );
+                          if (employeeData) {
+                            const jsonObj = JSON.parse(employeeData);
+                            navigation.navigate(
+                              AppNavigator.HomeStackIdentifiers.sourceModel,
+                              {
+                                empId: selector.login_employee_details.empId,
+                                headerTitle: "Grand Total",
+                                loggedInEmpId: jsonObj.empId,
+                                type: "TEAM",
+                                moduleType: "home",
+                                orgId: selector.login_employee_details.orgId,
+                              }
+                            );
                           }
-                        );
-                      }}
-                    />
+                        }}
+                      />
 
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        height: 40,
-                        backgroundColor: Colors.CORAL,
-                      }}
-                    >
                       <View
                         style={{
-                          width: 100,
-                          justifyContent: "space-around",
                           flexDirection: "row",
-                          backgroundColor: Colors.RED,
-                          height: 45,
+                          height: 40,
+                          backgroundColor: Colors.CORAL,
                         }}
                       >
-                        <View />
                         <View
                           style={{
-                            justifyContent: "center",
-                            alignItems: "center",
+                            width: 100,
+                            justifyContent: "space-around",
+                            flexDirection: "row",
+                            backgroundColor: Colors.RED,
+                            height: 45,
                           }}
                         >
-                          <Text
-                            style={[
-                              styles.grandTotalText,
-                              {
+                          <View />
+                          <View
+                            style={{
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                          >
+                            <Text
+                              style={[
+                                styles.grandTotalText,
+                                {
+                                  color: Colors.WHITE,
+                                  fontSize: 12,
+                                },
+                              ]}
+                            >
+                              Total
+                            </Text>
+                          </View>
+                          <View style={{ alignSelf: "flex-end" }}>
+                            <Text
+                              style={{
+                                fontSize: 10,
+                                fontWeight: "bold",
+                                paddingVertical: 6,
+                                paddingRight: 2,
+                                height: 22,
                                 color: Colors.WHITE,
-                                fontSize: 12,
-                              },
-                            ]}
-                          >
-                            Total
-                          </Text>
+                              }}
+                            >
+                              ACH
+                            </Text>
+                            <Text
+                              style={{
+                                fontSize: 10,
+                                fontWeight: "bold",
+                                paddingVertical: 6,
+                                height: 25,
+                                color: Colors.WHITE,
+                              }}
+                            >
+                              TGT
+                            </Text>
+                          </View>
                         </View>
-                        <View style={{ alignSelf: "flex-end" }}>
-                          <Text
-                            style={{
-                              fontSize: 10,
-                              fontWeight: "bold",
-                              paddingVertical: 6,
-                              paddingRight: 2,
-                              height: 22,
-                              color: Colors.WHITE,
-                            }}
-                          >
-                            ACH
-                          </Text>
-                          <Text
-                            style={{
-                              fontSize: 10,
-                              fontWeight: "bold",
-                              paddingVertical: 6,
-                              height: 25,
-                              color: Colors.WHITE,
-                            }}
-                          >
-                            TGT
-                          </Text>
-                        </View>
-                      </View>
-                      <View
-                        style={{
-                          minHeight: 40,
-                          flexDirection: "column",
-                        }}
-                      >
                         <View
                           style={{
                             minHeight: 40,
-                            flexDirection: "row",
+                            flexDirection: "column",
                           }}
                         >
-                          <RenderGrandTotal
-                            totalParams={selector.totalParameters}
-                            displayType={togglePercentage}
-                            params={toggleParamsMetaData}
-                          />
+                          <View
+                            style={{
+                              minHeight: 40,
+                              flexDirection: "row",
+                            }}
+                          >
+                            <RenderGrandTotal
+                              totalParams={selector.totalParameters}
+                              displayType={togglePercentage}
+                              params={toggleParamsMetaData}
+                            />
+                          </View>
                         </View>
                       </View>
                     </View>
-                  </View>
-                )}
-              </ScrollView>
+                  )}
+                </ScrollView>}
             </View>
           ) : (
             // IF Self or insights
@@ -1649,7 +1712,7 @@ const TargetScreen = ({ route }) => {
                               Math.floor(
                                 (parseInt(bookingData?.achievment) /
                                   parseInt(enqData?.achievment)) *
-                                  100
+                                100
                               ) > 40
                                 ? "#14ce40"
                                 : "#ff0000",
@@ -1658,13 +1721,13 @@ const TargetScreen = ({ route }) => {
                           }}
                         >
                           {parseInt(bookingData?.achievment) === 0 ||
-                          parseInt(enqData?.achievment) === 0
+                            parseInt(enqData?.achievment) === 0
                             ? 0
                             : Math.round(
-                                (parseInt(bookingData?.achievment) /
-                                  parseInt(enqData?.achievment)) *
-                                  100
-                              )}
+                              (parseInt(bookingData?.achievment) /
+                                parseInt(enqData?.achievment)) *
+                              100
+                            )}
                           %
                         </Text>
                       ) : (
@@ -1697,7 +1760,7 @@ const TargetScreen = ({ route }) => {
                               Math.floor(
                                 (parseInt(visitData?.achievment) /
                                   parseInt(enqData?.achievment)) *
-                                  100
+                                100
                               ) > 40
                                 ? "#14ce40"
                                 : "#ff0000",
@@ -1706,13 +1769,13 @@ const TargetScreen = ({ route }) => {
                           }}
                         >
                           {parseInt(enqData?.achievment) === 0 ||
-                          parseInt(visitData?.achievment) === 0
+                            parseInt(visitData?.achievment) === 0
                             ? 0
                             : Math.round(
-                                (parseInt(visitData?.achievment) /
-                                  parseInt(enqData?.achievment)) *
-                                  100
-                              )}
+                              (parseInt(visitData?.achievment) /
+                                parseInt(enqData?.achievment)) *
+                              100
+                            )}
                           %
                         </Text>
                       ) : (
@@ -1745,7 +1808,7 @@ const TargetScreen = ({ route }) => {
                               Math.floor(
                                 (parseInt(finData?.achievment) /
                                   parseInt(retailData?.achievment)) *
-                                  100
+                                100
                               ) > 40
                                 ? "#14ce40"
                                 : "#ff0000",
@@ -1754,13 +1817,13 @@ const TargetScreen = ({ route }) => {
                           }}
                         >
                           {parseInt(finData?.achievment) === 0 ||
-                          parseInt(retailData?.achievment) === 0
+                            parseInt(retailData?.achievment) === 0
                             ? 0
                             : Math.round(
-                                (parseInt(finData?.achievment) /
-                                  parseInt(retailData?.achievment)) *
-                                  100
-                              )}
+                              (parseInt(finData?.achievment) /
+                                parseInt(retailData?.achievment)) *
+                              100
+                            )}
                           %
                         </Text>
                       ) : (
@@ -1795,7 +1858,7 @@ const TargetScreen = ({ route }) => {
                               Math.floor(
                                 (parseInt(retailData?.achievment) /
                                   parseInt(bookingData?.achievment)) *
-                                  100
+                                100
                               ) > 40
                                 ? "#14ce40"
                                 : "#ff0000",
@@ -1804,13 +1867,13 @@ const TargetScreen = ({ route }) => {
                           }}
                         >
                           {parseInt(bookingData?.achievment) === 0 ||
-                          parseInt(retailData?.achievment) === 0
+                            parseInt(retailData?.achievment) === 0
                             ? 0
                             : Math.round(
-                                (parseInt(retailData?.achievment) /
-                                  parseInt(bookingData?.achievment)) *
-                                  100
-                              )}
+                              (parseInt(retailData?.achievment) /
+                                parseInt(bookingData?.achievment)) *
+                              100
+                            )}
                           %
                         </Text>
                       )}
@@ -1834,7 +1897,7 @@ const TargetScreen = ({ route }) => {
                               Math.round(
                                 (parseInt(TDData?.achievment) /
                                   parseInt(enqData?.achievment)) *
-                                  100
+                                100
                               ) > 40
                                 ? "#14ce40"
                                 : "#ff0000",
@@ -1843,13 +1906,13 @@ const TargetScreen = ({ route }) => {
                           }}
                         >
                           {parseInt(TDData?.achievment) === 0 ||
-                          parseInt(enqData?.achievment) === 0
+                            parseInt(enqData?.achievment) === 0
                             ? 0
                             : Math.floor(
-                                (parseInt(TDData?.achievment) /
-                                  parseInt(enqData?.achievment)) *
-                                  100
-                              )}
+                              (parseInt(TDData?.achievment) /
+                                parseInt(enqData?.achievment)) *
+                              100
+                            )}
                           %
                         </Text>
                       )}
@@ -1873,7 +1936,7 @@ const TargetScreen = ({ route }) => {
                               Math.round(
                                 (parseInt(insData?.achievment) /
                                   parseInt(retailData?.achievment)) *
-                                  100
+                                100
                               ) > 40
                                 ? "#14ce40"
                                 : "#ff0000",
@@ -1882,13 +1945,13 @@ const TargetScreen = ({ route }) => {
                           }}
                         >
                           {parseInt(insData?.achievment) === 0 ||
-                          parseInt(retailData?.achievment) === 0
+                            parseInt(retailData?.achievment) === 0
                             ? 0
                             : Math.floor(
-                                (parseInt(insData?.achievment) /
-                                  parseInt(retailData?.achievment)) *
-                                  100
-                              )}
+                              (parseInt(insData?.achievment) /
+                                parseInt(retailData?.achievment)) *
+                              100
+                            )}
                           %
                         </Text>
                       )}
@@ -1914,7 +1977,7 @@ const TargetScreen = ({ route }) => {
                               Math.floor(
                                 (parseInt(retailData?.achievment) /
                                   parseInt(enqData?.achievment)) *
-                                  100
+                                100
                               ) > 40
                                 ? "#14ce40"
                                 : "#ff0000",
@@ -1923,13 +1986,13 @@ const TargetScreen = ({ route }) => {
                           }}
                         >
                           {parseInt(retailData?.achievment) === 0 ||
-                          parseInt(enqData?.achievment) === 0
+                            parseInt(enqData?.achievment) === 0
                             ? 0
                             : Math.round(
-                                (parseInt(retailData?.achievment) /
-                                  parseInt(enqData?.achievment)) *
-                                  100
-                              )}
+                              (parseInt(retailData?.achievment) /
+                                parseInt(enqData?.achievment)) *
+                              100
+                            )}
                           %
                         </Text>
                       )}
@@ -1953,7 +2016,7 @@ const TargetScreen = ({ route }) => {
                               Math.round(
                                 (parseInt(exgData?.achievment) /
                                   parseInt(retailData?.achievment)) *
-                                  100
+                                100
                               ) > 40
                                 ? "#14ce40"
                                 : "#ff0000",
@@ -1962,13 +2025,13 @@ const TargetScreen = ({ route }) => {
                           }}
                         >
                           {parseInt(exgData?.achievment) === 0 ||
-                          parseInt(retailData?.achievment) === 0
+                            parseInt(retailData?.achievment) === 0
                             ? 0
                             : Math.floor(
-                                (parseInt(exgData?.achievment) /
-                                  parseInt(retailData?.achievment)) *
-                                  100
-                              )}
+                              (parseInt(exgData?.achievment) /
+                                parseInt(retailData?.achievment)) *
+                              100
+                            )}
                           %
                         </Text>
                       )}
@@ -1992,7 +2055,7 @@ const TargetScreen = ({ route }) => {
                               Math.floor(
                                 (parseInt(exwData?.achievment) /
                                   parseInt(retailData?.achievment)) *
-                                  100
+                                100
                               ) > 40
                                 ? "#14ce40"
                                 : "#ff0000",
@@ -2001,13 +2064,13 @@ const TargetScreen = ({ route }) => {
                           }}
                         >
                           {parseInt(exwData?.achievment) === 0 ||
-                          parseInt(retailData?.achievment) === 0
+                            parseInt(retailData?.achievment) === 0
                             ? 0
                             : Math.round(
-                                (parseInt(exwData?.achievment) /
-                                  parseInt(retailData?.achievment)) *
-                                  100
-                              )}
+                              (parseInt(exwData?.achievment) /
+                                parseInt(retailData?.achievment)) *
+                              100
+                            )}
                           %
                         </Text>
                       ) : (
@@ -2042,7 +2105,7 @@ const TargetScreen = ({ route }) => {
                             Math.round(
                               (parseInt(accData?.achievment) /
                                 parseInt(retailData?.achievment)) *
-                                100
+                              100
                             ) > 40
                               ? "#14ce40"
                               : "#ff0000",
@@ -2051,13 +2114,13 @@ const TargetScreen = ({ route }) => {
                         }}
                       >
                         {parseInt(accData?.achievment) === 0 ||
-                        parseInt(retailData?.achievment) === 0
+                          parseInt(retailData?.achievment) === 0
                           ? 0
                           : Math.floor(
-                              (parseInt(accData?.achievment) /
-                                parseInt(retailData?.achievment)) *
-                                100
-                            )}
+                            (parseInt(accData?.achievment) /
+                              parseInt(retailData?.achievment)) *
+                            100
+                          )}
                       </Text>
                     )}
                   </View>
@@ -2070,7 +2133,7 @@ const TargetScreen = ({ route }) => {
       ) : (
         <LoaderComponent
           visible={selector.isLoading}
-          onRequestClose={() => {}}
+          onRequestClose={() => { }}
         />
       )}
     </>

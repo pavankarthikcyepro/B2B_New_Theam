@@ -20,6 +20,8 @@ import { RenderGrandTotal } from "../Home/TabScreens/components/RenderGrandTotal
 import { RenderEmployeeParameters } from "../Home/TabScreens/components/RenderEmployeeParameters";
 import { AppNavigator } from "../../../navigations";
 import { EmsTopTabNavigatorIdentifiers, EMSTopTabNavigatorTwo } from "../../../navigations/emsTopTabNavigator";
+import URL from "../../../networking/endpoints";
+import { client } from "../../../networking/client";
 
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 100) / 5;
@@ -201,11 +203,27 @@ const ParametersScreen = ({ route }) => {
                     tempParams[i] = {
                         ...tempParams[i],
                         isOpenInner: false,
-                        employeeTargetAchievements: []
+                        employeeTargetAchievements: [],
+                        tempTargetAchievements: tempParams[i]?.targetAchievements,
                     }
                     // tempParams[i]["isOpenInner"] = false;
-                    // tempParams[i]["employeeTargetAchievements"] = [];
+                    // tempParams[i]["employeeTargetAchievements"] = [];  
                     if (i === tempParams.length - 1) {
+                        setAllParameters([...tempParams]);
+                    }
+                    let newIds = tempParams.map((emp) => emp.empId);
+                    for (let k = 0; k < newIds.length; k++) {
+                        const element = newIds[k].toString();
+                        let tempPayload = getTotalPayload(employeeData,
+                            element,
+                        );
+                        const response = await client.post(
+                            URL.GET_LIVE_LEADS_INSIGHTS(),
+                            tempPayload
+                        );
+
+                        const json = await response.json();
+                        tempParams[k].targetAchievements = json;
                         setAllParameters([...tempParams]);
                     }
                 }
@@ -250,6 +268,30 @@ const ParametersScreen = ({ route }) => {
         return branchName;
     }
 
+    const getTotalPayload = (employeeData, item) => {
+        const jsonObj = JSON.parse(employeeData);
+        const dateFormat = "YYYY-MM-DD";
+        const currentDate = moment().format(dateFormat);
+        const monthFirstDate = moment(currentDate, dateFormat)
+            .subtract(0, "months")
+            .startOf("month")
+            .format(dateFormat);
+        const monthLastDate = moment(currentDate, dateFormat)
+            .subtract(0, "months")
+            .endOf("month")
+            .format(dateFormat);
+        return {
+          empId: item,
+          endDate: currentDate,
+          levelSelected: null,
+          loggedInEmpId: item,
+          orgId: jsonObj.orgId,
+          pageNo: 0,
+          selectedEmpId: item,
+          size: 100,
+          startDate: "2021-01-01",
+        };
+    };
     const onEmployeeNameClick = async (item, index) => {
         setSelectedName(item.empName); // to display name on click of the left view - first letter
         setTimeout(() => {
@@ -284,7 +326,7 @@ const ParametersScreen = ({ route }) => {
                 }
                 Promise.all([
                     dispatch(getUserWiseTargetParameters(payload))
-                ]).then((res) => {
+                ]).then(async (res) => {
                     let tempRawData = [];
                     tempRawData = res[0]?.payload?.employeeTargetAchievements.filter((emp) => emp.empId !== item.empId);
                     if (tempRawData.length > 0) {
@@ -295,10 +337,33 @@ const ParametersScreen = ({ route }) => {
                                     ...tempRawData[i],
                                     isOpenInner: false,
                                     branchName: getBranchName(tempRawData[i].branchId),
-                                    employeeTargetAchievements: []
+                                    employeeTargetAchievements: [],
+                                    tempTargetAchievements: tempRawData[i]?.targetAchievements,
                                 }
                             if (i === tempRawData.length - 1) {
-                                localData[index].employeeTargetAchievements = tempRawData;
+                                localData[index].employeeTargetAchievements =
+                                    tempRawData;
+                                let newIds = tempRawData.map((emp) => emp.empId);
+                                if (newIds.length >= 2) {
+                                    for (let i = 0; i < newIds.length; i++) {
+                                        const element = newIds[i].toString();
+                                        let tempPayload = getTotalPayload(employeeData,
+                                            element,
+                                        );
+                                        const response = await client.post(
+                                            URL.GET_LIVE_LEADS_INSIGHTS(),
+                                            tempPayload
+                                        );
+                                        const json = await response.json();
+                                        if (Array.isArray(json)) {
+                                            localData[
+                                                index
+                                            ].employeeTargetAchievements[
+                                                i
+                                            ].targetAchievements = json;
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -597,7 +662,7 @@ const ParametersScreen = ({ route }) => {
                                                                                         }
                                                                                         Promise.all([
                                                                                             dispatch(getUserWiseTargetParameters(payload))
-                                                                                        ]).then((res) => {
+                                                                                        ]).then(async (res) => {
                                                                                             let tempRawData = [];
                                                                                             tempRawData = res[0]?.payload?.employeeTargetAchievements.filter((item) => item.empId !== innerItem1.empId);
                                                                                             if (tempRawData.length > 0) {
@@ -605,10 +670,23 @@ const ParametersScreen = ({ route }) => {
                                                                                                     tempRawData[i] = {
                                                                                                         ...tempRawData[i],
                                                                                                         isOpenInner: false,
-                                                                                                        employeeTargetAchievements: []
+                                                                                                        employeeTargetAchievements: [],
+                                                                                                        tempTargetAchievements: tempRawData[i]?.targetAchievements,
                                                                                                     }
                                                                                                     if (i === tempRawData.length - 1) {
                                                                                                         localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements = tempRawData;
+                                                                                                        let newIds = tempRawData.map((emp) => emp.empId);
+                                                                                                        if (newIds.length >= 2) {
+                                                                                                            for (let i = 0; i < newIds.length; i++) {
+                                                                                                                const element = newIds[i].toString();
+                                                                                                                let tempPayload = getTotalPayload(employeeData, element);
+                                                                                                                const response = await client.post(URL.GET_LIVE_LEADS_INSIGHTS(), tempPayload);
+                                                                                                                const json = await response.json();
+                                                                                                                if (Array.isArray(json)) {
+                                                                                                                    localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[i].targetAchievements = json;
+                                                                                                                }
+                                                                                                            }
+                                                                                                        }
                                                                                                     }
                                                                                                 }
                                                                                             }
