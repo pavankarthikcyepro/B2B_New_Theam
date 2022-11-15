@@ -531,7 +531,8 @@ const HomeVisitScreen = ({ route, navigation }) => {
             ></Text>
             <DateSelectItem
               disabled={isViewMode()}
-              label={"Actual Start Date"}
+              label={"Next Followup Date"}
+              // label={"Actual Start Date"}
               value={selector.actual_start_time}
               onPress={() => dispatch(setDatePicker("ACTUAL_START_TIME"))}
             //  value={selector.expected_delivery_date}
@@ -550,13 +551,13 @@ const HomeVisitScreen = ({ route, navigation }) => {
                 },
               ]}
             ></Text>
-            <DateSelectItem
+            {/* <DateSelectItem
               disabled={isViewMode()}
               label={"Actual End Date"}
               value={selector.actual_end_time}
               onPress={() => dispatch(setDatePicker("ACTUAL_END_TIME"))}
             />
-            <Text style={GlobalStyle.underline}></Text>
+            <Text style={GlobalStyle.underline}></Text> */}
           </View>
 
           {isCloseSelected ? (
