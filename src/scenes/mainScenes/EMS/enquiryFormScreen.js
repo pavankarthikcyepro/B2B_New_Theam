@@ -128,6 +128,7 @@ import {
   GetDropList,
   GetEnquiryCarModelList,
   GetFinanceBanksList,
+  isCheckPanOrAadhaar,
   PincodeDetails,
   PincodeDetailsNew,
 } from "../../../utils/helperFunctions";
@@ -1387,15 +1388,20 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     //   return;
     // }
 
-    if (
-      selector.pan_number.length > 0 &&
-      !isValidateAplhaNumeric(selector.pan_number)
-    ) {
+    if (isCheckPanOrAadhaar("pan", selector.pan_number)) {
       scrollToPos(6);
       setOpenAccordian("6");
       showToast("Please enter proper PAN number");
       return;
     }
+    
+    if (isCheckPanOrAadhaar("aadhaar", selector.adhaar_number)) {
+      scrollToPos(6);
+      setOpenAccordian("6");
+      showToast("Please enter proper Aadhaar number");
+      return;
+    }
+
     if (
       selector.gstin_number.length > 0 &&
       !isValidateAplhaNumeric(selector.gstin_number)
@@ -4583,11 +4589,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       style={styles.textInputStyle}
                       value={selector.adhaar_number}
                       label={"Aadhaar Number"}
-                      keyboardType={"phone-pad"}
+                      keyboardType={"number-pad"}
                       maxLength={12}
                       onChangeText={(text) =>
                         dispatch(
-                          setUploadDocuments({ key: "ADHAR", text: text })
+                          setUploadDocuments({ key: "ADHAR", text: text.replace(/[^0-9]/g, ""), })
                         )
                       }
                     />
