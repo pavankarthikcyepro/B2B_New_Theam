@@ -353,6 +353,7 @@ const BookingFormScreen = ({ route, navigation }) => {
         setInsuranceDiscount('');
         setAccDiscount('');
         setInitialTotalAmt(0);
+        setSelectedRegistrationCharges({});
     }
 
     useLayoutEffect(() => {
@@ -450,7 +451,8 @@ const BookingFormScreen = ({ route, navigation }) => {
         selectedWarrentyPrice,
         // selectedPaidAccessoriesPrice,
         selector.vechicle_registration,
-        taxPercent
+        taxPercent,
+        selector.registrationCharges
     ]);
 
     useEffect(() => {
@@ -673,13 +675,13 @@ const BookingFormScreen = ({ route, navigation }) => {
             saveAttachmentDetailsInLocalObject(dmsLeadDto.dmsAttachments);
             dispatch(updateDmsAttachments(dmsLeadDto.dmsAttachments));
 
-            // Update Paid Accesories
             if (dmsLeadDto.dmsAccessories.length > 0) {
-                let initialValue = 0;
-                const totalPrice = dmsLeadDto.dmsAccessories.reduce(
-                    (preValue, currentValue) => preValue + currentValue.amount,
-                    initialValue
-                );
+                let totalPrice = 0;
+                dmsLeadDto.dmsAccessories.forEach((item) => {
+                    if (item.dmsAccessoriesType === "MRP") {
+                      totalPrice += item.amount;
+                    }
+                });
                 setSelectedPaidAccessoriesPrice(totalPrice);
             }
             setSelectedPaidAccessoriesList([...dmsLeadDto.dmsAccessories]);
@@ -1107,6 +1109,9 @@ const BookingFormScreen = ({ route, navigation }) => {
 
         if (fastTagSelected) {
             totalPrice += priceInfomationData.fast_tag;
+        }
+        if (selector.registrationCharges) {
+            totalPrice += Number(selector.registrationCharges);
         }
         console.log("LIFE TAX PRICE: ", lifeTax, priceInfomationData.registration_charges, selectedInsurencePrice, selectedAddOnsPrice, selectedWarrentyPrice, handleSelected, priceInfomationData.handling_charges, essentialSelected, priceInfomationData.essential_kit, tcsPrice, fastTagSelected, priceInfomationData.fast_tag, selectedPaidAccessoriesPrice);
         // setTotalOnRoadPriceAfterDiscount(totalPrice - selectedFOCAccessoriesPrice);
@@ -1742,11 +1747,11 @@ const BookingFormScreen = ({ route, navigation }) => {
         let newFormatSelectedAccessories = [];
         tableData.forEach((item) => {
             if (item.selected) {
-                totalPrice += item.cost;
                 if (item.item === 'FOC') {
                     totFoc += item.cost
                 }
                 if (item.item === 'MRP') {
+                    totalPrice += item.cost;
                     totMrp += item.cost
                 }
                 newFormatSelectedAccessories.push({
@@ -3361,11 +3366,21 @@ const BookingFormScreen = ({ route, navigation }) => {
                                         }}
                                     >
                                         {selectedPaidAccessoriesList?.map((item, index) => {
-                                            return (
-                                                <Text style={styles.accessoriText} key={"ACC" + index}>
-                                                    {item.accessoriesName + " - " + item.amount}
-                                                </Text>
-                                            );
+                                            if (
+                                              item?.dmsAccessoriesType !== "FOC"
+                                            ){
+                                                return (
+                                                  <Text
+                                                    style={styles.accessoriText}
+                                                    key={"ACC" + index}
+                                                  >
+                                                    {item.accessoriesName +
+                                                      " - " +
+                                                      item.amount}
+                                                  </Text>
+                                                );
+                                            }
+                                            return null;
                                         })}
                                         <Text
                                             style={[GlobalStyle.underline, { marginTop: 5 }]}

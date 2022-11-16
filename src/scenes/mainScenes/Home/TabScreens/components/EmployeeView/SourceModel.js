@@ -115,9 +115,9 @@ const SourceModel = ({ route, navigation }) => {
       pageNo: 0,
       size: 100,
     };
-    let key = moduleType !== "live-leads" ? "" :"LIVE-LEADS";
-    dispatch(getSourceModelDataForSelf({ type, payload, key}));
-  }, [empId,navigation]);
+    let key = moduleType !== "live-leads" ? "" : "LIVE-LEADS";
+    dispatch(getSourceModelDataForSelf({ type, payload, key }));
+  }, [empId, navigation]);
 
   useEffect(() => {
     setToggleParamsIndex(0);
@@ -292,15 +292,14 @@ const SourceModel = ({ route, navigation }) => {
     },
   ];
 
-  if (moduleType !== 'live-leads') {
-    paramsMetadata.splice(6, 0,
-        {
-          color: "#C62159",
-          paramName: "DROPPED",
-          shortName: "Lost",
-          initial: "DRP",
-          toggleIndex: 0,
-        })
+  if (moduleType !== "live-leads") {
+    paramsMetadata.splice(6, 0, {
+      color: "#C62159",
+      paramName: "DROPPED",
+      shortName: "Lost",
+      initial: "DRP",
+      toggleIndex: 0,
+    });
   }
 
   const getData = (data, type) => {
@@ -334,7 +333,8 @@ const SourceModel = ({ route, navigation }) => {
                     />
                   )}
                 </View>
-              </View>);
+              </View>
+            );
           })}
       </>
     );
@@ -436,42 +436,47 @@ const SourceModel = ({ route, navigation }) => {
           >
             {moduleType !== "live-leads" && (
               <>
-              <SegmentedControl
-                style={{
-                  marginHorizontal: 4,
-                  justifyContent: "center",
-                  alignSelf: "flex-end",
-                  height: 24,
-                  marginTop: 8,
-                  width: "75%",
-                }}
-                values={["ETVBRL", "Allied", "View All"]}
-                selectedIndex={toggleParamsIndex}
-                tintColor={Colors.RED}
-                fontStyle={{ color: Colors.BLACK, fontSize: 10 }}
-                activeFontStyle={{ color: Colors.WHITE, fontSize: 10 }}
-                onChange={(event) => {
-                  const index = event.nativeEvent.selectedSegmentIndex;
-                  let data = [...paramsMetadata];
-                  if (index !== 2) {
-                    data = data.filter((x) => x.toggleIndex === index);
-                  } else {
-                    data = [...paramsMetadata];
-                  }
-                  setToggleParamsMetaData([...data]);
-                  setToggleParamsIndex(index);
-                }}
-              />
-               <View
-              style={{ height: 24, marginTop: 5, width: "20%", marginLeft: 4 }}
-            >
-              <View style={styles.percentageToggleView}>
-                <PercentageToggleControl
-                  toggleChange={(x) => setDisplayType(x)}
+                <SegmentedControl
+                  style={{
+                    marginHorizontal: 4,
+                    justifyContent: "center",
+                    alignSelf: "flex-end",
+                    height: 24,
+                    marginTop: 8,
+                    width: "75%",
+                  }}
+                  values={["ETVBRL", "Allied", "View All"]}
+                  selectedIndex={toggleParamsIndex}
+                  tintColor={Colors.RED}
+                  fontStyle={{ color: Colors.BLACK, fontSize: 10 }}
+                  activeFontStyle={{ color: Colors.WHITE, fontSize: 10 }}
+                  onChange={(event) => {
+                    const index = event.nativeEvent.selectedSegmentIndex;
+                    let data = [...paramsMetadata];
+                    if (index !== 2) {
+                      data = data.filter((x) => x.toggleIndex === index);
+                    } else {
+                      data = [...paramsMetadata];
+                    }
+                    setToggleParamsMetaData([...data]);
+                    setToggleParamsIndex(index);
+                  }}
                 />
-              </View>
-            </View>
-            </>
+                <View
+                  style={{
+                    height: 24,
+                    marginTop: 5,
+                    width: "20%",
+                    marginLeft: 4,
+                  }}
+                >
+                  <View style={styles.percentageToggleView}>
+                    <PercentageToggleControl
+                      toggleChange={(x) => setDisplayType(x)}
+                    />
+                  </View>
+                </View>
+              </>
             )}
           </View>
           <View style={{ height: "85%" }}>

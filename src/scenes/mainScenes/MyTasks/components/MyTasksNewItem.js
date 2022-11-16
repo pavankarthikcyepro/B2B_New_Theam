@@ -97,14 +97,17 @@ export const MyTaskNewItem = ({ from = "MY_TASKS", navigator, type, uniqueId, na
     }
 
     function getStageColor(leadStage, leadStatus) {
-        return leadStatus === "PREENQUIRYCOMPLETED" ||
-            (leadStatus === "ENQUIRYCOMPLETED" &&
-                leadStage === "ENQUIRY") ||
-            (leadStatus === "PREBOOKINGCOMPLETED" &&
-                leadStage === "PREBOOKING") ||
-            leadStatus === "BOOKINGCOMPLETED"
-            ? "#18a835"
-            : "#f29a22";
+             return leadStatus === "PREENQUIRYCOMPLETED" ||
+               (leadStatus === "ENQUIRYCOMPLETED" && leadStage === "ENQUIRY") ||
+               (leadStatus === "PREBOOKINGCOMPLETED" &&
+                 leadStage === "PREBOOKING") ||
+               (leadStatus === "PREDELIVERYCOMPLETED" &&
+                 leadStage === "PREDELIVERY") ||
+               (leadStatus === "INVOICECOMPLETED" && leadStage === "INVOICE") ||
+               (leadStatus === "DELIVERYCOMPLETED" && leadStage === "DELIVERY") ||
+               (leadStatus === "BOOKINGCOMPLETED" && leadStage === "BOOKING")
+               ? "#18a835"
+               : "#f29a22";
     }
     function getCategoryTextColor(cat) {
         let color = '#7b79f6';

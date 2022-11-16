@@ -175,8 +175,16 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
             .then(response => {
                 if (response.success === true) {
                     // go to parent screen
+                    // getPreEnquiryListFromServer();
+                    // navigation.navigate(EmsTopTabNavigatorIdentifiers.enquiry);
                     showToastSucess("Sent for Manager Approval");
-                    goToParentScreen();
+                    navigation.navigate(
+                      EmsTopTabNavigatorIdentifiers.preEnquiry,
+                      {
+                        isContactRefresh: true,
+                      }
+                    );
+                    dispatch(clearState());
                 } else {
                     showToast("Update Drop Lead Failed")
                 }
