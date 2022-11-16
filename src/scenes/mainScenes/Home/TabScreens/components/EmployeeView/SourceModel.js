@@ -33,7 +33,7 @@ const SourceModel = ({ route, navigation }) => {
   const [toggleParamsIndex, setToggleParamsIndex] = useState(0);
   const [toggleParamsMetaData, setToggleParamsMetaData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-const scrollViewRef = useRef();
+  const scrollViewRef = useRef();
   useEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
