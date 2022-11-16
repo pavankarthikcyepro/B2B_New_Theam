@@ -90,9 +90,9 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
       case "PRE_BOOKING_FOLLOW_UP":
         title = "Booking approval task";
         break;
-        case "BOOKING_FOLLOW_UP":
-          title ="Booking follow up";
-          break;
+      case "BOOKING_FOLLOW_UP":
+        title = "Booking follow up";
+        break;
     }
 
     navigation.setOptions({
@@ -111,7 +111,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
       console.log("TYPE:", reasonTaskName);
       getCurrentLocation()
       let taskName = reasonTaskName;
-      if (taskName ==='Contacts followup') { // this change is to send the previously used taskName value to the service call.
+      if (taskName === 'Contacts followup') { // this change is to send the previously used taskName value to the service call.
         taskName = 'Pre Enquiry Followup'
       }
       getReasonListData(taskName)
@@ -128,13 +128,13 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
     });
   }
   useEffect(() => {
-    if(selector.isReasonUpdate && reasonList.length > 0){
+    if (selector.isReasonUpdate && reasonList.length > 0) {
       let reason = selector.reason;
       let findIndex = reasonList.findIndex((item) => {
         return item.value === selector.reason
       })
       console.log("DEFAULT INDEX:", findIndex);
-      if(findIndex !== -1){
+      if (findIndex !== -1) {
         setDefaultReasonIndex(reasonList[findIndex].value)
       }
       else if (reason) {
@@ -152,7 +152,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
       const dmsLeadProducts = dmsLeadDto.dmsLeadProducts;
       if (dmsLeadProducts && dmsLeadProducts.length) {
         const selectedModelData = dmsLeadProducts[0];
-        const {model, variant} = selectedModelData;
+        const { model, variant } = selectedModelData;
         updateModelVarientsData(model, false);
       }
 
@@ -160,8 +160,8 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
   }, [selector.enquiry_details_response]);
 
   console.log(
-      'selector.enquiry_detail---',
-      selector.enquiry_details_response?.dmsLeadDto?.model
+    'selector.enquiry_detail---',
+    selector.enquiry_details_response?.dmsLeadDto?.model
   );
 
   const getReasonListData = async (taskName) => {
@@ -391,7 +391,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
   };
 
   const isViewMode = () => {
-    if(route?.params?.taskStatus === "CLOSED"){
+    if (route?.params?.taskStatus === "CLOSED") {
       return true;
     }
     return false;
@@ -451,28 +451,28 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
           <View style={[GlobalStyle.shadow]}>
             {(identifier === "ENQUIRY_FOLLOW_UP" ||
               identifier === "PRE_ENQUIRY_FOLLOW_UP") && (
-              <View>
-                <DropDownSelectionItem
-                  label={"Model"}
-                  disabled={isViewMode()}
-                  value={selector.enquiry_details_response?.dmsLeadDto?.model}
-                  onPress={() =>
-                    setDropDownDataForModel("MODEL", "Select Model")
-                  }
-                />
-
-                {identifier === "ENQUIRY_FOLLOW_UP" && (
+                <View>
                   <DropDownSelectionItem
-                    label={"Varient"}
+                    label={"Model"}
                     disabled={isViewMode()}
-                    value={selector.varient}
+                    value={selector.enquiry_details_response?.dmsLeadDto?.model}
                     onPress={() =>
-                      setDropDownDataForModel("VARIENT", "Select Varient")
+                      setDropDownDataForModel("MODEL", "Select Model")
                     }
                   />
-                )}
-              </View>
-            )}
+
+                  {identifier === "ENQUIRY_FOLLOW_UP" && (
+                    <DropDownSelectionItem
+                      label={"Varient"}
+                      disabled={isViewMode()}
+                      value={selector.varient}
+                      onPress={() =>
+                        setDropDownDataForModel("VARIENT", "Select Varient")
+                      }
+                    />
+                  )}
+                </View>
+              )}
 
             {/* <TextinputComp
               style={styles.textInputStyle}
@@ -616,13 +616,14 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
               ]}
             ></Text>
             <DateSelectItem
-              label={"Actual Start Date"}
+              label={"Next Followup Date"}
+              // label={"Actual Start Date"}
               disabled={isViewMode()}
               value={selector.actual_start_time}
               onPress={() => dispatch(setDatePicker("ACTUAL_START_TIME"))}
-              //  value={selector.expected_delivery_date}
-              // onPress={() =>
-              // dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
+            //  value={selector.expected_delivery_date}
+            // onPress={() =>
+            // dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
             />
             <Text
               style={[
@@ -630,19 +631,19 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
                 {
                   backgroundColor:
                     isSubmitPress &&
-                    (selector.actual_start_time === "" || isDateError)
+                      (selector.actual_start_time === "" || isDateError)
                       ? "red"
                       : "rgba(208, 212, 214, 0.7)",
                 },
               ]}
             ></Text>
-            <DateSelectItem
+            {/* <DateSelectItem
               label={"Actual End Date"}
               disabled={isViewMode()}
               value={selector.actual_end_time}
               onPress={() => dispatch(setDatePicker("ACTUAL_END_TIME"))}
             />
-            <Text style={GlobalStyle.underline}></Text>
+            <Text style={GlobalStyle.underline}></Text> */}
           </View>
 
           {selector.task_status !== "CANCELLED" ? (

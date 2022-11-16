@@ -49,6 +49,29 @@ export const isValidateAlphabetics = (text) => {
   return false;
 };
 
+export const isCheckPanOrAadhaar = (type, text) => {
+  let error = false;
+  if (type === "pan") {
+    if (text.length > 0) {
+      if (text.length != 10) {
+        error = true;
+      } else if (!isValidateAplhaNumeric(text)) {
+        error = true;
+      }
+    }
+  } else {
+    if (text.length > 0) {
+      if (text.length != 12) {
+        error = true;
+      } else if (!isPincode(text)) {
+        error = true;
+      }
+    }
+  }
+
+  return error;
+};
+
 export const isValidateAplhaNumeric = (text) => {
   // const regex = /^[a-zA-Z]+$/;/^[A-Za-z0-9]+$/
   const regex = /^[A-Za-z0-9]+$/;

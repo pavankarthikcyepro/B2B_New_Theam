@@ -2233,7 +2233,7 @@ export const RenderLevel1NameView = ({
             <IconButton
               icon="map-marker"
               style={{ padding: 0, margin: 0 }}
-              color={Colors.BLACK}
+              color={Colors.RED}
               size={8}
             />
             <Text style={{ fontSize: 8 }} numberOfLines={2}>

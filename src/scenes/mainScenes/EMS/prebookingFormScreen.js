@@ -121,7 +121,8 @@ import {
     GetPaidAccessoriesList,
     GetDropList,
     isEmail,
-    PincodeDetailsNew
+    PincodeDetailsNew,
+    isCheckPanOrAadhaar
 } from "../../../utils/helperFunctions";
 import URL from "../../../networking/endpoints";
 import uuid from "react-native-uuid";
@@ -1808,12 +1809,26 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       // }
 
       if (selector.form_or_pan === "PAN") {
+        let error = false;
         if (selector.pan_number.length == 0) {
+          error = true;
+        } else if (isCheckPanOrAadhaar("pan", selector.pan_number)) {
+          error = true;
+        }
+
+        if (error) {
           scrollToPos(4);
           setOpenAccordian("4");
           showToast("please enter PAN Number");
           return;
         }
+      }
+
+      if (isCheckPanOrAadhaar("aadhaar", selector.adhaar_number)) {
+        scrollToPos(4);
+        setOpenAccordian("4");
+        showToast("Please enter proper Aadhaar number");
+        return;
       }
 
       if (taxPercent === "") {
@@ -4523,13 +4538,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         style={styles.textInputStyle}
                         value={selector.adhaar_number}
                         label={"Aadhaar Number"}
-                        keyboardType={"phone-pad"}
+                        keyboardType={"number-pad"}
                         maxLength={12}
                         onChangeText={(text) =>
                           dispatch(
                             setDocumentUploadDetails({
                               key: "ADHAR",
-                              text: text,
+                              text: text.replace(/[^0-9]/g, ""),
                             })
                           )
                         }

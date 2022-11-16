@@ -272,7 +272,9 @@ const ParametersScreen = ({ route }) => {
   useEffect(async () => {
     try {
       setIsLoading(true);
-      let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
         if (selector.all_emp_parameters_data.length > 0) {
@@ -311,9 +313,8 @@ const ParametersScreen = ({ route }) => {
       }
       setIsLoading(false);
     } catch (error) {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-
   }, [selector.all_emp_parameters_data]);
 
   const getColor = (ach, tar) => {
@@ -612,7 +613,9 @@ const ParametersScreen = ({ route }) => {
               {/*    </View>*/}
               {/*</View>*/}
             </View>
-            {isLoading ? <ActivityIndicator color={Colors.RED} size={'large'} /> :
+            {isLoading ? (
+              <ActivityIndicator color={Colors.RED} size={"large"} />
+            ) : (
               <ScrollView
                 contentContainerStyle={{
                   paddingRight: 0,
@@ -631,7 +634,9 @@ const ParametersScreen = ({ route }) => {
                     borderBottomColor: Colors.GRAY,
                   }}
                 >
-                  <View style={{ width: 70, height: 20, marginRight: 5 }}></View>
+                  <View
+                    style={{ width: 70, height: 20, marginRight: 5 }}
+                  ></View>
                   <View
                     style={{ width: "100%", height: 20, flexDirection: "row" }}
                   >
@@ -787,11 +792,13 @@ const ParametersScreen = ({ route }) => {
                                           <Pressable
                                             onPress={() => {
                                               navigation.navigate(
-                                                AppNavigator.HomeStackIdentifiers
+                                                AppNavigator
+                                                  .HomeStackIdentifiers
                                                   .sourceModel,
                                                 {
                                                   empId: innerItem1.empId,
-                                                  headerTitle: innerItem1.empName,
+                                                  headerTitle:
+                                                    innerItem1.empName,
                                                   type: "TEAM",
                                                   moduleType: "live-leads",
                                                 }
@@ -817,11 +824,15 @@ const ParametersScreen = ({ route }) => {
                                             item={innerItem1}
                                             color={"#F59D00"}
                                             titleClick={async () => {
-                                              setSelectedName(innerItem1.empName);
+                                              setSelectedName(
+                                                innerItem1.empName
+                                              );
                                               setTimeout(() => {
                                                 setSelectedName("");
                                               }, 900);
-                                              let localData = [...allParameters];
+                                              let localData = [
+                                                ...allParameters,
+                                              ];
                                               let current =
                                                 localData[index]
                                                   .employeeTargetAchievements[
@@ -845,7 +856,7 @@ const ParametersScreen = ({ route }) => {
                                                   localData[index]
                                                     .employeeTargetAchievements
                                                     .length -
-                                                  1
+                                                    1
                                                 ) {
                                                   localData[
                                                     index
@@ -858,12 +869,14 @@ const ParametersScreen = ({ route }) => {
                                               if (!current) {
                                                 let employeeData =
                                                   await AsyncStore.getData(
-                                                    AsyncStore.Keys.LOGIN_EMPLOYEE
+                                                    AsyncStore.Keys
+                                                      .LOGIN_EMPLOYEE
                                                   );
                                                 if (employeeData) {
                                                   const jsonObj =
                                                     JSON.parse(employeeData);
-                                                  const dateFormat = "YYYY-MM-DD";
+                                                  const dateFormat =
+                                                    "YYYY-MM-DD";
                                                   const currentDate =
                                                     moment().format(dateFormat);
                                                   const monthFirstDate = moment(
@@ -885,7 +898,8 @@ const ParametersScreen = ({ route }) => {
                                                     selectedEmpId:
                                                       innerItem1.empId,
                                                     endDate: currentDate,
-                                                    loggedInEmpId: jsonObj.empId,
+                                                    loggedInEmpId:
+                                                      jsonObj.empId,
                                                     empId: innerItem1.empId,
                                                     startDate: monthFirstDate,
                                                     levelSelected: null,
@@ -906,7 +920,9 @@ const ParametersScreen = ({ route }) => {
                                                           item.empId !==
                                                           innerItem1.empId
                                                       );
-                                                    if (tempRawData.length > 0) {
+                                                    if (
+                                                      tempRawData.length > 0
+                                                    ) {
                                                       for (
                                                         let i = 0;
                                                         i < tempRawData.length;
@@ -991,7 +1007,9 @@ const ParametersScreen = ({ route }) => {
                                                   // setAllParameters([...localData])
                                                 }
                                               } else {
-                                                setAllParameters([...localData]);
+                                                setAllParameters([
+                                                  ...localData,
+                                                ]);
                                               }
                                               // setAllParameters([...localData])
                                             }}
@@ -1016,7 +1034,8 @@ const ParametersScreen = ({ route }) => {
                                                       borderRadius: 10,
                                                       borderWidth: 1,
                                                       borderColor: "#2C97DE",
-                                                      backgroundColor: "#EEEEEE",
+                                                      backgroundColor:
+                                                        "#EEEEEE",
                                                       marginHorizontal: 5,
                                                     },
                                                   ]}
@@ -1122,7 +1141,7 @@ const ParametersScreen = ({ route }) => {
                                                             ]
                                                               .employeeTargetAchievements
                                                               .length -
-                                                            1
+                                                              1
                                                           ) {
                                                             localData[
                                                               index
@@ -1160,7 +1179,9 @@ const ParametersScreen = ({ route }) => {
                                                                   0,
                                                                   "months"
                                                                 )
-                                                                .startOf("month")
+                                                                .startOf(
+                                                                  "month"
+                                                                )
                                                                 .format(
                                                                   dateFormat
                                                                 );
@@ -1190,7 +1211,8 @@ const ParametersScreen = ({ route }) => {
                                                                 innerItem2.empId,
                                                               startDate:
                                                                 monthFirstDate,
-                                                              levelSelected: null,
+                                                              levelSelected:
+                                                                null,
                                                               pageNo: 0,
                                                               size: 100,
                                                             };
@@ -1219,10 +1241,11 @@ const ParametersScreen = ({ route }) => {
                                                                   tempRawData.length;
                                                                   i++
                                                                 ) {
-                                                                  tempRawData[i] =
-                                                                  {
-                                                                    ...tempRawData[
+                                                                  tempRawData[
                                                                     i
+                                                                  ] = {
+                                                                    ...tempRawData[
+                                                                      i
                                                                     ],
                                                                     isOpenInner: false,
                                                                     employeeTargetAchievements:
@@ -1231,7 +1254,7 @@ const ParametersScreen = ({ route }) => {
                                                                   if (
                                                                     i ===
                                                                     tempRawData.length -
-                                                                    1
+                                                                      1
                                                                   ) {
                                                                     localData[
                                                                       index
@@ -1361,8 +1384,12 @@ const ParametersScreen = ({ route }) => {
                                                             >
                                                               <RenderLevel1NameView
                                                                 level={3}
-                                                                item={innerItem3}
-                                                                color={"#EC3466"}
+                                                                item={
+                                                                  innerItem3
+                                                                }
+                                                                color={
+                                                                  "#EC3466"
+                                                                }
                                                                 titleClick={async () => {
                                                                   setSelectedName(
                                                                     innerItem3.empName
@@ -1391,7 +1418,8 @@ const ParametersScreen = ({ route }) => {
                                                                     ]
                                                                       .employeeTargetAchievements[
                                                                       innerIndex3
-                                                                    ].isOpenInner;
+                                                                    ]
+                                                                      .isOpenInner;
                                                                   for (
                                                                     let i = 0;
                                                                     i <
@@ -1430,7 +1458,7 @@ const ParametersScreen = ({ route }) => {
                                                                       ]
                                                                         .employeeTargetAchievements
                                                                         .length -
-                                                                      1
+                                                                        1
                                                                     ) {
                                                                       localData[
                                                                         index
@@ -1445,7 +1473,9 @@ const ParametersScreen = ({ route }) => {
                                                                     }
                                                                   }
 
-                                                                  if (!current) {
+                                                                  if (
+                                                                    !current
+                                                                  ) {
                                                                     let employeeData =
                                                                       await AsyncStore.getData(
                                                                         AsyncStore
@@ -1496,24 +1526,24 @@ const ParametersScreen = ({ route }) => {
                                                                             dateFormat
                                                                           );
                                                                       let payload =
-                                                                      {
-                                                                        orgId:
-                                                                          jsonObj.orgId,
-                                                                        selectedEmpId:
-                                                                          innerItem3.empId,
-                                                                        endDate:
-                                                                          currentDate,
-                                                                        loggedInEmpId:
-                                                                          jsonObj.empId,
-                                                                        empId:
-                                                                          innerItem3.empId,
-                                                                        startDate:
-                                                                          monthFirstDate,
-                                                                        levelSelected:
-                                                                          null,
-                                                                        pageNo: 0,
-                                                                        size: 100,
-                                                                      };
+                                                                        {
+                                                                          orgId:
+                                                                            jsonObj.orgId,
+                                                                          selectedEmpId:
+                                                                            innerItem3.empId,
+                                                                          endDate:
+                                                                            currentDate,
+                                                                          loggedInEmpId:
+                                                                            jsonObj.empId,
+                                                                          empId:
+                                                                            innerItem3.empId,
+                                                                          startDate:
+                                                                            monthFirstDate,
+                                                                          levelSelected:
+                                                                            null,
+                                                                          pageNo: 0,
+                                                                          size: 100,
+                                                                        };
                                                                       Promise.all(
                                                                         [
                                                                           dispatch(
@@ -1523,7 +1553,9 @@ const ParametersScreen = ({ route }) => {
                                                                           ),
                                                                         ]
                                                                       ).then(
-                                                                        (res) => {
+                                                                        (
+                                                                          res
+                                                                        ) => {
                                                                           let tempRawData =
                                                                             [];
                                                                           tempRawData =
@@ -1547,18 +1579,18 @@ const ParametersScreen = ({ route }) => {
                                                                               tempRawData[
                                                                                 i
                                                                               ] =
-                                                                              {
-                                                                                ...tempRawData[
-                                                                                i
-                                                                                ],
-                                                                                isOpenInner: false,
-                                                                                employeeTargetAchievements:
-                                                                                  [],
-                                                                              };
+                                                                                {
+                                                                                  ...tempRawData[
+                                                                                    i
+                                                                                  ],
+                                                                                  isOpenInner: false,
+                                                                                  employeeTargetAchievements:
+                                                                                    [],
+                                                                                };
                                                                               if (
                                                                                 i ===
                                                                                 tempRawData.length -
-                                                                                1
+                                                                                  1
                                                                               ) {
                                                                                 localData[
                                                                                   index
@@ -1725,7 +1757,7 @@ const ParametersScreen = ({ route }) => {
                                                                                 ]
                                                                                   .employeeTargetAchievements
                                                                                   .length -
-                                                                                1
+                                                                                  1
                                                                               ) {
                                                                                 localData[
                                                                                   index
@@ -1795,24 +1827,24 @@ const ParametersScreen = ({ route }) => {
                                                                                       dateFormat
                                                                                     );
                                                                                 let payload =
-                                                                                {
-                                                                                  orgId:
-                                                                                    jsonObj.orgId,
-                                                                                  selectedEmpId:
-                                                                                    innerItem4.empId,
-                                                                                  endDate:
-                                                                                    currentDate,
-                                                                                  loggedInEmpId:
-                                                                                    jsonObj.empId,
-                                                                                  empId:
-                                                                                    innerItem4.empId,
-                                                                                  startDate:
-                                                                                    monthFirstDate,
-                                                                                  levelSelected:
-                                                                                    null,
-                                                                                  pageNo: 0,
-                                                                                  size: 100,
-                                                                                };
+                                                                                  {
+                                                                                    orgId:
+                                                                                      jsonObj.orgId,
+                                                                                    selectedEmpId:
+                                                                                      innerItem4.empId,
+                                                                                    endDate:
+                                                                                      currentDate,
+                                                                                    loggedInEmpId:
+                                                                                      jsonObj.empId,
+                                                                                    empId:
+                                                                                      innerItem4.empId,
+                                                                                    startDate:
+                                                                                      monthFirstDate,
+                                                                                    levelSelected:
+                                                                                      null,
+                                                                                    pageNo: 0,
+                                                                                    size: 100,
+                                                                                  };
                                                                                 Promise.all(
                                                                                   [
                                                                                     dispatch(
@@ -1848,18 +1880,18 @@ const ParametersScreen = ({ route }) => {
                                                                                         tempRawData[
                                                                                           i
                                                                                         ] =
-                                                                                        {
-                                                                                          ...tempRawData[
-                                                                                          i
-                                                                                          ],
-                                                                                          isOpenInner: false,
-                                                                                          employeeTargetAchievements:
-                                                                                            [],
-                                                                                        };
+                                                                                          {
+                                                                                            ...tempRawData[
+                                                                                              i
+                                                                                            ],
+                                                                                            isOpenInner: false,
+                                                                                            employeeTargetAchievements:
+                                                                                              [],
+                                                                                          };
                                                                                         if (
                                                                                           i ===
                                                                                           tempRawData.length -
-                                                                                          1
+                                                                                            1
                                                                                         ) {
                                                                                           localData[
                                                                                             index
@@ -1903,7 +1935,7 @@ const ParametersScreen = ({ route }) => {
                                                                         innerItem4
                                                                           .employeeTargetAchievements
                                                                           .length >
-                                                                        0 &&
+                                                                          0 &&
                                                                         innerItem4.employeeTargetAchievements.map(
                                                                           (
                                                                             innerItem5,
@@ -2039,7 +2071,7 @@ const ParametersScreen = ({ route }) => {
                                                                                           ]
                                                                                             .employeeTargetAchievements
                                                                                             .length -
-                                                                                          1
+                                                                                            1
                                                                                         ) {
                                                                                           localData[
                                                                                             index
@@ -2111,24 +2143,24 @@ const ParametersScreen = ({ route }) => {
                                                                                                 dateFormat
                                                                                               );
                                                                                           let payload =
-                                                                                          {
-                                                                                            orgId:
-                                                                                              jsonObj.orgId,
-                                                                                            selectedEmpId:
-                                                                                              innerItem5.empId,
-                                                                                            endDate:
-                                                                                              currentDate,
-                                                                                            loggedInEmpId:
-                                                                                              jsonObj.empId,
-                                                                                            empId:
-                                                                                              innerItem5.empId,
-                                                                                            startDate:
-                                                                                              monthFirstDate,
-                                                                                            levelSelected:
-                                                                                              null,
-                                                                                            pageNo: 0,
-                                                                                            size: 100,
-                                                                                          };
+                                                                                            {
+                                                                                              orgId:
+                                                                                                jsonObj.orgId,
+                                                                                              selectedEmpId:
+                                                                                                innerItem5.empId,
+                                                                                              endDate:
+                                                                                                currentDate,
+                                                                                              loggedInEmpId:
+                                                                                                jsonObj.empId,
+                                                                                              empId:
+                                                                                                innerItem5.empId,
+                                                                                              startDate:
+                                                                                                monthFirstDate,
+                                                                                              levelSelected:
+                                                                                                null,
+                                                                                              pageNo: 0,
+                                                                                              size: 100,
+                                                                                            };
                                                                                           Promise.all(
                                                                                             [
                                                                                               dispatch(
@@ -2164,18 +2196,18 @@ const ParametersScreen = ({ route }) => {
                                                                                                   tempRawData[
                                                                                                     i
                                                                                                   ] =
-                                                                                                  {
-                                                                                                    ...tempRawData[
-                                                                                                    i
-                                                                                                    ],
-                                                                                                    isOpenInner: false,
-                                                                                                    employeeTargetAchievements:
-                                                                                                      [],
-                                                                                                  };
+                                                                                                    {
+                                                                                                      ...tempRawData[
+                                                                                                        i
+                                                                                                      ],
+                                                                                                      isOpenInner: false,
+                                                                                                      employeeTargetAchievements:
+                                                                                                        [],
+                                                                                                    };
                                                                                                   if (
                                                                                                     i ===
                                                                                                     tempRawData.length -
-                                                                                                    1
+                                                                                                      1
                                                                                                   ) {
                                                                                                     localData[
                                                                                                       index
@@ -2221,7 +2253,7 @@ const ParametersScreen = ({ route }) => {
                                                                                   innerItem5
                                                                                     .employeeTargetAchievements
                                                                                     .length >
-                                                                                  0 &&
+                                                                                    0 &&
                                                                                   innerItem5.employeeTargetAchievements.map(
                                                                                     (
                                                                                       innerItem6,
@@ -2368,7 +2400,7 @@ const ParametersScreen = ({ route }) => {
                                                                                                     ]
                                                                                                       .employeeTargetAchievements
                                                                                                       .length -
-                                                                                                    1
+                                                                                                      1
                                                                                                   ) {
                                                                                                     localData[
                                                                                                       index
@@ -2442,24 +2474,24 @@ const ParametersScreen = ({ route }) => {
                                                                                                           dateFormat
                                                                                                         );
                                                                                                     let payload =
-                                                                                                    {
-                                                                                                      orgId:
-                                                                                                        jsonObj.orgId,
-                                                                                                      selectedEmpId:
-                                                                                                        innerItem6.empId,
-                                                                                                      endDate:
-                                                                                                        currentDate,
-                                                                                                      loggedInEmpId:
-                                                                                                        jsonObj.empId,
-                                                                                                      empId:
-                                                                                                        innerItem6.empId,
-                                                                                                      startDate:
-                                                                                                        monthFirstDate,
-                                                                                                      levelSelected:
-                                                                                                        null,
-                                                                                                      pageNo: 0,
-                                                                                                      size: 100,
-                                                                                                    };
+                                                                                                      {
+                                                                                                        orgId:
+                                                                                                          jsonObj.orgId,
+                                                                                                        selectedEmpId:
+                                                                                                          innerItem6.empId,
+                                                                                                        endDate:
+                                                                                                          currentDate,
+                                                                                                        loggedInEmpId:
+                                                                                                          jsonObj.empId,
+                                                                                                        empId:
+                                                                                                          innerItem6.empId,
+                                                                                                        startDate:
+                                                                                                          monthFirstDate,
+                                                                                                        levelSelected:
+                                                                                                          null,
+                                                                                                        pageNo: 0,
+                                                                                                        size: 100,
+                                                                                                      };
                                                                                                     Promise.all(
                                                                                                       [
                                                                                                         dispatch(
@@ -2495,18 +2527,18 @@ const ParametersScreen = ({ route }) => {
                                                                                                             tempRawData[
                                                                                                               i
                                                                                                             ] =
-                                                                                                            {
-                                                                                                              ...tempRawData[
-                                                                                                              i
-                                                                                                              ],
-                                                                                                              isOpenInner: false,
-                                                                                                              employeeTargetAchievements:
-                                                                                                                [],
-                                                                                                            };
+                                                                                                              {
+                                                                                                                ...tempRawData[
+                                                                                                                  i
+                                                                                                                ],
+                                                                                                                isOpenInner: false,
+                                                                                                                employeeTargetAchievements:
+                                                                                                                  [],
+                                                                                                              };
                                                                                                             if (
                                                                                                               i ===
                                                                                                               tempRawData.length -
-                                                                                                              1
+                                                                                                                1
                                                                                                             ) {
                                                                                                               localData[
                                                                                                                 index
@@ -2592,7 +2624,8 @@ const ParametersScreen = ({ route }) => {
                           {
                             empId: selector.login_employee_details.empId,
                             headerTitle: "Grand Total",
-                            loggedInEmpId: selector.login_employee_details.empId,
+                            loggedInEmpId:
+                              selector.login_employee_details.empId,
                             type: "TEAM",
                             moduleType: "live-leads",
                           }
@@ -2683,7 +2716,8 @@ const ParametersScreen = ({ route }) => {
                     </View>
                   </View>
                 )}
-              </ScrollView>}
+              </ScrollView>
+            )}
           </View>
         ) : (
           // IF Self or insights
@@ -2735,7 +2769,7 @@ const ParametersScreen = ({ route }) => {
       {!selector.isLoading ? null : (
         <LoaderComponent
           visible={selector.isLoading}
-          onRequestClose={() => { }}
+          onRequestClose={() => {}}
         />
       )}
     </>
@@ -2789,7 +2823,7 @@ export const RenderLevel1NameView = ({
             <IconButton
               icon="map-marker"
               style={{ padding: 0, margin: 0 }}
-              color={Colors.BLACK}
+              color={Colors.RED}
               size={8}
             />
             <Text style={{ fontSize: 8 }} numberOfLines={2}>
