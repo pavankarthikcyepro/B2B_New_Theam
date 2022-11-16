@@ -35,7 +35,8 @@ export const RenderSelfInsights = (args) => {
                         <Text>{item.paramName === 'DROPPED' ? 'Lost' : item.paramShortName}</Text>
                     </View>
                     <View style={{
-                        width: item.paramName === 'Accessories' ? '12%' : "10%",
+                        // width: item.paramName === 'Accessories' ? '12%' : "10%",
+                        width:'auto',
                         marginTop: 10,
                         position: "relative",
                         backgroundColor: color[index % color.length],
