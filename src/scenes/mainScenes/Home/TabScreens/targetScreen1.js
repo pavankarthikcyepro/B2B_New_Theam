@@ -1692,7 +1692,6 @@ const TargetScreen = ({ route }) => {
                 </View>
               </View>
               {/* Header view end */}
-              
               <ScrollView showsVerticalScrollIndicator={false}>
                 <>
                   <View style={{paddingRight:10}}>
