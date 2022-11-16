@@ -22,7 +22,7 @@ import {
   getUserWiseTargetParameters,
 } from "../../../redux/liveLeadsReducer";
 import { useNavigation } from "@react-navigation/native";
-import { Card, IconButton } from "react-native-paper";
+import { ActivityIndicator, Card, IconButton } from "react-native-paper";
 import { RenderGrandTotal } from "../Home/TabScreens/components/RenderGrandTotal";
 import { RenderEmployeeParameters } from "../Home/TabScreens/components/RenderEmployeeParameters";
 import { AppNavigator } from "../../../navigations";
@@ -62,6 +62,7 @@ const ParametersScreen = ({ route }) => {
   const [togglePercentage, setTogglePercentage] = useState(0);
   const [toggleParamsIndex, setToggleParamsIndex] = useState(0);
   const [toggleParamsMetaData, setToggleParamsMetaData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const color = [
     "#9f31bf",
@@ -269,42 +270,50 @@ const ParametersScreen = ({ route }) => {
   }, [selector.isTeam]);
 
   useEffect(async () => {
-    let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-    if (employeeData) {
-      const jsonObj = JSON.parse(employeeData);
-      if (selector.all_emp_parameters_data.length > 0) {
-        let tempParams = [
-          ...selector.all_emp_parameters_data.filter(
-            (item) => item.empId !== jsonObj.empId
-          ),
-        ];
-        for (let i = 0; i < tempParams.length; i++) {
-          tempParams[i] = {
-            ...tempParams[i],
-            isOpenInner: false,
-            employeeTargetAchievements: [],
-            tempTargetAchievements: tempParams[i]?.targetAchievements,
-          };
-          // tempParams[i]["isOpenInner"] = false;
-          // tempParams[i]["employeeTargetAchievements"] = [];
-          if (i === tempParams.length - 1) {
-            setAllParameters([...tempParams]);
-          }
-          let newIds = tempParams.map((emp) => emp.empId);
-          for (let k = 0; k < newIds.length; k++) {
-            const element = newIds[k].toString();
-            let tempPayload = getTotalPayload(employeeData, element);
-            const response = await client.post(
-              URL.GET_LIVE_LEADS_INSIGHTS(),
-              tempPayload
-            );
+    try {
+      setIsLoading(true);
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        if (selector.all_emp_parameters_data.length > 0) {
+          let tempParams = [
+            ...selector.all_emp_parameters_data.filter(
+              (item) => item.empId !== jsonObj.empId
+            ),
+          ];
+          for (let i = 0; i < tempParams.length; i++) {
+            tempParams[i] = {
+              ...tempParams[i],
+              isOpenInner: false,
+              employeeTargetAchievements: [],
+              tempTargetAchievements: tempParams[i]?.targetAchievements,
+            };
+            // tempParams[i]["isOpenInner"] = false;
+            // tempParams[i]["employeeTargetAchievements"] = [];
+            if (i === tempParams.length - 1) {
+              setAllParameters([...tempParams]);
+            }
+            let newIds = tempParams.map((emp) => emp.empId);
+            for (let k = 0; k < newIds.length; k++) {
+              const element = newIds[k].toString();
+              let tempPayload = getTotalPayload(employeeData, element);
+              const response = await client.post(
+                URL.GET_LIVE_LEADS_INSIGHTS(),
+                tempPayload
+              );
 
-            const json = await response.json();
-            tempParams[k].targetAchievements = json;
-            setAllParameters([...tempParams]);
+              const json = await response.json();
+              tempParams[k].targetAchievements = json;
+              setAllParameters([...tempParams]);
+            }
           }
         }
       }
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
     }
   }, [selector.all_emp_parameters_data]);
 
@@ -604,813 +613,816 @@ const ParametersScreen = ({ route }) => {
               {/*    </View>*/}
               {/*</View>*/}
             </View>
-
-            <ScrollView
-              contentContainerStyle={{
-                paddingRight: 0,
-                flexDirection: "column",
-              }}
-              horizontal={true}
-              directionalLockEnabled={true}
-            >
-              {/* TOP Header view */}
-              <View
-                key={"headers"}
-                style={{
-                  flexDirection: "row",
-                  borderBottomWidth: 0.5,
-                  paddingBottom: 4,
-                  borderBottomColor: Colors.GRAY,
+            {isLoading ? (
+              <ActivityIndicator color={Colors.RED} size={"large"} />
+            ) : (
+              <ScrollView
+                contentContainerStyle={{
+                  paddingRight: 0,
+                  flexDirection: "column",
                 }}
+                horizontal={true}
+                directionalLockEnabled={true}
               >
-                <View style={{ width: 70, height: 20, marginRight: 5 }}></View>
+                {/* TOP Header view */}
                 <View
-                  style={{ width: "100%", height: 20, flexDirection: "row" }}
+                  key={"headers"}
+                  style={{
+                    flexDirection: "row",
+                    borderBottomWidth: 0.5,
+                    paddingBottom: 4,
+                    borderBottomColor: Colors.GRAY,
+                  }}
                 >
-                  {toggleParamsMetaData.map((param) => {
-                    return (
-                      <View style={styles.itemBox} key={param.shortName}>
-                        <Text
-                          style={{
-                            color: param.color,
-                            fontSize: 12,
-                          }}
-                        >
-                          {param.shortName}
-                        </Text>
-                      </View>
-                    );
-                  })}
-                </View>
-              </View>
-              {/* Employee params section */}
-              {allParameters.length > 0 &&
-                allParameters.map((item, index) => {
-                  return (
-                    <View key={`${item.empId} ${index}`}>
-                      <View
-                        style={{
-                          paddingHorizontal: 8,
-                          display: "flex",
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          marginTop: 12,
-                          width: "100%",
-                        }}
-                      >
-                        <Text style={{ fontSize: 12, fontWeight: "600" }}>
-                          {item.empName}
-                        </Text>
-                        <Pressable
-                          onPress={() => {
-                            navigation.navigate(
-                              AppNavigator.HomeStackIdentifiers.sourceModel,
-                              {
-                                empId: item.empId,
-                                headerTitle: item.empName,
-                                loggedInEmpId:
-                                  selector.login_employee_details.empId,
-                                orgId: selector.login_employee_details.orgId,
-                                type: "TEAM",
-                                moduleType: "live-leads",
-                              }
-                            );
-                          }}
-                        >
+                  <View
+                    style={{ width: 70, height: 20, marginRight: 5 }}
+                  ></View>
+                  <View
+                    style={{ width: "100%", height: 20, flexDirection: "row" }}
+                  >
+                    {toggleParamsMetaData.map((param) => {
+                      return (
+                        <View style={styles.itemBox} key={param.shortName}>
                           <Text
                             style={{
+                              color: param.color,
                               fontSize: 12,
-                              fontWeight: "600",
-                              color: Colors.BLUE,
                             }}
                           >
-                            Source/Model
+                            {param.shortName}
                           </Text>
-                        </Pressable>
-                      </View>
-                      {/*Source/Model View END */}
-                      <View
-                        style={[
-                          { flexDirection: "row" },
-                          item.isOpenInner && {
-                            borderRadius: 10,
-                            borderWidth: 1,
-                            borderColor: "#C62159",
-                          },
-                        ]}
-                      >
-                        {/*RIGHT SIDE VIEW*/}
+                        </View>
+                      );
+                    })}
+                  </View>
+                </View>
+                {/* Employee params section */}
+                {allParameters.length > 0 &&
+                  allParameters.map((item, index) => {
+                    return (
+                      <View key={`${item.empId} ${index}`}>
+                        <View
+                          style={{
+                            paddingHorizontal: 8,
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            marginTop: 12,
+                            width: "100%",
+                          }}
+                        >
+                          <Text style={{ fontSize: 12, fontWeight: "600" }}>
+                            {item.empName}
+                          </Text>
+                          <Pressable
+                            onPress={() => {
+                              navigation.navigate(
+                                AppNavigator.HomeStackIdentifiers.sourceModel,
+                                {
+                                  empId: item.empId,
+                                  headerTitle: item.empName,
+                                  loggedInEmpId:
+                                    selector.login_employee_details.empId,
+                                  orgId: selector.login_employee_details.orgId,
+                                  type: "TEAM",
+                                  moduleType: "live-leads",
+                                }
+                              );
+                            }}
+                          >
+                            <Text
+                              style={{
+                                fontSize: 12,
+                                fontWeight: "600",
+                                color: Colors.BLUE,
+                              }}
+                            >
+                              Source/Model
+                            </Text>
+                          </Pressable>
+                        </View>
+                        {/*Source/Model View END */}
                         <View
                           style={[
-                            {
-                              width: "100%",
-                              minHeight: 40,
-                              flexDirection: "column",
-                              paddingHorizontal: 5,
+                            { flexDirection: "row" },
+                            item.isOpenInner && {
+                              borderRadius: 10,
+                              borderWidth: 1,
+                              borderColor: "#C62159",
                             },
                           ]}
                         >
+                          {/*RIGHT SIDE VIEW*/}
                           <View
-                            style={{
-                              width: "100%",
-                              minHeight: 40,
-                              flexDirection: "row",
-                            }}
+                            style={[
+                              {
+                                width: "100%",
+                                minHeight: 40,
+                                flexDirection: "column",
+                                paddingHorizontal: 5,
+                              },
+                            ]}
                           >
-                            <RenderLevel1NameView
-                              level={0}
-                              item={item}
-                              branchName={getBranchName(item.branchId)}
-                              color={"#C62159"}
-                              titleClick={async () => {
-                                await onEmployeeNameClick(item, index);
+                            <View
+                              style={{
+                                width: "100%",
+                                minHeight: 40,
+                                flexDirection: "row",
                               }}
-                            />
-                            {renderData(item, "#C62159")}
-                          </View>
+                            >
+                              <RenderLevel1NameView
+                                level={0}
+                                item={item}
+                                branchName={getBranchName(item.branchId)}
+                                color={"#C62159"}
+                                titleClick={async () => {
+                                  await onEmployeeNameClick(item, index);
+                                }}
+                              />
+                              {renderData(item, "#C62159")}
+                            </View>
 
-                          {item.isOpenInner &&
-                            item.employeeTargetAchievements.length > 0 &&
-                            item.employeeTargetAchievements.map(
-                              (innerItem1, innerIndex1) => {
-                                return (
-                                  <View
-                                    key={innerIndex1}
-                                    style={[
-                                      {
-                                        width: "100%",
-                                        minHeight: 40,
-                                        flexDirection: "column",
-                                      },
-                                      innerItem1.isOpenInner && {
-                                        borderRadius: 10,
-                                        borderWidth: 1,
-                                        borderColor: "#F59D00",
-                                        backgroundColor: "#FFFFFF",
-                                      },
-                                    ]}
-                                  >
+                            {item.isOpenInner &&
+                              item.employeeTargetAchievements.length > 0 &&
+                              item.employeeTargetAchievements.map(
+                                (innerItem1, innerIndex1) => {
+                                  return (
                                     <View
+                                      key={innerIndex1}
                                       style={[
                                         {
                                           width: "100%",
                                           minHeight: 40,
                                           flexDirection: "column",
                                         },
+                                        innerItem1.isOpenInner && {
+                                          borderRadius: 10,
+                                          borderWidth: 1,
+                                          borderColor: "#F59D00",
+                                          backgroundColor: "#FFFFFF",
+                                        },
                                       ]}
                                     >
                                       <View
-                                        style={{
-                                          paddingHorizontal: 4,
-                                          display: "flex",
-                                          flexDirection: "row",
-                                          justifyContent: "space-between",
-                                          marginTop: 8,
-                                        }}
+                                        style={[
+                                          {
+                                            width: "100%",
+                                            minHeight: 40,
+                                            flexDirection: "column",
+                                          },
+                                        ]}
                                       >
-                                        <Text
+                                        <View
                                           style={{
-                                            fontSize: 10,
-                                            fontWeight: "500",
-                                          }}
-                                        >
-                                          {innerItem1.empName}
-                                        </Text>
-                                        <Pressable
-                                          onPress={() => {
-                                            navigation.navigate(
-                                              AppNavigator.HomeStackIdentifiers
-                                                .sourceModel,
-                                              {
-                                                empId: innerItem1.empId,
-                                                headerTitle: innerItem1.empName,
-                                                type: "TEAM",
-                                                moduleType: "live-leads",
-                                              }
-                                            );
+                                            paddingHorizontal: 4,
+                                            display: "flex",
+                                            flexDirection: "row",
+                                            justifyContent: "space-between",
+                                            marginTop: 8,
                                           }}
                                         >
                                           <Text
                                             style={{
-                                              fontSize: 12,
-                                              fontWeight: "600",
-                                              color: Colors.BLUE,
-                                              marginLeft: 8,
+                                              fontSize: 10,
+                                              fontWeight: "500",
                                             }}
                                           >
-                                            Source/Model
+                                            {innerItem1.empName}
                                           </Text>
-                                        </Pressable>
-                                      </View>
-                                      {/*Source/Model View END */}
-                                      <View style={{ flexDirection: "row" }}>
-                                        <RenderLevel1NameView
-                                          level={1}
-                                          item={innerItem1}
-                                          color={"#F59D00"}
-                                          titleClick={async () => {
-                                            setSelectedName(innerItem1.empName);
-                                            setTimeout(() => {
-                                              setSelectedName("");
-                                            }, 900);
-                                            let localData = [...allParameters];
-                                            let current =
-                                              localData[index]
-                                                .employeeTargetAchievements[
-                                                innerIndex1
-                                              ].isOpenInner;
-                                            for (
-                                              let i = 0;
-                                              i <
-                                              localData[index]
-                                                .employeeTargetAchievements
-                                                .length;
-                                              i++
-                                            ) {
-                                              localData[
-                                                index
-                                              ].employeeTargetAchievements[
-                                                i
-                                              ].isOpenInner = false;
-                                              if (
-                                                i ===
+                                          <Pressable
+                                            onPress={() => {
+                                              navigation.navigate(
+                                                AppNavigator
+                                                  .HomeStackIdentifiers
+                                                  .sourceModel,
+                                                {
+                                                  empId: innerItem1.empId,
+                                                  headerTitle:
+                                                    innerItem1.empName,
+                                                  type: "TEAM",
+                                                  moduleType: "live-leads",
+                                                }
+                                              );
+                                            }}
+                                          >
+                                            <Text
+                                              style={{
+                                                fontSize: 12,
+                                                fontWeight: "600",
+                                                color: Colors.BLUE,
+                                                marginLeft: 8,
+                                              }}
+                                            >
+                                              Source/Model
+                                            </Text>
+                                          </Pressable>
+                                        </View>
+                                        {/*Source/Model View END */}
+                                        <View style={{ flexDirection: "row" }}>
+                                          <RenderLevel1NameView
+                                            level={1}
+                                            item={innerItem1}
+                                            color={"#F59D00"}
+                                            titleClick={async () => {
+                                              setSelectedName(
+                                                innerItem1.empName
+                                              );
+                                              setTimeout(() => {
+                                                setSelectedName("");
+                                              }, 900);
+                                              let localData = [
+                                                ...allParameters,
+                                              ];
+                                              let current =
+                                                localData[index]
+                                                  .employeeTargetAchievements[
+                                                  innerIndex1
+                                                ].isOpenInner;
+                                              for (
+                                                let i = 0;
+                                                i <
                                                 localData[index]
                                                   .employeeTargetAchievements
-                                                  .length -
-                                                1
+                                                  .length;
+                                                i++
                                               ) {
                                                 localData[
                                                   index
                                                 ].employeeTargetAchievements[
-                                                  innerIndex1
-                                                ].isOpenInner = !current;
+                                                  i
+                                                ].isOpenInner = false;
+                                                if (
+                                                  i ===
+                                                  localData[index]
+                                                    .employeeTargetAchievements
+                                                    .length -
+                                                    1
+                                                ) {
+                                                  localData[
+                                                    index
+                                                  ].employeeTargetAchievements[
+                                                    innerIndex1
+                                                  ].isOpenInner = !current;
+                                                }
                                               }
-                                            }
 
-                                            if (!current) {
-                                              let employeeData =
-                                                await AsyncStore.getData(
-                                                  AsyncStore.Keys.LOGIN_EMPLOYEE
-                                                );
-                                              if (employeeData) {
-                                                const jsonObj =
-                                                  JSON.parse(employeeData);
-                                                const dateFormat = "YYYY-MM-DD";
-                                                const currentDate =
-                                                  moment().format(dateFormat);
-                                                const monthFirstDate = moment(
-                                                  currentDate,
-                                                  dateFormat
-                                                )
-                                                  .subtract(0, "months")
-                                                  .startOf("month")
-                                                  .format(dateFormat);
-                                                const monthLastDate = moment(
-                                                  currentDate,
-                                                  dateFormat
-                                                )
-                                                  .subtract(0, "months")
-                                                  .endOf("month")
-                                                  .format(dateFormat);
-                                                let payload = {
-                                                  orgId: jsonObj.orgId,
-                                                  selectedEmpId:
-                                                    innerItem1.empId,
-                                                  endDate: currentDate,
-                                                  loggedInEmpId: jsonObj.empId,
-                                                  empId: innerItem1.empId,
-                                                  startDate: monthFirstDate,
-                                                  levelSelected: null,
-                                                  pageNo: 0,
-                                                  size: 100,
-                                                };
-                                                Promise.all([
-                                                  dispatch(
-                                                    getUserWiseTargetParameters(
-                                                      payload
-                                                    )
-                                                  ),
-                                                ]).then(async (res) => {
-                                                  let tempRawData = [];
-                                                  tempRawData =
-                                                    res[0]?.payload?.employeeTargetAchievements.filter(
-                                                      (item) =>
-                                                        item.empId !==
-                                                        innerItem1.empId
-                                                    );
-                                                  if (tempRawData.length > 0) {
-                                                    for (
-                                                      let i = 0;
-                                                      i < tempRawData.length;
-                                                      i++
+                                              if (!current) {
+                                                let employeeData =
+                                                  await AsyncStore.getData(
+                                                    AsyncStore.Keys
+                                                      .LOGIN_EMPLOYEE
+                                                  );
+                                                if (employeeData) {
+                                                  const jsonObj =
+                                                    JSON.parse(employeeData);
+                                                  const dateFormat =
+                                                    "YYYY-MM-DD";
+                                                  const currentDate =
+                                                    moment().format(dateFormat);
+                                                  const monthFirstDate = moment(
+                                                    currentDate,
+                                                    dateFormat
+                                                  )
+                                                    .subtract(0, "months")
+                                                    .startOf("month")
+                                                    .format(dateFormat);
+                                                  const monthLastDate = moment(
+                                                    currentDate,
+                                                    dateFormat
+                                                  )
+                                                    .subtract(0, "months")
+                                                    .endOf("month")
+                                                    .format(dateFormat);
+                                                  let payload = {
+                                                    orgId: jsonObj.orgId,
+                                                    selectedEmpId:
+                                                      innerItem1.empId,
+                                                    endDate: currentDate,
+                                                    loggedInEmpId:
+                                                      jsonObj.empId,
+                                                    empId: innerItem1.empId,
+                                                    startDate: monthFirstDate,
+                                                    levelSelected: null,
+                                                    pageNo: 0,
+                                                    size: 100,
+                                                  };
+                                                  Promise.all([
+                                                    dispatch(
+                                                      getUserWiseTargetParameters(
+                                                        payload
+                                                      )
+                                                    ),
+                                                  ]).then(async (res) => {
+                                                    let tempRawData = [];
+                                                    tempRawData =
+                                                      res[0]?.payload?.employeeTargetAchievements.filter(
+                                                        (item) =>
+                                                          item.empId !==
+                                                          innerItem1.empId
+                                                      );
+                                                    if (
+                                                      tempRawData.length > 0
                                                     ) {
-                                                      tempRawData[i] = {
-                                                        ...tempRawData[i],
-                                                        isOpenInner: false,
-                                                        employeeTargetAchievements:
-                                                          [],
-                                                        tempTargetAchievements:
-                                                          tempRawData[i]
-                                                            ?.targetAchievements,
-                                                      };
-                                                      if (
-                                                        i ===
-                                                        tempRawData.length - 1
+                                                      for (
+                                                        let i = 0;
+                                                        i < tempRawData.length;
+                                                        i++
                                                       ) {
-                                                        localData[
-                                                          index
-                                                        ].employeeTargetAchievements[
-                                                          innerIndex1
-                                                        ].employeeTargetAchievements =
-                                                          tempRawData;
-                                                        let newIds =
-                                                          tempRawData.map(
-                                                            (emp) => emp.empId
-                                                          );
+                                                        tempRawData[i] = {
+                                                          ...tempRawData[i],
+                                                          isOpenInner: false,
+                                                          employeeTargetAchievements:
+                                                            [],
+                                                          tempTargetAchievements:
+                                                            tempRawData[i]
+                                                              ?.targetAchievements,
+                                                        };
                                                         if (
-                                                          newIds.length >= 2
+                                                          i ===
+                                                          tempRawData.length - 1
                                                         ) {
-                                                          for (
-                                                            let i = 0;
-                                                            i < newIds.length;
-                                                            i++
+                                                          localData[
+                                                            index
+                                                          ].employeeTargetAchievements[
+                                                            innerIndex1
+                                                          ].employeeTargetAchievements =
+                                                            tempRawData;
+                                                          let newIds =
+                                                            tempRawData.map(
+                                                              (emp) => emp.empId
+                                                            );
+                                                          if (
+                                                            newIds.length >= 2
                                                           ) {
-                                                            const element =
-                                                              newIds[
-                                                                i
-                                                              ].toString();
-                                                            let tempPayload =
-                                                              getTotalPayload(
-                                                                employeeData,
-                                                                element
-                                                              );
-                                                            const response =
-                                                              await client.post(
-                                                                URL.GET_LIVE_LEADS_INSIGHTS(),
-                                                                tempPayload
-                                                              );
-                                                            const json =
-                                                              await response.json();
-                                                            if (
-                                                              Array.isArray(
-                                                                json
-                                                              )
+                                                            for (
+                                                              let i = 0;
+                                                              i < newIds.length;
+                                                              i++
                                                             ) {
-                                                              localData[
-                                                                index
-                                                              ].employeeTargetAchievements[
-                                                                innerIndex1
-                                                              ].employeeTargetAchievements[
-                                                                i
-                                                              ].targetAchievements =
-                                                                json;
+                                                              const element =
+                                                                newIds[
+                                                                  i
+                                                                ].toString();
+                                                              let tempPayload =
+                                                                getTotalPayload(
+                                                                  employeeData,
+                                                                  element
+                                                                );
+                                                              const response =
+                                                                await client.post(
+                                                                  URL.GET_LIVE_LEADS_INSIGHTS(),
+                                                                  tempPayload
+                                                                );
+                                                              const json =
+                                                                await response.json();
+                                                              if (
+                                                                Array.isArray(
+                                                                  json
+                                                                )
+                                                              ) {
+                                                                localData[
+                                                                  index
+                                                                ].employeeTargetAchievements[
+                                                                  innerIndex1
+                                                                ].employeeTargetAchievements[
+                                                                  i
+                                                                ].targetAchievements =
+                                                                  json;
+                                                              }
                                                             }
                                                           }
                                                         }
                                                       }
                                                     }
-                                                  }
-                                                  setAllParameters([
-                                                    ...localData,
-                                                  ]);
-                                                });
+                                                    setAllParameters([
+                                                      ...localData,
+                                                    ]);
+                                                  });
 
-                                                // if (localData[index].employeeTargetAchievements.length > 0) {
-                                                //   for (let j = 0; j < localData[index].employeeTargetAchievements.length; j++) {
-                                                //     localData[index].employeeTargetAchievements[j].isOpenInner = false;
-                                                //   }
-                                                // }
-                                                // setAllParameters([...localData])
+                                                  // if (localData[index].employeeTargetAchievements.length > 0) {
+                                                  //   for (let j = 0; j < localData[index].employeeTargetAchievements.length; j++) {
+                                                  //     localData[index].employeeTargetAchievements[j].isOpenInner = false;
+                                                  //   }
+                                                  // }
+                                                  // setAllParameters([...localData])
+                                                }
+                                              } else {
+                                                setAllParameters([
+                                                  ...localData,
+                                                ]);
                                               }
-                                            } else {
-                                              setAllParameters([...localData]);
-                                            }
-                                            // setAllParameters([...localData])
-                                          }}
-                                        />
-                                        {renderData(innerItem1, "#F59D00")}
-                                      </View>
-                                      {innerItem1.isOpenInner &&
-                                        innerItem1.employeeTargetAchievements
-                                          .length > 0 &&
-                                        innerItem1.employeeTargetAchievements.map(
-                                          (innerItem2, innerIndex2) => {
-                                            return (
-                                              <View
-                                                key={innerIndex2}
-                                                style={[
-                                                  {
-                                                    width: "98%",
-                                                    minHeight: 40,
-                                                    flexDirection: "column",
-                                                  },
-                                                  innerItem2.isOpenInner && {
-                                                    borderRadius: 10,
-                                                    borderWidth: 1,
-                                                    borderColor: "#2C97DE",
-                                                    backgroundColor: "#EEEEEE",
-                                                    marginHorizontal: 5,
-                                                  },
-                                                ]}
-                                              >
+                                              // setAllParameters([...localData])
+                                            }}
+                                          />
+                                          {renderData(innerItem1, "#F59D00")}
+                                        </View>
+                                        {innerItem1.isOpenInner &&
+                                          innerItem1.employeeTargetAchievements
+                                            .length > 0 &&
+                                          innerItem1.employeeTargetAchievements.map(
+                                            (innerItem2, innerIndex2) => {
+                                              return (
                                                 <View
-                                                  style={{
-                                                    paddingHorizontal: 4,
-                                                    display: "flex",
-                                                    flexDirection: "row",
-                                                    justifyContent:
-                                                      "space-between",
-                                                    paddingVertical: 4,
-                                                  }}
+                                                  key={innerIndex2}
+                                                  style={[
+                                                    {
+                                                      width: "98%",
+                                                      minHeight: 40,
+                                                      flexDirection: "column",
+                                                    },
+                                                    innerItem2.isOpenInner && {
+                                                      borderRadius: 10,
+                                                      borderWidth: 1,
+                                                      borderColor: "#2C97DE",
+                                                      backgroundColor:
+                                                        "#EEEEEE",
+                                                      marginHorizontal: 5,
+                                                    },
+                                                  ]}
                                                 >
-                                                  <Text
+                                                  <View
                                                     style={{
-                                                      fontSize: 10,
-                                                      fontWeight: "500",
-                                                    }}
-                                                  >
-                                                    {innerItem2.empName}
-                                                  </Text>
-                                                  <Pressable
-                                                    onPress={() => {
-                                                      navigation.navigate(
-                                                        AppNavigator
-                                                          .HomeStackIdentifiers
-                                                          .sourceModel,
-                                                        {
-                                                          empId:
-                                                            innerItem2.empId,
-                                                          headerTitle:
-                                                            innerItem2.empName,
-                                                          type: "TEAM",
-                                                          moduleType:
-                                                            "live-leads",
-                                                        }
-                                                      );
+                                                      paddingHorizontal: 4,
+                                                      display: "flex",
+                                                      flexDirection: "row",
+                                                      justifyContent:
+                                                        "space-between",
+                                                      paddingVertical: 4,
                                                     }}
                                                   >
                                                     <Text
                                                       style={{
-                                                        fontSize: 12,
-                                                        fontWeight: "600",
-                                                        color: Colors.BLUE,
-                                                        marginLeft: 8,
+                                                        fontSize: 10,
+                                                        fontWeight: "500",
                                                       }}
                                                     >
-                                                      Source/Model
+                                                      {innerItem2.empName}
                                                     </Text>
-                                                  </Pressable>
-                                                </View>
-                                                <View
-                                                  style={{
-                                                    flexDirection: "row",
-                                                  }}
-                                                >
-                                                  <RenderLevel1NameView
-                                                    level={2}
-                                                    item={innerItem2}
-                                                    color={"#2C97DE"}
-                                                    titleClick={async () => {
-                                                      setSelectedName(
-                                                        innerItem2.empName
-                                                      );
-                                                      setTimeout(() => {
-                                                        setSelectedName("");
-                                                      }, 900);
-                                                      let localData = [
-                                                        ...allParameters,
-                                                      ];
-                                                      let current =
-                                                        localData[index]
-                                                          .employeeTargetAchievements[
-                                                          innerIndex1
-                                                        ]
-                                                          .employeeTargetAchievements[
-                                                          innerIndex2
-                                                        ].isOpenInner;
-                                                      for (
-                                                        let i = 0;
-                                                        i <
-                                                        localData[index]
-                                                          .employeeTargetAchievements[
-                                                          innerIndex1
-                                                        ]
-                                                          .employeeTargetAchievements
-                                                          .length;
-                                                        i++
-                                                      ) {
-                                                        localData[
-                                                          index
-                                                        ].employeeTargetAchievements[
-                                                          innerIndex1
-                                                        ].employeeTargetAchievements[
-                                                          i
-                                                        ].isOpenInner = false;
-                                                        if (
-                                                          i ===
+                                                    <Pressable
+                                                      onPress={() => {
+                                                        navigation.navigate(
+                                                          AppNavigator
+                                                            .HomeStackIdentifiers
+                                                            .sourceModel,
+                                                          {
+                                                            empId:
+                                                              innerItem2.empId,
+                                                            headerTitle:
+                                                              innerItem2.empName,
+                                                            type: "TEAM",
+                                                            moduleType:
+                                                              "live-leads",
+                                                          }
+                                                        );
+                                                      }}
+                                                    >
+                                                      <Text
+                                                        style={{
+                                                          fontSize: 12,
+                                                          fontWeight: "600",
+                                                          color: Colors.BLUE,
+                                                          marginLeft: 8,
+                                                        }}
+                                                      >
+                                                        Source/Model
+                                                      </Text>
+                                                    </Pressable>
+                                                  </View>
+                                                  <View
+                                                    style={{
+                                                      flexDirection: "row",
+                                                    }}
+                                                  >
+                                                    <RenderLevel1NameView
+                                                      level={2}
+                                                      item={innerItem2}
+                                                      color={"#2C97DE"}
+                                                      titleClick={async () => {
+                                                        setSelectedName(
+                                                          innerItem2.empName
+                                                        );
+                                                        setTimeout(() => {
+                                                          setSelectedName("");
+                                                        }, 900);
+                                                        let localData = [
+                                                          ...allParameters,
+                                                        ];
+                                                        let current =
+                                                          localData[index]
+                                                            .employeeTargetAchievements[
+                                                            innerIndex1
+                                                          ]
+                                                            .employeeTargetAchievements[
+                                                            innerIndex2
+                                                          ].isOpenInner;
+                                                        for (
+                                                          let i = 0;
+                                                          i <
                                                           localData[index]
                                                             .employeeTargetAchievements[
                                                             innerIndex1
                                                           ]
                                                             .employeeTargetAchievements
-                                                            .length -
-                                                          1
+                                                            .length;
+                                                          i++
                                                         ) {
                                                           localData[
                                                             index
                                                           ].employeeTargetAchievements[
                                                             innerIndex1
                                                           ].employeeTargetAchievements[
-                                                            innerIndex2
-                                                          ].isOpenInner = !current;
+                                                            i
+                                                          ].isOpenInner = false;
+                                                          if (
+                                                            i ===
+                                                            localData[index]
+                                                              .employeeTargetAchievements[
+                                                              innerIndex1
+                                                            ]
+                                                              .employeeTargetAchievements
+                                                              .length -
+                                                              1
+                                                          ) {
+                                                            localData[
+                                                              index
+                                                            ].employeeTargetAchievements[
+                                                              innerIndex1
+                                                            ].employeeTargetAchievements[
+                                                              innerIndex2
+                                                            ].isOpenInner = !current;
+                                                          }
                                                         }
-                                                      }
 
-                                                      if (!current) {
-                                                        let employeeData =
-                                                          await AsyncStore.getData(
-                                                            AsyncStore.Keys
-                                                              .LOGIN_EMPLOYEE
-                                                          );
-                                                        if (employeeData) {
-                                                          const jsonObj =
-                                                            JSON.parse(
-                                                              employeeData
+                                                        if (!current) {
+                                                          let employeeData =
+                                                            await AsyncStore.getData(
+                                                              AsyncStore.Keys
+                                                                .LOGIN_EMPLOYEE
                                                             );
-                                                          const dateFormat =
-                                                            "YYYY-MM-DD";
-                                                          const currentDate =
-                                                            moment().format(
-                                                              dateFormat
-                                                            );
-                                                          const monthFirstDate =
-                                                            moment(
-                                                              currentDate,
-                                                              dateFormat
-                                                            )
-                                                              .subtract(
-                                                                0,
-                                                                "months"
-                                                              )
-                                                              .startOf("month")
-                                                              .format(
+                                                          if (employeeData) {
+                                                            const jsonObj =
+                                                              JSON.parse(
+                                                                employeeData
+                                                              );
+                                                            const dateFormat =
+                                                              "YYYY-MM-DD";
+                                                            const currentDate =
+                                                              moment().format(
                                                                 dateFormat
                                                               );
-                                                          const monthLastDate =
-                                                            moment(
-                                                              currentDate,
-                                                              dateFormat
-                                                            )
-                                                              .subtract(
-                                                                0,
-                                                                "months"
-                                                              )
-                                                              .endOf("month")
-                                                              .format(
+                                                            const monthFirstDate =
+                                                              moment(
+                                                                currentDate,
                                                                 dateFormat
-                                                              );
-                                                          let payload = {
-                                                            orgId:
-                                                              jsonObj.orgId,
-                                                            selectedEmpId:
-                                                              innerItem2.empId,
-                                                            endDate:
-                                                              currentDate,
-                                                            loggedInEmpId:
-                                                              jsonObj.empId,
-                                                            empId:
-                                                              innerItem2.empId,
-                                                            startDate:
-                                                              monthFirstDate,
-                                                            levelSelected: null,
-                                                            pageNo: 0,
-                                                            size: 100,
-                                                          };
-                                                          Promise.all([
-                                                            dispatch(
-                                                              getUserWiseTargetParameters(
-                                                                payload
                                                               )
-                                                            ),
-                                                          ]).then((res) => {
-                                                            let tempRawData =
-                                                              [];
-                                                            tempRawData =
-                                                              res[0]?.payload?.employeeTargetAchievements.filter(
-                                                                (item) =>
-                                                                  item.empId !==
-                                                                  innerItem2.empId
-                                                              );
-                                                            if (
-                                                              tempRawData.length >
-                                                              0
-                                                            ) {
-                                                              for (
-                                                                let i = 0;
-                                                                i <
-                                                                tempRawData.length;
-                                                                i++
+                                                                .subtract(
+                                                                  0,
+                                                                  "months"
+                                                                )
+                                                                .startOf(
+                                                                  "month"
+                                                                )
+                                                                .format(
+                                                                  dateFormat
+                                                                );
+                                                            const monthLastDate =
+                                                              moment(
+                                                                currentDate,
+                                                                dateFormat
+                                                              )
+                                                                .subtract(
+                                                                  0,
+                                                                  "months"
+                                                                )
+                                                                .endOf("month")
+                                                                .format(
+                                                                  dateFormat
+                                                                );
+                                                            let payload = {
+                                                              orgId:
+                                                                jsonObj.orgId,
+                                                              selectedEmpId:
+                                                                innerItem2.empId,
+                                                              endDate:
+                                                                currentDate,
+                                                              loggedInEmpId:
+                                                                jsonObj.empId,
+                                                              empId:
+                                                                innerItem2.empId,
+                                                              startDate:
+                                                                monthFirstDate,
+                                                              levelSelected:
+                                                                null,
+                                                              pageNo: 0,
+                                                              size: 100,
+                                                            };
+                                                            Promise.all([
+                                                              dispatch(
+                                                                getUserWiseTargetParameters(
+                                                                  payload
+                                                                )
+                                                              ),
+                                                            ]).then((res) => {
+                                                              let tempRawData =
+                                                                [];
+                                                              tempRawData =
+                                                                res[0]?.payload?.employeeTargetAchievements.filter(
+                                                                  (item) =>
+                                                                    item.empId !==
+                                                                    innerItem2.empId
+                                                                );
+                                                              if (
+                                                                tempRawData.length >
+                                                                0
                                                               ) {
-                                                                tempRawData[i] =
-                                                                {
-                                                                  ...tempRawData[
-                                                                  i
-                                                                  ],
-                                                                  isOpenInner: false,
-                                                                  employeeTargetAchievements:
-                                                                    [],
-                                                                };
-                                                                if (
-                                                                  i ===
-                                                                  tempRawData.length -
-                                                                  1
+                                                                for (
+                                                                  let i = 0;
+                                                                  i <
+                                                                  tempRawData.length;
+                                                                  i++
                                                                 ) {
-                                                                  localData[
-                                                                    index
-                                                                  ].employeeTargetAchievements[
-                                                                    innerIndex1
-                                                                  ].employeeTargetAchievements[
-                                                                    innerIndex2
-                                                                  ].employeeTargetAchievements =
-                                                                    tempRawData;
+                                                                  tempRawData[
+                                                                    i
+                                                                  ] = {
+                                                                    ...tempRawData[
+                                                                      i
+                                                                    ],
+                                                                    isOpenInner: false,
+                                                                    employeeTargetAchievements:
+                                                                      [],
+                                                                  };
+                                                                  if (
+                                                                    i ===
+                                                                    tempRawData.length -
+                                                                      1
+                                                                  ) {
+                                                                    localData[
+                                                                      index
+                                                                    ].employeeTargetAchievements[
+                                                                      innerIndex1
+                                                                    ].employeeTargetAchievements[
+                                                                      innerIndex2
+                                                                    ].employeeTargetAchievements =
+                                                                      tempRawData;
+                                                                  }
                                                                 }
                                                               }
-                                                            }
-                                                            setAllParameters([
-                                                              ...localData,
-                                                            ]);
-                                                          });
+                                                              setAllParameters([
+                                                                ...localData,
+                                                              ]);
+                                                            });
 
-                                                          // if (localData[index].employeeTargetAchievements.length > 0) {
-                                                          //   for (let j = 0; j < localData[index].employeeTargetAchievements.length; j++) {
-                                                          //     localData[index].employeeTargetAchievements[j].isOpenInner = false;
-                                                          //   }
-                                                          // }
-                                                          // setAllParameters([...localData])
+                                                            // if (localData[index].employeeTargetAchievements.length > 0) {
+                                                            //   for (let j = 0; j < localData[index].employeeTargetAchievements.length; j++) {
+                                                            //     localData[index].employeeTargetAchievements[j].isOpenInner = false;
+                                                            //   }
+                                                            // }
+                                                            // setAllParameters([...localData])
+                                                          }
+                                                        } else {
+                                                          setAllParameters([
+                                                            ...localData,
+                                                          ]);
                                                         }
-                                                      } else {
-                                                        setAllParameters([
-                                                          ...localData,
-                                                        ]);
-                                                      }
-                                                      // setAllParameters([...localData])
-                                                    }}
-                                                  />
-                                                  {renderData(
-                                                    innerItem2,
-                                                    "#2C97DE"
-                                                  )}
-                                                </View>
-                                                {innerItem2.isOpenInner &&
-                                                  innerItem2
-                                                    .employeeTargetAchievements
-                                                    .length > 0 &&
-                                                  innerItem2.employeeTargetAchievements.map(
-                                                    (
-                                                      innerItem3,
-                                                      innerIndex3
-                                                    ) => {
-                                                      return (
-                                                        <View
-                                                          key={innerIndex3}
-                                                          style={[
-                                                            {
-                                                              width: "98%",
-                                                              minHeight: 40,
-                                                              flexDirection:
-                                                                "column",
-                                                            },
-                                                            innerItem3.isOpenInner && {
-                                                              borderRadius: 10,
-                                                              borderWidth: 1,
-                                                              borderColor:
-                                                                "#EC3466",
-                                                              backgroundColor:
-                                                                "#FFFFFF",
-                                                              marginHorizontal: 5,
-                                                            },
-                                                          ]}
-                                                        >
+                                                        // setAllParameters([...localData])
+                                                      }}
+                                                    />
+                                                    {renderData(
+                                                      innerItem2,
+                                                      "#2C97DE"
+                                                    )}
+                                                  </View>
+                                                  {innerItem2.isOpenInner &&
+                                                    innerItem2
+                                                      .employeeTargetAchievements
+                                                      .length > 0 &&
+                                                    innerItem2.employeeTargetAchievements.map(
+                                                      (
+                                                        innerItem3,
+                                                        innerIndex3
+                                                      ) => {
+                                                        return (
                                                           <View
-                                                            style={{
-                                                              paddingHorizontal: 4,
-                                                              display: "flex",
-                                                              flexDirection:
-                                                                "row",
-                                                              justifyContent:
-                                                                "space-between",
-                                                              paddingVertical: 4,
-                                                            }}
-                                                          >
-                                                            <Text
-                                                              style={{
-                                                                fontSize: 10,
-                                                                fontWeight:
-                                                                  "500",
-                                                              }}
-                                                            >
+                                                            key={innerIndex3}
+                                                            style={[
                                                               {
-                                                                innerItem3.empName
-                                                              }
-                                                            </Text>
-                                                            <Pressable
-                                                              onPress={() => {
-                                                                navigation.navigate(
-                                                                  AppNavigator
-                                                                    .HomeStackIdentifiers
-                                                                    .sourceModel,
-                                                                  {
-                                                                    empId:
-                                                                      innerItem3.empId,
-                                                                    headerTitle:
-                                                                      innerItem3.empName,
-                                                                    type: "TEAM",
-                                                                    moduleType:
-                                                                      "live-leads",
-                                                                  }
-                                                                );
+                                                                width: "98%",
+                                                                minHeight: 40,
+                                                                flexDirection:
+                                                                  "column",
+                                                              },
+                                                              innerItem3.isOpenInner && {
+                                                                borderRadius: 10,
+                                                                borderWidth: 1,
+                                                                borderColor:
+                                                                  "#EC3466",
+                                                                backgroundColor:
+                                                                  "#FFFFFF",
+                                                                marginHorizontal: 5,
+                                                              },
+                                                            ]}
+                                                          >
+                                                            <View
+                                                              style={{
+                                                                paddingHorizontal: 4,
+                                                                display: "flex",
+                                                                flexDirection:
+                                                                  "row",
+                                                                justifyContent:
+                                                                  "space-between",
+                                                                paddingVertical: 4,
                                                               }}
                                                             >
                                                               <Text
                                                                 style={{
-                                                                  fontSize: 12,
+                                                                  fontSize: 10,
                                                                   fontWeight:
-                                                                    "600",
-                                                                  color:
-                                                                    Colors.BLUE,
-                                                                  marginLeft: 8,
+                                                                    "500",
                                                                 }}
                                                               >
-                                                                Source/Model
-                                                              </Text>
-                                                            </Pressable>
-                                                          </View>
-                                                          <View
-                                                            style={{
-                                                              flexDirection:
-                                                                "row",
-                                                            }}
-                                                          >
-                                                            <RenderLevel1NameView
-                                                              level={3}
-                                                              item={innerItem3}
-                                                              color={"#EC3466"}
-                                                              titleClick={async () => {
-                                                                setSelectedName(
+                                                                {
                                                                   innerItem3.empName
-                                                                );
-                                                                setTimeout(
-                                                                  () => {
-                                                                    setSelectedName(
-                                                                      ""
-                                                                    );
-                                                                  },
-                                                                  900
-                                                                );
-                                                                let localData =
-                                                                  [
-                                                                    ...allParameters,
-                                                                  ];
-                                                                let current =
-                                                                  localData[
-                                                                    index
-                                                                  ]
-                                                                    .employeeTargetAchievements[
-                                                                    innerIndex1
-                                                                  ]
-                                                                    .employeeTargetAchievements[
-                                                                    innerIndex2
-                                                                  ]
-                                                                    .employeeTargetAchievements[
-                                                                    innerIndex3
-                                                                  ].isOpenInner;
-                                                                for (
-                                                                  let i = 0;
-                                                                  i <
-                                                                  localData[
-                                                                    index
-                                                                  ]
-                                                                    .employeeTargetAchievements[
-                                                                    innerIndex1
-                                                                  ]
-                                                                    .employeeTargetAchievements[
-                                                                    innerIndex2
-                                                                  ]
-                                                                    .employeeTargetAchievements
-                                                                    .length;
-                                                                  i++
-                                                                ) {
-                                                                  localData[
-                                                                    index
-                                                                  ].employeeTargetAchievements[
-                                                                    innerIndex1
-                                                                  ].employeeTargetAchievements[
-                                                                    innerIndex2
-                                                                  ].employeeTargetAchievements[
-                                                                    i
-                                                                  ].isOpenInner = false;
-                                                                  if (
-                                                                    i ===
+                                                                }
+                                                              </Text>
+                                                              <Pressable
+                                                                onPress={() => {
+                                                                  navigation.navigate(
+                                                                    AppNavigator
+                                                                      .HomeStackIdentifiers
+                                                                      .sourceModel,
+                                                                    {
+                                                                      empId:
+                                                                        innerItem3.empId,
+                                                                      headerTitle:
+                                                                        innerItem3.empName,
+                                                                      type: "TEAM",
+                                                                      moduleType:
+                                                                        "live-leads",
+                                                                    }
+                                                                  );
+                                                                }}
+                                                              >
+                                                                <Text
+                                                                  style={{
+                                                                    fontSize: 12,
+                                                                    fontWeight:
+                                                                      "600",
+                                                                    color:
+                                                                      Colors.BLUE,
+                                                                    marginLeft: 8,
+                                                                  }}
+                                                                >
+                                                                  Source/Model
+                                                                </Text>
+                                                              </Pressable>
+                                                            </View>
+                                                            <View
+                                                              style={{
+                                                                flexDirection:
+                                                                  "row",
+                                                              }}
+                                                            >
+                                                              <RenderLevel1NameView
+                                                                level={3}
+                                                                item={
+                                                                  innerItem3
+                                                                }
+                                                                color={
+                                                                  "#EC3466"
+                                                                }
+                                                                titleClick={async () => {
+                                                                  setSelectedName(
+                                                                    innerItem3.empName
+                                                                  );
+                                                                  setTimeout(
+                                                                    () => {
+                                                                      setSelectedName(
+                                                                        ""
+                                                                      );
+                                                                    },
+                                                                    900
+                                                                  );
+                                                                  let localData =
+                                                                    [
+                                                                      ...allParameters,
+                                                                    ];
+                                                                  let current =
+                                                                    localData[
+                                                                      index
+                                                                    ]
+                                                                      .employeeTargetAchievements[
+                                                                      innerIndex1
+                                                                    ]
+                                                                      .employeeTargetAchievements[
+                                                                      innerIndex2
+                                                                    ]
+                                                                      .employeeTargetAchievements[
+                                                                      innerIndex3
+                                                                    ]
+                                                                      .isOpenInner;
+                                                                  for (
+                                                                    let i = 0;
+                                                                    i <
                                                                     localData[
                                                                       index
                                                                     ]
@@ -1421,8 +1433,8 @@ const ParametersScreen = ({ route }) => {
                                                                       innerIndex2
                                                                     ]
                                                                       .employeeTargetAchievements
-                                                                      .length -
-                                                                    1
+                                                                      .length;
+                                                                    i++
                                                                   ) {
                                                                     localData[
                                                                       index
@@ -1431,278 +1443,277 @@ const ParametersScreen = ({ route }) => {
                                                                     ].employeeTargetAchievements[
                                                                       innerIndex2
                                                                     ].employeeTargetAchievements[
-                                                                      innerIndex3
-                                                                    ].isOpenInner =
-                                                                      !current;
-                                                                  }
-                                                                }
-
-                                                                if (!current) {
-                                                                  let employeeData =
-                                                                    await AsyncStore.getData(
-                                                                      AsyncStore
-                                                                        .Keys
-                                                                        .LOGIN_EMPLOYEE
-                                                                    );
-                                                                  if (
-                                                                    employeeData
-                                                                  ) {
-                                                                    const jsonObj =
-                                                                      JSON.parse(
-                                                                        employeeData
-                                                                      );
-                                                                    const dateFormat =
-                                                                      "YYYY-MM-DD";
-                                                                    const currentDate =
-                                                                      moment().format(
-                                                                        dateFormat
-                                                                      );
-                                                                    const monthFirstDate =
-                                                                      moment(
-                                                                        currentDate,
-                                                                        dateFormat
-                                                                      )
-                                                                        .subtract(
-                                                                          0,
-                                                                          "months"
-                                                                        )
-                                                                        .startOf(
-                                                                          "month"
-                                                                        )
-                                                                        .format(
-                                                                          dateFormat
-                                                                        );
-                                                                    const monthLastDate =
-                                                                      moment(
-                                                                        currentDate,
-                                                                        dateFormat
-                                                                      )
-                                                                        .subtract(
-                                                                          0,
-                                                                          "months"
-                                                                        )
-                                                                        .endOf(
-                                                                          "month"
-                                                                        )
-                                                                        .format(
-                                                                          dateFormat
-                                                                        );
-                                                                    let payload =
-                                                                    {
-                                                                      orgId:
-                                                                        jsonObj.orgId,
-                                                                      selectedEmpId:
-                                                                        innerItem3.empId,
-                                                                      endDate:
-                                                                        currentDate,
-                                                                      loggedInEmpId:
-                                                                        jsonObj.empId,
-                                                                      empId:
-                                                                        innerItem3.empId,
-                                                                      startDate:
-                                                                        monthFirstDate,
-                                                                      levelSelected:
-                                                                        null,
-                                                                      pageNo: 0,
-                                                                      size: 100,
-                                                                    };
-                                                                    Promise.all(
-                                                                      [
-                                                                        dispatch(
-                                                                          getUserWiseTargetParameters(
-                                                                            payload
-                                                                          )
-                                                                        ),
+                                                                      i
+                                                                    ].isOpenInner = false;
+                                                                    if (
+                                                                      i ===
+                                                                      localData[
+                                                                        index
                                                                       ]
-                                                                    ).then(
-                                                                      (res) => {
-                                                                        let tempRawData =
-                                                                          [];
-                                                                        tempRawData =
-                                                                          res[0]?.payload?.employeeTargetAchievements.filter(
-                                                                            (
-                                                                              item
-                                                                            ) =>
-                                                                              item.empId !==
-                                                                              innerItem3.empId
+                                                                        .employeeTargetAchievements[
+                                                                        innerIndex1
+                                                                      ]
+                                                                        .employeeTargetAchievements[
+                                                                        innerIndex2
+                                                                      ]
+                                                                        .employeeTargetAchievements
+                                                                        .length -
+                                                                        1
+                                                                    ) {
+                                                                      localData[
+                                                                        index
+                                                                      ].employeeTargetAchievements[
+                                                                        innerIndex1
+                                                                      ].employeeTargetAchievements[
+                                                                        innerIndex2
+                                                                      ].employeeTargetAchievements[
+                                                                        innerIndex3
+                                                                      ].isOpenInner =
+                                                                        !current;
+                                                                    }
+                                                                  }
+
+                                                                  if (
+                                                                    !current
+                                                                  ) {
+                                                                    let employeeData =
+                                                                      await AsyncStore.getData(
+                                                                        AsyncStore
+                                                                          .Keys
+                                                                          .LOGIN_EMPLOYEE
+                                                                      );
+                                                                    if (
+                                                                      employeeData
+                                                                    ) {
+                                                                      const jsonObj =
+                                                                        JSON.parse(
+                                                                          employeeData
+                                                                        );
+                                                                      const dateFormat =
+                                                                        "YYYY-MM-DD";
+                                                                      const currentDate =
+                                                                        moment().format(
+                                                                          dateFormat
+                                                                        );
+                                                                      const monthFirstDate =
+                                                                        moment(
+                                                                          currentDate,
+                                                                          dateFormat
+                                                                        )
+                                                                          .subtract(
+                                                                            0,
+                                                                            "months"
+                                                                          )
+                                                                          .startOf(
+                                                                            "month"
+                                                                          )
+                                                                          .format(
+                                                                            dateFormat
                                                                           );
-                                                                        if (
-                                                                          tempRawData.length >
-                                                                          0
-                                                                        ) {
-                                                                          for (
-                                                                            let i = 0;
-                                                                            i <
-                                                                            tempRawData.length;
-                                                                            i++
+                                                                      const monthLastDate =
+                                                                        moment(
+                                                                          currentDate,
+                                                                          dateFormat
+                                                                        )
+                                                                          .subtract(
+                                                                            0,
+                                                                            "months"
+                                                                          )
+                                                                          .endOf(
+                                                                            "month"
+                                                                          )
+                                                                          .format(
+                                                                            dateFormat
+                                                                          );
+                                                                      let payload =
+                                                                        {
+                                                                          orgId:
+                                                                            jsonObj.orgId,
+                                                                          selectedEmpId:
+                                                                            innerItem3.empId,
+                                                                          endDate:
+                                                                            currentDate,
+                                                                          loggedInEmpId:
+                                                                            jsonObj.empId,
+                                                                          empId:
+                                                                            innerItem3.empId,
+                                                                          startDate:
+                                                                            monthFirstDate,
+                                                                          levelSelected:
+                                                                            null,
+                                                                          pageNo: 0,
+                                                                          size: 100,
+                                                                        };
+                                                                      Promise.all(
+                                                                        [
+                                                                          dispatch(
+                                                                            getUserWiseTargetParameters(
+                                                                              payload
+                                                                            )
+                                                                          ),
+                                                                        ]
+                                                                      ).then(
+                                                                        (
+                                                                          res
+                                                                        ) => {
+                                                                          let tempRawData =
+                                                                            [];
+                                                                          tempRawData =
+                                                                            res[0]?.payload?.employeeTargetAchievements.filter(
+                                                                              (
+                                                                                item
+                                                                              ) =>
+                                                                                item.empId !==
+                                                                                innerItem3.empId
+                                                                            );
+                                                                          if (
+                                                                            tempRawData.length >
+                                                                            0
                                                                           ) {
-                                                                            tempRawData[
-                                                                              i
-                                                                            ] =
-                                                                            {
-                                                                              ...tempRawData[
-                                                                              i
-                                                                              ],
-                                                                              isOpenInner: false,
-                                                                              employeeTargetAchievements:
-                                                                                [],
-                                                                            };
-                                                                            if (
-                                                                              i ===
-                                                                              tempRawData.length -
-                                                                              1
+                                                                            for (
+                                                                              let i = 0;
+                                                                              i <
+                                                                              tempRawData.length;
+                                                                              i++
                                                                             ) {
-                                                                              localData[
-                                                                                index
-                                                                              ].employeeTargetAchievements[
-                                                                                innerIndex1
-                                                                              ].employeeTargetAchievements[
-                                                                                innerIndex2
-                                                                              ].employeeTargetAchievements[
-                                                                                innerIndex3
-                                                                              ].employeeTargetAchievements =
-                                                                                tempRawData;
+                                                                              tempRawData[
+                                                                                i
+                                                                              ] =
+                                                                                {
+                                                                                  ...tempRawData[
+                                                                                    i
+                                                                                  ],
+                                                                                  isOpenInner: false,
+                                                                                  employeeTargetAchievements:
+                                                                                    [],
+                                                                                };
+                                                                              if (
+                                                                                i ===
+                                                                                tempRawData.length -
+                                                                                  1
+                                                                              ) {
+                                                                                localData[
+                                                                                  index
+                                                                                ].employeeTargetAchievements[
+                                                                                  innerIndex1
+                                                                                ].employeeTargetAchievements[
+                                                                                  innerIndex2
+                                                                                ].employeeTargetAchievements[
+                                                                                  innerIndex3
+                                                                                ].employeeTargetAchievements =
+                                                                                  tempRawData;
+                                                                              }
                                                                             }
                                                                           }
+                                                                          setAllParameters(
+                                                                            [
+                                                                              ...localData,
+                                                                            ]
+                                                                          );
                                                                         }
-                                                                        setAllParameters(
-                                                                          [
-                                                                            ...localData,
-                                                                          ]
-                                                                        );
-                                                                      }
+                                                                      );
+                                                                    }
+                                                                  } else {
+                                                                    setAllParameters(
+                                                                      [
+                                                                        ...localData,
+                                                                      ]
                                                                     );
                                                                   }
-                                                                } else {
-                                                                  setAllParameters(
-                                                                    [
-                                                                      ...localData,
-                                                                    ]
-                                                                  );
-                                                                }
-                                                                // setAllParameters([...localData])
-                                                              }}
-                                                            />
+                                                                  // setAllParameters([...localData])
+                                                                }}
+                                                              />
 
-                                                            {renderData(
-                                                              innerItem3,
-                                                              "#EC3466"
-                                                            )}
-                                                          </View>
-                                                          {innerItem3.isOpenInner &&
-                                                            innerItem3
-                                                              .employeeTargetAchievements
-                                                              .length > 0 &&
-                                                            innerItem3.employeeTargetAchievements.map(
-                                                              (
-                                                                innerItem4,
-                                                                innerIndex4
-                                                              ) => {
-                                                                return (
-                                                                  <View
-                                                                    key={
-                                                                      innerIndex4
-                                                                    }
-                                                                    style={[
-                                                                      {
-                                                                        width:
-                                                                          "98%",
-                                                                        minHeight: 40,
-                                                                        flexDirection:
-                                                                          "column",
-                                                                      },
-                                                                      innerItem4.isOpenInner && {
-                                                                        borderRadius: 10,
-                                                                        borderWidth: 1,
-                                                                        borderColor:
-                                                                          "#1C95A6",
-                                                                        backgroundColor:
-                                                                          "#EEEEEE",
-                                                                        marginHorizontal: 5,
-                                                                      },
-                                                                    ]}
-                                                                  >
+                                                              {renderData(
+                                                                innerItem3,
+                                                                "#EC3466"
+                                                              )}
+                                                            </View>
+                                                            {innerItem3.isOpenInner &&
+                                                              innerItem3
+                                                                .employeeTargetAchievements
+                                                                .length > 0 &&
+                                                              innerItem3.employeeTargetAchievements.map(
+                                                                (
+                                                                  innerItem4,
+                                                                  innerIndex4
+                                                                ) => {
+                                                                  return (
                                                                     <View
-                                                                      style={{
-                                                                        flexDirection:
-                                                                          "row",
-                                                                      }}
+                                                                      key={
+                                                                        innerIndex4
+                                                                      }
+                                                                      style={[
+                                                                        {
+                                                                          width:
+                                                                            "98%",
+                                                                          minHeight: 40,
+                                                                          flexDirection:
+                                                                            "column",
+                                                                        },
+                                                                        innerItem4.isOpenInner && {
+                                                                          borderRadius: 10,
+                                                                          borderWidth: 1,
+                                                                          borderColor:
+                                                                            "#1C95A6",
+                                                                          backgroundColor:
+                                                                            "#EEEEEE",
+                                                                          marginHorizontal: 5,
+                                                                        },
+                                                                      ]}
                                                                     >
-                                                                      <RenderLevel1NameView
-                                                                        level={
-                                                                          4
-                                                                        }
-                                                                        item={
-                                                                          innerItem4
-                                                                        }
-                                                                        color={
-                                                                          "#1C95A6"
-                                                                        }
-                                                                        titleClick={async () => {
-                                                                          setSelectedName(
-                                                                            innerItem4.empName
-                                                                          );
-                                                                          setTimeout(
-                                                                            () => {
-                                                                              setSelectedName(
-                                                                                ""
-                                                                              );
-                                                                            },
-                                                                            900
-                                                                          );
-                                                                          let localData =
-                                                                            [
-                                                                              ...allParameters,
-                                                                            ];
-                                                                          let current =
-                                                                            localData[
-                                                                              index
-                                                                            ]
-                                                                              .employeeTargetAchievements[
-                                                                              innerIndex1
-                                                                            ]
-                                                                              .employeeTargetAchievements[
-                                                                              innerIndex2
-                                                                            ]
-                                                                              .employeeTargetAchievements[
-                                                                              innerIndex3
-                                                                            ]
-                                                                              .employeeTargetAchievements[
-                                                                              innerIndex4
-                                                                            ]
-                                                                              .isOpenInner;
-                                                                          for (
-                                                                            let i = 0;
-                                                                            i <
-                                                                            localData[
-                                                                              index
-                                                                            ]
-                                                                              .employeeTargetAchievements[
-                                                                              innerIndex1
-                                                                            ]
-                                                                              .employeeTargetAchievements[
-                                                                              innerIndex2
-                                                                            ]
-                                                                              .employeeTargetAchievements[
-                                                                              innerIndex3
-                                                                            ]
-                                                                              .employeeTargetAchievements
-                                                                              .length;
-                                                                            i++
-                                                                          ) {
-                                                                            localData[
-                                                                              index
-                                                                            ].employeeTargetAchievements[
-                                                                              innerIndex1
-                                                                            ].employeeTargetAchievements[
-                                                                              innerIndex2
-                                                                            ].employeeTargetAchievements[
-                                                                              innerIndex3
-                                                                            ].employeeTargetAchievements[
-                                                                              i
-                                                                            ].isOpenInner = false;
-                                                                            if (
-                                                                              i ===
+                                                                      <View
+                                                                        style={{
+                                                                          flexDirection:
+                                                                            "row",
+                                                                        }}
+                                                                      >
+                                                                        <RenderLevel1NameView
+                                                                          level={
+                                                                            4
+                                                                          }
+                                                                          item={
+                                                                            innerItem4
+                                                                          }
+                                                                          color={
+                                                                            "#1C95A6"
+                                                                          }
+                                                                          titleClick={async () => {
+                                                                            setSelectedName(
+                                                                              innerItem4.empName
+                                                                            );
+                                                                            setTimeout(
+                                                                              () => {
+                                                                                setSelectedName(
+                                                                                  ""
+                                                                                );
+                                                                              },
+                                                                              900
+                                                                            );
+                                                                            let localData =
+                                                                              [
+                                                                                ...allParameters,
+                                                                              ];
+                                                                            let current =
+                                                                              localData[
+                                                                                index
+                                                                              ]
+                                                                                .employeeTargetAchievements[
+                                                                                innerIndex1
+                                                                              ]
+                                                                                .employeeTargetAchievements[
+                                                                                innerIndex2
+                                                                              ]
+                                                                                .employeeTargetAchievements[
+                                                                                innerIndex3
+                                                                              ]
+                                                                                .employeeTargetAchievements[
+                                                                                innerIndex4
+                                                                              ]
+                                                                                .isOpenInner;
+                                                                            for (
+                                                                              let i = 0;
+                                                                              i <
                                                                               localData[
                                                                                 index
                                                                               ]
@@ -1716,8 +1727,8 @@ const ParametersScreen = ({ route }) => {
                                                                                 innerIndex3
                                                                               ]
                                                                                 .employeeTargetAchievements
-                                                                                .length -
-                                                                              1
+                                                                                .length;
+                                                                              i++
                                                                             ) {
                                                                               localData[
                                                                                 index
@@ -1728,292 +1739,287 @@ const ParametersScreen = ({ route }) => {
                                                                               ].employeeTargetAchievements[
                                                                                 innerIndex3
                                                                               ].employeeTargetAchievements[
-                                                                                innerIndex4
-                                                                              ].isOpenInner =
-                                                                                !current;
-                                                                            }
-                                                                          }
-
-                                                                          if (
-                                                                            !current
-                                                                          ) {
-                                                                            let employeeData =
-                                                                              await AsyncStore.getData(
-                                                                                AsyncStore
-                                                                                  .Keys
-                                                                                  .LOGIN_EMPLOYEE
-                                                                              );
-                                                                            if (
-                                                                              employeeData
-                                                                            ) {
-                                                                              const jsonObj =
-                                                                                JSON.parse(
-                                                                                  employeeData
-                                                                                );
-                                                                              const dateFormat =
-                                                                                "YYYY-MM-DD";
-                                                                              const currentDate =
-                                                                                moment().format(
-                                                                                  dateFormat
-                                                                                );
-                                                                              const monthFirstDate =
-                                                                                moment(
-                                                                                  currentDate,
-                                                                                  dateFormat
-                                                                                )
-                                                                                  .subtract(
-                                                                                    0,
-                                                                                    "months"
-                                                                                  )
-                                                                                  .startOf(
-                                                                                    "month"
-                                                                                  )
-                                                                                  .format(
-                                                                                    dateFormat
-                                                                                  );
-                                                                              const monthLastDate =
-                                                                                moment(
-                                                                                  currentDate,
-                                                                                  dateFormat
-                                                                                )
-                                                                                  .subtract(
-                                                                                    0,
-                                                                                    "months"
-                                                                                  )
-                                                                                  .endOf(
-                                                                                    "month"
-                                                                                  )
-                                                                                  .format(
-                                                                                    dateFormat
-                                                                                  );
-                                                                              let payload =
-                                                                              {
-                                                                                orgId:
-                                                                                  jsonObj.orgId,
-                                                                                selectedEmpId:
-                                                                                  innerItem4.empId,
-                                                                                endDate:
-                                                                                  currentDate,
-                                                                                loggedInEmpId:
-                                                                                  jsonObj.empId,
-                                                                                empId:
-                                                                                  innerItem4.empId,
-                                                                                startDate:
-                                                                                  monthFirstDate,
-                                                                                levelSelected:
-                                                                                  null,
-                                                                                pageNo: 0,
-                                                                                size: 100,
-                                                                              };
-                                                                              Promise.all(
-                                                                                [
-                                                                                  dispatch(
-                                                                                    getUserWiseTargetParameters(
-                                                                                      payload
-                                                                                    )
-                                                                                  ),
+                                                                                i
+                                                                              ].isOpenInner = false;
+                                                                              if (
+                                                                                i ===
+                                                                                localData[
+                                                                                  index
                                                                                 ]
-                                                                              ).then(
-                                                                                (
-                                                                                  res
-                                                                                ) => {
-                                                                                  let tempRawData =
-                                                                                    [];
-                                                                                  tempRawData =
-                                                                                    res[0]?.payload?.employeeTargetAchievements.filter(
-                                                                                      (
-                                                                                        item
-                                                                                      ) =>
-                                                                                        item.empId !==
-                                                                                        innerItem4.empId
+                                                                                  .employeeTargetAchievements[
+                                                                                  innerIndex1
+                                                                                ]
+                                                                                  .employeeTargetAchievements[
+                                                                                  innerIndex2
+                                                                                ]
+                                                                                  .employeeTargetAchievements[
+                                                                                  innerIndex3
+                                                                                ]
+                                                                                  .employeeTargetAchievements
+                                                                                  .length -
+                                                                                  1
+                                                                              ) {
+                                                                                localData[
+                                                                                  index
+                                                                                ].employeeTargetAchievements[
+                                                                                  innerIndex1
+                                                                                ].employeeTargetAchievements[
+                                                                                  innerIndex2
+                                                                                ].employeeTargetAchievements[
+                                                                                  innerIndex3
+                                                                                ].employeeTargetAchievements[
+                                                                                  innerIndex4
+                                                                                ].isOpenInner =
+                                                                                  !current;
+                                                                              }
+                                                                            }
+
+                                                                            if (
+                                                                              !current
+                                                                            ) {
+                                                                              let employeeData =
+                                                                                await AsyncStore.getData(
+                                                                                  AsyncStore
+                                                                                    .Keys
+                                                                                    .LOGIN_EMPLOYEE
+                                                                                );
+                                                                              if (
+                                                                                employeeData
+                                                                              ) {
+                                                                                const jsonObj =
+                                                                                  JSON.parse(
+                                                                                    employeeData
+                                                                                  );
+                                                                                const dateFormat =
+                                                                                  "YYYY-MM-DD";
+                                                                                const currentDate =
+                                                                                  moment().format(
+                                                                                    dateFormat
+                                                                                  );
+                                                                                const monthFirstDate =
+                                                                                  moment(
+                                                                                    currentDate,
+                                                                                    dateFormat
+                                                                                  )
+                                                                                    .subtract(
+                                                                                      0,
+                                                                                      "months"
+                                                                                    )
+                                                                                    .startOf(
+                                                                                      "month"
+                                                                                    )
+                                                                                    .format(
+                                                                                      dateFormat
                                                                                     );
-                                                                                  if (
-                                                                                    tempRawData.length >
-                                                                                    0
-                                                                                  ) {
-                                                                                    for (
-                                                                                      let i = 0;
-                                                                                      i <
-                                                                                      tempRawData.length;
-                                                                                      i++
+                                                                                const monthLastDate =
+                                                                                  moment(
+                                                                                    currentDate,
+                                                                                    dateFormat
+                                                                                  )
+                                                                                    .subtract(
+                                                                                      0,
+                                                                                      "months"
+                                                                                    )
+                                                                                    .endOf(
+                                                                                      "month"
+                                                                                    )
+                                                                                    .format(
+                                                                                      dateFormat
+                                                                                    );
+                                                                                let payload =
+                                                                                  {
+                                                                                    orgId:
+                                                                                      jsonObj.orgId,
+                                                                                    selectedEmpId:
+                                                                                      innerItem4.empId,
+                                                                                    endDate:
+                                                                                      currentDate,
+                                                                                    loggedInEmpId:
+                                                                                      jsonObj.empId,
+                                                                                    empId:
+                                                                                      innerItem4.empId,
+                                                                                    startDate:
+                                                                                      monthFirstDate,
+                                                                                    levelSelected:
+                                                                                      null,
+                                                                                    pageNo: 0,
+                                                                                    size: 100,
+                                                                                  };
+                                                                                Promise.all(
+                                                                                  [
+                                                                                    dispatch(
+                                                                                      getUserWiseTargetParameters(
+                                                                                        payload
+                                                                                      )
+                                                                                    ),
+                                                                                  ]
+                                                                                ).then(
+                                                                                  (
+                                                                                    res
+                                                                                  ) => {
+                                                                                    let tempRawData =
+                                                                                      [];
+                                                                                    tempRawData =
+                                                                                      res[0]?.payload?.employeeTargetAchievements.filter(
+                                                                                        (
+                                                                                          item
+                                                                                        ) =>
+                                                                                          item.empId !==
+                                                                                          innerItem4.empId
+                                                                                      );
+                                                                                    if (
+                                                                                      tempRawData.length >
+                                                                                      0
                                                                                     ) {
-                                                                                      tempRawData[
-                                                                                        i
-                                                                                      ] =
-                                                                                      {
-                                                                                        ...tempRawData[
-                                                                                        i
-                                                                                        ],
-                                                                                        isOpenInner: false,
-                                                                                        employeeTargetAchievements:
-                                                                                          [],
-                                                                                      };
-                                                                                      if (
-                                                                                        i ===
-                                                                                        tempRawData.length -
-                                                                                        1
+                                                                                      for (
+                                                                                        let i = 0;
+                                                                                        i <
+                                                                                        tempRawData.length;
+                                                                                        i++
                                                                                       ) {
-                                                                                        localData[
-                                                                                          index
-                                                                                        ].employeeTargetAchievements[
-                                                                                          innerIndex1
-                                                                                        ].employeeTargetAchievements[
-                                                                                          innerIndex2
-                                                                                        ].employeeTargetAchievements[
-                                                                                          innerIndex3
-                                                                                        ].employeeTargetAchievements[
-                                                                                          innerIndex4
-                                                                                        ].employeeTargetAchievements =
-                                                                                          tempRawData;
+                                                                                        tempRawData[
+                                                                                          i
+                                                                                        ] =
+                                                                                          {
+                                                                                            ...tempRawData[
+                                                                                              i
+                                                                                            ],
+                                                                                            isOpenInner: false,
+                                                                                            employeeTargetAchievements:
+                                                                                              [],
+                                                                                          };
+                                                                                        if (
+                                                                                          i ===
+                                                                                          tempRawData.length -
+                                                                                            1
+                                                                                        ) {
+                                                                                          localData[
+                                                                                            index
+                                                                                          ].employeeTargetAchievements[
+                                                                                            innerIndex1
+                                                                                          ].employeeTargetAchievements[
+                                                                                            innerIndex2
+                                                                                          ].employeeTargetAchievements[
+                                                                                            innerIndex3
+                                                                                          ].employeeTargetAchievements[
+                                                                                            innerIndex4
+                                                                                          ].employeeTargetAchievements =
+                                                                                            tempRawData;
+                                                                                        }
                                                                                       }
                                                                                     }
+                                                                                    setAllParameters(
+                                                                                      [
+                                                                                        ...localData,
+                                                                                      ]
+                                                                                    );
                                                                                   }
-                                                                                  setAllParameters(
-                                                                                    [
-                                                                                      ...localData,
-                                                                                    ]
-                                                                                  );
-                                                                                }
+                                                                                );
+                                                                              }
+                                                                            } else {
+                                                                              setAllParameters(
+                                                                                [
+                                                                                  ...localData,
+                                                                                ]
                                                                               );
                                                                             }
-                                                                          } else {
-                                                                            setAllParameters(
-                                                                              [
-                                                                                ...localData,
-                                                                              ]
-                                                                            );
-                                                                          }
-                                                                          // setAllParameters([...localData])
-                                                                        }}
-                                                                      />
-                                                                      {renderData(
-                                                                        innerItem4,
-                                                                        "#1C95A6"
-                                                                      )}
-                                                                    </View>
-                                                                    {innerItem4.isOpenInner &&
-                                                                      innerItem4
-                                                                        .employeeTargetAchievements
-                                                                        .length >
-                                                                      0 &&
-                                                                      innerItem4.employeeTargetAchievements.map(
-                                                                        (
-                                                                          innerItem5,
-                                                                          innerIndex5
-                                                                        ) => {
-                                                                          return (
-                                                                            <View
-                                                                              key={
-                                                                                innerIndex5
-                                                                              }
-                                                                              style={[
-                                                                                {
-                                                                                  width:
-                                                                                    "98%",
-                                                                                  minHeight: 40,
-                                                                                  flexDirection:
-                                                                                    "column",
-                                                                                },
-                                                                                innerItem5.isOpenInner && {
-                                                                                  borderRadius: 10,
-                                                                                  borderWidth: 1,
-                                                                                  borderColor:
-                                                                                    "#C62159",
-                                                                                  backgroundColor:
-                                                                                    "#FFFFFF",
-                                                                                  marginHorizontal: 5,
-                                                                                },
-                                                                              ]}
-                                                                            >
+                                                                            // setAllParameters([...localData])
+                                                                          }}
+                                                                        />
+                                                                        {renderData(
+                                                                          innerItem4,
+                                                                          "#1C95A6"
+                                                                        )}
+                                                                      </View>
+                                                                      {innerItem4.isOpenInner &&
+                                                                        innerItem4
+                                                                          .employeeTargetAchievements
+                                                                          .length >
+                                                                          0 &&
+                                                                        innerItem4.employeeTargetAchievements.map(
+                                                                          (
+                                                                            innerItem5,
+                                                                            innerIndex5
+                                                                          ) => {
+                                                                            return (
                                                                               <View
-                                                                                style={{
-                                                                                  flexDirection:
-                                                                                    "row",
-                                                                                }}
+                                                                                key={
+                                                                                  innerIndex5
+                                                                                }
+                                                                                style={[
+                                                                                  {
+                                                                                    width:
+                                                                                      "98%",
+                                                                                    minHeight: 40,
+                                                                                    flexDirection:
+                                                                                      "column",
+                                                                                  },
+                                                                                  innerItem5.isOpenInner && {
+                                                                                    borderRadius: 10,
+                                                                                    borderWidth: 1,
+                                                                                    borderColor:
+                                                                                      "#C62159",
+                                                                                    backgroundColor:
+                                                                                      "#FFFFFF",
+                                                                                    marginHorizontal: 5,
+                                                                                  },
+                                                                                ]}
                                                                               >
-                                                                                <RenderLevel1NameView
-                                                                                  level={
-                                                                                    5
-                                                                                  }
-                                                                                  item={
-                                                                                    innerItem5
-                                                                                  }
-                                                                                  color={
-                                                                                    "#C62159"
-                                                                                  }
-                                                                                  titleClick={async () => {
-                                                                                    setSelectedName(
-                                                                                      innerItem5.empName
-                                                                                    );
-                                                                                    setTimeout(
-                                                                                      () => {
-                                                                                        setSelectedName(
-                                                                                          ""
-                                                                                        );
-                                                                                      },
-                                                                                      900
-                                                                                    );
-                                                                                    let localData =
-                                                                                      [
-                                                                                        ...allParameters,
-                                                                                      ];
-                                                                                    let current =
-                                                                                      localData[
-                                                                                        index
-                                                                                      ]
-                                                                                        .employeeTargetAchievements[
-                                                                                        innerIndex1
-                                                                                      ]
-                                                                                        .employeeTargetAchievements[
-                                                                                        innerIndex2
-                                                                                      ]
-                                                                                        .employeeTargetAchievements[
-                                                                                        innerIndex3
-                                                                                      ]
-                                                                                        .employeeTargetAchievements[
-                                                                                        innerIndex4
-                                                                                      ]
-                                                                                        .employeeTargetAchievements[
-                                                                                        innerIndex5
-                                                                                      ]
-                                                                                        .isOpenInner;
-                                                                                    for (
-                                                                                      let i = 0;
-                                                                                      i <
-                                                                                      localData[
-                                                                                        index
-                                                                                      ]
-                                                                                        .employeeTargetAchievements[
-                                                                                        innerIndex1
-                                                                                      ]
-                                                                                        .employeeTargetAchievements[
-                                                                                        innerIndex2
-                                                                                      ]
-                                                                                        .employeeTargetAchievements[
-                                                                                        innerIndex3
-                                                                                      ]
-                                                                                        .employeeTargetAchievements[
-                                                                                        innerIndex4
-                                                                                      ]
-                                                                                        .employeeTargetAchievements
-                                                                                        .length;
-                                                                                      i++
-                                                                                    ) {
-                                                                                      localData[
-                                                                                        index
-                                                                                      ].employeeTargetAchievements[
-                                                                                        innerIndex1
-                                                                                      ].employeeTargetAchievements[
-                                                                                        innerIndex2
-                                                                                      ].employeeTargetAchievements[
-                                                                                        innerIndex3
-                                                                                      ].employeeTargetAchievements[
-                                                                                        innerIndex4
-                                                                                      ].employeeTargetAchievements[
-                                                                                        i
-                                                                                      ].isOpenInner = false;
-                                                                                      if (
-                                                                                        i ===
+                                                                                <View
+                                                                                  style={{
+                                                                                    flexDirection:
+                                                                                      "row",
+                                                                                  }}
+                                                                                >
+                                                                                  <RenderLevel1NameView
+                                                                                    level={
+                                                                                      5
+                                                                                    }
+                                                                                    item={
+                                                                                      innerItem5
+                                                                                    }
+                                                                                    color={
+                                                                                      "#C62159"
+                                                                                    }
+                                                                                    titleClick={async () => {
+                                                                                      setSelectedName(
+                                                                                        innerItem5.empName
+                                                                                      );
+                                                                                      setTimeout(
+                                                                                        () => {
+                                                                                          setSelectedName(
+                                                                                            ""
+                                                                                          );
+                                                                                        },
+                                                                                        900
+                                                                                      );
+                                                                                      let localData =
+                                                                                        [
+                                                                                          ...allParameters,
+                                                                                        ];
+                                                                                      let current =
+                                                                                        localData[
+                                                                                          index
+                                                                                        ]
+                                                                                          .employeeTargetAchievements[
+                                                                                          innerIndex1
+                                                                                        ]
+                                                                                          .employeeTargetAchievements[
+                                                                                          innerIndex2
+                                                                                        ]
+                                                                                          .employeeTargetAchievements[
+                                                                                          innerIndex3
+                                                                                        ]
+                                                                                          .employeeTargetAchievements[
+                                                                                          innerIndex4
+                                                                                        ]
+                                                                                          .employeeTargetAchievements[
+                                                                                          innerIndex5
+                                                                                        ]
+                                                                                          .isOpenInner;
+                                                                                      for (
+                                                                                        let i = 0;
+                                                                                        i <
                                                                                         localData[
                                                                                           index
                                                                                         ]
@@ -2030,8 +2036,8 @@ const ParametersScreen = ({ route }) => {
                                                                                           innerIndex4
                                                                                         ]
                                                                                           .employeeTargetAchievements
-                                                                                          .length -
-                                                                                        1
+                                                                                          .length;
+                                                                                        i++
                                                                                       ) {
                                                                                         localData[
                                                                                           index
@@ -2044,302 +2050,297 @@ const ParametersScreen = ({ route }) => {
                                                                                         ].employeeTargetAchievements[
                                                                                           innerIndex4
                                                                                         ].employeeTargetAchievements[
-                                                                                          innerIndex5
-                                                                                        ].isOpenInner =
-                                                                                          !current;
-                                                                                      }
-                                                                                    }
-
-                                                                                    if (
-                                                                                      !current
-                                                                                    ) {
-                                                                                      let employeeData =
-                                                                                        await AsyncStore.getData(
-                                                                                          AsyncStore
-                                                                                            .Keys
-                                                                                            .LOGIN_EMPLOYEE
-                                                                                        );
-                                                                                      if (
-                                                                                        employeeData
-                                                                                      ) {
-                                                                                        const jsonObj =
-                                                                                          JSON.parse(
-                                                                                            employeeData
-                                                                                          );
-                                                                                        const dateFormat =
-                                                                                          "YYYY-MM-DD";
-                                                                                        const currentDate =
-                                                                                          moment().format(
-                                                                                            dateFormat
-                                                                                          );
-                                                                                        const monthFirstDate =
-                                                                                          moment(
-                                                                                            currentDate,
-                                                                                            dateFormat
-                                                                                          )
-                                                                                            .subtract(
-                                                                                              0,
-                                                                                              "months"
-                                                                                            )
-                                                                                            .startOf(
-                                                                                              "month"
-                                                                                            )
-                                                                                            .format(
-                                                                                              dateFormat
-                                                                                            );
-                                                                                        const monthLastDate =
-                                                                                          moment(
-                                                                                            currentDate,
-                                                                                            dateFormat
-                                                                                          )
-                                                                                            .subtract(
-                                                                                              0,
-                                                                                              "months"
-                                                                                            )
-                                                                                            .endOf(
-                                                                                              "month"
-                                                                                            )
-                                                                                            .format(
-                                                                                              dateFormat
-                                                                                            );
-                                                                                        let payload =
-                                                                                        {
-                                                                                          orgId:
-                                                                                            jsonObj.orgId,
-                                                                                          selectedEmpId:
-                                                                                            innerItem5.empId,
-                                                                                          endDate:
-                                                                                            currentDate,
-                                                                                          loggedInEmpId:
-                                                                                            jsonObj.empId,
-                                                                                          empId:
-                                                                                            innerItem5.empId,
-                                                                                          startDate:
-                                                                                            monthFirstDate,
-                                                                                          levelSelected:
-                                                                                            null,
-                                                                                          pageNo: 0,
-                                                                                          size: 100,
-                                                                                        };
-                                                                                        Promise.all(
-                                                                                          [
-                                                                                            dispatch(
-                                                                                              getUserWiseTargetParameters(
-                                                                                                payload
-                                                                                              )
-                                                                                            ),
+                                                                                          i
+                                                                                        ].isOpenInner = false;
+                                                                                        if (
+                                                                                          i ===
+                                                                                          localData[
+                                                                                            index
                                                                                           ]
-                                                                                        ).then(
-                                                                                          (
-                                                                                            res
-                                                                                          ) => {
-                                                                                            let tempRawData =
-                                                                                              [];
-                                                                                            tempRawData =
-                                                                                              res[0]?.payload?.employeeTargetAchievements.filter(
-                                                                                                (
-                                                                                                  item
-                                                                                                ) =>
-                                                                                                  item.empId !==
-                                                                                                  innerItem5.empId
+                                                                                            .employeeTargetAchievements[
+                                                                                            innerIndex1
+                                                                                          ]
+                                                                                            .employeeTargetAchievements[
+                                                                                            innerIndex2
+                                                                                          ]
+                                                                                            .employeeTargetAchievements[
+                                                                                            innerIndex3
+                                                                                          ]
+                                                                                            .employeeTargetAchievements[
+                                                                                            innerIndex4
+                                                                                          ]
+                                                                                            .employeeTargetAchievements
+                                                                                            .length -
+                                                                                            1
+                                                                                        ) {
+                                                                                          localData[
+                                                                                            index
+                                                                                          ].employeeTargetAchievements[
+                                                                                            innerIndex1
+                                                                                          ].employeeTargetAchievements[
+                                                                                            innerIndex2
+                                                                                          ].employeeTargetAchievements[
+                                                                                            innerIndex3
+                                                                                          ].employeeTargetAchievements[
+                                                                                            innerIndex4
+                                                                                          ].employeeTargetAchievements[
+                                                                                            innerIndex5
+                                                                                          ].isOpenInner =
+                                                                                            !current;
+                                                                                        }
+                                                                                      }
+
+                                                                                      if (
+                                                                                        !current
+                                                                                      ) {
+                                                                                        let employeeData =
+                                                                                          await AsyncStore.getData(
+                                                                                            AsyncStore
+                                                                                              .Keys
+                                                                                              .LOGIN_EMPLOYEE
+                                                                                          );
+                                                                                        if (
+                                                                                          employeeData
+                                                                                        ) {
+                                                                                          const jsonObj =
+                                                                                            JSON.parse(
+                                                                                              employeeData
+                                                                                            );
+                                                                                          const dateFormat =
+                                                                                            "YYYY-MM-DD";
+                                                                                          const currentDate =
+                                                                                            moment().format(
+                                                                                              dateFormat
+                                                                                            );
+                                                                                          const monthFirstDate =
+                                                                                            moment(
+                                                                                              currentDate,
+                                                                                              dateFormat
+                                                                                            )
+                                                                                              .subtract(
+                                                                                                0,
+                                                                                                "months"
+                                                                                              )
+                                                                                              .startOf(
+                                                                                                "month"
+                                                                                              )
+                                                                                              .format(
+                                                                                                dateFormat
                                                                                               );
-                                                                                            if (
-                                                                                              tempRawData.length >
-                                                                                              0
-                                                                                            ) {
-                                                                                              for (
-                                                                                                let i = 0;
-                                                                                                i <
-                                                                                                tempRawData.length;
-                                                                                                i++
+                                                                                          const monthLastDate =
+                                                                                            moment(
+                                                                                              currentDate,
+                                                                                              dateFormat
+                                                                                            )
+                                                                                              .subtract(
+                                                                                                0,
+                                                                                                "months"
+                                                                                              )
+                                                                                              .endOf(
+                                                                                                "month"
+                                                                                              )
+                                                                                              .format(
+                                                                                                dateFormat
+                                                                                              );
+                                                                                          let payload =
+                                                                                            {
+                                                                                              orgId:
+                                                                                                jsonObj.orgId,
+                                                                                              selectedEmpId:
+                                                                                                innerItem5.empId,
+                                                                                              endDate:
+                                                                                                currentDate,
+                                                                                              loggedInEmpId:
+                                                                                                jsonObj.empId,
+                                                                                              empId:
+                                                                                                innerItem5.empId,
+                                                                                              startDate:
+                                                                                                monthFirstDate,
+                                                                                              levelSelected:
+                                                                                                null,
+                                                                                              pageNo: 0,
+                                                                                              size: 100,
+                                                                                            };
+                                                                                          Promise.all(
+                                                                                            [
+                                                                                              dispatch(
+                                                                                                getUserWiseTargetParameters(
+                                                                                                  payload
+                                                                                                )
+                                                                                              ),
+                                                                                            ]
+                                                                                          ).then(
+                                                                                            (
+                                                                                              res
+                                                                                            ) => {
+                                                                                              let tempRawData =
+                                                                                                [];
+                                                                                              tempRawData =
+                                                                                                res[0]?.payload?.employeeTargetAchievements.filter(
+                                                                                                  (
+                                                                                                    item
+                                                                                                  ) =>
+                                                                                                    item.empId !==
+                                                                                                    innerItem5.empId
+                                                                                                );
+                                                                                              if (
+                                                                                                tempRawData.length >
+                                                                                                0
                                                                                               ) {
-                                                                                                tempRawData[
-                                                                                                  i
-                                                                                                ] =
-                                                                                                {
-                                                                                                  ...tempRawData[
-                                                                                                  i
-                                                                                                  ],
-                                                                                                  isOpenInner: false,
-                                                                                                  employeeTargetAchievements:
-                                                                                                    [],
-                                                                                                };
-                                                                                                if (
-                                                                                                  i ===
-                                                                                                  tempRawData.length -
-                                                                                                  1
+                                                                                                for (
+                                                                                                  let i = 0;
+                                                                                                  i <
+                                                                                                  tempRawData.length;
+                                                                                                  i++
                                                                                                 ) {
-                                                                                                  localData[
-                                                                                                    index
-                                                                                                  ].employeeTargetAchievements[
-                                                                                                    innerIndex1
-                                                                                                  ].employeeTargetAchievements[
-                                                                                                    innerIndex2
-                                                                                                  ].employeeTargetAchievements[
-                                                                                                    innerIndex3
-                                                                                                  ].employeeTargetAchievements[
-                                                                                                    innerIndex4
-                                                                                                  ].employeeTargetAchievements[
-                                                                                                    innerIndex5
-                                                                                                  ].employeeTargetAchievements =
-                                                                                                    tempRawData;
+                                                                                                  tempRawData[
+                                                                                                    i
+                                                                                                  ] =
+                                                                                                    {
+                                                                                                      ...tempRawData[
+                                                                                                        i
+                                                                                                      ],
+                                                                                                      isOpenInner: false,
+                                                                                                      employeeTargetAchievements:
+                                                                                                        [],
+                                                                                                    };
+                                                                                                  if (
+                                                                                                    i ===
+                                                                                                    tempRawData.length -
+                                                                                                      1
+                                                                                                  ) {
+                                                                                                    localData[
+                                                                                                      index
+                                                                                                    ].employeeTargetAchievements[
+                                                                                                      innerIndex1
+                                                                                                    ].employeeTargetAchievements[
+                                                                                                      innerIndex2
+                                                                                                    ].employeeTargetAchievements[
+                                                                                                      innerIndex3
+                                                                                                    ].employeeTargetAchievements[
+                                                                                                      innerIndex4
+                                                                                                    ].employeeTargetAchievements[
+                                                                                                      innerIndex5
+                                                                                                    ].employeeTargetAchievements =
+                                                                                                      tempRawData;
+                                                                                                  }
                                                                                                 }
                                                                                               }
+                                                                                              setAllParameters(
+                                                                                                [
+                                                                                                  ...localData,
+                                                                                                ]
+                                                                                              );
                                                                                             }
-                                                                                            setAllParameters(
-                                                                                              [
-                                                                                                ...localData,
-                                                                                              ]
-                                                                                            );
-                                                                                          }
+                                                                                          );
+                                                                                        }
+                                                                                      } else {
+                                                                                        setAllParameters(
+                                                                                          [
+                                                                                            ...localData,
+                                                                                          ]
                                                                                         );
                                                                                       }
-                                                                                    } else {
-                                                                                      setAllParameters(
-                                                                                        [
-                                                                                          ...localData,
-                                                                                        ]
-                                                                                      );
-                                                                                    }
-                                                                                    // setAllParameters([...localData])
-                                                                                  }}
-                                                                                />
-                                                                                {renderData(
-                                                                                  innerItem5,
-                                                                                  "#C62159"
-                                                                                )}
-                                                                              </View>
-                                                                              {innerItem5.isOpenInner &&
-                                                                                innerItem5
-                                                                                  .employeeTargetAchievements
-                                                                                  .length >
-                                                                                0 &&
-                                                                                innerItem5.employeeTargetAchievements.map(
-                                                                                  (
-                                                                                    innerItem6,
-                                                                                    innerIndex6
-                                                                                  ) => {
-                                                                                    return (
-                                                                                      <View
-                                                                                        key={
-                                                                                          innerIndex6
-                                                                                        }
-                                                                                        style={[
-                                                                                          {
-                                                                                            width:
-                                                                                              "98%",
-                                                                                            minHeight: 40,
-                                                                                            flexDirection:
-                                                                                              "column",
-                                                                                          },
-                                                                                          innerItem6.isOpenInner && {
-                                                                                            borderRadius: 10,
-                                                                                            borderWidth: 1,
-                                                                                            borderColor:
-                                                                                              "#C62159",
-                                                                                            backgroundColor:
-                                                                                              "#FFFFFF",
-                                                                                            marginHorizontal: 5,
-                                                                                          },
-                                                                                        ]}
-                                                                                      >
+                                                                                      // setAllParameters([...localData])
+                                                                                    }}
+                                                                                  />
+                                                                                  {renderData(
+                                                                                    innerItem5,
+                                                                                    "#C62159"
+                                                                                  )}
+                                                                                </View>
+                                                                                {innerItem5.isOpenInner &&
+                                                                                  innerItem5
+                                                                                    .employeeTargetAchievements
+                                                                                    .length >
+                                                                                    0 &&
+                                                                                  innerItem5.employeeTargetAchievements.map(
+                                                                                    (
+                                                                                      innerItem6,
+                                                                                      innerIndex6
+                                                                                    ) => {
+                                                                                      return (
                                                                                         <View
-                                                                                          style={{
-                                                                                            flexDirection:
-                                                                                              "row",
-                                                                                          }}
+                                                                                          key={
+                                                                                            innerIndex6
+                                                                                          }
+                                                                                          style={[
+                                                                                            {
+                                                                                              width:
+                                                                                                "98%",
+                                                                                              minHeight: 40,
+                                                                                              flexDirection:
+                                                                                                "column",
+                                                                                            },
+                                                                                            innerItem6.isOpenInner && {
+                                                                                              borderRadius: 10,
+                                                                                              borderWidth: 1,
+                                                                                              borderColor:
+                                                                                                "#C62159",
+                                                                                              backgroundColor:
+                                                                                                "#FFFFFF",
+                                                                                              marginHorizontal: 5,
+                                                                                            },
+                                                                                          ]}
                                                                                         >
-                                                                                          <RenderLevel1NameView
-                                                                                            level={
-                                                                                              6
-                                                                                            }
-                                                                                            item={
-                                                                                              innerItem6
-                                                                                            }
-                                                                                            color={
-                                                                                              "#C62159"
-                                                                                            }
-                                                                                            titleClick={async () => {
-                                                                                              setSelectedName(
-                                                                                                innerItem6.empName
-                                                                                              );
-                                                                                              setTimeout(
-                                                                                                () => {
-                                                                                                  setSelectedName(
-                                                                                                    ""
-                                                                                                  );
-                                                                                                },
-                                                                                                900
-                                                                                              );
-                                                                                              let localData =
-                                                                                                [
-                                                                                                  ...allParameters,
-                                                                                                ];
-                                                                                              let current =
-                                                                                                localData[
-                                                                                                  index
-                                                                                                ]
-                                                                                                  .employeeTargetAchievements[
-                                                                                                  innerIndex1
-                                                                                                ]
-                                                                                                  .employeeTargetAchievements[
-                                                                                                  innerIndex2
-                                                                                                ]
-                                                                                                  .employeeTargetAchievements[
-                                                                                                  innerIndex3
-                                                                                                ]
-                                                                                                  .employeeTargetAchievements[
-                                                                                                  innerIndex4
-                                                                                                ]
-                                                                                                  .employeeTargetAchievements[
-                                                                                                  innerIndex5
-                                                                                                ]
-                                                                                                  .employeeTargetAchievements[
-                                                                                                  innerIndex6
-                                                                                                ]
-                                                                                                  .isOpenInner;
-                                                                                              for (
-                                                                                                let i = 0;
-                                                                                                i <
-                                                                                                localData[
-                                                                                                  index
-                                                                                                ]
-                                                                                                  .employeeTargetAchievements[
-                                                                                                  innerIndex1
-                                                                                                ]
-                                                                                                  .employeeTargetAchievements[
-                                                                                                  innerIndex2
-                                                                                                ]
-                                                                                                  .employeeTargetAchievements[
-                                                                                                  innerIndex3
-                                                                                                ]
-                                                                                                  .employeeTargetAchievements[
-                                                                                                  innerIndex4
-                                                                                                ]
-                                                                                                  .employeeTargetAchievements[
-                                                                                                  innerIndex5
-                                                                                                ]
-                                                                                                  .employeeTargetAchievements
-                                                                                                  .length;
-                                                                                                i++
-                                                                                              ) {
-                                                                                                localData[
-                                                                                                  index
-                                                                                                ].employeeTargetAchievements[
-                                                                                                  innerIndex1
-                                                                                                ].employeeTargetAchievements[
-                                                                                                  innerIndex2
-                                                                                                ].employeeTargetAchievements[
-                                                                                                  innerIndex3
-                                                                                                ].employeeTargetAchievements[
-                                                                                                  innerIndex4
-                                                                                                ].employeeTargetAchievements[
-                                                                                                  innerIndex5
-                                                                                                ].employeeTargetAchievements[
-                                                                                                  i
-                                                                                                ].isOpenInner = false;
-                                                                                                if (
-                                                                                                  i ===
+                                                                                          <View
+                                                                                            style={{
+                                                                                              flexDirection:
+                                                                                                "row",
+                                                                                            }}
+                                                                                          >
+                                                                                            <RenderLevel1NameView
+                                                                                              level={
+                                                                                                6
+                                                                                              }
+                                                                                              item={
+                                                                                                innerItem6
+                                                                                              }
+                                                                                              color={
+                                                                                                "#C62159"
+                                                                                              }
+                                                                                              titleClick={async () => {
+                                                                                                setSelectedName(
+                                                                                                  innerItem6.empName
+                                                                                                );
+                                                                                                setTimeout(
+                                                                                                  () => {
+                                                                                                    setSelectedName(
+                                                                                                      ""
+                                                                                                    );
+                                                                                                  },
+                                                                                                  900
+                                                                                                );
+                                                                                                let localData =
+                                                                                                  [
+                                                                                                    ...allParameters,
+                                                                                                  ];
+                                                                                                let current =
+                                                                                                  localData[
+                                                                                                    index
+                                                                                                  ]
+                                                                                                    .employeeTargetAchievements[
+                                                                                                    innerIndex1
+                                                                                                  ]
+                                                                                                    .employeeTargetAchievements[
+                                                                                                    innerIndex2
+                                                                                                  ]
+                                                                                                    .employeeTargetAchievements[
+                                                                                                    innerIndex3
+                                                                                                  ]
+                                                                                                    .employeeTargetAchievements[
+                                                                                                    innerIndex4
+                                                                                                  ]
+                                                                                                    .employeeTargetAchievements[
+                                                                                                    innerIndex5
+                                                                                                  ]
+                                                                                                    .employeeTargetAchievements[
+                                                                                                    innerIndex6
+                                                                                                  ]
+                                                                                                    .isOpenInner;
+                                                                                                for (
+                                                                                                  let i = 0;
+                                                                                                  i <
                                                                                                   localData[
                                                                                                     index
                                                                                                   ]
@@ -2359,8 +2360,8 @@ const ParametersScreen = ({ route }) => {
                                                                                                     innerIndex5
                                                                                                   ]
                                                                                                     .employeeTargetAchievements
-                                                                                                    .length -
-                                                                                                  1
+                                                                                                    .length;
+                                                                                                  i++
                                                                                                 ) {
                                                                                                   localData[
                                                                                                     index
@@ -2375,307 +2376,348 @@ const ParametersScreen = ({ route }) => {
                                                                                                   ].employeeTargetAchievements[
                                                                                                     innerIndex5
                                                                                                   ].employeeTargetAchievements[
-                                                                                                    innerIndex6
-                                                                                                  ].isOpenInner =
-                                                                                                    !current;
-                                                                                                }
-                                                                                              }
-
-                                                                                              if (
-                                                                                                !current
-                                                                                              ) {
-                                                                                                let employeeData =
-                                                                                                  await AsyncStore.getData(
-                                                                                                    AsyncStore
-                                                                                                      .Keys
-                                                                                                      .LOGIN_EMPLOYEE
-                                                                                                  );
-                                                                                                if (
-                                                                                                  employeeData
-                                                                                                ) {
-                                                                                                  const jsonObj =
-                                                                                                    JSON.parse(
-                                                                                                      employeeData
-                                                                                                    );
-                                                                                                  const dateFormat =
-                                                                                                    "YYYY-MM-DD";
-                                                                                                  const currentDate =
-                                                                                                    moment().format(
-                                                                                                      dateFormat
-                                                                                                    );
-                                                                                                  const monthFirstDate =
-                                                                                                    moment(
-                                                                                                      currentDate,
-                                                                                                      dateFormat
-                                                                                                    )
-                                                                                                      .subtract(
-                                                                                                        0,
-                                                                                                        "months"
-                                                                                                      )
-                                                                                                      .startOf(
-                                                                                                        "month"
-                                                                                                      )
-                                                                                                      .format(
-                                                                                                        dateFormat
-                                                                                                      );
-                                                                                                  const monthLastDate =
-                                                                                                    moment(
-                                                                                                      currentDate,
-                                                                                                      dateFormat
-                                                                                                    )
-                                                                                                      .subtract(
-                                                                                                        0,
-                                                                                                        "months"
-                                                                                                      )
-                                                                                                      .endOf(
-                                                                                                        "month"
-                                                                                                      )
-                                                                                                      .format(
-                                                                                                        dateFormat
-                                                                                                      );
-                                                                                                  let payload =
-                                                                                                  {
-                                                                                                    orgId:
-                                                                                                      jsonObj.orgId,
-                                                                                                    selectedEmpId:
-                                                                                                      innerItem6.empId,
-                                                                                                    endDate:
-                                                                                                      currentDate,
-                                                                                                    loggedInEmpId:
-                                                                                                      jsonObj.empId,
-                                                                                                    empId:
-                                                                                                      innerItem6.empId,
-                                                                                                    startDate:
-                                                                                                      monthFirstDate,
-                                                                                                    levelSelected:
-                                                                                                      null,
-                                                                                                    pageNo: 0,
-                                                                                                    size: 100,
-                                                                                                  };
-                                                                                                  Promise.all(
-                                                                                                    [
-                                                                                                      dispatch(
-                                                                                                        getUserWiseTargetParameters(
-                                                                                                          payload
-                                                                                                        )
-                                                                                                      ),
+                                                                                                    i
+                                                                                                  ].isOpenInner = false;
+                                                                                                  if (
+                                                                                                    i ===
+                                                                                                    localData[
+                                                                                                      index
                                                                                                     ]
-                                                                                                  ).then(
-                                                                                                    (
-                                                                                                      res
-                                                                                                    ) => {
-                                                                                                      let tempRawData =
-                                                                                                        [];
-                                                                                                      tempRawData =
-                                                                                                        res[0]?.payload?.employeeTargetAchievements.filter(
-                                                                                                          (
-                                                                                                            item
-                                                                                                          ) =>
-                                                                                                            item.empId !==
-                                                                                                            innerItem6.empId
+                                                                                                      .employeeTargetAchievements[
+                                                                                                      innerIndex1
+                                                                                                    ]
+                                                                                                      .employeeTargetAchievements[
+                                                                                                      innerIndex2
+                                                                                                    ]
+                                                                                                      .employeeTargetAchievements[
+                                                                                                      innerIndex3
+                                                                                                    ]
+                                                                                                      .employeeTargetAchievements[
+                                                                                                      innerIndex4
+                                                                                                    ]
+                                                                                                      .employeeTargetAchievements[
+                                                                                                      innerIndex5
+                                                                                                    ]
+                                                                                                      .employeeTargetAchievements
+                                                                                                      .length -
+                                                                                                      1
+                                                                                                  ) {
+                                                                                                    localData[
+                                                                                                      index
+                                                                                                    ].employeeTargetAchievements[
+                                                                                                      innerIndex1
+                                                                                                    ].employeeTargetAchievements[
+                                                                                                      innerIndex2
+                                                                                                    ].employeeTargetAchievements[
+                                                                                                      innerIndex3
+                                                                                                    ].employeeTargetAchievements[
+                                                                                                      innerIndex4
+                                                                                                    ].employeeTargetAchievements[
+                                                                                                      innerIndex5
+                                                                                                    ].employeeTargetAchievements[
+                                                                                                      innerIndex6
+                                                                                                    ].isOpenInner =
+                                                                                                      !current;
+                                                                                                  }
+                                                                                                }
+
+                                                                                                if (
+                                                                                                  !current
+                                                                                                ) {
+                                                                                                  let employeeData =
+                                                                                                    await AsyncStore.getData(
+                                                                                                      AsyncStore
+                                                                                                        .Keys
+                                                                                                        .LOGIN_EMPLOYEE
+                                                                                                    );
+                                                                                                  if (
+                                                                                                    employeeData
+                                                                                                  ) {
+                                                                                                    const jsonObj =
+                                                                                                      JSON.parse(
+                                                                                                        employeeData
+                                                                                                      );
+                                                                                                    const dateFormat =
+                                                                                                      "YYYY-MM-DD";
+                                                                                                    const currentDate =
+                                                                                                      moment().format(
+                                                                                                        dateFormat
+                                                                                                      );
+                                                                                                    const monthFirstDate =
+                                                                                                      moment(
+                                                                                                        currentDate,
+                                                                                                        dateFormat
+                                                                                                      )
+                                                                                                        .subtract(
+                                                                                                          0,
+                                                                                                          "months"
+                                                                                                        )
+                                                                                                        .startOf(
+                                                                                                          "month"
+                                                                                                        )
+                                                                                                        .format(
+                                                                                                          dateFormat
                                                                                                         );
-                                                                                                      if (
-                                                                                                        tempRawData.length >
-                                                                                                        0
-                                                                                                      ) {
-                                                                                                        for (
-                                                                                                          let i = 0;
-                                                                                                          i <
-                                                                                                          tempRawData.length;
-                                                                                                          i++
+                                                                                                    const monthLastDate =
+                                                                                                      moment(
+                                                                                                        currentDate,
+                                                                                                        dateFormat
+                                                                                                      )
+                                                                                                        .subtract(
+                                                                                                          0,
+                                                                                                          "months"
+                                                                                                        )
+                                                                                                        .endOf(
+                                                                                                          "month"
+                                                                                                        )
+                                                                                                        .format(
+                                                                                                          dateFormat
+                                                                                                        );
+                                                                                                    let payload =
+                                                                                                      {
+                                                                                                        orgId:
+                                                                                                          jsonObj.orgId,
+                                                                                                        selectedEmpId:
+                                                                                                          innerItem6.empId,
+                                                                                                        endDate:
+                                                                                                          currentDate,
+                                                                                                        loggedInEmpId:
+                                                                                                          jsonObj.empId,
+                                                                                                        empId:
+                                                                                                          innerItem6.empId,
+                                                                                                        startDate:
+                                                                                                          monthFirstDate,
+                                                                                                        levelSelected:
+                                                                                                          null,
+                                                                                                        pageNo: 0,
+                                                                                                        size: 100,
+                                                                                                      };
+                                                                                                    Promise.all(
+                                                                                                      [
+                                                                                                        dispatch(
+                                                                                                          getUserWiseTargetParameters(
+                                                                                                            payload
+                                                                                                          )
+                                                                                                        ),
+                                                                                                      ]
+                                                                                                    ).then(
+                                                                                                      (
+                                                                                                        res
+                                                                                                      ) => {
+                                                                                                        let tempRawData =
+                                                                                                          [];
+                                                                                                        tempRawData =
+                                                                                                          res[0]?.payload?.employeeTargetAchievements.filter(
+                                                                                                            (
+                                                                                                              item
+                                                                                                            ) =>
+                                                                                                              item.empId !==
+                                                                                                              innerItem6.empId
+                                                                                                          );
+                                                                                                        if (
+                                                                                                          tempRawData.length >
+                                                                                                          0
                                                                                                         ) {
-                                                                                                          tempRawData[
-                                                                                                            i
-                                                                                                          ] =
-                                                                                                          {
-                                                                                                            ...tempRawData[
-                                                                                                            i
-                                                                                                            ],
-                                                                                                            isOpenInner: false,
-                                                                                                            employeeTargetAchievements:
-                                                                                                              [],
-                                                                                                          };
-                                                                                                          if (
-                                                                                                            i ===
-                                                                                                            tempRawData.length -
-                                                                                                            1
+                                                                                                          for (
+                                                                                                            let i = 0;
+                                                                                                            i <
+                                                                                                            tempRawData.length;
+                                                                                                            i++
                                                                                                           ) {
-                                                                                                            localData[
-                                                                                                              index
-                                                                                                            ].employeeTargetAchievements[
-                                                                                                              innerIndex1
-                                                                                                            ].employeeTargetAchievements[
-                                                                                                              innerIndex2
-                                                                                                            ].employeeTargetAchievements[
-                                                                                                              innerIndex3
-                                                                                                            ].employeeTargetAchievements[
-                                                                                                              innerIndex4
-                                                                                                            ].employeeTargetAchievements[
-                                                                                                              innerIndex5
-                                                                                                            ].employeeTargetAchievements[
-                                                                                                              innerIndex6
-                                                                                                            ].employeeTargetAchievements =
-                                                                                                              tempRawData;
+                                                                                                            tempRawData[
+                                                                                                              i
+                                                                                                            ] =
+                                                                                                              {
+                                                                                                                ...tempRawData[
+                                                                                                                  i
+                                                                                                                ],
+                                                                                                                isOpenInner: false,
+                                                                                                                employeeTargetAchievements:
+                                                                                                                  [],
+                                                                                                              };
+                                                                                                            if (
+                                                                                                              i ===
+                                                                                                              tempRawData.length -
+                                                                                                                1
+                                                                                                            ) {
+                                                                                                              localData[
+                                                                                                                index
+                                                                                                              ].employeeTargetAchievements[
+                                                                                                                innerIndex1
+                                                                                                              ].employeeTargetAchievements[
+                                                                                                                innerIndex2
+                                                                                                              ].employeeTargetAchievements[
+                                                                                                                innerIndex3
+                                                                                                              ].employeeTargetAchievements[
+                                                                                                                innerIndex4
+                                                                                                              ].employeeTargetAchievements[
+                                                                                                                innerIndex5
+                                                                                                              ].employeeTargetAchievements[
+                                                                                                                innerIndex6
+                                                                                                              ].employeeTargetAchievements =
+                                                                                                                tempRawData;
+                                                                                                            }
                                                                                                           }
                                                                                                         }
+                                                                                                        setAllParameters(
+                                                                                                          [
+                                                                                                            ...localData,
+                                                                                                          ]
+                                                                                                        );
                                                                                                       }
-                                                                                                      setAllParameters(
-                                                                                                        [
-                                                                                                          ...localData,
-                                                                                                        ]
-                                                                                                      );
-                                                                                                    }
+                                                                                                    );
+                                                                                                  }
+                                                                                                } else {
+                                                                                                  setAllParameters(
+                                                                                                    [
+                                                                                                      ...localData,
+                                                                                                    ]
                                                                                                   );
                                                                                                 }
-                                                                                              } else {
-                                                                                                setAllParameters(
-                                                                                                  [
-                                                                                                    ...localData,
-                                                                                                  ]
-                                                                                                );
-                                                                                              }
-                                                                                              // setAllParameters([...localData])
-                                                                                            }}
-                                                                                          />
-                                                                                          {renderData(
-                                                                                            innerItem6,
-                                                                                            "#C62159"
-                                                                                          )}
+                                                                                                // setAllParameters([...localData])
+                                                                                              }}
+                                                                                            />
+                                                                                            {renderData(
+                                                                                              innerItem6,
+                                                                                              "#C62159"
+                                                                                            )}
+                                                                                          </View>
                                                                                         </View>
-                                                                                      </View>
-                                                                                    );
-                                                                                  }
-                                                                                )}
-                                                                            </View>
-                                                                          );
-                                                                        }
-                                                                      )}
-                                                                  </View>
-                                                                );
-                                                              }
-                                                            )}
-                                                        </View>
-                                                      );
-                                                    }
-                                                  )}
-                                              </View>
-                                            );
-                                          }
-                                        )}
+                                                                                      );
+                                                                                    }
+                                                                                  )}
+                                                                              </View>
+                                                                            );
+                                                                          }
+                                                                        )}
+                                                                    </View>
+                                                                  );
+                                                                }
+                                                              )}
+                                                          </View>
+                                                        );
+                                                      }
+                                                    )}
+                                                </View>
+                                              );
+                                            }
+                                          )}
+                                      </View>
                                     </View>
-                                  </View>
-                                );
-                              }
-                            )}
-                          {/* GET EMPLOYEE TOTAL MAIN ITEM */}
+                                  );
+                                }
+                              )}
+                            {/* GET EMPLOYEE TOTAL MAIN ITEM */}
+                          </View>
                         </View>
                       </View>
-                    </View>
-                  );
-                })}
-              {/* Grand Total Section */}
-              {selector.totalParameters.length > 0 && (
-                <View>
-                  <Pressable
-                    style={{ alignSelf: "flex-end" }}
-                    onPress={() => {
-                      navigation.navigate(
-                        AppNavigator.HomeStackIdentifiers.sourceModel,
-                        {
-                          empId: selector.login_employee_details.empId,
-                          headerTitle: "Grand Total",
-                          loggedInEmpId: selector.login_employee_details.empId,
-                          type: "TEAM",
-                          moduleType: "live-leads",
-                        }
-                      );
-                    }}
-                  >
-                    <Text
-                      style={{
-                        fontSize: 12,
-                        fontWeight: "600",
-                        color: Colors.BLUE,
-                        marginLeft: 8,
-                        paddingRight: 12,
+                    );
+                  })}
+                {/* Grand Total Section */}
+                {selector.totalParameters.length > 0 && (
+                  <View>
+                    <Pressable
+                      style={{ alignSelf: "flex-end" }}
+                      onPress={() => {
+                        navigation.navigate(
+                          AppNavigator.HomeStackIdentifiers.sourceModel,
+                          {
+                            empId: selector.login_employee_details.empId,
+                            headerTitle: "Grand Total",
+                            loggedInEmpId:
+                              selector.login_employee_details.empId,
+                            type: "TEAM",
+                            moduleType: "live-leads",
+                          }
+                        );
                       }}
                     >
-                      Source/Model
-                    </Text>
-                  </Pressable>
-
-                  <View style={{ flexDirection: "row", height: 40 }}>
-                    <View
-                      style={{
-                        width: 70,
-                        minHeight: 40,
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        flexDirection: "row",
-                        backgroundColor: Colors.RED,
-                      }}
-                    >
-                      <View
+                      <Text
                         style={{
-                          justifyContent: "center",
-                          alignItems: "center",
-                          marginLeft: 6,
+                          fontSize: 12,
+                          fontWeight: "600",
+                          color: Colors.BLUE,
+                          marginLeft: 8,
+                          paddingRight: 12,
                         }}
                       >
-                        <Text
-                          style={[
-                            styles.grandTotalText,
-                            {
-                              color: Colors.WHITE,
-                              fontSize: 12,
-                            },
-                          ]}
+                        Source/Model
+                      </Text>
+                    </Pressable>
+
+                    <View style={{ flexDirection: "row", height: 40 }}>
+                      <View
+                        style={{
+                          width: 70,
+                          minHeight: 40,
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          flexDirection: "row",
+                          backgroundColor: Colors.RED,
+                        }}
+                      >
+                        <View
+                          style={{
+                            justifyContent: "center",
+                            alignItems: "center",
+                            marginLeft: 6,
+                          }}
                         >
-                          Total
-                        </Text>
+                          <Text
+                            style={[
+                              styles.grandTotalText,
+                              {
+                                color: Colors.WHITE,
+                                fontSize: 12,
+                              },
+                            ]}
+                          >
+                            Total
+                          </Text>
+                        </View>
+                        {/*<View>*/}
+                        {/*    <Text style={{*/}
+                        {/*        fontSize: 6,*/}
+                        {/*        fontWeight: 'bold',*/}
+                        {/*        paddingVertical: 6,*/}
+                        {/*        paddingRight: 2,*/}
+                        {/*        height: 20,*/}
+                        {/*        color: Colors.WHITE*/}
+                        {/*    }}>CNT</Text>*/}
+                        {/*    <Text style={{*/}
+                        {/*        fontSize: 6,*/}
+                        {/*        fontWeight: 'bold',*/}
+                        {/*        paddingVertical: 6,*/}
+                        {/*        height: 20,*/}
+                        {/*        color: Colors.WHITE*/}
+                        {/*    }}>TGT</Text>*/}
+                        {/*</View>*/}
                       </View>
-                      {/*<View>*/}
-                      {/*    <Text style={{*/}
-                      {/*        fontSize: 6,*/}
-                      {/*        fontWeight: 'bold',*/}
-                      {/*        paddingVertical: 6,*/}
-                      {/*        paddingRight: 2,*/}
-                      {/*        height: 20,*/}
-                      {/*        color: Colors.WHITE*/}
-                      {/*    }}>CNT</Text>*/}
-                      {/*    <Text style={{*/}
-                      {/*        fontSize: 6,*/}
-                      {/*        fontWeight: 'bold',*/}
-                      {/*        paddingVertical: 6,*/}
-                      {/*        height: 20,*/}
-                      {/*        color: Colors.WHITE*/}
-                      {/*    }}>TGT</Text>*/}
-                      {/*</View>*/}
-                    </View>
-                    <View
-                      style={{
-                        minHeight: 40,
-                        flexDirection: "column",
-                      }}
-                    >
                       <View
                         style={{
                           minHeight: 40,
-                          flexDirection: "row",
+                          flexDirection: "column",
                         }}
                       >
-                        <RenderGrandTotal
-                          totalParams={selector.totalParameters}
-                          displayType={togglePercentage}
-                          params={toggleParamsMetaData}
-                          moduleType={"live-leads"}
-                        />
+                        <View
+                          style={{
+                            minHeight: 40,
+                            flexDirection: "row",
+                          }}
+                        >
+                          <RenderGrandTotal
+                            totalParams={selector.totalParameters}
+                            displayType={togglePercentage}
+                            params={toggleParamsMetaData}
+                            moduleType={"live-leads"}
+                          />
+                        </View>
                       </View>
                     </View>
                   </View>
-                </View>
-              )}
-            </ScrollView>
+                )}
+              </ScrollView>
+            )}
           </View>
         ) : (
           // IF Self or insights
@@ -2727,7 +2769,7 @@ const ParametersScreen = ({ route }) => {
       {!selector.isLoading ? null : (
         <LoaderComponent
           visible={selector.isLoading}
-          onRequestClose={() => { }}
+          onRequestClose={() => {}}
         />
       )}
     </>

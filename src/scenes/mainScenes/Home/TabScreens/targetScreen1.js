@@ -1694,7 +1694,7 @@ const TargetScreen = ({ route }) => {
               {/* Header view end */}
               <ScrollView showsVerticalScrollIndicator={false}>
                 <>
-                  <View style={{ paddingRight: 10 }}>
+                  <View style={{paddingRight:10}}>
                     <View
                       style={{
                         width: "42%",

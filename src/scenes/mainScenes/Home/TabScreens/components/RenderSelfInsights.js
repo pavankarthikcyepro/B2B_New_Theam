@@ -44,6 +44,7 @@ export const RenderSelfInsights = (args) => {
                         alignItems: "center",
                         borderTopLeftRadius: 3,
                         borderBottomLeftRadius: 3,
+                        flex:1
                     }}>
                         <Text  onPress={()=>{
                             let param = item.paramName;
