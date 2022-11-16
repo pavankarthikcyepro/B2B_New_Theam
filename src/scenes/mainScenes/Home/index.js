@@ -673,311 +673,524 @@ const HomeScreen = ({ route, navigation }) => {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
-            <DropDownComponant
-                visible={showDropDownModel}
-                headerTitle={dropDownTitle}
-                data={dataForDropDown}
-                onRequestClose={() => setShowDropDownModel(false)}
-                selectedItems={(item) => {
-
-                    setShowDropDownModel(false);
-                    setDropDownData({ key: dropDownKey, value: item.name, id: item.id })
+      <SafeAreaView style={styles.container}>
+        <DropDownComponant
+          visible={showDropDownModel}
+          headerTitle={dropDownTitle}
+          data={dataForDropDown}
+          onRequestClose={() => setShowDropDownModel(false)}
+          selectedItems={(item) => {
+            setShowDropDownModel(false);
+            setDropDownData({
+              key: dropDownKey,
+              value: item.name,
+              id: item.id,
+            });
+          }}
+        />
+        <HeaderComp
+          title={headerText}
+          branchName={selectedBranchName}
+          menuClicked={() => navigation.openDrawer()}
+          branchClicked={() => moveToSelectBranch()}
+          filterClicked={() => moveToFilter()}
+        />
+        <View style={{ flex: 1, paddingHorizontal: 10 }}>
+          {/* 0000 */}
+          <View>
+            {isButtonPresent && (
+              <View
+                style={{
+                  width: "100%",
+                  alignItems: "flex-end",
+                  marginVertical: 6,
                 }}
-            />
-            <HeaderComp
-                title={headerText}
-                branchName={selectedBranchName}
-                menuClicked={() => navigation.openDrawer()}
-                branchClicked={() => moveToSelectBranch()}
-                filterClicked={() => moveToFilter()}
-            />
-            <View style={{ flex: 1, paddingHorizontal: 10 }}>
-                {/* 0000 */}
-                <View>
-                    {isButtonPresent &&
-                        <View style={{ width: '100%', alignItems: 'flex-end', marginVertical: 6 }}>
-                            <TouchableOpacity style={{ width: 140, height: 30, borderColor: Colors.RED, borderWidth: 1, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={downloadFileFromServer1}>
-                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                    <IconButton icon={'download'} size={16} color={Colors.RED} style={{ margin: 0, padding: 0 }} />
-                                    <Text style={{ fontSize: 14, fontWeight: '600', color: Colors.RED }}>ETVBRL Report</Text>
-                                </View>
-                            </TouchableOpacity>
-                        </View>
-                    }
-                    {!selector.isMD &&
-                        <>
-                            <View style={styles.rankView}>
-                                <View style={styles.rankBox}>
-                                    <Text style={styles.rankHeadingText}>Dealer Ranking</Text>
-                                    <View style={{
-                                        flexDirection: 'row'
-                                    }}>
-                                        <TouchableOpacity style={styles.rankIconBox} onPress={() => {
-                                            navigation.navigate(AppNavigator.HomeStackIdentifiers.leaderboard)
-                                        }}>
-                                            <Image style={styles.rankIcon} source={require("../../../assets/images/perform_rank.png")} />
-                                        </TouchableOpacity>
-                                        <View style={{
-                                            marginTop: 5,
-                                            marginLeft: 3
-                                        }}>
-                                            {groupDealerRank !== null &&
-                                                <Text style={styles.rankText}>{groupDealerRank}/{groupDealerCount}</Text>
-                                            }
-                                        </View>
-                                    </View>
-                                </View>
-
-                                <View style={styles.rankBox}>
-                                    <Text style={styles.rankHeadingText}>Branch Ranking</Text>
-                                    <View style={{
-                                        flexDirection: 'row'
-                                    }}>
-                                        <TouchableOpacity style={styles.rankIconBox} onPress={() => {
-                                            navigation.navigate(AppNavigator.HomeStackIdentifiers.branchRanking)
-                                        }}>
-                                            <Image style={styles.rankIcon} source={require("../../../assets/images/perform_rank.png")} />
-                                        </TouchableOpacity>
-                                        <View style={{
-                                            marginTop: 5,
-                                            marginLeft: 3,
-                                        }}>
-                                            {dealerRank !== null &&
-                                                <View style={{ flexDirection: 'row' }}>
-                                                    <Text style={[styles.rankText]}>{dealerRank}</Text>
-                                                    <Text style={[styles.rankText]}>/{dealerCount}</Text>
-                                                </View>
-                                            }
-                                        </View>
-                                    </View>
-                                </View>
-                                <View style={styles.rankBox}>
-                                    <Text style={styles.rankHeadingText}>Retails</Text>
-                                    <View style={{
-                                        flexDirection: 'row'
-                                    }}>
-                                        <View style={styles.rankIconBox}>
-                                            <Image style={styles.rankIcon} source={require("../../../assets/images/retail.png")} />
-                                        </View>
-                                        <View style={{
-                                            marginTop: 5,
-                                            marginLeft: 5,
-                                        }}>
-
-                                            <View style={{ flexDirection: 'row' }}>
-                                                <Text style={[styles.rankText, { color: Colors.RED }]}>{retailData?.achievment}</Text>
-                                                <Text style={[styles.rankText]}>/{retailData?.target}</Text>
-                                            </View>
-                                            <View style={{
-                                                marginTop: 5
-                                            }}>
-                                                <Text style={styles.baseText}>Ach v/s Tar</Text>
-                                            </View>
-                                        </View>
-                                    </View>
-                                </View>
-                            </View>
-                        </>
-                    }
-                </View>
-
-                {/* 1111 */}
-                <View>
-                    {isTeamPresent && !selector.isDSE &&
-                        <View style={{ flexDirection: 'row', marginBottom: 2, justifyContent: 'center', alignItems: 'center' }}>
-                            <View style={{ flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 28, marginTop: 2, justifyContent: 'center', width: '80%' }}>
-
-                                <TouchableOpacity onPress={() => {
-                                    // setIsTeam(true)
-                                    dispatch(updateIsTeam(false))
-                                }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: selector.isTeam ? Colors.WHITE : Colors.RED, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
-                                    <Text style={{ fontSize: 16, color: selector.isTeam ? Colors.BLACK : Colors.WHITE, fontWeight: '600' }}>Insights</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={() => {
-                                    // setIsTeam(false)
-                                    dispatch(updateIsTeam(true))
-                                }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: selector.isTeam ? Colors.RED : Colors.WHITE, borderTopRightRadius: 5, borderBottomRightRadius: 5 }}>
-                                    <Text style={{ fontSize: 16, color: selector.isTeam ? Colors.WHITE : Colors.BLACK, fontWeight: '600' }}>Teams</Text>
-                                </TouchableOpacity>
-
-                            </View>
-                        </View>
-                    }
-                    {selector.isDSE &&
-                        <View style={{ flexDirection: 'row', marginBottom: 2, justifyContent: 'center', alignItems: 'center' }}>
-                            <View style={{ flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 28, justifyContent: 'center', width: '80%' }}>
-                                <TouchableOpacity onPress={() => {
-                                    // setIsTeam(true)
-                                    dispatch(updateIsTeam(false))
-                                }} style={{ width: '100%', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.RED, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
-                                    <Text style={{ fontSize: 16, color: Colors.WHITE, fontWeight: '600' }}>Dashboard</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    }
-                </View>
-
-                {/* 2222 */}
-                <View style={{ marginTop: 8, alignItems: 'center' }}>
-                    <View style={{
-                        shadowColor: Colors.DARK_GRAY,
-                        shadowOffset: {
-                            width: 0,
-                            height: 2,
-                        },
-                        shadowRadius: 4,
-                        shadowOpacity: 0.5,
-                        marginHorizontal: 4,
-                        height: isButtonPresent ? '93%' : '90%'
-                    }}>
-                        {(selector.target_parameters_data.length > 0 || (isTeamPresent && selector.all_target_parameters_data.length > 0)) &&
-                            <DashboardTopTabNavigatorNew />
-                        }
+              >
+                <TouchableOpacity
+                  style={{
+                    width: 140,
+                    height: 30,
+                    borderColor: Colors.RED,
+                    borderWidth: 1,
+                    borderRadius: 4,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                  onPress={downloadFileFromServer1}
+                >
+                  <View style={{ flexDirection: "row", alignItems: "center" }}>
+                    <IconButton
+                      icon={"download"}
+                      size={16}
+                      color={Colors.RED}
+                      style={{ margin: 0, padding: 0 }}
+                    />
+                    <Text
+                      style={{
+                        fontSize: 14,
+                        fontWeight: "600",
+                        color: Colors.RED,
+                      }}
+                    >
+                      ETVBRL Report
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            )}
+            {!selector.isMD && (
+              <>
+                <View style={styles.rankView}>
+                  <View style={styles.rankBox}>
+                    <Text style={styles.rankHeadingText}>Dealer Ranking</Text>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                      }}
+                    >
+                      <TouchableOpacity
+                        style={styles.rankIconBox}
+                        onPress={() => {
+                          navigation.navigate(
+                            AppNavigator.HomeStackIdentifiers.leaderboard
+                          );
+                        }}
+                      >
+                        <Image
+                          style={styles.rankIcon}
+                          source={require("../../../assets/images/perform_rank.png")}
+                        />
+                      </TouchableOpacity>
+                      <View
+                        style={{
+                          marginTop: 5,
+                          marginLeft: 3,
+                        }}
+                      >
+                        {groupDealerRank !== null && (
+                          <Text style={styles.rankText}>
+                            {groupDealerRank}/{groupDealerCount}
+                          </Text>
+                        )}
+                      </View>
                     </View>
+                  </View>
+
+                  <View style={styles.rankBox}>
+                    <Text style={styles.rankHeadingText}>Branch Ranking</Text>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                      }}
+                    >
+                      <TouchableOpacity
+                        style={styles.rankIconBox}
+                        onPress={() => {
+                          navigation.navigate(
+                            AppNavigator.HomeStackIdentifiers.branchRanking
+                          );
+                        }}
+                      >
+                        <Image
+                          style={styles.rankIcon}
+                          source={require("../../../assets/images/perform_rank.png")}
+                        />
+                      </TouchableOpacity>
+                      <View
+                        style={{
+                          marginTop: 5,
+                          marginLeft: 3,
+                        }}
+                      >
+                        {dealerRank !== null && (
+                          <View style={{ flexDirection: "row" }}>
+                            <Text style={[styles.rankText]}>{dealerRank}</Text>
+                            <Text style={[styles.rankText]}>
+                              /{dealerCount}
+                            </Text>
+                          </View>
+                        )}
+                      </View>
+                    </View>
+                  </View>
+                  <View style={styles.rankBox}>
+                    <Text style={styles.rankHeadingText}>Retails</Text>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                      }}
+                    >
+                      <View style={styles.rankIconBox}>
+                        <Image
+                          style={styles.rankIcon}
+                          source={require("../../../assets/images/retail.png")}
+                        />
+                      </View>
+                      <View
+                        style={{
+                          marginTop: 5,
+                          marginLeft: 5,
+                        }}
+                      >
+                        <View style={{ flexDirection: "row" }}>
+                          <Text
+                            style={[styles.rankText, { color: Colors.RED }]}
+                          >
+                            {retailData?.achievment}
+                          </Text>
+                          <Text style={[styles.rankText]}>
+                            /{retailData?.target}
+                          </Text>
+                        </View>
+                        <View
+                          style={{
+                            marginTop: 5,
+                          }}
+                        >
+                          <Text style={styles.baseText}>Ach v/s Tar</Text>
+                        </View>
+                      </View>
+                    </View>
+                  </View>
+                </View>
+              </>
+            )}
+            {true && (
+              <View
+                style={{
+                  justifyContent: "space-around",
+                  flexDirection: "row",
+                }}
+              >
+                <View style={{ flexDirection: "column", alignItems: "center" }}>
+                  <Text style={styles.rankHeadingText}>
+                    {"Leads Allocated"}
+                  </Text>
+                  <View style={styles.cardView}>
+                    <Text style={{ ...styles.rankText, color: "blue" }}>
+                      12
+                    </Text>
+                  </View>
                 </View>
 
+                <View style={{ flexDirection: "column", alignItems: "center" }}>
+                  <Text style={styles.rankHeadingText}>{"Bookings"}</Text>
+                  <View style={styles.cardView}>
+                    <Text style={{ ...styles.rankText, color: "red" }}>12</Text>
+                  </View>
+                </View>
+                <View style={{ flexDirection: "column", alignItems: "center" }}>
+                  <Text style={styles.rankHeadingText}>{"Retails"}</Text>
+                  <View style={styles.cardView}>
+                    <Text style={{ ...styles.rankText, color: "green" }}>
+                      12
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            )}
+          </View>
+
+          {/* 1111 */}
+          <View>
+            {isTeamPresent && !selector.isDSE && (
+              <View
+                style={{
+                  flexDirection: "row",
+                  marginBottom: 2,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <View
+                  style={{
+                    flexDirection: "row",
+                    borderColor: Colors.RED,
+                    borderWidth: 1,
+                    borderRadius: 5,
+                    height: 28,
+                    marginTop: 2,
+                    justifyContent: "center",
+                    width: "80%",
+                  }}
+                >
+                  <TouchableOpacity
+                    onPress={() => {
+                      // setIsTeam(true)
+                      dispatch(updateIsTeam(false));
+                    }}
+                    style={{
+                      width: "50%",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      backgroundColor: selector.isTeam
+                        ? Colors.WHITE
+                        : Colors.RED,
+                      borderTopLeftRadius: 5,
+                      borderBottomLeftRadius: 5,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        color: selector.isTeam ? Colors.BLACK : Colors.WHITE,
+                        fontWeight: "600",
+                      }}
+                    >
+                      Insights
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      // setIsTeam(false)
+                      dispatch(updateIsTeam(true));
+                    }}
+                    style={{
+                      width: "50%",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      backgroundColor: selector.isTeam
+                        ? Colors.RED
+                        : Colors.WHITE,
+                      borderTopRightRadius: 5,
+                      borderBottomRightRadius: 5,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        color: selector.isTeam ? Colors.WHITE : Colors.BLACK,
+                        fontWeight: "600",
+                      }}
+                    >
+                      Teams
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
+            {selector.isDSE && (
+              <View
+                style={{
+                  flexDirection: "row",
+                  marginBottom: 2,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <View
+                  style={{
+                    flexDirection: "row",
+                    borderColor: Colors.RED,
+                    borderWidth: 1,
+                    borderRadius: 5,
+                    height: 28,
+                    justifyContent: "center",
+                    width: "80%",
+                  }}
+                >
+                  <TouchableOpacity
+                    onPress={() => {
+                      // setIsTeam(true)
+                      dispatch(updateIsTeam(false));
+                    }}
+                    style={{
+                      width: "100%",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      backgroundColor: Colors.RED,
+                      borderTopLeftRadius: 5,
+                      borderBottomLeftRadius: 5,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        color: Colors.WHITE,
+                        fontWeight: "600",
+                      }}
+                    >
+                      Dashboard
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
+          </View>
+
+          {/* 2222 */}
+          <View style={{ marginTop: 8, alignItems: "center" }}>
+            <View
+              style={{
+                shadowColor: Colors.DARK_GRAY,
+                shadowOffset: {
+                  width: 0,
+                  height: 2,
+                },
+                shadowRadius: 4,
+                shadowOpacity: 0.5,
+                marginHorizontal: 4,
+                height: isButtonPresent ? "93%" : "90%",
+              }}
+            >
+              {(selector.target_parameters_data.length > 0 ||
+                (isTeamPresent &&
+                  selector.all_target_parameters_data.length > 0)) && (
+                <DashboardTopTabNavigatorNew />
+              )}
             </View>
-            <LoaderComponent visible={loading} />
-        </SafeAreaView>
+          </View>
+        </View>
+        <LoaderComponent visible={loading} />
+      </SafeAreaView>
     );
 };
 
 export default HomeScreen;
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        flexDirection: "column",
-        justifyContent: "center",
-        backgroundColor: Colors.LIGHT_GRAY,
+  container: {
+    flex: 1,
+    flexDirection: "column",
+    justifyContent: "center",
+    backgroundColor: Colors.LIGHT_GRAY,
+  },
+  shadow: {
+    //   overflow: 'hidden',
+    borderRadius: 4,
+    width: "100%",
+    height: 250,
+    shadowColor: Colors.DARK_GRAY,
+    shadowOffset: {
+      width: 0,
+      height: 2,
     },
-    shadow: {
-        //   overflow: 'hidden',
-        borderRadius: 4,
-        width: "100%",
-        height: 250,
-        shadowColor: Colors.DARK_GRAY,
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowRadius: 2,
-        shadowOpacity: 0.5,
-        // elevation: 3,
-        position: "relative",
-    },
-    text1: {
-        fontSize: 16,
-        fontWeight: "600",
-        color: Colors.WHITE,
-    },
-    barVw: {
-        backgroundColor: Colors.WHITE,
-        width: 40,
-        height: "70%",
-        justifyContent: "center",
-    },
-    text2: {
-        fontSize: 20,
-        fontWeight: "600",
-        textAlign: "center",
-    },
-    text3: {
-        fontSize: 18,
-        fontWeight: "800",
-    },
-    dateVw: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        borderWidth: 1,
-        borderColor: Colors.BORDER_COLOR,
-        backgroundColor: Colors.WHITE,
-        marginBottom: 5,
-        paddingLeft: 5,
-        height: 50,
-    },
-    boxView: {
-        justifyContent: "center",
-        alignItems: "center",
-        borderWidth: 1,
-        borderColor: Colors.BORDER_COLOR,
-        backgroundColor: Colors.WHITE,
-        paddingVertical: 5
-    },
+    shadowRadius: 2,
+    shadowOpacity: 0.5,
+    // elevation: 3,
+    position: "relative",
+  },
+  text1: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: Colors.WHITE,
+  },
+  barVw: {
+    backgroundColor: Colors.WHITE,
+    width: 40,
+    height: "70%",
+    justifyContent: "center",
+  },
+  text2: {
+    fontSize: 20,
+    fontWeight: "600",
+    textAlign: "center",
+  },
+  text3: {
+    fontSize: 18,
+    fontWeight: "800",
+  },
+  dateVw: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: Colors.BORDER_COLOR,
+    backgroundColor: Colors.WHITE,
+    marginBottom: 5,
+    paddingLeft: 5,
+    height: 50,
+  },
+  boxView: {
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: Colors.BORDER_COLOR,
+    backgroundColor: Colors.WHITE,
+    paddingVertical: 5,
+  },
 
-    performView: {
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "flex-start",
-        backgroundColor: Colors.WHITE,
-        marginBottom: 5,
-    },
+  performView: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "flex-start",
+    backgroundColor: Colors.WHITE,
+    marginBottom: 5,
+  },
 
-    rankView: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        paddingLeft: 3,
-        height: 70,
-        marginTop: 10,
-        width: '100%',
+  rankView: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingLeft: 3,
+    height: 70,
+    marginTop: 10,
+    width: "100%",
+  },
+  rankIconBox: {
+    height: 40,
+    width: 40,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
     },
-    rankIconBox: {
-        height: 40,
-        width: 40,
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.3,
-        shadowRadius: 1,
-        borderStyle: "solid",
-        borderWidth: 1,
-        borderColor: "#d2d2d2",
-        borderRadius: 7,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 5
-    },
-    rankHeadingText: {
-        fontSize: 10,
-        fontWeight: "500"
-    },
-    rankText: {
-        fontSize: 16,
-        fontWeight: "700"
-    },
-    rankText2: {
-        fontSize: 20,
-        fontWeight: "700"
-    },
-    baseText: {
-        fontSize: 10,
-        fontWeight: "800"
-    },
-    rankBox: {
-        paddingTop: 5,
-        height: 80,
-        width: '32%',
-        marginRight: 10
-    },
-    rankBox2: {
-        paddingTop: 5,
-        height: 80,
-        width: '30%',
-        marginRight: 10
-    },
+    shadowOpacity: 0.3,
+    shadowRadius: 1,
+    borderStyle: "solid",
+    borderWidth: 1,
+    borderColor: "#d2d2d2",
+    borderRadius: 7,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 5,
+  },
+  rankHeadingText: {
+    fontSize: 10,
+    fontWeight: "500",
+  },
+  rankText: {
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  rankText2: {
+    fontSize: 20,
+    fontWeight: "700",
+  },
+  baseText: {
+    fontSize: 10,
+    fontWeight: "800",
+  },
+  rankBox: {
+    paddingTop: 5,
+    height: 80,
+    width: "32%",
+    marginRight: 10,
+  },
+  rankBox2: {
+    paddingTop: 5,
+    height: 80,
+    width: "30%",
+    marginRight: 10,
+  },
 
-    retailBox: {
-        paddingTop: 5,
-        height: 80,
-        width: '20%',
-        marginRight: 10,
-        alignItems: 'flex-end'
-    },
-    rankIcon: { width: 25, height: 25 }
+  retailBox: {
+    paddingTop: 5,
+    height: 80,
+    width: "20%",
+    marginRight: 10,
+    alignItems: "flex-end",
+  },
+  rankIcon: { width: 25, height: 25 },
+  cardView: {
+    width: 45,
+    height: 45,
+    borderWidth: 2,
+    borderColor: "#D3D3D3",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 10,
+    backgroundColor: "#fff",
+  },
 });
 
