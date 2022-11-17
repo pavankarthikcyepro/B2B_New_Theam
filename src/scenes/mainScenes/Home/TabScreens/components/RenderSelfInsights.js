@@ -125,7 +125,6 @@ export const RenderSelfInsights = (args) => {
                 textDecorationLine: navigableParams.includes(item.paramName)
                   ? "underline"
                   : "none",
-                fontSize: 10,
               }}
             >
               {type === 0
