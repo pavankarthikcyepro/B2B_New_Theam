@@ -5,6 +5,7 @@ import {Colors} from "../../../../../styles";
 import moment from "moment/moment";
 import {achievementPercentage} from "../../../../../utils/helperFunctions";
 import {AppNavigator} from "../../../../../navigations";
+import TextTicker from "react-native-text-ticker";
 
 export const RenderSelfInsights = (args) => {
   const color = [
@@ -55,36 +56,48 @@ export const RenderSelfInsights = (args) => {
   };
 
   return getRearrangeArray().map((item, index) => {
-    if (item) {
-      return (
+    return (
+      <View
+        style={{ flexDirection: "row", marginLeft: 8 }}
+        key={`${item.paramShortName}_${index}`}
+      >
+        {/* row title */}
         <View
-          style={{ flexDirection: "row", marginLeft: 8 }}
-          key={`${item.paramShortName}_${index}`}
+          style={{
+            width: "10%",
+            justifyContent: "center",
+            marginTop: 5,
+          }}
         >
-          <View
+          <Text>
+            {item.paramName === "DROPPED" ? "Lost" : item.paramShortName}
+          </Text>
+        </View>
+
+        {/* Progress bar Left */}
+        <View
+          style={{
+            flex: 1,
+            height: 20,
+            width: "15%",
+            marginTop: 10,
+            paddingLeft: 5,
+            position: "relative",
+            borderTopLeftRadius: 3,
+            justifyContent: "center",
+            borderBottomLeftRadius: 3,
+            backgroundColor: color[index % color.length],
+          }}
+        >
+          <TextTicker
+            duration={10000}
+            loop={true}
+            // shouldAnimateTreshold={50}
+            bounce={false}
+            repeatSpacer={50}
+            marqueeDelay={0}
             style={{
-              width: "10%",
-              justifyContent: "center",
-              marginTop: 5,
-            }}
-          >
-            <Text>
-              {item.paramName === "DROPPED" ? "Lost" : item.paramShortName}
-            </Text>
-          </View>
-          <View
-            style={{
-              // width: item.paramName === 'Accessories' ? '12%' : "10%",
-              width: "auto",
-              marginTop: 10,
-              position: "relative",
-              backgroundColor: color[index % color.length],
-              height: 20,
-              justifyContent: "center",
-              alignItems: "center",
-              borderTopLeftRadius: 3,
-              borderBottomLeftRadius: 3,
-              flex: 1,
+              marginBottom: 0,
             }}
           >
             <Text
@@ -136,166 +149,121 @@ export const RenderSelfInsights = (args) => {
                     enq.achievment
                   )}
             </Text>
-          </View>
-          <View
-            style={{
-              width: item.paramName === "Accessories" ? "33%" : "35%",
-              marginTop: 10,
-              position: "relative",
-            }}
-          >
-            <ProgressBar
-              progress={
-                item.achivementPerc.includes("%")
-                  ? parseInt(
+          </TextTicker>
+        </View>
+
+        {/* Progress bar right */}
+        <View
+          style={{
+            width: "35%",
+            marginTop: 10,
+            position: "relative",
+          }}
+        >
+          <ProgressBar
+            progress={
+              item.achivementPerc.includes("%")
+                ? parseInt(
+                    item.achivementPerc.substring(
+                      0,
+                      item.achivementPerc.indexOf("%")
+                    )
+                  ) === 0
+                  ? 0
+                  : parseInt(
                       item.achivementPerc.substring(
                         0,
                         item.achivementPerc.indexOf("%")
                       )
-                    ) === 0
-                    ? 0
-                    : parseInt(
-                        item.achivementPerc.substring(
-                          0,
-                          item.achivementPerc.indexOf("%")
-                        )
-                      ) / 100
-                  : parseFloat(item.achivementPerc) / 100
-              }
-              color={color[index % color.length]}
-              style={{
-                height: 20,
-                borderTopRightRadius: 3,
-                borderBottomRightRadius: 3,
-                backgroundColor: "#eeeeee",
-              }}
-            />
-            {item.paramName !== "DROPPED" && (
-              <View style={{ position: "absolute", top: 1, right: 5 }}>
-                <Text
-                  style={{
-                    color:
-                      parseInt(
-                        item.achivementPerc.substring(
-                          0,
-                          item.achivementPerc.indexOf("%")
-                        )
-                      ) >= 90
-                        ? Colors.WHITE
-                        : Colors.BLACK,
-                  }}
-                >
-                  {item.target}
-                </Text>
-              </View>
-            )}
-          </View>
-          {/*<View*/}
-          {/*    style={{*/}
-          {/*        width: "10%",*/}
-          {/*        justifyContent: "center",*/}
-          {/*        flexDirection: "row",*/}
-          {/*        height: 25,*/}
-          {/*        marginTop: 8,*/}
-          {/*        alignItems: "center",*/}
-          {/*        marginLeft: 8,*/}
-          {/*    }}*/}
-          {/*>*/}
-          {/*    <IconButton*/}
-          {/*        icon={*/}
-          {/*            parseInt(*/}
-          {/*                item.achivementPerc.substring(*/}
-          {/*                    0,*/}
-          {/*                    item.achivementPerc.indexOf("%")*/}
-          {/*                )*/}
-          {/*            ) > 40*/}
-          {/*                ? "menu-up"*/}
-          {/*                : "menu-down"*/}
-          {/*        }*/}
-          {/*        color={*/}
-          {/*            parseInt(*/}
-          {/*                item.achivementPerc.substring(*/}
-          {/*                    0,*/}
-          {/*                    item.achivementPerc.indexOf("%")*/}
-          {/*                )*/}
-          {/*            ) > 40*/}
-          {/*                ? Colors.DARK_GREEN*/}
-          {/*                : Colors.RED*/}
-          {/*        }*/}
-          {/*        size={30}*/}
-          {/*    />*/}
-          {/*    <View*/}
-          {/*        style={{*/}
-          {/*            justifyContent: "center",*/}
-          {/*            flexDirection: "row",*/}
-          {/*            height: 25,*/}
-          {/*            marginTop: 0,*/}
-          {/*            alignItems: "center",*/}
-          {/*            marginLeft: -20,*/}
-          {/*        }}*/}
-          {/*    >*/}
-          {/*        <Text>{item.achivementPerc}</Text>*/}
-          {/*    </View>*/}
-          {/*</View>*/}
-          {item.paramName !== "DROPPED" ? (
-            <View
-              style={{
-                width: "35%",
-                justifyContent: "center",
-                flexDirection: "row",
-                height: 25,
-                alignItems: "center",
-                marginTop: 8,
-                marginLeft: 20,
-              }}
-            >
-              <View
+                    ) / 100
+                : parseFloat(item.achivementPerc) / 100
+            }
+            color={color[index % color.length]}
+            style={{
+              height: 20,
+              borderTopRightRadius: 3,
+              borderBottomRightRadius: 3,
+              backgroundColor: "#eeeeee",
+            }}
+          />
+          {item.paramName !== "DROPPED" && (
+            <View style={{ position: "absolute", top: 1, right: 5 }}>
+              <Text
                 style={{
-                  maxWidth: item.target && item.target.length >= 6 ? 70 : 45,
-                  minWidth: 45,
-                  height: 25,
-                  borderColor: color[index % color.length],
-                  borderWidth: 1,
-                  borderRadius: 8,
-                  justifyContent: "center",
-                  alignItems: "center",
+                  color:
+                    parseInt(
+                      item.achivementPerc.substring(
+                        0,
+                        item.achivementPerc.indexOf("%")
+                      )
+                    ) >= 90
+                      ? Colors.WHITE
+                      : Colors.BLACK,
                 }}
               >
-                <Text style={{ padding: 2 }}>
-                  {Number(item.achievment) > Number(item.target)
-                    ? 0
-                    : item.shortfall}
-                </Text>
-              </View>
-              <View
-                style={{
-                  maxWidth: item.target && item.target.length >= 6 ? 70 : 45,
-                  minWidth: 45,
-                  height: 25,
-                  borderColor: color[index % color.length],
-                  borderWidth: 1,
-                  borderRadius: 8,
-                  justifyContent: "center",
-                  alignItems: "center",
-                  marginLeft: item.target.length >= 6 ? 5 : 20,
-                }}
-              >
-                <Text style={{ padding: 2 }}>
-                  {parseInt(item.achievment) > parseInt(item.target)
-                    ? 0
-                    : dateDiff > 0 && parseInt(item.shortfall) !== 0
-                    ? Math.abs(Math.round(parseInt(item.shortfall) / dateDiff))
-                    : 0}
-                </Text>
-              </View>
+                {item.target}
+              </Text>
             </View>
-          ) : (
-            <View style={{ width: "35%", marginLeft: 20 }} />
           )}
         </View>
-      );
-    } else {
-      return <View key={index} />;
-    }
+
+        {/* Balance and AR/Day */}
+        {item.paramName !== "DROPPED" ? (
+          <View
+            style={{
+              width: "35%",
+              justifyContent: "center",
+              flexDirection: "row",
+              height: 25,
+              alignItems: "center",
+              marginTop: 8,
+              marginLeft: 20,
+            }}
+          >
+            <View
+              style={{
+                maxWidth: item.target && item.target.length >= 6 ? 70 : 45,
+                minWidth: 45,
+                height: 25,
+                borderColor: color[index % color.length],
+                borderWidth: 1,
+                borderRadius: 8,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ padding: 2 }}>
+                {Number(item.achievment) > Number(item.target)
+                  ? 0
+                  : item.shortfall}
+              </Text>
+            </View>
+            <View
+              style={{
+                maxWidth: item.target && item.target.length >= 6 ? 70 : 45,
+                minWidth: 45,
+                height: 25,
+                borderColor: color[index % color.length],
+                borderWidth: 1,
+                borderRadius: 8,
+                justifyContent: "center",
+                alignItems: "center",
+                marginLeft: item.target.length >= 6 ? 5 : 20,
+              }}
+            >
+              <Text style={{ padding: 2 }}>
+                {parseInt(item.achievment) > parseInt(item.target)
+                  ? 0
+                  : dateDiff > 0 && parseInt(item.shortfall) !== 0
+                  ? Math.abs(Math.round(parseInt(item.shortfall) / dateDiff))
+                  : 0}
+              </Text>
+            </View>
+          </View>
+        ) : (
+          <View style={{ width: "35%", marginLeft: 20 }} />
+        )}
+      </View>
+    );
   });
 };
