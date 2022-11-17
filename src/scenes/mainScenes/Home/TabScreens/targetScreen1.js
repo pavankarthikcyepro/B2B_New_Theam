@@ -713,17 +713,6 @@ const TargetScreen = ({ route }) => {
     setToggleParamsIndex(index);
   };
 
-  const getLostData = (data) => {
-    let value = 0;
-    for (let i = 0; i < data.length; i++) {
-      if (data[i]?.paramName === "DROPPED" || data[i]?.paramShortName === "Lost") {
-        value = data[i].achievment;
-      }
-    }
-
-    return value;
-  }
-
   return (
     <>
       {!selector.isLoading ? (
@@ -1733,35 +1722,12 @@ const TargetScreen = ({ route }) => {
                   </View>
                 </>
 
-                <View style={{ marginHorizontal: 8, marginTop: 16 }}>
-                  <View style={{ height: 4 }}></View>
-                  <View style={styles.statWrap}>
-                    <Text
-                      style={{
-                        marginLeft: 10,
-                        fontSize: 16,
-                        fontWeight: "600",
-                      }}
-                    >
-                      Lost
-                    </Text>
-                    <Text
-                      style={{
-                        color: "#ff0000",
-                        fontSize: 12,
-                        marginRight: 4,
-                      }}
-                    >
-                      {getLostData(selfInsightsData)}
-                    </Text>
-                  </View>
-                </View>
-
                 <View
                   style={{
                     flexDirection: "row",
                     justifyContent: "space-between",
                     marginHorizontal: 8,
+                    marginTop: 16,
                   }}
                 >
                   <View style={{ flexGrow: 1 }}>
