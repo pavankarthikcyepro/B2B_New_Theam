@@ -71,7 +71,7 @@ export const RenderSourceModelParameters = (parameter) => {
                                     <Text style={[styles.totalText1, { color: elementColor }]}>
                                         {selectedParameter ?
                                             displayType === 0 ? selectedParameter.achievment :
-                                                selectedParameter.target > 0 ? achievementPercentage(selectedParameter.achievment, selectedParameter.target, param, enquiryParameter.achievment) :
+                                                selectedParameter.target > 0 ? achievementPercentage(selectedParameter.achievment, selectedParameter.target, param, enquiryParameter?.achievment) :
                                                     selectedParameter.achievment
                                             : 0}
                                     </Text>
