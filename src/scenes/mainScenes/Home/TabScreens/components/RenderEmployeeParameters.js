@@ -132,7 +132,7 @@ export const RenderEmployeeParameters = (parameter) => {
                             selectedParameter?.achievment,
                             selectedParameter?.target,
                             param,
-                            enquiryParameter.achievment
+                            enquiryParameter?.achievment
                           )
                         : selectedParameter?.achievment
                       : 0}
@@ -192,7 +192,7 @@ export const RenderEmployeeParameters = (parameter) => {
                             selectedParameter?.achievment,
                             selectedParameter?.target,
                             param,
-                            enquiryParameter.achievment
+                            enquiryParameter?.achievment
                           )
                         : selectedParameter?.achievment
                       : 0}
