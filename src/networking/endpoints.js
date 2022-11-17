@@ -66,9 +66,7 @@ const URL = {
     );
   },
   DELETE_MODEL_CARD: (value) => {
-    return (
-      deleteModelCard + `/delete_leadProduct?id=${value}`
-    )
+    return deleteModelCard + `/delete_leadProduct?id=${value}`;
   },
   LEADS_LIST_API_FILTER: () => sales_url + "/lead/allByDate",
   MENULIST_API: (userName) => {
@@ -80,9 +78,7 @@ const URL = {
     );
   },
   ENQUIRY_VEHICLE_MODELS: (orgId) => {
-    return (
-      getEnquiryVehicleModelData + "?organizationId=" + orgId
-    );
+    return getEnquiryVehicleModelData + "?organizationId=" + orgId;
   },
   GET_EMPID: (userName) => {
     return roleManagement_url + "/user/" + userName;
@@ -149,10 +145,7 @@ const URL = {
     );
   },
   GET_PAID_ACCESSORIES_LIST2: (vehicleId, orgId) => {
-    return (
-      sales_url +
-      `/allotment/${vehicleId}/${orgId}`
-    );
+    return sales_url + `/allotment/${vehicleId}/${orgId}`;
   },
   GET_ON_ROAD_PRICE_DTO_LIST: (leadId) => {
     return sales_url + `/on-road-price/lead/${leadId}`;
@@ -259,7 +252,15 @@ const URL = {
   REVOKE: (id) => {
     return sales_url + "/lead-drop/updateStatusEnquire/ENQUIRY/" + id;
   },
-  GET_LEADDROP_LIST: (branchId, empName, orgId, offSet, limit) => {
+  GET_LEADDROP_LIST: (
+    branchId,
+    empName,
+    orgId,
+    offSet,
+    limit,
+    startDate,
+    endDate
+  ) => {
     return (
       sales_url +
       "/lead-drop/details?branch=" +
@@ -271,34 +272,36 @@ const URL = {
       "&offset=" +
       offSet +
       "&orgId=" +
-      orgId
+      orgId +
+      `&startdate=${startDate}&enddate=${endDate}`
     );
   },
   GET_SUB_MENU: (stage) => {
-    return (
-      sales_url +
-      "/lead/stagedropdown?menu=" + stage
-    );
+    return sales_url + "/lead/stagedropdown?menu=" + stage;
   },
   GET_LEAD_LIST: (branchId, empName, empId, offSet, limit) => {
     return (
-      sales_url + "/lead/allLeads?limit=" +
-      limit + "&offset=" +
-      offSet + "&empId=" +
-      empId + "&branchId=" +
-      branchId + "&empName=" + empName
+      sales_url +
+      "/lead/allLeads?limit=" +
+      limit +
+      "&offset=" +
+      offSet +
+      "&empId=" +
+      empId +
+      "&branchId=" +
+      branchId +
+      "&empName=" +
+      empName
     );
   },
   GET_LEAD_LIST_2: () => {
-    return (sales_url + "/lead/allByDateNew");
+    return sales_url + "/lead/allByDateNew";
   },
-  GET_ALL_STATUS:()=>{
-    return (sales_url + "/lead/alldatadropdown");
+  GET_ALL_STATUS: () => {
+    return sales_url + "/lead/alldatadropdown";
   },
   GET_MENU_DROP_DOWN_DATA: () => {
-    return (
-      sales_url +
-      "/lead/menudropdown");
+    return sales_url + "/lead/menudropdown";
   },
   GET_EMPLOYEES_DROP_DOWN_DATA: (orgId, employeeId) => {
     return orgnaizationHirarchy + `/active-dropdowns/${orgId}/${employeeId}`;
@@ -390,7 +393,8 @@ const URL = {
   GET_TASK_LIST: (taskId) => {
     return `${getTaskList}/${taskId}`;
   },
-  GET_TEAMS_TARGET_PARAMS: () => dashboard + "/v4/get_target_params_for_all_emps",
+  GET_TEAMS_TARGET_PARAMS: () =>
+    dashboard + "/v4/get_target_params_for_all_emps",
   // GET_TOTAL_TARGET_PARAMS: () => dashboard + "/v4/get_target_params",
   GET_TOTAL_TARGET_PARAMS: () => dashboard + "/v2/get_target_params",
   GET_EMPLOYEE_DETAILS: (orgId, branchId, deptId, desigId) => {
@@ -418,7 +422,7 @@ const URL = {
     return `${getLeaderBoardData}/${orgId}`;
   },
   GET_BRANCH_RANKING_DATA: (orgId, branchId) => {
-    return getBranchRankingData + '/org/' + orgId + '/branch/' + branchId;
+    return getBranchRankingData + "/org/" + orgId + "/branch/" + branchId;
   },
   EMPLOYEE_DATA_UPDATE: (empID, managerID) => {
     return `${updateEmployeeTaskDelegate}/${empID}/reportingManager/${managerID}/update`;
@@ -433,7 +437,10 @@ const URL = {
     return `${getEmployeeData}?orgId=${orgId}&branchId=${branchId}&deptId=${deptId}&desigId=${desigId}`;
   },
   TRANSFER_TASK: (fromUserId, toUserId) => {
-    return sales_url + `/task-delegation/process/selected?emplIdFrom=${fromUserId}&emplIdTo=${toUserId}`;
+    return (
+      sales_url +
+      `/task-delegation/process/selected?emplIdFrom=${fromUserId}&emplIdTo=${toUserId}`
+    );
   },
   UPDATE_SELF_TARGET_PARAMS: () => {
     return `${salesGap}/target-update1`;
@@ -441,17 +448,26 @@ const URL = {
   UPDATE_TEAM_TARGET_PARAMS: () => {
     return `${salesGap}/target-update`;
   },
-  MODEL_SOURCE_SELF: () => `${dashboard}/v2/get_target_params_for_emp_model_source`,
-  GET_LIVE_LEADS_MODEL_SOURCE_SELF: () => `${dashboardLiveLeads}/dashboard/v2/get_target_params_for_emp_model_source`,
-  GET_LIVE_LEADS_MODEL_SOURCE_INSIGHTS: () => `${dashboardLiveLeads}/dashboard/v2/get_target_params_model_source`,
-  GET_LIVE_LEADS_MODEL_SOURCE_TEAM: () => `${dashboardLiveLeads}/dashboard/v4/get_target_params_for_all_emps_model_source`,
+  MODEL_SOURCE_SELF: () =>
+    `${dashboard}/v2/get_target_params_for_emp_model_source`,
+  GET_LIVE_LEADS_MODEL_SOURCE_SELF: () =>
+    `${dashboardLiveLeads}/dashboard/v2/get_target_params_for_emp_model_source`,
+  GET_LIVE_LEADS_MODEL_SOURCE_INSIGHTS: () =>
+    `${dashboardLiveLeads}/dashboard/v2/get_target_params_model_source`,
+  GET_LIVE_LEADS_MODEL_SOURCE_TEAM: () =>
+    `${dashboardLiveLeads}/dashboard/v4/get_target_params_for_all_emps_model_source`,
   MODEL_SOURCE_INSIGHTS: () => `${dashboard}/v2/get_target_params_model_source`,
-  MODEL_SOURCE_TEAM: () => `${dashboard}/v4/get_target_params_for_all_emps_model_source`,
-  GET_LIVE_LEADS_SELF: () => `${dashboardLiveLeads}/dashboard/v2/get_target_params_for_emp`,
-  GET_LIVE_LEADS_INSIGHTS: () => `${dashboardLiveLeads}/dashboard/v2/get_target_params`,
-  GET_LIVE_LEADS_TEAM: () => `${dashboardLiveLeads}/dashboard/v4/get_target_params_for_all_emps`,
-  GET_TOTAL_OF_TEAM: () => `${dashboard}/v2/get_target_params_immediate_hierarchy`
-}
+  MODEL_SOURCE_TEAM: () =>
+    `${dashboard}/v4/get_target_params_for_all_emps_model_source`,
+  GET_LIVE_LEADS_SELF: () =>
+    `${dashboardLiveLeads}/dashboard/v2/get_target_params_for_emp`,
+  GET_LIVE_LEADS_INSIGHTS: () =>
+    `${dashboardLiveLeads}/dashboard/v2/get_target_params`,
+  GET_LIVE_LEADS_TEAM: () =>
+    `${dashboardLiveLeads}/dashboard/v4/get_target_params_for_all_emps`,
+  GET_TOTAL_OF_TEAM: () =>
+    `${dashboard}/v2/get_target_params_immediate_hierarchy`,
+};
 
 // bankFinancier, incuranceCompany, enqueryCategory, deliveryCheckList, sublostReason
 // http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8091/df-get-all/1/%22Active%22/1/enqueryCategory
