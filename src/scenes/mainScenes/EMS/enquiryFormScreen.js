@@ -714,6 +714,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
   }, [selector.enquiry_details_response]); //selector.enquiry_details_response
 
+  function isEmpty(obj) {
+    return Object.keys(obj).length === 0;
+  }
+
   const saveAttachmentDetailsInLocalObject = (dmsAttachments, exchangeDoc) => {
     if (dmsAttachments.length > 0) {
       const dataObj = {};
@@ -726,10 +730,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         };
         dataObj[item.documentType] = obj;
       });
-      function isEmpty(obj) {
-        return Object.keys(obj).length === 0;
-      }
-      if (!isEmpty(exchangeDoc[0])) {
+
+      if (exchangeDoc.length > 0 && !isEmpty(exchangeDoc[0])) {
         const obj = {
           documentPath: exchangeDoc[0]?.regDocumentPath,
           documentType: "REGDOC",
