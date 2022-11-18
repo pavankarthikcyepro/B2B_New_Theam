@@ -2458,7 +2458,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         status: "ENQUIRY",
       },
     };
-    console.log("payload =>>>>>> ", payload);
     setTypeOfActionDispatched("DROP_ENQUIRY");
     dispatch(dropEnquiryApi(payload));
     dispatch(updateEnquiryDetailsApi(enquiryDetailsObj));
