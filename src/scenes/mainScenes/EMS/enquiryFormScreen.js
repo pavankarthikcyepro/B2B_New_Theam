@@ -2411,13 +2411,25 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       return;
     }
 
+    let primaryTempCars = [];
+    primaryTempCars = carModelsList.filter((item) => {
+      return item.isPrimary === "Y";
+    });
+
+    if (!primaryTempCars.length > 0) {
+      scrollToPos(4);
+      setOpenAccordian("4");
+      showToast("Select is Primary for atleast one vehicle");
+      return;
+    }
+    
     if (!selector.enquiry_details_response) {
       return;
     }
 
     let enquiryDetailsObj = { ...selector.enquiry_details_response };
     let dmsLeadDto = { ...enquiryDetailsObj.dmsLeadDto };
-    dmsLeadDto.leadStatus = "ENQUIRYCOMPLETED";
+    // dmsLeadDto.leadStatus = "ENQUIRYCOMPLETED";
     dmsLeadDto.leadStage = "DROPPED";
     enquiryDetailsObj.dmsLeadDto = dmsLeadDto;
 
@@ -2446,6 +2458,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         status: "ENQUIRY",
       },
     };
+    console.log("payload =>>>>>> ", payload);
     setTypeOfActionDispatched("DROP_ENQUIRY");
     dispatch(dropEnquiryApi(payload));
     dispatch(updateEnquiryDetailsApi(enquiryDetailsObj));

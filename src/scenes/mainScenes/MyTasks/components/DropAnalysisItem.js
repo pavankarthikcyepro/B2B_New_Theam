@@ -216,7 +216,7 @@ export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId
                 <Text
                   style={{
                     color: dropStatus === "DROPPED" ? "#18a835" : Colors.BLUE,
-                    fontSize: 16,
+                    fontSize: 14,
                     fontWeight: "bold",
                   }}
                 >
