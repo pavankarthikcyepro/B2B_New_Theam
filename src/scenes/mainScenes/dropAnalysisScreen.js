@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Colors, GlobalStyle } from "../../styles";
 import { AppNavigator } from '../../navigations';
 import * as AsyncStore from '../../asyncStore';
-import { getLeadDropList, getMoreLeadDropList, updateSingleApproval, updateBulkApproval, revokeDrop } from "../../redux/leaddropReducer";
+import { getLeadDropList, getMoreLeadDropList, updateSingleApproval, updateBulkApproval, revokeDrop, leadStatusDropped } from "../../redux/leaddropReducer";
 import { callNumber } from "../../utils/helperFunctions";
 import moment from "moment";
 import { Category_Type_List_For_Filter } from '../../jsonData/enquiryFormScreenJsonData';
@@ -296,82 +296,81 @@ const DropAnalysisScreen = ({ navigation }) => {
         } else dispatch(updateBulkApproval(selectedItemIds));
 
     }
-    const onItemSelected = async (uniqueId, leadDropId, type, operation) =>{
-        try{
-            if (type === 'multi') {
-                if (operation === 'add') {
-                    const data = {
-                        "dmsLeadDropInfo": {
-                            "leadId": uniqueId,
-                            "leadDropId": leadDropId,
-                            "status": "APPROVED"
-                        }
-                    }
-                    await setSelectedItemIds([...selectedItemIds, data])
-                    await setisApprovalUIVisible(true)
-
-                } else {
-                    let arr = await [...selectedItemIds]
-                    const data = {
-                        "dmsLeadDropInfo": {
-                            "leadId": uniqueId,
-                            "leadDropId": leadDropId,
-                            "status": "APPROVED"
-                        }
-                    }
-                   var index=  await arr.indexOf(data)
-                   await arr.splice(index, 1)
-                    await setSelectedItemIds([...arr])
-                    if(arr.length === 0){
-                        await setisApprovalUIVisible(false)
-                    }
-                }
-            } else{
-                if(operation === 'approve')
-                 { // approve apic
-                    const data = {
-                        "dmsLeadDropInfo": {
-                            "leadId": uniqueId,
-                            "leadDropId": leadDropId,
-                            "status": "APPROVED"
-                        }
-                    }
-                    Promise.all([dispatch(updateSingleApproval(data))]).then(() => {
-                        showToast("Successfully approved")
-                        getDataFromDB();
-                    })
-                } else if (operation === 'reject') {
-
-                    //reject api
-                    const data = {
-                        "dmsLeadDropInfo": {
-                            "leadId": uniqueId,
-                            "leadDropId": leadDropId,
-                            "status": "REJECTED"
-                        }
-                    }
-                    Promise.all([dispatch(updateSingleApproval(data))]).then(() => {
-                        showToast("Successfully rejected")
-                        getDataFromDB();
-                    })
-                }
-                else {
-                    //reject api
-                    const data = {
-                        "leadId": uniqueId,
-                    }
-                    Promise.all([dispatch(revokeDrop(data))]).then(() => {
-                        showToast("Successfully revoked")
-                        getDataFromDB();
-                    })
-                }
+    const onItemSelected = async (uniqueId, leadDropId, type, operation) => {
+      try {
+        if (type === "multi") {
+          if (operation === "add") {
+            const data = {
+              dmsLeadDropInfo: {
+                leadId: uniqueId,
+                leadDropId: leadDropId,
+                status: "APPROVED",
+              },
+            };
+            await setSelectedItemIds([...selectedItemIds, data]);
+            await setisApprovalUIVisible(true);
+          } else {
+            let arr = await [...selectedItemIds];
+            const data = {
+              dmsLeadDropInfo: {
+                leadId: uniqueId,
+                leadDropId: leadDropId,
+                status: "APPROVED",
+              },
+            };
+            var index = await arr.indexOf(data);
+            await arr.splice(index, 1);
+            await setSelectedItemIds([...arr]);
+            if (arr.length === 0) {
+              await setisApprovalUIVisible(false);
             }
-        }catch(error)
-        {
+          }
+        } else {
+          if (operation === "approve") {
+            // approve apic
+            const data = {
+              dmsLeadDropInfo: {
+                leadId: uniqueId,
+                leadDropId: leadDropId,
+                status: "APPROVED",
+              },
+            };
+            Promise.all([dispatch(updateSingleApproval(data))]).then(() => {
+              showToast("Successfully approved");
+              let payload = {
+                leadDropId: leadDropId,
+              };
+              Promise.all([dispatch(leadStatusDropped(payload))]).then(
+                () => {}
+              );
+              getDataFromDB();
+            });
+          } else if (operation === "reject") {
+            //reject api
+            const data = {
+              dmsLeadDropInfo: {
+                leadId: uniqueId,
+                leadDropId: leadDropId,
+                status: "REJECTED",
+              },
+            };
+            Promise.all([dispatch(updateSingleApproval(data))]).then(() => {
+              showToast("Successfully rejected");
+              getDataFromDB();
+            });
+          } else {
+            //reject api
+            const data = {
+              leadId: uniqueId,
+            };
+            Promise.all([dispatch(revokeDrop(data))]).then(() => {
+              showToast("Successfully revoked");
+              getDataFromDB();
+            });
+          }
         }
-
-
-    }
+      } catch (error) {}
+    };
 
     const renderFooter = () => {
         if (!selector.isLoadingExtraData) { return null }
