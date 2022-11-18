@@ -31,7 +31,7 @@ const statusBgColors = {
 const IconComp = ({ iconName, onPress, opacity = 1 }) => {
     return (
         <TouchableOpacity onPress={onPress}>
-            <View style={{ width: 35, height: 35, justifyContent: "center", alignItems: "center", borderWidth: 1,
+            <View style={{ width: 32, height: 32, justifyContent: "center", alignItems: "center", borderWidth: 1,
                 borderColor: "#002C5F", borderRadius: 5, opacity }}>
                 <IconButton
                     icon={iconName}
@@ -143,7 +143,7 @@ export const MyTaskNewItem = ({ from = "MY_TASKS", navigator, type, uniqueId, na
                     position: "relative"
                 }}
             >
-                <View style={{ width: "70%" }}>
+                <View style={{ width: "65%" }}>
                     <View style={{ flexDirection: "row" }}>
                         <View style={{ maxWidth: "73%" }}>
                             <Text style={styles.text1}>{name}</Text>
@@ -169,33 +169,10 @@ export const MyTaskNewItem = ({ from = "MY_TASKS", navigator, type, uniqueId, na
                         }
                     </>
                 </View>
-                <View style={{ width: "30%", alignItems: "center", }}>
-                    <View style={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }}>
-                        <>
-                            {needStatus === "YES" && from === 'PRE_ENQUIRY' && (
-                                <View
-                                    style={{
-                                        height: 16,
-                                        width: 16,
-                                        borderRadius: 4,
-                                        backgroundColor:
-                                            leadStatus === "PREENQUIRYCOMPLETED" ||
-                                                (leadStatus === "ENQUIRYCOMPLETED" &&
-                                                    leadStage === "ENQUIRY") ||
-                                                (leadStatus === "PREBOOKINGCOMPLETED" &&
-                                                    leadStage === "PREBOOKING") ||
-                                                leadStatus === "BOOKINGCOMPLETED"
-                                                ? "#18a835"
-                                                : "#f29a22",
-                                    }}
-                                >
-                                </View>
-                            )}
-                        </>
-                        <View style={styles.modal}>
-                            <Text style={styles.text4}>{model}</Text>
-                            {/* <Text style={styles.text4}>{"Jeep Compact SUV"}</Text> */}
-                        </View>
+                <View style={{ width: "35%", alignItems: "center" }}>
+                    <View style={styles.modal}>
+                        <Text style={styles.text4}>{model}</Text>
+                        {/* <Text style={styles.text4}>{"Jeep Compact SUV"}</Text> */}
                     </View>
                     {/* <View style={{ height: 8 }}></View> */}
                     <View
@@ -214,7 +191,7 @@ export const MyTaskNewItem = ({ from = "MY_TASKS", navigator, type, uniqueId, na
                                 showToastRedAlert("You don't have Permission"):
                                 onDocPress() }}
                         />
-                        <View style={{ padding: 8 }} />
+                        <View style={{ padding: 5 }} />
                         <IconComp
                             iconName={"phone-outline"}
                             onPress={() =>
@@ -228,7 +205,7 @@ export const MyTaskNewItem = ({ from = "MY_TASKS", navigator, type, uniqueId, na
                                     })
                             }
                         />
-                        <View style={{ padding: 8 }} />
+                        <View style={{ padding: 5 }} />
                         <IconComp
                             iconName={"whatsapp"}
                             onPress={() => 
@@ -281,11 +258,10 @@ const styles = StyleSheet.create({
     modal: {
         backgroundColor: Colors.RED,
         borderRadius: 4,
-        minWidth: "85%",
+        width: "100%",
         minHeight: 21,
         justifyContent: "center",
         alignItems: "center",
-        marginLeft: 8,
         marginBottom: 10
     },
     catText: {
