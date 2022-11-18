@@ -2071,12 +2071,13 @@ const TargetScreen = ({ route }) => {
                     />
                   </View>
                 </>
+
                 <View
                   style={{
                     flexDirection: "row",
-                    marginTop: 16,
                     justifyContent: "space-between",
                     marginHorizontal: 8,
+                    marginTop: 16,
                   }}
                 >
                   <View style={{ flexGrow: 1 }}>
@@ -2504,9 +2505,8 @@ const TargetScreen = ({ route }) => {
                         parseInt(retailData?.achievment) === 0
                           ? 0
                           : Math.floor(
-                              (parseInt(accData?.achievment) /
-                                parseInt(retailData?.achievment)) *
-                                100
+                              parseInt(accData?.achievment) /
+                                parseInt(retailData?.achievment)
                             )}
                       </Text>
                     )}
