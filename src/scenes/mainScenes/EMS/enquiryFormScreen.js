@@ -714,6 +714,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
   }, [selector.enquiry_details_response]); //selector.enquiry_details_response
 
+  function isEmpty(obj) {
+    return Object.keys(obj).length === 0;
+  }
+
   const saveAttachmentDetailsInLocalObject = (dmsAttachments, exchangeDoc) => {
     if (dmsAttachments.length > 0) {
       const dataObj = {};
@@ -726,10 +730,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         };
         dataObj[item.documentType] = obj;
       });
-      function isEmpty(obj) {
-        return Object.keys(obj).length === 0;
-      }
-      if (!isEmpty(exchangeDoc[0])) {
+
+      if (exchangeDoc.length > 0 && !isEmpty(exchangeDoc[0])) {
         const obj = {
           documentPath: exchangeDoc[0]?.regDocumentPath,
           documentType: "REGDOC",
@@ -2409,13 +2411,25 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       return;
     }
 
+    let primaryTempCars = [];
+    primaryTempCars = carModelsList.filter((item) => {
+      return item.isPrimary === "Y";
+    });
+
+    if (!primaryTempCars.length > 0) {
+      scrollToPos(4);
+      setOpenAccordian("4");
+      showToast("Select is Primary for atleast one vehicle");
+      return;
+    }
+    
     if (!selector.enquiry_details_response) {
       return;
     }
 
     let enquiryDetailsObj = { ...selector.enquiry_details_response };
     let dmsLeadDto = { ...enquiryDetailsObj.dmsLeadDto };
-    dmsLeadDto.leadStatus = "ENQUIRYCOMPLETED";
+    // dmsLeadDto.leadStatus = "ENQUIRYCOMPLETED";
     dmsLeadDto.leadStage = "DROPPED";
     enquiryDetailsObj.dmsLeadDto = dmsLeadDto;
 

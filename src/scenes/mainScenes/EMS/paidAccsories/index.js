@@ -67,11 +67,6 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
   });
 
   useEffect(() => {
-    console.log(
-      "accessorylist: ",
-      selectedAccessoryList.length,
-      accessorylist.length
-    );
     const titleNames = [];
     const dataObj = {};
 
@@ -83,8 +78,8 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
         return (
           innerItem.accessoriesName === item.partName &&
           Number(innerItem.amount) === Number(item.cost) &&
-          innerItem?.dmsAccessoriesType === item.item &&
-          innerItem?.id === item.id
+          innerItem?.dmsAccessoriesType === item.item 
+          // && innerItem?.id === item.id
         );
       });
 

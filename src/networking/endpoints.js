@@ -246,6 +246,7 @@ const URL = {
   UPDATE_SINGLEAPPROVAL: () => {
     return sales_url + "/lead-drop";
   },
+  LEAD_DROPPED: () => sales_url + "/lead",
   UPDATE_BULKAPPROVAL: () => {
     return sales_url + "/lead-drop/bulkdrop";
   },

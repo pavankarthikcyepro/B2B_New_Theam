@@ -69,20 +69,7 @@ export const getLeadsList = createAsyncThunk(
 
 export const getLeadDropList = createAsyncThunk(
   "DROPANALYSIS/getLeaddropList",
-  async (payload, { rejectWithValue }) => {
-    console.log(
-      "PAYLOAD EN: ",
-      URL.GET_LEADDROP_LIST(
-        payload.branchId,
-        payload.empName,
-        payload.orgId,
-        payload.offset,
-        payload.limit,
-        payload.startdate,
-        payload.enddate
-      )
-    );
-
+  async (payload, { rejectWithValue }) => {    
     const response = await client.get(
       URL.GET_LEADDROP_LIST(
         payload.branchId,
@@ -96,7 +83,6 @@ export const getLeadDropList = createAsyncThunk(
       payload.body
     );
     const json = await response.json();
-    console.log("ENQ LIST:", JSON.stringify(json));
 
     if (!response.ok) {
       return rejectWithValue(json);
@@ -107,9 +93,6 @@ export const getLeadDropList = createAsyncThunk(
 export const getMoreLeadDropList = createAsyncThunk(
   "DROPANALYSIS/getMoreLeaddropList",
   async (payload, { rejectWithValue }) => {
-    console.log("PAYLOAD EN: ", JSON.stringify(payload));
-    console.log("ENQ LIST:", "hi");
-
     const response = await client.get(
       URL.GET_LEADDROP_LIST(
         payload.branchId,
@@ -137,6 +120,21 @@ export const updateSingleApproval = createAsyncThunk(
     const json = await response.json();
     console.log("ENQ LIST:", JSON.stringify(json));
 
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+export const leadStatusDropped = createAsyncThunk(
+  "DROPANALYSIS/leadStatusDropped",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(
+      `${URL.LEAD_DROPPED()}/${payload.leadDropId}`,
+      {}
+    );
+    const json = await response.json();
     if (!response.ok) {
       return rejectWithValue(json);
     }
@@ -307,6 +305,10 @@ const leaddropListSlice = createSlice({
       state.approvalStatus = "sucess";
     });
     builder.addCase(updateSingleApproval.rejected, (state, action) => {});
+    
+    builder.addCase(leadStatusDropped.pending, (state) => {});
+    builder.addCase(leadStatusDropped.fulfilled, (state, action) => {});
+    builder.addCase(leadStatusDropped.rejected, (state, action) => {});
 
     builder.addCase(revokeDrop.pending, (state) => {});
     builder.addCase(revokeDrop.fulfilled, (state, action) => {
