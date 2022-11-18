@@ -189,9 +189,9 @@ const DropAnalysisScreen = ({ navigation }) => {
         const payload = {
             "startdate": startDate,
             "enddate": endDate,
-            "model": modelFilters,
-            "categoryType": categoryFilters,
-            "sourceOfEnquiry": sourceFilters,
+            // "model": modelFilters,
+            // "categoryType": categoryFilters,
+            // "sourceOfEnquiry": sourceFilters,
             "empId": empId,
             "empName":empName,
             "branchId":branchId,
@@ -434,7 +434,7 @@ const DropAnalysisScreen = ({ navigation }) => {
 
             <SafeAreaView style={styles.container}>
 
-                {/* <DatePickerComponent
+                <DatePickerComponent
                     visible={showDatePicker}
                     mode={"date"}
                     value={new Date(Date.now())}
@@ -452,7 +452,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                     onRequestClose={() => setShowDatePicker(false)}
                 />
 
-                <SortAndFilterComp
+                {/* <SortAndFilterComp
                     visible={sortAndFilterVisible}
                     categoryList={categoryList}
                     modelList={vehicleModelList}
@@ -465,10 +465,10 @@ const DropAnalysisScreen = ({ navigation }) => {
                     onRequestClose={() => {
                         setSortAndFilterVisible(false);
                     }}
-                />
+                /> */}
 
                 <View style={styles.view1}>
-                    <View style={{ width: "80%" }}>
+                    <View style={{ width: "100%" }}>
                         <DateRangeComp
                             fromDate={selectedFromDate}
                             toDate={selectedToDate}
@@ -476,13 +476,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                             toDateClicked={() => showDatePickerMethod("TO_DATE")}
                         />
                     </View>
-                    <Pressable onPress={() => setSortAndFilterVisible(true)}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <Text style={styles.text1}>{'Filter'}</Text>
-                            <IconButton icon={'filter-outline'} size={20} color={Colors.RED} style={{ margin: 0, padding: 0 }} />
-                        </View>
-                    </Pressable>
-                </View> */}
+                </View>
 
                 {searchedData.length === 0 ? <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} /> :
                     <View style={[{ backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10 }]}>
