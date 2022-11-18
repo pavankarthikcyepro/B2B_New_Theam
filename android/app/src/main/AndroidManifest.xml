@@ -8,6 +8,8 @@
  <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.MICROPHONE" />
+     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-feature android:name="android.hardware.microphone" android:required="true" />
     <queries> <intent> <action android:name="android.intent.action.SEND_MULTIPLE" />
         <data android:mimeType="*/*" /> </intent> </queries>
@@ -31,5 +33,6 @@
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
       </activity>
+       <service android:name="com.asterinet.react.bgactions.RNBackgroundActionsTask" />
     </application>
 </manifest>

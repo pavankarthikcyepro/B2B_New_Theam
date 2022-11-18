@@ -12,7 +12,7 @@ import {
   Modal,
   TextInput,
   KeyboardAvoidingView,
-  ScrollView
+  ScrollView,
 } from "react-native";
 import { Colors } from "../../styles";
 import { TextinputComp } from "../../components/textinputComp";
@@ -23,36 +23,37 @@ import {
   updateEmployeeId,
   updatePassword,
   updateSecurePassword,
-  showErrorMessage, 
+  showErrorMessage,
   postUserData,
   getPreEnquiryData,
   getMenuList,
   getCustomerTypeList,
   getCarModalList,
-  clearUserNameAndPass, getEmpId
+  clearUserNameAndPass,
+  getEmpId,
 } from "../../redux/loginReducer";
-import { getCallRecordingCredentials } from '../../../redux/callRecordingReducer';
+import { getCallRecordingCredentials } from "../../../redux/callRecordingReducer";
 import { AuthNavigator } from "../../navigations";
 import { IconButton } from "react-native-paper";
 import { AuthContext } from "../../utils/authContext";
-import { LoaderComponent } from '../../components';
-import * as AsyncStore from '../../asyncStore';
+import { LoaderComponent } from "../../components";
+import * as AsyncStore from "../../asyncStore";
 import { showAlertMessage, showToast } from "../../utils/toast";
+import BackgroundService from "react-native-background-actions";
+import Geolocation from "@react-native-community/geolocation";
+import { options, sleep } from "../../service";
 // import { TextInput } from 'react-native-paper';
-
 
 const ScreenWidth = Dimensions.get("window").width;
 const ScreenHeight = Dimensions.get("window").height;
 
 const LoginScreen = ({ navigation }) => {
-
   const selector = useSelector((state) => state.loginReducer);
   const dispatch = useDispatch();
   const fadeAnima = useRef(new Animated.Value(0)).current;
   const { signIn } = React.useContext(AuthContext);
   const [text, setText] = React.useState("");
   const [number, onChangeNumber] = React.useState(null);
-
 
   useEffect(() => {
     Animated.timing(fadeAnima, {
@@ -63,17 +64,15 @@ const LoginScreen = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-
     // if (selector.offlineStatus == "completed") {
     //   setTimeout(() => {
     //     signIn(selector.authToken);
     //     dispatch(clearState());
     //   }, 3000);
     // }
-  }, [selector.offlineStatus])
+  }, [selector.offlineStatus]);
 
   const loginClicked = () => {
-
     const employeeId = selector.employeeId;
     const password = selector.password;
 
@@ -96,45 +95,57 @@ const LoginScreen = ({ navigation }) => {
     }
 
     let object = {
-      "empname": employeeId,
-      "password": password
-    }
+      empname: employeeId,
+      password: password,
+    };
 
     dispatch(postUserData(object));
   };
 
   // Handle Login Success Response
-  useEffect(() => {
 
+  useEffect(() => {
     if (selector.status == "sucess") {
       console.log("$$$$$$$$ USER DATA:", JSON.stringify(selector.userData));
       //signIn(selector.authToken);
-      AsyncStore.storeData(AsyncStore.Keys.USER_NAME, selector.userData.userName);
+      AsyncStore.storeData(
+        AsyncStore.Keys.USER_NAME,
+        selector.userData.userName
+      );
       AsyncStore.storeData(AsyncStore.Keys.ORG_ID, selector.userData.orgId);
-      AsyncStore.storeData(AsyncStore.Keys.REFRESH_TOKEN, selector.userData.refreshToken);
+      AsyncStore.storeData(
+        AsyncStore.Keys.REFRESH_TOKEN,
+        selector.userData.refreshToken
+      );
 
-      AsyncStore.storeData(AsyncStore.Keys.USER_TOKEN, selector.userData.idToken).then(() => {
+      AsyncStore.storeData(
+        AsyncStore.Keys.USER_TOKEN,
+        selector.userData.idToken
+      ).then(() => {
         dispatch(getMenuList(selector.userData.userName));
         dispatch(getEmpId(selector.userData.userName));
-
-
+        AsyncStore.storeJsonData(
+          AsyncStore.Keys.TODAYSDATE,
+          new Date().getDate()
+        );
+        AsyncStore.storeJsonData(AsyncStore.Keys.COORDINATES, []);
+        startTracking();
         let data = {
-          userName : selector.userData.userName,
-          orgId: selector.userData.orgId
-        }
-       // dispatch(getCallRecordingCredentials(data))
+          userName: selector.userData.userName,
+          orgId: selector.userData.orgId,
+        };
+        // dispatch(getCallRecordingCredentials(data))
         // dispatch(getCustomerTypeList());
         // dispatch(getCarModalList(selector.userData.orgId))
         // signIn(selector.authToken);
         // dispatch(clearState());
       });
-      dispatch(clearUserNameAndPass())
+      dispatch(clearUserNameAndPass());
     } else {
     }
-  }, [selector.status])
+  }, [selector.status]);
 
   useEffect(() => {
-
     if (selector.menuListStatus == "completed") {
       console.log("branchList: ", selector.branchesList.length);
       // if (selector.branchesList.length > 1) {
@@ -143,27 +154,103 @@ const LoginScreen = ({ navigation }) => {
       if (selector.branchesList.length > 0) {
         const branchId = selector.branchesList[0].branchId;
         const branchName = selector.branchesList[0].branchName;
-        AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_ID, branchId.toString());
+        AsyncStore.storeData(
+          AsyncStore.Keys.SELECTED_BRANCH_ID,
+          branchId.toString()
+        );
         AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_NAME, branchName);
         signIn(selector.authToken);
         dispatch(clearState());
       } else {
-        showToast("No branches found")
+        showToast("No branches found");
       }
       //getPreEnquiryListFromServer();
-    }
-    else if (selector.menuListStatus == "failed") {
+    } else if (selector.menuListStatus == "failed") {
       showToast("something went wrong");
     }
-  }, [selector.menuListStatus, selector.branchesList])
+  }, [selector.menuListStatus, selector.branchesList]);
 
   const getPreEnquiryListFromServer = async () => {
-    let endUrl = "?limit=10&offset=" + "0" + "&status=PREENQUIRY&empId=" + selector.empId;
-    dispatch(getPreEnquiryData(endUrl))
-  }
+    let endUrl =
+      "?limit=10&offset=" + "0" + "&status=PREENQUIRY&empId=" + selector.empId;
+    dispatch(getPreEnquiryData(endUrl));
+  };
 
   const forgotClicked = () => {
     navigation.navigate(AuthNavigator.AuthStackIdentifiers.FORGOT);
+  };
+
+  const initialData = async () => {
+    AsyncStore.storeJsonData(AsyncStore.Keys.TODAYSDATE, new Date().getDate());
+    AsyncStore.storeJsonData(AsyncStore.Keys.COORDINATES, []);
+    getCoordinates();
+  };
+
+  const getCoordinates = async () => {
+    try {
+      let coordinates = AsyncStore.getJsonData(AsyncStore.Keys.COORDINATES);
+      let todaysDate = AsyncStore.getData(AsyncStore.Keys.TODAYSDATE);
+
+      if (todaysDate != new Date().getDate()) {
+        initialData();
+      } else {
+        var startDate = createDateTime("8:30");
+        var endDate = createDateTime("21:30");
+        var now = new Date();
+        var isBetween = startDate <= now && now <= endDate;
+        if (isBetween) {
+          await Geolocation.watchPosition(
+            (lastPosition) => {
+              //   console.log("CHANGED LOACTION", coordinates);
+              //   console.log("CURRENTLOCATION", lastPosition);
+              var newLatLng = {
+                latitude: lastPosition.coords.latitude,
+                longitude: lastPosition.coords.longitude,
+              };
+
+              let newArray = [...coordinates, ...[newLatLng]];
+              console.log("newArray", newArray);
+              AsyncStore.storeJsonData(AsyncStore.Keys.COORDINATES, newArray);
+            },
+            (error) => {
+              console.log(error);
+              return;
+              alert(JSON.stringify(error));
+            },
+            { enableHighAccuracy: true, distanceFilter: 10 }
+          );
+        }
+      }
+    } catch (error) {}
+  };
+
+  const veryIntensiveTask = async (taskDataArguments) => {
+    // Example of an infinite loop task
+    const { delay } = taskDataArguments;
+    await new Promise(async (resolve) => {
+      for (let i = 0; BackgroundService.isRunning(); i++) {
+        // console.log(i);
+        try {
+          let todaysDate = AsyncStore.getData(AsyncStore.Keys.TODAYSDATE);
+          // console.log("todaysDate", todaysDate);
+          if (todaysDate) {
+            getCoordinates();
+          } else {
+            initialData();
+          }
+        } catch (error) {}
+        await sleep(delay);
+      }
+    });
+  };
+
+  const startTracking = async () => {
+    await Geolocation.setRNConfiguration({
+      skipPermissionRequests: false,
+      authorizationLevel: "always" | "whenInUse" | "auto",
+      locationProvider: "playServices" | "android" | "auto",
+    });
+    await BackgroundService.start(veryIntensiveTask, options);
   };
 
   const closeBottomView = () => {
@@ -178,12 +265,12 @@ const LoginScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="white" barStyle="dark-content" />
-      <LoaderComponent
-        visible={selector.isLoading}
-        onRequestClose={() => { }}
-      />
-      <ScrollView contentContainerStyle={{ flex: 1 }} keyboardShouldPersistTaps="always">
-      {/* <KeyboardAvoidingView
+      <LoaderComponent visible={selector.isLoading} onRequestClose={() => {}} />
+      <ScrollView
+        contentContainerStyle={{ flex: 1 }}
+        keyboardShouldPersistTaps="always"
+      >
+        {/* <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS == "ios" ? "padding" : "height"}
         enabled
@@ -191,9 +278,17 @@ const LoginScreen = ({ navigation }) => {
         keyboardShouldPersistTaps="always"
       > */}
 
-        <View style={{ flexDirection: 'column', backgroundColor: Colors.WHITE }}>
-
-          <View style={{ width: "100%", height: ScreenHeight * 0.23, alignItems: "center", justifyContent: 'center', }}>
+        <View
+          style={{ flexDirection: "column", backgroundColor: Colors.WHITE }}
+        >
+          <View
+            style={{
+              width: "100%",
+              height: ScreenHeight * 0.23,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
             <Image
               style={{ width: 200, height: ScreenHeight * 0.4 }}
               resizeMode={"center"}
@@ -230,7 +325,10 @@ const LoginScreen = ({ navigation }) => {
             mode={"outlined"}
             isSecure={selector.securePassword}
             showRightIcon={true}
-            rightIconObj={{ name: selector.securePassword ? "eye-off-outline" : "eye-outline", color: Colors.GRAY }}
+            rightIconObj={{
+              name: selector.securePassword ? "eye-off-outline" : "eye-outline",
+              color: Colors.GRAY,
+            }}
             onChangeText={(text) => dispatch(updatePassword(text))}
             onRightIconPressed={() => dispatch(updateSecurePassword())}
           />
@@ -240,13 +338,10 @@ const LoginScreen = ({ navigation }) => {
             </Pressable>
           </View> */}
           <View style={{ height: 40 }}></View>
-          <Pressable 
-            style={styles.loginButton}
-            onPress={() => loginClicked()}
-          >
+          <Pressable style={styles.loginButton} onPress={() => loginClicked()}>
             <Text style={styles.buttonText}>Login to Account</Text>
           </Pressable>
-          <Image 
+          <Image
             source={require("../../assets/images/loginCar.jpg")}
             style={styles.loginImage}
           />
@@ -285,7 +380,7 @@ const LoginScreen = ({ navigation }) => {
             />
           </Animated.View> */}
         </View>
-      {/* </KeyboardAvoidingView> */}
+        {/* </KeyboardAvoidingView> */}
       </ScrollView>
     </SafeAreaView>
   );
@@ -304,7 +399,7 @@ const styles = StyleSheet.create({
     color: Colors.BLACK,
     textAlign: "center",
     marginBottom: 30,
-    fontWeight: "bold"
+    fontWeight: "bold",
   },
   forgotView: {
     flexDirection: "row",
@@ -349,22 +444,22 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 8,
-    elevation: 3
+    elevation: 3,
   },
   buttonText: {
     fontWeight: "bold",
-    color: Colors.WHITE
+    color: Colors.WHITE,
   },
   loginImage: {
     width: ScreenWidth - 40,
     height: 100,
-    marginTop:30
+    marginTop: 30,
   },
   signUpText: {
     alignSelf: "center",
-    marginTop: 25
+    marginTop: 25,
   },
   signUpSubtext: {
-    fontWeight: "bold"
-  }
+    fontWeight: "bold",
+  },
 });
