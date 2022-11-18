@@ -2155,8 +2155,7 @@ const TargetScreen = ({ route }) => {
                           ? 0
                           : Math.floor(
                               (parseInt(accData?.achievment) /
-                                parseInt(retailData?.achievment)) *
-                                100
+                                parseInt(retailData?.achievment))
                             )}
                       </Text>
                     )}

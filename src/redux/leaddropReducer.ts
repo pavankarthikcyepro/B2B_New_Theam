@@ -77,7 +77,9 @@ export const getLeadDropList = createAsyncThunk(
         payload.empName,
         payload.orgId,
         payload.offset,
-        payload.limit
+        payload.limit,
+        payload.startdate,
+        payload.enddate
       )
     );
 
@@ -87,7 +89,9 @@ export const getLeadDropList = createAsyncThunk(
         payload.empName,
         payload.orgId,
         payload.offset,
-        payload.limit
+        payload.limit,
+        payload.startdate,
+        payload.enddate
       ),
       payload.body
     );
@@ -185,7 +189,7 @@ const leaddropListSlice = createSlice({
     subMenu: [],
     menu: [],
     leadList: [],
-    defualtStatus:[]
+    defualtStatus: [],
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -213,18 +217,18 @@ const leaddropListSlice = createSlice({
       console.log("dropanalysis", "rejected");
       state.subMenu = [];
     });
-       builder.addCase(getStatus.pending, (state, action) => {
-         console.log("dropanalysis pending", action);
-         state.defualtStatus = [];
-       });
-       builder.addCase(getStatus.fulfilled, (state, action) => {
-         console.log("dropanalysis sucess", JSON.stringify(action));
-         state.defualtStatus = action.payload;
-       });
-       builder.addCase(getStatus.rejected, (state, action) => {
-         console.log("dropanalysis", "rejected");
-         state.defualtStatus = [];
-       });
+    builder.addCase(getStatus.pending, (state, action) => {
+      console.log("dropanalysis pending", action);
+      state.defualtStatus = [];
+    });
+    builder.addCase(getStatus.fulfilled, (state, action) => {
+      console.log("dropanalysis sucess", JSON.stringify(action));
+      state.defualtStatus = action.payload;
+    });
+    builder.addCase(getStatus.rejected, (state, action) => {
+      console.log("dropanalysis", "rejected");
+      state.defualtStatus = [];
+    });
     builder.addCase(getLeadDropList.pending, (state, action) => {
       console.log("dropanalysis pending", action);
       state.totalPages = 1;
