@@ -56,214 +56,220 @@ export const RenderSelfInsights = (args) => {
   };
 
   return getRearrangeArray().map((item, index) => {
-    return (
-      <View
-        style={{ flexDirection: "row", marginLeft: 8 }}
-        key={`${item.paramShortName}_${index}`}
-      >
-        {/* row title */}
+    if (item) {
+      return (
         <View
-          style={{
-            width: "10%",
-            justifyContent: "center",
-            marginTop: 5,
-          }}
+          style={{ flexDirection: "row", marginLeft: 8 }}
+          key={`${item.paramShortName}_${index}`}
         >
-          <Text>
-            {item.paramName === "DROPPED" ? "Lost" : item.paramShortName}
-          </Text>
-        </View>
-
-        {/* Progress bar Left */}
-        <View
-          style={{
-            flex: 1,
-            height: 20,
-            width: "15%",
-            marginTop: 10,
-            paddingLeft: 5,
-            position: "relative",
-            borderTopLeftRadius: 3,
-            justifyContent: "center",
-            borderBottomLeftRadius: 3,
-            backgroundColor: color[index % color.length],
-          }}
-        >
-          <TextTicker
-            duration={10000}
-            loop={true}
-            // shouldAnimateTreshold={50}
-            bounce={false}
-            repeatSpacer={50}
-            marqueeDelay={0}
+          {/* row title */}
+          <View
             style={{
-              marginBottom: 0,
+              width: "10%",
+              justifyContent: "center",
+              marginTop: 5,
             }}
           >
-            <Text
-              onPress={() => {
-                let param = item.paramName;
-                if (
-                  param === "Enquiry" ||
-                  param === "Booking" ||
-                  param === "INVOICE"
-                ) {
-                  navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
-                  setTimeout(() => {
-                    navigation.navigate("LEADS", {
-                      param: param === "INVOICE" ? "Retail" : param,
-                      moduleType: "home",
-                    });
-                  }, 1000);
-                } else if (param == "Home Visit" || param == "Test Drive") {
-                  navigation.jumpTo(AppNavigator.TabStackIdentifiers.myTask, {
-                    screen: "CLOSED",
-                  });
-                  setTimeout(() => {
-                    navigation.navigate("CLOSED");
-                  }, 500);
-                } else if (param === "DROPPED") {
-                  navigation.navigate(
-                    AppNavigator.DrawerStackIdentifiers.dropAnalysis
-                  );
-                } else if (param === "Test Drive" || param === "Home Visit") {
-                  navigation.navigate(AppNavigator.TabStackIdentifiers.myTask);
-                  setTimeout(() => {
-                    navigation.navigate("CLOSED");
-                  }, 750);
-                }
-              }}
+            <Text>
+              {item.paramName === "DROPPED" ? "Lost" : item.paramShortName}
+            </Text>
+          </View>
+
+          {/* Progress bar Left */}
+          <View
+            style={{
+              flex: 1,
+              height: 20,
+              width: "15%",
+              marginTop: 10,
+              paddingLeft: 5,
+              position: "relative",
+              borderTopLeftRadius: 3,
+              justifyContent: "center",
+              borderBottomLeftRadius: 3,
+              backgroundColor: color[index % color.length],
+            }}
+          >
+            <TextTicker
+              duration={10000}
+              loop={true}
+              // shouldAnimateTreshold={50}
+              bounce={false}
+              repeatSpacer={50}
+              marqueeDelay={0}
               style={{
-                color: "#fff",
-                textDecorationLine: navigableParams.includes(item.paramName)
-                  ? "underline"
-                  : "none",
+                marginBottom: 0,
               }}
             >
-              {type === 0
-                ? item.achievment
-                : achievementPercentage(
-                    item.achievment,
-                    item.target,
-                    item.paramName,
-                    enq.achievment
-                  )}
-            </Text>
-          </TextTicker>
-        </View>
-
-        {/* Progress bar right */}
-        <View
-          style={{
-            width: "35%",
-            marginTop: 10,
-            position: "relative",
-          }}
-        >
-          <ProgressBar
-            progress={
-              item.achivementPerc.includes("%")
-                ? parseInt(
-                    item.achivementPerc.substring(
-                      0,
-                      item.achivementPerc.indexOf("%")
-                    )
-                  ) === 0
-                  ? 0
-                  : parseInt(
-                      item.achivementPerc.substring(
-                        0,
-                        item.achivementPerc.indexOf("%")
-                      )
-                    ) / 100
-                : parseFloat(item.achivementPerc) / 100
-            }
-            color={color[index % color.length]}
-            style={{
-              height: 20,
-              borderTopRightRadius: 3,
-              borderBottomRightRadius: 3,
-              backgroundColor: "#eeeeee",
-            }}
-          />
-          {item.paramName !== "DROPPED" && (
-            <View style={{ position: "absolute", top: 1, right: 5 }}>
               <Text
+                onPress={() => {
+                  let param = item.paramName;
+                  if (
+                    param === "Enquiry" ||
+                    param === "Booking" ||
+                    param === "INVOICE"
+                  ) {
+                    navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
+                    setTimeout(() => {
+                      navigation.navigate("LEADS", {
+                        param: param === "INVOICE" ? "Retail" : param,
+                        moduleType: "home",
+                      });
+                    }, 1000);
+                  } else if (param == "Home Visit" || param == "Test Drive") {
+                    navigation.jumpTo(AppNavigator.TabStackIdentifiers.myTask, {
+                      screen: "CLOSED",
+                    });
+                    setTimeout(() => {
+                      navigation.navigate("CLOSED");
+                    }, 500);
+                  } else if (param === "DROPPED") {
+                    navigation.navigate(
+                      AppNavigator.DrawerStackIdentifiers.dropAnalysis
+                    );
+                  } else if (param === "Test Drive" || param === "Home Visit") {
+                    navigation.navigate(
+                      AppNavigator.TabStackIdentifiers.myTask
+                    );
+                    setTimeout(() => {
+                      navigation.navigate("CLOSED");
+                    }, 750);
+                  }
+                }}
                 style={{
-                  color:
-                    parseInt(
-                      item.achivementPerc.substring(
-                        0,
-                        item.achivementPerc.indexOf("%")
-                      )
-                    ) >= 90
-                      ? Colors.WHITE
-                      : Colors.BLACK,
+                  color: "#fff",
+                  textDecorationLine: navigableParams.includes(item.paramName)
+                    ? "underline"
+                    : "none",
                 }}
               >
-                {item.target}
+                {type === 0
+                  ? item.achievment
+                  : achievementPercentage(
+                      item.achievment,
+                      item.target,
+                      item.paramName,
+                      enq.achievment
+                    )}
               </Text>
-            </View>
-          )}
-        </View>
+            </TextTicker>
+          </View>
 
-        {/* Balance and AR/Day */}
-        {item.paramName !== "DROPPED" ? (
+          {/* Progress bar right */}
           <View
             style={{
               width: "35%",
-              justifyContent: "center",
-              flexDirection: "row",
-              height: 25,
-              alignItems: "center",
-              marginTop: 8,
-              marginLeft: 20,
+              marginTop: 10,
+              position: "relative",
             }}
           >
-            <View
+            <ProgressBar
+              progress={
+                item.achivementPerc.includes("%")
+                  ? parseInt(
+                      item.achivementPerc.substring(
+                        0,
+                        item.achivementPerc.indexOf("%")
+                      )
+                    ) === 0
+                    ? 0
+                    : parseInt(
+                        item.achivementPerc.substring(
+                          0,
+                          item.achivementPerc.indexOf("%")
+                        )
+                      ) / 100
+                  : parseFloat(item.achivementPerc) / 100
+              }
+              color={color[index % color.length]}
               style={{
-                maxWidth: item.target && item.target.length >= 6 ? 70 : 45,
-                minWidth: 45,
-                height: 25,
-                borderColor: color[index % color.length],
-                borderWidth: 1,
-                borderRadius: 8,
-                justifyContent: "center",
-                alignItems: "center",
+                height: 20,
+                borderTopRightRadius: 3,
+                borderBottomRightRadius: 3,
+                backgroundColor: "#eeeeee",
               }}
-            >
-              <Text style={{ padding: 2 }}>
-                {Number(item.achievment) > Number(item.target)
-                  ? 0
-                  : item.shortfall}
-              </Text>
-            </View>
-            <View
-              style={{
-                maxWidth: item.target && item.target.length >= 6 ? 70 : 45,
-                minWidth: 45,
-                height: 25,
-                borderColor: color[index % color.length],
-                borderWidth: 1,
-                borderRadius: 8,
-                justifyContent: "center",
-                alignItems: "center",
-                marginLeft: item.target.length >= 6 ? 5 : 20,
-              }}
-            >
-              <Text style={{ padding: 2 }}>
-                {parseInt(item.achievment) > parseInt(item.target)
-                  ? 0
-                  : dateDiff > 0 && parseInt(item.shortfall) !== 0
-                  ? Math.abs(Math.round(parseInt(item.shortfall) / dateDiff))
-                  : 0}
-              </Text>
-            </View>
+            />
+            {item.paramName !== "DROPPED" && (
+              <View style={{ position: "absolute", top: 1, right: 5 }}>
+                <Text
+                  style={{
+                    color:
+                      parseInt(
+                        item.achivementPerc.substring(
+                          0,
+                          item.achivementPerc.indexOf("%")
+                        )
+                      ) >= 90
+                        ? Colors.WHITE
+                        : Colors.BLACK,
+                  }}
+                >
+                  {item.target}
+                </Text>
+              </View>
+            )}
           </View>
-        ) : (
-          <View style={{ width: "35%", marginLeft: 20 }} />
-        )}
-      </View>
-    );
+
+          {/* Balance and AR/Day */}
+          {item.paramName !== "DROPPED" ? (
+            <View
+              style={{
+                width: "35%",
+                justifyContent: "center",
+                flexDirection: "row",
+                height: 25,
+                alignItems: "center",
+                marginTop: 8,
+                marginLeft: 20,
+              }}
+            >
+              <View
+                style={{
+                  maxWidth: item.target && item.target.length >= 6 ? 70 : 45,
+                  minWidth: 45,
+                  height: 25,
+                  borderColor: color[index % color.length],
+                  borderWidth: 1,
+                  borderRadius: 8,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Text style={{ padding: 2 }}>
+                  {Number(item.achievment) > Number(item.target)
+                    ? 0
+                    : item.shortfall}
+                </Text>
+              </View>
+              <View
+                style={{
+                  maxWidth: item.target && item.target.length >= 6 ? 70 : 45,
+                  minWidth: 45,
+                  height: 25,
+                  borderColor: color[index % color.length],
+                  borderWidth: 1,
+                  borderRadius: 8,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginLeft: item.target.length >= 6 ? 5 : 20,
+                }}
+              >
+                <Text style={{ padding: 2 }}>
+                  {parseInt(item.achievment) > parseInt(item.target)
+                    ? 0
+                    : dateDiff > 0 && parseInt(item.shortfall) !== 0
+                    ? Math.abs(Math.round(parseInt(item.shortfall) / dateDiff))
+                    : 0}
+                </Text>
+              </View>
+            </View>
+          ) : (
+            <View style={{ width: "35%", marginLeft: 20 }} />
+          )}
+        </View>
+      );
+    } else {
+      return <View key={index} />;
+    }
   });
 };
