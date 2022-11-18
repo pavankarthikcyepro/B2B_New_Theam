@@ -77,7 +77,9 @@ export const getLeadDropList = createAsyncThunk(
         payload.empName,
         payload.orgId,
         payload.offset,
-        payload.limit
+        payload.limit,
+        payload.startdate,
+        payload.enddate
       )
     );
 
@@ -87,7 +89,9 @@ export const getLeadDropList = createAsyncThunk(
         payload.empName,
         payload.orgId,
         payload.offset,
-        payload.limit
+        payload.limit,
+        payload.startdate,
+        payload.enddate
       ),
       payload.body
     );

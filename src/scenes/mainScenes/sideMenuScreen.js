@@ -60,6 +60,7 @@ const receptionMenu = [
   "Home",
   "Upcoming Deliveries",
   "Settings",
+  "Drop/Lost/Cancel",
   "Digital Payment",
   "Target Planning",
   "Helpdesk",
@@ -269,6 +270,9 @@ const SideMenuScreen = ({ navigation }) => {
         break;
       case 114:
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.liveLeads);
+        break;
+      case 115:
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropLostCancel);
         break;
       case 112:
         signOutClicked();

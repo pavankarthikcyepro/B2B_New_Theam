@@ -1692,9 +1692,365 @@ const TargetScreen = ({ route }) => {
                 </View>
               </View>
               {/* Header view end */}
+              {/* <>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "flex-end",
+                    marginVertical: 10,
+                    marginRight: 10,
+                  }}
+                >
+                  <SourceModelView
+                    style={{ alignSelf: "flex-end" }}
+                    onClick={() => {
+                      navigation.navigate(
+                        // AppNavigator.HomeStackIdentifiers.recepSourceModel,
+                        'RECEP_SOURCE_MODEL',
+                        {
+                          empId: selector.login_employee_details.empId,
+                          headerTitle: "Source/Model",
+                          loggedInEmpId: selector.login_employee_details.empId,
+                          type: selector.isDSE ? "SELF" : "INSIGHTS",
+                          moduleType: "home",
+                        }
+                      );
+                    }}
+                  />
+                </View>
+                <ScrollView showsVerticalScrollIndicator={false}>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      paddingHorizontal: 10,
+                    }}
+                  >
+                    <View
+                      style={{
+                        justifyContent: "center",
+                        alignItems: "center",
+                        width: "35%",
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontSize: 12,
+                          fontWeight: "400",
+                          textDecorationLine: "underline",
+                        }}
+                      >
+                        {"Consultant Name"}
+                      </Text>
+                    </View>
+
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        width: "50%",
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontSize: 12,
+                          fontWeight: "400",
+                          textDecorationLine: "underline",
+                        }}
+                      >
+                        {"Leads Allocated"}
+                      </Text>
+                      <Text
+                        style={{
+                          fontSize: 12,
+                          fontWeight: "400",
+                          textDecorationLine: "underline",
+                        }}
+                      >
+                        {"Drop Leads"}
+                      </Text>
+                    </View>
+                  </View>
+                  {[0, 0, 0, 0, 0].map((item) => {
+                    return (
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          paddingHorizontal: 10,
+                        }}
+                      >
+                        <View
+                          style={{
+                            justifyContent: "center",
+                            alignItems: "center",
+                            width: "35%",
+                          }}
+                        >
+                          <Text>{"Akash"}</Text>
+                        </View>
+                        <View
+                          style={{
+                            width: "45%",
+                            justifyContent: "space-between",
+                            flexDirection: "row",
+                            height: 25,
+                            alignItems: "center",
+                            marginTop: 8,
+                            marginLeft: 20,
+                          }}
+                        >
+                          <View
+                            style={{
+                              // maxWidth:
+                              // item.target && item.target.length >= 6 ? 70 : 45,
+                              minWidth: 45,
+                              height: 25,
+                              borderColor: "red",
+                              borderWidth: 1,
+                              borderRadius: 8,
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                          >
+                            <Text style={{ padding: 2 }}>{"12"}</Text>
+                          </View>
+                          <View
+                            style={{
+                              // maxWidth:
+                              //   item.target && item.target.length >= 6 ? 70 : 45,
+                              minWidth: 45,
+                              height: 25,
+                              borderColor: "red",
+                              borderWidth: 1,
+                              borderRadius: 8,
+                              justifyContent: "center",
+                              alignItems: "center",
+                              // marginLeft: item.target.length >= 6 ? 5 : 20,
+                            }}
+                          >
+                            <Text style={{ padding: 2 }}>{"12"}</Text>
+                          </View>
+                        </View>
+                      </View>
+                    );
+                  })}
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      paddingHorizontal: 10,
+                      marginTop: 10,
+                    }}
+                  >
+                    <View
+                      style={{
+                        justifyContent: "center",
+                        alignItems: "center",
+                        width: "35%",
+                      }}
+                    >
+                      <Text>{"Total"}</Text>
+                    </View>
+                    <View
+                      style={{
+                        width: "45%",
+                        justifyContent: "space-between",
+                        flexDirection: "row",
+                        height: 25,
+                        alignItems: "center",
+                        marginTop: 8,
+                        marginLeft: 20,
+                      }}
+                    >
+                      <View
+                        style={{
+                          // maxWidth:
+                          // item.target && item.target.length >= 6 ? 70 : 45,
+                          minWidth: 45,
+                          height: 25,
+                          borderColor: "red",
+                          borderWidth: 1,
+                          borderRadius: 8,
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Text style={{ padding: 2 }}>{"12"}</Text>
+                      </View>
+                      <View
+                        style={{
+                          // maxWidth:
+                          //   item.target && item.target.length >= 6 ? 70 : 45,
+                          minWidth: 45,
+                          height: 25,
+                          borderColor: "red",
+                          borderWidth: 1,
+                          borderRadius: 8,
+                          justifyContent: "center",
+                          alignItems: "center",
+                          // marginLeft: item.target.length >= 6 ? 5 : 20,
+                        }}
+                      >
+                        <Text style={{ padding: 2 }}>{"12"}</Text>
+                      </View>
+                    </View>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      marginTop: 16,
+                      justifyContent: "space-between",
+                      marginHorizontal: 8,
+                    }}
+                  >
+                    <View style={{ ...styles.statWrap, width: "33%" }}>
+                      <Text
+                        style={{
+                          marginLeft: 10,
+                          fontSize: 16,
+                          fontWeight: "600",
+                          flexDirection: "row",
+                        }}
+                      >
+                        E2B
+                      </Text>
+                      {bookingData !== null && enqData !== null ? (
+                        <Text
+                          style={{
+                            color:
+                              Math.floor(
+                                (parseInt(bookingData?.achievment) /
+                                  parseInt(enqData?.achievment)) *
+                                  100
+                              ) > 40
+                                ? "#14ce40"
+                                : "#ff0000",
+                            fontSize: 12,
+                            marginRight: 4,
+                          }}
+                        >
+                          {parseInt(bookingData?.achievment) === 0 ||
+                          parseInt(enqData?.achievment) === 0
+                            ? 0
+                            : Math.round(
+                                (parseInt(bookingData?.achievment) /
+                                  parseInt(enqData?.achievment)) *
+                                  100
+                              )}
+                          %
+                        </Text>
+                      ) : (
+                        <Text
+                          style={{
+                            color: "#ff0000",
+                            fontSize: 12,
+                          }}
+                        >
+                          0%
+                        </Text>
+                      )}
+                    </View>
+                    <View style={{ ...styles.statWrap, width: "33%" }}>
+                      <Text
+                        style={{
+                          marginLeft: 10,
+                          fontSize: 16,
+                          fontWeight: "600",
+                        }}
+                      >
+                        E2R
+                      </Text>
+                      {enqData !== null && visitData !== null ? (
+                        <Text
+                          style={{
+                            color:
+                              Math.floor(
+                                (parseInt(visitData?.achievment) /
+                                  parseInt(enqData?.achievment)) *
+                                  100
+                              ) > 40
+                                ? "#14ce40"
+                                : "#ff0000",
+                            fontSize: 12,
+                            marginRight: 4,
+                          }}
+                        >
+                          {parseInt(enqData?.achievment) === 0 ||
+                          parseInt(visitData?.achievment) === 0
+                            ? 0
+                            : Math.round(
+                                (parseInt(visitData?.achievment) /
+                                  parseInt(enqData?.achievment)) *
+                                  100
+                              )}
+                          %
+                        </Text>
+                      ) : (
+                        <Text
+                          style={{
+                            color: "#ff0000",
+                            fontSize: 12,
+                          }}
+                        >
+                          0%
+                        </Text>
+                      )}
+                    </View>
+                    <View style={{ ...styles.statWrap, width: "33%" }}>
+                      <Text
+                        style={{
+                          marginLeft: 10,
+                          fontSize: 16,
+                          fontWeight: "600",
+                        }}
+                      >
+                        E2R
+                      </Text>
+                      {finData !== null && retailData !== null ? (
+                        <Text
+                          style={{
+                            color:
+                              Math.floor(
+                                (parseInt(finData?.achievment) /
+                                  parseInt(retailData?.achievment)) *
+                                  100
+                              ) > 40
+                                ? "#14ce40"
+                                : "#ff0000",
+                            fontSize: 12,
+                            marginRight: 4,
+                          }}
+                        >
+                          {parseInt(finData?.achievment) === 0 ||
+                          parseInt(retailData?.achievment) === 0
+                            ? 0
+                            : Math.round(
+                                (parseInt(finData?.achievment) /
+                                  parseInt(retailData?.achievment)) *
+                                  100
+                              )}
+                          %
+                        </Text>
+                      ) : (
+                        <Text
+                          style={{
+                            color: "#ff0000",
+                            fontSize: 12,
+                          }}
+                        >
+                          0%
+                        </Text>
+                      )}
+                    </View>
+                  </View>
+                </ScrollView>
+              </> */}
               <ScrollView showsVerticalScrollIndicator={false}>
                 <>
-                  <View style={{paddingRight:10}}>
+                  <View style={{ paddingRight: 10 }}>
                     <View
                       style={{
                         width: "42%",

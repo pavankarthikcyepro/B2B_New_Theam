@@ -855,7 +855,7 @@ const HomeScreen = ({ route, navigation }) => {
                 </View>
               </>
             )}
-            {true && (
+            {false && (
               <View
                 style={{
                   justifyContent: "space-around",
