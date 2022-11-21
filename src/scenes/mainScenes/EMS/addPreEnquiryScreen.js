@@ -368,7 +368,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       organizationId: organizationId,
       phone: selector.mobile,
       sourceOfEnquiry: selector.sourceOfEnquiryId,
-      subSourceOfEnquiry: selector.subSourceOfEnquiryId,
+      subSourceOfEnquiry: selector.subSourceOfEnquiry,
       eventCode: "",
       email: selector.email,
       referencenumber: "",
@@ -636,7 +636,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
           otherCustomerType: selector.other,
           email: selector.email,
           enquirySource: selector.sourceOfEnquiryId,
-          subSource: selector.subSourceOfEnquiryId,
+          subSource: selector.subSourceOfEnquiry,
           ownerName: employeeName,
           secondaryPhone: selector.alterMobile,
           status: "PREENQUIRY",
@@ -655,7 +655,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       phone: selector.mobile,
       model: selector.carModel,
       sourceOfEnquiry: selector.sourceOfEnquiryId,
-      subSourceOfEnquiry: selector.subSourceOfEnquiryId,
+      subSource: selector.subSourceOfEnquiry,
       eventCode: selector.eventName,
       referencenumber: refNumber,
       pincode: selector.pincode,
@@ -797,7 +797,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
 
     dmsAccountOrContactDto.customerType = selector.customerType;
     dmsAccountOrContactDto.enquirySource = selector.sourceOfEnquiryId;
-    dmsAccountOrContactDto.subSource = selector.subSourceOfEnquiryId;
+    dmsAccountOrContactDto.subSource = selector.subSourceOfEnquiry;
     dmsAccountOrContactDto.pincode = selector.pincode;
 
     if (existingPreEnquiryDetails.hasOwnProperty("dmsLeadDto")) {
@@ -811,7 +811,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
 
       dmsLeadDto.enquirySegment = selector.enquiryType;
       dmsLeadDto.sourceOfEnquiry = selector.sourceOfEnquiryId;
-      dmsLeadDto.subSourceOfEnquiry = selector.subSourceOfEnquiryId;
+      dmsLeadDto.subSourceOfEnquiry = selector.subSourceOfEnquiry;
       dmsLeadDto.enquirySource = selector.sourceOfEnquiry;
       dmsLeadDto.subSource = selector.subSourceOfEnquiry;
       dmsLeadDto.dmsAddresses = newDmsAddressList;
@@ -1306,7 +1306,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                 },
               ]}
             ></Text>
-            {subSourceData.length > 0 && (
+            {subSourceData.length > 0 || selector.subSourceOfEnquiry && (
               <DropDownSelectionItem
                 label={"Sub Source of Lead"}
                 value={selector.subSourceOfEnquiry}
