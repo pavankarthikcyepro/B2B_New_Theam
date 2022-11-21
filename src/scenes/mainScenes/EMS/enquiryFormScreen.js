@@ -1988,25 +1988,27 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dataObj.registrationDate = moment(
         selector.r_registration_date
       );
-      dataObj.registrationValidityDate =
-        moment(
-          selector.r_registration_validity_date
-        );
+      dataObj.registrationValidityDate = moment(
+        selector.r_registration_validity_date,
+        "DD/MM/YYYY"
+      );
       dataObj.insuranceAvailable = `${selector.r_insurence_checked}`;
       dataObj.insuranceDocumentAvailable =
         selector.r_insurence_document_checked;
       dataObj.insuranceCompanyName = selector.r_insurence_company_name;
       // Pending
       dataObj.insuranceExpiryDate = selector.r_insurence_to_date
-        ? moment(selector.r_insurence_to_date)
+        ? moment(selector.r_insurence_to_date, "DD/MM/YYYY")
         : "";
       dataObj.insuranceType = selector.r_insurence_type;
       // Pending
       dataObj.insuranceFromDate = moment(
-        selector.r_insurence_from_date
+        selector.r_insurence_from_date,
+        "DD/MM/YYYY"
       );
       dataObj.insuranceToDate = moment(
-        selector.r_insurence_to_date
+        selector.r_insurence_to_date,
+        "DD/MM/YYYY"
       );
     }
     return dataObj;
