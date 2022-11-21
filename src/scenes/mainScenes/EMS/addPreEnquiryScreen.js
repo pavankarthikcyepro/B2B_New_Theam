@@ -1306,7 +1306,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                 },
               ]}
             ></Text>
-            {subSourceData.length > 0 || selector.subSourceOfEnquiry && (
+            {subSourceData.length > 0 || selector.subSourceOfEnquiry ? (
               <DropDownSelectionItem
                 label={"Sub Source of Lead"}
                 value={selector.subSourceOfEnquiry}
@@ -1318,7 +1318,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                   )
                 }
               />
-            )}
+            ) : null}
             <Text style={[GlobalStyle.underline]}></Text>
             {/* <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.subSourceOfEnquiry === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text> */}
             {selector.sourceOfEnquiry === "Other" ? (
