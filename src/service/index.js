@@ -53,14 +53,14 @@ export const veryIntensiveTask = async (taskDataArguments) => {
 
 export const options = {
   taskName: "Cypro",
-  taskTitle: "Cypro title",
-  taskDesc: "Cypro description",
+  taskTitle: "Cypro",
+  taskDesc: "Cypro is tracking",
   taskIcon: {
-    name: "ic_launcher",
+    name: "@mipmap/cy",
     type: "mipmap",
   },
   color: Colors.PINK,
-  linkingURI: "yourSchemeHere://chat/jane", // See Deep Linking for more info
+  linkingURI: "yourSchemeHere", // See Deep Linking for more info
   parameters: {
     delay: 10000,
   },

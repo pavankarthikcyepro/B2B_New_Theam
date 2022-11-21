@@ -290,7 +290,7 @@ const SideMenuScreen = ({ navigation }) => {
     AsyncStore.storeData(AsyncStore.Keys.EXTENSION_ID, "");
     AsyncStore.storeData(AsyncStore.Keys.EXTENSSION_PWD, "");
     AsyncStore.storeData(AsyncStore.Keys.IS_LOGIN, "false");
-    AsyncStore.storeJsonData(AsyncStore.Keys.TODAYSDATE, "");
+    AsyncStore.storeJsonData(AsyncStore.Keys.TODAYSDATE, new Date().getDate());
     AsyncStore.storeJsonData(AsyncStore.Keys.COORDINATES, []);
     await BackgroundService.stop();
 

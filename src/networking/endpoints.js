@@ -55,8 +55,12 @@ export const getEnquiryVehicleModelData = "http://automatestaging-724985329.ap-s
 export const deleteModelCard = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/lead"
 export const dashboardLiveLeads = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8083";
 export const profileImageUpdate = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic";
-export const locationUpdate =
+export const saveLocation =
   "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeTracking/saveEmployeeTracking";
+export const locationUpdate =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeTracking/updateEmployeeTracking";
+export const getDetailsByempIdAndorgId =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeTracking/getDetailsByempIdAndorgId";
   
 const URL = {
   LOGIN: () => hrms_url + "/emplogin",

@@ -13,6 +13,7 @@ import {
   TextInput,
   KeyboardAvoidingView,
   ScrollView,
+  Platform,
 } from "react-native";
 import { Colors } from "../../styles";
 import { TextinputComp } from "../../components/textinputComp";
@@ -42,6 +43,12 @@ import { showAlertMessage, showToast } from "../../utils/toast";
 import BackgroundService from "react-native-background-actions";
 import Geolocation from "@react-native-community/geolocation";
 import { options, sleep } from "../../service";
+import {
+  getDetailsByempIdAndorgId,
+  locationUpdate,
+  saveLocation,
+} from "../../networking/endpoints";
+import { client } from "../../networking/client";
 // import { TextInput } from 'react-native-paper';
 
 const ScreenWidth = Dimensions.get("window").width;
@@ -122,18 +129,23 @@ const LoginScreen = ({ navigation }) => {
         AsyncStore.Keys.USER_TOKEN,
         selector.userData.idToken
       ).then(() => {
-        dispatch(getMenuList(selector.userData.userName));
-        dispatch(getEmpId(selector.userData.userName));
-        AsyncStore.storeJsonData(
-          AsyncStore.Keys.TODAYSDATE,
-          new Date().getDate()
+        Promise.all([dispatch(getMenuList(selector.userData.userName))]).then(
+          () => {
+            AsyncStore.storeJsonData(
+              AsyncStore.Keys.TODAYSDATE,
+              new Date().getDate()
+            );
+            AsyncStore.storeJsonData(AsyncStore.Keys.COORDINATES, []);
+            startTracking();
+          }
         );
-        AsyncStore.storeJsonData(AsyncStore.Keys.COORDINATES, []);
-        startTracking();
+        dispatch(getEmpId(selector.userData.userName));
+
         let data = {
           userName: selector.userData.userName,
           orgId: selector.userData.orgId,
         };
+
         // dispatch(getCallRecordingCredentials(data))
         // dispatch(getCustomerTypeList());
         // dispatch(getCarModalList(selector.userData.orgId))
@@ -186,11 +198,28 @@ const LoginScreen = ({ navigation }) => {
     getCoordinates();
   };
 
+  function createDateTime(time) {
+    var splitted = time.split(":");
+    if (splitted.length != 2) return undefined;
+
+    var date = new Date();
+    date.setHours(parseInt(splitted[0], 10));
+    date.setMinutes(parseInt(splitted[1], 10));
+    date.setSeconds(0);
+    return date;
+  }
+
+  const objectsEqual = (o1, o2) =>
+    Object.keys(o1).length === Object.keys(o2).length &&
+    Object.keys(o1).every((p) => o1[p] === o2[p]);
+
   const getCoordinates = async () => {
     try {
-      let coordinates = AsyncStore.getJsonData(AsyncStore.Keys.COORDINATES);
-      let todaysDate = AsyncStore.getData(AsyncStore.Keys.TODAYSDATE);
-
+      let coordinates = await AsyncStore.getJsonData(
+        AsyncStore.Keys.COORDINATES
+      );
+      let todaysDate = await AsyncStore.getData(AsyncStore.Keys.TODAYSDATE);
+      // alert(coordinates, todaysDate);
       if (todaysDate != new Date().getDate()) {
         initialData();
       } else {
@@ -199,18 +228,89 @@ const LoginScreen = ({ navigation }) => {
         var now = new Date();
         var isBetween = startDate <= now && now <= endDate;
         if (isBetween) {
-          await Geolocation.watchPosition(
-            (lastPosition) => {
-              //   console.log("CHANGED LOACTION", coordinates);
-              //   console.log("CURRENTLOCATION", lastPosition);
-              var newLatLng = {
-                latitude: lastPosition.coords.latitude,
-                longitude: lastPosition.coords.longitude,
-              };
+          Geolocation.watchPosition(
+            async (lastPosition) => {
+              const employeeData = await AsyncStore.getData(
+                AsyncStore.Keys.LOGIN_EMPLOYEE
+              );
+              if (employeeData) {
+                const jsonObj = JSON.parse(employeeData);
+                const trackingResponse = await client.get(
+                  getDetailsByempIdAndorgId +
+                    `/${jsonObj.empId}/${jsonObj.orgId}`
+                );
 
-              let newArray = [...coordinates, ...[newLatLng]];
-              console.log("newArray", newArray);
-              AsyncStore.storeJsonData(AsyncStore.Keys.COORDINATES, newArray);
+                const trackingJson = await trackingResponse.json();
+                console.log("LOGINNN", trackingJson);
+                var newLatLng = {
+                  latitude: lastPosition.coords.latitude,
+                  longitude: lastPosition.coords.longitude,
+                };
+                console.log("CHANGED LOCATION", coordinates);
+                let parsedValue =
+                  trackingJson.length > 0
+                    ? JSON.parse(trackingJson[0].location)
+                    : null;
+                if (coordinates.length > 0 && parsedValue) {
+                  if (
+                    objectsEqual(
+                      coordinates[coordinates.length - 1],
+                      parsedValue[parsedValue.length - 1]
+                    )
+                  ) {
+                    return;
+                  }
+                }
+
+                // console.log("CURRENTLOCATION", lastPosition);
+
+                let newArray = [...coordinates, ...[newLatLng]];
+
+                if (trackingJson.length > 0) {
+                  // return; //// API integration
+                  let tempPayload = {
+                    id: trackingJson[0]?.id,
+                    orgId: jsonObj?.orgId,
+                    empId: jsonObj?.empId,
+                    branchId: jsonObj?.branchId,
+                    currentTimestamp: new Date().getTime(),
+                    updateTimestamp: new Date().getTime(),
+                    purpose: "",
+                    location: JSON.stringify(newArray),
+                  };
+                  console.log("newArray", tempPayload);
+
+                  const response = await client.put(
+                    locationUpdate + `/${trackingJson[0].id}`,
+                    tempPayload
+                  );
+                  const json = await response.json();
+                  console.log("RESPONSEmmmmm", json);
+
+                  await AsyncStore.storeJsonData(
+                    AsyncStore.Keys.COORDINATES,
+                    newArray
+                  );
+                } else {
+                  let payload = {
+                    id: 0,
+                    orgId: jsonObj?.orgId,
+                    empId: jsonObj?.empId,
+                    branchId: jsonObj?.branchId,
+                    currentTimestamp: new Date().getTime(),
+                    updateTimestamp: new Date().getTime(),
+                    purpose: "",
+                    location: JSON.stringify(newArray),
+                  };
+                  const response = await client.post(saveLocation, payload);
+                  console.log("RESPONSEmmmmsssmELSE", response);
+                  const json = await response.json();
+                  await AsyncStore.storeJsonData(
+                    AsyncStore.Keys.COORDINATES,
+                    newArray
+                  );
+                }
+              }
             },
             (error) => {
               console.log(error);
@@ -229,7 +329,7 @@ const LoginScreen = ({ navigation }) => {
     const { delay } = taskDataArguments;
     await new Promise(async (resolve) => {
       for (let i = 0; BackgroundService.isRunning(); i++) {
-        // console.log(i);
+        console.log("LOGIN", i);
         try {
           let todaysDate = AsyncStore.getData(AsyncStore.Keys.TODAYSDATE);
           // console.log("todaysDate", todaysDate);
@@ -245,6 +345,9 @@ const LoginScreen = ({ navigation }) => {
   };
 
   const startTracking = async () => {
+    if (Platform.OS === "ios") {
+      Geolocation.requestAuthorization();
+    }
     await Geolocation.setRNConfiguration({
       skipPermissionRequests: false,
       authorizationLevel: "always" | "whenInUse" | "auto",
