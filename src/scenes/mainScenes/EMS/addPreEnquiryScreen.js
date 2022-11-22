@@ -811,7 +811,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
 
       dmsLeadDto.enquirySegment = selector.enquiryType;
       dmsLeadDto.sourceOfEnquiry = selector.sourceOfEnquiryId;
-      dmsLeadDto.subSourceOfEnquiry = selector.subSourceOfEnquiry;
+      dmsLeadDto.subSourceOfEnquiry = selector.subSourceOfEnquiryId;
       dmsLeadDto.enquirySource = selector.sourceOfEnquiry;
       dmsLeadDto.subSource = selector.subSourceOfEnquiry;
       dmsLeadDto.dmsAddresses = newDmsAddressList;
