@@ -34,5 +34,8 @@
         </intent-filter>
       </activity>
        <service android:name="com.asterinet.react.bgactions.RNBackgroundActionsTask" />
+        <meta-data
+     android:name="com.google.android.geo.API_KEY"
+     android:value="AIzaSyDiIoBHUeutksbdPqxVvohX50njC0gxVUQ"/>
     </application>
 </manifest>

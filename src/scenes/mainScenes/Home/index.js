@@ -685,6 +685,7 @@ const HomeScreen = ({ route, navigation }) => {
                     setDropDownData({ key: dropDownKey, value: item.name, id: item.id })
                 }}
             />
+            {/* <Button onPress={()=>{navigation.navigate(AppNavigator.HomeStackIdentifiers.location);}} /> */}
             <HeaderComp
                 title={headerText}
                 branchName={selectedBranchName}
