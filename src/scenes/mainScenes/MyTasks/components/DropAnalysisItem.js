@@ -90,9 +90,9 @@ export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId
     }
 
     function checkForStageName(taskName) {
-        if (taskName.toLowerCase() === 'preenquiry') {
+        if (taskName?.toLowerCase() === 'preenquiry') {
             taskName = 'CONTACTS';
-        } else if (taskName.toLowerCase() === 'prebooking') {
+        } else if (taskName?.toLowerCase() === 'prebooking') {
             taskName = 'Booking Approval';
         }
         // else if (taskName.includes('Booking')) {
