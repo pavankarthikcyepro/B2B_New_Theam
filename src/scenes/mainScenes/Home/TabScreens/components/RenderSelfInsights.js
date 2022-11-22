@@ -225,8 +225,9 @@ export const RenderSelfInsights = (args) => {
             >
               <View
                 style={{
-                  maxWidth: item.target && item.target.length >= 6 ? 70 : 45,
-                  minWidth: 45,
+                  // maxWidth: item.target && item.target.length >= 6 ? 70 : 45,
+                  // minWidth: 45,
+                  width: 45,
                   height: 25,
                   borderColor: color[index % color.length],
                   borderWidth: 1,
@@ -235,32 +236,60 @@ export const RenderSelfInsights = (args) => {
                   alignItems: "center",
                 }}
               >
-                <Text style={{ padding: 2 }}>
-                  {Number(item.achievment) > Number(item.target)
-                    ? 0
-                    : item.shortfall}
-                </Text>
+                <TextTicker
+                  duration={10000}
+                  loop={true}
+                  // shouldAnimateTreshold={50}
+                  bounce={false}
+                  repeatSpacer={50}
+                  marqueeDelay={0}
+                  style={{
+                    marginBottom: 0,
+                  }}
+                >
+                  <Text style={{ padding: 2 }}>
+                    {Number(item.achievment) > Number(item.target)
+                      ? 0
+                      : item.shortfall}
+                  </Text>
+                </TextTicker>
               </View>
               <View
                 style={{
-                  maxWidth: item.target && item.target.length >= 6 ? 70 : 45,
-                  minWidth: 45,
+                  // maxWidth: item.target && item.target.length >= 6 ? 70 : 45,
+                  // minWidth: 45,
+                  width: 45,
                   height: 25,
                   borderColor: color[index % color.length],
                   borderWidth: 1,
                   borderRadius: 8,
                   justifyContent: "center",
                   alignItems: "center",
-                  marginLeft: item.target.length >= 6 ? 5 : 20,
+                  marginLeft: 20,
+                  // marginLeft: item.target.length >= 6 ? 5 : 20,
                 }}
               >
-                <Text style={{ padding: 2 }}>
-                  {parseInt(item.achievment) > parseInt(item.target)
-                    ? 0
-                    : dateDiff > 0 && parseInt(item.shortfall) !== 0
-                    ? Math.abs(Math.round(parseInt(item.shortfall) / dateDiff))
-                    : 0}
-                </Text>
+                <TextTicker
+                  duration={10000}
+                  loop={true}
+                  // shouldAnimateTreshold={50}
+                  bounce={false}
+                  repeatSpacer={50}
+                  marqueeDelay={0}
+                  style={{
+                    marginBottom: 0,
+                  }}
+                >
+                  <Text style={{ padding: 2 }}>
+                    {parseInt(item.achievment) > parseInt(item.target)
+                      ? 0
+                      : dateDiff > 0 && parseInt(item.shortfall) !== 0
+                      ? Math.abs(
+                          Math.round(parseInt(item.shortfall) / dateDiff)
+                        )
+                      : 0}
+                  </Text>
+                </TextTicker>
               </View>
             </View>
           ) : (

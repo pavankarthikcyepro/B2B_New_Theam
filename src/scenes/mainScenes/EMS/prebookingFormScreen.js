@@ -755,59 +755,33 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     const modelOnclick = async (index, value, type) => {
         try {
             if (type == "update") {
-                let arr = await [...carModelsList]
-                arr[index] = value
-                // arr.splice(carModelsList, index, value);
-                console.log("MODELS IF: ", arr);
-                let primaryModel = [];
-                primaryModel = arr.filter((item) => item.isPrimary === "Y");
-                if(primaryModel.length > 0){
-                    if (primaryModel[0].variant !== '' && primaryModel[0].model !== ''){
-                        updateVariantModelsData(primaryModel[0].model, true, primaryModel[0].variant);
-                    }
+              let arr = await [...carModelsList];
+              arr[index] = value;
+              // arr.splice(carModelsList, index, value);
+              console.log("MODELS IF: ", arr);
+              let primaryModel = [];
+              primaryModel = arr.filter((item) => item.isPrimary === "Y");
+              if (primaryModel.length > 0) {
+                if (
+                  primaryModel[0].variant !== "" &&
+                  primaryModel[0].model !== ""
+                ) {
+                  updateVariantModelsData(
+                    primaryModel[0].model,
+                    true,
+                    primaryModel[0].variant
+                  );
                 }
-                await setCarModelsList([...arr])
+              }
+              await setCarModelsList([...arr]);
+            } else {
+              if (type == "delete") {
+                let arr = await [...carModelsList];
+                arr.splice(index, 1);
+                deleteModalFromServer({ value });
+                await setCarModelsList([...arr]);
+              }
             }
-            else {
-                if (type == "delete") {
-                  //let arr = await [...carModelsList];
-
-
-                  // arr[0] = item;
-                  // arr.splice(0, 1);
-                  // arr.unshift(item)
-                  // if (arr[0].variant !== '' && arr[0].model !== '' &&  arr[0].isPrimary === 'Y') {
-                  //     updateVariantModelsData(arr[0].model, true, arr[0].variant);
-                  // }
-                  // setCarModelsList([])
-
-                  // carModelsList.splice(0, 1)
-
-                let arr = await [...carModelsList]
-                arr.splice(index, 1)
-                 deleteModalFromServer({ value });
-                console.log("MODELS ELSE: ", arr);
-                let primaryModel = [];
-                primaryModel = arr.filter((item) => item.isPrimary === "Y");
-                var isPrimary = arr[0].isPrimary;
-                if (primaryModel.length === 0) {
-                    await setIsPrimaryCurrentIndex(0)
-                    isPrimary = "Y"
-                }
-              //  alert(primaryModel.length)
-                let item = {
-                    "color": arr[0].color,
-                    "fuel": arr[0].fuel,
-                    "id": arr[0].id,
-                    "model": arr[0].model,
-                    "transimmisionType": arr[0].transimmisionType,
-                    "variant": arr[0].variant,
-                    "isPrimary": isPrimary,
-
-                }
-                 await setCarModelsList([...arr]);
-            }
-        }
             // console.log("onValueChangeonValueChange@@@@ ", value)
         } catch (error) {
             // alert(error)
@@ -3223,6 +3197,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         );
     }
 
+    const randomNumberGenerator = () => {
+      return Math.floor(Math.random() * 1000);
+    };
+
     return (
       <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
         <ImagePickerComponent
@@ -4275,7 +4253,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       const carmodeldata = {
                         color: "",
                         fuel: "",
-                        id: 0,
+                        id: randomNumberGenerator(),
                         model: "",
                         transimmisionType: "",
                         variant: "",
@@ -4313,7 +4291,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   <FlatList
                     data={carModelsList}
                     extraData={carModelsList}
-                    keyExtractor={(item, index) => index.toString()}
+                    keyExtractor={(item, index) => item.id.toString()}
                     renderItem={({ item, index }) => {
                       return (
                         // <Pressable onPress={() => selectedItem(item, index)}>
