@@ -1986,7 +1986,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dataObj.hypothicationBranch = selector.r_hypothication_branch;
       // Pending
       dataObj.registrationDate = moment(
-        selector.r_registration_date
+        selector.r_registration_date,
+        "DD/MM/YYYY"
       );
       dataObj.registrationValidityDate = moment(
         selector.r_registration_validity_date,
@@ -5640,7 +5641,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       onPress={() => dispatch(setImagePicker("UPLOAD_REG_DOC"))}
                     />
                   </View>
-                  {uploadedImagesDataObj.REGDOC ? (
+                  {uploadedImagesDataObj.REGDOC &&
+                  uploadedImagesDataObj.REGDOC.documentPath ? (
                     <View style={{ flexDirection: "row" }}>
                       <TouchableOpacity
                         style={{
