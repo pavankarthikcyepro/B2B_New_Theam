@@ -1371,6 +1371,34 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           }));
         }
 
+        let newPanArr = dmsLeadDto.dmsAttachments.filter((item) => {
+          return item.documentType === "pan";
+        });
+
+        let newAadharArr = dmsLeadDto.dmsAttachments.filter((item) => {
+          return item.documentType === "aadhar";
+        });
+
+        let newPassbookArr = dmsLeadDto.dmsAttachments.filter((item) => {
+          return item.documentType === "pattaPassBook";
+        });
+
+        let newEmpArr = dmsLeadDto.dmsAttachments.filter((item) => {
+          return item.documentType === "employeeId";
+        });
+
+        let newPaySlipArr = dmsLeadDto.dmsAttachments.filter((item) => {
+          return item.documentType === "payslips";
+        });
+
+        let newPensionArr = dmsLeadDto.dmsAttachments.filter((item) => {
+          return item.documentType === "pensionLetter";
+        });
+
+        let imaCertArr = dmsLeadDto.dmsAttachments.filter((item) => {
+          return item.documentType === "imaCertificate";
+        });
+
         for (let i = 0; i < docUploadArr.length; i++) {
           if (docUploadArr[i].value.documentPath) {
             let newObj = {
@@ -1382,9 +1410,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             };
 
             if (docUploadArr[i].name == "pan") {
-              let newPanArr = dmsLeadDto.dmsAttachments.filter((item) => {
-                return item.documentType === "pan";
-              });
               if (newPanArr.length) {
                 newObj = { ...newPanArr[0], ...newObj };
               } else {
@@ -1396,11 +1421,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               }
               tempAttachments.push(Object.assign({}, newObj));
             } else if (docUploadArr[i].name == "aadhar") {
-              let newPassbookArr = dmsLeadDto.dmsAttachments.filter((item) => {
-                return item.documentType === "aadhar";
-              });
-              if (newPassbookArr.length) {
-                newObj = { ...newPassbookArr[0], ...newObj };
+              if (newAadharArr.length) {
+                newObj = { ...newAadharArr[0], ...newObj };
               } else {
                 newObj = {
                   ...dmsAttachmentsObj,
@@ -1410,9 +1432,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               }
               tempAttachments.push(Object.assign({}, newObj));
             } else if (docUploadArr[i].name == "passbook") {
-              let newPassbookArr = dmsLeadDto.dmsAttachments.filter((item) => {
-                return item.documentType === "pattaPassBook";
-              });
               if (newPassbookArr.length) {
                 newObj = { ...newPassbookArr[0], ...newObj };
               } else {
@@ -1424,10 +1443,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               }
               tempAttachments.push(Object.assign({}, newObj));
             } else if (docUploadArr[i].name == "employeeId") {
-              let newEmpArr = dmsLeadDto.dmsAttachments.filter((item) => {
-                return item.documentType === "employeeId";
-              });
-
               if (newEmpArr.length) {
                 newObj = { ...newEmpArr[0], ...newObj };
               } else {
@@ -1440,10 +1455,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
               tempAttachments.push(Object.assign({}, newObj));
             } else if (docUploadArr[i].name == "payslips") {
-              let newPaySlipArr = dmsLeadDto.dmsAttachments.filter((item) => {
-                return item.documentType === "payslips";
-              });
-
               if (newPaySlipArr.length) {
                 newObj = { ...newPaySlipArr[0], ...newObj };
               } else {
@@ -1456,12 +1467,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
               tempAttachments.push(Object.assign({}, newObj));
             } else if (docUploadArr[i].name == "pension") {
-              let newPaySlipArr = dmsLeadDto.dmsAttachments.filter((item) => {
-                return item.documentType === "pensionLetter";
-              });
-
-              if (newPaySlipArr.length) {
-                newObj = { ...newPaySlipArr[0], ...newObj };
+              if (newPensionArr.length) {
+                newObj = { ...newPensionArr[0], ...newObj };
               } else {
                 newObj = {
                   ...dmsAttachmentsObj,
@@ -1472,12 +1479,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
               tempAttachments.push(Object.assign({}, newObj));
             } else if (docUploadArr[i].name == "imaCertificate") {
-              let newPaySlipArr = dmsLeadDto.dmsAttachments.filter((item) => {
-                return item.documentType === "imaCertificate";
-              });
-
-              if (newPaySlipArr.length) {
-                newObj = { ...newPaySlipArr[0], ...newObj };
+              if (imaCertArr.length) {
+                newObj = { ...imaCertArr[0], ...newObj };
               } else {
                 newObj = {
                   ...dmsAttachmentsObj,
@@ -1502,8 +1505,17 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               break;
             }
           }
-          if (!isAvailable) {
+
+          if (newPanArr.length) {
             let newObj = {
+              ...newPanArr[0],
+              documentNumber: selector.pan_number,
+              documentType: "pan",
+              ...empObj,
+            };
+            tempAttachments.push(Object.assign({}, newObj));
+          } else if (!isAvailable) {
+            newObj = {
               ...dmsAttachmentsObj,
               documentNumber: selector.pan_number,
               documentType: "pan",
@@ -1524,7 +1536,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               break;
             }
           }
-          if (!isAvailable) {
+          
+          if (newAadharArr.length) {
+            let newObj = {
+              ...newAadharArr[0],
+              documentNumber: selector.pan_number,
+              documentType: "aadhar",
+              ...empObj,
+            };
+            tempAttachments.push(Object.assign({}, newObj));
+          } else if (!isAvailable) {
             let newObj = {
               ...dmsAttachmentsObj,
               documentNumber: selector.adhaar_number,
@@ -1546,7 +1567,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               break;
             }
           }
-          if (!isAvailable) {
+          
+          if (newEmpArr.length) {
+            let newObj = {
+              ...newEmpArr[0],
+              documentNumber: selector.pan_number,
+              documentType: "employeeId",
+              ...empObj,
+            };
+            tempAttachments.push(Object.assign({}, newObj));
+          } else if (!isAvailable) {
             let newObj = {
               ...dmsAttachmentsObj,
               documentNumber: selector.employee_id,
