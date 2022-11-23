@@ -228,7 +228,6 @@ export const convertTimeStringToDate = (timeStamp, format) => {
 };
 
 export const convertDateStringToMilliseconds = (dateString) => {
-  console.log("dateString:-=-=-=-=-> ", dateString);
   if (!dateString) {
     return null;
   }

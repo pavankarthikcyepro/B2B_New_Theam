@@ -1953,27 +1953,32 @@ const enquiryDetailsOverViewSlice = createSlice({
       // state.pan_number = "";
       // state.adhaar_number = "";
       if (dmsAttachments.length > 0) {
+        let newArr = [];
         dmsAttachments.forEach((item, index) => {
-          switch (item.documentType) {
-            case "pan":
-              if (item.documentNumber && item.documentNumber != "") {
-                state.pan_number = item.documentNumber;
-              }
-              break;
-            case "aadhar":
-              if (item.documentNumber && item.documentNumber != "") {
-                state.adhaar_number = item.documentNumber;
-              }
-              break;
-            case "employeeId":
-              if (item.documentNumber && item.documentNumber != "") {
-                state.employee_id = item.documentNumber;
-              }
-            case "gstNumber":
-              if (item.documentNumber && item.documentNumber != "") {
-                state.gstin_number = item.documentNumber;
-              }
-              break;
+          let isAvailableIndex = newArr.findIndex(element => element === item.documentType);
+          if (isAvailableIndex < 0) {
+            newArr.push(item.documentType);
+            switch (item.documentType) {
+              case "pan":
+                if (item.documentNumber && item.documentNumber != "") {
+                  state.pan_number = item.documentNumber;
+                }
+                break;
+              case "aadhar":
+                if (item.documentNumber && item.documentNumber != "") {
+                  state.adhaar_number = item.documentNumber;
+                }
+                break;
+              case "employeeId":
+                if (item.documentNumber && item.documentNumber != "") {
+                  state.employee_id = item.documentNumber;
+                }
+              case "gstNumber":
+                if (item.documentNumber && item.documentNumber != "") {
+                  state.gstin_number = item.documentNumber;
+                }
+                break;
+            }
           }
         });
       }
