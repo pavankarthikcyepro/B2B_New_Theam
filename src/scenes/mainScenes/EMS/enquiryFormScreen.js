@@ -736,11 +736,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       if (exchangeDoc.length > 0 && !isEmpty(exchangeDoc[0])) {
         const obj = {
           documentPath: exchangeDoc[0]?.regDocumentPath,
-          documentType: "REGDOC",
+          documentType: "regNoD",
           fileName: exchangeDoc[0]?.regDocumentPath?.split("/")?.pop(),
           keyName: exchangeDoc[0]?.regDocumentKey,
         };
-        dataObj["REGDOC"] = obj;
+        dataObj["regNoD"] = obj;
         if (exchangeDoc[0]?.insuranceAvailable == "true") {
           const obj = {
             documentPath: exchangeDoc[0]?.insuranceDocumentPath,
@@ -1433,8 +1433,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       };
     }
 
-    console.log("formData ->>> ", JSON.stringify(formData));
-
     setTypeOfActionDispatched("UPDATE_ENQUIRY");
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     if (employeeData) {
@@ -1744,6 +1742,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       // dataObj.yearofManufacture = convertDateStringToMillisecondsUsingMoment(
       //   selector.r_mfg_year
       // );
+      dataObj.regDocumentKey = selector.regDocumentKey;
+      dataObj.regDocumentPath = selector.regDocumentPath;
       dataObj.yearofManufacture = selector.r_mfg_year;
       dataObj.kiloMeters = selector.r_kms_driven_or_odometer_reading;
       dataObj.expectedPrice = selector.r_expected_price
@@ -1826,7 +1826,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       case "aadhar":
         object.documentNumber = selector.adhaar_number;
         break;
-      case "REGDOC":
+      case "regNoD":
         object.documentNumber = selector.r_reg_no;
         break;
     }
@@ -2504,7 +2504,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         formData.append("documentType", "aadhar");
         break;
       case "UPLOAD_REG_DOC":
-        formData.append("documentType", "REGDOC");
+        formData.append("documentType", "regNoD");
         break;
       case "UPLOAD_INSURENCE":
         formData.append("documentType", "insurance");
@@ -2545,9 +2545,24 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       .then((response) => response.json())
       .then((response) => {
         if (response) {
-          const dataObj = { ...uploadedImagesDataObj };
-          dataObj[response.documentType] = response;
-          setUploadedImagesDataObj({ ...dataObj });
+          if (keyId === "UPLOAD_REG_DOC") {
+            dispatch(
+              setReplacementBuyerDetails({
+                key: "R_REG_DOC_KEY",
+                text: response.keyName,
+              })
+            );
+            dispatch(
+              setReplacementBuyerDetails({
+                key: "R_REG_DOC_PATH",
+                text: response.documentPath,
+              })
+            );
+          } else {
+            const dataObj = { ...uploadedImagesDataObj };
+            dataObj[response.documentType] = response;
+            setUploadedImagesDataObj({ ...dataObj });
+          }
         }
       })
       .catch((error) => {
@@ -2567,8 +2582,19 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       case "AADHAR":
         delete imagesDataObj.aadhar;
         break;
-      case "REGDOC":
-        delete imagesDataObj.REGDOC;
+      case "regNoD":
+        dispatch(
+          setReplacementBuyerDetails({
+            key: "R_REG_DOC_KEY",
+            text: "",
+          })
+        );
+        dispatch(
+          setReplacementBuyerDetails({
+            key: "R_REG_DOC_PATH",
+            text: "",
+          })
+        );
         break;
       case "INSURENCE":
         delete imagesDataObj.insurance;
@@ -4378,7 +4404,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       maxLength={12}
                       onChangeText={(text) =>
                         dispatch(
-                          setUploadDocuments({ key: "ADHAR", text: text.replace(/[^0-9]/g, ""), })
+                          setUploadDocuments({
+                            key: "ADHAR",
+                            text: text.replace(/[^0-9]/g, ""),
+                          })
                         )
                       }
                     />
@@ -5409,8 +5438,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       onPress={() => dispatch(setImagePicker("UPLOAD_REG_DOC"))}
                     />
                   </View>
-                  {uploadedImagesDataObj.REGDOC &&
-                  uploadedImagesDataObj.REGDOC.documentPath ? (
+                  {selector.regDocumentPath ? (
                     <View style={{ flexDirection: "row" }}>
                       <TouchableOpacity
                         style={{
@@ -5422,9 +5450,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           alignItems: "center",
                         }}
                         onPress={() => {
-                          if (uploadedImagesDataObj.REGDOC?.documentPath) {
+                          if (selector.regDocumentPath) {
                             setImagePath(
-                              uploadedImagesDataObj.REGDOC?.documentPath
+                              selector.regDocumentPath
                             );
                           }
                         }}
@@ -5441,8 +5469,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       </TouchableOpacity>
                       <View style={{ width: "80%" }}>
                         <DisplaySelectedImage
-                          fileName={uploadedImagesDataObj.REGDOC.fileName}
-                          from={"REGDOC"}
+                          fileName={selector.regDocumentKey}
+                          from={"regNoD"}
                         />
                       </View>
                     </View>

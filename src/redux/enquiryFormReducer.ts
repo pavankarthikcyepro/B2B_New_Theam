@@ -585,6 +585,8 @@ const initialState = {
   a_reg_no: "",
   // Replacement Buyer
   r_reg_no: "",
+  regDocumentKey: "",
+  regDocumentPath: "",
   r_varient: "",
   r_color: "",
   r_make: "",
@@ -649,6 +651,8 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.a_reg_no = "";
       // Replacement Buyer
       state.r_reg_no = "";
+      state.regDocumentKey= "",
+      state.regDocumentPath= "",
       state.r_varient = "";
       state.r_color = "";
       state.r_make = "";
@@ -701,6 +705,8 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.a_reg_no = "";
       // Replacement Buyer
       state.r_reg_no = "";
+      state.regDocumentKey= "",
+      state.regDocumentPath= "",
       state.r_varient = "";
       state.r_color = "";
       state.r_make = "";
@@ -1313,6 +1319,12 @@ const enquiryDetailsOverViewSlice = createSlice({
         case "R_REG_NO":
           state.r_reg_no = text;
           break;
+        case "R_REG_DOC_KEY":
+          state.regDocumentKey = text;
+          break;
+        case "R_REG_DOC_PATH":
+          state.regDocumentPath = text;
+          break;
         case "R_MAKE_OTHER_NAME":
           state.r_make_other_name = text;
           break;
@@ -1846,7 +1858,6 @@ const enquiryDetailsOverViewSlice = createSlice({
       if (dmsExchagedetails.length > 0) {
         dataObj = dmsExchagedetails[0];
       }
-      console.log("BUYER TYPE: ", JSON.stringify(dataObj));
       if (dataObj.buyerType === "Additional Buyer") {
         state.a_make = dataObj.brand ? dataObj.brand : "";
         state.a_model = dataObj.model ? dataObj.model : "";
@@ -1858,6 +1869,8 @@ const enquiryDetailsOverViewSlice = createSlice({
         dataObj.buyerType === "Exchange Buyer"
       ) {
         state.r_reg_no = dataObj.regNo ? dataObj.regNo : "";
+        state.regDocumentKey = dataObj.regDocumentKey ? dataObj.regDocumentKey : "";
+        state.regDocumentPath = dataObj.regDocumentPath ? dataObj.regDocumentPath : "";
         state.r_make = dataObj.brand ? dataObj.brand : "";
         state.r_model = dataObj.model ? dataObj.model : "";
         state.r_varient = dataObj.varient ? dataObj.varient : "";
