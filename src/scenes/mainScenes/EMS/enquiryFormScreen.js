@@ -177,6 +177,29 @@ const theme = {
   },
 };
 
+const dmsAttachmentsObj = {
+  branchId: null,
+  contentSize: 0,
+  createdBy: convertDateStringToMilliseconds(new Date()),
+  description: null,
+  documentNumber: "",
+  documentPath: "",
+  documentType: "",
+  documentVersion: 0,
+  fileName: "",
+  gstNumber: null,
+  id: 0,
+  isActive: null,
+  isPrivate: null,
+  keyName: "",
+  modifiedBy: "",
+  orgId: null,
+  ownerId: null,
+  ownerName: "",
+  parentId: null,
+  tinNumber: null,
+};
+
 const DetailsOverviewScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const headNavigation = useNavigation();
@@ -1332,91 +1355,208 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       );
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
+        let empObj = {
+          branchId: jsonObj.branchs[0]?.branchId,
+          modifiedBy: jsonObj.empName,
+          orgId: jsonObj.orgId,
+          ownerName: jsonObj.empName,
+        };
         let tempAttachments = [];
 
-        // pan number
+        let docUploadArr;
+        if (Object.keys(uploadedImagesDataObj).length > 0) {
+          docUploadArr = Object.entries(uploadedImagesDataObj).map((e) => ({
+            name: e[0],
+            value: e[1],
+          }));
+        }
+
+        for (let i = 0; i < docUploadArr.length; i++) {
+          if (docUploadArr[i].value.documentPath) {
+            let newObj = {
+              documentPath: docUploadArr[i].value.documentPath,
+              fileName: docUploadArr[i].value.fileName,
+              keyName: docUploadArr[i].value.keyName,
+              createdBy: convertDateStringToMilliseconds(new Date()),
+              ...empObj,
+            };
+
+            if (docUploadArr[i].name == "pan") {
+              let newPanArr = dmsLeadDto.dmsAttachments.filter((item) => {
+                return item.documentType === "pan";
+              });
+              if (newPanArr.length) {
+                newObj = { ...newPanArr[0], ...newObj };
+              } else {
+                newObj = {
+                  ...dmsAttachmentsObj,
+                  ...newObj,
+                  documentType: "pan",
+                };
+              }
+              tempAttachments.push(Object.assign({}, newObj));
+            } else if (docUploadArr[i].name == "aadhar") {
+              let newPassbookArr = dmsLeadDto.dmsAttachments.filter((item) => {
+                return item.documentType === "aadhar";
+              });
+              if (newPassbookArr.length) {
+                newObj = { ...newPassbookArr[0], ...newObj };
+              } else {
+                newObj = {
+                  ...dmsAttachmentsObj,
+                  ...newObj,
+                  documentType: "aadhar",
+                };
+              }
+              tempAttachments.push(Object.assign({}, newObj));
+            } else if (docUploadArr[i].name == "passbook") {
+              let newPassbookArr = dmsLeadDto.dmsAttachments.filter((item) => {
+                return item.documentType === "pattaPassBook";
+              });
+              if (newPassbookArr.length) {
+                newObj = { ...newPassbookArr[0], ...newObj };
+              } else {
+                newObj = {
+                  ...dmsAttachmentsObj,
+                  ...newObj,
+                  documentType: "pattaPassBook",
+                };
+              }
+              tempAttachments.push(Object.assign({}, newObj));
+            } else if (docUploadArr[i].name == "employeeId") {
+              let newEmpArr = dmsLeadDto.dmsAttachments.filter((item) => {
+                return item.documentType === "employeeId";
+              });
+
+              if (newEmpArr.length) {
+                newObj = { ...newEmpArr[0], ...newObj };
+              } else {
+                newObj = {
+                  ...dmsAttachmentsObj,
+                  ...newObj,
+                  documentType: "employeeId",
+                };
+              }
+
+              tempAttachments.push(Object.assign({}, newObj));
+            } else if (docUploadArr[i].name == "payslips") {
+              let newPaySlipArr = dmsLeadDto.dmsAttachments.filter((item) => {
+                return item.documentType === "payslips";
+              });
+
+              if (newPaySlipArr.length) {
+                newObj = { ...newPaySlipArr[0], ...newObj };
+              } else {
+                newObj = {
+                  ...dmsAttachmentsObj,
+                  ...newObj,
+                  documentType: "payslips",
+                };
+              }
+
+              tempAttachments.push(Object.assign({}, newObj));
+            } else if (docUploadArr[i].name == "pension") {
+              let newPaySlipArr = dmsLeadDto.dmsAttachments.filter((item) => {
+                return item.documentType === "pensionLetter";
+              });
+
+              if (newPaySlipArr.length) {
+                newObj = { ...newPaySlipArr[0], ...newObj };
+              } else {
+                newObj = {
+                  ...dmsAttachmentsObj,
+                  ...newObj,
+                  documentType: "pensionLetter",
+                };
+              }
+
+              tempAttachments.push(Object.assign({}, newObj));
+            } else if (docUploadArr[i].name == "imaCertificate") {
+              let newPaySlipArr = dmsLeadDto.dmsAttachments.filter((item) => {
+                return item.documentType === "imaCertificate";
+              });
+
+              if (newPaySlipArr.length) {
+                newObj = { ...newPaySlipArr[0], ...newObj };
+              } else {
+                newObj = {
+                  ...dmsAttachmentsObj,
+                  ...newObj,
+                  documentType: "imaCertificate",
+                };
+              }
+
+              tempAttachments.push(Object.assign({}, newObj));
+            }
+          }
+        }
+
+        // if pan number
         if (selector.pan_number) {
-          let newArr = dmsLeadDto.dmsAttachments.filter((item) => {
-            return item.documentType === "pan";
-          });
-          if (newArr.length) {
-            tempAttachments.push({
-              ...newArr[0],
+          let tmpArr = tempAttachments;
+          let isAvailable = false;
+          for (let i = 0; i < tmpArr.length; i++) {
+            if (tmpArr[i].documentType === "pan") {
+              isAvailable = true;
+              tmpArr[i].documentNumber = selector.pan_number;
+              break;
+            }
+          }
+          if (!isAvailable) {
+            let newObj = {
+              ...dmsAttachmentsObj,
               documentNumber: selector.pan_number,
-              createdBy: convertDateStringToMilliseconds(new Date()),
-            });
+              documentType: "pan",
+              ...empObj,
+            };
+            tempAttachments.push(Object.assign({}, newObj));
           }
         }
 
-        // aadhar number
+        // if pan aadhar number
         if (selector.adhaar_number) {
-          let newArr = dmsLeadDto.dmsAttachments.filter((item) => {
-            return item.documentType === "aadhar";
-          });
-          if (newArr.length) {
-            tempAttachments.push({
-              ...newArr[0],
+          let tmpArr = tempAttachments;
+          let isAvailable = false;
+          for (let i = 0; i < tmpArr.length; i++) {
+            if (tmpArr[i].documentType === "aadhar") {
+              isAvailable = true;
+              tmpArr[i].documentNumber = selector.adhaar_number;
+              break;
+            }
+          }
+          if (!isAvailable) {
+            let newObj = {
+              ...dmsAttachmentsObj,
               documentNumber: selector.adhaar_number,
-              createdBy: convertDateStringToMilliseconds(new Date()),
-            });
+              documentType: "aadhar",
+              ...empObj,
+            };
+            tempAttachments.push(Object.assign({}, newObj));
           }
         }
 
-        // employee id number
+        // if employee id
         if (selector.employee_id) {
-          let newArr = dmsLeadDto.dmsAttachments.filter((item) => {
-            return item.documentType === "employeeId";
-          });
-          if (newArr.length) {
-            tempAttachments.push({
-              ...newArr[0],
+          let tmpArr = tempAttachments;
+          let isAvailable = false;
+          for (let i = 0; i < tmpArr.length; i++) {
+            if (tmpArr[i].documentType === "employeeId") {
+              isAvailable = true;
+              tmpArr[i].documentNumber = selector.employee_id;
+              break;
+            }
+          }
+          if (!isAvailable) {
+            let newObj = {
+              ...dmsAttachmentsObj,
               documentNumber: selector.employee_id,
-              createdBy: convertDateStringToMilliseconds(new Date()),
-            });
+              documentType: "employeeId",
+              ...empObj,
+            };
+            tempAttachments.push(Object.assign({}, newObj));
           }
         }
 
-        // if (Object.keys(uploadedImagesDataObj).length > 0) {
-        //   let tempImages = Object.entries(uploadedImagesDataObj).map((e) => ({
-        //     name: e[0],
-        //     value: e[1],
-        //   }));
-        //   for (let i = 0; i < tempImages.length; i++) {
-        //     if (
-        //       tempImages[i].name != "pan" &&
-        //       tempImages[i].name != "aadhar" &&
-        //       tempImages[i].name != "employeeId"
-        //     ) {
-        //       tempAttachments.push({
-        //         branchId: jsonObj.branchs[0]?.branchId,
-        //         contentSize: 0,
-        //         createdBy: convertDateStringToMilliseconds(new Date()),
-        //         description: "",
-        //         documentNumber: "",
-        //         documentPath: tempImages[i].value.documentPath,
-        //         documentType: tempImages[i].name,
-        //         documentVersion: 0,
-        //         fileName: tempImages[i].value.fileName,
-        //         gstNumber: "",
-        //         id: 0,
-        //         isActive: 0,
-        //         isPrivate: 0,
-        //         keyName: tempImages[i].value.keyName,
-        //         modifiedBy: jsonObj.empName,
-        //         orgId: jsonObj.orgId,
-        //         ownerId: "",
-        //         ownerName: jsonObj.empName,
-        //         parentId: "",
-        //         tinNumber: "",
-        //       });
-        //     }
-        //     if (i === tempImages.length - 1) {
-        //       dmsLeadDto.dmsAttachments = tempAttachments;
-        //     }
-        //   }
-        // } else {
-        //   dmsLeadDto.dmsAttachments = tempAttachments;
-        // }
         dmsLeadDto.dmsAttachments = tempAttachments;
       }
     }
