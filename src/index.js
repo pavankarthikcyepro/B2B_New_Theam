@@ -124,13 +124,9 @@ const AppScreen = () => {
                     return;
                   }
                 }
-
-                // console.log("CURRENTLOCATION", lastPosition);
-
                 let newArray = [...coordinates, ...[newLatLng]];
 
                 if (trackingJson.length > 0) {
-                  // return; //// API integration
                   let tempPayload = {
                     id: trackingJson[0]?.id,
                     orgId: jsonObj?.orgId,
@@ -167,7 +163,7 @@ const AppScreen = () => {
                   };
                   const response = await client.post(saveLocation, payload);
                   const json = await response.json();
-                  console.log("RESPONSEmmmmsssmELSE", json);
+                  // console.log("RESPONSEmmmmsssmELSE", json);
                   await AsyncStore.storeJsonData(
                     AsyncStore.Keys.COORDINATES,
                     newArray
@@ -176,9 +172,7 @@ const AppScreen = () => {
               }
             },
             (error) => {
-              console.log(error);
-              return;
-              alert(JSON.stringify(error));
+              console.error(error);
             },
             { enableHighAccuracy: true, distanceFilter: 10 }
           );
