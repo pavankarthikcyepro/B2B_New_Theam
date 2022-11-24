@@ -122,7 +122,8 @@ import {
     GetDropList,
     isEmail,
     PincodeDetailsNew,
-    isCheckPanOrAadhaar
+    isCheckPanOrAadhaar,
+    convertDateStringToMilliseconds
 } from "../../../utils/helperFunctions";
 import URL from "../../../networking/endpoints";
 import uuid from "react-native-uuid";
@@ -139,6 +140,29 @@ import {
 import { EmsTopTabNavigatorIdentifiers } from "../../../navigations/emsTopTabNavigator";
 
 const rupeeSymbol = "\u20B9";
+
+const dmsAttachmentsObj = {
+  branchId: null,
+  contentSize: 0,
+  createdBy: convertDateStringToMilliseconds(new Date()),
+  description: null,
+  documentNumber: "",
+  documentPath: "",
+  documentType: "",
+  documentVersion: 0,
+  fileName: "",
+  gstNumber: null,
+  id: 0,
+  isActive: null,
+  isPrivate: null,
+  keyName: "",
+  modifiedBy: "",
+  orgId: null,
+  ownerId: null,
+  ownerName: "",
+  parentId: null,
+  tinNumber: null,
+};
 
 const CheckboxTextAndAmountComp = ({
     title,
@@ -1490,7 +1514,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     };
 
     const checkModelSelection = () => {
-      console.log("carModelsList =====> ", carModelsList);
       let error = false;
       for (let i = 0; i < carModelsList.length; i++) {
         if (carModelsList[i].model.length == 0) {
@@ -1798,7 +1821,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         }
       }
 
-      if (isCheckPanOrAadhaar("aadhaar", selector.adhaar_number)) {
+      if (selector.enquiry_segment.toLowerCase() === "personal" && isCheckPanOrAadhaar("aadhaar", selector.adhaar_number)) {
         scrollToPos(4);
         setOpenAccordian("4");
         showToast("Please enter proper Aadhaar number");
@@ -1891,8 +1914,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       postOnRoadPriceTable.fast_tag = fastTagSlctd
         ? priceInfomationData.fast_tag
         : 0;
-      postOnRoadPriceTable.id = postOnRoadPriceTable.id
-        ? postOnRoadPriceTable.id
+      postOnRoadPriceTable.id = selector.on_road_price_dto_list_response.length ? selector.on_road_price_dto_list_response[0].id
         : 0;
       postOnRoadPriceTable.insuranceAddonData = selectedInsurenceAddons;
       postOnRoadPriceTable.insuranceAmount = selectedInsurencePrice;
@@ -1917,13 +1939,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
       postOnRoadPriceTable.form_or_pan = selector.form_or_pan;
 
-      console.log(
-        "PAYLOAD:===---=-=-=->>>>>",
-        JSON.stringify(postOnRoadPriceTable)
-      );
       if (isEdit) {
-        // postOnRoadPriceTable.id =
-        //   selector.on_road_price_dto_list_response[0].id;
         dispatch(sendEditedOnRoadPriceDetails(postOnRoadPriceTable));
       } else dispatch(sendOnRoadPriceDetails(postOnRoadPriceTable));
       // Promise.all([
@@ -1957,326 +1973,205 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
     // Handle On Road Price Response
     useEffect(async () => {
-        if (selector.send_onRoad_price_details_response) {
-            if (!selector.pre_booking_details_response) {
-                return;
+      if (selector.send_onRoad_price_details_response) {
+        if (!selector.pre_booking_details_response) {
+          return;
+        }
+
+        let dmsContactOrAccountDto = {};
+        let dmsLeadDto = {};
+        let formData;
+
+        const dmsEntity = selector.pre_booking_details_response;
+        if (dmsEntity.hasOwnProperty("dmsContactDto"))
+          dmsContactOrAccountDto = mapContactOrAccountDto(
+            dmsEntity.dmsContactDto
+          );
+        else if (dmsEntity.hasOwnProperty("dmsAccountDto"))
+          dmsContactOrAccountDto = mapContactOrAccountDto(
+            dmsEntity.dmsAccountDto
+          );
+
+        if (dmsEntity.hasOwnProperty("dmsLeadDto"))
+          dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
+
+        let selectedModel = [];
+        selectedModel = carModelsList.filter((item) => item.isPrimary === "Y");
+        console.log("MODEL: ", selector.model, carModelsList);
+        dmsLeadDto.firstName = selector.first_name;
+        dmsLeadDto.lastName = selector.last_name;
+        dmsLeadDto.phone = selector.mobile;
+        dmsLeadDto.email = selector.email;
+        dmsLeadDto.model =
+          selectedModel.length > 0 ? selectedModel[0].model : selector.model;
+        const employeeData = await AsyncStore.getData(
+          AsyncStore.Keys.LOGIN_EMPLOYEE
+        );
+
+        if (employeeData) {
+          const jsonObj = JSON.parse(employeeData);
+          let empObj = {
+            branchId: jsonObj.branchs[0]?.branchId,
+            modifiedBy: jsonObj.empName,
+            orgId: jsonObj.orgId,
+            ownerName: jsonObj.empName,
+          };
+
+          let tempAttachments = Object.assign([], dmsLeadDto.dmsAttachments);
+
+          let imgObjArr = [];
+          if (Object.keys(uploadedImagesDataObj).length > 0) {
+            imgObjArr = Object.entries(uploadedImagesDataObj).map((e) => ({
+              name: e[0],
+              value: e[1],
+            }));
+          }
+
+          for (let i = 0; i < imgObjArr.length; i++) {
+            let isAvailable = false;
+            for (let j = 0; j < tempAttachments.length; j++) {
+              if (tempAttachments[j].documentType == imgObjArr[i].name) {
+                let finalObj = {
+                  ...tempAttachments[j],
+                  documentPath: imgObjArr[i].value.documentPath,
+                  fileName: imgObjArr[i].value.fileName,
+                  keyName: imgObjArr[i].value.keyName,
+                  documentType: imgObjArr[i].name,
+                  createdBy: convertDateStringToMilliseconds(new Date()),
+                };
+
+                if (imgObjArr[i].name === "pan" && selector.pan_number) {
+                  finalObj.documentNumber = selector.pan_number;
+                } else if (
+                  imgObjArr[i].name == "aadhar" &&
+                  selector.adhaar_number
+                ) {
+                  finalObj.documentNumber = selector.adhaar_number;
+                } else if (
+                  imgObjArr[i].name == "employeeId" &&
+                  selector.employee_id
+                ) {
+                  finalObj.documentNumber = selector.employee_id;
+                }
+
+                tempAttachments[j] = Object.assign({}, finalObj);
+                isAvailable = true;
+                break;
+              }
             }
 
-            let dmsContactOrAccountDto = {};
-            let dmsLeadDto = {};
-            let formData;
+            if (!isAvailable) {
+              let newObj = {
+                ...dmsAttachmentsObj,
+                documentPath: imgObjArr[i].value.documentPath,
+                fileName: imgObjArr[i].value.fileName,
+                keyName: imgObjArr[i].value.keyName,
+                documentType: imgObjArr[i].name,
+                createdBy: convertDateStringToMilliseconds(new Date()),
+                ...empObj,
+              };
 
-            const dmsEntity = selector.pre_booking_details_response;
-            if (dmsEntity.hasOwnProperty("dmsContactDto"))
-                dmsContactOrAccountDto = mapContactOrAccountDto(
-                    dmsEntity.dmsContactDto
-                );
-            else if (dmsEntity.hasOwnProperty("dmsAccountDto"))
-                dmsContactOrAccountDto = mapContactOrAccountDto(
-                    dmsEntity.dmsAccountDto
-                );
+              if (imgObjArr[i].name === "pan" && selector.pan_number) {
+                newObj.documentNumber = selector.pan_number;
+              } else if (
+                imgObjArr[i].name == "aadhar" &&
+                selector.adhaar_number
+              ) {
+                newObj.documentNumber = selector.adhaar_number;
+              } else if (
+                imgObjArr[i].name == "employeeId" &&
+                selector.employee_id
+              ) {
+                newObj.documentNumber = selector.employee_id;
+              }
 
-            if (dmsEntity.hasOwnProperty("dmsLeadDto"))
-                dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
+              tempAttachments.push(Object.assign({}, newObj));
+            }
+          }
 
-            let selectedModel = []
-            selectedModel = carModelsList.filter((item) => item.isPrimary === "Y")
-            console.log("MODEL: ", selector.model, carModelsList);
-            dmsLeadDto.firstName = selector.first_name;
-            dmsLeadDto.lastName = selector.last_name;
-            dmsLeadDto.phone = selector.mobile;
-            dmsLeadDto.email = selector.email;
-            dmsLeadDto.model = selectedModel.length > 0 ? selectedModel[0].model : selector.model ;
-            const employeeData = await AsyncStore.getData(
-                AsyncStore.Keys.LOGIN_EMPLOYEE
+          let panArr = tempAttachments.filter((item) => {
+            return item.documentType === "pan";
+          });
+
+          let aadharArr = tempAttachments.filter((item) => {
+            return item.documentType === "aadhar";
+          });
+
+          let empArr = tempAttachments.filter((item) => {
+            return item.documentType === "employeeId";
+          });
+
+          // if pan number
+          if (!panArr.length && selector.pan_number) {
+            newObj = {
+              ...dmsAttachmentsObj,
+              documentNumber: selector.pan_number,
+              documentType: "pan",
+              ...empObj,
+            };
+            tempAttachments.push(Object.assign({}, newObj));
+          }
+
+          // if aadhar number
+          if (!aadharArr.length && selector.adhaar_number) {
+            newObj = {
+              ...dmsAttachmentsObj,
+              documentNumber: selector.adhaar_number,
+              documentType: "aadhar",
+              ...empObj,
+            };
+            tempAttachments.push(Object.assign({}, newObj));
+          }
+
+          // if emp id
+          if (!empArr.length && selector.employee_id) {
+            newObj = {
+              ...dmsAttachmentsObj,
+              documentNumber: selector.employee_id,
+              documentType: "employeeId",
+              ...empObj,
+            };
+            tempAttachments.push(Object.assign({}, newObj));
+          }
+
+          dmsLeadDto.dmsAttachments = Object.assign([], tempAttachments);
+        }
+
+        if (
+          selector.pre_booking_details_response.hasOwnProperty("dmsContactDto")
+        ) {
+          formData = {
+            dmsContactDto: dmsContactOrAccountDto,
+            dmsLeadDto: dmsLeadDto,
+          };
+        } else {
+          formData = {
+            dmsAccountDto: dmsContactOrAccountDto,
+            dmsLeadDto: dmsLeadDto,
+          };
+        }
+
+        setTypeOfActionDispatched("UPDATE_PRE_BOOKING");
+        // dispatch(updatePrebookingDetailsApi(formData));
+        Promise.all([dispatch(updatePrebookingDetailsApi(formData))]).then(
+          async (res) => {
+            console.log("REF NO:", selector.refNo);
+            let employeeData = await AsyncStore.getData(
+              AsyncStore.Keys.LOGIN_EMPLOYEE
             );
             if (employeeData) {
-                const jsonObj = JSON.parse(employeeData);
-                let tempAttachments = [];
-                if (selector.pan_number || dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "pan";
-                })) {
-                    tempAttachments.push({
-                      branchId: jsonObj.branchs[0]?.branchId,
-                      contentSize: 0,
-                      createdBy: new Date().getSeconds(),
-                      description: "",
-                      documentNumber: selector.pan_number,
-                      documentPath:
-                        dmsLeadDto.dmsAttachments.length > 0
-                          ? dmsLeadDto.dmsAttachments.filter((item) => {
-                              return item.documentType === "pan";
-                            })[0]?.documentPath
-                            ? dmsLeadDto.dmsAttachments.filter((item) => {
-                                return item.documentType === "pan";
-                              })[0]?.documentPath
-                            : ""
-                          : "",
-                      documentType: "pan",
-                      documentVersion: 0,
-                      fileName:
-                        dmsLeadDto.dmsAttachments.length > 0
-                          ? dmsLeadDto.dmsAttachments.filter((item) => {
-                              return item.documentType === "pan";
-                            })[0]?.fileName
-                            ? dmsLeadDto.dmsAttachments.filter((item) => {
-                                return item.documentType === "pan";
-                              })[0]?.fileName
-                            : ""
-                          : "",
-                      gstNumber: selector.gstin_number,
-                      id: 0,
-                      isActive: 0,
-                      isPrivate: 0,
-                      keyName:
-                        dmsLeadDto.dmsAttachments.length > 0
-                          ? dmsLeadDto.dmsAttachments.filter((item) => {
-                              return item.documentType === "pan";
-                            })[0]?.keyName
-                            ? dmsLeadDto.dmsAttachments.filter((item) => {
-                                return item.documentType === "pan";
-                              })[0]?.keyName
-                            : ""
-                          : "",
-                      modifiedBy: jsonObj.empName,
-                      orgId: jsonObj.orgId,
-                      ownerId: "",
-                      ownerName: jsonObj.empName,
-                      parentId: "",
-                      tinNumber: "",
-                    });
-                }
-
-                if (selector.adhaar_number || dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "Form60";
-                }))
-                {
-                    tempAttachments.push({
-                      branchId: jsonObj.branchs[0]?.branchId,
-                      contentSize: 0,
-                      createdBy: new Date().getSeconds(),
-                      description: "",
-                      documentNumber: selector.pan_number,
-                      documentPath:
-                        dmsLeadDto.dmsAttachments.length > 0
-                          ? dmsLeadDto.dmsAttachments.filter((item) => {
-                              return item.documentType === "Form60";
-                            })[0]?.documentPath
-                            ? dmsLeadDto.dmsAttachments.filter((item) => {
-                                return item.documentType === "Form60";
-                              })[0]?.documentPath
-                            : ""
-                          : "",
-                      documentType: "pan",
-                      documentVersion: 0,
-                      fileName:
-                        dmsLeadDto.dmsAttachments.length > 0
-                          ? dmsLeadDto.dmsAttachments.filter((item) => {
-                              return item.documentType === "Form60";
-                            })[0]?.fileName
-                            ? dmsLeadDto.dmsAttachments.filter((item) => {
-                                return item.documentType === "Form60";
-                              })[0]?.fileName
-                            : ""
-                          : "",
-                      gstNumber: selector.gstin_number,
-                      id: 0,
-                      isActive: 0,
-                      isPrivate: 0,
-                      keyName:
-                        dmsLeadDto.dmsAttachments.length > 0
-                          ? dmsLeadDto.dmsAttachments.filter((item) => {
-                              return item.documentType === "Form60";
-                            })[0]?.keyName
-                            ? dmsLeadDto.dmsAttachments.filter((item) => {
-                                return item.documentType === "Form60";
-                              })[0]?.keyName
-                            : ""
-                          : "",
-                      modifiedBy: jsonObj.empName,
-                      orgId: jsonObj.orgId,
-                      ownerId: "",
-                      ownerName: jsonObj.empName,
-                      parentId: "",
-                      tinNumber: "",
-                    });
-                }
-
-
-                if (selector.adhaar_number || dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "aadhar";
-                })) {
-                    tempAttachments.push({
-                      branchId: jsonObj.branchs[0]?.branchId,
-                      contentSize: 0,
-                      createdBy: new Date().getSeconds(),
-                      description: "",
-                      documentNumber: selector.adhaar_number,
-                      documentPath:
-                        dmsLeadDto.dmsAttachments.length > 0
-                          ? dmsLeadDto.dmsAttachments.filter((item) => {
-                              return item.documentType === "aadhar";
-                            })[0]?.documentPath
-                            ? dmsLeadDto.dmsAttachments.filter((item) => {
-                                return item.documentType === "aadhar";
-                              })[0]?.documentPath
-                            : ""
-                          : "",
-                      documentType: "aadhar",
-                      documentVersion: 0,
-                      fileName:
-                        dmsLeadDto.dmsAttachments.length > 0
-                          ? dmsLeadDto.dmsAttachments.filter((item) => {
-                              return item.documentType === "aadhar";
-                            })[0]?.fileName
-                            ? dmsLeadDto.dmsAttachments.filter((item) => {
-                                return item.documentType === "aadhar";
-                              })[0]?.fileName
-                            : ""
-                          : "",
-                      gstNumber: selector.gstin_number,
-                      id: 0,
-                      isActive: 0,
-                      isPrivate: 0,
-                      keyName:
-                        dmsLeadDto.dmsAttachments.length > 0
-                          ? dmsLeadDto.dmsAttachments.filter((item) => {
-                              return item.documentType === "aadhar";
-                            })[0]?.keyName
-                            ? dmsLeadDto.dmsAttachments.filter((item) => {
-                                return item.documentType === "aadhar";
-                              })[0]?.keyName
-                            : ""
-                          : "",
-                      modifiedBy: jsonObj.empName,
-                      orgId: jsonObj.orgId,
-                      ownerId: "",
-                      ownerName: jsonObj.empName,
-                      parentId: "",
-                      tinNumber: "",
-                    });
-                }
-                if (selector.employee_id || dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "employeeId";
-                })) {
-                    tempAttachments.push({
-                      branchId: jsonObj.branchs[0]?.branchId,
-                      contentSize: 0,
-                      createdBy: new Date().getSeconds(),
-                      description: "",
-                      documentNumber: selector.employee_id,
-                      documentPath:
-                        dmsLeadDto.dmsAttachments.length > 0
-                          ? dmsLeadDto.dmsAttachments.filter((item) => {
-                              return item.documentType === "employeeId";
-                            })[0]?.documentPath
-                            ? dmsLeadDto.dmsAttachments.filter((item) => {
-                                return item.documentType === "employeeId";
-                              })[0]?.documentPath
-                            : ""
-                          : "",
-                      documentType: "employeeId",
-                      documentVersion: 0,
-                      fileName:
-                        dmsLeadDto.dmsAttachments.length > 0
-                          ? dmsLeadDto.dmsAttachments.filter((item) => {
-                              return item.documentType === "employeeId";
-                            })[0]?.fileName
-                            ? dmsLeadDto.dmsAttachments.filter((item) => {
-                                return item.documentType === "employeeId";
-                              })[0]?.fileName
-                            : ""
-                          : "",
-                      gstNumber: selector.gstin_number,
-                      id: 0,
-                      isActive: 0,
-                      isPrivate: 0,
-                      keyName:
-                        dmsLeadDto.dmsAttachments.length > 0
-                          ? dmsLeadDto.dmsAttachments.filter((item) => {
-                              return item.documentType === "employeeId";
-                            })[0]?.keyName
-                            ? dmsLeadDto.dmsAttachments.filter((item) => {
-                                return item.documentType === "employeeId";
-                              })[0]?.keyName
-                            : ""
-                          : "",
-                      modifiedBy: jsonObj.empName,
-                      orgId: jsonObj.orgId,
-                      ownerId: "",
-                      ownerName: jsonObj.empName,
-                      parentId: "",
-                      tinNumber: "",
-                    });
-                }
-                if (Object.keys(uploadedImagesDataObj).length > 0) {
-                    let tempImages = Object.entries(uploadedImagesDataObj).map((e) => ({ name: e[0], value: e[1] }));
-                    for (let i = 0; i < tempImages.length; i++) {
-                        tempAttachments.push({
-                          branchId: jsonObj.branchs[0]?.branchId,
-                          contentSize: 0,
-                          createdBy: new Date().getSeconds(),
-                          description: "",
-                          documentNumber: "",
-                          documentPath: tempImages[i].value.documentPath,
-                          documentType: tempImages[i].name,
-                          documentVersion: 0,
-                          fileName: tempImages[i].value.fileName,
-                          gstNumber: selector.gstin_number,
-                          id: 0,
-                          isActive: 0,
-                          isPrivate: 0,
-                          keyName: tempImages[i].value.keyName,
-                          modifiedBy: jsonObj.empName,
-                          orgId: jsonObj.orgId,
-                          ownerId: "",
-                          ownerName: jsonObj.empName,
-                          parentId: "",
-                          tinNumber: "",
-                        });
-
-                        if (i === tempImages.length - 1) {
-                            dmsLeadDto.dmsAttachments = tempAttachments;
-                        }
-                    }
-                }
-                else {
-                    dmsLeadDto.dmsAttachments = tempAttachments;
-                }
+              const jsonObj = JSON.parse(employeeData);
+              const payload = {
+                refNo: selector.refNo,
+                orgId: jsonObj.orgId,
+                stageCompleted: "PREBOOKING",
+              };
+              console.log("PAYLOAD:", payload);
+              dispatch(updateRef(payload));
             }
-
-            if (
-                selector.pre_booking_details_response.hasOwnProperty("dmsContactDto")
-            ) {
-                formData = {
-                    dmsContactDto: dmsContactOrAccountDto,
-                    dmsLeadDto: dmsLeadDto,
-                };
-            } else {
-                formData = {
-                    dmsAccountDto: dmsContactOrAccountDto,
-                    dmsLeadDto: dmsLeadDto,
-                };
-            }
-            setTypeOfActionDispatched("UPDATE_PRE_BOOKING");
-            // dispatch(updatePrebookingDetailsApi(formData));
-            Promise.all([
-                dispatch(updatePrebookingDetailsApi(formData))
-            ]).then(async (res) => {
-                console.log("REF NO:", selector.refNo);
-                let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-                if (employeeData) {
-                    const jsonObj = JSON.parse(employeeData);
-                    const payload = {
-                        "refNo":selector.refNo,
-                        "orgId":jsonObj.orgId,
-                        "stageCompleted":"PREBOOKING"
-                    }
-                    console.log("PAYLOAD:", payload);
-                    dispatch(updateRef(payload))
-                }
-            });
-        }
+          }
+        );
+      }
     }, [selector.send_onRoad_price_details_response]);
 
     const approveOrRejectMethod = (type) => {
@@ -2414,7 +2309,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
     const mapLeadDto = (prevData) => {
         let dataObj = { ...prevData };
-        console.log("MapLeadDTO----------->",selector.customer_preferred_date)
         dataObj.enquirySegment = selector.enquiry_segment;
         dataObj.buyerType = selector.buyer_type;
         dataObj.maritalStatus = selector.marital_status;
@@ -2545,35 +2439,45 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     };
 
     const mapDmsAttachments = (prevDmsAttachments) => {
-        let dmsAttachments = [...prevDmsAttachments];
-        console.log("DMS-==-===->",dmsAttachments)
-        if (dmsAttachments.length > 0) {
-            dmsAttachments.forEach((obj, index) => {
-                const item = uploadedImagesDataObj[obj.documentType];
-                if(item){
-                  const object = formatAttachment(
-                      { ...obj },
-                      item,
-                      index,
-                      obj.documentType
-                  );
-                  dmsAttachments[index] = object;
-                }
-            });
-        } else {
-             console.log("uploadedImagesDataObj1: ", uploadedImagesDataObj);
-            Object.keys(uploadedImagesDataObj).forEach((key, index) => {
-                const item = uploadedImagesDataObj[key];
-                const object = formatAttachment({}, item, index, item.documentType);
-                dmsAttachments.push(object);
-            });
-        }
-        return dmsAttachments;
+      let dmsAttachments = [...prevDmsAttachments];
+      if (dmsAttachments.length > 0) {
+        dmsAttachments.forEach((obj, index) => {
+          const item = uploadedImagesDataObj[obj.documentType];
+          let finalObj = {};
+          if (item) {
+            finalObj = formatAttachment(
+              { ...obj },
+              item,
+              index,
+              obj.documentType
+            );
+          } else {
+            let subItem = {
+              documentType: obj.documentType,
+              documentPath: "",
+              keyName: "",
+              fileName: "",
+            };
+            finalObj = formatAttachment(
+              { ...obj },
+              subItem,
+              index,
+              obj.documentType
+            );
+          }
+        });
+      } else {
+        Object.keys(uploadedImagesDataObj).forEach((key, index) => {
+          const item = uploadedImagesDataObj[key];
+          const object = formatAttachment({}, item, index, item.documentType);
+          dmsAttachments.push(object);
+        });
+      }
+      return dmsAttachments;
     };
 
     const formatAttachment = (data, photoObj, index, typeOfDocument) => {
         let object = { ...data };
-        console.log("DATATATATT=======>", data)
         console.log({typeOfDocument})
         object.branchId = selectedBranchId;
         object.ownerName = userData.employeeName;
@@ -2593,13 +2497,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           case "aadhar":
             object.documentNumber = selector.adhaar_number;
             break;
-
           case "form60":
             object.documentNumber = selector.pan_number;
             break;
-
           case "REGDOC":
             object.documentNumber = selector.r_reg_no;
+            break;
+          case "employeeId":
+            object.documentNumber = selector.employee_id;
             break;
         }
         return object;
