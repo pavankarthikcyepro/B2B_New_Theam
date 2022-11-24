@@ -1914,8 +1914,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       postOnRoadPriceTable.fast_tag = fastTagSlctd
         ? priceInfomationData.fast_tag
         : 0;
-      postOnRoadPriceTable.id = postOnRoadPriceTable.id
-        ? postOnRoadPriceTable.id
+      postOnRoadPriceTable.id = selector.on_road_price_dto_list_response.length ? selector.on_road_price_dto_list_response[0].id
         : 0;
       postOnRoadPriceTable.insuranceAddonData = selectedInsurenceAddons;
       postOnRoadPriceTable.insuranceAmount = selectedInsurencePrice;
@@ -1941,8 +1940,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       postOnRoadPriceTable.form_or_pan = selector.form_or_pan;
 
       if (isEdit) {
-        // postOnRoadPriceTable.id =
-        //   selector.on_road_price_dto_list_response[0].id;
         dispatch(sendEditedOnRoadPriceDetails(postOnRoadPriceTable));
       } else dispatch(sendOnRoadPriceDetails(postOnRoadPriceTable));
       // Promise.all([
@@ -2029,9 +2026,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
               value: e[1],
             }));
           }
-
-          console.log("imgObjArr ->>>> ", imgObjArr);
-          console.log("dmsLeadDto.dmsAttachments before ->>>> ", dmsLeadDto.dmsAttachments);
 
           for (let i = 0; i < imgObjArr.length; i++) {
             let isAvailable = false;
