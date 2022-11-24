@@ -11,7 +11,7 @@ import reduxStore from "./redux/reduxStore";
 import * as AsyncStore from "./asyncStore";
 import { AuthContext } from "./utils/authContext";
 import BackgroundService from "react-native-background-actions";
-import { options, sleep, veryIntensiveTask } from "./service";
+import { createDateTime, options, sleep, veryIntensiveTask } from "./service";
 import Geolocation from "@react-native-community/geolocation";
 import { client } from "./networking/client";
 import {
@@ -50,17 +50,6 @@ const AppScreen = () => {
       userToken: null,
     }
   );
-
-  function createDateTime(time) {
-    var splitted = time.split(":");
-    if (splitted.length != 2) return undefined;
-
-    var date = new Date();
-    date.setHours(parseInt(splitted[0], 10));
-    date.setMinutes(parseInt(splitted[1], 10));
-    date.setSeconds(0);
-    return date;
-  }
 
   const initialData = async () => {
     try {
@@ -204,7 +193,7 @@ const AppScreen = () => {
   const startTracking = async () => {
     if (Platform.OS === "ios") {
       Geolocation.requestAuthorization((value) => {
-        alert(value);
+        // alert(value);
       });
     }
     await Geolocation.setRNConfiguration({

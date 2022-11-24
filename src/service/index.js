@@ -2,6 +2,7 @@ import Geolocation from "@react-native-community/geolocation";
 import BackgroundService from "react-native-background-actions";
 import { Colors } from "../styles";
 
+export const officeRadius = 5;
 export const sleep = (time) =>
   new Promise((resolve) => setTimeout(() => resolve(), time));
 
@@ -11,7 +12,6 @@ export const sleep = (time) =>
 // or there is a foreground app).
 export const veryIntensiveTask = async (taskDataArguments) => {
   // Example of an infinite loop task
-  console.log("sssssss");
   const { delay } = taskDataArguments;
   await new Promise(async (resolve) => {
     for (let i = 0; BackgroundService.isRunning(); i++) {
@@ -20,32 +20,22 @@ export const veryIntensiveTask = async (taskDataArguments) => {
         await Geolocation.watchPosition(
           (lastPosition) => {
             console.log(lastPosition);
-            // var { distanceTotal, record } = this.state;
-            // this.setState({ lastPosition });
-            // if (record) {
-            //   var newLatLng = {
-            //     latitude: lastPosition.coords.latitude,
-            //     longitude: lastPosition.coords.longitude,
-            //   };
-
-            //   this.setState({ track: this.state.track.concat([newLatLng]) });
-            //   this.setState({
-            //     distanceTotal: distanceTotal + this.calcDistance(newLatLng),
-            //   });
-            //   this.setState({ prevLatLng: newLatLng });
-            // }
+              var newLatLng = {
+                latitude: lastPosition.coords.latitude,
+                longitude: lastPosition.coords.longitude,
+              };
           },
           (error) => alert(JSON.stringify(error)),
           { enableHighAccuracy: true, distanceFilter: 100 }
         );
-        // Geolocation.watchPosition((data) => {
-        //   console.log("LOACATION", data);
-        // });
+        Geolocation.watchPosition((data) => {
+          console.log("LOACATION", data);
+        });
       } catch (error) {}
 
-      //   await BackgroundService.updateNotification({
-      //     taskTitle: "test"
-      //   })
+        await BackgroundService.updateNotification({
+          taskTitle: "test"
+        })
       await sleep(delay);
     }
   });
@@ -66,9 +56,40 @@ export const options = {
   },
 };
 
-// await BackgroundService.start(veryIntensiveTask, options);
-// await BackgroundService.updateNotification({
-//   taskDesc: "New ExampleTask description",
-// }); // Only Android, iOS will ignore this call
-// // iOS will also run everything here in the background until .stop() is called
-// await BackgroundService.stop();
+export function getDistanceBetweenTwoPoints(lat1, lon1, lat2, lon2) {
+  if (lat1 == lon1?.lat && lat2 == lon2) {
+    return 0;
+  }
+
+  const radlat1 = (Math.PI * lat1) / 180;
+  const radlat2 = (Math.PI * lat2) / 180;
+
+  const theta = lon1 - lon2;
+  const radtheta = (Math.PI * theta) / 180;
+
+  let dist =
+    Math.sin(radlat1) * Math.sin(radlat2) +
+    Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+
+  if (dist > 1) {
+    dist = 1;
+  }
+
+  dist = Math.acos(dist);
+  dist = (dist * 180) / Math.PI;
+  dist = dist * 60 * 1.1515;
+  dist = dist * 1.609344; //convert miles to km
+
+  return dist;
+}
+
+export function createDateTime(time) {
+  var splitted = time.split(":");
+  if (splitted.length != 2) return undefined;
+
+  var date = new Date();
+  date.setHours(parseInt(splitted[0], 10));
+  date.setMinutes(parseInt(splitted[1], 10));
+  date.setSeconds(0);
+  return date;
+}

@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   Platform,
   Keyboard,
+  Alert,
 } from "react-native";
 import { Colors } from "../styles";
 import { IconButton, Checkbox, Button } from "react-native-paper";
@@ -17,6 +18,9 @@ import { TextinputComp } from "./textinputComp";
 import * as AsyncStore from "../asyncStore";
 import { client } from "../networking/client";
 import URL, { reasonDropDown } from "../networking/endpoints";
+import { createDateTime } from "../service";
+import { useNavigation } from "@react-navigation/native";
+import { AppNavigator } from "../navigations";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -35,17 +39,24 @@ const LocalButtonComp = ({ title, onPress, disabled }) => {
   );
 };
 
-const AttendanceForm = ({ visible = false, onRequestClose, inVisible }) => {
+var startDate = createDateTime("8:30");
+var endDate = createDateTime("12:00");
+var now = new Date();
+var isBetween = startDate <= now && now <= endDate;
+
+const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
+  const navigation = useNavigation();
   const [comment, setComment] = useState("");
   const [commentError, setCommentError] = useState("");
   const [present, setPresent] = useState(true);
   const [reason, setReason] = useState({});
   const [reasonError, setReasonError] = useState("");
   const [reasonList, setReasonList] = useState([]);
+  const [userData, setUserData] = useState({});
 
   useEffect(() => {
     if (!present) {
-      callAPI();
+      callAPI(true);
     }
   }, [present]);
 
@@ -53,17 +64,29 @@ const AttendanceForm = ({ visible = false, onRequestClose, inVisible }) => {
     getReason();
   }, []);
 
+  useEffect(() => {
+    getDetails();
+  }, []);
+
+  const getDetails = async () => {
+    let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      setUserData(jsonObj);
+    }
+  };
+
   const getReason = async () => {
     try {
-        let payload = {
-          bu: "18",
-          dropdownType: "AttendanceReason",
-          parentId: 0,
-        };
-        const response = await client.post(reasonDropDown, payload);
-        const json = await response.json();
-        const newArr1 = json.map((v) => ({ ...v, label: v.key }));
-        setReasonList(newArr1);
+      let payload = {
+        bu: "18",
+        dropdownType: "AttendanceReason",
+        parentId: 0,
+      };
+      const response = await client.post(reasonDropDown, payload);
+      const json = await response.json();
+      const newArr1 = json.map((v) => ({ ...v, label: v.key }));
+      setReasonList(newArr1);
     } catch (error) {}
   };
 
@@ -73,18 +96,16 @@ const AttendanceForm = ({ visible = false, onRequestClose, inVisible }) => {
 
   const validation = () => {
     let error = false;
-    if (!present) {
+    if (showReason) {
       if (isEmpty(reason)) {
         setReasonError("Please Select a Reason");
         error = true;
       }
-
       if (comment.trim().length == 0) {
         setCommentError("Please enter your comments");
         error = true;
       }
     }
-
     if (!error) {
       return true;
     } else {
@@ -100,7 +121,7 @@ const AttendanceForm = ({ visible = false, onRequestClose, inVisible }) => {
     callAPI();
   };
 
-  const callAPI = async () => {
+  const callAPI = async (absentRequest = false) => {
     try {
       let employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -123,10 +144,15 @@ const AttendanceForm = ({ visible = false, onRequestClose, inVisible }) => {
         );
         const json = await response.json();
 
-        if (json.length == 0) {
-          saveData(payload);
+        console.log("OKOKOKOK", json[json.length - 1].createdtimestamp);
+        let latestDate = new Date(
+          json[json.length - 1].createdtimestamp
+        ).getDate();
+        let todaysDate = new Date().getDate();
+        if (json.length == 0 || latestDate == todaysDate) {
+          saveData(payload, absentRequest);
         } else {
-          updateData(payload, json);
+          updateData(payload, json, absentRequest);
         }
       }
     } catch (error) {
@@ -134,23 +160,24 @@ const AttendanceForm = ({ visible = false, onRequestClose, inVisible }) => {
     }
   };
 
-  const saveData = async (payload) => {
+  const saveData = async (payload, absentRequest = false) => {
     try {
       const saveData = await client.post(
         URL.SAVE_EMPLOYEE_ATTENDANCE(),
         payload
       );
       const savedJson = await saveData.json();
-      console.log("savedJson", savedJson);
-      if (savedJson.success) {
-        inVisible();
-      }
+      console.log("savedJson", savedJson, absentRequest);
+      !absentRequest && inVisible();
+      // if (savedJson.success) {
+      //   !absentRequest && inVisible();
+      // }
     } catch (error) {
-      console.error("savedJson", error);
+      console.error("savedJsonERROR", error);
     }
   };
 
-  const updateData = async (payload, json) => {
+  const updateData = async (payload, json, absentRequest = false) => {
     try {
       let tempPayload = {
         id: json[0].id,
@@ -169,20 +196,21 @@ const AttendanceForm = ({ visible = false, onRequestClose, inVisible }) => {
       );
       const updatedJson = await updateData.json();
       console.log("updatedJson", updatedJson);
-      if (updatedJson.success) {
-        inVisible();
-      }
+      !absentRequest && inVisible();
+      // if (updatedJson.success) {
+      //   !absentRequest && inVisible();
+      // }
     } catch (error) {
-      console.error("updatedJson", error);
+      console.error("updatedJsonERROR", error);
     }
   };
 
-  function onAbsent() {
+  function onClose() {
     setPresent(false);
-    setReason({});
-    setComment("");
-    setCommentError("");
-    setReasonError("");
+    // setReason({});
+    // setComment("");
+    // setCommentError("");
+    // setReasonError("");
   }
 
   return (
@@ -195,22 +223,60 @@ const AttendanceForm = ({ visible = false, onRequestClose, inVisible }) => {
       <View style={styles.container}>
         <View style={styles.view1}>
           <View style={{ flexDirection: "row" }}>
-            <RadioTextItem
-              label={"Present"}
-              value={"Present"}
-              disabled={false}
-              status={present ? true : false}
-              onPress={() => setPresent(true)}
-            />
-            {/* <RadioTextItem
+            <View style={{ flexDirection: "column", alignItems: "center" }}>
+              <Text style={styles.greetingText}>
+                {"Hi, " + userData.empName}
+              </Text>
+              {}
+              <Text style={styles.greetingText}>
+                {isBetween ? "Good Morning," : "Good Evening,"}
+              </Text>
+              {present ? (
+                <Text style={styles.greetingText}>
+                  {isBetween
+                    ? "Please Punch Your Attendance"
+                    : "Please LogOut Your Attendance"}
+                </Text>
+              ) : (
+                <Text style={styles.greetingText}>
+                  {"Today your Attendance is Locked as Absent , For More info "}
+                  <Text
+                    onPress={() => {
+                      navigation.navigate(
+                        AppNavigator.DrawerStackIdentifiers.attendance
+                      );
+                      inVisible();
+                    }}
+                    style={{
+                      textDecorationLine: "underline",
+                      color: Colors.BLUE,
+                    }}
+                  >
+                    {"Click Here"}
+                  </Text>
+                </Text>
+              )}
+            </View>
+          </View>
+          {present && (
+            <View style={{ flexDirection: "row" }}>
+              <RadioTextItem
+                label={"Present"}
+                value={"Present"}
+                disabled={false}
+                status={present ? true : false}
+                onPress={() => setPresent(true)}
+              />
+              {/* <RadioTextItem
               label={"Absent"}
               value={"Absent"}
               disabled={false}
               status={!present ? true : false}
               onPress={() => onAbsent()}
             /> */}
-          </View>
-          {false && (
+            </View>
+          )}
+          {showReason && (
             <>
               <View style={{ flexDirection: "row", marginTop: 10 }}>
                 <Dropdown
@@ -280,18 +346,30 @@ const AttendanceForm = ({ visible = false, onRequestClose, inVisible }) => {
             </>
           )}
           <View style={{ flexDirection: "row", marginTop: 10, width: "100%" }}>
-            <LocalButtonComp
-              title={"Submit"}
-              onPress={() => onSubmit()}
-              disabled={false}
-            />
-            <LocalButtonComp
-              title={"Close"}
-              onPress={() => {
-                setPresent(false);
-              }}
-              disabled={false}
-            />
+            {present ? (
+              <>
+                <LocalButtonComp
+                  title={"Submit"}
+                  onPress={() => onSubmit()}
+                  disabled={false}
+                />
+                <LocalButtonComp
+                  title={"Close"}
+                  onPress={() => {
+                    setPresent(false);
+                  }}
+                  disabled={false}
+                />
+              </>
+            ) : (
+              <LocalButtonComp
+                title={"Close"}
+                onPress={() => {
+                  inVisible();
+                }}
+                disabled={false}
+              />
+            )}
           </View>
           <View
             style={{
@@ -396,5 +474,10 @@ const styles = StyleSheet.create({
   errorText: {
     color: Colors.RED,
     fontSize: 15,
+  },
+  greetingText: {
+    fontSize: 15,
+    fontWeight: "400",
+    color: Colors.DARK_GRAY,
   },
 });
