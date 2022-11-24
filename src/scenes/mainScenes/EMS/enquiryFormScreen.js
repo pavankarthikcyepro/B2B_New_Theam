@@ -1348,8 +1348,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       let primaryModel = carModelsList.filter((item) => item.isPrimary === "Y");
       dmsLeadDto.model = primaryModel[0].model;
 
-      // await alert(JSON.stringify(dmsLeadDto.dmsLeadProducts))
-
       const employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
       );
@@ -1361,233 +1359,94 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           orgId: jsonObj.orgId,
           ownerName: jsonObj.empName,
         };
-        let tempAttachments = [];
+        let tempAttachments = Object.assign([], dmsLeadDto.dmsAttachments);
 
-        let docUploadArr;
+        let imgObjArr = [];
         if (Object.keys(uploadedImagesDataObj).length > 0) {
-          docUploadArr = Object.entries(uploadedImagesDataObj).map((e) => ({
+          imgObjArr = Object.entries(uploadedImagesDataObj).map((e) => ({
             name: e[0],
             value: e[1],
           }));
         }
 
-        let newPanArr = dmsLeadDto.dmsAttachments.filter((item) => {
-          return item.documentType === "pan";
-        });
+        for (let i = 0; i < imgObjArr.length; i++) {
+          let isAvailable = false;
+          for (let j = 0; j < tempAttachments.length; j++) {
+            if(tempAttachments[j].documentType == imgObjArr[i].name){
+              isAvailable = true;
+              break;
+            }
+          }
 
-        let newAadharArr = dmsLeadDto.dmsAttachments.filter((item) => {
-          return item.documentType === "aadhar";
-        });
-
-        let newPassbookArr = dmsLeadDto.dmsAttachments.filter((item) => {
-          return item.documentType === "pattaPassBook";
-        });
-
-        let newEmpArr = dmsLeadDto.dmsAttachments.filter((item) => {
-          return item.documentType === "employeeId";
-        });
-
-        let newPaySlipArr = dmsLeadDto.dmsAttachments.filter((item) => {
-          return item.documentType === "payslips";
-        });
-
-        let newPensionArr = dmsLeadDto.dmsAttachments.filter((item) => {
-          return item.documentType === "pensionLetter";
-        });
-
-        let imaCertArr = dmsLeadDto.dmsAttachments.filter((item) => {
-          return item.documentType === "imaCertificate";
-        });
-
-        for (let i = 0; i < docUploadArr.length; i++) {
-          if (docUploadArr[i].value.documentPath) {
+          if (!isAvailable) {
             let newObj = {
-              documentPath: docUploadArr[i].value.documentPath,
-              fileName: docUploadArr[i].value.fileName,
-              keyName: docUploadArr[i].value.keyName,
+              ...dmsAttachmentsObj,
+              documentPath: imgObjArr[i].value.documentPath,
+              fileName: imgObjArr[i].value.fileName,
+              keyName: imgObjArr[i].value.keyName,
+              documentType: imgObjArr[i].name,
               createdBy: convertDateStringToMilliseconds(new Date()),
               ...empObj,
             };
 
-            if (docUploadArr[i].name == "pan") {
-              if (newPanArr.length) {
-                newObj = { ...newPanArr[0], ...newObj };
-              } else {
-                newObj = {
-                  ...dmsAttachmentsObj,
-                  ...newObj,
-                  documentType: "pan",
-                };
-              }
-              tempAttachments.push(Object.assign({}, newObj));
-            } else if (docUploadArr[i].name == "aadhar") {
-              if (newAadharArr.length) {
-                newObj = { ...newAadharArr[0], ...newObj };
-              } else {
-                newObj = {
-                  ...dmsAttachmentsObj,
-                  ...newObj,
-                  documentType: "aadhar",
-                };
-              }
-              tempAttachments.push(Object.assign({}, newObj));
-            } else if (docUploadArr[i].name == "passbook") {
-              if (newPassbookArr.length) {
-                newObj = { ...newPassbookArr[0], ...newObj };
-              } else {
-                newObj = {
-                  ...dmsAttachmentsObj,
-                  ...newObj,
-                  documentType: "pattaPassBook",
-                };
-              }
-              tempAttachments.push(Object.assign({}, newObj));
-            } else if (docUploadArr[i].name == "employeeId") {
-              if (newEmpArr.length) {
-                newObj = { ...newEmpArr[0], ...newObj };
-              } else {
-                newObj = {
-                  ...dmsAttachmentsObj,
-                  ...newObj,
-                  documentType: "employeeId",
-                };
-              }
-
-              tempAttachments.push(Object.assign({}, newObj));
-            } else if (docUploadArr[i].name == "payslips") {
-              if (newPaySlipArr.length) {
-                newObj = { ...newPaySlipArr[0], ...newObj };
-              } else {
-                newObj = {
-                  ...dmsAttachmentsObj,
-                  ...newObj,
-                  documentType: "payslips",
-                };
-              }
-
-              tempAttachments.push(Object.assign({}, newObj));
-            } else if (docUploadArr[i].name == "pension") {
-              if (newPensionArr.length) {
-                newObj = { ...newPensionArr[0], ...newObj };
-              } else {
-                newObj = {
-                  ...dmsAttachmentsObj,
-                  ...newObj,
-                  documentType: "pensionLetter",
-                };
-              }
-
-              tempAttachments.push(Object.assign({}, newObj));
-            } else if (docUploadArr[i].name == "imaCertificate") {
-              if (imaCertArr.length) {
-                newObj = { ...imaCertArr[0], ...newObj };
-              } else {
-                newObj = {
-                  ...dmsAttachmentsObj,
-                  ...newObj,
-                  documentType: "imaCertificate",
-                };
-              }
-
-              tempAttachments.push(Object.assign({}, newObj));
+            if (imgObjArr[i].name === "pan" && selector.pan_number){
+              newObj.documentNumber = selector.pan_number;
+            }else if (imgObjArr[i].name == "aadhar" && selector.adhaar_number) {
+              newObj.documentNumber = selector.adhaar_number;
+            } else if (imgObjArr[i].name == "employeeId" && selector.employee_id) {
+              newObj.documentNumber = selector.employee_id;
             }
+
+            tempAttachments.push(Object.assign({}, newObj));
           }
         }
+
+        let panArr = tempAttachments.filter((item) => {
+          return item.documentType === "pan";
+        });
+
+        let aadharArr = tempAttachments.filter((item) => {
+          return item.documentType === "aadhar";
+        });
+
+        let empArr = tempAttachments.filter((item) => {
+          return item.documentType === "employeeId";
+        });
 
         // if pan number
-        if (selector.pan_number) {
-          let tmpArr = tempAttachments;
-          let isAvailable = false;
-          for (let i = 0; i < tmpArr.length; i++) {
-            if (tmpArr[i].documentType === "pan") {
-              isAvailable = true;
-              tmpArr[i].documentNumber = selector.pan_number;
-              break;
-            }
-          }
-
-          if (newPanArr.length) {
-            let newObj = {
-              ...newPanArr[0],
-              documentNumber: selector.pan_number,
-              documentType: "pan",
-              ...empObj,
-            };
-            tempAttachments.push(Object.assign({}, newObj));
-          } else if (!isAvailable) {
-            newObj = {
-              ...dmsAttachmentsObj,
-              documentNumber: selector.pan_number,
-              documentType: "pan",
-              ...empObj,
-            };
-            tempAttachments.push(Object.assign({}, newObj));
-          }
+        if (!panArr.length && selector.pan_number) {
+          newObj = {
+            ...dmsAttachmentsObj,
+            documentNumber: selector.pan_number,
+            documentType: "pan",
+            ...empObj,
+          };
+          tempAttachments.push(Object.assign({}, newObj));
         }
 
-        // if pan aadhar number
-        if (selector.adhaar_number) {
-          let tmpArr = tempAttachments;
-          let isAvailable = false;
-          for (let i = 0; i < tmpArr.length; i++) {
-            if (tmpArr[i].documentType === "aadhar") {
-              isAvailable = true;
-              tmpArr[i].documentNumber = selector.adhaar_number;
-              break;
-            }
-          }
-          
-          if (newAadharArr.length) {
-            let newObj = {
-              ...newAadharArr[0],
-              documentNumber: selector.pan_number,
-              documentType: "aadhar",
-              ...empObj,
-            };
-            tempAttachments.push(Object.assign({}, newObj));
-          } else if (!isAvailable) {
-            let newObj = {
-              ...dmsAttachmentsObj,
-              documentNumber: selector.adhaar_number,
-              documentType: "aadhar",
-              ...empObj,
-            };
-            tempAttachments.push(Object.assign({}, newObj));
-          }
+        // if aadhar number
+        if (!aadharArr.length && selector.adhaar_number) {
+          newObj = {
+            ...dmsAttachmentsObj,
+            documentNumber: selector.adhaar_number,
+            documentType: "aadhar",
+            ...empObj,
+          };
+          tempAttachments.push(Object.assign({}, newObj));
         }
 
-        // if employee id
-        if (selector.employee_id) {
-          let tmpArr = tempAttachments;
-          let isAvailable = false;
-          for (let i = 0; i < tmpArr.length; i++) {
-            if (tmpArr[i].documentType === "employeeId") {
-              isAvailable = true;
-              tmpArr[i].documentNumber = selector.employee_id;
-              break;
-            }
-          }
-          
-          if (newEmpArr.length) {
-            let newObj = {
-              ...newEmpArr[0],
-              documentNumber: selector.pan_number,
-              documentType: "employeeId",
-              ...empObj,
-            };
-            tempAttachments.push(Object.assign({}, newObj));
-          } else if (!isAvailable) {
-            let newObj = {
-              ...dmsAttachmentsObj,
-              documentNumber: selector.employee_id,
-              documentType: "employeeId",
-              ...empObj,
-            };
-            tempAttachments.push(Object.assign({}, newObj));
-          }
+        // if emp id
+        if (!empArr.length && selector.employee_id) {
+          newObj = {
+            ...dmsAttachmentsObj,
+            documentNumber: selector.employee_id,
+            documentType: "employeeId",
+            ...empObj,
+          };
+          tempAttachments.push(Object.assign({}, newObj));
         }
 
-        dmsLeadDto.dmsAttachments = tempAttachments;
+        dmsLeadDto.dmsAttachments = Object.assign([], tempAttachments);
       }
     }
 
@@ -1958,13 +1817,33 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     if (dmsAttachments.length > 0) {
       dmsAttachments.forEach((obj, index) => {
         const item = uploadedImagesDataObj[obj.documentType];
-        const object = formatAttachment(
-          { ...obj },
-          item,
-          index,
-          obj.documentType
-        );
-        dmsAttachments[index] = object;
+
+        let finalObj = {};
+
+        if (item) {
+          finalObj = formatAttachment(
+            { ...obj },
+            item,
+            index,
+            obj.documentType
+          );
+        } else {
+          let subItem = {
+            documentType: obj.documentType,
+            documentPath: "",
+            keyName: "",
+            fileName: "",
+          };
+
+          finalObj = formatAttachment(
+            { ...obj },
+            subItem,
+            index,
+            obj.documentType
+          );
+        }
+
+        dmsAttachments[index] = finalObj;
       });
     } else {
       Object.keys(uploadedImagesDataObj).forEach((key, index) => {
@@ -1977,7 +1856,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   };
 
   const formatAttachment = (data, photoObj, index, typeOfDocument) => {
-    let object = { ...data };
+    let object = { ...dmsAttachmentsObj, ...data };
     object.branchId = selectedBranchId;
     object.ownerName = userData.employeeName;
     object.orgId = userData.orgId;
@@ -1998,6 +1877,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         break;
       case "regNoD":
         object.documentNumber = selector.r_reg_no;
+        break;
+      case "employeeId":
+        object.documentNumber = selector.employee_id;
         break;
     }
     return object;
@@ -2686,16 +2568,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         formData.append("documentType", "payslips");
         break;
       case "UPLOAD_PATTA_PASS_BOOK":
-        formData.append("documentType", "passbook");
+        formData.append("documentType", "pattaPassBook");
         break;
       case "UPLOAD_PENSION_LETTER":
-        formData.append("documentType", "pension");
+        formData.append("documentType", "pensionLetter");
         break;
       case "UPLOAD_IMA_CERTIFICATE":
         formData.append("documentType", "imaCertificate");
         break;
       case "UPLOAD_LEASING_CONFIRMATION":
-        formData.append("documentType", "leasingConfirm");
+        formData.append("documentType", "leasingConfirmationLetter");
         break;
       case "UPLOAD_ADDRESS_PROOF":
         formData.append("documentType", "address");
@@ -2776,16 +2658,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         delete imagesDataObj.payslips;
         break;
       case "PATTA_PASS_BOOK":
-        delete imagesDataObj.passbook;
+        delete imagesDataObj.pattaPassBook;
         break;
       case "PENSION_LETTER":
-        delete imagesDataObj.pension;
+        delete imagesDataObj.pensionLetter;
         break;
       case "IMA_CERTIFICATE":
         delete imagesDataObj.imaCertificate;
         break;
       case "LEASING_CONFIRMATION":
-        delete imagesDataObj.leasingConfirm;
+        delete imagesDataObj.leasingConfirmationLetter;
         break;
       case "ADDRESS_PROOF":
         delete imagesDataObj.address;
@@ -4764,7 +4646,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         }
                       />
                     </View>
-                    {uploadedImagesDataObj.passbook ? (
+                    {uploadedImagesDataObj.pattaPassBook ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
                           style={{
@@ -4776,9 +4658,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                             alignItems: "center",
                           }}
                           onPress={() => {
-                            if (uploadedImagesDataObj.passbook?.documentPath) {
+                            if (
+                              uploadedImagesDataObj.pattaPassBook?.documentPath
+                            ) {
                               setImagePath(
-                                uploadedImagesDataObj.passbook?.documentPath
+                                uploadedImagesDataObj.pattaPassBook
+                                  ?.documentPath
                               );
                             }
                           }}
@@ -4795,7 +4680,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
-                            fileName={uploadedImagesDataObj.passbook.fileName}
+                            fileName={
+                              uploadedImagesDataObj.pattaPassBook.fileName
+                            }
                             from={"PATTA_PASS_BOOK"}
                           />
                         </View>
@@ -4857,7 +4744,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         }
                       />
                     </View>
-                    {uploadedImagesDataObj.pension ? (
+                    {uploadedImagesDataObj.pensionLetter ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
                           style={{
@@ -4869,9 +4756,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                             alignItems: "center",
                           }}
                           onPress={() => {
-                            if (uploadedImagesDataObj.pension?.documentPath) {
+                            if (
+                              uploadedImagesDataObj.pensionLetter?.documentPath
+                            ) {
                               setImagePath(
-                                uploadedImagesDataObj.pension?.documentPath
+                                uploadedImagesDataObj.pensionLetter
+                                  ?.documentPath
                               );
                             }
                           }}
@@ -4888,7 +4778,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
-                            fileName={uploadedImagesDataObj.pension.fileName}
+                            fileName={
+                              uploadedImagesDataObj.pensionLetter.fileName
+                            }
                             from={"PENSION_LETTER"}
                           />
                         </View>
@@ -4968,7 +4860,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         }
                       />
                     </View>
-                    {uploadedImagesDataObj.leasingConfirm ? (
+                    {uploadedImagesDataObj.leasingConfirmationLetter ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
                           style={{
@@ -4981,10 +4873,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           }}
                           onPress={() => {
                             if (
-                              uploadedImagesDataObj.leasingConfirm?.documentPath
+                              uploadedImagesDataObj.leasingConfirmationLetter
+                                ?.documentPath
                             ) {
                               setImagePath(
-                                uploadedImagesDataObj.leasingConfirm
+                                uploadedImagesDataObj.leasingConfirmationLetter
                                   ?.documentPath
                               );
                             }
@@ -5003,7 +4896,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
                             fileName={
-                              uploadedImagesDataObj.leasingConfirm.fileName
+                              uploadedImagesDataObj.leasingConfirmationLetter
+                                .fileName
                             }
                             from={"LEASING_CONFIRMATION"}
                           />
@@ -5621,9 +5515,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         }}
                         onPress={() => {
                           if (selector.regDocumentPath) {
-                            setImagePath(
-                              selector.regDocumentPath
-                            );
+                            setImagePath(selector.regDocumentPath);
                           }
                         }}
                       >

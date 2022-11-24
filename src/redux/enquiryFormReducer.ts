@@ -343,7 +343,6 @@ export const customerLeadRef = createAsyncThunk(
 export const updateEnquiryDetailsApiAutoSave = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/updateEnquiryDetailsApiAutoSave",
   async (payload, { rejectWithValue }) => {
-    console.log("form payload", payload);
     const response = await client.post(URL.AUTO_SAVE(), payload);
     const json = await response.json();
     console.log("SUCCESS:");
@@ -1272,8 +1271,6 @@ const enquiryDetailsOverViewSlice = createSlice({
     },
     setUploadDocuments: (state, action: PayloadAction<PersonalIntroModel>) => {
       const { key, text } = action.payload;
-      console.log("ID:", key, text);
-
       switch (key) {
         case "PAN":
           state.pan_number = text;
