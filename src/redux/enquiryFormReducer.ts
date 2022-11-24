@@ -343,7 +343,6 @@ export const customerLeadRef = createAsyncThunk(
 export const updateEnquiryDetailsApiAutoSave = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/updateEnquiryDetailsApiAutoSave",
   async (payload, { rejectWithValue }) => {
-    console.log("form payload", payload);
     const response = await client.post(URL.AUTO_SAVE(), payload);
     const json = await response.json();
     console.log("SUCCESS:");
@@ -587,6 +586,8 @@ const initialState = {
   r_reg_no: "",
   regDocumentKey: "",
   regDocumentPath: "",
+  insuranceDocumentKey: "",
+  insuranceDocumentPath: "",
   r_varient: "",
   r_color: "",
   r_make: "",
@@ -653,6 +654,8 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.r_reg_no = "";
       state.regDocumentKey= "",
       state.regDocumentPath= "",
+      state.insuranceDocumentKey= "",
+      state.insuranceDocumentPath= "",
       state.r_varient = "";
       state.r_color = "";
       state.r_make = "";
@@ -707,6 +710,8 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.r_reg_no = "";
       state.regDocumentKey= "",
       state.regDocumentPath= "",
+      state.insuranceDocumentKey= "",
+      state.insuranceDocumentPath= "",
       state.r_varient = "";
       state.r_color = "";
       state.r_make = "";
@@ -1272,8 +1277,6 @@ const enquiryDetailsOverViewSlice = createSlice({
     },
     setUploadDocuments: (state, action: PayloadAction<PersonalIntroModel>) => {
       const { key, text } = action.payload;
-      console.log("ID:", key, text);
-
       switch (key) {
         case "PAN":
           state.pan_number = text;
@@ -1324,6 +1327,12 @@ const enquiryDetailsOverViewSlice = createSlice({
           break;
         case "R_REG_DOC_PATH":
           state.regDocumentPath = text;
+          break;
+        case "R_INS_DOC_KEY":
+          state.insuranceDocumentKey = text;
+          break;
+        case "R_INS_DOC_PATH":
+          state.insuranceDocumentPath = text;
           break;
         case "R_MAKE_OTHER_NAME":
           state.r_make_other_name = text;
@@ -1871,6 +1880,8 @@ const enquiryDetailsOverViewSlice = createSlice({
         state.r_reg_no = dataObj.regNo ? dataObj.regNo : "";
         state.regDocumentKey = dataObj.regDocumentKey ? dataObj.regDocumentKey : "";
         state.regDocumentPath = dataObj.regDocumentPath ? dataObj.regDocumentPath : "";
+        state.insuranceDocumentKey = dataObj.insuranceDocumentKey ? dataObj.insuranceDocumentKey : "";
+        state.insuranceDocumentPath = dataObj.insuranceDocumentPath ? dataObj.insuranceDocumentPath : "";
         state.r_make = dataObj.brand ? dataObj.brand : "";
         state.r_model = dataObj.model ? dataObj.model : "";
         state.r_varient = dataObj.varient ? dataObj.varient : "";
