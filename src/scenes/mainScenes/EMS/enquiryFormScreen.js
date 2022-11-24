@@ -1773,6 +1773,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       // );
       dataObj.regDocumentKey = selector.regDocumentKey;
       dataObj.regDocumentPath = selector.regDocumentPath;
+      dataObj.insuranceDocumentKey = selector.insuranceDocumentKey;
+      dataObj.insuranceDocumentPath = selector.insuranceDocumentPath;
       dataObj.yearofManufacture = selector.r_mfg_year;
       dataObj.kiloMeters = selector.r_kms_driven_or_odometer_reading;
       dataObj.expectedPrice = selector.r_expected_price
@@ -2610,6 +2612,19 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 text: response.documentPath,
               })
             );
+          } else if (keyId === "UPLOAD_INSURENCE") {
+            dispatch(
+              setReplacementBuyerDetails({
+                key: "R_INS_DOC_KEY",
+                text: response.keyName,
+              })
+            );
+            dispatch(
+              setReplacementBuyerDetails({
+                key: "R_INS_DOC_PATH",
+                text: response.documentPath,
+              })
+            );
           } else {
             const dataObj = { ...uploadedImagesDataObj };
             dataObj[response.documentType] = response;
@@ -2650,6 +2665,18 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         break;
       case "INSURENCE":
         delete imagesDataObj.insurance;
+        dispatch(
+          setReplacementBuyerDetails({
+            key: "R_INS_DOC_KEY",
+            text: "",
+          })
+        );
+        dispatch(
+          setReplacementBuyerDetails({
+            key: "R_INS_DOC_PATH",
+            text: "",
+          })
+        );
         break;
       case "EMPLOYEE_ID":
         delete imagesDataObj.employeeId;
@@ -5830,7 +5857,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           from={"INSURENCE"}
                         />
                       ) : null} */}
-                      {uploadedImagesDataObj.insurance ? (
+                      {selector.insuranceDocumentPath ? (
                         <View style={{ flexDirection: "row" }}>
                           <TouchableOpacity
                             style={{
@@ -5842,12 +5869,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                               alignItems: "center",
                             }}
                             onPress={() => {
-                              if (
-                                uploadedImagesDataObj.insurance?.documentPath
-                              ) {
-                                setImagePath(
-                                  uploadedImagesDataObj.insurance?.documentPath
-                                );
+                              if (selector.insuranceDocumentPath) {
+                                setImagePath(selector.insuranceDocumentPath);
                               }
                             }}
                           >
@@ -5863,9 +5886,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           </TouchableOpacity>
                           <View style={{ width: "80%" }}>
                             <DisplaySelectedImage
-                              fileName={
-                                uploadedImagesDataObj.insurance.fileName
-                              }
+                              fileName={selector.insuranceDocumentKey}
                               from={"INSURENCE"}
                             />
                           </View>
