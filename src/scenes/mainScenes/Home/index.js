@@ -83,7 +83,11 @@ import AttendanceForm from "../../../components/AttendanceForm";
 import URL from "../../../networking/endpoints";
 import { client } from "../../../networking/client";
 import Geolocation from "@react-native-community/geolocation";
-import { createDateTime, getDistanceBetweenTwoPoints, officeRadius } from "../../../service";
+import {
+  createDateTime,
+  getDistanceBetweenTwoPoints,
+  officeRadius,
+} from "../../../service";
 
 const officeLocation = {
   latitude: 37.33233141,
@@ -163,6 +167,8 @@ const HomeScreen = ({ route, navigation }) => {
   const getDetails = async () => {
     try {
       var startDate = createDateTime("8:30");
+      var startBetween = createDateTime("9:30");
+      var endBetween = createDateTime("20:30");
       var endDate = createDateTime("21:30");
       var now = new Date();
       var isBetween = startDate <= now && now <= endDate;
@@ -179,7 +185,7 @@ const HomeScreen = ({ route, navigation }) => {
           const json = await response.json();
           console.log("INITITAALSSs", json);
           if (json.length != 0) {
-            let date = new Date(json[0].createdtimestamp);
+            let date = new Date(json[json.length - 1].createdtimestamp);
             let dist = getDistanceBetweenTwoPoints(
               officeLocation.latitude,
               officeLocation.longitude,
@@ -196,9 +202,17 @@ const HomeScreen = ({ route, navigation }) => {
             console.log("new Date().getDate()", new Date().getDate());
 
             if (date.getDate() != new Date().getDate()) {
-              setAttendance(true);
+              if (startDate <= now && now <= startBetween) {
+                setAttendance(true);
+              }else{
+                setAttendance(false);
+              }
             } else {
-              setAttendance(false);
+              if (endBetween <= now && now <= endDate) {
+                setAttendance(true);
+              } else {
+                setAttendance(false);
+              }
             }
           }
         }
@@ -929,7 +943,6 @@ const HomeScreen = ({ route, navigation }) => {
         visible={attendance}
         showReason={reason}
         inVisible={() => {
-          alert("CLOSE");
           setAttendance(false);
         }}
       />

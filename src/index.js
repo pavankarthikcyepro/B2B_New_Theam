@@ -11,7 +11,14 @@ import reduxStore from "./redux/reduxStore";
 import * as AsyncStore from "./asyncStore";
 import { AuthContext } from "./utils/authContext";
 import BackgroundService from "react-native-background-actions";
-import { createDateTime, options, sleep, veryIntensiveTask } from "./service";
+import {
+  createDateTime,
+  getDistanceBetweenTwoPoints,
+  officeRadius,
+  options,
+  sleep,
+  veryIntensiveTask,
+} from "./service";
 import Geolocation from "@react-native-community/geolocation";
 import { client } from "./networking/client";
 import {
@@ -19,6 +26,14 @@ import {
   locationUpdate,
   saveLocation,
 } from "./networking/endpoints";
+import PushNotificationIOS from "@react-native-community/push-notification-ios";
+import { Platform } from "react-native";
+import PushNotification from "react-native-push-notification";
+
+const officeLocation = {
+  latitude: 37.33233141,
+  longitude: -122.0312186,
+};
 
 const AppScreen = () => {
   const [state, dispatch] = React.useReducer(
@@ -76,6 +91,8 @@ const AppScreen = () => {
         initialData();
       } else {
         var startDate = createDateTime("8:30");
+        var startBetween = createDateTime("9:30");
+        var endBetween = createDateTime("20:30");
         var endDate = createDateTime("21:30");
         var now = new Date();
         var isBetween = startDate <= now && now <= endDate;
@@ -98,6 +115,18 @@ const AppScreen = () => {
                   latitude: lastPosition.coords.latitude,
                   longitude: lastPosition.coords.longitude,
                 };
+                let dist = getDistanceBetweenTwoPoints(
+                  officeLocation.latitude,
+                  officeLocation.longitude,
+                  lastPosition.coords.latitude,
+                  lastPosition.coords.longitude
+                );
+
+                if (dist > officeRadius) {
+                  // setReason(false); ///true for reason
+                } else {
+                  // setReason(false);
+                }
                 console.log("CHANGED LOCATION", coordinates);
                 let parsedValue =
                   trackingJson.length > 0
@@ -205,6 +234,15 @@ const AppScreen = () => {
   };
 
   useEffect(async () => {
+    if (Platform.OS === "ios") {
+      // PushNotificationIOS.requestPermissions();
+      PushNotificationIOS.checkPermissions((item) => {
+        if (!item.alert) {
+          PushNotificationIOS.requestPermissions();
+        }
+      });
+    }
+
     const checkUserToken = async () => {
       await BackgroundService.stop();
       let userToken = await AsyncStore.getData(AsyncStore.Keys.USER_TOKEN);

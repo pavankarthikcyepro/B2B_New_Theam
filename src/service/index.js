@@ -1,4 +1,5 @@
 import Geolocation from "@react-native-community/geolocation";
+import PushNotificationIOS from "@react-native-community/push-notification-ios";
 import BackgroundService from "react-native-background-actions";
 import { Colors } from "../styles";
 
@@ -93,3 +94,11 @@ export function createDateTime(time) {
   date.setSeconds(0);
   return date;
 }
+
+ export const sendLocalNotification = () => {
+   PushNotificationIOS.presentLocalNotification({
+     alertTitle: "Cyepro",
+     alertBody: "Cyepro local notification",
+     applicationIconBadgeNumber: 1,
+   });
+ };

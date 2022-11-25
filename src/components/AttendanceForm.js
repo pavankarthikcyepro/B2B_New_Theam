@@ -21,6 +21,7 @@ import URL, { reasonDropDown } from "../networking/endpoints";
 import { createDateTime } from "../service";
 import { useNavigation } from "@react-navigation/native";
 import { AppNavigator } from "../navigations";
+import moment from "moment";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -43,6 +44,8 @@ var startDate = createDateTime("8:30");
 var endDate = createDateTime("12:00");
 var now = new Date();
 var isBetween = startDate <= now && now <= endDate;
+const dateFormat = "YYYY-MM-DD";
+const currentDate = moment().format(dateFormat);
 
 const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
   const navigation = useNavigation();
@@ -73,6 +76,12 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
       setUserData(jsonObj);
+       const response = await client.get(
+         URL.GET_ATTENDANCE_EMPID(jsonObj.empId, jsonObj.orgId)
+       );
+       const json = await response.json();
+        const lastDate = moment().format(dateFormat);
+       console.log("OKOKOKOK", json[json.length - 1].createdtimestamp); 
     }
   };
 
