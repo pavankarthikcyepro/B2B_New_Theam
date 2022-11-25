@@ -361,6 +361,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     const [isSubmitPress, setIsSubmitPress] = useState(false);
     
     const [isEditButtonShow, setIsEditButtonShow] = useState(false);
+    const [isAddModelButtonShow, setIsAddModelButtonShow] = useState(false);
     const [isSubmitCancelButtonShow, setIsSubmitCancelButtonShow] = useState(false);
 
     const [registrationChargesType, setRegistrationChargesType]= useState([]);
@@ -374,7 +375,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         selector.pre_booking_details_response.dmsLeadDto
       ) {
         const { leadStatus } = selector.pre_booking_details_response.dmsLeadDto;
-
         let isEditFlag = false;
 
         if (
@@ -395,6 +395,22 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           setIsEditButtonShow(true);
         } else {
           setIsEditButtonShow(false);
+        }
+      }
+    }, [selector.pre_booking_details_response, uploadedImagesDataObj.receipt]);
+    
+    // Add Model buttons shows
+    useEffect(() => {
+      if (
+        selector &&
+        selector.pre_booking_details_response &&
+        selector.pre_booking_details_response.dmsLeadDto
+      ) {
+        const { leadStatus } = selector.pre_booking_details_response.dmsLeadDto;
+        if (leadStatus == "ENQUIRYCOMPLETED") {
+          setIsAddModelButtonShow(true);
+        } else {
+          setIsAddModelButtonShow(false);
         }
       }
     }, [selector.pre_booking_details_response, uploadedImagesDataObj.receipt]);
@@ -4095,52 +4111,54 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     styles.accordianBorder,
                   ]}
                 >
-                  <TouchableOpacity
-                    disabled={!isInputsEditable()}
-                    onPress={() => {
-                      if (checkModelSelection()) {
-                        scrollToPos(3);
-                        setOpenAccordian("3");
-                        return;
-                      }
-                      const carmodeldata = {
-                        color: "",
-                        fuel: "",
-                        id: randomNumberGenerator(),
-                        model: "",
-                        transimmisionType: "",
-                        variant: "",
-                        isPrimary: "N",
-                      };
-                      let arr = [...carModelsList];
-                      arr.push(carmodeldata);
-                      setCarModelsList(arr);
-                      // selector.dmsLeadProducts = [...selector.dmsLeadProducts, carmodeldata]
-                    }}
-                    style={{
-                      width: "40%",
-                      margin: 5,
-                      borderRadius: 5,
-                      backgroundColor: Colors.PINK,
-                      height: 40,
-                      alignSelf: "flex-end",
-                      alignContent: "flex-end",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Text
+                  {isAddModelButtonShow && (
+                    <TouchableOpacity
+                      disabled={!isInputsEditable()}
+                      onPress={() => {
+                        if (checkModelSelection()) {
+                          scrollToPos(3);
+                          setOpenAccordian("3");
+                          return;
+                        }
+                        const carmodeldata = {
+                          color: "",
+                          fuel: "",
+                          id: randomNumberGenerator(),
+                          model: "",
+                          transimmisionType: "",
+                          variant: "",
+                          isPrimary: "N",
+                        };
+                        let arr = [...carModelsList];
+                        arr.push(carmodeldata);
+                        setCarModelsList(arr);
+                        // selector.dmsLeadProducts = [...selector.dmsLeadProducts, carmodeldata]
+                      }}
                       style={{
-                        fontSize: 16,
-                        textAlign: "center",
-                        textAlignVertical: "center",
-                        color: Colors.WHITE,
-                        width: "100%",
+                        width: "40%",
+                        margin: 5,
+                        borderRadius: 5,
+                        backgroundColor: Colors.PINK,
+                        height: 40,
+                        alignSelf: "flex-end",
+                        alignContent: "flex-end",
+                        alignItems: "center",
+                        justifyContent: "center",
                       }}
                     >
-                      Add Model
-                    </Text>
-                  </TouchableOpacity>
+                      <Text
+                        style={{
+                          fontSize: 16,
+                          textAlign: "center",
+                          textAlignVertical: "center",
+                          color: Colors.WHITE,
+                          width: "100%",
+                        }}
+                      >
+                        Add Model
+                      </Text>
+                    </TouchableOpacity>
+                  )}
                   <FlatList
                     data={carModelsList}
                     extraData={carModelsList}
