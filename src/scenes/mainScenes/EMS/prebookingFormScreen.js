@@ -803,6 +803,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
           if (
             value?.model &&
+            selector?.pre_booking_details_response?.dmsLeadDto?.leadStatus !=
+              "ENQUIRYCOMPLETED" &&
             selector.dmsLeadProducts[0].model == value.model
           ) {
             setVehicleOnRoadPriceInsuranceDetails();
@@ -4265,7 +4267,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   )}
                   <FlatList
                     data={carModelsList}
-                    extraData={[carModelsList, priceInfomationData]}
+                    extraData={carModelsList}
                     keyExtractor={(item, index) => item.id.toString()}
                     renderItem={({ item, index }) => {
                       return (
