@@ -622,9 +622,6 @@ export const PreBookingModelListitemCom = ({
                 if (isPrimary === "N") {
                   isPrimaryOnclick("Y", index, item);
                   setisPrimary("Y");
-                } else {
-                  isPrimaryOnclick("N", index, item);
-                  setisPrimary("N");
                 }
               }}
               color={Colors.PINK}
