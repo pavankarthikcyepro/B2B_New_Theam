@@ -52,6 +52,7 @@ import {
     updateFinancialData,
     updateBookingPaymentData,
     updateDmsAttachments,
+    updateOfferPriceData,
     getOnRoadPriceAndInsurenceDetailsApi,
     dropPreBooingApi,
     updatePrebookingDetailsApi,
@@ -787,40 +788,92 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     };
 
     const modelOnclick = async (index, value, type) => {
-        try {
-            if (type == "update") {
-              let arr = await [...carModelsList];
-              arr[index] = value;
-              // arr.splice(carModelsList, index, value);
-              let primaryModel = [];
-              primaryModel = arr.filter((item) => item.isPrimary === "Y");
-              if (primaryModel.length > 0) {
-                if (
-                  primaryModel[0].variant !== "" &&
-                  primaryModel[0].model !== ""
-                ) {
-                  updateVariantModelsData(
-                    primaryModel[0].model,
-                    true,
-                    primaryModel[0].variant
-                  );
-                }
-              }
-              await setCarModelsList([...arr]);
-            } else {
-              if (type == "delete") {
-                let arr = await [...carModelsList];
-                arr.splice(index, 1);
-                deleteModalFromServer({ value });
-                await setCarModelsList([...arr]);
+      try {
+        if (type == "update") {
+          if (
+            value?.model &&
+            selector?.dmsLeadProducts.length &&
+            selector?.pre_booking_details_response?.dmsLeadDto?.leadStatus !=
+              "ENQUIRYCOMPLETED" &&
+            selector.dmsLeadProducts[0].model != value.model
+          ) {
+            dispatch(updateOfferPriceData());
+            clearPriceConfirmationData();
+          }
+
+          if (
+            value?.model &&
+            selector?.pre_booking_details_response?.dmsLeadDto?.leadStatus !=
+              "ENQUIRYCOMPLETED" &&
+            selector.dmsLeadProducts[0].model == value.model
+          ) {
+            setVehicleOnRoadPriceInsuranceDetails();
+            setPriceConfirmationData();
+            setPaidAccessoriesData();
+            dispatch(
+              updateOfferPriceData(selector.on_road_price_dto_list_response)
+            );
+            addingIsPrimary();
+          } else {
+            let arr = await [...carModelsList];
+            arr[index] = value;
+            // arr.splice(carModelsList, index, value);
+            let primaryModel = [];
+            primaryModel = arr.filter((item) => item.isPrimary === "Y");
+            if (primaryModel.length > 0) {
+              if (
+                primaryModel[0].variant !== "" &&
+                primaryModel[0].model !== ""
+              ) {
+                updateVariantModelsData(
+                  primaryModel[0].model,
+                  true,
+                  primaryModel[0].variant
+                );
               }
             }
-            // console.log("onValueChangeonValueChange@@@@ ", value)
-        } catch (error) {
-            // alert(error)
-        }
+            await setCarModelsList([...arr]);
+          }
 
-    }
+        } else {
+          if (type == "delete") {
+            let arr = await [...carModelsList];
+            arr.splice(index, 1);
+            deleteModalFromServer({ value });
+            await setCarModelsList([...arr]);
+          }
+        }
+        // console.log("onValueChangeonValueChange@@@@ ", value)
+      } catch (error) {
+        // alert(error)
+      }
+    };
+
+    const setPaidAccessoriesData = () => {
+      const dmsLeadDto = selector.pre_booking_details_response.dmsLeadDto;
+      // Update Paid Accesories
+      if (dmsLeadDto.dmsAccessories.length > 0) {
+        let totalPrice = 0,
+          totalFOCPrice = 0;
+        for (let i = 0; i < dmsLeadDto.dmsAccessories.length; i++) {
+          if (dmsLeadDto.dmsAccessories[i].dmsAccessoriesType !== "FOC") {
+            totalPrice += dmsLeadDto.dmsAccessories[i].amount;
+          } else {
+            totalFOCPrice += dmsLeadDto.dmsAccessories[i].amount;
+          }
+          if (i === dmsLeadDto.dmsAccessories.length - 1) {
+            setSelectedPaidAccessoriesPrice(totalPrice);
+            setSelectedFOCAccessoriesPrice(totalFOCPrice);
+          }
+        }
+      }
+      setSelectedPaidAccessoriesList([...dmsLeadDto.dmsAccessories]);
+      setPaidAccessoriesListNew([
+        ...dmsLeadDto.dmsAccessories.filter(
+          (item) => item.dmsAccessoriesType !== "FOC"
+        ),
+      ]);
+    };
 
     const isPrimaryOnclick = async(isPrimaryEnabled, index, item)=>{
         try{
@@ -1083,60 +1136,77 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
     // Handle getOnRoadPriceDtoListApi response
     useEffect(() => {
-        if (selector.on_road_price_dto_list_response.length > 0) {
-            const dmsOnRoadPriceDtoObj = selector.on_road_price_dto_list_response[0];
-            // setSelectedInsurencePrice(dmsOnRoadPriceDtoObj.)
-            setSelectedWarrentyPrice(dmsOnRoadPriceDtoObj.warrantyAmount);
-            let handlingChargeSlctdLocal = handlingChargSlctd;
-            let essentialKitSlctdLocal = essentialKitSlctd;
-            let fastTagSlctdLocal = fastTagSlctd;
-
-            if (
-                dmsOnRoadPriceDtoObj.handlingCharges &&
-                dmsOnRoadPriceDtoObj.handlingCharges > 0
-            ) {
-                setHandlingChargSlctd(true);
-                handlingChargeSlctdLocal = true;
-            }
-            if (
-                dmsOnRoadPriceDtoObj.essentialKit &&
-                dmsOnRoadPriceDtoObj.essentialKit > 0
-            ) {
-                setEssentialKitSlctd(true);
-                essentialKitSlctdLocal = true;
-            }
-            if (dmsOnRoadPriceDtoObj.fast_tag && dmsOnRoadPriceDtoObj.fast_tag > 0) {
-                setFastTagSlctd(true);
-                fastTagSlctdLocal = true;
-            }
-            calculateOnRoadPrice(
-                handlingChargeSlctdLocal,
-                essentialKitSlctdLocal,
-                fastTagSlctdLocal
-            );
-
-            if (
-                dmsOnRoadPriceDtoObj.insuranceAddonData &&
-                dmsOnRoadPriceDtoObj.insuranceAddonData.length > 0
-            ) {
-                // let addOnPrice = 0;
-                // dmsOnRoadPriceDtoObj.insuranceAddonData.forEach((element, index) => {
-                //     addOnPrice += Number(element.add_on_price[0].cost);
-                // });
-                // setSelectedAddOnsPrice(addOnPrice);
-            }
-            if (dmsOnRoadPriceDtoObj.lifeTaxPercentage) {
-                setTaxPercent(((Number(dmsOnRoadPriceDtoObj.lifeTaxPercentage) * 1000) / 10).toString())
-                setLifeTaxAmount(getLifeTaxNew(Number(dmsOnRoadPriceDtoObj.lifeTaxPercentage) * 100))
-            }
-            if (dmsOnRoadPriceDtoObj.insuranceDiscount) {
-                setInsuranceDiscount(dmsOnRoadPriceDtoObj.insuranceDiscount.toString())
-            }
-            if (dmsOnRoadPriceDtoObj.accessoriesDiscount) {
-                setAccDiscount(dmsOnRoadPriceDtoObj.accessoriesDiscount.toString())
-            }
-        }
+        setPriceConfirmationData();
     }, [selector.on_road_price_dto_list_response]);
+
+    const setPriceConfirmationData = () => {
+      if (selector.on_road_price_dto_list_response.length > 0) {
+        const dmsOnRoadPriceDtoObj =
+          selector.on_road_price_dto_list_response[0];
+        // setSelectedInsurencePrice(dmsOnRoadPriceDtoObj.)
+        setSelectedWarrentyPrice(dmsOnRoadPriceDtoObj.warrantyAmount);
+        let handlingChargeSlctdLocal = handlingChargSlctd;
+        let essentialKitSlctdLocal = essentialKitSlctd;
+        let fastTagSlctdLocal = fastTagSlctd;
+
+        if (
+          dmsOnRoadPriceDtoObj.handlingCharges &&
+          dmsOnRoadPriceDtoObj.handlingCharges > 0
+        ) {
+          setHandlingChargSlctd(true);
+          handlingChargeSlctdLocal = true;
+        }
+        if (
+          dmsOnRoadPriceDtoObj.essentialKit &&
+          dmsOnRoadPriceDtoObj.essentialKit > 0
+        ) {
+          setEssentialKitSlctd(true);
+          essentialKitSlctdLocal = true;
+        }
+        if (
+          dmsOnRoadPriceDtoObj.fast_tag &&
+          dmsOnRoadPriceDtoObj.fast_tag > 0
+        ) {
+          setFastTagSlctd(true);
+          fastTagSlctdLocal = true;
+        }
+        calculateOnRoadPrice(
+          handlingChargeSlctdLocal,
+          essentialKitSlctdLocal,
+          fastTagSlctdLocal
+        );
+
+        if (
+          dmsOnRoadPriceDtoObj.insuranceAddonData &&
+          dmsOnRoadPriceDtoObj.insuranceAddonData.length > 0
+        ) {
+          // let addOnPrice = 0;
+          // dmsOnRoadPriceDtoObj.insuranceAddonData.forEach((element, index) => {
+          //     addOnPrice += Number(element.add_on_price[0].cost);
+          // });
+          // setSelectedAddOnsPrice(addOnPrice);
+        }
+        if (dmsOnRoadPriceDtoObj.lifeTaxPercentage) {
+          setTaxPercent(
+            (
+              (Number(dmsOnRoadPriceDtoObj.lifeTaxPercentage) * 1000) /
+              10
+            ).toString()
+          );
+          setLifeTaxAmount(
+            getLifeTaxNew(Number(dmsOnRoadPriceDtoObj.lifeTaxPercentage) * 100)
+          );
+        }
+        if (dmsOnRoadPriceDtoObj.insuranceDiscount) {
+          setInsuranceDiscount(
+            dmsOnRoadPriceDtoObj.insuranceDiscount.toString()
+          );
+        }
+        if (dmsOnRoadPriceDtoObj.accessoriesDiscount) {
+          setAccDiscount(dmsOnRoadPriceDtoObj.accessoriesDiscount.toString());
+        }
+      }
+    };
 
     useEffect(() => {
         calculateOnRoadPriceAfterDiscount()
@@ -1147,95 +1217,131 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     }, [selector.addOnPrice]);
 
     useEffect(() => {
-        if (selector.vehicle_on_road_price_insurence_details_response) {
-            const varientTypes =
-                selector.vehicle_on_road_price_insurence_details_response
-                    .insurance_vareint_mapping || [];
-            if (varientTypes.length > 0) {
-                let newFormatVarientTypes = [];
-                varientTypes.forEach((item) => {
-                    newFormatVarientTypes.push({
-                        ...item,
-                        name: item.policy_name,
-                    });
-                    if (selector.insurance_type === item.policy_name) {
-                        setSelectedInsurencePrice(item.cost);
-                    }
-                });
-                setInsurenceVarientTypes([...newFormatVarientTypes]);
-            }
-
-            const allWarrentyTypes =
-                selector.vehicle_on_road_price_insurence_details_response
-                    .extended_waranty || [];
-            if (allWarrentyTypes.length > 0) {
-                for (const object of allWarrentyTypes) {
-                    if (object.varient_id === selectedVarientId) {
-                        const matchedWarrentyTypes = object.warranty || [];
-                        if (matchedWarrentyTypes.length > 0) {
-                            let newFormatWarrentyTypes = [];
-                            matchedWarrentyTypes.forEach((item) => {
-                                if (Number(item.cost) !== 0) {
-                                    newFormatWarrentyTypes.push({
-                                        ...item,
-                                        name: item.document_name,
-                                    });
-                                }
-                            });
-                            setWarrentyTypes([...newFormatWarrentyTypes]);
-                        }
-                        break;
-                    }
-                }
-            }
-
-            const allInsuranceAddOnTypes =
-                selector.vehicle_on_road_price_insurence_details_response
-                    .insuranceAddOn || [];
-            if (allInsuranceAddOnTypes.length > 0) {
-                for (const object of allInsuranceAddOnTypes) {
-                    if (object.varient_id === selectedVarientId) {
-                        const matchedInsurenceAddOnTypes = object.add_on_price || [];
-                        let newFormatAddOnTypes = [];
-                        matchedInsurenceAddOnTypes.forEach((item) => {
-                            newFormatAddOnTypes.push({
-                                ...item,
-                                selected: false,
-                                name: item.document_name,
-                            });
-                        });
-                        setInsurenceAddOnTypes([...newFormatAddOnTypes]);
-                        break;
-                    }
-                }
-            }
-
-          const allRegistrationCharges = selector.vehicle_on_road_price_insurence_details_response
-            .registration || {};
-          function isEmpty(obj) {
-            return Object.keys(obj).length === 0;
-          }
-          if (!isEmpty(allRegistrationCharges)){
-            let x = Object.keys(allRegistrationCharges);
-            let newArray =[];
-            for (let i = 0; i < x.length; i++) {
-              let ladel = x[i].toString();
-              
-              let temp = { "name": ladel, "cost": allRegistrationCharges[ladel] };
-              if (selector.registrationCharges !== 0) {
-                if (selector.registrationCharges === allRegistrationCharges[ladel]) {
-                  setSelectedRegistrationCharges(temp);
-                }
-              }
-              newArray.push(temp);             
-            }
-            setRegistrationChargesType(newArray);
-          }
-            setPriceInformationData({
-                ...selector.vehicle_on_road_price_insurence_details_response,
-            });
-        }
+      setVehicleOnRoadPriceInsuranceDetails();
     }, [selector.vehicle_on_road_price_insurence_details_response]);
+
+    const setVehicleOnRoadPriceInsuranceDetails = () => {
+      if (selector.vehicle_on_road_price_insurence_details_response) {
+        const varientTypes =
+          selector.vehicle_on_road_price_insurence_details_response
+            .insurance_vareint_mapping || [];
+        if (varientTypes.length > 0) {
+          let newFormatVarientTypes = [];
+          varientTypes.forEach((item) => {
+            newFormatVarientTypes.push({
+              ...item,
+              name: item.policy_name,
+            });
+            if (selector.insurance_type === item.policy_name) {
+              setSelectedInsurencePrice(item.cost);
+            }
+          });
+          setInsurenceVarientTypes([...newFormatVarientTypes]);
+        }
+
+        const allWarrentyTypes =
+          selector.vehicle_on_road_price_insurence_details_response
+            .extended_waranty || [];
+        if (allWarrentyTypes.length > 0) {
+          for (const object of allWarrentyTypes) {
+            if (object.varient_id === selectedVarientId) {
+              const matchedWarrentyTypes = object.warranty || [];
+              if (matchedWarrentyTypes.length > 0) {
+                let newFormatWarrentyTypes = [];
+                matchedWarrentyTypes.forEach((item) => {
+                  if (Number(item.cost) !== 0) {
+                    newFormatWarrentyTypes.push({
+                      ...item,
+                      name: item.document_name,
+                    });
+                  }
+                });
+                setWarrentyTypes([...newFormatWarrentyTypes]);
+              }
+              break;
+            }
+          }
+        }
+
+        const allInsuranceAddOnTypes =
+          selector.vehicle_on_road_price_insurence_details_response
+            .insuranceAddOn || [];
+        if (allInsuranceAddOnTypes.length > 0) {
+          for (const object of allInsuranceAddOnTypes) {
+            if (object.varient_id === selectedVarientId) {
+              const matchedInsurenceAddOnTypes = object.add_on_price || [];
+              let newFormatAddOnTypes = [];
+              matchedInsurenceAddOnTypes.forEach((item) => {
+                newFormatAddOnTypes.push({
+                  ...item,
+                  selected: false,
+                  name: item.document_name,
+                });
+              });
+              setInsurenceAddOnTypes([...newFormatAddOnTypes]);
+              break;
+            }
+          }
+        }
+
+        const allRegistrationCharges =
+          selector.vehicle_on_road_price_insurence_details_response
+            .registration || {};
+        function isEmpty(obj) {
+          return Object.keys(obj).length === 0;
+        }
+        if (!isEmpty(allRegistrationCharges)) {
+          let x = Object.keys(allRegistrationCharges);
+          let newArray = [];
+          for (let i = 0; i < x.length; i++) {
+            let ladel = x[i].toString();
+
+            let temp = { name: ladel, cost: allRegistrationCharges[ladel] };
+            if (selector.registrationCharges !== 0) {
+              if (
+                selector.registrationCharges === allRegistrationCharges[ladel]
+              ) {
+                setSelectedRegistrationCharges(temp);
+              }
+            }
+            newArray.push(temp);
+          }
+          setRegistrationChargesType(newArray);
+        }
+        setPriceInformationData({
+          ...selector.vehicle_on_road_price_insurence_details_response,
+        });
+      }
+    };
+
+    const clearPriceConfirmationData = () => {
+      setSelectedRegistrationCharges({});
+      setRegistrationChargesType([]);
+      setInsurenceAddOnTypes([]);
+      setSelectedInsurencePrice(0);
+      setPriceInformationData({
+        ex_showroom_price: 0,
+        ex_showroom_price_csd: 0,
+        registration_charges: 0,
+        handling_charges: 0,
+        tcs_percentage: 0,
+        tcs_amount: 0,
+        essential_kit: 0,
+        fast_tag: 0,
+        vehicle_road_tax: 0,
+      });
+      setSelectedWarrentyPrice(0);
+      setHandlingChargSlctd(false);
+      setEssentialKitSlctd(false);
+      setFastTagSlctd(false);
+      calculateOnRoadPrice(false, false, false);
+      setTaxPercent("");
+      setLifeTaxAmount(0);
+      setInsuranceDiscount("");
+      setAccDiscount("");
+      setPaidAccessoriesListNew([]);
+      setSelectedPaidAccessoriesPrice(0);
+    };
 
     const showDropDownModelMethod = (key, headerText) => {
         Keyboard.dismiss();
