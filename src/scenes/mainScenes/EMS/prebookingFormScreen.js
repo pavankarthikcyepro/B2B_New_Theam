@@ -790,12 +790,26 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     const modelOnclick = async (index, value, type) => {
       try {
         if (type == "update") {
+          let modelData = "";
+          if (
+            selector?.pre_booking_details_response?.dmsLeadDto?.dmsLeadProducts
+              .length
+          ) {
+            const { dmsLeadProducts } =
+              selector.pre_booking_details_response.dmsLeadDto;
+            for (let i = 0; i < dmsLeadProducts.length; i++) {
+              if (dmsLeadProducts[i].isPrimary == "Y") {
+                modelData = dmsLeadProducts[i];
+                break;
+              }
+            }
+          }
+
           if (
             value?.model &&
-            selector?.dmsLeadProducts.length &&
             selector?.pre_booking_details_response?.dmsLeadDto?.leadStatus !=
               "ENQUIRYCOMPLETED" &&
-            selector.dmsLeadProducts[0].model != value.model
+            modelData.model != value.model
           ) {
             dispatch(updateOfferPriceData());
             clearPriceConfirmationData();
@@ -805,15 +819,20 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             value?.model &&
             selector?.pre_booking_details_response?.dmsLeadDto?.leadStatus !=
               "ENQUIRYCOMPLETED" &&
-            selector.dmsLeadProducts[0].model == value.model
+            modelData.model == value.model
           ) {
-            setVehicleOnRoadPriceInsuranceDetails();
-            setPriceConfirmationData();
-            setPaidAccessoriesData();
-            dispatch(
-              updateOfferPriceData(selector.on_road_price_dto_list_response)
-            );
-            addingIsPrimary();
+            if (modelData.variant == value.variant) {
+              setVehicleOnRoadPriceInsuranceDetails();
+              setPriceConfirmationData();
+              setPaidAccessoriesData();
+              dispatch(
+                updateOfferPriceData(selector.on_road_price_dto_list_response)
+              );
+              addingIsPrimary();
+            } else {
+              dispatch(updateOfferPriceData());
+              clearPriceConfirmationData();
+            }
           } else {
             let arr = await [...carModelsList];
             arr[index] = value;
@@ -834,7 +853,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             }
             await setCarModelsList([...arr]);
           }
-
         } else {
           if (type == "delete") {
             let arr = await [...carModelsList];
@@ -1341,6 +1359,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       setAccDiscount("");
       setPaidAccessoriesListNew([]);
       setSelectedPaidAccessoriesPrice(0);
+      setTotalOnRoadPrice(0);
+      setTcsAmount(0);
+      setTotalOnRoadPriceAfterDiscount(0);
     };
 
     const showDropDownModelMethod = (key, headerText) => {
