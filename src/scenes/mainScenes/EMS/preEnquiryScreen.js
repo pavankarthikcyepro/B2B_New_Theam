@@ -123,30 +123,45 @@ const PreEnquiryScreen = ({ route, navigation }) => {
     }, [])
 
     const getDataFromDB = async (leadStage, leadStatus) => {
-        const employeeData = await AsyncStore.getData(
-            AsyncStore.Keys.LOGIN_EMPLOYEE
+      const employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      const dateFormat = "YYYY-MM-DD";
+      // const currentDate = moment().add(0, "day").format(dateFormat)
+      let currentDateLocal = currentDate;
+      let lastMonthFirstDateLocal = moment(currentDate, dateFormat)
+        .subtract(0, "months")
+        .startOf("month")
+        .format(dateFormat);
+      if (route && route.params && route.params.moduleType) {
+        lastMonthFirstDateLocal =
+          route?.params?.moduleType === "live-leads"
+            ? "2021-01-01"
+            : lastMonthFirstDateLocal;
+        currentDateLocal = currentDate;
+        // setFromDateState(lastMonthFirstDateLocal);
+        setSelectedFromDate("2021-01-01");
+        setToDateState(currentDateLocal);
+      } else {
+        setFromDateState(lastMonthFirstDate);
+        setToDateState(currentDate);
+      }
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        let employeeId = jsonObj.empId;
+        if (route && route.params && route.params.employeeDetail) {
+          const { empId } = route.params.employeeDetail;
+          employeeId = empId;
+        }
+        // setEmployeeId(jsonObj.empId);
+        // onTempFliter(jsonObj.empId, lastMonthFirstDate, currentDate, [], [], [], leadStage, leadStatus);
+        getPreEnquiryListFromServer(
+          employeeId,
+          lastMonthFirstDateLocal,
+          currentDateLocal
         );
-        const dateFormat = "YYYY-MM-DD";
-        // const currentDate = moment().add(0, "day").format(dateFormat)
-        let currentDateLocal = currentDate;
-        let lastMonthFirstDateLocal = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
-        if (route && route.params && route.params.moduleType) {
-            lastMonthFirstDateLocal = route?.params?.moduleType === 'live-leads' ? '2021-01-01' : lastMonthFirstDateLocal;
-            currentDateLocal = route?.params?.moduleType === 'live-leads' ? moment().format(dateFormat) : currentDate;
-            // setFromDateState(lastMonthFirstDateLocal);
-            setSelectedFromDate("2021-01-01");
-            setToDateState(currentDateLocal);
-        } else {
-            setFromDateState(lastMonthFirstDate);
-            setToDateState(currentDate);
-        }
-        if (employeeData) {
-            const jsonObj = JSON.parse(employeeData);
-            // setEmployeeId(jsonObj.empId);
-            // onTempFliter(jsonObj.empId, lastMonthFirstDate, currentDate, [], [], [], leadStage, leadStatus);
-            getPreEnquiryListFromServer(jsonObj.empId, lastMonthFirstDateLocal, currentDateLocal);
-        }
-    }
+      }
+    };
 
     useEffect(() => {
         setSearchQuery('');
@@ -167,7 +182,7 @@ const PreEnquiryScreen = ({ route, navigation }) => {
             // });
             if (route && route.params && route.params.moduleType) {
                 const liveLeadsStartDate = route?.params?.moduleType === 'live-leads' ? '2021-01-01' : lastMonthFirstDate;
-                const liveLeadsEndDate = route?.params?.moduleType === 'live-leads' ? moment().format(dateFormat) : currentDate;
+                const liveLeadsEndDate = currentDate;
                 setFromDateState(liveLeadsStartDate);
                 setToDateState(liveLeadsEndDate);
             } else {

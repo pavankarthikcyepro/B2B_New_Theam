@@ -45,23 +45,26 @@ export const RenderEmployeeParameters = (parameter) => {
     const isDropped = param.toLowerCase() === "dropped";
     const isContact = param.toLowerCase() === "preenquiry";
     const isLead = leads.includes(param.toLowerCase());
+    let employeeDetail = {
+      empName: item.empName,
+      empId: item.empId,
+      orgId: item.orgId,
+      branchId: item.branchId,
+    };
+
     if (isLead) {
       navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
       setTimeout(() => {
         navigation.navigate("LEADS", {
           param: param === "INVOICE" ? "Retail" : param,
-          employeeDetail: {
-            empName: item.empName,
-            empId: item.empId,
-            orgId: item.orgId,
-            branchId: item.branchId,
-          },
+          employeeDetail: employeeDetail,
           moduleType,
         });
       }, 1000);
     } else if (isContact) {
       navigation.navigate(EmsTopTabNavigatorIdentifiers.preEnquiry, {
         moduleType: "live-leads",
+        employeeDetail: employeeDetail,
       });
     } else if (isDropped) {
       navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis);
