@@ -2236,18 +2236,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       return;
     }
 
-    let primaryTempCars = [];
-    primaryTempCars = carModelsList.filter((item) => {
-      return item.isPrimary === "Y";
-    });
-
-    if (!primaryTempCars.length > 0) {
-      scrollToPos(4);
-      setOpenAccordian("4");
-      showToast("Select is Primary for atleast one vehicle");
-      return;
-    }
-    
     if (!selector.enquiry_details_response) {
       return;
     }
