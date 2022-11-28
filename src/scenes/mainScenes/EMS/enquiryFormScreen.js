@@ -2949,16 +2949,19 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           ref={scrollRef}
         >
           <View style={styles.baseVw}>
-            {/*}       {(leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY' && carModelsList && carModelsList.length > 0) ? <Button style={{ height: 40, width: 200, marginBottom: 15, alignSelf: 'flex-end', alignContent: 'center', backgroundColor: Colors.PINK, color: Colors.WHITE }}
+           
+                 {(leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY' && carModelsList && carModelsList.length > 0) ?
+                  <Button style={{ height: 40, width: 200, marginBottom: 15, alignSelf: 'flex-end', alignContent: 'center', backgroundColor: Colors.PINK, color: Colors.WHITE }}
               labelStyle={{ textTransform: "none", fontSize: 16, color: Colors.WHITE }}
-              onPress={() => navigateToProforma()}>Proforma Invoice</Button> : null}
+                onPress={() => navigateToProforma()}><Text>Proforma Invoice</Text></Button> : null}
 
-
+{/* 
            {(leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY' && carModelsList && carModelsList.length > 0) ?
             <Button style={{height:40, width:200,marginBottom:15, alignSelf:'flex-end', alignContent:'center', backgroundColor:Colors.PINK, color: Colors.WHITE}}
               labelStyle={{ textTransform: "none",fontSize:16, color: Colors.WHITE }}
-        onPress={()=> navigateToProforma()}>Proforma Invoice</Button> : null}
-        */}
+                onPress={() => navigateToProforma()}><Text>Proforma Invoice</Text></Button> : null} */}
+        
+        
 
             <List.AccordionGroup
               expandedId={openAccordian}

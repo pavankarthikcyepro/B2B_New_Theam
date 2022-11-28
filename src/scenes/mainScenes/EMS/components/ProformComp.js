@@ -201,13 +201,13 @@ export const ProformaComp = ({
   }, []);
   const getUserData = async () => {
     try {
-      let employeeData = await AsyncStore.getData(
+      const employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
       );
       AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
         setUserToken(token);
       });
-      // console.log("$$$$$ LOGIN EMP:", employeeData);
+      console.log("$$$$$  LOGIN EMP:", employeeData);
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
         const data = {
@@ -776,7 +776,7 @@ export const ProformaComp = ({
 
       GetPaidAccessoriesListFromServer(
         carModelObj.vehicleId,
-        userData.orgId,
+        orgId,
         userToken
       );
 
@@ -937,7 +937,7 @@ export const ProformaComp = ({
             setSelectedWarrentyPrice(Number(item.cost));
           } else if (dropDownKey === "DROP_REASON") {
             const payload = {
-              bu: userData.orgId,
+              bu: orgId,
               dropdownType: "PreBook_Lost_Com_Sub_Reas",
               parentId: item.id,
             };
@@ -1206,7 +1206,7 @@ export const ProformaComp = ({
           amount={
             handlingChargSlctd
               ? priceInfomationData.handling_charges.toFixed(2)
-              : 0
+              : 0 
           }
           // amount={handlingChargSlctd ? priceInfomationData.handling_charges.toFixed(2) : "0.00"}
           isChecked={handlingChargSlctd}
