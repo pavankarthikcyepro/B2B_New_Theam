@@ -14,11 +14,11 @@ var RNFS = require('react-native-fs');
 
 import * as AsyncStore from "../../../../asyncStore";
 import {
-    getLogoNameApi, getOnRoadPriceAndInsurenceDetailsApi, setDropDownData, postProformaInvoiceDetails
+  getLogoNameApi, getOnRoadPriceAndInsurenceDetailsApi, setDropDownData, postProformaInvoiceDetails
 } from "../../../../redux/enquiryFormReducer";
 import { getFocusedRouteNameFromRoute, useNavigation } from "@react-navigation/native";
 import {
-    GetCarModelList, GetPaidAccessoriesList,
+  GetCarModelList, GetPaidAccessoriesList,
 } from "../../../../utils/helperFunctions";
 import { PriceStackIdentifiers } from "../../../../navigations/appNavigator";
 import { AppNavigator } from "../../../../navigations";
@@ -33,91 +33,91 @@ const lostToSameDealer = "Lost to same dealer used vehicle".replace(/\s/g, "").t
 const rupeeSymbol = "\u20B9";
 
 const CheckboxTextAndAmountComp = ({
-    title,
-    amount,
-    titleStyle = {},
-    amoutStyle = {},
-    isChecked = false,
-    onPress,
+  title,
+  amount,
+  titleStyle = {},
+  amoutStyle = {},
+  isChecked = false,
+  onPress,
 }) => {
-    return (
-        <View style={[styles.textAndAmountView, { paddingLeft: 2 }]}>
-            <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
-                <Checkbox.Android
-                    style={{ padding: 0, margin: 0 }}
-                    status={isChecked ? "checked" : "unchecked"}
-                    color={Colors.BLUE}
-                    uncheckedColor={Colors.GRAY}
-                    onPress={onPress}
-                />
-                <Text
-                    style={[
-                        {
-                            fontSize: 14,
-                            fontWeight: "400",
-                            maxWidth: "70%",
-                            color: Colors.GRAY,
-                        },
-                        titleStyle,
-                    ]}
-                >
-                    {title}
-                </Text>
-            </View>
-            <Text style={[{ fontSize: 14, fontWeight: "400" }, amoutStyle]}>
-                {rupeeSymbol + " " + amount}
-            </Text>
-        </View>
-    );
+  return (
+    <View style={[styles.textAndAmountView, { paddingLeft: 2 }]}>
+      <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
+        <Checkbox.Android
+          style={{ padding: 0, margin: 0 }}
+          status={isChecked ? "checked" : "unchecked"}
+          color={Colors.BLUE}
+          uncheckedColor={Colors.GRAY}
+          onPress={onPress}
+        />
+        <Text
+          style={[
+            {
+              fontSize: 14,
+              fontWeight: "400",
+              maxWidth: "70%",
+              color: Colors.GRAY,
+            },
+            titleStyle,
+          ]}
+        >
+          {title}
+        </Text>
+      </View>
+      <Text style={[{ fontSize: 14, fontWeight: "400" }, amoutStyle]}>
+        {rupeeSymbol + " " + amount}
+      </Text>
+    </View>
+  );
 };
 
 const TextAndAmountComp = ({
-    title,
-    amount,
-    text,
-    titleStyle = {},
-    amoutStyle = {},
+  title,
+  amount,
+  text,
+  titleStyle = {},
+  amoutStyle = {},
 }) => {
-    return (
-        <View style={styles.textAndAmountView}>
-            <Text style={[styles.leftLabel, titleStyle]}>{title}</Text>
+  return (
+    <View style={styles.textAndAmountView}>
+      <Text style={[styles.leftLabel, titleStyle]}>{title}</Text>
 
-            {text && text != '' ? <Text style={[{ fontSize: 16, fontWeight: "400", width: '50%' }, amoutStyle]}>
-                {text}
-            </Text> : <Text style={[{ fontSize: 14, fontWeight: "400" }, amoutStyle]}>
-                {rupeeSymbol + " " + amount}
-            </Text>}
-        </View>
-    );
+      {text && text != '' ? <Text style={[{ fontSize: 16, fontWeight: "400", width: '50%' }, amoutStyle]}>
+        {text}
+      </Text> : <Text style={[{ fontSize: 14, fontWeight: "400" }, amoutStyle]}>
+        {rupeeSymbol + " " + amount}
+      </Text>}
+    </View>
+  );
 };
 
 const PaidAccessoriesTextAndAmountComp = ({
-    title,
-    amount,
-    titleStyle = {},
-    amoutStyle = {},
+  title,
+  amount,
+  titleStyle = {},
+  amoutStyle = {},
 }) => {
-    return (
-        <View style={styles.textAndAmountView}>
-            <Text
-                style={[
-                    styles.leftLabel,
-                    titleStyle,
-                    {
-                        color: Colors.BLUE,
-                        textDecorationLine: "underline",
-                        textDecorationStyle: "solid",
-                        textDecorationColor: Colors.BLUE,
-                    },
-                ]}
-            >
-                {title}
-            </Text>
-            <Text style={[{ fontSize: 14, fontWeight: "400" }, amoutStyle]}>
-                {rupeeSymbol + " " + amount}
-            </Text>
-        </View>
-    );
+  return (
+    <View style={styles.textAndAmountView}>
+      <Text
+        style={[
+          styles.leftLabel,
+          titleStyle,
+          {
+            color: Colors.BLUE,
+            textDecorationLine: "underline",
+            textDecorationStyle: "solid",
+            textDecorationColor: Colors.BLUE,
+          },
+        ]}
+      >
+        {title}
+      </Text>
+      <Text style={[{ fontSize: 14, fontWeight: "400" }, amoutStyle]}>
+        {rupeeSymbol + " " + amount}
+      </Text>
+    </View>
+  );
 };
 export const ProformaComp = ({
   userData,
@@ -128,7 +128,7 @@ export const ProformaComp = ({
 }) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
-
+  
   const selector = useSelector((state) => state.enquiryFormReducer);
   const [orgId, setOrgId] = useState("");
   const [selectedVarientId, setSelectedVarientId] = useState(0);
@@ -192,10 +192,22 @@ export const ProformaComp = ({
   const [showSubmitDropBtn, setShowSubmitDropBtn] = useState(false);
   const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
   const [isRejectSelected, setIsRejectSelected] = useState(false);
-
-  const [carModelsData, setCarModelsData] = useState([]);
-
   const [userToken, setUserToken] = useState("");
+  const [carModelsData, setCarModelsData] = useState([]);
+  const [isNewPerformaClicked, setisNewPerformaClicked] = useState(false);
+  const [isSelectPerformaClick, setisSelectPerformaClick] = useState(false);
+  const [openAccordian, setOpenAccordian] = useState("0");
+  const [carModel, setCarModel] = useState("");
+  const [carColor, setCarColor] = useState("");
+  const [carVariant, setCarVariant] = useState("");
+  const [selectedCarVarientsData, setSelectedCarVarientsData] = useState({
+    varientList: [],
+    varientListForDropDown: [],
+  });
+  const [carColorsData, setCarColorsData] = useState([]);
+  // const [carModalData, setcarModalData] = useState([]);
+  
+
   useEffect(() => {
     getUserData();
   }, []);
@@ -286,7 +298,7 @@ export const ProformaComp = ({
         // setSelectedAddOnsPrice(addOnPrice);
       }
 
-      console.log("dmsOnRoadPriceDtoObj",dmsOnRoadPriceDtoObj);
+      console.log("dmsOnRoadPriceDtoObj", dmsOnRoadPriceDtoObj);
       if (dmsOnRoadPriceDtoObj.tcs_percentage) {
         setTaxPercent(
           (Number(dmsOnRoadPriceDtoObj.tcs_percentage)).toString()
@@ -458,6 +470,14 @@ export const ProformaComp = ({
     setPaidAccessoriesListNew([...tempPaidAcc]);
     // setSelectedFOCAccessoriesList([...newFormatSelectedFOCAccessories]);
   };
+
+  const newPerformaClick = () => {
+    setisNewPerformaClicked(true)
+  }
+  const selectPerformaClick = () => {
+    setisSelectPerformaClick(true)
+    showDropDownModelMethod("SELECTPERFORMA", "Select Proforma")
+  }
 
   const downloadPdf = async (from) => {
     try {
@@ -728,6 +748,15 @@ export const ProformaComp = ({
       case "CUSTOMER_TYPE_CATEGORY":
         setDataForDropDown([...Customer_Category_Types]);
         break;
+      case "MODEL":
+        setDataForDropDown([...carModelsData]);
+        break;
+      case "VARIENT":
+        setDataForDropDown([...selectedCarVarientsData.varientListForDropDown]);
+        break;
+      case "COLOR":
+        setDataForDropDown([...carColorsData]);
+        break;
     }
     setDropDownKey(key);
     setDropDownTitle(headerText);
@@ -758,9 +787,10 @@ export const ProformaComp = ({
           console.log("getCarModelListFromServer Failed");
         }
       )
-      .finally(() => {});
+      .finally(() => { });
   };
   const updateVariantModelsData = (selectedModelName, orgId, modalList) => {
+   
     if (!selectedModelName || selectedModelName.length === 0) {
       return;
     }
@@ -768,12 +798,10 @@ export const ProformaComp = ({
     let arrTemp = modalList.filter(function (obj) {
       return obj.model === selectedModelName;
     });
-
     let carModelObj = arrTemp.length > 0 ? arrTemp[0] : undefined;
     if (carModelObj !== undefined) {
       let newArray = [];
       let mArray = carModelObj.varients;
-
       GetPaidAccessoriesListFromServer(
         carModelObj.vehicleId,
         orgId,
@@ -788,11 +816,15 @@ export const ProformaComp = ({
           });
         });
 
-        updateColorsDataForSelectedVarient(
-          modelDetails.variant,
-          [...mArray],
-          orgId
-        );
+        setSelectedCarVarientsData({
+          varientList: [...mArray],
+          varientListForDropDown: [...newArray],
+        });
+        // updateColorsDataForSelectedVarient(
+        //   carModelObj.variant,
+        //   [...mArray],
+        //   orgId
+        // );
       }
     }
   };
@@ -815,6 +847,17 @@ export const ProformaComp = ({
       let mArray = carModelObj.vehicleImages;
       const varientId = carModelObj.id;
       setSelectedVarientId(varientId);
+      if(mArray.length >0){
+        mArray.map((item) => {
+          newArray.push({
+            id: item.id,
+            name: item.color,
+          });
+        });
+
+        setCarColorsData([...newArray]);
+      }
+      
       // alert("variant id")
 
       //alert("success" + orgId + " varientId" + varientId)
@@ -912,6 +955,15 @@ export const ProformaComp = ({
     return amount;
   };
 
+  const updateAccordian = (selectedIndex) => {
+    Keyboard.dismiss();
+    if (selectedIndex != openAccordian) {
+      setOpenAccordian(selectedIndex);
+    } else {
+      setOpenAccordian(0);
+    }
+  };
+
   return (
     <View>
       <DropDownComponant
@@ -924,13 +976,25 @@ export const ProformaComp = ({
           setShowDropDownModel(false);
           setShowMultipleDropDownData(false);
           if (dropDownKey === "MODEL") {
-            updateVariantModelsData(item.name, false);
+            setCarModel(item.name)
+            setCarVariant("")
+            setCarColor("")
+            updateVariantModelsData(item.name, orgId, carModelsData);
           } else if (dropDownKey === "VARIENT") {
+            setCarVariant(item.name)
+            setCarColor("")
+            
             updateColorsDataForSelectedVarient(
               item.name,
-              selectedCarVarientsData.varientList,
-              selectedModelId
+              selectedCarVarientsData.varientList
             );
+          }
+          else if (dropDownKey === "COLOR") {
+            setCarColor(item.name)
+            // updateColor(item);
+          }
+          else if (dropDownKey === "SELECTPERFORMA") {
+            updateColor(item);
           } else if (dropDownKey === "INSURANCE_TYPE") {
             setSelectedInsurencePrice(item.cost);
           } else if (dropDownKey === "WARRANTY") {
@@ -976,7 +1040,7 @@ export const ProformaComp = ({
       <View style={{ flexDirection: "row", alignSelf: "flex-end" }}>
         <Button
           mode="contained"
-          style={{ width: 100, marginRight: 10 }}
+          style={{ width: '30%', marginRight: 10 }}
           color={Colors.PINK}
           labelStyle={{ textTransform: "none" }}
           onPress={() => downloadPdf("downlaod")}>
@@ -984,7 +1048,7 @@ export const ProformaComp = ({
         </Button>
         <Button
           mode="contained"
-          style={{ width: 80, marginRight: 10 }}
+          style={{ width: '30%', }}
           color={Colors.PINK}
           labelStyle={{ textTransform: "none" }}
           onPress={() => downloadPdf("email")}>
@@ -992,391 +1056,510 @@ export const ProformaComp = ({
         </Button>
       </View>
 
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: 5,
-        }}>
-        <Image
-          style={styles.ImageStyleS}
-          source={{ uri: selector.proforma_logo }}
-        />
-        <Text
-          style={{
-            fontSize: 18,
-            color: Colors.PINK,
-            textAlign: "center",
-            marginLeft: 10,
-          }}>
-          {selector.proforma_orgName}
-        </Text>
-      </View>
-      <Text
-        style={{
-          fontSize: 14,
-          color: Colors.BLACK,
-          textAlign: "center",
-          marginLeft: 10,
-          marginBottom: 10,
-        }}>
-        {selector.proforma_branch +
-          ", " +
-          selector.proforma_city +
-          ", " +
-          selector.proforma_state}
-      </Text>
-      <View
-        style={{
-          margin: 10,
-          borderRadius: 5,
-          borderWidth: 1,
-          borderColor: Colors.BLACK,
-          paddingBottom: 10,
-        }}>
-        <Text
-          style={{
-            fontSize: 18,
-            color: Colors.PINK,
-            textAlign: "center",
-            margin: 10,
-          }}>
-          Proforma Invoice
-        </Text>
-        <TextAndAmountComp title={"Name"} text={modelDetails?.model} />
-        <TextAndAmountComp
-          title={"Date"}
-          text={moment().format("DD/MM/YYYY")}
-        />
-        <TextAndAmountComp title={"Model"} text={modelDetails?.variant} />
-        <TextAndAmountComp title={"Color"} text={modelDetails?.color} />
-        <TextAndAmountComp
-          title={"Amount"}
-          text={totalOnRoadPrice.toFixed(2)}
-        />
+      <View style={{ flexDirection: "row", alignSelf: "flex-end", marginTop: '2%' }}>
+        <Button
+          mode="contained"
+          style={{ flex: 1, marginRight: 10 }}
+          color={Colors.PINK}
+          labelStyle={{ textTransform: "none" }}
+          onPress={() => selectPerformaClick()}>
+          Select Proforma
+        </Button>
+
+
+        <Button
+          mode="contained"
+          style={{ flex: 1, }}
+          color={Colors.PINK}
+          labelStyle={{ textTransform: "none" }}
+          onPress={() => newPerformaClick()}>
+          New Proforma
+        </Button>
       </View>
 
-      <View
-        style={{
-          margin: 10,
-          borderRadius: 5,
-          borderWidth: 1,
-          borderColor: Colors.BLACK,
-          paddingBottom: 10,
-        }}>
-        <Text
-          style={{
-            fontSize: 18,
-            color: Colors.PINK,
-            textAlign: "center",
-            margin: 10,
-          }}>
-          Description
-        </Text>
-
-        <TextAndAmountComp
-          title={"Ex-Showroom Price:"}
-          amount={priceInfomationData.ex_showroom_price.toFixed(2)}
-        />
-
-        {selector.vechicle_registration ? (
-          <View>
+      <View>
+        {isNewPerformaClicked ? <List.AccordionGroup
+          expandedId={openAccordian}
+          onAccordionPress={(expandedId) => updateAccordian(expandedId)}
+        >
+          <List.Accordion
+            id={"5"}
+            title={"Vehicle Selection"}
+            titleStyle={{
+              color: openAccordian === "5" ? Colors.BLACK : Colors.BLACK,
+              fontSize: 16,
+              fontWeight: "600",
+            }}
+            style={[
+              {
+                backgroundColor:
+                  openAccordian === "5" ? Colors.RED : Colors.WHITE,
+                height: 60,
+                marginTop: '2%'
+              },
+              styles.accordianBorder,
+            ]}
+          >
             <DropDownSelectionItem
-              label={"Vehicle Type"}
-              value={selector.vehicle_type}
+              label={"Vehicle"}
+              value={carModel}
               onPress={() =>
-                showDropDownModelMethod("VEHICLE_TYPE", "Vehicle Type")
+                showDropDownModelMethod("MODEL", "Select Vehicle")
               }
             />
-            <TextinputComp
-              style={styles.textInputStyle}
-              value={selector.registration_number}
-              label={"Reg. No"}
-              maxLength={15}
-              autoCapitalize={"characters"}
-              onChangeText={(text) =>
-                dispatch(
-                  setPriceConformationDetails({
-                    key: "REGISTRATION_NUMBER",
-                    text: text,
-                  })
-                )
-              }
-            />
-            <Text style={GlobalStyle.underline}></Text>
-          </View>
-        ) : null}
 
-        {/* <TextAndAmountComp
+            <DropDownSelectionItem
+              label={"Variant"}
+              value={carVariant}
+              onPress={() => {
+                if(carModel != "" ){
+                  showDropDownModelMethod("VARIENT", "Select Variant")
+                }else{
+                  showToast("Please Select Vehicle")
+                }
+                
+              }
+              
+              }
+            />
+
+            <DropDownSelectionItem
+              label={"Color"}
+              value={carColor}
+              onPress={() =>{
+                if (carModel != "" && carVariant != "") {
+                  showDropDownModelMethod("COLOR", "Select Color")
+                } else {
+                  showToast("Please Select Variant")
+                }
+                
+              }
+               
+              }
+            />
+          
+          </List.Accordion>
+        </List.AccordionGroup> : null}
+
+      </View>
+
+      {/* main view to manage visibility  */}
+      <View>
+        {carModel !== "" ?
+          <>
+            
+
+            {/* Proforma Invoice section */}
+            <View
+              style={{
+                margin: 10,
+                borderRadius: 5,
+                borderWidth: 1,
+                borderColor: Colors.BLACK,
+                paddingBottom: 10,
+              }}>
+              <Text
+                style={{
+                  fontSize: 18,
+                  color: Colors.PINK,
+                  textAlign: "center",
+                  margin: 10,
+                }}>
+                Proforma Invoice
+              </Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  // padding: 5,
+                }}>
+                <Image
+                  style={styles.ImageStyleS}
+                  source={{ uri: selector.proforma_logo }}
+                  resizeMode="stretch"
+                />
+                {/* <Text
+                  style={{
+                    fontSize: 18,
+                    color: Colors.PINK,
+                    textAlign: "center",
+                    marginLeft: 10,
+                  }}>
+                  {selector.proforma_orgName}
+                </Text> */}
+              </View>
+              <Text
+                style={{
+                  fontSize: 14,
+                  color: Colors.BLACK,
+                  textAlign: "center",
+                  marginLeft: 10,
+                  marginBottom: 10,
+                  marginTop:10
+                }}>
+                {/* {selector.proforma_address} */}
+                {selector.proforma_houseNo + ", " +selector.proforma_branch +
+                  ", " +
+                  selector.proforma_city +
+                  ", " +
+                  selector.proforma_state + ", " + selector.proforma_pincode}
+              </Text>
+              <TextAndAmountComp title={"LESSEE"} text={
+                selector.enquiry_details_response.dmsAccountDto.salutation +" "+
+                selector.enquiry_details_response.dmsAccountDto.firstName + " " +
+                selector.enquiry_details_response.dmsAccountDto.lastName
+                } />
+              <TextAndAmountComp title={"LESSOR"} text={
+              selector.proforma_orgName
+              } />
+              <TextAndAmountComp title={"GSTN"} text={
+                selector.proforma_gstnNumber
+              } />
+              <TextAndAmountComp title={"Name"} text={modelDetails?.model} />
+              <TextAndAmountComp
+                title={"Date"}
+                text={moment().format("DD/MM/YYYY")}
+              />
+              <TextAndAmountComp title={"Model"} text={modelDetails?.variant} />
+              <TextAndAmountComp title={"Color"} text={modelDetails?.color} />
+              <TextAndAmountComp
+                title={"Amount"}
+                text={totalOnRoadPrice.toFixed(2)}
+              />
+            </View>
+
+            <View
+              style={{
+                margin: 10,
+                borderRadius: 5,
+                borderWidth: 1,
+                borderColor: Colors.BLACK,
+                paddingBottom: 10,
+              }}>
+              <Text
+                style={{
+                  fontSize: 18,
+                  color: Colors.PINK,
+                  textAlign: "center",
+                  margin: 10,
+                }}>
+                Description
+              </Text>
+
+              <TextAndAmountComp
+                title={"Ex-Showroom Price:"}
+                amount={priceInfomationData.ex_showroom_price.toFixed(2)}
+              />
+
+              {selector.vechicle_registration ? (
+                <View>
+                  <DropDownSelectionItem
+                    label={"Vehicle Type"}
+                    value={selector.vehicle_type}
+                    onPress={() =>
+                      showDropDownModelMethod("VEHICLE_TYPE", "Vehicle Type")
+                    }
+                  />
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.registration_number}
+                    label={"Reg. No"}
+                    maxLength={15}
+                    autoCapitalize={"characters"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setPriceConformationDetails({
+                          key: "REGISTRATION_NUMBER",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                </View>
+              ) : null}
+
+              {/* <TextAndAmountComp
                                     title={"Life Tax:"}
                                     amount={lifeTaxAmount.toFixed(2)}
                                 /> */}
-        <View style={styles.textAndAmountView}>
-          {/* <View style={{width: '60%', flexDirection: 'row'}}> */}
-          <Text style={[styles.leftLabel]}>{"Life Tax:"}</Text>
-          {/* </View> */}
-          <View
-            style={{
-              width: 100,
-              // height: 30,
-              // justifyContent: 'center',
-              paddingHorizontal: 10,
-              borderBottomWidth: 1,
-              borderBottomColor: "#d1d1d1",
-            }}>
-            <TextInput
-              value={taxPercent}
-              style={[{ fontSize: 14, fontWeight: "400" }]}
-              keyboardType={"number-pad"}
-              onChangeText={(text) => {
-                setTaxPercent(text);
-                if (text !== "") {
-                  setLifeTaxAmount(getLifeTaxNew(Number(text)));
-                } else {
-                  setLifeTaxAmount(0);
-                }
-              }}
-            />
-          </View>
-          <Text style={{ fontSize: 14, fontWeight: "400" }}>
-            {rupeeSymbol + " " + lifeTaxAmount.toFixed(2)}
-          </Text>
-        </View>
-
-        <Text style={GlobalStyle.underline}></Text>
-
-        <TextAndAmountComp
-          title={"Registration Charges:"}
-          amount={priceInfomationData.registration_charges.toFixed(2)}
-        />
-        <Text style={GlobalStyle.underline}></Text>
-
-        <View style={styles.symbolview}>
-          <View style={{ width: "70%" }}>
-            <DropDownSelectionItem
-              label={"Insurance Type"}
-              value={selector.insurance_type}
-              onPress={() =>
-                showDropDownModelMethod("INSURANCE_TYPE", "Insurance Type")
-              }
-            />
-          </View>
-          <Text style={styles.shadowText}>
-            {rupeeSymbol + " " + selectedInsurencePrice.toFixed(2)}
-          </Text>
-        </View>
-        <View style={styles.symbolview}>
-          <View style={{ width: "70%" }}>
-            <DropDownSelectionItem
-              label={"Add-on Insurance"}
-              value={
-                selector.insurance_type !== "" ? selector.add_on_insurance : ""
-              }
-              disabled={!selector.insurance_type}
-              onPress={() =>
-                showDropDownModelMethod("INSURENCE_ADD_ONS", "Add-on Insurance")
-              }
-            />
-          </View>
-          {selector.insurance_type !== "" ? (
-            <Text style={styles.shadowText}>
-              {rupeeSymbol + " " + selectedAddOnsPrice.toFixed(2)}
-            </Text>
-          ) : (
-            <Text style={styles.shadowText}>{rupeeSymbol + " 0.00"}</Text>
-          )}
-        </View>
-        <View style={styles.symbolview}>
-          <View style={{ width: "70%" }}>
-            <DropDownSelectionItem
-              label={"Warranty"}
-              value={selector.warranty}
-              onPress={() => showDropDownModelMethod("WARRANTY", "Warranty")}
-            />
-          </View>
-          <Text style={styles.shadowText}>
-            {rupeeSymbol + " " + selectedWarrentyPrice.toFixed(2)}
-          </Text>
-        </View>
-        <Text style={GlobalStyle.underline}></Text>
-
-        <CheckboxTextAndAmountComp
-          title={"Handling Charges:"}
-          amount={
-            handlingChargSlctd
-              ? priceInfomationData.handling_charges.toFixed(2)
-              : 0 
-          }
-          // amount={handlingChargSlctd ? priceInfomationData.handling_charges.toFixed(2) : "0.00"}
-          isChecked={handlingChargSlctd}
-          onPress={() => {
-            setHandlingChargSlctd(!handlingChargSlctd);
-            calculateOnRoadPrice(
-              !handlingChargSlctd,
-              essentialKitSlctd,
-              fastTagSlctd
-            );
-          }}
-        />
-        <Text style={GlobalStyle.underline}></Text>
-
-        <CheckboxTextAndAmountComp
-          title={"Essential Kit:"}
-          amount={
-            essentialKitSlctd ? priceInfomationData.essential_kit.toFixed(2) : 0
-          }
-          // amount={essentialKitSlctd ? priceInfomationData.essential_kit.toFixed(2) : "0.00"}
-          isChecked={essentialKitSlctd}
-          onPress={() => {
-            setEssentialKitSlctd(!essentialKitSlctd);
-            calculateOnRoadPrice(
-              handlingChargSlctd,
-              !essentialKitSlctd,
-              fastTagSlctd
-            );
-          }}
-        />
-        <Text style={GlobalStyle.underline}></Text>
-
-        <TextAndAmountComp
-          title={"TCS(>=10Lakhs -> 1%):"}
-          amount={tcsAmount.toFixed(2)}
-        />
-        <Text style={GlobalStyle.underline}></Text>
-
-        <Pressable
-          onPress={() =>
-            navigation.navigate(
-              AppNavigator.EmsStackIdentifiers.paidAccessories,
-              {
-                accessorylist: paidAccessoriesList,
-                selectedAccessoryList: selectedPaidAccessoriesList,
-                selectedFOCAccessoryList: selectedFOCAccessoriesList,
-              }
-            )
-          }>
-          <PaidAccessoriesTextAndAmountComp
-            title={"Paid Accessories:"}
-            amount={selectedPaidAccessoriesPrice.toFixed(2)}
-          />
-        </Pressable>
-        <Text style={GlobalStyle.underline}></Text>
-        {paidAccessoriesListNew.length > 0 ? (
-          <View
-            style={{
-              backgroundColor: Colors.WHITE,
-              paddingLeft: 12,
-              paddingTop: 5,
-            }}>
-            {paidAccessoriesListNew.map((item, index) => {
-              return (
-                <Text style={styles.accessoriText} key={"ACC" + index}>
-                  {item.accessoriesName + " - " + item.amount}
+              <View style={styles.textAndAmountView}>
+                {/* <View style={{width: '60%', flexDirection: 'row'}}> */}
+                <Text style={[styles.leftLabel]}>{"Life Tax:"}</Text>
+                {/* </View> */}
+                <View
+                  style={{
+                    width: 100,
+                    // height: 30,
+                    // justifyContent: 'center',
+                    paddingHorizontal: 10,
+                    borderBottomWidth: 1,
+                    borderBottomColor: "#d1d1d1",
+                  }}>
+                  <TextInput
+                    value={taxPercent}
+                    style={[{ fontSize: 14, fontWeight: "400" }]}
+                    keyboardType={"number-pad"}
+                    onChangeText={(text) => {
+                      setTaxPercent(text);
+                      if (text !== "") {
+                        setLifeTaxAmount(getLifeTaxNew(Number(text)));
+                      } else {
+                        setLifeTaxAmount(0);
+                      }
+                    }}
+                  />
+                </View>
+                <Text style={{ fontSize: 14, fontWeight: "400" }}>
+                  {rupeeSymbol + " " + lifeTaxAmount.toFixed(2)}
                 </Text>
-              );
-            })}
-            <Text style={[GlobalStyle.underline, { marginTop: 5 }]}></Text>
-          </View>
-        ) : null}
+              </View>
 
-        <CheckboxTextAndAmountComp
-          title={"Fast Tag:"}
-          amount={fastTagSlctd ? priceInfomationData?.fast_tag?.toFixed(2) : 0}
-          // amount={fastTagSlctd ? priceInfomationData.fast_tag.toFixed(2) : "0.00"}
-          isChecked={fastTagSlctd}
-          onPress={() => {
-            setFastTagSlctd(!fastTagSlctd);
-            calculateOnRoadPrice(
-              handlingChargSlctd,
-              essentialKitSlctd,
-              !fastTagSlctd
-            );
-          }}
-        />
-        {/* <TextAndAmountComp
+              <Text style={GlobalStyle.underline}></Text>
+
+              <TextAndAmountComp
+                title={"Registration Charges:"}
+                amount={priceInfomationData.registration_charges.toFixed(2)}
+              />
+              <Text style={GlobalStyle.underline}></Text>
+
+              <View style={styles.symbolview}>
+                <View style={{ width: "70%" }}>
+                  <DropDownSelectionItem
+                    label={"Insurance Type"}
+                    value={selector.insurance_type}
+                    onPress={() =>
+                      showDropDownModelMethod("INSURANCE_TYPE", "Insurance Type")
+                    }
+                  />
+                </View>
+                <Text style={styles.shadowText}>
+                  {rupeeSymbol + " " + selectedInsurencePrice.toFixed(2)}
+                </Text>
+              </View>
+              <View style={styles.symbolview}>
+                <View style={{ width: "70%" }}>
+                  <DropDownSelectionItem
+                    label={"Add-on Insurance"}
+                    value={
+                      selector.insurance_type !== "" ? selector.add_on_insurance : ""
+                    }
+                    disabled={!selector.insurance_type}
+                    onPress={() =>
+                      showDropDownModelMethod("INSURENCE_ADD_ONS", "Add-on Insurance")
+                    }
+                  />
+                </View>
+                {selector.insurance_type !== "" ? (
+                  <Text style={styles.shadowText}>
+                    {rupeeSymbol + " " + selectedAddOnsPrice.toFixed(2)}
+                  </Text>
+                ) : (
+                  <Text style={styles.shadowText}>{rupeeSymbol + " 0.00"}</Text>
+                )}
+              </View>
+              <View style={styles.symbolview}>
+                <View style={{ width: "70%" }}>
+                  <DropDownSelectionItem
+                    label={"Warranty"}
+                    value={selector.warranty}
+                    onPress={() => showDropDownModelMethod("WARRANTY", "Warranty")}
+                  />
+                </View>
+                <Text style={styles.shadowText}>
+                  {rupeeSymbol + " " + selectedWarrentyPrice.toFixed(2)}
+                </Text>
+              </View>
+              <Text style={GlobalStyle.underline}></Text>
+
+              <CheckboxTextAndAmountComp
+                title={"Handling Charges:"}
+                amount={
+                  handlingChargSlctd
+                    ? priceInfomationData.handling_charges.toFixed(2)
+                    : 0
+                }
+                // amount={handlingChargSlctd ? priceInfomationData.handling_charges.toFixed(2) : "0.00"}
+                isChecked={handlingChargSlctd}
+                onPress={() => {
+                  setHandlingChargSlctd(!handlingChargSlctd);
+                  calculateOnRoadPrice(
+                    !handlingChargSlctd,
+                    essentialKitSlctd,
+                    fastTagSlctd
+                  );
+                }}
+              />
+              <Text style={GlobalStyle.underline}></Text>
+
+              <CheckboxTextAndAmountComp
+                title={"Essential Kit:"}
+                amount={
+                  essentialKitSlctd ? priceInfomationData.essential_kit.toFixed(2) : 0
+                }
+                // amount={essentialKitSlctd ? priceInfomationData.essential_kit.toFixed(2) : "0.00"}
+                isChecked={essentialKitSlctd}
+                onPress={() => {
+                  setEssentialKitSlctd(!essentialKitSlctd);
+                  calculateOnRoadPrice(
+                    handlingChargSlctd,
+                    !essentialKitSlctd,
+                    fastTagSlctd
+                  );
+                }}
+              />
+              <Text style={GlobalStyle.underline}></Text>
+
+              <TextAndAmountComp
+                title={"TCS(>=10Lakhs -> 1%):"}
+                amount={tcsAmount.toFixed(2)}
+              />
+              <Text style={GlobalStyle.underline}></Text>
+
+              <Pressable
+                onPress={() =>
+                  navigation.navigate(
+                    AppNavigator.EmsStackIdentifiers.paidAccessories,
+                    {
+                      accessorylist: paidAccessoriesList,
+                      selectedAccessoryList: selectedPaidAccessoriesList,
+                      selectedFOCAccessoryList: selectedFOCAccessoriesList,
+                    }
+                  )
+                }>
+                <PaidAccessoriesTextAndAmountComp
+                  title={"Paid Accessories:"}
+                  amount={selectedPaidAccessoriesPrice.toFixed(2)}
+                />
+              </Pressable>
+              <Text style={GlobalStyle.underline}></Text>
+              {paidAccessoriesListNew.length > 0 ? (
+                <View
+                  style={{
+                    backgroundColor: Colors.WHITE,
+                    paddingLeft: 12,
+                    paddingTop: 5,
+                  }}>
+                  {paidAccessoriesListNew.map((item, index) => {
+                    return (
+                      <Text style={styles.accessoriText} key={"ACC" + index}>
+                        {item.accessoriesName + " - " + item.amount}
+                      </Text>
+                    );
+                  })}
+                  <Text style={[GlobalStyle.underline, { marginTop: 5 }]}></Text>
+                </View>
+              ) : null}
+
+              <CheckboxTextAndAmountComp
+                title={"Fast Tag:"}
+                amount={fastTagSlctd ? priceInfomationData?.fast_tag?.toFixed(2) : 0}
+                // amount={fastTagSlctd ? priceInfomationData.fast_tag.toFixed(2) : "0.00"}
+                isChecked={fastTagSlctd}
+                onPress={() => {
+                  setFastTagSlctd(!fastTagSlctd);
+                  calculateOnRoadPrice(
+                    handlingChargSlctd,
+                    essentialKitSlctd,
+                    !fastTagSlctd
+                  );
+                }}
+              />
+              {/* <TextAndAmountComp
                   title={"Fast Tag:"}
                   amount={priceInfomationData.fast_tag.toFixed(2)}
                 /> */}
-        <Text style={GlobalStyle.underline}></Text>
+              <Text style={GlobalStyle.underline}></Text>
 
-        <TextAndAmountComp
-          title={"On Road Price:"}
-          amount={totalOnRoadPrice.toFixed(2)}
-          titleStyle={{ fontSize: 18, fontWeight: "800" }}
-          amoutStyle={{ fontSize: 18, fontWeight: "800" }}
-        />
-        {/* <Text style={GlobalStyle.underline}></Text> */}
+              <TextAndAmountComp
+                title={"On Road Price:"}
+                amount={totalOnRoadPrice.toFixed(2)}
+                titleStyle={{ fontSize: 18, fontWeight: "800" }}
+                amoutStyle={{ fontSize: 18, fontWeight: "800" }}
+              />
+              {/* <Text style={GlobalStyle.underline}></Text> */}
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                margin: 15,
+              }}>
+              <Button
+                mode="contained"
+                style={{ width: 120 }}
+                color={Colors.PINK}
+                labelStyle={{ textTransform: "none" }}
+                onPress={() => saveProformaDetails("save")}>
+                Save
+              </Button>
+              <Button
+                mode="contained"
+                style={{ width: 160 }}
+                color={Colors.PINK}
+                labelStyle={{ textTransform: "none" }}
+                onPress={() => saveProformaDetails("approval")}>
+                Sent For Approval
+              </Button>
+            </View>
+          </> : null}
+
       </View>
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          margin: 15,
-        }}>
-        <Button
-          mode="contained"
-          style={{ width: 120 }}
-          color={Colors.PINK}
-          labelStyle={{ textTransform: "none" }}
-          onPress={() => saveProformaDetails("save")}>
-          Save
-        </Button>
-        <Button
-          mode="contained"
-          style={{ width: 160 }}
-          color={Colors.PINK}
-          labelStyle={{ textTransform: "none" }}
-          onPress={() => saveProformaDetails("approval")}>
-          Sent For Approval
-        </Button>
-      </View>
+
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-    textInputStyle: {
-        height: 65,
-        width: "100%",
-    },
-    textAndAmountView: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        paddingHorizontal: 12,
-        minHeight: 40,
-        paddingVertical: 5,
-        alignItems: "center",
-        backgroundColor: Colors.WHITE,
-    },
-    offerPriceTextInput: {
-        height: 55,
-        width: "100%",
-    },
-    actionBtnView: {
-        paddingTop: 20,
-        paddingBottom: 10,
-        flexDirection: "row",
-        justifyContent: "space-evenly",
-        alignItems: "center",
-    },
-    symbolview: {
-        flex: 1,
-        flexDirection: "row",
-        alignItems: "center",
-        width: "100%",
-        paddingRight: 12,
-        backgroundColor: Colors.WHITE,
-    },
-    shadowText: {
-        width: "30%",
-        backgroundColor: Colors.WHITE,
-        textAlign: "right",
-        fontSize: 14,
-        fontWeight: "400",
-    },
-    ImageStyleS: {
-        width: 50,
-        height: 50
-    },
+  textInputStyle: {
+    height: 65,
+    width: "100%",
+  },
+  textAndAmountView: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 12,
+    minHeight: 40,
+    paddingVertical: 5,
+    alignItems: "center",
+    backgroundColor: Colors.WHITE,
+  },
+  offerPriceTextInput: {
+    height: 55,
+    width: "100%",
+  },
+  actionBtnView: {
+    paddingTop: 20,
+    paddingBottom: 10,
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    alignItems: "center",
+  },
+  symbolview: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+    paddingRight: 12,
+    backgroundColor: Colors.WHITE,
+  },
+  shadowText: {
+    width: "30%",
+    backgroundColor: Colors.WHITE,
+    textAlign: "right",
+    fontSize: 14,
+    fontWeight: "400",
+  },
+  ImageStyleS: {
+    width: 100,
+    height: 100,
+   
+    alignSelf:"center"
+  },
+  accordianBorder: {
+    borderWidth: 0.5,
+    borderRadius: 4,
+    borderColor: "#7a7b7d",
+  }
 })

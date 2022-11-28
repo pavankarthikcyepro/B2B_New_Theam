@@ -212,7 +212,7 @@ export const getLogoNameApi = createAsyncThunk(
       URL.PROFORMA_LOGO_NAME(data.orgId, data.branchId)
     );
     const json = await response.json();
-
+  
     if (!response.ok) {
       return rejectWithValue(json);
     }
@@ -454,6 +454,9 @@ const initialState = {
   maxDate: null,
 
   //Proforma Invoice
+  proforma_houseNo : "",
+  proforma_address:"",
+  proforma_gstnNumber:"",
   proforma_orgName: "",
   proforma_logo: "",
   proforma_city: "",
@@ -2084,6 +2087,9 @@ const enquiryDetailsOverViewSlice = createSlice({
         state.proforma_city = data.city;
         state.proforma_state = data.state;
         state.proforma_pincode = data.pincode;
+        state.proforma_gstnNumber = data.gstnNumber;
+        state.proforma_houseNo = data.houseNo;
+        state.proforma_address = `${data.houseNo}  ${data.street}`
       }
       state.isLoading = false;
     });

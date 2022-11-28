@@ -34,12 +34,7 @@ const ProformaScreen = ({ route, navigation }) => {
                 universalId={route.params.universalId}
                 route={route}
             />
-                {/* <ProformaComp
-                    modelDetails={""}
-                    branchId={""}
-                    universalId={""}
-                /> */}
-</ScrollView>
+            </ScrollView>
         </SafeAreaView>
     )
 };
