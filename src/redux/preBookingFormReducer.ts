@@ -472,7 +472,7 @@ const prebookingFormSlice = createSlice({
     accessories_discount: "",
     insurance_discount: "",
     isAddressSet: false,
-    registrationCharges: 0
+    registrationCharges: 0,
   },
   reducers: {
     clearState: (state, action) => {
@@ -1119,30 +1119,45 @@ const prebookingFormSlice = createSlice({
       // if(state.customer_types_response && state){
       //   state.customer_types_data = state.customer_types_response[state.buyer_type.toLowerCase()]
       // }
-      state.buyer_type = dmsLeadDto.buyerType
-        ? dmsLeadDto.buyerType
+      state.buyer_type = dmsLeadDto.buyerType ? dmsLeadDto.buyerType : "";
+      state.marital_status = dmsLeadDto.maritalStatus
+        ? dmsLeadDto.maritalStatus
         : "";
-      state.marital_status = dmsLeadDto.maritalStatus ? dmsLeadDto.maritalStatus : "";
-      state.vehicle_type = dmsLeadDto.otherVehicleType ? dmsLeadDto.otherVehicleType : "";
-      state.registration_number = dmsLeadDto.otherVehicleRcNo ? dmsLeadDto.otherVehicleRcNo : "";
+      state.vehicle_type = dmsLeadDto.otherVehicleType
+        ? dmsLeadDto.otherVehicleType
+        : "";
+      state.registration_number = dmsLeadDto.otherVehicleRcNo
+        ? dmsLeadDto.otherVehicleRcNo
+        : "";
 
       // Documents
       if (dmsLeadDto.documentType) {
         state.form_or_pan = dmsLeadDto.documentType;
       }
       if (dmsLeadDto.gstNumber && dmsLeadDto.gstNumber != "") {
-        state.gstin_number = dmsLeadDto.gstNumber
+        state.gstin_number = dmsLeadDto.gstNumber;
       }
-      state.customer_type_category = dmsLeadDto.customerCategoryType ? dmsLeadDto.customerCategoryType : "";
+      state.customer_type_category = dmsLeadDto.customerCategoryType
+        ? dmsLeadDto.customerCategoryType
+        : "";
 
       // Commitment
       state.occasion = dmsLeadDto.occasion ? dmsLeadDto.occasion : "";
-      const customerPreferredDate = dmsLeadDto.commitmentDeliveryPreferredDate ? dmsLeadDto.commitmentDeliveryPreferredDate : "";
+      const customerPreferredDate = dmsLeadDto.commitmentDeliveryPreferredDate
+        ? dmsLeadDto.commitmentDeliveryPreferredDate
+        : "";
 
-      state.customer_preferred_date = convertTimeStampToDateString(customerPreferredDate, "DD/MM/YYYY");
-      console.log("Select---------->>>>>>>>", customerPreferredDate);
-      const tentativeDeliveryDate = dmsLeadDto.commitmentDeliveryTentativeDate ? dmsLeadDto.commitmentDeliveryTentativeDate : ""
-      state.tentative_delivery_date = convertTimeStampToDateString(tentativeDeliveryDate, "DD/MM/YYYY");
+      state.customer_preferred_date = convertTimeStampToDateString(
+        customerPreferredDate,
+        "DD/MM/YYYY"
+      );
+      const tentativeDeliveryDate = dmsLeadDto.commitmentDeliveryTentativeDate
+        ? dmsLeadDto.commitmentDeliveryTentativeDate
+        : "";
+      state.tentative_delivery_date = convertTimeStampToDateString(
+        tentativeDeliveryDate,
+        "DD/MM/YYYY"
+      );
 
       // Reject Remarks
       state.reject_remarks = dmsLeadDto.remarks ? dmsLeadDto.remarks : "";
@@ -1329,13 +1344,12 @@ const prebookingFormSlice = createSlice({
             if (item.documentNumber) {
               state.employee_id = item.documentNumber;
             }
-          }
-          else if (item.documentType === "gstNumber") {
+          } else if (item.documentType === "gstNumber") {
             if (item.documentNumber && item.documentNumber != "") {
               state.gstin_number = item.documentNumber;
             }
           }
-        })
+        });
       }
     },
     updateAddressByPincode: (state, action) => {
@@ -1358,6 +1372,62 @@ const prebookingFormSlice = createSlice({
       state.p_district = action.payload.District || "";
       state.p_state = action.payload.State || "";
       // state.isAddressSet = true
+    },
+    updateOfferPriceData: (state, action) => {
+      let dataObj: any = "";
+      if (action?.payload?.length) {
+        dataObj = action.payload[0];
+      }
+      state.insurance_type = dataObj?.insuranceType
+        ? dataObj.insuranceType
+        : "";
+      state.warranty = dataObj?.warrantyName ? dataObj.warrantyName : "";
+
+      if (dataObj?.insuranceAddonData && dataObj?.insuranceAddonData.length > 0) {
+        let addOnNames = "";
+        dataObj.insuranceAddonData.forEach((element, index) => {
+          addOnNames +=
+            element.insuranceAddonName +
+            (index + 1 < dataObj.length ? ", " : "");
+        });
+        state.add_on_insurance = addOnNames;
+      } else {
+        state.add_on_insurance = "";
+      }
+      
+      state.consumer_offer = dataObj?.specialScheme
+        ? `${dataObj.specialScheme}`
+        : "";
+      state.exchange_offer = dataObj?.exchangeOffers
+        ? `${dataObj.exchangeOffers}`
+        : "";
+      state.corporate_offer = dataObj?.corporateOffer
+        ? `${dataObj.corporateOffer}`
+        : "";
+      state.promotional_offer = dataObj?.promotionalOffers
+        ? `${dataObj.promotionalOffers}`
+        : "";
+      state.cash_discount = dataObj?.cashDiscount
+        ? `${dataObj.cashDiscount}`
+        : "";
+      state.for_accessories = dataObj?.focAccessories
+        ? `${dataObj.focAccessories}`
+        : "";
+      state.additional_offer_1 = dataObj?.additionalOffer1
+        ? `${dataObj.additionalOffer1}`
+        : "";
+      state.additional_offer_2 = dataObj?.additionalOffer2
+        ? `${dataObj.additionalOffer2}`
+        : "";
+      state.insurance_discount = dataObj?.insuranceDiscount
+        ? `${dataObj.insuranceDiscount}`
+        : "";
+      state.accessories_discount = dataObj?.accessoriesDiscount
+        ? `${dataObj.accessoriesDiscount}`
+        : "";
+      state.registrationCharges = dataObj?.registrationCharges
+        ? dataObj.registrationCharges
+        : 0;
     },
   },
   extraReducers: (builder) => {
@@ -1520,16 +1590,17 @@ const prebookingFormSlice = createSlice({
     });
     builder.addCase(getOnRoadPriceDtoListApi.fulfilled, (state, action) => {
       if (action.payload.dmsEntity) {
-        const dmsOnRoadPriceDtoList = action.payload.dmsEntity.dmsOnRoadPriceDtoList;
-        
+        const dmsOnRoadPriceDtoList =
+          action.payload.dmsEntity.dmsOnRoadPriceDtoList;
+
         if (dmsOnRoadPriceDtoList.length > 0) {
-          let newArr: any = [
-            dmsOnRoadPriceDtoList[0],
-          ];
+          let newArr: any = [dmsOnRoadPriceDtoList[0]];
           state.on_road_price_dto_list_response = newArr;
-          
+
           const dataObj = dmsOnRoadPriceDtoList[0];
-          state.insurance_type = dataObj.insuranceType ? dataObj.insuranceType : "";
+          state.insurance_type = dataObj.insuranceType
+            ? dataObj.insuranceType
+            : "";
           state.warranty = dataObj.warrantyName ? dataObj.warrantyName : "";
 
           if (
@@ -1544,22 +1615,42 @@ const prebookingFormSlice = createSlice({
             });
             state.add_on_insurance = addOnNames;
           }
-          
-          state.consumer_offer = dataObj.specialScheme ? dataObj.specialScheme.toString() : "";
-          state.exchange_offer = dataObj.exchangeOffers ? dataObj.exchangeOffers.toString() : "";
-          state.corporate_offer = dataObj.corporateOffer ? dataObj.corporateOffer.toString() : "";
-          state.promotional_offer = dataObj.promotionalOffers ? dataObj.promotionalOffers.toString() : "";
-          state.cash_discount = dataObj.cashDiscount ? dataObj.cashDiscount.toString() : "";
-          state.for_accessories = dataObj.focAccessories ? dataObj.focAccessories.toString() : "";
-          state.additional_offer_1 = dataObj.additionalOffer1 ? dataObj.additionalOffer1.toString() : "";
-          state.additional_offer_2 = dataObj.additionalOffer2 ? dataObj.additionalOffer2.toString() : "";
-          state.insurance_discount = dataObj.insuranceDiscount ? dataObj.insuranceDiscount.toString() : "";
-          state.accessories_discount = dataObj.accessoriesDiscount ? dataObj.accessoriesDiscount.toString() : "";
-          state.registrationCharges = dataObj.registrationCharges ? dataObj.registrationCharges : 0;
+
+          state.consumer_offer = dataObj.specialScheme
+            ? dataObj.specialScheme.toString()
+            : "";
+          state.exchange_offer = dataObj.exchangeOffers
+            ? dataObj.exchangeOffers.toString()
+            : "";
+          state.corporate_offer = dataObj.corporateOffer
+            ? dataObj.corporateOffer.toString()
+            : "";
+          state.promotional_offer = dataObj.promotionalOffers
+            ? dataObj.promotionalOffers.toString()
+            : "";
+          state.cash_discount = dataObj.cashDiscount
+            ? dataObj.cashDiscount.toString()
+            : "";
+          state.for_accessories = dataObj.focAccessories
+            ? dataObj.focAccessories.toString()
+            : "";
+          state.additional_offer_1 = dataObj.additionalOffer1
+            ? dataObj.additionalOffer1.toString()
+            : "";
+          state.additional_offer_2 = dataObj.additionalOffer2
+            ? dataObj.additionalOffer2.toString()
+            : "";
+          state.insurance_discount = dataObj.insuranceDiscount
+            ? dataObj.insuranceDiscount.toString()
+            : "";
+          state.accessories_discount = dataObj.accessoriesDiscount
+            ? dataObj.accessoriesDiscount.toString()
+            : "";
+          state.registrationCharges = dataObj.registrationCharges
+            ? dataObj.registrationCharges
+            : 0;
           // console.log('corporate_offercorporate_offer',dataObj.corporateOffer.toString());
-          
         }
-        
       }
       state.isLoading = false;
     });
@@ -1814,6 +1905,7 @@ export const {
   updateStatus,
   clearPermanentAddr,
   updateAddressByPincode2,
-  updatedmsLeadProduct
+  updatedmsLeadProduct,
+  updateOfferPriceData,
 } = prebookingFormSlice.actions;
 export default prebookingFormSlice.reducer;

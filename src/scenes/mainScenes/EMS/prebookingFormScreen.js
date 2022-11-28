@@ -52,6 +52,7 @@ import {
     updateFinancialData,
     updateBookingPaymentData,
     updateDmsAttachments,
+    updateOfferPriceData,
     getOnRoadPriceAndInsurenceDetailsApi,
     dropPreBooingApi,
     updatePrebookingDetailsApi,
@@ -361,6 +362,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     const [isSubmitPress, setIsSubmitPress] = useState(false);
     
     const [isEditButtonShow, setIsEditButtonShow] = useState(false);
+    const [isAddModelButtonShow, setIsAddModelButtonShow] = useState(false);
     const [isSubmitCancelButtonShow, setIsSubmitCancelButtonShow] = useState(false);
 
     const [registrationChargesType, setRegistrationChargesType]= useState([]);
@@ -374,7 +376,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         selector.pre_booking_details_response.dmsLeadDto
       ) {
         const { leadStatus } = selector.pre_booking_details_response.dmsLeadDto;
-
         let isEditFlag = false;
 
         if (
@@ -395,6 +396,22 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           setIsEditButtonShow(true);
         } else {
           setIsEditButtonShow(false);
+        }
+      }
+    }, [selector.pre_booking_details_response, uploadedImagesDataObj.receipt]);
+    
+    // Add Model buttons shows
+    useEffect(() => {
+      if (
+        selector &&
+        selector.pre_booking_details_response &&
+        selector.pre_booking_details_response.dmsLeadDto
+      ) {
+        const { leadStatus } = selector.pre_booking_details_response.dmsLeadDto;
+        if (leadStatus == "ENQUIRYCOMPLETED") {
+          setIsAddModelButtonShow(true);
+        } else {
+          setIsAddModelButtonShow(false);
         }
       }
     }, [selector.pre_booking_details_response, uploadedImagesDataObj.receipt]);
@@ -632,7 +649,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     }
 
     useEffect(() => {
-        //console.log("accessoriesList======>: ", route?.params?.lists.names);
         if (route.params?.accessoriesList) {
             updatePaidAccessroies(route.params?.accessoriesList);
         }
@@ -663,7 +679,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
     useEffect(() => {
         if (selector.pan_number) {
-            console.log("%%%%%%%%%%", selector.pan_number, selector.form_or_pan);
             dispatch(
                 setDocumentUploadDetails({
                     key: "PAN_NUMBER",
@@ -688,7 +703,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     }, [focPrice]);
 
     useEffect(() => {
-        console.log("$%$%^^^%&^&*^&&&*&", selector.pincode);
         if (selector.pincode) {
             if (selector.pincode.length != 6) {
                 return;
@@ -696,7 +710,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             PincodeDetailsNew(selector.pincode).then(
                 (res) => {
                     // dispatch an action to update address
-                    console.log("PINCODE DETAILS 2", selector.village);
                     let tempAddr = []
                     if (res?.length > 0) {
                         for (let i = 0; i < res.length; i++) {
@@ -746,9 +759,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     ]);
 
     const getBranchId = () => {
-
         AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_ID).then((branchId) => {
-            console.log("branch id:", branchId)
             setSelectedBranchId(branchId);
         });
     }
@@ -777,47 +788,115 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     };
 
     const modelOnclick = async (index, value, type) => {
-        try {
-            if (type == "update") {
-              let arr = await [...carModelsList];
-              arr[index] = value;
-              // arr.splice(carModelsList, index, value);
-              console.log("MODELS IF: ", arr);
-              let primaryModel = [];
-              primaryModel = arr.filter((item) => item.isPrimary === "Y");
-              if (primaryModel.length > 0) {
-                if (
-                  primaryModel[0].variant !== "" &&
-                  primaryModel[0].model !== ""
-                ) {
-                  updateVariantModelsData(
-                    primaryModel[0].model,
-                    true,
-                    primaryModel[0].variant
-                  );
-                }
-              }
-              await setCarModelsList([...arr]);
-            } else {
-              if (type == "delete") {
-                let arr = await [...carModelsList];
-                arr.splice(index, 1);
-                deleteModalFromServer({ value });
-                await setCarModelsList([...arr]);
+      try {
+        if (type == "update") {
+          let modelData = "";
+          if (
+            selector?.pre_booking_details_response?.dmsLeadDto?.dmsLeadProducts
+              .length
+          ) {
+            const { dmsLeadProducts } =
+              selector.pre_booking_details_response.dmsLeadDto;
+            for (let i = 0; i < dmsLeadProducts.length; i++) {
+              if (dmsLeadProducts[i].isPrimary == "Y") {
+                modelData = dmsLeadProducts[i];
+                break;
               }
             }
-            // console.log("onValueChangeonValueChange@@@@ ", value)
-        } catch (error) {
-            // alert(error)
-        }
+          }
 
-    }
+          if (
+            value?.model &&
+            selector?.pre_booking_details_response?.dmsLeadDto?.leadStatus !=
+              "ENQUIRYCOMPLETED" &&
+            modelData.model != value.model
+          ) {
+            dispatch(updateOfferPriceData());
+            clearPriceConfirmationData();
+          }
+
+          if (
+            value?.model &&
+            selector?.pre_booking_details_response?.dmsLeadDto?.leadStatus !=
+              "ENQUIRYCOMPLETED" &&
+            modelData.model == value.model
+          ) {
+            if (modelData.variant == value.variant) {
+              setVehicleOnRoadPriceInsuranceDetails();
+              setPriceConfirmationData();
+              setPaidAccessoriesData();
+              dispatch(
+                updateOfferPriceData(selector.on_road_price_dto_list_response)
+              );
+              addingIsPrimary();
+            } else {
+              dispatch(updateOfferPriceData());
+              clearPriceConfirmationData();
+            }
+          } else {
+            let arr = await [...carModelsList];
+            arr[index] = value;
+            // arr.splice(carModelsList, index, value);
+            let primaryModel = [];
+            primaryModel = arr.filter((item) => item.isPrimary === "Y");
+            if (primaryModel.length > 0) {
+              if (
+                primaryModel[0].variant !== "" &&
+                primaryModel[0].model !== ""
+              ) {
+                updateVariantModelsData(
+                  primaryModel[0].model,
+                  true,
+                  primaryModel[0].variant
+                );
+              }
+            }
+            await setCarModelsList([...arr]);
+          }
+        } else {
+          if (type == "delete") {
+            let arr = await [...carModelsList];
+            arr.splice(index, 1);
+            deleteModalFromServer({ value });
+            await setCarModelsList([...arr]);
+          }
+        }
+        // console.log("onValueChangeonValueChange@@@@ ", value)
+      } catch (error) {
+        // alert(error)
+      }
+    };
+
+    const setPaidAccessoriesData = () => {
+      const dmsLeadDto = selector.pre_booking_details_response.dmsLeadDto;
+      // Update Paid Accesories
+      if (dmsLeadDto.dmsAccessories.length > 0) {
+        let totalPrice = 0,
+          totalFOCPrice = 0;
+        for (let i = 0; i < dmsLeadDto.dmsAccessories.length; i++) {
+          if (dmsLeadDto.dmsAccessories[i].dmsAccessoriesType !== "FOC") {
+            totalPrice += dmsLeadDto.dmsAccessories[i].amount;
+          } else {
+            totalFOCPrice += dmsLeadDto.dmsAccessories[i].amount;
+          }
+          if (i === dmsLeadDto.dmsAccessories.length - 1) {
+            setSelectedPaidAccessoriesPrice(totalPrice);
+            setSelectedFOCAccessoriesPrice(totalFOCPrice);
+          }
+        }
+      }
+      setSelectedPaidAccessoriesList([...dmsLeadDto.dmsAccessories]);
+      setPaidAccessoriesListNew([
+        ...dmsLeadDto.dmsAccessories.filter(
+          (item) => item.dmsAccessoriesType !== "FOC"
+        ),
+      ]);
+    };
 
     const isPrimaryOnclick = async(isPrimaryEnabled, index, item)=>{
         try{
             if(isPrimaryEnabled === "Y")
             {
-                console.log("CALLED UPDATE");
                 await setIsPrimaryCurrentIndex(index)
                 updateVariantModelsData(item.model, true, item.variant);
             }
@@ -845,7 +924,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 await setCarModelsList([])
                 arr[isPrimaryCureentIndex] = cardata;
                 arr[index] =selecteditem
-                console.log("MODELS IS PRIMARY: ", arr);
                 await setCarModelsList([...arr])
                 await setIsPrimaryCurrentIndex(index)
             }
@@ -858,7 +936,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         const employeeData = await AsyncStore.getData(
             AsyncStore.Keys.LOGIN_EMPLOYEE
         );
-        console.log('employeeData-----', employeeData);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
             let isManager = false,
@@ -964,8 +1041,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             setShowSubmitDropBtn(false)
             setIsEdit(false)
             setIsReciptDocUpload(false)
-            console.log("MAXXXXX=>>>>", selector.maxDate);
-            console.log("DDDDD", JSON.stringify(selector.pre_booking_details_response));
             let dmsContactOrAccountDto;
             if (
                 selector.pre_booking_details_response.hasOwnProperty("dmsAccountDto")
@@ -981,7 +1056,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             const dmsLeadDto = selector.pre_booking_details_response.dmsLeadDto;
             dispatch(getOnRoadPriceDtoListApi(dmsLeadDto.id));
             //if (dmsLeadDto.leadStatus === "ENQUIRYCOMPLETED" || dmsLeadDto.leadStatus === "SENTFORAPPROVAL" || dmsLeadDto.leadStatus === "REJECTED") {
-          console.log("INSIsssDE ", dmsLeadDto.leadStatus);
 
             if (dmsLeadDto.leadStatus === "ENQUIRYCOMPLETED" || dmsLeadDto.leadStatus === "REJECTED") {
                 // console.log("INSIDE ", dmsLeadDto.leadStatus);
@@ -1018,7 +1092,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             dispatch(updateDmsAttachments(dmsLeadDto.dmsAttachments));
 
             // Update Paid Accesories
-            console.log("PAID ACC:", JSON.stringify(dmsLeadDto.dmsAccessories));
             if (dmsLeadDto.dmsAccessories.length > 0) {
                 let initialValue = 0;
                 let totalPrice = 0, totalFOCPrice = 0
@@ -1048,7 +1121,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
     const saveAttachmentDetailsInLocalObject = (dmsAttachments) => {
         const attachments = [...dmsAttachments];
-        console.log("BEFORE:", JSON.stringify(attachments));
         if (attachments.length > 0) {
             const dataObj = {};
             attachments.forEach((item, index) => {
@@ -1061,7 +1133,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 };
                 dataObj[item.documentType] = obj;
             });
-            console.log("AFTER:", JSON.stringify(dataObj));
             setUploadedImagesDataObj({ ...dataObj });
         }
     };
@@ -1083,60 +1154,77 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
     // Handle getOnRoadPriceDtoListApi response
     useEffect(() => {
-        if (selector.on_road_price_dto_list_response.length > 0) {
-            const dmsOnRoadPriceDtoObj = selector.on_road_price_dto_list_response[0];
-            // setSelectedInsurencePrice(dmsOnRoadPriceDtoObj.)
-            setSelectedWarrentyPrice(dmsOnRoadPriceDtoObj.warrantyAmount);
-            let handlingChargeSlctdLocal = handlingChargSlctd;
-            let essentialKitSlctdLocal = essentialKitSlctd;
-            let fastTagSlctdLocal = fastTagSlctd;
-
-            if (
-                dmsOnRoadPriceDtoObj.handlingCharges &&
-                dmsOnRoadPriceDtoObj.handlingCharges > 0
-            ) {
-                setHandlingChargSlctd(true);
-                handlingChargeSlctdLocal = true;
-            }
-            if (
-                dmsOnRoadPriceDtoObj.essentialKit &&
-                dmsOnRoadPriceDtoObj.essentialKit > 0
-            ) {
-                setEssentialKitSlctd(true);
-                essentialKitSlctdLocal = true;
-            }
-            if (dmsOnRoadPriceDtoObj.fast_tag && dmsOnRoadPriceDtoObj.fast_tag > 0) {
-                setFastTagSlctd(true);
-                fastTagSlctdLocal = true;
-            }
-            calculateOnRoadPrice(
-                handlingChargeSlctdLocal,
-                essentialKitSlctdLocal,
-                fastTagSlctdLocal
-            );
-
-            if (
-                dmsOnRoadPriceDtoObj.insuranceAddonData &&
-                dmsOnRoadPriceDtoObj.insuranceAddonData.length > 0
-            ) {
-                // let addOnPrice = 0;
-                // dmsOnRoadPriceDtoObj.insuranceAddonData.forEach((element, index) => {
-                //     addOnPrice += Number(element.add_on_price[0].cost);
-                // });
-                // setSelectedAddOnsPrice(addOnPrice);
-            }
-            if (dmsOnRoadPriceDtoObj.lifeTaxPercentage) {
-                setTaxPercent(((Number(dmsOnRoadPriceDtoObj.lifeTaxPercentage) * 1000) / 10).toString())
-                setLifeTaxAmount(getLifeTaxNew(Number(dmsOnRoadPriceDtoObj.lifeTaxPercentage) * 100))
-            }
-            if (dmsOnRoadPriceDtoObj.insuranceDiscount) {
-                setInsuranceDiscount(dmsOnRoadPriceDtoObj.insuranceDiscount.toString())
-            }
-            if (dmsOnRoadPriceDtoObj.accessoriesDiscount) {
-                setAccDiscount(dmsOnRoadPriceDtoObj.accessoriesDiscount.toString())
-            }
-        }
+        setPriceConfirmationData();
     }, [selector.on_road_price_dto_list_response]);
+
+    const setPriceConfirmationData = () => {
+      if (selector.on_road_price_dto_list_response.length > 0) {
+        const dmsOnRoadPriceDtoObj =
+          selector.on_road_price_dto_list_response[0];
+        // setSelectedInsurencePrice(dmsOnRoadPriceDtoObj.)
+        setSelectedWarrentyPrice(dmsOnRoadPriceDtoObj.warrantyAmount);
+        let handlingChargeSlctdLocal = handlingChargSlctd;
+        let essentialKitSlctdLocal = essentialKitSlctd;
+        let fastTagSlctdLocal = fastTagSlctd;
+
+        if (
+          dmsOnRoadPriceDtoObj.handlingCharges &&
+          dmsOnRoadPriceDtoObj.handlingCharges > 0
+        ) {
+          setHandlingChargSlctd(true);
+          handlingChargeSlctdLocal = true;
+        }
+        if (
+          dmsOnRoadPriceDtoObj.essentialKit &&
+          dmsOnRoadPriceDtoObj.essentialKit > 0
+        ) {
+          setEssentialKitSlctd(true);
+          essentialKitSlctdLocal = true;
+        }
+        if (
+          dmsOnRoadPriceDtoObj.fast_tag &&
+          dmsOnRoadPriceDtoObj.fast_tag > 0
+        ) {
+          setFastTagSlctd(true);
+          fastTagSlctdLocal = true;
+        }
+        calculateOnRoadPrice(
+          handlingChargeSlctdLocal,
+          essentialKitSlctdLocal,
+          fastTagSlctdLocal
+        );
+
+        if (
+          dmsOnRoadPriceDtoObj.insuranceAddonData &&
+          dmsOnRoadPriceDtoObj.insuranceAddonData.length > 0
+        ) {
+          // let addOnPrice = 0;
+          // dmsOnRoadPriceDtoObj.insuranceAddonData.forEach((element, index) => {
+          //     addOnPrice += Number(element.add_on_price[0].cost);
+          // });
+          // setSelectedAddOnsPrice(addOnPrice);
+        }
+        if (dmsOnRoadPriceDtoObj.lifeTaxPercentage) {
+          setTaxPercent(
+            (
+              (Number(dmsOnRoadPriceDtoObj.lifeTaxPercentage) * 1000) /
+              10
+            ).toString()
+          );
+          setLifeTaxAmount(
+            getLifeTaxNew(Number(dmsOnRoadPriceDtoObj.lifeTaxPercentage) * 100)
+          );
+        }
+        if (dmsOnRoadPriceDtoObj.insuranceDiscount) {
+          setInsuranceDiscount(
+            dmsOnRoadPriceDtoObj.insuranceDiscount.toString()
+          );
+        }
+        if (dmsOnRoadPriceDtoObj.accessoriesDiscount) {
+          setAccDiscount(dmsOnRoadPriceDtoObj.accessoriesDiscount.toString());
+        }
+      }
+    };
 
     useEffect(() => {
         calculateOnRoadPriceAfterDiscount()
@@ -1147,96 +1235,134 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     }, [selector.addOnPrice]);
 
     useEffect(() => {
-        if (selector.vehicle_on_road_price_insurence_details_response) {
-            console.log("ON ROAD PRICE INFO:", JSON.stringify(selector.vehicle_on_road_price_insurence_details_response));
-            const varientTypes =
-                selector.vehicle_on_road_price_insurence_details_response
-                    .insurance_vareint_mapping || [];
-            if (varientTypes.length > 0) {
-                let newFormatVarientTypes = [];
-                varientTypes.forEach((item) => {
-                    newFormatVarientTypes.push({
-                        ...item,
-                        name: item.policy_name,
-                    });
-                    if (selector.insurance_type === item.policy_name) {
-                        setSelectedInsurencePrice(item.cost);
-                    }
-                });
-                setInsurenceVarientTypes([...newFormatVarientTypes]);
-            }
-
-            const allWarrentyTypes =
-                selector.vehicle_on_road_price_insurence_details_response
-                    .extended_waranty || [];
-            if (allWarrentyTypes.length > 0) {
-                for (const object of allWarrentyTypes) {
-                    if (object.varient_id === selectedVarientId) {
-                        const matchedWarrentyTypes = object.warranty || [];
-                        if (matchedWarrentyTypes.length > 0) {
-                            let newFormatWarrentyTypes = [];
-                            matchedWarrentyTypes.forEach((item) => {
-                                if (Number(item.cost) !== 0) {
-                                    newFormatWarrentyTypes.push({
-                                        ...item,
-                                        name: item.document_name,
-                                    });
-                                }
-                            });
-                            setWarrentyTypes([...newFormatWarrentyTypes]);
-                        }
-                        break;
-                    }
-                }
-            }
-
-            const allInsuranceAddOnTypes =
-                selector.vehicle_on_road_price_insurence_details_response
-                    .insuranceAddOn || [];
-            if (allInsuranceAddOnTypes.length > 0) {
-                for (const object of allInsuranceAddOnTypes) {
-                    if (object.varient_id === selectedVarientId) {
-                        const matchedInsurenceAddOnTypes = object.add_on_price || [];
-                        let newFormatAddOnTypes = [];
-                        matchedInsurenceAddOnTypes.forEach((item) => {
-                            newFormatAddOnTypes.push({
-                                ...item,
-                                selected: false,
-                                name: item.document_name,
-                            });
-                        });
-                        setInsurenceAddOnTypes([...newFormatAddOnTypes]);
-                        break;
-                    }
-                }
-            }
-
-          const allRegistrationCharges = selector.vehicle_on_road_price_insurence_details_response
-            .registration || {};
-          function isEmpty(obj) {
-            return Object.keys(obj).length === 0;
-          }
-          if (!isEmpty(allRegistrationCharges)){
-            let x = Object.keys(allRegistrationCharges);
-            let newArray =[];
-            for (let i = 0; i < x.length; i++) {
-              let ladel = x[i].toString();
-              
-              let temp = { "name": ladel, "cost": allRegistrationCharges[ladel] };
-              if (selector.registrationCharges !== 0) {
-                if (selector.registrationCharges === allRegistrationCharges[ladel]) {
-                  setSelectedRegistrationCharges(temp);
-                }
-              }
-              newArray.push(temp);             
-            }
-            setRegistrationChargesType(newArray);
-          }
-            setPriceInformationData({
-                ...selector.vehicle_on_road_price_insurence_details_response,
-            });
-        }
+      setVehicleOnRoadPriceInsuranceDetails();
     }, [selector.vehicle_on_road_price_insurence_details_response]);
+
+    const setVehicleOnRoadPriceInsuranceDetails = () => {
+      if (selector.vehicle_on_road_price_insurence_details_response) {
+        const varientTypes =
+          selector.vehicle_on_road_price_insurence_details_response
+            .insurance_vareint_mapping || [];
+        if (varientTypes.length > 0) {
+          let newFormatVarientTypes = [];
+          varientTypes.forEach((item) => {
+            newFormatVarientTypes.push({
+              ...item,
+              name: item.policy_name,
+            });
+            if (selector.insurance_type === item.policy_name) {
+              setSelectedInsurencePrice(item.cost);
+            }
+          });
+          setInsurenceVarientTypes([...newFormatVarientTypes]);
+        }
+
+        const allWarrentyTypes =
+          selector.vehicle_on_road_price_insurence_details_response
+            .extended_waranty || [];
+        if (allWarrentyTypes.length > 0) {
+          for (const object of allWarrentyTypes) {
+            if (object.varient_id === selectedVarientId) {
+              const matchedWarrentyTypes = object.warranty || [];
+              if (matchedWarrentyTypes.length > 0) {
+                let newFormatWarrentyTypes = [];
+                matchedWarrentyTypes.forEach((item) => {
+                  if (Number(item.cost) !== 0) {
+                    newFormatWarrentyTypes.push({
+                      ...item,
+                      name: item.document_name,
+                    });
+                  }
+                });
+                setWarrentyTypes([...newFormatWarrentyTypes]);
+              }
+              break;
+            }
+          }
+        }
+
+        const allInsuranceAddOnTypes =
+          selector.vehicle_on_road_price_insurence_details_response
+            .insuranceAddOn || [];
+        if (allInsuranceAddOnTypes.length > 0) {
+          for (const object of allInsuranceAddOnTypes) {
+            if (object.varient_id === selectedVarientId) {
+              const matchedInsurenceAddOnTypes = object.add_on_price || [];
+              let newFormatAddOnTypes = [];
+              matchedInsurenceAddOnTypes.forEach((item) => {
+                newFormatAddOnTypes.push({
+                  ...item,
+                  selected: false,
+                  name: item.document_name,
+                });
+              });
+              setInsurenceAddOnTypes([...newFormatAddOnTypes]);
+              break;
+            }
+          }
+        }
+
+        const allRegistrationCharges =
+          selector.vehicle_on_road_price_insurence_details_response
+            .registration || {};
+        function isEmpty(obj) {
+          return Object.keys(obj).length === 0;
+        }
+        if (!isEmpty(allRegistrationCharges)) {
+          let x = Object.keys(allRegistrationCharges);
+          let newArray = [];
+          for (let i = 0; i < x.length; i++) {
+            let ladel = x[i].toString();
+
+            let temp = { name: ladel, cost: allRegistrationCharges[ladel] };
+            if (selector.registrationCharges !== 0) {
+              if (
+                selector.registrationCharges === allRegistrationCharges[ladel]
+              ) {
+                setSelectedRegistrationCharges(temp);
+              }
+            }
+            newArray.push(temp);
+          }
+          setRegistrationChargesType(newArray);
+        }
+        setPriceInformationData({
+          ...selector.vehicle_on_road_price_insurence_details_response,
+        });
+      }
+    };
+
+    const clearPriceConfirmationData = () => {
+      setSelectedRegistrationCharges({});
+      setRegistrationChargesType([]);
+      setInsurenceAddOnTypes([]);
+      setSelectedInsurencePrice(0);
+      setPriceInformationData({
+        ex_showroom_price: 0,
+        ex_showroom_price_csd: 0,
+        registration_charges: 0,
+        handling_charges: 0,
+        tcs_percentage: 0,
+        tcs_amount: 0,
+        essential_kit: 0,
+        fast_tag: 0,
+        vehicle_road_tax: 0,
+      });
+      setSelectedWarrentyPrice(0);
+      setHandlingChargSlctd(false);
+      setEssentialKitSlctd(false);
+      setFastTagSlctd(false);
+      calculateOnRoadPrice(false, false, false);
+      setTaxPercent("");
+      setLifeTaxAmount(0);
+      setInsuranceDiscount("");
+      setAccDiscount("");
+      setPaidAccessoriesListNew([]);
+      setSelectedPaidAccessoriesPrice(0);
+      setTotalOnRoadPrice(0);
+      setTcsAmount(0);
+      setTotalOnRoadPriceAfterDiscount(0);
+    };
 
     const showDropDownModelMethod = (key, headerText) => {
         Keyboard.dismiss();
@@ -1366,13 +1492,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         if (!selectedModelName || selectedModelName.length === 0) {
             return;
         }
-        console.log("coming..: ", selectedModelName,
-            fromInitialize,
-            selectedVarientName);
         let arrTemp = carModelsData.filter(function (obj) {
             return obj.model === selectedModelName;
         });
-        console.log("arrTemp: ", arrTemp);
 
         let carModelObj = arrTemp.length > 0 ? arrTemp[0] : undefined;
         if (carModelObj !== undefined) {
@@ -1411,9 +1533,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         varientList,
         modelId
     ) => {
-        console.log("CALLED updateColorsDataForSelectedVarient", selectedVarientName,
-            varientList,
-            modelId);
         if (!selectedVarientName || selectedVarientName.length === 0) {
             return;
         }
@@ -1421,7 +1540,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         let arrTemp = varientList.filter(function (obj) {
             return obj.name === selectedVarientName;
         });
-        console.log("VARIENT LIST: ", arrTemp[0]);
         let carModelObj = arrTemp.length > 0 ? arrTemp[0] : undefined;
         if (carModelObj !== undefined) {
             let newArray = [];
@@ -1456,7 +1574,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         essentialSelected,
         fastTagSelected
     ) => {
-        console.log("CALLED");
         let totalPrice = 0;
         totalPrice += priceInfomationData.ex_showroom_price;
         // const lifeTax = getLifeTax();
@@ -1483,7 +1600,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         if (fastTagSelected) {
             totalPrice += priceInfomationData.fast_tag;
         }
-        console.log("LIFE TAX PRICE: ", lifeTax, priceInfomationData.registration_charges, selectedInsurencePrice, selectedAddOnsPrice, selectedWarrentyPrice, handleSelected, priceInfomationData.handling_charges, essentialSelected, priceInfomationData.essential_kit, tcsPrice, fastTagSelected, priceInfomationData.fast_tag, selectedPaidAccessoriesPrice);
         // setTotalOnRoadPriceAfterDiscount(totalPrice - selectedFOCAccessoriesPrice);
         totalPrice += selectedPaidAccessoriesPrice;
         setTotalOnRoadPrice(totalPrice);
@@ -1539,7 +1655,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     const submitClicked = () => {
       Keyboard.dismiss();
       setIsSubmitPress(true);
-      console.log("ATTCH", JSON.stringify(uploadedImagesDataObj));
       // console.log("FOUND: ", uploadedImagesDataObj.hasOwnProperty('receipt'));
 
       if (selector.salutation.length === 0) {
@@ -1997,7 +2112,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
         let selectedModel = [];
         selectedModel = carModelsList.filter((item) => item.isPrimary === "Y");
-        console.log("MODEL: ", selector.model, carModelsList);
         dmsLeadDto.firstName = selector.first_name;
         dmsLeadDto.lastName = selector.last_name;
         dmsLeadDto.phone = selector.mobile;
@@ -2155,7 +2269,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         // dispatch(updatePrebookingDetailsApi(formData));
         Promise.all([dispatch(updatePrebookingDetailsApi(formData))]).then(
           async (res) => {
-            console.log("REF NO:", selector.refNo);
             let employeeData = await AsyncStore.getData(
               AsyncStore.Keys.LOGIN_EMPLOYEE
             );
@@ -2166,7 +2279,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 orgId: jsonObj.orgId,
                 stageCompleted: "PREBOOKING",
               };
-              console.log("PAYLOAD:", payload);
               dispatch(updateRef(payload));
             }
           }
@@ -2284,7 +2396,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 }
                // console.log(userObject.username);
             }
-            console.log("MODELS ADD PRIMARY: ", array);
             await setCarModelsList(array)
         } catch(error){
         }
@@ -2390,7 +2501,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         index = carModelsList.findIndex((item) => item.isPrimary === "Y")
         tempCarModels.splice(index, 1);
         tempCarModels.unshift(selectedModel[0])
-        console.log("ARRANGE MODEL: ", tempCarModels, dmsLeadProducts)
         dmsLeadProducts = tempCarModels
         return dmsLeadProducts;
     };
@@ -2478,7 +2588,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
     const formatAttachment = (data, photoObj, index, typeOfDocument) => {
         let object = { ...data };
-        console.log({typeOfDocument})
         object.branchId = selectedBranchId;
         object.ownerName = userData.employeeName;
         object.orgId = userData.orgId;
@@ -2518,11 +2627,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             setOpenAccordian('10')
             return;
         }
-        console.log("CALLED BEFORE", selector.pre_booking_details_response);
         if (!selector.pre_booking_details_response) {
             return;
         }
-        console.log("CALLED AFTER")
         let enquiryDetailsObj = { ...selector.pre_booking_details_response };
         let dmsLeadDto = { ...enquiryDetailsObj.dmsLeadDto };
         dmsLeadDto.leadStage = "DROPPED";
@@ -2925,16 +3032,16 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 formData.append("documentType", "payslips");
                 break;
             case "UPLOAD_PATTA_PASS_BOOK":
-                formData.append("documentType", "passbook");
+                formData.append("documentType", "pattaPassBook");
                 break;
             case "UPLOAD_PENSION_LETTER":
-                formData.append("documentType", "pension");
+                formData.append("documentType", "pensionLetter");
                 break;
             case "UPLOAD_IMA_CERTIFICATE":
                 formData.append("documentType", "imaCertificate");
                 break;
             case "UPLOAD_LEASING_CONFIRMATION":
-                formData.append("documentType", "leasingConfirm");
+                formData.append("documentType", "leasingConfirmationLetter");
                 break;
             case "UPLOAD_ADDRESS_PROOF":
                 formData.append("documentType", "address");
@@ -2954,7 +3061,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         })
         .then((response) => response.json())
         .then((response) => {
-          console.log('response', response);
           if (response) {
                   const dataObj = { ...uploadedImagesDataObj };
                   dataObj[response.documentType] = response;
@@ -2972,7 +3078,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
     const deteleButtonPressed = (from) => {
         const imagesDataObj = { ...uploadedImagesDataObj };
-        console.log("delelelete====>", imagesDataObj);
         switch (from) {
             case "PAN":
                 delete imagesDataObj.pan;
@@ -2996,16 +3101,16 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 delete imagesDataObj.payslips;
                 break;
             case "PATTA_PASS_BOOK":
-                delete imagesDataObj.passbook || imagesDataObj?.pattaPassBook ;
+                delete imagesDataObj.pattaPassBook;
                 break;
             case "PENSION_LETTER":
-                delete imagesDataObj.pension;
+                delete imagesDataObj.pensionLetter;
                 break;
             case "IMA_CERTIFICATE":
                 delete imagesDataObj.imaCertificate;
                 break;
             case "LEASING_CONFIRMATION":
-                delete imagesDataObj.leasingConfirm || imagesDataObj?.leasingConfirmationLetter;
+                delete imagesDataObj.leasingConfirmationLetter;
                 break;
             case "ADDRESS_PROOF":
                 delete imagesDataObj.address;
@@ -3046,7 +3151,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         PincodeDetailsNew(pincode).then(
             (res) => {
                 // dispatch an action to update address
-                console.log("PINCODE DETAILS 1", JSON.stringify(res));
                 let tempAddr = []
                 if (res) {
                     if (res.length > 0) {
@@ -3074,7 +3178,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         PincodeDetailsNew(pincode).then(
             (res) => {
                 // dispatch an action to update address
-                console.log("PINCODE DETAILS 1", JSON.stringify(res));
                 let tempAddr = []
                 if (res) {
                     if (res.length > 0) {
@@ -3113,7 +3216,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           keyId={selector.imagePickerKeyId}
           onDismiss={() => dispatch(setImagePicker(""))}
           selectedImage={(data, keyId) => {
-            console.log("imageObj: ", data, keyId);
             uploadSelectedImage(data, keyId);
           }}
           // onDismiss={() => dispatch(setImagePicker(""))}
@@ -3126,18 +3228,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           multiple={showMultipleDropDownData}
           onRequestClose={() => setShowDropDownModel(false)}
           selectedItems={(item) => {
-            console.log("SSSSSS",item);
             setShowDropDownModel(false);
             setShowMultipleDropDownData(false);
             if (dropDownKey === "MODEL") {
               updateVariantModelsData(item.name, false);
             } else if (dropDownKey === "VARIENT") {
-              console.log(
-                "SELECT $$$$$$$",
-                item,
-                selectedCarVarientsData.varientList,
-                selectedModelId
-              );
               updateColorsDataForSelectedVarient(
                 item.name,
                 selectedCarVarientsData.varientList,
@@ -3158,7 +3253,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
               let totalCost = 0;
               let names = "";
               let insurenceAddOns = [];
-              console.log("ADD-ON ITEM:", JSON.stringify(item));
               if (item.length > 0) {
                 item.forEach((obj, index) => {
                   totalCost += Number(obj.cost);
@@ -3175,7 +3269,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 setDropDownData({ key: dropDownKey, value: names, id: "" })
               );
               return;
-            } else if (dropDownKey === "REGISTRATION_CHARGES"){
+            } else if (dropDownKey === "REGISTRATION_CHARGES") {
               setSelectedRegistrationCharges(item);
             }
 
@@ -3210,7 +3304,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           //   minimumDate={selector.minDate}
           maximumDate={selector.maxDate}
           onChange={(event, selectedDate) => {
-            console.log("date: ", selectedDate);
             if (Platform.OS === "android") {
               if (!selectedDate) {
                 dispatch(
@@ -3585,7 +3678,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         // onFocus={() => setIsFocus(true)}
                         // onBlur={() => setIsFocus(false)}
                         onChange={(val) => {
-                          console.log("ADDR: ", val);
                           dispatch(updateAddressByPincode(val.value));
                         }}
                       />
@@ -3907,7 +3999,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         // onFocus={() => setIsFocus(true)}
                         // onBlur={() => setIsFocus(false)}
                         onChange={(val) => {
-                          console.log("ADDR: ", val);
                           dispatch(updateAddressByPincode2(val.value));
                         }}
                       />
@@ -4147,52 +4238,54 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     styles.accordianBorder,
                   ]}
                 >
-                  <TouchableOpacity
-                    disabled={!isInputsEditable()}
-                    onPress={() => {
-                      if (checkModelSelection()) {
-                        scrollToPos(3);
-                        setOpenAccordian("3");
-                        return;
-                      }
-                      const carmodeldata = {
-                        color: "",
-                        fuel: "",
-                        id: randomNumberGenerator(),
-                        model: "",
-                        transimmisionType: "",
-                        variant: "",
-                        isPrimary: "N",
-                      };
-                      let arr = [...carModelsList];
-                      arr.push(carmodeldata);
-                      setCarModelsList(arr);
-                      // selector.dmsLeadProducts = [...selector.dmsLeadProducts, carmodeldata]
-                    }}
-                    style={{
-                      width: "40%",
-                      margin: 5,
-                      borderRadius: 5,
-                      backgroundColor: Colors.PINK,
-                      height: 40,
-                      alignSelf: "flex-end",
-                      alignContent: "flex-end",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Text
+                  {isAddModelButtonShow && (
+                    <TouchableOpacity
+                      disabled={!isInputsEditable()}
+                      onPress={() => {
+                        if (checkModelSelection()) {
+                          scrollToPos(3);
+                          setOpenAccordian("3");
+                          return;
+                        }
+                        const carmodeldata = {
+                          color: "",
+                          fuel: "",
+                          id: randomNumberGenerator(),
+                          model: "",
+                          transimmisionType: "",
+                          variant: "",
+                          isPrimary: "N",
+                        };
+                        let arr = [...carModelsList];
+                        arr.push(carmodeldata);
+                        setCarModelsList(arr);
+                        // selector.dmsLeadProducts = [...selector.dmsLeadProducts, carmodeldata]
+                      }}
                       style={{
-                        fontSize: 16,
-                        textAlign: "center",
-                        textAlignVertical: "center",
-                        color: Colors.WHITE,
-                        width: "100%",
+                        width: "40%",
+                        margin: 5,
+                        borderRadius: 5,
+                        backgroundColor: Colors.PINK,
+                        height: 40,
+                        alignSelf: "flex-end",
+                        alignContent: "flex-end",
+                        alignItems: "center",
+                        justifyContent: "center",
                       }}
                     >
-                      Add Model
-                    </Text>
-                  </TouchableOpacity>
+                      <Text
+                        style={{
+                          fontSize: 16,
+                          textAlign: "center",
+                          textAlignVertical: "center",
+                          color: Colors.WHITE,
+                          width: "100%",
+                        }}
+                      >
+                        Add Model
+                      </Text>
+                    </TouchableOpacity>
+                  )}
                   <FlatList
                     data={carModelsList}
                     extraData={carModelsList}
@@ -4751,7 +4844,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           }
                         />
                       </View>
-                      {uploadedImagesDataObj.pension?.fileName ? (
+                      {uploadedImagesDataObj.pensionLetter?.fileName ? (
                         <View style={{ flexDirection: "row" }}>
                           <TouchableOpacity
                             disabled={!isInputsEditable()}
@@ -4764,9 +4857,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                               alignItems: "center",
                             }}
                             onPress={() => {
-                              if (uploadedImagesDataObj.pension?.documentPath) {
+                              if (
+                                uploadedImagesDataObj.pensionLetter
+                                  ?.documentPath
+                              ) {
                                 setImagePath(
-                                  uploadedImagesDataObj.pension?.documentPath
+                                  uploadedImagesDataObj.pensionLetter
+                                    ?.documentPath
                                 );
                               }
                             }}
@@ -4784,7 +4881,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           <View style={{ width: "80%" }}>
                             <DisplaySelectedImage
                               disabled={!isInputsEditable()}
-                              fileName={uploadedImagesDataObj.pension.fileName}
+                              fileName={
+                                uploadedImagesDataObj.pensionLetter.fileName
+                              }
                               from={"PENSION_LETTER"}
                             />
                           </View>
@@ -5322,7 +5421,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     </View>
 
                     <Text style={styles.shadowText}>
-                      {rupeeSymbol + " " + `${selectedRegistrationCharges?.cost ? selectedRegistrationCharges?.cost : '0.00' }`}
+                      {rupeeSymbol +
+                        " " +
+                        `${
+                          selectedRegistrationCharges?.cost
+                            ? selectedRegistrationCharges?.cost
+                            : "0.00"
+                        }`}
                     </Text>
                   </View>
                   {/* <TextAndAmountComp
@@ -6537,35 +6642,33 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   </View>
                 )}
 
-              {showApproveRejectBtn && userData.isSelfManager == "Y"  ? 
-              (
-                  <View style={styles.actionBtnView}>
-                    {!isRejectSelected && (
-                      <Button
-                        mode="contained"
-                        style={{ width: 120 }}
-                        color={Colors.GREEN}
-                        labelStyle={{ textTransform: "none" }}
-                        onPress={() => approveOrRejectMethod("APPROVE")}
-                      >
-                        Approve
-                      </Button>
-                    )}
+              {showApproveRejectBtn && userData.isSelfManager == "Y" ? (
+                <View style={styles.actionBtnView}>
+                  {!isRejectSelected && (
                     <Button
                       mode="contained"
-                      color={Colors.RED}
+                      style={{ width: 120 }}
+                      color={Colors.GREEN}
                       labelStyle={{ textTransform: "none" }}
-                      onPress={() =>
-                        isRejectSelected
-                          ? approveOrRejectMethod("REJECT")
-                          : setIsRejectSelected(true)
-                      }
+                      onPress={() => approveOrRejectMethod("APPROVE")}
                     >
-                      {isRejectSelected ? "Submit" : "Reject"}
+                      Approve
                     </Button>
-                  </View>
-              )
-            :null}
+                  )}
+                  <Button
+                    mode="contained"
+                    color={Colors.RED}
+                    labelStyle={{ textTransform: "none" }}
+                    onPress={() =>
+                      isRejectSelected
+                        ? approveOrRejectMethod("REJECT")
+                        : setIsRejectSelected(true)
+                    }
+                  >
+                    {isRejectSelected ? "Submit" : "Reject"}
+                  </Button>
+                </View>
+              ) : null}
 
               {isEditButtonShow && (
                 <View style={styles.actionBtnView}>

@@ -114,8 +114,8 @@ const LeadsScreen = ({ route, navigation }) => {
                         item.enquiryCategory
                             ?.toLowerCase()
                             .includes(appSelector.searchKey.toLowerCase()) ||
-                        item.model
-                            .toLowerCase()
+                        item?.model
+                            ?.toLowerCase()
                             .includes(appSelector.searchKey.toLowerCase())
                     );
                 })

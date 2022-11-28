@@ -14,6 +14,7 @@ import {
   Image,
   Platform,
   PermissionsAndroid,
+  TouchableWithoutFeedback
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { IconButton, Card, Button, Portal } from "react-native-paper";
@@ -88,11 +89,14 @@ import {
   getDistanceBetweenTwoPoints,
   officeRadius,
 } from "../../../service";
+import ReactNativeModal from "react-native-modal";
+
 
 const officeLocation = {
   latitude: 37.33233141,
   longitude: -122.0312186,
 };
+
 const HomeScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
@@ -118,14 +122,17 @@ const HomeScreen = ({ route, navigation }) => {
   const [attendance, setAttendance] = useState(false);
   const [reason, setReason] = useState(false);
   const [initialPosition, setInitialPosition] = useState({});
+  const [showModal, setShowModal] = useState(false);
+  const [options, setOptions] = useState({});
+
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {
       getCurrentLocation();
       setTargetData().then((r) => console.log(r)); //Commented to resolved filter issue for Home Screen
     });
   }, [navigation]);
-
-  const getCurrentLocation = async () => {
+  
+const getCurrentLocation = async () => {
     console.log("LLL");
     try {
       if (Platform.OS === "ios") {
@@ -807,62 +814,78 @@ const HomeScreen = ({ route, navigation }) => {
   };
 
   const downloadFileFromServer1 = async () => {
-    setLoading(true);
-    Promise.all([dispatch(getBranchIds({}))])
-      .then(async (res) => {
-        let branchIds = [];
-        let employeeData = await AsyncStore.getData(
-          AsyncStore.Keys.LOGIN_EMPLOYEE
-        );
-        if (employeeData) {
-          const jsonObj = JSON.parse(employeeData);
-          const dateFormat = "YYYY-MM-DD";
-          const currentDate = moment().format(dateFormat);
-          const monthFirstDate = moment(currentDate, dateFormat)
-            .subtract(0, "months")
-            .startOf("month")
-            .format(dateFormat);
-          const monthLastDate = moment(currentDate, dateFormat)
-            .subtract(0, "months")
-            .endOf("month")
-            .format(dateFormat);
-          let payload7 = {
-            orgId: jsonObj.orgId,
-            reportFrequency: "MONTHLY",
-            reportType: "ORG",
-            location: "Khammam",
-          };
-          var date = new Date();
-          var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
-          var lastDay = new Date(
-            date.getFullYear(),
-            date.getMonth() + 1,
-            0
-          ).setHours(23, 59, 59, 999);
-          let dateFormat1 = moment(firstDay).format("YYYY-MM-DD HH:mm:ss");
-          let dateFormat2 = moment(lastDay).format("YYYY-MM-DD HH:mm:ss");
-          let newPayload = {
-            branchIdList: [],
-            fromDate: dateFormat1,
-            orgId: jsonObj.orgId,
-            toDate: dateFormat2,
-          };
-          Promise.all([dispatch(downloadFile(newPayload))])
-            .then(async (res) => {
-              if (res[0]?.payload?.downloadUrl) {
-                downloadInLocal(res[0]?.payload?.downloadUrl);
-              } else {
+    if (!isEmpty(options) && Platform.OS === "ios") {
+      setShowModal(true);
+    } else {
+      setLoading(true);
+      Promise.all([dispatch(getBranchIds({}))])
+        .then(async (res) => {
+          let branchIds = [];
+          let employeeData = await AsyncStore.getData(
+            AsyncStore.Keys.LOGIN_EMPLOYEE
+          );
+          if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            const dateFormat = "YYYY-MM-DD";
+            const currentDate = moment().format(dateFormat);
+            const monthFirstDate = moment(currentDate, dateFormat)
+              .subtract(0, "months")
+              .startOf("month")
+              .format(dateFormat);
+            const monthLastDate = moment(currentDate, dateFormat)
+              .subtract(0, "months")
+              .endOf("month")
+              .format(dateFormat);
+            let payload7 = {
+              orgId: jsonObj.orgId,
+              reportFrequency: "MONTHLY",
+              reportType: "ORG",
+              location: "Khammam",
+            };
+            var date = new Date();
+            var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+            var lastDay = new Date(
+              date.getFullYear(),
+              date.getMonth() + 1,
+              0
+            ).setHours(23, 59, 59, 999);
+            let dateFormat1 = moment(firstDay).format("YYYY-MM-DD HH:mm:ss");
+            let dateFormat2 = moment(lastDay).format("YYYY-MM-DD HH:mm:ss");
+            let newPayload = {
+              branchIdList: [],
+              fromDate: dateFormat1,
+              orgId: jsonObj.orgId,
+              toDate: dateFormat2,
+            };
+            Promise.all([dispatch(downloadFile(newPayload))])
+              .then(async (res) => {
+                if (res[0]?.payload?.downloadUrl) {
+                  console.log(res[0]?.payload);
+                  let path = res[0]?.payload;
+                  if (Platform.OS === "android") {
+                    for (const property in path) {
+                      console.log(`${property}: ${path[property]}`);
+                      downloadInLocal(path[property]);
+                    }
+                  }
+                  if (Platform.OS === "ios") {
+                    setLoading(false);
+                    setOptions(path);
+                    setShowModal(true);
+                  }
+                } else {
+                  setLoading(false);
+                }
+              })
+              .catch(() => {
                 setLoading(false);
-              }
-            })
-            .catch(() => {
-              setLoading(false);
-            });
-        }
-      })
-      .catch(() => {
-        setLoading(false);
-      });
+              });
+          }
+        })
+        .catch(() => {
+          setLoading(false);
+        });
+    }
   };
 
   const downloadInLocal = async (url) => {
@@ -937,8 +960,61 @@ const HomeScreen = ({ route, navigation }) => {
     return /[.]/.exec(fileUrl) ? /[^.]+$/.exec(fileUrl) : undefined;
   };
 
+const RenderModal = () => {
+  return (
+    <ReactNativeModal
+      onBackdropPress={() => {
+        setShowModal(false);
+      }}
+      transparent={true}
+      visible={showModal}
+    >
+      <View style={styles.newModalContainer}>
+        <TouchableWithoutFeedback
+          style={styles.actionButtonContainer}
+          onPress={() => {}}
+        >
+          <>
+            <Button
+              onPress={() => {
+                downloadInLocal(options?.downloadUrl);
+                setShowModal(false);
+              }}
+              color="black"
+            >
+              {"ETVBRL Excel"}
+            </Button>
+
+            <View style={styles.divider} />
+            <Button
+              onPress={() => {
+                downloadInLocal(options?.downloadUrl1);
+                setShowModal(false);
+              }}
+              color="black"
+            >
+              {"EBR"}
+            </Button>
+            <View style={styles.divider} />
+            <Button
+              onPress={() => {
+                downloadInLocal(options?.downloadUrl2);
+                setShowModal(false);
+              }}
+              color="black"
+            >
+              {"Support"}
+            </Button>
+          </>
+        </TouchableWithoutFeedback>
+      </View>
+    </ReactNativeModal>
+  );
+};
+
   return (
     <SafeAreaView style={styles.container}>
+      <RenderModal />
       <AttendanceForm
         visible={attendance}
         showReason={reason}
@@ -1417,4 +1493,37 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
   },
   rankIcon: { width: 25, height: 25 },
+  newModalContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    maxHeight: "50%",
+    maxWidth: "100%",
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: "#fff",
+    marginTop: "35%",
+    // marginLeft: "15%",
+    marginRight: "1%",
+    elevation: 20,
+    shadowColor: "#171717",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 3,
+    top: 0,
+    right: 0,
+    position: "absolute",
+  },
+  actionButtonContainer: {
+    // backgroundColor: "white",
+    justifyContent: "space-evenly",
+    flexDirection: "column",
+  },
+  divider: {
+    width: "85%",
+    height: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    alignSelf: "center",
+    // opacity: 0.7,
+  },
 });
