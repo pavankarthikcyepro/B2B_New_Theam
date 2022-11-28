@@ -1,9 +1,17 @@
 import Geolocation from "@react-native-community/geolocation";
 import PushNotificationIOS from "@react-native-community/push-notification-ios";
+import { Platform } from "react-native";
 import BackgroundService from "react-native-background-actions";
+import PushNotification from "react-native-push-notification";
 import { Colors } from "../styles";
 
-export const officeRadius = 5;
+var startDate = createDateTime("8:30");
+var endDate = createDateTime("12:00");
+var now = new Date();
+var isBetween = startDate <= now && now <= endDate;
+
+export const distanceFilterValue = 10;
+export const officeRadius = 0.1;
 export const sleep = (time) =>
   new Promise((resolve) => setTimeout(() => resolve(), time));
 
@@ -21,10 +29,10 @@ export const veryIntensiveTask = async (taskDataArguments) => {
         await Geolocation.watchPosition(
           (lastPosition) => {
             console.log(lastPosition);
-              var newLatLng = {
-                latitude: lastPosition.coords.latitude,
-                longitude: lastPosition.coords.longitude,
-              };
+            var newLatLng = {
+              latitude: lastPosition.coords.latitude,
+              longitude: lastPosition.coords.longitude,
+            };
           },
           (error) => alert(JSON.stringify(error)),
           { enableHighAccuracy: true, distanceFilter: 100 }
@@ -34,9 +42,9 @@ export const veryIntensiveTask = async (taskDataArguments) => {
         });
       } catch (error) {}
 
-        await BackgroundService.updateNotification({
-          taskTitle: "test"
-        })
+      await BackgroundService.updateNotification({
+        taskTitle: "test",
+      });
       await sleep(delay);
     }
   });
@@ -95,10 +103,94 @@ export function createDateTime(time) {
   return date;
 }
 
- export const sendLocalNotification = () => {
-   PushNotificationIOS.presentLocalNotification({
-     alertTitle: "Cyepro",
-     alertBody: "Cyepro local notification",
-     applicationIconBadgeNumber: 1,
-   });
- };
+export const sendLocalNotification = (alert) => {
+  console.log("KKKKKK");
+  if (Platform.OS === "ios") {
+    console.log("OPENNNN");
+    PushNotificationIOS.presentLocalNotification({
+      alertTitle:isBetween
+        ? "Good Morning"
+        : "Good Evening",
+      alertBody: isBetween
+        ? `Please Punch Your Attendance`
+        : "Please LogOut Your Attendance",
+      applicationIconBadgeNumber: 1,
+    });
+  }
+  if(Platform.OS === 'android'){
+    PushNotification.createChannel(
+      {
+        channelId: "mychannel", // (required)
+        channelName: "My channel", // (required)
+        vibrate: true,
+       
+      },
+      (created) => {
+        PushNotification.localNotification({
+          channelId: "mychannel",
+          autoCancel: true,
+          // bigText: "data",
+          // subText: "Notification",
+          title: isBetween ? "Good Morning" : "Good Evening",
+          message: isBetween
+            ? `Please Punch Your Attendance`
+            : "Please LogOut Your Attendance",
+          vibrate: true,
+          vibration: 300,
+          playSound: true,
+          soundName: "default",
+          ignoreInForeground: false,
+          importance: "high",
+          invokeApp: true,
+          allowWhileIdle: true,
+          priority: "high",
+          visibility: "public",
+          largeIcon: "@mipmap/cy",
+          smallIcon: "@mipmap/cy",
+        });
+      }
+    );
+  }
+};
+
+
+export const sendAlertLocalNotification = (alert) => {
+  if (Platform.OS === "ios") {
+    PushNotificationIOS.presentLocalNotification({
+      alertTitle: isBetween ? "Good Morning" : "Good Evening",
+      alertBody: "You are 100 meters Away from Your Office",
+      applicationIconBadgeNumber: 1,
+    });
+  }
+  if (Platform.OS === "android") {
+    PushNotification.createChannel(
+      {
+        channelId: "mychannel", // (required)
+        channelName: "My channel", // (required)
+        vibrate: true,
+      },
+      (created) => {
+        PushNotification.localNotification({
+          channelId: "mychannel",
+          autoCancel: true,
+          // bigText: "data",
+          // subText: "Notification",
+          title: "You are 100 meters Away from Your Office",
+          message: "You are 100 meters Away from Your Office",
+          vibrate: true,
+          vibration: 300,
+          playSound: true,
+          soundName: "default",
+          ignoreInForeground: false,
+          importance: "high",
+          invokeApp: true,
+          allowWhileIdle: true,
+          priority: "high",
+          visibility: "public",
+          largeIcon: "@mipmap/cy",
+          smallIcon: "@mipmap/cy",
+        });
+      }
+    );
+  }
+};

@@ -13,9 +13,12 @@ import { AuthContext } from "./utils/authContext";
 import BackgroundService from "react-native-background-actions";
 import {
   createDateTime,
+  distanceFilterValue,
   getDistanceBetweenTwoPoints,
   officeRadius,
   options,
+  sendAlertLocalNotification,
+  sendLocalNotification,
   sleep,
   veryIntensiveTask,
 } from "./service";
@@ -108,9 +111,7 @@ const AppScreen = () => {
                   getDetailsByempIdAndorgId +
                     `/${jsonObj.empId}/${jsonObj.orgId}`
                 );
-
                 const trackingJson = await trackingResponse.json();
-                console.log("ROOOT", trackingJson);
                 var newLatLng = {
                   latitude: lastPosition.coords.latitude,
                   longitude: lastPosition.coords.longitude,
@@ -123,14 +124,13 @@ const AppScreen = () => {
                 );
 
                 if (dist > officeRadius) {
-                  // setReason(false); ///true for reason
+                  sendAlertLocalNotification();
                 } else {
-                  // setReason(false);
+                  // seteReason(false);
                 }
-                console.log("CHANGED LOCATION", coordinates);
                 let parsedValue =
                   trackingJson.length > 0
-                    ? JSON.parse(trackingJson[0].location)
+                    ? JSON.parse(trackingJson[trackingJson.length - 1].location)
                     : null;
                 if (coordinates.length > 0 && parsedValue) {
                   if (
@@ -143,10 +143,13 @@ const AppScreen = () => {
                   }
                 }
                 let newArray = [...coordinates, ...[newLatLng]];
-
-                if (trackingJson.length > 0) {
+                let date = new Date(
+                  trackingJson[trackingJson.length - 1]?.createdtimestamp
+                );
+                let condition = date.getDate() == new Date().getDate();
+                if (trackingJson.length > 0 && condition) {
                   let tempPayload = {
-                    id: trackingJson[0]?.id,
+                    id: trackingJson[trackingJson.length - 1]?.id,
                     orgId: jsonObj?.orgId,
                     empId: jsonObj?.empId,
                     branchId: jsonObj?.branchId,
@@ -155,15 +158,12 @@ const AppScreen = () => {
                     purpose: "",
                     location: JSON.stringify(newArray),
                   };
-                  console.log("newArray", tempPayload);
-
                   const response = await client.put(
-                    locationUpdate + `/${trackingJson[0].id}`,
+                    locationUpdate +
+                      `/${trackingJson[trackingJson.length - 1].id}`,
                     tempPayload
                   );
                   const json = await response.json();
-                  console.log("RESPONSEmmmmm", json);
-
                   await AsyncStore.storeJsonData(
                     AsyncStore.Keys.COORDINATES,
                     newArray
@@ -181,7 +181,6 @@ const AppScreen = () => {
                   };
                   const response = await client.post(saveLocation, payload);
                   const json = await response.json();
-                  // console.log("RESPONSEmmmmsssmELSE", json);
                   await AsyncStore.storeJsonData(
                     AsyncStore.Keys.COORDINATES,
                     newArray
@@ -192,7 +191,7 @@ const AppScreen = () => {
             (error) => {
               console.error(error);
             },
-            { enableHighAccuracy: true, distanceFilter: 10 }
+            { enableHighAccuracy: true, distanceFilter: distanceFilterValue }
           );
         }
       }
@@ -205,9 +204,19 @@ const AppScreen = () => {
     await new Promise(async (resolve) => {
       for (let i = 0; BackgroundService.isRunning(); i++) {
         // console.log(i);
+        var startDate = createDateTime("8:30");
+        var startBetween = createDateTime("9:30");
+        var endBetween = createDateTime("20:30");
+        var endDate = createDateTime("21:30");
+        var now = new Date();
+        if (startDate <= now && now <= startBetween) {
+          sendLocalNotification();
+        }
+        if (endBetween <= now && now <= endDate) {
+          sendLocalNotification();
+        }
         try {
           let todaysDate = await AsyncStore.getData(AsyncStore.Keys.TODAYSDATE);
-          // console.log("todaysDate", todaysDate);
           if (todaysDate) {
             getCoordinates();
           } else {
@@ -235,12 +244,20 @@ const AppScreen = () => {
 
   useEffect(async () => {
     if (Platform.OS === "ios") {
-      // PushNotificationIOS.requestPermissions();
       PushNotificationIOS.checkPermissions((item) => {
         if (!item.alert) {
           PushNotificationIOS.requestPermissions();
         }
       });
+      // sendLocalNotification();
+    }
+    if (Platform.OS === "android") {
+      PushNotification.checkPermissions((item) => {
+        if (!item.alert) {
+          PushNotification.requestPermissions();
+        }
+      });
+      // sendLocalNotification();
     }
 
     const checkUserToken = async () => {

@@ -97,7 +97,7 @@ const screeOptionStyle = {
     headerBackTitleVisible: false,
 };
 
-const MenuIcon = ({ navigation }) => {
+export const MenuIcon = ({ navigation }) => {
 
     return (
         <IconButton

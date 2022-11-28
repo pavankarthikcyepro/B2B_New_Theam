@@ -6,6 +6,7 @@ import {
   SafeAreaView,
   StyleSheet,
   TouchableOpacity,
+  Dimensions,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -19,6 +20,8 @@ import { Calendar } from "react-native-calendars";
 import * as AsyncStore from "../../../asyncStore";
 import moment from "moment";
 import AttendanceForm from "../../../components/AttendanceForm";
+import { MenuIcon } from "../../../navigations/appNavigator";
+import WeeklyCalendar from "react-native-weekly-calendar";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
@@ -28,71 +31,112 @@ const AttendanceScreen = ({ route }) => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [isWeek, setIsWeek] = useState(false);
-  const [marker,setMarker] = useState({});
+  const [marker, setMarker] = useState({});
   const [attendance, setAttendance] = useState(false);
-  //   useLayoutEffect(() => {
-  //     navigation.setOptions({
-  //       headerRight: () => (
-  //         <IconButton
-  //           icon="filter"
-  //           color={Colors.WHITE}
-  //           size={30}
-  //           onPress={() => setShowDatePicker(true)}
-  //         />
-  //       ),
-  //     });
-  //   }, [navigation]);
+  const [weeklyRecord, setWeeklyRecord] = useState([]);
+
+  const sampleEvents = [
+    { start: "2020-03-27 09:00:00", duration: "00:20:00", note: "Walk my dog" },
+    {
+      start: "2020-03-28 14:00:00",
+      duration: "01:00:00",
+      note: "Doctor's appointment",
+    },
+    {
+      start: "2020-03-29 08:00:00",
+      duration: "00:30:00",
+      note: "Morning exercise",
+    },
+    {
+      start: "2020-03-25 14:00:00",
+      duration: "02:00:00",
+      note: "Meeting with client",
+    },
+    {
+      start: "2020-03-25 19:00:00",
+      duration: "01:00:00",
+      note: "Dinner with family",
+    },
+    { start: "2020-03-26 09:30:00", duration: "01:00:00", note: "Schedule 1" },
+    { start: "2020-03-26 11:00:00", duration: "02:00:00", note: "Schedule 2" },
+    { start: "2020-03-26 15:00:00", duration: "01:30:00", note: "Schedule 3" },
+    { start: "2020-03-26 18:00:00", duration: "02:00:00", note: "Schedule 4" },
+    { start: "2020-03-26 22:00:00", duration: "01:00:00", note: "Schedule 5" },
+  ];
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => <MenuIcon navigation={navigation} />,
+    });
+  }, [navigation]);
+
   useEffect(() => {
+    setLoading(true);
     getAttendance();
   }, []);
 
   const getAttendance = async () => {
-    let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-    if (employeeData) {
-      const jsonObj = JSON.parse(employeeData);
-      const response = await client.get(
-        URL.GET_ATTENDANCE_EMPID(jsonObj.empId, jsonObj.orgId)
+    try {
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
       );
-      const json = await response.json();
-      if (json) {
-        let newArray = [];
-        let dateArray = [];
-        for (let i = 0; i < json.length; i++) {
-          const element = json[i];
-          let format = {
-            // marked: true,
-            // dotColor: element.isPresent === 1 ? Colors.GREEN : Colors.RED,
-            customStyles: {
-              container: {
-                backgroundColor:
-                  element.isPresent === 1 ? Colors.GREEN : "#ff5d68",
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        const response = await client.get(
+          URL.GET_ATTENDANCE_EMPID(jsonObj.empId, jsonObj.orgId)
+        );
+        const json = await response.json();
+        if (json) {
+          let newArray = [];
+          let dateArray = [];
+          let weekArray =[];
+          for (let i = 0; i < json.length; i++) {
+            const element = json[i];
+            let format = {
+              // marked: true,
+              // dotColor: element.isPresent === 1 ? Colors.GREEN : Colors.RED,
+              customStyles: {
+                container: {
+                  backgroundColor:
+                    element.isPresent === 1 ? Colors.GREEN : "#ff5d68",
+                },
+                text: {
+                  color: Colors.WHITE,
+                  fontWeight: "bold",
+                },
               },
-              text: {
-                color: Colors.WHITE,
-                fontWeight: "bold",
-              },
-            },
-          };
-          let date = new Date(element.createdtimestamp);
-          let formatedDate = moment(date).format(dateFormat);
-          dateArray.push(formatedDate);
-          newArray.push(format);
+            };
+            
+            let date = new Date(element.createdtimestamp);
+            let formatedDate = moment(date).format(dateFormat);
+            let weekReport = {
+              start: formatedDate,
+              // duration: "00:20:00",
+              note: element.comments,
+              color: element.isPresent === 1 ? Colors.GREEN : "#ff5d68",
+              status: element.isPresent === 1 ? "Present" : "Absent",
+            };
+            dateArray.push(formatedDate);
+            newArray.push(format);
+            weekArray.push(weekReport);
+          }
+          var obj = {};
+          for (let i = 0; i < newArray.length; i++) {
+            const element = newArray[i];
+            obj[dateArray[i]] = element;
+          }
+          setLoading(false);
+          setWeeklyRecord(weekArray);
+          setMarker(obj);
         }
-        // console.log(dateArray);
-        var obj = {};
-        for (let i = 0; i < newArray.length; i++) {
-          const element = newArray[i];
-          obj[dateArray[i]] = element;
-        }
-        setMarker(obj);
-        console.log(obj);
       }
+    } catch (error) {
+      setLoading(false);
     }
   };
 
   const isCurrentDate = (day) => {
     let selectedDate = day.dateString;
-    console.log(currentDate, selectedDate, currentDate === selectedDate);
     if (currentDate === selectedDate) {
       setAttendance(true);
     }
@@ -104,6 +148,7 @@ const AttendanceScreen = ({ route }) => {
         visible={attendance}
         // showReason={reason}
         inVisible={() => {
+          getAttendance();
           setAttendance(false);
         }}
       />
@@ -113,6 +158,7 @@ const AttendanceScreen = ({ route }) => {
           marginBottom: 2,
           justifyContent: "center",
           alignItems: "center",
+          marginTop: 25,
         }}
       >
         <View
@@ -127,7 +173,7 @@ const AttendanceScreen = ({ route }) => {
             width: "80%",
           }}
         >
-          {/* <TouchableOpacity
+          <TouchableOpacity
             onPress={() => {
               setIsWeek(true);
             }}
@@ -149,13 +195,13 @@ const AttendanceScreen = ({ route }) => {
             >
               Week
             </Text>
-          </TouchableOpacity> */}
+          </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
               setIsWeek(false);
             }}
             style={{
-              width: "100%",
+              width: "50%",
               justifyContent: "center",
               alignItems: "center",
               backgroundColor: !isWeek ? Colors.RED : Colors.WHITE,
@@ -175,40 +221,69 @@ const AttendanceScreen = ({ route }) => {
           </TouchableOpacity>
         </View>
       </View>
-      <View>
-        <Calendar
-          //   initialDate={"2012-03-01"}
-          onDayPress={(day) => {
-            console.log("selected day", day);
-            isCurrentDate(day);
-          }}
-          onDayLongPress={(day) => {
-            console.log("selected day", day);
-          }}
-          monthFormat={"MMM yyyy"}
-          onMonthChange={(month) => {
-            console.log("month changed", month);
-          }}
-          hideExtraDays={true}
-          firstDay={1}
-          onPressArrowLeft={(subtractMonth) => subtractMonth()}
-          onPressArrowRight={(addMonth) => addMonth()}
-          enableSwipeMonths={true}
-          theme={{
-            arrowColor: Colors.RED,
-            dotColor: Colors.RED,
-            textMonthFontWeight: "500",
-            monthTextColor: Colors.RED,
-            indicatorColor: Colors.RED,
-            dayTextColor: Colors.BLACK,
-            selectedDayBackgroundColor: Colors.LIGHT_SKY_BLUE,
-            textDayFontWeight: "500",
-          }}
-          markingType={"custom"}
-          markedDates={marker}
-        />
-      </View>
+      {!isWeek && (
+        <View>
+          <Calendar
+            onDayPress={(day) => {
+              console.log("selected day", day);
+              isCurrentDate(day);
+            }}
+            onDayLongPress={(day) => {
+              console.log("selected day", day);
+            }}
+            monthFormat={"MMM yyyy"}
+            onMonthChange={(month) => {
+              console.log("month changed", month);
+            }}
+            hideExtraDays={true}
+            firstDay={1}
+            onPressArrowLeft={(subtractMonth) => subtractMonth()}
+            onPressArrowRight={(addMonth) => addMonth()}
+            enableSwipeMonths={true}
+            theme={{
+              arrowColor: Colors.RED,
+              dotColor: Colors.RED,
+              textMonthFontWeight: "500",
+              monthTextColor: Colors.RED,
+              indicatorColor: Colors.RED,
+              dayTextColor: Colors.BLACK,
+              selectedDayBackgroundColor: Colors.LIGHT_SKY_BLUE,
+              textDayFontWeight: "500",
+            }}
+            markingType={"custom"}
+            markedDates={marker}
+          />
+        </View>
+      )}
 
+      {isWeek && (
+        <View style={{ flex: 1, marginTop: 10 }}>
+          <WeeklyCalendar
+            events={weeklyRecord}
+            titleFormat={"MMM yyyy"}
+            titleStyle={{
+              color: Colors.RED,
+              fontSize: 15,
+              fontWeight: "500",
+              marginVertical: 10,
+            }}
+            themeColor={Colors.RED}
+            dayLabelStyle={{
+              color: Colors.RED,
+            }}
+            renderEvent={(event, j) => {
+              return (
+                <View
+                  style={{ ...styles.eventNote, backgroundColor: event.color }}
+                >
+                  <Text style={styles.eventText}>{event.status}</Text>
+                  <Text style={styles.eventText}>{event.note}</Text>
+                </View>
+              );
+            }}
+          />
+        </View>
+      )}
       <LoaderComponent visible={loading} />
     </SafeAreaView>
   );
@@ -222,4 +297,183 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     backgroundColor: Colors.LIGHT_GRAY,
   },
+  component: {
+    width: Dimensions.get("window").width,
+    alignItems: "center",
+    backgroundColor: "white",
+    borderColor: "grey",
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  header: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 5,
+  },
+  arrowButton: {
+    paddingHorizontal: 10,
+  },
+  title: {
+    color: "grey",
+    fontWeight: "bold",
+  },
+  week: {
+    width: "100%",
+    borderBottomColor: "grey",
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    paddingVertical: 5,
+  },
+  weekdayLabelContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 10,
+  },
+  weekdayLabel: {
+    flex: 1,
+    alignItems: "center",
+  },
+  weekdayLabelText: {
+    color: "grey",
+  },
+  weekdayNumberContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 5,
+  },
+  weekDayNumber: {
+    flex: 1,
+    width: 30,
+    height: 30,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  weekDayNumberCircle: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: 30,
+    height: 30,
+    borderRadius: 30 / 2,
+  },
+  weekDayNumberTextToday: {
+    color: "white",
+  },
+  schedule: {
+    width: "100%",
+  },
+  pickerButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    backgroundColor: "white",
+  },
+  picker: {
+    backgroundColor: "white",
+    paddingBottom: 20,
+  },
+  modal: {
+    width: "100%",
+    justifyContent: "flex-end",
+    alignItems: "flex-end",
+  },
+  blurredArea: {
+    flex: 1,
+    opacity: 0.7,
+    backgroundColor: "black",
+  },
+  modalButton: {
+    padding: 15,
+  },
+  modalButtonText: {
+    fontSize: 20,
+  },
+  indicator: {
+    width: "100%",
+    height: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.7)",
+    position: "absolute",
+  },
+  day: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    borderTopColor: "grey",
+    borderTopWidth: StyleSheet.hairlineWidth,
+  },
+  dayLabel: {
+    width: "20%",
+    alignItems: "center",
+    padding: 10,
+    borderRightColor: "grey",
+    borderRightWidth: StyleSheet.hairlineWidth,
+  },
+  monthDateText: {
+    fontSize: 20,
+  },
+  dayText: {},
+  allEvents: {
+    width: "80%",
+  },
+  event: {
+    flex: 1,
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 10,
+  },
+  eventDuration: {
+    width: "30%",
+    justifyContent: "center",
+  },
+  durationContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  durationDot: {
+    width: 4,
+    height: 4,
+    backgroundColor: "grey",
+    marginRight: 5,
+    alignSelf: "center",
+    borderRadius: 4 / 2,
+  },
+  durationDotConnector: {
+    height: 20,
+    borderLeftColor: "grey",
+    borderLeftWidth: StyleSheet.hairlineWidth,
+    position: "absolute",
+    left: 2,
+  },
+  durationText: {
+    color: "grey",
+    fontSize: 12,
+  },
+  eventNote: {
+    backgroundColor: "skyblue",
+    flex: 1,
+    justifyContent: "center",
+    paddingLeft: 15,
+  },
+  lineSeparator: {
+    width: "100%",
+    borderBottomColor: "lightgrey",
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  dot: {
+    width: 4,
+    height: 4,
+    marginTop: 1,
+    alignSelf: "center",
+    borderRadius: 4 / 2,
+    position: "absolute",
+    bottom: "10%",
+  },
+  eventText:{
+    fontSize:17,
+    fontWeight:'500',
+    color: Colors.WHITE
+  }
 });

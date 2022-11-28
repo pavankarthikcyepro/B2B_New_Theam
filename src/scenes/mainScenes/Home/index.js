@@ -14,7 +14,7 @@ import {
   Image,
   Platform,
   PermissionsAndroid,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { IconButton, Card, Button, Portal } from "react-native-paper";
@@ -91,7 +91,6 @@ import {
 } from "../../../service";
 import ReactNativeModal from "react-native-modal";
 
-
 const officeLocation = {
   latitude: 37.33233141,
   longitude: -122.0312186,
@@ -131,9 +130,8 @@ const HomeScreen = ({ route, navigation }) => {
       setTargetData().then((r) => console.log(r)); //Commented to resolved filter issue for Home Screen
     });
   }, [navigation]);
-  
-const getCurrentLocation = async () => {
-    console.log("LLL");
+
+  const getCurrentLocation = async () => {
     try {
       if (Platform.OS === "ios") {
         Geolocation.requestAuthorization();
@@ -145,7 +143,6 @@ const getCurrentLocation = async () => {
       Geolocation.getCurrentPosition(
         (position) => {
           const initialPosition = JSON.stringify(position);
-          console.log("initialPosition", initialPosition);
           let json = JSON.parse(initialPosition);
           setInitialPosition(json.coords);
           // this.setState({ initialPosition });
@@ -156,13 +153,11 @@ const getCurrentLocation = async () => {
         { enableHighAccuracy: true }
       );
     } catch (error) {
-      console.log("ERORORO", error);
+      console.log("ERROR", error);
     }
   };
   useEffect(() => {
     if (selector.isModalVisible && !isEmpty(initialPosition)) {
-      console.log("ON MODAL", typeof initialPosition);
-      console.log("selector.isLoading", selector.isModalVisible);
       getDetails();
     }
   }, [selector.isModalVisible, initialPosition]);
@@ -185,12 +180,10 @@ const getCurrentLocation = async () => {
         );
         if (employeeData) {
           const jsonObj = JSON.parse(employeeData);
-
           const response = await client.get(
             URL.GET_ATTENDANCE_EMPID(jsonObj.empId, jsonObj.orgId)
           );
           const json = await response.json();
-          console.log("INITITAALSSs", json);
           if (json.length != 0) {
             let date = new Date(json[json.length - 1].createdtimestamp);
             let dist = getDistanceBetweenTwoPoints(
@@ -199,19 +192,15 @@ const getCurrentLocation = async () => {
               initialPosition?.latitude,
               initialPosition?.longitude
             );
-
             if (dist > officeRadius) {
               setReason(false); ///true for reason
             } else {
               setReason(false);
             }
-            console.log("date.getDate()", date.getDate());
-            console.log("new Date().getDate()", new Date().getDate());
-
             if (date.getDate() != new Date().getDate()) {
               if (startDate <= now && now <= startBetween) {
                 setAttendance(true);
-              }else{
+              } else {
                 setAttendance(false);
               }
             } else {
@@ -221,6 +210,12 @@ const getCurrentLocation = async () => {
                 setAttendance(false);
               }
             }
+          } else {
+           if (startDate <= now && now <= startBetween) {
+             setAttendance(true);
+           } else {
+             setAttendance(false);
+           }
           }
         }
       }
@@ -960,57 +955,57 @@ const getCurrentLocation = async () => {
     return /[.]/.exec(fileUrl) ? /[^.]+$/.exec(fileUrl) : undefined;
   };
 
-const RenderModal = () => {
-  return (
-    <ReactNativeModal
-      onBackdropPress={() => {
-        setShowModal(false);
-      }}
-      transparent={true}
-      visible={showModal}
-    >
-      <View style={styles.newModalContainer}>
-        <TouchableWithoutFeedback
-          style={styles.actionButtonContainer}
-          onPress={() => {}}
-        >
-          <>
-            <Button
-              onPress={() => {
-                downloadInLocal(options?.downloadUrl);
-                setShowModal(false);
-              }}
-              color="black"
-            >
-              {"ETVBRL Excel"}
-            </Button>
+  const RenderModal = () => {
+    return (
+      <ReactNativeModal
+        onBackdropPress={() => {
+          setShowModal(false);
+        }}
+        transparent={true}
+        visible={showModal}
+      >
+        <View style={styles.newModalContainer}>
+          <TouchableWithoutFeedback
+            style={styles.actionButtonContainer}
+            onPress={() => {}}
+          >
+            <>
+              <Button
+                onPress={() => {
+                  downloadInLocal(options?.downloadUrl);
+                  setShowModal(false);
+                }}
+                color="black"
+              >
+                {"ETVBRL Excel"}
+              </Button>
 
-            <View style={styles.divider} />
-            <Button
-              onPress={() => {
-                downloadInLocal(options?.downloadUrl1);
-                setShowModal(false);
-              }}
-              color="black"
-            >
-              {"EBR"}
-            </Button>
-            <View style={styles.divider} />
-            <Button
-              onPress={() => {
-                downloadInLocal(options?.downloadUrl2);
-                setShowModal(false);
-              }}
-              color="black"
-            >
-              {"Support"}
-            </Button>
-          </>
-        </TouchableWithoutFeedback>
-      </View>
-    </ReactNativeModal>
-  );
-};
+              <View style={styles.divider} />
+              <Button
+                onPress={() => {
+                  downloadInLocal(options?.downloadUrl1);
+                  setShowModal(false);
+                }}
+                color="black"
+              >
+                {"EBR"}
+              </Button>
+              <View style={styles.divider} />
+              <Button
+                onPress={() => {
+                  downloadInLocal(options?.downloadUrl2);
+                  setShowModal(false);
+                }}
+                color="black"
+              >
+                {"Support"}
+              </Button>
+            </>
+          </TouchableWithoutFeedback>
+        </View>
+      </ReactNativeModal>
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>

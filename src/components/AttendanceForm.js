@@ -56,6 +56,7 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
   const [reasonError, setReasonError] = useState("");
   const [reasonList, setReasonList] = useState([]);
   const [userData, setUserData] = useState({});
+  const [punched, setPunched] = useState(false);
 
   useEffect(() => {
     if (!present) {
@@ -76,12 +77,18 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
       setUserData(jsonObj);
-       const response = await client.get(
-         URL.GET_ATTENDANCE_EMPID(jsonObj.empId, jsonObj.orgId)
-       );
-       const json = await response.json();
-        const lastDate = moment().format(dateFormat);
-       console.log("OKOKOKOK", json[json.length - 1].createdtimestamp); 
+      const response = await client.get(
+        URL.GET_ATTENDANCE_EMPID(jsonObj.empId, jsonObj.orgId)
+      );
+      const json = await response.json();
+      const lastDate = moment().format(dateFormat);
+      const lastPresentDate = new Date(
+        json[json?.length - 1]?.createdtimestamp
+      ).getDate();
+      const todaysDate = new Date().getDate();
+      if (todaysDate === lastPresentDate) {
+        setPunched(true);
+      }
     }
   };
 
@@ -152,13 +159,12 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
           URL.GET_ATTENDANCE_EMPID(jsonObj.empId, jsonObj.orgId)
         );
         const json = await response.json();
-
-        console.log("OKOKOKOK", json[json.length - 1].createdtimestamp);
+        console.log("OKOKOKOK", json[json?.length - 1]);
         let latestDate = new Date(
-          json[json.length - 1].createdtimestamp
-        ).getDate();
+          json[json?.length - 1]?.createdtimestamp
+        )?.getDate();
         let todaysDate = new Date().getDate();
-        if (json.length == 0 || latestDate == todaysDate) {
+        if (json.length == 0 || latestDate !== todaysDate) {
           saveData(payload, absentRequest);
         } else {
           updateData(payload, json, absentRequest);
@@ -189,7 +195,7 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
   const updateData = async (payload, json, absentRequest = false) => {
     try {
       let tempPayload = {
-        id: json[0].id,
+        id: json[json.length - 1].id,
         orgId: payload.orgId,
         empId: payload.empId,
         branchId: payload.branchId,
@@ -204,7 +210,7 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
         tempPayload
       );
       const updatedJson = await updateData.json();
-      console.log("updatedJson", updatedJson);
+      // console.log("updatedJson", updatedJson);
       !absentRequest && inVisible();
       // if (updatedJson.success) {
       //   !absentRequest && inVisible();
@@ -216,10 +222,6 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
 
   function onClose() {
     setPresent(false);
-    // setReason({});
-    // setComment("");
-    // setCommentError("");
-    // setReasonError("");
   }
 
   return (
@@ -242,7 +244,7 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
               </Text>
               {present ? (
                 <Text style={styles.greetingText}>
-                  {isBetween
+                  {isBetween && !punched
                     ? "Please Punch Your Attendance"
                     : "Please LogOut Your Attendance"}
                 </Text>
@@ -296,12 +298,6 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
                   inputSearchStyle={styles.inputSearchStyle}
                   iconStyle={styles.iconStyle}
                   data={reasonList}
-                  //   data={[
-                  //     { label: "OO", value: "OO" },
-                  //     { label: "KK", value: "KK" },
-                  //     { label: "JJ", value: "JJ" },
-                  //     { label: "Other", value: "Other" },
-                  //   ]}
                   search
                   maxHeight={300}
                   labelField="label"
@@ -310,7 +306,6 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
                   value={reason.label}
                   searchPlaceholder="Search..."
                   onChange={(val) => {
-                    console.log("£££", val);
                     setReason(val);
                     setReasonError("");
                   }}

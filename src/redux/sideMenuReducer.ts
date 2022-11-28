@@ -33,7 +33,7 @@ const data = [
     pngIcon: require("../assets/images/Target_Planning-01.png"),
   },
   {
-    title: "Attendance",
+    title: "My Attendance",
     icon: ATTENDANCE,
     screen: 116,
     pngIcon: require("../assets/images/Target_Planning-01.png"),
