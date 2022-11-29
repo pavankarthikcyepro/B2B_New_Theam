@@ -589,7 +589,10 @@ const LeadsScreen = ({ route, navigation }) => {
             }
 
             let isLive = false;
-            if (route?.params?.param && route?.params?.moduleType != "home") {
+            if (
+              route?.params?.param &&
+              route?.params?.moduleType == "live-leads"
+            ) {
               isLive = true;
               from = "2021-01-01";
             }
