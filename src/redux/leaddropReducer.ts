@@ -54,9 +54,11 @@ export const getSubMenu = createAsyncThunk(
 export const getLeadsList = createAsyncThunk(
   "DROPANALYSIS/getLeadsList",
   async (payload, { rejectWithValue }) => {
-    console.log("PAYLOAD getLeadsList EN: ", URL.GET_LEAD_LIST_2());
-
-    const response = await client.post(URL.GET_LEAD_LIST_2(), payload);
+    let url = URL.GET_LEAD_LIST_2();
+    if (payload?.isLive) {
+      url = url + "Live";
+    }
+    const response = await client.post(url, payload.newPayload);
     const json = await response.json();
     console.log("ENQ getLeadsList LIST:", JSON.stringify(json));
 
