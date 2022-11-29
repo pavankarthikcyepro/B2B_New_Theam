@@ -636,7 +636,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
           otherCustomerType: selector.other,
           email: selector.email,
           enquirySource: selector.sourceOfEnquiryId,
-          subSource: selector.subSourceOfEnquiry,
+          subSource: selector.subSourceOfEnquiryId,
           ownerName: employeeName,
           secondaryPhone: selector.alterMobile,
           status: "PREENQUIRY",
