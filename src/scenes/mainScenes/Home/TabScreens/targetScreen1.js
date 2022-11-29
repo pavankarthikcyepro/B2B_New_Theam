@@ -68,8 +68,6 @@ const TargetScreen = ({ route }) => {
   );
   const [dropDownPlaceHolder, setDropDownPlaceHolder] = useState("Employees");
   const [allParameters, setAllParameters] = useState([]);
-  // const [countParameters, setCountParameters] = useState([]);
-
   const [selectedName, setSelectedName] = useState("");
 
   const [employeeListDropdownItem, setEmployeeListDropdownItem] = useState(0);
@@ -88,7 +86,6 @@ const TargetScreen = ({ route }) => {
   const [toggleParamsMetaData, setToggleParamsMetaData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const scrollViewRef = useRef();
-  const [employeeData, setEmployeeData] = useState()
   const paramsMetadata = [
     // 'Enquiry', 'Test Drive', 'Home Visit', 'Booking', 'INVOICE', 'Finance', 'Insurance', 'Exchange', 'EXTENDEDWARRANTY', 'Accessories'
     {
@@ -169,14 +166,6 @@ const TargetScreen = ({ route }) => {
       toggleIndex: 1,
     },
   ];
-  let count = 0
-
-  useEffect(async () => {
-    let empData = await AsyncStore.getData(
-      AsyncStore.Keys.LOGIN_EMPLOYEE
-    );
-    setEmployeeData(empData)
-  }, [])
 
   const getEmployeeListFromServer = async (user) => {
     const payload = {
@@ -252,7 +241,7 @@ const TargetScreen = ({ route }) => {
             Promise.allSettled([
               dispatch(getNewTargetParametersAllData(payload2)),
               dispatch(getTotalTargetParametersData(payload2)),
-            ]).then(() => { });
+            ]).then(() => {});
           }
         }
       );
@@ -268,7 +257,7 @@ const TargetScreen = ({ route }) => {
       .format(dateFormat);
     setDateDiff(
       (new Date(monthLastDate).getTime() - new Date(currentDate).getTime()) /
-      (1000 * 60 * 60 * 24)
+        (1000 * 60 * 60 * 24)
     );
 
     const isInsights = selector.isTeamPresent && !selector.isDSE;
@@ -390,7 +379,7 @@ const TargetScreen = ({ route }) => {
         .format(dateFormat);
       setDateDiff(
         (new Date(monthLastDate).getTime() - new Date(currentDate).getTime()) /
-        (1000 * 60 * 60 * 24)
+          (1000 * 60 * 60 * 24)
       );
     });
 
@@ -503,7 +492,6 @@ const TargetScreen = ({ route }) => {
             // tempParams[i]["employeeTargetAchievements"] = [];
             if (i === tempParams.length - 1) {
               setAllParameters([...tempParams]);
-              // setCountParameters([...tempParams]);
             }
             let newIds = tempParams.map((emp) => emp.empId);
             for (let k = 0; k < newIds.length; k++) {
@@ -516,7 +504,6 @@ const TargetScreen = ({ route }) => {
               const json = await response.json();
               tempParams[k].targetAchievements = json;
               setAllParameters([...tempParams]);
-              // setCountParameters([...tempParams]);
             }
           }
         }
@@ -648,7 +635,6 @@ const TargetScreen = ({ route }) => {
   };
 
   const onEmployeeNameClick = async (item, index, lastParameter) => {
-    // let localData = key ? [...countParameters]: [...allParameters];
     let localData = [...allParameters];
     let current = lastParameter[index].isOpenInner;
     for (let i = 0; i < lastParameter.length; i++) {
@@ -688,9 +674,7 @@ const TargetScreen = ({ route }) => {
                   if (newIds.length >= 2) {
                     for (let i = 0; i < newIds.length; i++) {
                       const element = newIds[i].toString();
-                      let tempPayload = getTotalPayload(employeeData,
-                        element,
-                      );
+                      let tempPayload = getTotalPayload(employeeData, element);
                       const response = await client.post(
                         URL.GET_TOTAL_TARGET_PARAMS(),
                         tempPayload
@@ -706,13 +690,11 @@ const TargetScreen = ({ route }) => {
                 }
               }
             }
-            // key ? setCountParameters([...localData]) : setAllParameters([...localData]);
             setAllParameters([...localData]);
           }
         );
       }
     } else {
-      // key ? setCountParameters([...localData]) : setAllParameters([...localData]);
       setAllParameters([...localData]);
     }
   };
@@ -728,121 +710,6 @@ const TargetScreen = ({ route }) => {
     setToggleParamsMetaData([...data]);
     setToggleParamsIndex(index);
   };
-
-  const getCounts = (item, index) => {
-    count = 0
-    if (index == 1 && employeeData) {
-      // let lastParameter = [...allParameters];
-      console.log('item', item);
-
-      // count += item.employeeTargetAchievements.length
-
-      // item.employeeTargetAchievements.map((item, index) => {
-      //   const localData = [
-      //     ...allParameters,
-      //   ];
-      // const localParameter = localData.employeeTargetAchievements;
-      //  onEmployeeNameClick(
-      //   item,
-      //   index,
-      //   lastParameter,
-      //   'getCount'
-      // )
-      //  })
-      // console.log('lastParameter ------->', lastParameter);
-
-
-
-      const payload = getEmployeePayload(employeeData, item);
-      Promise.all([dispatch(getUserWiseTargetParameters(payload))]).then(
-        async (res) => {
-          // let tempRawData = res[0]?.payload?.employeeTargetAchievements
-          let tempRawData = res[0]?.payload?.employeeTargetAchievements.filter(
-            (emp) => emp.empId !== item.empId
-          );
-
-          if (tempRawData?.length > 0) {
-            count += tempRawData?.length
-            console.log('tempRawData =-----------=>', tempRawData?.length);
-
-            tempRawData.map((innerItem1, innerIndex1) => {
-              const payload = getEmployeePayload(employeeData, innerItem1);
-              Promise.all([dispatch(getUserWiseTargetParameters(payload))]).then(
-                async (res) => {
-                  // let tempRawData2 = res[0]?.payload?.employeeTargetAchievements
-                  let tempRawData2 = res[0]?.payload?.employeeTargetAchievements.filter(
-                    (emp) => emp.empId !== innerItem1.empId
-                  );
-                  if (tempRawData2?.length > 0) {
-                    count += tempRawData2?.length
-                    console.log('count inner1 =----------=>', count)
-                    tempRawData2.map((innerItem2, innerIndex2) => {
-                      const payload = getEmployeePayload(employeeData, innerItem2);
-                      Promise.all([dispatch(getUserWiseTargetParameters(payload))]).then(
-                        async (res) => {
-                          // let tempRawData3 = res[0]?.payload?.employeeTargetAchievements
-                          let tempRawData3 = res[0]?.payload?.employeeTargetAchievements.filter(
-                            (emp) => emp.empId !== innerItem2.empId
-                          );
-                          if (tempRawData3?.length > 0) {
-                            count += tempRawData3?.length
-                            console.log('count inner2 =----------=>', count)
-                            tempRawData3.map((innerItem3, innerIndex3) => {
-                              const payload = getEmployeePayload(employeeData, innerItem3);
-                              Promise.all([dispatch(getUserWiseTargetParameters(payload))]).then(
-                                async (res) => {
-                                  // let tempRawData4 = res[0]?.payload?.employeeTargetAchievements
-                                  let tempRawData4 = res[0]?.payload?.employeeTargetAchievements.filter(
-                                    (emp) => emp.empId !== innerItem3.empId
-                                  );
-                                  if (tempRawData4?.length > 0) {
-                                    count += tempRawData4?.length
-                                    console.log('count inner3 =----------=>', count)
-                                    tempRawData4.map((innerItem4, innnerIndex4) => {
-                                      const payload = getEmployeePayload(employeeData, innerItem4);
-                                      Promise.all([dispatch(getUserWiseTargetParameters(payload))]).then(
-                                        async (res) => {
-                                          let tempRawData5 = res[0]?.payload?.employeeTargetAchievements.filter(
-                                            (emp) => emp.empId !== innerItem4.empId
-                                          );
-                                          if (tempRawData5?.length > 0) {
-                                            count += tempRawData5?.length
-                                            console.log('count inner4 =----------=>', count)
-                                            tempRawData5.map((innerItem5, innnerIndex5) => {
-                                              const payload = getEmployeePayload(employeeData, innerItem4);
-                                              Promise.all([dispatch(getUserWiseTargetParameters(payload))]).then(
-                                                async (res) => {
-                                                  let tempRawData6 = res[0]?.payload?.employeeTargetAchievements.filter(
-                                                    (emp) => emp.empId !== innerItem5.empId
-                                                  );
-                                                  if (tempRawData5?.length > 0) {
-                                                    count += tempRawData5?.length
-                                                    console.log('count inner5 =----------=>', count)
-                                                  }
-                                                })
-                                            })
-                                          }
-                                        })
-                                    })
-                                  }
-                                })
-                            })
-                          }
-                        })
-                    })
-                    // console.log('tempRawData 22222222 =----------=>', res[0]?.payload?.employeeTargetAchievements)
-                  }
-                })
-            })
-          }
-        })
-      // console.log('count =----------=> ', count);
-      // console.log('allParameters -------->', allParameters);
-      // console.log('count -------->', count);
-    }
-    return count.toString()
-
-  }
 
   return (
     <>
@@ -957,12 +824,10 @@ const TargetScreen = ({ route }) => {
                     {/* Employee params section */}
                     <ScrollView
                       style={{ height: Dimensions.get("screen").height / 2.2 }}
-                    // style={{ height: selector.isMD ? "81%" : "80%" }}
+                      // style={{ height: selector.isMD ? "81%" : "80%" }}
                     >
                       {allParameters.length > 0 &&
                         allParameters.map((item, index) => {
-
-
                           return (
                             <View key={`${item.empId} ${index}`}>
                               <View
@@ -975,28 +840,15 @@ const TargetScreen = ({ route }) => {
                                   width: Dimensions.get("screen").width - 28,
                                 }}
                               >
-                                <View style={{ flexDirection: 'row',paddingBottom:3 }}>
-                                  <Text
-                                    style={{
-                                      fontSize: 12,
-                                      fontWeight: "600",
-                                      textTransform: "capitalize",
-                                    }}
-                                  >
-                                    {item.empName}
-                                  </Text>
-                                  <View style={{
-                                    flexDirection: 'row',
-                                    marginLeft: 5,
-                                    borderLeftWidth: 1,
-                                    borderColor: Colors.GRAY
-                                  }}>
-                                  <Text style={{marginHorizontal:5}}>99</Text>
-                                    <Text>
-                                      {getCounts(item, index)}
-                                    </Text>
-                                  </View>
-                                </View>
+                                <Text
+                                  style={{
+                                    fontSize: 12,
+                                    fontWeight: "600",
+                                    textTransform: "capitalize",
+                                  }}
+                                >
+                                  {item.empName}
+                                </Text>
                                 <SourceModelView
                                   onClick={() => {
                                     navigation.navigate(
@@ -1057,8 +909,7 @@ const TargetScreen = ({ route }) => {
                                         await onEmployeeNameClick(
                                           item,
                                           index,
-                                          localData,
-                                          // undefined
+                                          localData
                                         );
                                       }}
                                     />
@@ -1067,7 +918,7 @@ const TargetScreen = ({ route }) => {
 
                                   {item.isOpenInner &&
                                     item.employeeTargetAchievements.length >
-                                    0 &&
+                                      0 &&
                                     item.employeeTargetAchievements.map(
                                       (innerItem1, innerIndex1) => {
                                         return (
@@ -1114,14 +965,14 @@ const TargetScreen = ({ route }) => {
                                                     marginTop: 8,
                                                   }}
                                                 >
-                                                    <Text
-                                                      style={{
-                                                        fontSize: 10,
-                                                        fontWeight: "500",
-                                                      }}
-                                                    >
-                                                      {innerItem1.empName}
-                                                    </Text>
+                                                  <Text
+                                                    style={{
+                                                      fontSize: 10,
+                                                      fontWeight: "500",
+                                                    }}
+                                                  >
+                                                    {innerItem1.empName}
+                                                  </Text>
                                                   <SourceModelView
                                                     onClick={() => {
                                                       navigation.navigate(
@@ -1160,8 +1011,7 @@ const TargetScreen = ({ route }) => {
                                                       await onEmployeeNameClick(
                                                         innerItem1,
                                                         innerIndex1,
-                                                        localParameter,
-                                                        // undefined
+                                                        localParameter
                                                       );
                                                     }}
                                                   />
@@ -1268,8 +1118,7 @@ const TargetScreen = ({ route }) => {
                                                               await onEmployeeNameClick(
                                                                 innerItem2,
                                                                 innerIndex2,
-                                                                localParameter,
-                                                                // undefined
+                                                                localParameter
                                                               );
                                                             }}
                                                           />
@@ -1386,8 +1235,7 @@ const TargetScreen = ({ route }) => {
                                                                         await onEmployeeNameClick(
                                                                           innerItem3,
                                                                           innerIndex3,
-                                                                          localParameter,
-                                                                          // undefined
+                                                                          localParameter
                                                                         );
                                                                       }}
                                                                     />
@@ -1401,7 +1249,7 @@ const TargetScreen = ({ route }) => {
                                                                     innerItem3
                                                                       .employeeTargetAchievements
                                                                       .length >
-                                                                    0 &&
+                                                                      0 &&
                                                                     innerItem3.employeeTargetAchievements.map(
                                                                       (
                                                                         innerItem4,
@@ -1469,8 +1317,7 @@ const TargetScreen = ({ route }) => {
                                                                                   await onEmployeeNameClick(
                                                                                     innerItem4,
                                                                                     innerIndex4,
-                                                                                    localParameter,
-                                                                                    // undefined
+                                                                                    localParameter
                                                                                   );
                                                                                 }}
                                                                               />
@@ -1483,7 +1330,7 @@ const TargetScreen = ({ route }) => {
                                                                               innerItem4
                                                                                 .employeeTargetAchievements
                                                                                 .length >
-                                                                              0 &&
+                                                                                0 &&
                                                                               innerItem4.employeeTargetAchievements.map(
                                                                                 (
                                                                                   innerItem5,
@@ -1554,8 +1401,7 @@ const TargetScreen = ({ route }) => {
                                                                                             await onEmployeeNameClick(
                                                                                               innerItem5,
                                                                                               innerIndex5,
-                                                                                              localParameter,
-                                                                                              // undefined,
+                                                                                              localParameter
                                                                                             );
                                                                                           }}
                                                                                         />
@@ -1568,7 +1414,7 @@ const TargetScreen = ({ route }) => {
                                                                                         innerItem5
                                                                                           .employeeTargetAchievements
                                                                                           .length >
-                                                                                        0 &&
+                                                                                          0 &&
                                                                                         innerItem5.employeeTargetAchievements.map(
                                                                                           (
                                                                                             innerItem6,
@@ -1642,8 +1488,7 @@ const TargetScreen = ({ route }) => {
                                                                                                       await onEmployeeNameClick(
                                                                                                         innerItem6,
                                                                                                         innerIndex6,
-                                                                                                        localParameter,
-                                                                                                        // undefined
+                                                                                                        localParameter
                                                                                                       );
                                                                                                     }}
                                                                                                   />
@@ -1903,7 +1748,7 @@ const TargetScreen = ({ route }) => {
                               Math.floor(
                                 (parseInt(bookingData?.achievment) /
                                   parseInt(enqData?.achievment)) *
-                                100
+                                  100
                               ) > 40
                                 ? "#14ce40"
                                 : "#ff0000",
@@ -1912,13 +1757,13 @@ const TargetScreen = ({ route }) => {
                           }}
                         >
                           {parseInt(bookingData?.achievment) === 0 ||
-                            parseInt(enqData?.achievment) === 0
+                          parseInt(enqData?.achievment) === 0
                             ? 0
                             : Math.round(
-                              (parseInt(bookingData?.achievment) /
-                                parseInt(enqData?.achievment)) *
-                              100
-                            )}
+                                (parseInt(bookingData?.achievment) /
+                                  parseInt(enqData?.achievment)) *
+                                  100
+                              )}
                           %
                         </Text>
                       ) : (
@@ -1951,7 +1796,7 @@ const TargetScreen = ({ route }) => {
                               Math.floor(
                                 (parseInt(visitData?.achievment) /
                                   parseInt(enqData?.achievment)) *
-                                100
+                                  100
                               ) > 40
                                 ? "#14ce40"
                                 : "#ff0000",
@@ -1960,13 +1805,13 @@ const TargetScreen = ({ route }) => {
                           }}
                         >
                           {parseInt(enqData?.achievment) === 0 ||
-                            parseInt(visitData?.achievment) === 0
+                          parseInt(visitData?.achievment) === 0
                             ? 0
                             : Math.round(
-                              (parseInt(visitData?.achievment) /
-                                parseInt(enqData?.achievment)) *
-                              100
-                            )}
+                                (parseInt(visitData?.achievment) /
+                                  parseInt(enqData?.achievment)) *
+                                  100
+                              )}
                           %
                         </Text>
                       ) : (
@@ -1999,7 +1844,7 @@ const TargetScreen = ({ route }) => {
                               Math.floor(
                                 (parseInt(finData?.achievment) /
                                   parseInt(retailData?.achievment)) *
-                                100
+                                  100
                               ) > 40
                                 ? "#14ce40"
                                 : "#ff0000",
@@ -2008,13 +1853,13 @@ const TargetScreen = ({ route }) => {
                           }}
                         >
                           {parseInt(finData?.achievment) === 0 ||
-                            parseInt(retailData?.achievment) === 0
+                          parseInt(retailData?.achievment) === 0
                             ? 0
                             : Math.round(
-                              (parseInt(finData?.achievment) /
-                                parseInt(retailData?.achievment)) *
-                              100
-                            )}
+                                (parseInt(finData?.achievment) /
+                                  parseInt(retailData?.achievment)) *
+                                  100
+                              )}
                           %
                         </Text>
                       ) : (
@@ -2049,7 +1894,7 @@ const TargetScreen = ({ route }) => {
                               Math.floor(
                                 (parseInt(retailData?.achievment) /
                                   parseInt(bookingData?.achievment)) *
-                                100
+                                  100
                               ) > 40
                                 ? "#14ce40"
                                 : "#ff0000",
@@ -2058,13 +1903,13 @@ const TargetScreen = ({ route }) => {
                           }}
                         >
                           {parseInt(bookingData?.achievment) === 0 ||
-                            parseInt(retailData?.achievment) === 0
+                          parseInt(retailData?.achievment) === 0
                             ? 0
                             : Math.round(
-                              (parseInt(retailData?.achievment) /
-                                parseInt(bookingData?.achievment)) *
-                              100
-                            )}
+                                (parseInt(retailData?.achievment) /
+                                  parseInt(bookingData?.achievment)) *
+                                  100
+                              )}
                           %
                         </Text>
                       )}
@@ -2088,7 +1933,7 @@ const TargetScreen = ({ route }) => {
                               Math.round(
                                 (parseInt(TDData?.achievment) /
                                   parseInt(enqData?.achievment)) *
-                                100
+                                  100
                               ) > 40
                                 ? "#14ce40"
                                 : "#ff0000",
@@ -2097,13 +1942,13 @@ const TargetScreen = ({ route }) => {
                           }}
                         >
                           {parseInt(TDData?.achievment) === 0 ||
-                            parseInt(enqData?.achievment) === 0
+                          parseInt(enqData?.achievment) === 0
                             ? 0
                             : Math.floor(
-                              (parseInt(TDData?.achievment) /
-                                parseInt(enqData?.achievment)) *
-                              100
-                            )}
+                                (parseInt(TDData?.achievment) /
+                                  parseInt(enqData?.achievment)) *
+                                  100
+                              )}
                           %
                         </Text>
                       )}
@@ -2127,7 +1972,7 @@ const TargetScreen = ({ route }) => {
                               Math.round(
                                 (parseInt(insData?.achievment) /
                                   parseInt(retailData?.achievment)) *
-                                100
+                                  100
                               ) > 40
                                 ? "#14ce40"
                                 : "#ff0000",
@@ -2136,13 +1981,13 @@ const TargetScreen = ({ route }) => {
                           }}
                         >
                           {parseInt(insData?.achievment) === 0 ||
-                            parseInt(retailData?.achievment) === 0
+                          parseInt(retailData?.achievment) === 0
                             ? 0
                             : Math.floor(
-                              (parseInt(insData?.achievment) /
-                                parseInt(retailData?.achievment)) *
-                              100
-                            )}
+                                (parseInt(insData?.achievment) /
+                                  parseInt(retailData?.achievment)) *
+                                  100
+                              )}
                           %
                         </Text>
                       )}
@@ -2168,7 +2013,7 @@ const TargetScreen = ({ route }) => {
                               Math.floor(
                                 (parseInt(retailData?.achievment) /
                                   parseInt(enqData?.achievment)) *
-                                100
+                                  100
                               ) > 40
                                 ? "#14ce40"
                                 : "#ff0000",
@@ -2177,13 +2022,13 @@ const TargetScreen = ({ route }) => {
                           }}
                         >
                           {parseInt(retailData?.achievment) === 0 ||
-                            parseInt(enqData?.achievment) === 0
+                          parseInt(enqData?.achievment) === 0
                             ? 0
                             : Math.round(
-                              (parseInt(retailData?.achievment) /
-                                parseInt(enqData?.achievment)) *
-                              100
-                            )}
+                                (parseInt(retailData?.achievment) /
+                                  parseInt(enqData?.achievment)) *
+                                  100
+                              )}
                           %
                         </Text>
                       )}
@@ -2207,7 +2052,7 @@ const TargetScreen = ({ route }) => {
                               Math.round(
                                 (parseInt(exgData?.achievment) /
                                   parseInt(retailData?.achievment)) *
-                                100
+                                  100
                               ) > 40
                                 ? "#14ce40"
                                 : "#ff0000",
@@ -2216,13 +2061,13 @@ const TargetScreen = ({ route }) => {
                           }}
                         >
                           {parseInt(exgData?.achievment) === 0 ||
-                            parseInt(retailData?.achievment) === 0
+                          parseInt(retailData?.achievment) === 0
                             ? 0
                             : Math.floor(
-                              (parseInt(exgData?.achievment) /
-                                parseInt(retailData?.achievment)) *
-                              100
-                            )}
+                                (parseInt(exgData?.achievment) /
+                                  parseInt(retailData?.achievment)) *
+                                  100
+                              )}
                           %
                         </Text>
                       )}
@@ -2246,7 +2091,7 @@ const TargetScreen = ({ route }) => {
                               Math.floor(
                                 (parseInt(exwData?.achievment) /
                                   parseInt(retailData?.achievment)) *
-                                100
+                                  100
                               ) > 40
                                 ? "#14ce40"
                                 : "#ff0000",
@@ -2255,13 +2100,13 @@ const TargetScreen = ({ route }) => {
                           }}
                         >
                           {parseInt(exwData?.achievment) === 0 ||
-                            parseInt(retailData?.achievment) === 0
+                          parseInt(retailData?.achievment) === 0
                             ? 0
                             : Math.round(
-                              (parseInt(exwData?.achievment) /
-                                parseInt(retailData?.achievment)) *
-                              100
-                            )}
+                                (parseInt(exwData?.achievment) /
+                                  parseInt(retailData?.achievment)) *
+                                  100
+                              )}
                           %
                         </Text>
                       ) : (
@@ -2296,7 +2141,7 @@ const TargetScreen = ({ route }) => {
                             Math.round(
                               (parseInt(accData?.achievment) /
                                 parseInt(retailData?.achievment)) *
-                              100
+                                100
                             ) > 40
                               ? "#14ce40"
                               : "#ff0000",
@@ -2305,12 +2150,12 @@ const TargetScreen = ({ route }) => {
                         }}
                       >
                         {parseInt(accData?.achievment) === 0 ||
-                          parseInt(retailData?.achievment) === 0
+                        parseInt(retailData?.achievment) === 0
                           ? 0
                           : Math.floor(
-                            parseInt(accData?.achievment) /
-                            parseInt(retailData?.achievment)
-                          )}
+                              parseInt(accData?.achievment) /
+                                parseInt(retailData?.achievment)
+                            )}
                       </Text>
                     )}
                   </View>
@@ -2323,7 +2168,7 @@ const TargetScreen = ({ route }) => {
       ) : (
         <LoaderComponent
           visible={selector.isLoading}
-          onRequestClose={() => { }}
+          onRequestClose={() => {}}
         />
       )}
     </>
