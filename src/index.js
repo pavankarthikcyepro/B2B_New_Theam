@@ -15,6 +15,7 @@ import {
   createDateTime,
   distanceFilterValue,
   getDistanceBetweenTwoPoints,
+  MarkAbsent,
   officeRadius,
   options,
   sendAlertLocalNotification,
@@ -119,8 +120,8 @@ const AppScreen = () => {
                 let dist = getDistanceBetweenTwoPoints(
                   officeLocation.latitude,
                   officeLocation.longitude,
-                  lastPosition.coords.latitude,
-                  lastPosition.coords.longitude
+                  lastPosition?.coords?.latitude,
+                  lastPosition?.coords?.longitude
                 );
 
                 if (dist > officeRadius) {
@@ -211,6 +212,9 @@ const AppScreen = () => {
         var now = new Date();
         if (startDate <= now && now <= startBetween) {
           sendLocalNotification();
+        }
+        if (now >= startBetween) {
+          MarkAbsent();
         }
         if (endBetween <= now && now <= endDate) {
           sendLocalNotification();

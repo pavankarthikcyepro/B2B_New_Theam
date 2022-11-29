@@ -145,7 +145,6 @@ const HomeScreen = ({ route, navigation }) => {
           const initialPosition = JSON.stringify(position);
           let json = JSON.parse(initialPosition);
           setInitialPosition(json.coords);
-          // this.setState({ initialPosition });
         },
         (error) => {
           console.log(JSON.stringify(error));
@@ -193,7 +192,7 @@ const HomeScreen = ({ route, navigation }) => {
               initialPosition?.longitude
             );
             if (dist > officeRadius) {
-              setReason(false); ///true for reason
+              setReason(true); ///true for reason
             } else {
               setReason(false);
             }

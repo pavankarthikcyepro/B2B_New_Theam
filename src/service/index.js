@@ -4,6 +4,9 @@ import { Platform } from "react-native";
 import BackgroundService from "react-native-background-actions";
 import PushNotification from "react-native-push-notification";
 import { Colors } from "../styles";
+import * as AsyncStore from "../asyncStore";
+import URL from "../networking/endpoints";
+import { client } from "../networking/client";
 
 var startDate = createDateTime("8:30");
 var endDate = createDateTime("12:00");
@@ -14,6 +17,50 @@ export const distanceFilterValue = 10;
 export const officeRadius = 0.1;
 export const sleep = (time) =>
   new Promise((resolve) => setTimeout(() => resolve(), time));
+
+export const MarkAbsent = async (absentRequest = false) => {
+  try {
+    let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      let payload = {
+        id: 0,
+        orgId: jsonObj.orgId,
+        empId: jsonObj.empId,
+        branchId: jsonObj.branchId,
+        isPresent: 0,
+        isAbsent: 1,
+        status: "Active",
+        comments: "",
+        reason: "",
+      };
+      const response = await client.get(
+        URL.GET_ATTENDANCE_EMPID(jsonObj.empId, jsonObj.orgId)
+      );
+      const json = await response.json();
+      console.log("OKOKOKOK", json[json?.length - 1]);
+      let latestDate = new Date(
+        json[json?.length - 1]?.createdtimestamp
+      )?.getDate();
+      let todaysDate = new Date().getDate();
+      if (json?.length !== 0 || latestDate !== todaysDate) {
+        saveData(payload, true);
+      }
+    }
+  } catch (error) {
+    console.error("MAIN", error);
+  }
+};
+
+const saveData = async (payload, absentRequest = false) => {
+  try {
+    const saveData = await client.post(URL.SAVE_EMPLOYEE_ATTENDANCE(), payload);
+    const savedJson = await saveData.json();
+    console.log("savedJson", savedJson, absentRequest);
+  } catch (error) {
+    console.error("savedJsonERROR", error);
+  }
+};
 
 // You can do anything in your task such as network requests, timers and so on,
 // as long as it doesn't touch UI. Once your task completes (i.e. the promise is resolved),
@@ -38,7 +85,7 @@ export const veryIntensiveTask = async (taskDataArguments) => {
           { enableHighAccuracy: true, distanceFilter: 100 }
         );
         Geolocation.watchPosition((data) => {
-          console.log("LOACATION", data);
+          console.log("LOCATION", data);
         });
       } catch (error) {}
 
@@ -104,26 +151,21 @@ export function createDateTime(time) {
 }
 
 export const sendLocalNotification = (alert) => {
-  console.log("KKKKKK");
   if (Platform.OS === "ios") {
-    console.log("OPENNNN");
     PushNotificationIOS.presentLocalNotification({
-      alertTitle:isBetween
-        ? "Good Morning"
-        : "Good Evening",
+      alertTitle: isBetween ? "Good Morning" : "Good Evening",
       alertBody: isBetween
         ? `Please Punch Your Attendance`
         : "Please LogOut Your Attendance",
       applicationIconBadgeNumber: 1,
     });
   }
-  if(Platform.OS === 'android'){
+  if (Platform.OS === "android") {
     PushNotification.createChannel(
       {
         channelId: "mychannel", // (required)
         channelName: "My channel", // (required)
         vibrate: true,
-       
       },
       (created) => {
         PushNotification.localNotification({
@@ -152,7 +194,6 @@ export const sendLocalNotification = (alert) => {
     );
   }
 };
-
 
 export const sendAlertLocalNotification = (alert) => {
   if (Platform.OS === "ios") {

@@ -66,30 +66,31 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
 
   useEffect(() => {
     getReason();
-  }, []);
-
-  useEffect(() => {
     getDetails();
   }, []);
 
   const getDetails = async () => {
-    let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-    if (employeeData) {
-      const jsonObj = JSON.parse(employeeData);
-      setUserData(jsonObj);
-      const response = await client.get(
-        URL.GET_ATTENDANCE_EMPID(jsonObj.empId, jsonObj.orgId)
+    try {
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
       );
-      const json = await response.json();
-      const lastDate = moment().format(dateFormat);
-      const lastPresentDate = new Date(
-        json[json?.length - 1]?.createdtimestamp
-      ).getDate();
-      const todaysDate = new Date().getDate();
-      if (todaysDate === lastPresentDate) {
-        setPunched(true);
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        setUserData(jsonObj);
+        const response = await client.get(
+          URL.GET_ATTENDANCE_EMPID(jsonObj.empId, jsonObj.orgId)
+        );
+        const json = await response.json();
+        const lastDate = moment().format(dateFormat);
+        const lastPresentDate = new Date(
+          json[json?.length - 1]?.createdtimestamp
+        ).getDate();
+        const todaysDate = new Date().getDate();
+        if (todaysDate === lastPresentDate) {
+          setPunched(true);
+        }
       }
-    }
+    } catch (error) {}
   };
 
   const getReason = async () => {
@@ -206,7 +207,7 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
         reason: reason?.value ? reason?.value : "",
       };
       const updateData = await client.put(
-        URL.UPDATE_EMPLOYEE_ATTENDANCE(json[0].id),
+        URL.UPDATE_EMPLOYEE_ATTENDANCE(json[json.length - 1].id),
         tempPayload
       );
       const updatedJson = await updateData.json();

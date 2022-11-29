@@ -7,6 +7,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Dimensions,
+  Platform,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -22,9 +23,15 @@ import moment from "moment";
 import AttendanceForm from "../../../components/AttendanceForm";
 import { MenuIcon } from "../../../navigations/appNavigator";
 import WeeklyCalendar from "react-native-weekly-calendar";
+import Geolocation from "@react-native-community/geolocation";
+import { getDistanceBetweenTwoPoints, officeRadius } from "../../../service";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
+const officeLocation = {
+  latitude: 37.33233141,
+  longitude: -122.0312186,
+};
 
 const AttendanceScreen = ({ route }) => {
   const navigation = useNavigation();
@@ -34,35 +41,8 @@ const AttendanceScreen = ({ route }) => {
   const [marker, setMarker] = useState({});
   const [attendance, setAttendance] = useState(false);
   const [weeklyRecord, setWeeklyRecord] = useState([]);
-
-  const sampleEvents = [
-    { start: "2020-03-27 09:00:00", duration: "00:20:00", note: "Walk my dog" },
-    {
-      start: "2020-03-28 14:00:00",
-      duration: "01:00:00",
-      note: "Doctor's appointment",
-    },
-    {
-      start: "2020-03-29 08:00:00",
-      duration: "00:30:00",
-      note: "Morning exercise",
-    },
-    {
-      start: "2020-03-25 14:00:00",
-      duration: "02:00:00",
-      note: "Meeting with client",
-    },
-    {
-      start: "2020-03-25 19:00:00",
-      duration: "01:00:00",
-      note: "Dinner with family",
-    },
-    { start: "2020-03-26 09:30:00", duration: "01:00:00", note: "Schedule 1" },
-    { start: "2020-03-26 11:00:00", duration: "02:00:00", note: "Schedule 2" },
-    { start: "2020-03-26 15:00:00", duration: "01:30:00", note: "Schedule 3" },
-    { start: "2020-03-26 18:00:00", duration: "02:00:00", note: "Schedule 4" },
-    { start: "2020-03-26 22:00:00", duration: "01:00:00", note: "Schedule 5" },
-  ];
+  const [reason, setReason] = useState(false);
+  const [initialPosition, setInitialPosition] = useState({});
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -71,9 +51,46 @@ const AttendanceScreen = ({ route }) => {
   }, [navigation]);
 
   useEffect(() => {
+    getCurrentLocation();
     setLoading(true);
     getAttendance();
   }, []);
+
+   const getCurrentLocation = async () => {
+     try {
+       if (Platform.OS === "ios") {
+         Geolocation.requestAuthorization();
+         Geolocation.setRNConfiguration({
+           skipPermissionRequests: false,
+           authorizationLevel: "whenInUse",
+         });
+       }
+       Geolocation.getCurrentPosition(
+         (position) => {
+           const initialPosition = JSON.stringify(position);
+           let json = JSON.parse(initialPosition);
+           setInitialPosition(json.coords);
+            let dist = getDistanceBetweenTwoPoints(
+              officeLocation.latitude,
+              officeLocation.longitude,
+              json?.coords?.latitude,
+              json?.coords?.longitude
+            );
+            if (dist > officeRadius) {
+              setReason(true); ///true for reason
+            } else {
+              setReason(false);
+            }
+         },
+         (error) => {
+           console.log(JSON.stringify(error));
+         },
+         { enableHighAccuracy: true }
+       );
+     } catch (error) {
+       console.log("ERROR", error);
+     }
+   };
 
   const getAttendance = async () => {
     try {
@@ -136,7 +153,15 @@ const AttendanceScreen = ({ route }) => {
   };
 
   const isCurrentDate = (day) => {
+
     let selectedDate = day.dateString;
+    if (currentDate === selectedDate) {
+      setAttendance(true);
+    }
+  };
+
+  const isCurrentDateForWeekView = (day) => {
+    let selectedDate =  moment(day).format(dateFormat);
     if (currentDate === selectedDate) {
       setAttendance(true);
     }
@@ -146,7 +171,7 @@ const AttendanceScreen = ({ route }) => {
     <SafeAreaView style={styles.container}>
       <AttendanceForm
         visible={attendance}
-        // showReason={reason}
+        showReason={reason}
         inVisible={() => {
           getAttendance();
           setAttendance(false);
@@ -270,6 +295,10 @@ const AttendanceScreen = ({ route }) => {
             themeColor={Colors.RED}
             dayLabelStyle={{
               color: Colors.RED,
+            }}
+            onDayPress={(day) => {
+              console.log("selected dayssss", day);
+              isCurrentDateForWeekView(day);
             }}
             renderEvent={(event, j) => {
               return (
