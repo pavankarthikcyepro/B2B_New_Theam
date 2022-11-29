@@ -36,7 +36,16 @@ const enquirySlice = createSlice({
     isLoadingExtraData: false,
     status: ""
   },
-  reducers: {},
+  reducers: {
+    clearEnqState: (state, action) => {
+      state.enquiry_list =  [],
+      state.pageNumber =  0,
+      state.totalPages =  1,
+      state.isLoading =  false,
+      state.isLoadingExtraData =  false,
+      state.status =  ""
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(getEnquiryList.pending, (state) => {
       state.totalPages = 1
@@ -92,5 +101,5 @@ const enquirySlice = createSlice({
   }
 });
 
-export const { } = enquirySlice.actions;
+export const { clearEnqState } = enquirySlice.actions;
 export default enquirySlice.reducer;
