@@ -591,6 +591,7 @@ const LeadsScreen = ({ route, navigation }) => {
             let isLive = false;
             if (route?.params?.param) {
               isLive = true;
+              from = "2021-01-01"
             }
 
             let newPayload = {
@@ -602,7 +603,7 @@ const LeadsScreen = ({ route, navigation }) => {
                 "empId": employeeDetail ? route?.params?.employeeDetail?.empId : jsonObj.empId,
                 "status": "",
                 "offset": 0,
-                "limit": 500,
+                "limit": 5000,
                 "leadStage": leadStages,
                 "leadStatus": defLeadStatus ? defLeadStatus : leadStatus.length === 0 ? defualtLeadStatus : leadStatus
             };
