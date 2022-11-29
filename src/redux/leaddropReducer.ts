@@ -191,7 +191,21 @@ const leaddropListSlice = createSlice({
     leadList: [],
     defualtStatus: [],
   },
-  reducers: {},
+  reducers: {
+    clearLeadDropState :(state, action) => {
+      state.leadDropList= [],
+      state.pageNumber= 0,
+      state.totalPages= 1,
+      state.isLoading= false,
+      state.isLoadingExtraData= false,
+      state.status= "",
+      state.approvalStatus= "",
+      state.subMenu= [],
+      state.menu= [],
+      state.leadList= [],
+      state.defualtStatus= []
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(getMenu.pending, (state, action) => {
       console.log("dropanalysis getMenu pending", action);
@@ -337,5 +351,5 @@ const leaddropListSlice = createSlice({
   },
 });
 
-export const {} = leaddropListSlice.actions;
+export const { clearLeadDropState } = leaddropListSlice.actions;
 export default leaddropListSlice.reducer;
