@@ -589,9 +589,12 @@ const LeadsScreen = ({ route, navigation }) => {
             }
 
             let isLive = false;
-            if (route?.params?.param) {
+            if (
+              route?.params?.param &&
+              route?.params?.moduleType == "live-leads"
+            ) {
               isLive = true;
-              from = "2021-01-01"
+              from = "2021-01-01";
             }
 
             let newPayload = {

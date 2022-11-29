@@ -241,7 +241,7 @@ const TargetScreen = ({ route }) => {
             Promise.allSettled([
               dispatch(getNewTargetParametersAllData(payload2)),
               dispatch(getTotalTargetParametersData(payload2)),
-            ]).then(() => { });
+            ]).then(() => {});
           }
         }
       );
@@ -257,7 +257,7 @@ const TargetScreen = ({ route }) => {
       .format(dateFormat);
     setDateDiff(
       (new Date(monthLastDate).getTime() - new Date(currentDate).getTime()) /
-      (1000 * 60 * 60 * 24)
+        (1000 * 60 * 60 * 24)
     );
 
     const isInsights = selector.isTeamPresent && !selector.isDSE;
@@ -379,7 +379,7 @@ const TargetScreen = ({ route }) => {
         .format(dateFormat);
       setDateDiff(
         (new Date(monthLastDate).getTime() - new Date(currentDate).getTime()) /
-        (1000 * 60 * 60 * 24)
+          (1000 * 60 * 60 * 24)
       );
     });
 
@@ -674,9 +674,7 @@ const TargetScreen = ({ route }) => {
                   if (newIds.length >= 2) {
                     for (let i = 0; i < newIds.length; i++) {
                       const element = newIds[i].toString();
-                      let tempPayload = getTotalPayload(employeeData,
-                        element,
-                      );
+                      let tempPayload = getTotalPayload(employeeData, element);
                       const response = await client.post(
                         URL.GET_TOTAL_TARGET_PARAMS(),
                         tempPayload
