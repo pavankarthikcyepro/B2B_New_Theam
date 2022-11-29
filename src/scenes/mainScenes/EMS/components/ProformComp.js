@@ -14,7 +14,7 @@ var RNFS = require('react-native-fs');
 
 import * as AsyncStore from "../../../../asyncStore";
 import {
-  getLogoNameApi, getOnRoadPriceAndInsurenceDetailsApi, setDropDownData, postProformaInvoiceDetails
+  getLogoNameApi, getOnRoadPriceAndInsurenceDetailsApi, setDropDownData, postProformaInvoiceDetails, getProformaListingDetailsApi
 } from "../../../../redux/enquiryFormReducer";
 import { getFocusedRouteNameFromRoute, useNavigation } from "@react-navigation/native";
 import {
@@ -200,17 +200,50 @@ export const ProformaComp = ({
   const [carModel, setCarModel] = useState("");
   const [carColor, setCarColor] = useState("");
   const [carVariant, setCarVariant] = useState("");
+  const [proformaDataForDropdown, setproformaDataForDropdown] = useState("");
+  const [selectedProfroma, setSelectedProfroma] = useState("");
+  const [selectedProfromaData, setSelectedProfromaData] = useState([]);
+  const [proformaNo, setProformaNo] = useState("");
+
   const [selectedCarVarientsData, setSelectedCarVarientsData] = useState({
     varientList: [],
     varientListForDropDown: [],
   });
   const [carColorsData, setCarColorsData] = useState([]);
   // const [carModalData, setcarModalData] = useState([]);
-  
 
   useEffect(() => {
     getUserData();
+    dispatch(getProformaListingDetailsApi(universalId));
+    
+    
   }, []);
+
+  useEffect(() => {
+    if (selector.proforma_listingdata){
+      const proformaList =
+        selector.proforma_listingdata || [];
+      if (proformaList.length > 0) {
+        let newProformaList = [];
+        proformaList.forEach((item) => {
+         
+          
+          newProformaList.push({
+           id : item.id,
+            name: moment(item.created_date).format("DD/MM/YYYY h:mm")
+          });
+         
+        });
+        setproformaDataForDropdown([...newProformaList])
+     
+      }
+    }
+  
+    
+  }, [selector.proforma_listingdata])
+  
+
+
   const getUserData = async () => {
     try {
       const employeeData = await AsyncStore.getData(
@@ -473,9 +506,12 @@ export const ProformaComp = ({
 
   const newPerformaClick = () => {
     setisNewPerformaClicked(true)
+    setSelectedProfroma("")
+    setSelectedProfromaData([])
   }
   const selectPerformaClick = () => {
     setisSelectPerformaClick(true)
+    setisNewPerformaClicked(false)
     showDropDownModelMethod("SELECTPERFORMA", "Select Proforma")
   }
 
@@ -757,6 +793,9 @@ export const ProformaComp = ({
       case "COLOR":
         setDataForDropDown([...carColorsData]);
         break;
+      case "SELECTPERFORMA":
+        setDataForDropDown([...proformaDataForDropdown]);
+        break;
     }
     setDropDownKey(key);
     setDropDownTitle(headerText);
@@ -831,7 +870,6 @@ export const ProformaComp = ({
   const updateColorsDataForSelectedVarient = (
     selectedVarientName,
     varientList,
-    orgId
   ) => {
     if (!selectedVarientName || selectedVarientName.length === 0) {
       return;
@@ -860,11 +898,11 @@ export const ProformaComp = ({
       
       // alert("variant id")
 
-      //alert("success" + orgId + " varientId" + varientId)
+      // alert("success" + orgId + " varientId" + varientId)
       dispatch(
-        getOnRoadPriceAndInsurenceDetailsApi({
-          orgId: orgId,
+        getOnRoadPriceAndInsurenceDetailsApi({ 
           varientId: varientId,
+          orgId: orgId
         })
       );
     }
@@ -964,6 +1002,43 @@ export const ProformaComp = ({
     }
   };
 
+
+  const updateProformaDataforSelectedValue = (id,
+    selectedProformaName,
+    proformaData
+  ) => {
+    if (!selectedProformaName || selectedProformaName.length === 0) {
+      return;
+    }
+
+    let arrTemp = proformaData.filter(function (obj) {
+      return obj.id === id;
+    });
+    console.log("proformaData LIST: ", arrTemp);
+    let tempArrr = arrTemp.length > 0 ? arrTemp[0] : undefined;
+    if (tempArrr !== undefined) {
+      let newSelectedProforma = [];
+      let mArray = selector.proforma_listingdata;
+   
+    
+      if (mArray.length > 0) {
+         newSelectedProforma = mArray.filter((item) => item.id === id);
+        
+        setProformaNo(newSelectedProforma[0].performaUUID);
+        let oth_performa_column =JSON.parse(newSelectedProforma[0].oth_performa_column)
+      
+      }
+      setSelectedProfromaData(newSelectedProforma)
+     
+   
+      let carmodalObj = [...carModelsData];
+     // todo need to filter car details
+      let findVehicle = carmodalObj.filter((item) => item.vehicleId === newSelectedProforma[0].vehicleId)
+   
+
+    }
+  };
+
   return (
     <View>
       <DropDownComponant
@@ -994,7 +1069,9 @@ export const ProformaComp = ({
             // updateColor(item);
           }
           else if (dropDownKey === "SELECTPERFORMA") {
-            updateColor(item);
+           
+            setSelectedProfroma(item.name)
+            updateProformaDataforSelectedValue(item.id, item.name, [...proformaDataForDropdown]);
           } else if (dropDownKey === "INSURANCE_TYPE") {
             setSelectedInsurencePrice(item.cost);
           } else if (dropDownKey === "WARRANTY") {
@@ -1060,10 +1137,10 @@ export const ProformaComp = ({
         <Button
           mode="contained"
           style={{ flex: 1, marginRight: 10 }}
-          color={Colors.PINK}
+          color={selectedProfroma !== "" ? Colors.WHITE :Colors.PINK}
           labelStyle={{ textTransform: "none" }}
           onPress={() => selectPerformaClick()}>
-          Select Proforma
+          {selectedProfroma !== "" ? selectedProfroma : "Select Proforma"}
         </Button>
 
 
@@ -1145,7 +1222,7 @@ export const ProformaComp = ({
 
       {/* main view to manage visibility  */}
       <View>
-        {carModel !== "" ?
+        {selectedProfroma != "" || carModel != "" ?
           <>
             
 
@@ -1216,17 +1293,31 @@ export const ProformaComp = ({
               <TextAndAmountComp title={"GSTN"} text={
                 selector.proforma_gstnNumber
               } />
-              <TextAndAmountComp title={"Name"} text={modelDetails?.model} />
+              {/* <TextAndAmountComp title={"Name"} text={modelDetails?.model} /> */}
               <TextAndAmountComp
                 title={"Date"}
                 text={moment().format("DD/MM/YYYY")}
               />
+              {/* <TextAndAmountComp title={"Name"} text={modelDetails?.model} />
               <TextAndAmountComp title={"Model"} text={modelDetails?.variant} />
-              <TextAndAmountComp title={"Color"} text={modelDetails?.color} />
-              <TextAndAmountComp
+              <TextAndAmountComp title={"Color"} text={modelDetails?.color} /> */}
+              {carModel != "" && <TextAndAmountComp title={"Name"} text={carModel} /> } 
+              {carVariant != "" && <TextAndAmountComp title={"Model"} text={carVariant} />}  
+              {carColor != "" && <TextAndAmountComp title={"Color"} text={carColor} />} 
+              {proformaNo != "" && <TextAndAmountComp
+                title={"PROFORMA NO:"}
+                text={proformaNo}
+              /> }
+              {selector.pan_number != "" &&
+               <TextAndAmountComp
+                title={"PAN NO :"}
+                text={selector.pan_number}
+              /> }
+              
+              {/* <TextAndAmountComp
                 title={"Amount"}
                 text={totalOnRoadPrice.toFixed(2)}
-              />
+              /> */}
             </View>
 
             <View
@@ -1425,6 +1516,7 @@ export const ProformaComp = ({
                       accessorylist: paidAccessoriesList,
                       selectedAccessoryList: selectedPaidAccessoriesList,
                       selectedFOCAccessoryList: selectedFOCAccessoriesList,
+                      fromScreen: "PROFORMA"
                     }
                   )
                 }>

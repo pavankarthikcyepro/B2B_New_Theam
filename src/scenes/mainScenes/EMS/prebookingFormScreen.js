@@ -5561,6 +5561,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           accessorylist: paidAccessoriesList,
                           selectedAccessoryList: selectedPaidAccessoriesList,
                           selectedFOCAccessoryList: selectedFOCAccessoriesList,
+                          fromScreen: "preBookingForm"
                         }
                       )
                     }

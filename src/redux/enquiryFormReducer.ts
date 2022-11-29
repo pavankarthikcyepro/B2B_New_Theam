@@ -219,6 +219,20 @@ export const getLogoNameApi = createAsyncThunk(
     return json;
   }
 );
+export const getProformaListingDetailsApi = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/getProformaListingDetailsApi",
+  async (crmUniversalId, { rejectWithValue }) => {
+    const response = await client.get(
+      URL.PROFORMA_LISTING_DETAILS(crmUniversalId)
+    );
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
 export const getProformaModelApi = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/getProformaModelApi",
   async (universalId, { rejectWithValue }) => {
@@ -454,6 +468,7 @@ const initialState = {
   maxDate: null,
 
   //Proforma Invoice
+  proforma_listingdata : [],
   proforma_houseNo : "",
   proforma_address:"",
   proforma_gstnNumber:"",
@@ -2096,6 +2111,27 @@ const enquiryDetailsOverViewSlice = createSlice({
     builder.addCase(getLogoNameApi.rejected, (state, action) => {
       state.isLoading = false;
     });
+
+
+    builder.addCase(getProformaListingDetailsApi.pending, (state) => {
+      state.isLoading = true;
+      state.proforma_listingdata = [];
+    });
+    builder.addCase(getProformaListingDetailsApi.fulfilled, (state, action) => {
+      
+      const data = action.payload;
+      if(data){
+        state.proforma_listingdata = data;
+      }
+      state.isLoading = false;
+    });
+    builder.addCase(getProformaListingDetailsApi.rejected, (state, action) => {
+      state.isLoading = false;
+      state.proforma_listingdata = [];
+    });
+
+
+    
     builder.addCase(
       getOnRoadPriceAndInsurenceDetailsApi.pending,
       (state, action) => {

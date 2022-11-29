@@ -123,6 +123,11 @@ const URL = {
     );
   },
 
+  PROFORMA_LISTING_DETAILS: (crmUniversalId) => {
+    return (
+      sales_url + "/enquiry/performa/id/" +crmUniversalId);
+  },
+
   ENQUIRY_DETAILS_BY_AUTOSAVE: (universalId) => {
     return downloadFile + "/autosave-get-uid/" + `${universalId}`;
   },
