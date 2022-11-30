@@ -278,7 +278,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                                     {item.lat && item.lon &&
                                                         <TouchableOpacity style={{ position: 'absolute', top: 0, right: 0 }} onPress={() => openMap(item.lat, item.lon)}>
                                                             <View style={{ width: 35, height: 35, justifyContent: "center", alignItems: "center", borderWidth: 1, borderColor: "#d1d1d1", borderRadius: 5 }}>
-                                                                <Image style={{ height: 25, width: 15 }} source={require('../../../assets/images/location-pin.png')} />
+                                                                <Image style={{ height: 25, width: 15 }} source={require('../../../assets/images/location-pin.png')} tintColor={Colors.PINK}  />
                                                             </View>
                                                         </TouchableOpacity>
                                                     }
@@ -313,7 +313,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                                 {item.lat && item.lon &&
                                                     <TouchableOpacity style={{ position: 'absolute', top: 0, right: 0 }} onPress={() => openMap(item.lat, item.lon)}>
                                                         <View style={{ width: 35, height: 35, justifyContent: "center", alignItems: "center", borderWidth: 1, borderColor: "#d1d1d1", borderRadius: 5 }}>
-                                                            <Image style={{ height: 25, width: 15 }} source={require('../../../assets/images/location-pin.png')} />
+                                                            <Image style={{ height: 25, width: 15 }} source={require('../../../assets/images/location-pin.png')} tintColor={Colors.PINK} />
                                                         </View>
                                                     </TouchableOpacity>
                                                 }

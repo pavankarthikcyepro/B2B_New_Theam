@@ -154,11 +154,13 @@ export const MyTaskNewItem = ({ from = "MY_TASKS", navigator, type, uniqueId, na
                         {from !== 'PRE_ENQUIRY' &&
                             <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                                 <>
-                                    {enqCat !== '' && enqCat?.length > 0 &&
-                                        <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                                            <Text style={[styles.text3, { color: getCategoryTextColor(enqCat) }]}>{enqCat}</Text>
-                                            <Text style={{ fontWeight: '600', color: Colors.BLACK }}> | </Text>
-                                        </View>
+                                    {leadStage == 'ENQUIRY' &&
+                                        (enqCat !== '' && enqCat?.length > 0 &&
+                                            <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                                                <Text style={[styles.text3, { color: getCategoryTextColor(enqCat) }]}>{enqCat}</Text>
+                                                <Text style={{ fontWeight: '600', color: Colors.BLACK }}> | </Text>
+                                            </View>)
+
                                     }
                                 </>
                                 <Text style={[styles.text3, { color: getStageColor(leadStage, leadStatus) }]}>{leadStage === 'PREBOOKING' ? 'BOOKING APPROVAL' : leadStage}</Text>

@@ -330,18 +330,26 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
       return;
     }
 
+    if (type == 'RESCHEDULE') {
+      if (selector.actual_start_time.trim().length === 0) {
+        showToast("Please select next followup date");
+        return;
+      }
+
+    }
+    var defaultDate = moment()
     const newTaskObj = { ...selector.task_details_response };
     newTaskObj.reason = selector.reason === 'Other' ? otherReason : selector.reason;
     newTaskObj.customerRemarks = selector.customer_remarks;
     newTaskObj.employeeRemarks = selector.employee_remarks;
     newTaskObj.taskActualStartTime = convertDateStringToMillisecondsUsingMoment(
-      selector.actual_start_time
+      selector.actual_start_time != '' ? selector.actual_start_time : defaultDate
     );
     newTaskObj.lat = currentLocation ? currentLocation.lat.toString() : null;
     newTaskObj.lon = currentLocation ? currentLocation.long.toString() : null;
     // dataObj.dmsExpectedDeliveryDate = convertDateStringToMillisecondsUsingMoment(selector.expected_delivery_date);
     newTaskObj.taskActualEndTime = convertDateStringToMillisecondsUsingMoment(
-      selector.actual_end_time
+      selector.actual_end_time != '' ? selector.actual_start_time : defaultDate
     );
     switch (type) {
       case "CLOSE":
