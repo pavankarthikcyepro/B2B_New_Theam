@@ -73,7 +73,6 @@ const EnquiryScreen = ({ navigation }) => {
     useEffect(() => {
         setSearchQuery('');
         if (selector.enquiry_list.length > 0) {
-            console.log("ENQ LENGTH: ", selector.enquiry_list.length);
             setSearchedData(selector.enquiry_list)
         }
         else{
@@ -176,9 +175,7 @@ const EnquiryScreen = ({ navigation }) => {
     }
 
     const getEnquiryListFromServer = (empId, startDate, endDate) => {
-        console.log("DATE: ", empId, startDate, endDate);
         const payload = getPayloadData(empId, startDate, endDate, 0)
-        console.log("payload called", payload)
         dispatch(getEnquiryList(payload));
     }
 
@@ -200,7 +197,6 @@ const EnquiryScreen = ({ navigation }) => {
     const getMoreEnquiryListFromServer = async () => {
         if (selector.isLoadingExtraData) { return }
         if (employeeId && ((selector.pageNumber + 1) < selector.totalPages)) {
-            console.log("GET MORE: ", selector.pageNumber, selector.totalPages);
 
             const payload = getPayloadData(employeeId, selectedFromDate, selectedToDate, (selector.pageNumber + 1))
             dispatch(getMoreEnquiryList(payload));
@@ -300,7 +296,6 @@ const EnquiryScreen = ({ navigation }) => {
                 mode={"date"}
                 value={new Date(Date.now())}
                 onChange={(event, selectedDate) => {
-                    console.log("date: ", selectedDate);
                     setShowDatePicker(false)
                     if (Platform.OS === "android") {
                         if (selectedDate) {
@@ -319,7 +314,6 @@ const EnquiryScreen = ({ navigation }) => {
                 modelList={vehicleModelList}
                 sourceList={sourceList}
                 submitCallback={(payload) => {
-                    // console.log("payload: ", payload);
                     applySelectedFilters(payload);
                     setSortAndFilterVisible(false);
                 }}
@@ -400,7 +394,6 @@ const EnquiryScreen = ({ navigation }) => {
                                             needStatus={"YES"}
                                             enqCat={item.enquiryCategory}
                                             onItemPress={() => {
-                                                console.log("ENQ: ", JSON.stringify(item));
                                                 navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, { universalId: item.universalId, mobileNo: item.phone, leadStatus: item.leadStatus })
                                             }}
                                             onDocPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.detailsOverview, { universalId: item.universalId, enqDetails: item, leadStatus: item.leadStatus, leadStage: item.leadStage })}

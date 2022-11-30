@@ -107,7 +107,6 @@ const LoginScreen = ({ navigation }) => {
   useEffect(() => {
 
     if (selector.status == "sucess") {
-      console.log("$$$$$$$$ USER DATA:", JSON.stringify(selector.userData));
       //signIn(selector.authToken);
       AsyncStore.storeData(AsyncStore.Keys.USER_NAME, selector.userData.userName);
       AsyncStore.storeData(AsyncStore.Keys.ORG_ID, selector.userData.orgId);
@@ -136,7 +135,6 @@ const LoginScreen = ({ navigation }) => {
   useEffect(() => {
 
     if (selector.menuListStatus == "completed") {
-      console.log("branchList: ", selector.branchesList.length);
       // if (selector.branchesList.length > 1) {
       //   navigation.navigate(AuthNavigator.AuthStackIdentifiers.SELECT_BRANCH, { isFromLogin: true, branches: selector.branchesList })
       // }
@@ -167,7 +165,6 @@ const LoginScreen = ({ navigation }) => {
   };
 
   const closeBottomView = () => {
-    console.log("clicked");
     Animated.timing(fadeAnima, {
       toValue: 0,
       duration: 2000,

@@ -216,7 +216,6 @@ const LeadsScreen = ({ route, navigation }) => {
             }
           })
           .catch((err) => {
-            console.log("ERROdddR", err);
             setLoader(false);
             setLeadsFilterDropDownText("All");
             setSubMenu([]);
@@ -253,7 +252,6 @@ const LeadsScreen = ({ route, navigation }) => {
             }
           })
           .catch((err) => {
-            console.log("EdddRROR", err);
             setLoader(false);
             setLeadsFilterDropDownText("All");
             setSubMenu([]);
@@ -489,9 +487,7 @@ const LeadsScreen = ({ route, navigation }) => {
                 } else {
                     NewSubMenu(path);
                 }
-            }).catch((error) =>
-                console.log("Error", error)
-            );
+            }).catch((error) => {});
     }
 
     const NewSubMenu = (item) => {
@@ -624,7 +620,6 @@ const LeadsScreen = ({ route, navigation }) => {
               })
               .catch((error) => {
                 setLoader(false);
-                console.log(error);
               });
         }
     }
@@ -655,7 +650,6 @@ const LeadsScreen = ({ route, navigation }) => {
         updateSelectedDate(from, 'FROM_DATE');
         updateSelectedDate(to, 'TO_DATE');
         setShowDatePicker(false);
-        // console.log('live leads: from to: ', from, to);
         // onTempFliter(tempFilterPayload, isEmpty(tempEmployee) ? null : tempEmployee,
         //     tempVehicleModelList, tempCategoryList, tempSourceList, from, to, tempLeadStage, tempLeadStatus);
         // return
@@ -690,7 +684,6 @@ const LeadsScreen = ({ route, navigation }) => {
             defualtCall(newArr, leadStage, leadStatus);
             setTempEmployee({});
         }).catch((err) => {
-            console.log("EdddRROR", err);
             setLoader(false);
             setLeadsFilterDropDownText("All");
             setSubMenu([]);
@@ -708,7 +701,6 @@ const LeadsScreen = ({ route, navigation }) => {
                 maximumDate={new Date(liveLeadsEndDate.toString())}
                 value={new Date()}
                 onChange={(event, selectedDate) => {
-                    console.log("date: ", selectedDate);
                     setShowDatePicker(false)
                     if (Platform.OS === "android") {
                         if (selectedDate) {
@@ -757,7 +749,6 @@ const LeadsScreen = ({ route, navigation }) => {
                         setLeadsSubMenuFilterVisible(false)
                     }}
                     onChange={(x) => {
-                        // console.log("onChange", x);
                     }}
                 />
             </View>

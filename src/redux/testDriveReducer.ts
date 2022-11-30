@@ -58,8 +58,6 @@ export const getTestDriveVehicleListApi = createAsyncThunk("TEST_DRIVE_SLICE/get
 export const bookTestDriveAppointmentApi = createAsyncThunk("TEST_DRIVE_SLICE/bookTestDriveAppointmentApi", async (payload, { rejectWithValue }) => {
 
   const response = await client.post(URL.BOOK_TEST_DRIVE_APPOINTMENT(), payload);
-  console.log("TD URL: ", URL.BOOK_TEST_DRIVE_APPOINTMENT());
-  
   
   const json = await response.json()
   if (!response.ok) {
@@ -69,13 +67,11 @@ export const bookTestDriveAppointmentApi = createAsyncThunk("TEST_DRIVE_SLICE/bo
 })
 
 export const updateTestDriveTaskApi = createAsyncThunk("TEST_DRIVE_SLICE/updateTestDriveTaskApi", async (payload, { rejectWithValue }) => {
-  console.log("UPDATE URL:", URL.UPDATE_TEST_DRIVE_TASK());
 
   const response = await client.post(URL.UPDATE_TEST_DRIVE_TASK(), payload);
 
   try {
     const json = await response.json();
-    console.log("DATA:", JSON.stringify(json));
     if (response.status != 200) {
       return rejectWithValue(json);
     }
@@ -93,7 +89,6 @@ export const updateTestDriveTaskApi = createAsyncThunk("TEST_DRIVE_SLICE/updateT
 })
 
 export const getTestDriveAppointmentDetailsApi = createAsyncThunk("TEST_DRIVE_SLICE/getAppointmentDetailsApi", async (payload, { rejectWithValue }) => {
-  console.log("URL ", URL.GET_TEST_DRIVE_APPOINTMENT_DETAILS(payload["entityModuleId"], payload["barnchId"], payload["orgId"]));
 
   const response = await client.get(URL.GET_TEST_DRIVE_APPOINTMENT_DETAILS(payload["entityModuleId"], payload["barnchId"], payload["orgId"]));
   const json = await response.json()
@@ -115,7 +110,6 @@ export const validateTestDriveApi = createAsyncThunk("TEST_DRIVE_SLICE/validateT
 
 export const generateOtpApi = createAsyncThunk("HOME_VISIT_SLICE/generateOtpApi", async (payload, { rejectWithValue }) => {
   const url = `${URL.GENERATE_OTP()}?type=TEST DRIVE`;
-  console.log("OTP PAYLOAD url: ", url, payload);
   const response = await client.post(url, payload);
   const json = await response.json()
   if (!response.ok) {
@@ -125,7 +119,6 @@ export const generateOtpApi = createAsyncThunk("HOME_VISIT_SLICE/generateOtpApi"
 })
 
 export const validateOtpApi = createAsyncThunk("HOME_VISIT_SLICE/validateOtpApi", async (payload, { rejectWithValue }) => {
-  console.log("VERIFY PAY:", payload);
   
   const response = await client.post(URL.VALIDATE_OTP(), payload);
   const json = await response.json()
@@ -183,7 +176,6 @@ const testDriveSlice = createSlice({
     },
     updateSelectedDate: (state, action: PayloadAction<CustomerDetailModel>) => {
       const { key, text } = action.payload;
-      console.log(text);
       switch (key) {
         case "PREFERRED_DATE":
           state.customer_preferred_date = text;
@@ -211,7 +203,6 @@ const testDriveSlice = createSlice({
       state.task_details_response = null;
     })
     builder.addCase(getTaskDetailsApi.fulfilled, (state, action) => {
-      console.log("S getTaskDetailsApi: ", JSON.stringify(action.payload));
       if (action.payload.success === true && action.payload.dmsEntity) {
         state.task_details_response = action.payload.dmsEntity.task;
       } else {
@@ -219,7 +210,6 @@ const testDriveSlice = createSlice({
       }
     })
     builder.addCase(getTaskDetailsApi.rejected, (state, action) => {
-      console.log("F getTaskDetailsApi: ", JSON.stringify(action.payload));
       state.task_details_response = null;
     })
     // Get Test Drive Appointment Details
@@ -227,7 +217,6 @@ const testDriveSlice = createSlice({
       state.test_drive_appointment_details_response = null;
     })
     builder.addCase(getTestDriveAppointmentDetailsApi.fulfilled, (state, action) => {
-      console.log("S getTestDriveAppointmentDetailsApi: ", JSON.stringify(action.payload));
       if (action.payload != null && action.payload.statusCode === "200") {
         if (action.payload.testDrives && action.payload.testDrives.length > 0) {
 
@@ -258,7 +247,6 @@ const testDriveSlice = createSlice({
       }
     })
     builder.addCase(getTestDriveAppointmentDetailsApi.rejected, (state, action) => {
-      // console.log("F getTestDriveAppointmentDetailsApi: ", JSON.stringify(action.payload));
       state.test_drive_appointment_details_response = null;
     })
     // Get Test Drive Vehicle list
@@ -267,7 +255,6 @@ const testDriveSlice = createSlice({
       state.test_drive_vehicle_list_for_drop_down = [];
     })
     builder.addCase(getTestDriveVehicleListApi.fulfilled, (state, action) => {
-      console.log("S getTestDriveVehicleListApi: ", JSON.stringify(action.payload));
       if (action.payload.status === "SUCCESS" && action.payload.vehicles) {
         const vehicles = action.payload.vehicles;
         state.test_drive_vehicle_list = vehicles;
@@ -290,7 +277,6 @@ const testDriveSlice = createSlice({
             new_vehicles.push(vehicleInfoForModel)
           }
         });
-        console.log("length: ", new_vehicles.length)
         state.test_drive_vehicle_list_for_drop_down = new_vehicles;
         state.test_drive_varients_obj_for_drop_down = varientObj;
       }
@@ -303,7 +289,6 @@ const testDriveSlice = createSlice({
       state.employees_list = [];
     })
     builder.addCase(getTestDriveDseEmployeeListApi.fulfilled, (state, action) => {
-      // console.log("getTestDriveDseEmployeeListApi S: ", action.payload);
       if (action.payload.dmsEntity) {
         state.employees_list = action.payload.dmsEntity.employees;
       }
@@ -316,7 +301,6 @@ const testDriveSlice = createSlice({
       state.drivers_list = [];
     })
     builder.addCase(getDriversListApi.fulfilled, (state, action) => {
-      //console.log("getDriversListApi S: ", action.payload);
       if (action.payload.dmsEntity) {
         const driversList = action.payload.dmsEntity.employees;
         let newFormatDriversList = [];
@@ -330,7 +314,6 @@ const testDriveSlice = createSlice({
       }
     })
     builder.addCase(getDriversListApi.rejected, (state, action) => {
-      console.log("getDriversListApi F: ", action.payload);
       state.drivers_list = [];
     })
     // Book Test Drive Appointment
@@ -381,7 +364,6 @@ const testDriveSlice = createSlice({
       state.otp_session_key = "";
     })
     builder.addCase(generateOtpApi.fulfilled, (state, action) => {
-      console.log("S generateOtpApi: ", JSON.stringify(action.payload));
       const status = action.payload.reason ? action.payload.reason : "";
       if (status === "Success") {
         showToastSucess("Otp sent successfully");
@@ -391,7 +373,6 @@ const testDriveSlice = createSlice({
       state.otp_session_key = action.payload.sessionKey ? action.payload.sessionKey : "";
     })
     builder.addCase(generateOtpApi.rejected, (state, action) => {
-      console.log("F generateOtpApi: ", JSON.stringify(action.payload));
       if (action.payload["reason"]) {
         showToastRedAlert(action.payload["reason"]);
       }
@@ -405,7 +386,6 @@ const testDriveSlice = createSlice({
       state.validate_otp_response_status = "pending";
     })
     builder.addCase(validateOtpApi.fulfilled, (state, action) => {
-      console.log("S validateOtpApi: ", JSON.stringify(action.payload));
       if (action.payload.reason === "Success") {
         state.validate_otp_response_status = "successs";
       }
@@ -416,7 +396,6 @@ const testDriveSlice = createSlice({
       state.isLoading = false;
     })
     builder.addCase(validateOtpApi.rejected, (state, action) => {
-      console.log("F validateOtpApi: ", JSON.stringify(action.payload));
       if (action.payload["reason"]) {
         showToastRedAlert(action.payload["reason"]);
       }

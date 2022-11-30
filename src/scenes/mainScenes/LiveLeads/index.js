@@ -73,7 +73,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
     let numk = 0;
     useLayoutEffect(() => {
         navigation.addListener('focus', () => {
-            setTargetData().then(r => console.log(r));
+            setTargetData().then(r => {});
         })
 
     }, [navigation]);
@@ -91,7 +91,6 @@ const LiveLeadsScreen = ({ route, navigation }) => {
 
     useEffect(() => {
         if (selector.self_target_parameters_data.length > 0) {
-            // console.log("@@@@@@@@@@@@@@@@@@selector.self_target_parameters_data.length$$$$$$", selector.self_target_parameters_data.length);
             let tempRetail = [];
             tempRetail = selector.self_target_parameters_data.filter((item) => {
                 return item.paramName.toLowerCase() === 'invoice'
@@ -129,7 +128,6 @@ const LiveLeadsScreen = ({ route, navigation }) => {
                     return item.empId === jsonObj.empId
                 })
                 if (tempArr.length > 0) {
-                    // console.log("RANK", tempArr[0].rank);
                     setDealerRank(tempArr[0].rank)
                 }
                 else {
@@ -145,14 +143,12 @@ const LiveLeadsScreen = ({ route, navigation }) => {
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
             if (selector.allGroupDealerData.length > 0) {
-                // console.log("£££££RRRRR:", selector.allGroupDealerData[0]);
                 let tempArr = [], allArray = selector.allGroupDealerData;
                 setGroupDealerCount(selector.allGroupDealerData.length)
                 tempArr = allArray.filter((item) => {
                     return item.empId === jsonObj.empId
                 })
                 if (tempArr.length > 0) {
-                    // console.log("RANK", tempArr[0].rank);
                     setGroupDealerRank(tempArr[0].rank)
                 }
                 else {
@@ -182,7 +178,6 @@ const LiveLeadsScreen = ({ route, navigation }) => {
 
     const getCustomerType = async() => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-        // console.log("$$$$$ LOGIN EMP:", employeeData);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
             dispatch(getCustomerTypeList(jsonObj.orgId));
@@ -191,7 +186,6 @@ const LiveLeadsScreen = ({ route, navigation }) => {
 
     const updateBranchNameInHeader = async () => {
         await AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_NAME).then((branchName) => {
-            // console.log("branchNameTest: ", branchName)
             if (branchName) {
                 setSelectedBranchName(branchName);
             }
@@ -223,7 +217,6 @@ const LiveLeadsScreen = ({ route, navigation }) => {
 
 
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-        //console.log("SSSSSSSSSSSSSSSSSSSSS$$$$$ LOGIN EMP:", employeeData);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
             let findMdArr = [];
@@ -283,7 +276,6 @@ const LiveLeadsScreen = ({ route, navigation }) => {
                     orgId: jsonObj.orgId
                 }))
             ]).then(() => {
-                console.log('I did everything!');
             });
             if (jsonObj?.hrmsRole === "Admin" || jsonObj?.hrmsRole === "Admin Prod" ||
                 jsonObj?.hrmsRole === "App Admin" || jsonObj?.hrmsRole === "Manager" ||
@@ -302,7 +294,6 @@ const LiveLeadsScreen = ({ route, navigation }) => {
                 else {
                     dispatch(updateIsMD(false))
                 }
-                // console.log("%%%%% TEAM:", rolesArr);
                 const dateFormat = "YYYY-MM-DD";
                 const currentDate = moment().format(dateFormat)
                 const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
@@ -315,8 +306,8 @@ const LiveLeadsScreen = ({ route, navigation }) => {
                     "empId": jsonObj.empId,
                 }
                 getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
-                    .then(x => console.log(`getAllTargetParametersDataFromServer:: success: ${x}`))
-                    .catch(y => console.log(`getAllTargetParametersDataFromServer:: error: ${y}`));
+                    .then(x => {})
+                    .catch(y => {});
             }
             if (jsonObj?.hrmsRole.toLowerCase().includes('manager')) {
                 dispatch(updateIsManager(true))
@@ -350,7 +341,6 @@ const LiveLeadsScreen = ({ route, navigation }) => {
     //
     // const getHomeData = async() => {
     //     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-    //     // console.log("$$$$$ LOGIN EMP:", employeeData);
     //     if (employeeData) {
     //         const jsonObj = JSON.parse(employeeData);
     //         const dateFormat = "YYYY-MM-DD";
@@ -371,11 +361,11 @@ const LiveLeadsScreen = ({ route, navigation }) => {
     //                 "size": 5,
     //             })),
     //                 getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
-    //                     .then(x => console.log(`getAllTargetParametersDataFromServer:: success: ${x}`))
-    //                     .catch(y => console.log(`getAllTargetParametersDataFromServer:: error: ${y}`));
+    //                     .then(x => {})
+    //                     .catch(y => {});
     //         }
     //         else{
-    //             getTargetParametersDataFromServer(payload).catch(y=> console.log('getTargetParametersDataFromServer:: home/index.js: ', y));
+    //             getTargetParametersDataFromServer(payload).catch(y=> {});
     //         }
     //     }
     // }
@@ -400,13 +390,11 @@ const LiveLeadsScreen = ({ route, navigation }) => {
             dispatch(getVehicleModelTableList(payload)),
             dispatch(getEventTableList(payload)),
             // dispatch(getLostDropChartData(payload))
-        ]).then(() => {
-            console.log("getDashboadTableDataFromServer()");
-        });
+        ]).then(() => {});
 
         getTaskTableDataFromServer(empId, payload);
         payload.startDate = '2021-01-01'; // for live leads
-        getTargetParametersDataFromServer(payload).catch(y=> console.log('587 home/index.js: ', y));
+        getTargetParametersDataFromServer(payload).catch(y=> {});
     }
 
     const getTaskTableDataFromServer = (empId, oldPayload) => {
@@ -420,9 +408,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
             dispatch(getTaskTableList(payload)),
             dispatch(getSalesData(payload)),
             dispatch(getSalesComparisonData(payload))
-        ]).then(() => {
-            console.log("getTaskTableDataFromServer");
-        });
+        ]).then(() => {});
     }
 
     const getTargetParametersDataFromServer = async (payload) => {
@@ -445,11 +431,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
         Promise.allSettled([
             dispatch(getTargetParametersData(payload1)),
             dispatch(!isTeamPresentLocal ? getTargetParametersEmpData(payload1) : getTargetParametersEmpDataInsights(payload1))
-        ]).then(() => {
-            console.log("getTargetParametersDataFromServer");
-        }).catch(y => {
-            console.log("getTargetParametersDataFromServer err: ", y);
-        });
+        ]).then(() => {}).catch(y => {});
     }
 
     const getAllTargetParametersDataFromServer = async (payload, orgId) => {
@@ -486,11 +468,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
             dispatch(getTotalTargetParametersData(payload2)), // grand total
             dispatch(getNewTargetParametersAllData(payload2)), // TEAM
             dispatch(isTeamPresentLocal ? getTargetParametersEmpDataInsights(payload1) : getTargetParametersEmpData(payload1))
-        ]).then(() => {
-            console.log("I did everything!");
-        }).catch(y => {
-            console.log("I did everything!!!: ", y);
-        });
+        ]).then(() => {}).catch(y => {});
     }
 
     useEffect(() => {

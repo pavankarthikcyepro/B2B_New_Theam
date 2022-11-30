@@ -129,7 +129,6 @@ const MainParamScreen = ({ route, navigation }) => {
                         return Number(item.employeeId) === Number(loggedInEmpDetails?.empId)
                     })
                 }
-                console.log("TTT 1: ", JSON.stringify(ownDataArray));
                 if (ownDataArray.length > 0) {
                     setAllOwnData(ownDataArray)
                     let ownDataArray2 = []
@@ -143,7 +142,6 @@ const MainParamScreen = ({ route, navigation }) => {
                             return selector.endDate === item.endDate && selector.startDate === item.startDate
                         })
                     }
-                    console.log("TTT 2: ", JSON.stringify(ownDataArray2));
                     if (ownDataArray2.length > 0) {
                         setIsNoTargetAvailable(false)
                         setOwnData(ownDataArray2[0])
@@ -179,7 +177,6 @@ const MainParamScreen = ({ route, navigation }) => {
                 })
             }
         });
-        console.log("paramsArray", paramsArray);
         setUpdateTeamsParamsData([...paramsArray]);
     }
 
@@ -218,7 +215,6 @@ const MainParamScreen = ({ route, navigation }) => {
                     return Number(item.employeeId) === Number(loggedInEmpDetails?.empId)
                 })
             }
-            console.log("TTT 1: ", JSON.stringify(ownDataArray));
             if (ownDataArray.length > 0) {
                 setAllOwnData(ownDataArray)
                 let ownDataArray2 = []
@@ -232,7 +228,6 @@ const MainParamScreen = ({ route, navigation }) => {
                         return selector.endDate === item.endDate && selector.startDate === item.startDate
                     })
                 }
-                console.log("TTT 2: targetMapping", JSON.stringify(ownDataArray2));
                 if (ownDataArray2.length > 0) {
                     setOwnData(ownDataArray2[0])
                     if (ownDataArray2[0]?.targetName) {
@@ -265,7 +260,6 @@ const MainParamScreen = ({ route, navigation }) => {
                     return selector.endDate === item.endDate && selector.startDate === item.startDate
                 })
             }
-            console.log("TTT: ", JSON.stringify(ownDataArray));
             if (ownDataArray.length > 0) {
                 setOwnData(ownDataArray[0])
                 if (ownDataArray[0]?.targetName) {
@@ -282,7 +276,6 @@ const MainParamScreen = ({ route, navigation }) => {
 
     useEffect(async () => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-        // console.log("$$$$$ LOGIN EMP:", employeeData);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData)
             const payload = {
@@ -291,7 +284,6 @@ const MainParamScreen = ({ route, navigation }) => {
                 "size": 500,
                 "targetType": selector.targetType
             }
-            console.log("PAYLOAD", payload);
             //dispatch(getAllTargetMapping(payload))
         }
     }, [selector.targetType])
@@ -330,7 +322,6 @@ const MainParamScreen = ({ route, navigation }) => {
             showToast("Please enter retail value")
         }
         else {
-            console.log("CALLED ADD");
             setOpenRetail(false)
             let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
             if (employeeData) {
@@ -348,11 +339,9 @@ const MainParamScreen = ({ route, navigation }) => {
                     // "targetName": selector.targetType === 'MONTHLY' ? selector.selectedMonth.value : selector.selectedSpecial.keyId
                     "targetName": targetName !== '' ? targetName : "DEFAULT"
                 }
-                console.log("PAYLOAD:", payload);
                 Promise.all([
                     dispatch(addTargetMapping(payload))
                 ]).then(() => {
-                    console.log('I did everything!');
                     setSelectedUser(null)
                     setRetail('')
                     setSelectedBranch(null)
@@ -378,7 +367,6 @@ const MainParamScreen = ({ route, navigation }) => {
             showToast("Please enter retail value")
         }
         else {
-            console.log("CALLED EDIT");
             setOpenRetail(false)
             let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
             if (employeeData) {
@@ -397,17 +385,14 @@ const MainParamScreen = ({ route, navigation }) => {
                     "targetName": targetName !== '' ? targetName : "DEFAULT"
                 }
 
-                console.log("PAYLOAD EDIT:", payload);
                 Promise.all([
                     dispatch(editTargetMapping(payload))
                 ]).then((response) => {
-                    console.log("response", response);
                     setSelectedUser(null)
                     setRetail('')
                     setSelectedBranch(null)
                     setDefaultBranch(null)
                     setIsNoTargetAvailable(false)
-                    console.log('I did everything!');
                     const payload2 = {
                         "empId": jsonObj.empId,
                         "pageNo": 1,
@@ -416,7 +401,6 @@ const MainParamScreen = ({ route, navigation }) => {
                     }
                     dispatch(getAllTargetMapping(payload2))
                 }).catch((error) => {
-                    console.log("ERROR", error);
                 });
             }
         }
@@ -425,7 +409,6 @@ const MainParamScreen = ({ route, navigation }) => {
     const getTotal = (key) => {
         let total = 0;
         for (let i = 0; i < selector.targetMapping.length; i++) {
-            // console.log("RTRTRTRTRTR:", selector.targetMapping[i], selector.endDate, selector.startDate, selector.targetType);
             if (selector.targetMapping[i][key] !== null && selector.endDate === selector.targetMapping[i].endDate && selector.startDate === selector.targetMapping[i].startDate && selector.targetMapping[i].targetType === selector.targetType) {
                 total += parseInt(selector.targetMapping[i][key])
             }
@@ -512,9 +495,7 @@ const MainParamScreen = ({ route, navigation }) => {
             Promise.all([
                 dispatch(saveSelfTargetParams(payload))
             ]).then((x) => {
-                console.log('daata: ', x)
             }).catch((y) => {
-                console.log('daata: errr', y)
             })
         }
     }
@@ -541,7 +522,6 @@ const MainParamScreen = ({ route, navigation }) => {
             Promise.all([
                 dispatch(saveTeamTargetParams(payload))
             ]).then((x) => {
-                console.log('daata---: ', selector.targetMapping)
                 if (Array.isArray(x) && x[0].payload.message.toLowerCase() === 'not updated') {
                     const payload2 = {
                         "empId": loggedInEmpDetails.empId,
@@ -552,13 +532,10 @@ const MainParamScreen = ({ route, navigation }) => {
                     Promise.all([
                         dispatch(getAllTargetMapping(payload2))
                     ]).then((x) => {
-                        console.log('daata: ', x)
                     }).catch((y) => {
-                        console.log('daata: errr', y)
                     })
                 }
             }).catch((y) => {
-                console.log('daata---: errr', y)
             })
         }
     }
@@ -633,9 +610,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                     Promise.all([
                                         dispatch(getAllTargetMapping(payload2))
                                     ]).then((x) => {
-                                        console.log('daata: ', x)
                                     }).catch((y) => {
-                                        console.log('daata: errr', y)
                                     })
                                 } else {
                                     const data = { ...masterSelfParameters };
@@ -1074,10 +1049,8 @@ const MainParamScreen = ({ route, navigation }) => {
                                 // onFocus={() => setIsFocus(true)}
                                 // onBlur={() => setIsFocus(false)}
                                 onChange={async (item) => {
-                                    console.log("£££", item);
                                     setSelectedBranch(item)
                                     if (selector.isTeam) {
-                                        console.log("£££££££");
                                         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
                                         if (employeeData) {
                                             const jsonObj = JSON.parse(employeeData);
@@ -1089,7 +1062,6 @@ const MainParamScreen = ({ route, navigation }) => {
                                             Promise.all([
                                                 dispatch(getEmployeesDropDownData(payload))
                                             ]).then(() => {
-                                                console.log('DROP', selector.employees_drop_down_data);
                                             })
                                         }
                                     }
@@ -1117,9 +1089,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                             // onFocus={() => setIsFocus(true)}
                                             // onBlur={() => setIsFocus(false)}
                                             onChange={val => {
-                                                // console.log("£££", val);
                                                 let tempVal = otherDropDownSelectedValue;
-                                                // console.log("$$$$", JSON.stringify(tempVal));
                                                 tempVal.push({
                                                     key: item.title,
                                                     value: val
@@ -1148,7 +1118,6 @@ const MainParamScreen = ({ route, navigation }) => {
                         </View>
                         <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
                             <TouchableOpacity style={{ width: '38%', backgroundColor: Colors.RED, height: 40, marginRight: 10, borderRadius: 5, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
-                                // console.log("££££",selectedUser);
                                 // if (addOrEdit === 'A') {
                                 //     editTargetData()
                                 // }

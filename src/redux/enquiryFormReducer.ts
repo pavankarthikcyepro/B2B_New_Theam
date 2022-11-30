@@ -26,20 +26,12 @@ export const getEnquiryDetailsApi = createAsyncThunk(
     // // try {
     //   const autoSaveResponse = await client.get(URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId));
     //   const autoSavejson = await autoSaveResponse.json();
-    //   console.log("URL$$$: ", URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId));
-    //   console.log("ENQ DETAILS: ", JSON.stringify(autoSavejson));
     // // } catch (error) {
 
     // // }
 
     const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
     const json = await response.json();
-
-    console.log(
-      "ENQ DETAILS @@@: ",
-      URL.ENQUIRY_DETAILS(universalId),
-      JSON.stringify(json)
-    );
 
     if (!response.ok) {
       return rejectWithValue(json);
@@ -49,7 +41,6 @@ export const getEnquiryDetailsApi = createAsyncThunk(
     // if (leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY')
     // {
     //   // if (json.dmsEntity.hasOwnProperty("dmsLeadDto")) {
-    //   //   console.log("autoSavejson is true")
     //   // }
     //   if (!response.ok) {
     //     return rejectWithValue(json);
@@ -64,7 +55,6 @@ export const getEnquiryDetailsApi = createAsyncThunk(
     // }
     // else{
     //   // if (autoSavejson.hasOwnProperty("dmsLeadDto")) {
-    //   //   console.log("autoSavejson is true")
     //   // }
     //   if (autoSaveResponse){
     //     if (!autoSaveResponse.ok) {
@@ -81,18 +71,13 @@ export const getEnquiryDetailsApi = createAsyncThunk(
     //     json.dmsEntity
     //   }
     // }
-    // console.log("enquirey lead", json);
-    // console.log("autoSavejson", autoSavejson);
 
     // if (autoSavejson.hasOwnProperty("dmsLeadDto")) {
-    //   console.log("autoSavejson is true")
     // }
 
     // if (json.success) {
-    //   console.log("came here")
     //    autoSaveResponse = await client.get(URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId));
     //     autoSavejson = await autoSaveResponse.json();
-    //     // console.log("autoSavejson", autoSavejson);
     // }
 
     // if (!response.ok) {
@@ -116,8 +101,6 @@ export const getEnquiryDetailsApiAuto = createAsyncThunk(
       URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId)
     );
     const autoSavejson = await autoSaveResponse.json();
-    console.log("URL$$$: ", URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId));
-    console.log("ENQ DETAILS: ", JSON.stringify(autoSavejson));
     // } catch (error) {
 
     // }
@@ -125,15 +108,8 @@ export const getEnquiryDetailsApiAuto = createAsyncThunk(
     const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
     const json = await response.json();
 
-    console.log(
-      "ENQ DETAILS @@@: ",
-      URL.ENQUIRY_DETAILS(universalId),
-      JSON.stringify(json)
-    );
-
     if (leadStatus === "ENQUIRYCOMPLETED" && leadStage === "ENQUIRY") {
       // if (json.dmsEntity.hasOwnProperty("dmsLeadDto")) {
-      //   console.log("autoSavejson is true")
       // }
       if (!response.ok) {
         return rejectWithValue(json);
@@ -147,7 +123,6 @@ export const getEnquiryDetailsApiAuto = createAsyncThunk(
       return json.dmsEntity;
     } else {
       // if (autoSavejson.hasOwnProperty("dmsLeadDto")) {
-      //   console.log("autoSavejson is true")
       // }
       if (autoSaveResponse) {
         if (!autoSaveResponse.ok) {
@@ -163,18 +138,13 @@ export const getEnquiryDetailsApiAuto = createAsyncThunk(
         json.dmsEntity;
       }
     }
-    // console.log("enquirey lead", json);
-    // console.log("autoSavejson", autoSavejson);
 
     // if (autoSavejson.hasOwnProperty("dmsLeadDto")) {
-    //   console.log("autoSavejson is true")
     // }
 
     // if (json.success) {
-    //   console.log("came here")
     //    autoSaveResponse = await client.get(URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId));
     //     autoSavejson = await autoSaveResponse.json();
-    //     // console.log("autoSavejson", autoSavejson);
     // }
 
     // if (!response.ok) {
@@ -197,7 +167,6 @@ export const getAutoSaveEnquiryDetailsApi = createAsyncThunk(
       URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId)
     );
     const json = await response.json();
-    console.log("auto save details", json);
 
     if (!response.ok) {
       return rejectWithValue(json);
@@ -226,7 +195,6 @@ export const getProformaModelApi = createAsyncThunk(
       URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId)
     );
     const json = await response.json();
-    console.log("auto save details", json);
 
     if (!response.ok) {
       return rejectWithValue(json);
@@ -237,7 +205,6 @@ export const getProformaModelApi = createAsyncThunk(
 export const postProformaInvoiceDetails = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/postProformaInvoiceDetails",
   async (payload, { rejectWithValue }) => {
-    console.log("Proforma", JSON.stringify(payload));
     const response = await client.post(URL.SAVE_PROFORMA_DETAILS(), payload);
     const json = await response.json();
 
@@ -250,15 +217,6 @@ export const postProformaInvoiceDetails = createAsyncThunk(
 export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/getOnRoadPriceAndInsurenceDetailsApi",
   async (payload, { rejectWithValue }) => {
-    console.log(
-      "proforma:",
-      URL.GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS(
-        payload["varientId"],
-        payload["orgId"]
-      ),
-      JSON.stringify(payload)
-    );
-    //console.log("proforma", URL.PROFORMA_LOGO_NAME(data.orgId, data.branchId));
 
     const response = await client.get(
       URL.GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS(
@@ -268,7 +226,6 @@ export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk(
     );
     try {
       const json = await response.json();
-      // console.log("INSURANCE:", JSON.stringify(json));
 
       if (response.status != 200) {
         return rejectWithValue(json);
@@ -291,15 +248,9 @@ export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk(
 export const updateEnquiryDetailsApi = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/updateEnquiryDetailsApi",
   async (payload, { rejectWithValue }) => {
-    console.log(
-      "ENQ PAY:",
-      URL.UPDATE_ENQUIRY_DETAILS(),
-      JSON.stringify(payload)
-    );
 
     const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
     const json = await response.json();
-    console.log("UPDATE ENQ:", JSON.stringify(json));
 
     if (!response.ok) {
       return rejectWithValue(json);
@@ -311,11 +262,6 @@ export const updateEnquiryDetailsApi = createAsyncThunk(
 export const autoSaveEnquiryDetailsApi = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/autoSaveEnquiryDetailsApi",
   async (payload, { rejectWithValue }) => {
-    console.log(
-      "ENQ PAY:",
-      URL.UPDATE_ENQUIRY_DETAILS(),
-      JSON.stringify(payload)
-    );
 
     const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
     const json = await response.json();
@@ -345,7 +291,6 @@ export const updateEnquiryDetailsApiAutoSave = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     const response = await client.post(URL.AUTO_SAVE(), payload);
     const json = await response.json();
-    console.log("SUCCESS:");
 
     if (!response.ok) {
       return rejectWithValue(json);
@@ -359,10 +304,8 @@ export const updateRef = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     const response = await client.post(URL.UPDATE_REF(), payload);
     try {
-      console.log("PPPP", payload, URL.UPDATE_REF());
 
       // const json = await response.json();
-      console.log("UPDATE REF:", response);
 
       if (!response.ok) {
         return rejectWithValue(response);
@@ -385,7 +328,6 @@ export const dropEnquiryApi = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     const response = await client.post(URL.DROP_ENQUIRY(), payload);
     const json = await response.json();
-    console.log("DROP RES: ", JSON.stringify(json));
 
     if (!response.ok) {
       return rejectWithValue(json);
@@ -410,11 +352,9 @@ export const getPendingTasksApi = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/getPendingTasksApi",
   async (endUrl, { rejectWithValue }) => {
     const url = URL.TASKS_PRE_ENQUIRY() + endUrl;
-    console.log("$$$URL: ", url);
 
     const response = await client.get(url);
     const json = await response.json();
-    console.log("RES:", JSON.stringify(json));
 
     if (!response.ok) {
       return rejectWithValue(json);
@@ -739,7 +679,6 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.refNo = "";
     },
     setEditable: (state, action) => {
-      console.log("pressed");
       state.enableEdit = !state.enableEdit;
     },
     setDropDownData: (state, action: PayloadAction<DropDownModelNew>) => {
@@ -901,7 +840,6 @@ const enquiryDetailsOverViewSlice = createSlice({
       }
     },
     setDatePicker: (state, action) => {
-      console.log("coming here");
       switch (action.payload) {
         case "EXPECTED_DELIVERY_DATE":
           state.minDate = new Date();
@@ -914,10 +852,6 @@ const enquiryDetailsOverViewSlice = createSlice({
         case "ANNIVERSARY_DATE":
           if (state.dateOfBirth) {
             let dobArr = state.dateOfBirth.split("/");
-            console.log(
-              new Date(state.dateOfBirth),
-              new Date(Number(dobArr[2]), Number(dobArr[1]), Number(dobArr[0]))
-            );
             state.minDate = new Date(
               Number(dobArr[2]) + 1,
               Number(dobArr[1]),
@@ -963,7 +897,6 @@ const enquiryDetailsOverViewSlice = createSlice({
     updatedmsLeadProduct: (state, action) => {
       // alert(JSON.stringify(action.payload))
       const data = action.payload;
-      console.log("updatedmsLeadProduct: ", JSON.stringify(action.payload));
       state.dmsLeadProducts = data;
     },
     updateSelectedDate: (state, action: PayloadAction<PersonalIntroModel>) => {
@@ -1027,7 +960,6 @@ const enquiryDetailsOverViewSlice = createSlice({
           state.r_insurence_to_date = selectedDate;
           break;
         case "NONE":
-          console.log("NONE");
           break;
       }
       state.showDatepicker = !state.showDatepicker;
@@ -1173,7 +1105,6 @@ const enquiryDetailsOverViewSlice = createSlice({
     },
     setCustomerProfile: (state, action: PayloadAction<PersonalIntroModel>) => {
       const { key, text } = action.payload;
-      console.log("arey======> key ", key, text);
       switch (key) {
         case "OCCUPATION":
           state.occupation = text;
@@ -1380,7 +1311,6 @@ const enquiryDetailsOverViewSlice = createSlice({
     },
     updateDmsContactOrAccountDtoData: (state, action) => {
       // dmsContactOrAccountDto
-      console.log("dmsContactOrAccountDto", JSON.stringify(action.payload));
 
       const dms_C_Or_A_Dto = action.payload;
 
@@ -1536,7 +1466,6 @@ const enquiryDetailsOverViewSlice = createSlice({
     },
     updateDmsLeadDtoData: (state, action) => {
       const dmsLeadDto = action.payload;
-      console.log("updateDmsLeadDtoData: ", JSON.stringify(action.payload));
 
       if (dmsLeadDto.buyerType && dmsLeadDto.buyerType != "") {
         state.buyer_type = dmsLeadDto.buyerType;
@@ -1689,7 +1618,6 @@ const enquiryDetailsOverViewSlice = createSlice({
     },
     updateModelSelectionData: (state, action) => {
       const dmsLeadProducts = action.payload;
-      console.log("updateModelSelectionData: ", JSON.stringify(action.payload));
 
       let dataObj: any = {};
       // if (dmsLeadProducts.length > 0) {
@@ -1702,7 +1630,6 @@ const enquiryDetailsOverViewSlice = createSlice({
       //   //   "variant": "Rxt 1.0L Ece Easy-R Ece My22" }]
       //   alert("hiii")
       //   state.dmsLeadProducts = dmsLeadProducts
-      //   console.log("dmm model products------------", state.dmsLeadProducts)
 
       //  // state.dmsLeadProducts[1] = dmsLeadProducts[0]
       // }
@@ -1890,7 +1817,6 @@ const enquiryDetailsOverViewSlice = createSlice({
         state.r_transmission_type = dataObj.transmission
           ? dataObj.transmission
           : "";
-        console.log("TRAN TYPE:", state.r_transmission_type);
 
         const yearOfManfac = dataObj.yearofManufacture
           ? dataObj.yearofManufacture
@@ -1905,7 +1831,6 @@ const enquiryDetailsOverViewSlice = createSlice({
           );
         }
 
-        console.log("DATE:", state.r_mfg_year, dataObj.yearofManufacture);
 
         state.r_kms_driven_or_odometer_reading = dataObj.kiloMeters
           ? dataObj.kiloMeters
@@ -2016,7 +1941,6 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.get_pending_tasks_response_list = [];
     },
     updateAddressByPincode: (state, action) => {
-      console.log("pincode action", action);
 
       state.village = action.payload.Block || "";
 
@@ -2060,7 +1984,6 @@ const enquiryDetailsOverViewSlice = createSlice({
     builder.addCase(getEnquiryDetailsApi.fulfilled, (state, action) => {
       // if (action.payload.dmsEntity) {
       //  state.enquiry_details_response = action.payload.dmsEntity;
-      console.log("action.payload", action.payload);
       state.enquiry_details_response = action.payload;
       state.isOpened = true;
       // }
@@ -2070,7 +1993,6 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.isLoading = false;
     });
     builder.addCase(getLogoNameApi.pending, (state) => {
-      console.log("proforma pending");
       state.isLoading = true;
     });
     builder.addCase(getLogoNameApi.fulfilled, (state, action) => {
@@ -2100,7 +2022,6 @@ const enquiryDetailsOverViewSlice = createSlice({
     builder.addCase(
       getOnRoadPriceAndInsurenceDetailsApi.fulfilled,
       (state, action) => {
-        console.log("proforma action.payload", action.payload);
 
         if (action.payload) {
           state.vehicle_on_road_price_insurence_details_response =
@@ -2108,10 +2029,6 @@ const enquiryDetailsOverViewSlice = createSlice({
           if (action.payload.insuranceAddOn.length > 0) {
             let addOnNames = "",
               price = 0;
-            console.log(
-              "ADD-ONS: ",
-              JSON.stringify(action.payload.insuranceAddOn)
-            );
 
             action.payload.insuranceAddOn.forEach((element, index) => {
               addOnNames +=
@@ -2136,12 +2053,10 @@ const enquiryDetailsOverViewSlice = createSlice({
       }
     );
     builder.addCase(postProformaInvoiceDetails.pending, (state) => {
-      console.log("proforma on road pending");
     });
     builder.addCase(postProformaInvoiceDetails.fulfilled, (state, action) => {
       // if (action.payload.dmsEntity) {
       //  state.enquiry_details_response = action.payload.dmsEntity;
-      console.log("action.payload auto", action.payload);
       if (action.payload && action.payload.crmUniversalId)
         showToast("Successfully updated");
       // state.enquiry_details_response = action.payload;
@@ -2149,7 +2064,6 @@ const enquiryDetailsOverViewSlice = createSlice({
       // }
     });
     builder.addCase(postProformaInvoiceDetails.rejected, (state, action) => {
-      console.log("proforma rejected", action);
     });
     builder.addCase(getEnquiryDetailsApiAuto.pending, (state) => {
       state.isLoading = true;
@@ -2158,7 +2072,6 @@ const enquiryDetailsOverViewSlice = createSlice({
     builder.addCase(getEnquiryDetailsApiAuto.fulfilled, (state, action) => {
       // if (action.payload.dmsEntity) {
       //  state.enquiry_details_response = action.payload.dmsEntity;
-      console.log("action.payload auto", action.payload);
       state.enquiry_details_response = action.payload;
       state.isOpened = true;
       // }
@@ -2173,13 +2086,10 @@ const enquiryDetailsOverViewSlice = createSlice({
       // state.enquiry_details_response = null;
     });
     builder.addCase(getAutoSaveEnquiryDetailsApi.fulfilled, (state, action) => {
-      // console.log("form reducers data", action.payload)
       if (action.payload) {
-        // console.log("came here in enquiry form reducers", action.payload)
         // state.enquiry_details_response = action.payload;
       }
 
-      // console.log("state", state)
       state.isLoading = false;
     });
     builder.addCase(getAutoSaveEnquiryDetailsApi.rejected, (state, action) => {
@@ -2191,10 +2101,6 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.isLoading = true;
     });
     builder.addCase(updateEnquiryDetailsApi.fulfilled, (state, action) => {
-      // console.log(
-      //   "S updateEnquiryDetailsApi: ",
-      //   JSON.stringify(action.payload)
-      // );
       if (action.payload.success == true) {
         state.refNo = action.payload.dmsEntity.dmsLeadDto.referencenumber;
         state.update_enquiry_details_response = "success";
@@ -2202,10 +2108,6 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.isLoading = false;
     });
     builder.addCase(updateEnquiryDetailsApi.rejected, (state, action) => {
-      console.log(
-        "F updateEnquiryDetailsApi: ",
-        JSON.stringify(action.payload)
-      );
       if (action.payload["message"] != undefined) {
         showToastRedAlert(action.payload["message"]);
       }
@@ -2218,7 +2120,6 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.isLoading = true;
     });
     builder.addCase(dropEnquiryApi.fulfilled, (state, action) => {
-      console.log("STATUS TT: ", action.payload.status);
       if (action.payload.status === "SUCCESS") {
         state.enquiry_drop_response_status = "success";
       }
@@ -2252,7 +2153,6 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.isLoading = true;
     });
     builder.addCase(getCustomerTypesApi.fulfilled, (state, action) => {
-      //console.log("S getCustomerTypesApi: ", JSON.stringify(action.payload));
       if (action.payload) {
         const customerTypes = action.payload;
         let personalTypes = [];

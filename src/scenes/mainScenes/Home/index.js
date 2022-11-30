@@ -108,7 +108,7 @@ const HomeScreen = ({ route, navigation }) => {
 
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {
-      setTargetData().then((r) => console.log(r)); //Commented to resolved filter issue for Home Screen
+      setTargetData().then((r) => {}); //Commented to resolved filter issue for Home Screen
     });
   }, [navigation]);
 
@@ -372,12 +372,8 @@ const HomeScreen = ({ route, navigation }) => {
           empId: jsonObj.empId,
         };
         getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
-          .then((x) =>
-            console.log(`getAllTargetParametersDataFromServer:: success: ${x}`)
-          )
-          .catch((y) =>
-            console.log(`getAllTargetParametersDataFromServer:: error: ${y}`)
-          );
+          .then((x) => {})
+          .catch((y) => {});
       }
       if (jsonObj?.hrmsRole.toLowerCase().includes("manager")) {
         dispatch(updateIsManager(true));
@@ -444,18 +440,10 @@ const HomeScreen = ({ route, navigation }) => {
           })
         ),
           getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
-            .then((x) =>
-              console.log(
-                `getAllTargetParametersDataFromServer:: success: ${x}`
-              )
-            )
-            .catch((y) =>
-              console.log(`getAllTargetParametersDataFromServer:: error: ${y}`)
-            );
+            .then((x) => {})
+            .catch((y) => {});
       } else {
-        getTargetParametersDataFromServer(payload).catch((y) =>
-          console.log("getTargetParametersDataFromServer:: home/index.js: ", y)
-        );
+        getTargetParametersDataFromServer(payload).catch((y) => {});
       }
     }
   };
@@ -487,9 +475,7 @@ const HomeScreen = ({ route, navigation }) => {
     ]).then(() => {});
 
     getTaskTableDataFromServer(empId, payload);
-    getTargetParametersDataFromServer(payload).catch((y) =>
-      console.log("587 home/index.js: ", y)
-    );
+    getTargetParametersDataFromServer(payload).catch((y) => {});
   };
 
   const getTaskTableDataFromServer = (empId, oldPayload) => {
@@ -743,11 +729,9 @@ const HomeScreen = ({ route, navigation }) => {
             Promise.all([dispatch(downloadFile(newPayload))])
               .then(async (res) => {
                 if (res[0]?.payload?.downloadUrl) {
-                  console.log(res[0]?.payload);
                   let path = res[0]?.payload;
                   if (Platform.OS === "android") {
                     for (const property in path) {
-                      console.log(`${property}: ${path[property]}`);
                       downloadInLocal(path[property]);
                     }
                   }

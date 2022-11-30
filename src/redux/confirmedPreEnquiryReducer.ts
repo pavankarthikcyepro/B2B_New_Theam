@@ -15,7 +15,6 @@ export const getPreEnquiryDetails = createAsyncThunk("CONFIRMED_PRE_ENQUIRY/getP
 export const customerLeadRef = createAsyncThunk("CONFIRMED_PRE_ENQUIRY/customerLeadRef", async (payload, { rejectWithValue }) => {
     const response = await client.post(URL.CUSTOMER_LEAD_REFERENCE(), payload)
     const json = await response.json()
-    console.log("LEAD REF", JSON.stringify(json));
     
     if (!response.ok) {
         return rejectWithValue(json);
@@ -181,7 +180,6 @@ export const slice = createSlice({
             state.pre_enquiry_details = {};
         })
         builder.addCase(noThanksApi.fulfilled, (state, action) => {
-            console.log("noThanksApi: ", JSON.stringify(action.payload));
         })
         builder.addCase(getEmployeesListApi.pending, (state, action) => {
             state.employees_list = [];
@@ -225,7 +223,6 @@ export const slice = createSlice({
             state.change_enquiry_status = "Pending";
         })
         builder.addCase(changeEnquiryStatusApi.fulfilled, (state, action) => {
-            console.log("S changeEnquiryStatusApi: ", JSON.stringify(action.payload))
             state.change_enquiry_response = action.payload;
             state.change_enquiry_status = "success";
         })
