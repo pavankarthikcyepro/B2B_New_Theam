@@ -14,7 +14,9 @@ var RNFS = require('react-native-fs');
 
 import * as AsyncStore from "../../../../asyncStore";
 import {
-  getLogoNameApi, getOnRoadPriceAndInsurenceDetailsApi, setDropDownData, postProformaInvoiceDetails, getProformaListingDetailsApi
+  getLogoNameApi, getOnRoadPriceAndInsurenceDetailsApi, setDropDownData,
+   postProformaInvoiceDetails, getProformaListingDetailsApi, setOfferPriceDetails,
+  setOfferPriceDataForSelectedProforma, clearOfferPriceData
 } from "../../../../redux/enquiryFormReducer";
 import { getFocusedRouteNameFromRoute, useNavigation } from "@react-navigation/native";
 import {
@@ -22,6 +24,7 @@ import {
 } from "../../../../utils/helperFunctions";
 import { PriceStackIdentifiers } from "../../../../navigations/appNavigator";
 import { AppNavigator } from "../../../../navigations";
+import { color } from "react-native-reanimated";
 
 const lostToCompetitor = "Lost to Competitor".replace(/\s/g, "").toLowerCase();
 const lostToUsedCarsFromCoDelear = "Lost to Used Cars from Co-Dealer".replace(/\s/g, "").toLowerCase();
@@ -82,7 +85,7 @@ const TextAndAmountComp = ({
     <View style={styles.textAndAmountView}>
       <Text style={[styles.leftLabel, titleStyle]}>{title}</Text>
 
-      {text && text != '' ? <Text style={[{ fontSize: 16, fontWeight: "400", width: '50%' }, amoutStyle]}>
+      {text && text != '' ? <Text style={[{ fontSize: 16, fontWeight: "400", width: '50%', }, amoutStyle]}>
         {text}
       </Text> : <Text style={[{ fontSize: 14, fontWeight: "400" }, amoutStyle]}>
         {rupeeSymbol + " " + amount}
@@ -194,7 +197,7 @@ export const ProformaComp = ({
   const [isRejectSelected, setIsRejectSelected] = useState(false);
   const [userToken, setUserToken] = useState("");
   const [carModelsData, setCarModelsData] = useState([]);
-  const [isNewPerformaClicked, setisNewPerformaClicked] = useState(false);
+  const [isnewProformaClicked, setisnewProformaClicked] = useState(false);
   const [isSelectPerformaClick, setisSelectPerformaClick] = useState(false);
   const [openAccordian, setOpenAccordian] = useState("0");
   const [carModel, setCarModel] = useState("");
@@ -204,6 +207,10 @@ export const ProformaComp = ({
   const [selectedProfroma, setSelectedProfroma] = useState("");
   const [selectedProfromaData, setSelectedProfromaData] = useState([]);
   const [proformaNo, setProformaNo] = useState("");
+  const [selectedRegistrationCharges, setSelectedRegistrationCharges] = useState({});
+  const [registrationChargesType, setRegistrationChargesType] = useState([]);
+  
+
 
   const [selectedCarVarientsData, setSelectedCarVarientsData] = useState({
     varientList: [],
@@ -242,7 +249,18 @@ export const ProformaComp = ({
     
   }, [selector.proforma_listingdata])
   
+  const formateLesseName = () =>{
+    let salutationTemp = selector.enquiry_details_response.dmsAccountDto.salutation ? 
+        selector.enquiry_details_response.dmsAccountDto.salutation+" " : "";
+    let firstNameTemp = selector.enquiry_details_response.dmsAccountDto.firstName ? 
+      selector.enquiry_details_response.dmsAccountDto.firstName + " " : "";
+    let lastNametemp = selector.enquiry_details_response.dmsAccountDto.lastName?
+      selector.enquiry_details_response.dmsAccountDto.lastName : "";
 
+      return salutationTemp+firstNameTemp+lastNametemp
+      // selector.enquiry_details_response.dmsAccountDto.firstName + " " +
+      // selector.enquiry_details_response.dmsAccountDto.lastName
+  } 
 
   const getUserData = async () => {
     try {
@@ -277,6 +295,25 @@ export const ProformaComp = ({
     selectedPaidAccessoriesPrice,
     selector.vechicle_registration,
     taxPercent,
+    selectedRegistrationCharges
+  ]);
+
+  useEffect(() => {
+    calculateOnRoadPriceAfterDiscount();
+  }, [
+    selector.consumer_offer,
+    selector.exchange_offer,
+    selector.corporate_offer,
+    selector.promotional_offer,
+    selector.cash_discount,
+
+    selector.for_accessories,
+    selector.insurance_discount,
+    selector.accessories_discount,
+    selector.additional_offer_1,
+    selector.additional_offer_2,
+    totalOnRoadPrice,
+    selector.registrationCharges
   ]);
 
   useEffect(() => {
@@ -295,25 +332,25 @@ export const ProformaComp = ({
       let handlingChargeSlctdLocal = handlingChargSlctd;
       let essentialKitSlctdLocal = essentialKitSlctd;
       let fastTagSlctdLocal = fastTagSlctd;
-
-      if (
-        dmsOnRoadPriceDtoObj.handling_charges &&
-        dmsOnRoadPriceDtoObj.handling_charges > 0
-      ) {
-        setHandlingChargSlctd(true);
-        handlingChargeSlctdLocal = true;
-      }
-      if (
-        dmsOnRoadPriceDtoObj.essential_kit &&
-        dmsOnRoadPriceDtoObj.essential_kit > 0
-      ) {
-        setEssentialKitSlctd(true);
-        essentialKitSlctdLocal = true;
-      }
-      if (dmsOnRoadPriceDtoObj.fast_tag && dmsOnRoadPriceDtoObj.fast_tag > 0) {
-        setFastTagSlctd(true);
-        fastTagSlctdLocal = true;
-      }
+      
+      // if (
+      //   dmsOnRoadPriceDtoObj.handling_charges &&
+      //   dmsOnRoadPriceDtoObj.handling_charges > 0
+      // ) {
+      //   setHandlingChargSlctd(true);
+      //   handlingChargeSlctdLocal = true;
+      // }
+      // if (
+      //   dmsOnRoadPriceDtoObj.essential_kit &&
+      //   dmsOnRoadPriceDtoObj.essential_kit > 0
+      // ) {
+      //   setEssentialKitSlctd(true);
+      //   essentialKitSlctdLocal = true;
+      // }
+      // if (dmsOnRoadPriceDtoObj.fast_tag && dmsOnRoadPriceDtoObj.fast_tag > 0) {
+      //   setFastTagSlctd(true);
+      //   fastTagSlctdLocal = true;
+      // }
       calculateOnRoadPrice(
         handlingChargeSlctdLocal,
         essentialKitSlctdLocal,
@@ -331,15 +368,26 @@ export const ProformaComp = ({
         // setSelectedAddOnsPrice(addOnPrice);
       }
 
-      console.log("dmsOnRoadPriceDtoObj", dmsOnRoadPriceDtoObj);
-      if (dmsOnRoadPriceDtoObj.tcs_percentage) {
+      
+        if (dmsOnRoadPriceDtoObj.lifeTaxPercentage) {
         setTaxPercent(
-          (Number(dmsOnRoadPriceDtoObj.tcs_percentage)).toString()
+          (
+            (Number(dmsOnRoadPriceDtoObj.lifeTaxPercentage) * 1000) /
+            10
+          ).toString()
         );
         setLifeTaxAmount(
-          getLifeTaxNew(Number(dmsOnRoadPriceDtoObj.vehicle_road_tax))
+          getLifeTaxNew(Number(dmsOnRoadPriceDtoObj.lifeTaxPercentage) * 100)
         );
       }
+      // if (dmsOnRoadPriceDtoObj.tcs_percentage) {
+      //   setTaxPercent(
+      //     (Number(dmsOnRoadPriceDtoObj.tcs_percentage)).toString()
+      //   );
+      //   setLifeTaxAmount(
+      //     getLifeTaxNew(Number(dmsOnRoadPriceDtoObj.vehicle_road_tax))
+      //   );
+      // }
       if (dmsOnRoadPriceDtoObj.insuranceDiscount) {
         setInsuranceDiscount(dmsOnRoadPriceDtoObj.insuranceDiscount.toString());
       }
@@ -444,6 +492,31 @@ export const ProformaComp = ({
         }
       }
 
+      const allRegistrationCharges =
+        selector.vehicle_on_road_price_insurence_details_response
+          .registration || {};
+      function isEmpty(obj) {
+        return Object.keys(obj).length === 0;
+      }
+      if (!isEmpty(allRegistrationCharges)) {
+        let x = Object.keys(allRegistrationCharges);
+        let newArray = [];
+        for (let i = 0; i < x.length; i++) {
+          let ladel = x[i].toString();
+
+          let temp = { name: ladel, cost: allRegistrationCharges[ladel] };
+          if (selector.registrationCharges !== 0) {
+            if (
+              selector.registrationCharges === allRegistrationCharges[ladel]
+            ) {
+              setSelectedRegistrationCharges(temp);
+            }
+          }
+          newArray.push(temp);
+        }
+        setRegistrationChargesType(newArray);
+      }
+      
       setPriceInformationData({
         ...selector.vehicle_on_road_price_insurence_details_response,
       });
@@ -504,14 +577,19 @@ export const ProformaComp = ({
     // setSelectedFOCAccessoriesList([...newFormatSelectedFOCAccessories]);
   };
 
-  const newPerformaClick = () => {
-    setisNewPerformaClicked(true)
+  const newProformaClick = () => {
+    setisnewProformaClicked(true)
     setSelectedProfroma("")
     setSelectedProfromaData([])
+    setCarModel("")
+    setCarVariant("")
+    setCarColor("")
+    clearPriceConfirmationData();
+    dispatch(clearOfferPriceData());
   }
   const selectPerformaClick = () => {
     setisSelectPerformaClick(true)
-    setisNewPerformaClicked(false)
+    setisnewProformaClicked(false)
     showDropDownModelMethod("SELECTPERFORMA", "Select Proforma")
   }
 
@@ -796,6 +874,9 @@ export const ProformaComp = ({
       case "SELECTPERFORMA":
         setDataForDropDown([...proformaDataForDropdown]);
         break;
+      case "REGISTRATION_CHARGES":
+        setDataForDropDown([...registrationChargesType]);
+        break;
     }
     setDropDownKey(key);
     setDropDownTitle(headerText);
@@ -1014,7 +1095,7 @@ export const ProformaComp = ({
     let arrTemp = proformaData.filter(function (obj) {
       return obj.id === id;
     });
-    console.log("proformaData LIST: ", arrTemp);
+   
     let tempArrr = arrTemp.length > 0 ? arrTemp[0] : undefined;
     if (tempArrr !== undefined) {
       let newSelectedProforma = [];
@@ -1026,17 +1107,125 @@ export const ProformaComp = ({
         
         setProformaNo(newSelectedProforma[0].performaUUID);
         let oth_performa_column =JSON.parse(newSelectedProforma[0].oth_performa_column)
-      
+        
+        dispatch(setOfferPriceDataForSelectedProforma(oth_performa_column))
+        // todo need to figurout how to do auto fill for warranty etc 
+        // setPriceInformationData({
+        //   ex_showroom_price: oth_performa_column.ex_showroom_price,
+        //   ex_showroom_price_csd: 0,
+        //   registration_charges: oth_performa_column.registration_charges.toString(),
+        //   handling_charges: oth_performa_column.handling_charges,
+        //   tcs_percentage: oth_performa_column.tcs_percentage,
+        //   tcs_amount: oth_performa_column.tcs_amount,
+        //   essential_kit: oth_performa_column.essential_kit,
+        //   fast_tag: oth_performa_column.fast_tag,
+        //   vehicle_road_tax: 0,
+        // });
       }
       setSelectedProfromaData(newSelectedProforma)
      
    
       let carmodalObj = [...carModelsData];
-     // todo need to filter car details
-      let findVehicle = carmodalObj.filter((item) => item.vehicleId === newSelectedProforma[0].vehicleId)
-   
+      
+     // filter for selected proforma car details 
+     let carModalNameTemp = "";
+     let carModalVarientNameTemp = "";
+     let carModalColorTemp = "";
+      carmodalObj.filter((item) => {
+        if (item.vehicleId === newSelectedProforma[0].vehicleId){
+          [item].map((carModalName)=>{
+           
+            carModalNameTemp = carModalName.model;
+            carModalName.varients.filter((variantItems)=>{
+             
+              if (variantItems.id === newSelectedProforma[0].varientId){
+                
+                carModalVarientNameTemp = variantItems.name;
+
+                variantItems.vehicleImages.filter((carColor)=>{
+              
+                  if (carColor.vehicleImageId === newSelectedProforma[0].vehicleImageId){
+                    carModalColorTemp = carColor.color;
+                   
+                  }
+                })
+              }
+            })
+          })
+        }
+      }
+      )
+      GetPaidAccessoriesListFromServer(
+        newSelectedProforma[0].vehicleId,
+        orgId,
+        userToken
+      );
+     
+      setCarModel(carModalNameTemp);
+      setCarVariant(carModalVarientNameTemp);
+      setSelectedVarientId(newSelectedProforma[0].varientId);
+      setCarColor(carModalColorTemp);
+      
+      dispatch(
+        getOnRoadPriceAndInsurenceDetailsApi({
+          varientId: newSelectedProforma[0].varientId,
+          orgId: orgId
+        })
+      );
 
     }
+  };
+
+  const isInputsEditable = () => {
+    let isInputEditFlag = true;
+    // if (
+    //   selector &&
+    //   selector.pre_booking_details_response &&
+    //   selector.pre_booking_details_response.dmsLeadDto
+    // ) {
+    //   const { leadStatus } = selector.pre_booking_details_response.dmsLeadDto;
+    //   if (!userData.isManager || isLeadCreatedBySelf()) {
+    //     if (leadStatus === "ENQUIRYCOMPLETED") {
+    //       isInputEditFlag = true;
+    //     } else if (!isEditButtonShow && leadStatus !== "SENTFORAPPROVAL") {
+    //       isInputEditFlag = true;
+    //     }
+    //   }
+    // }
+
+    return isInputEditFlag;
+  }
+
+  const clearPriceConfirmationData = () => {
+    setSelectedRegistrationCharges({});
+    setRegistrationChargesType([]);
+    setInsurenceAddOnTypes([]);
+    setSelectedInsurencePrice(0);
+    setPriceInformationData({
+      ex_showroom_price: 0,
+      ex_showroom_price_csd: 0,
+      registration_charges: 0,
+      handling_charges: 0,
+      tcs_percentage: 0,
+      tcs_amount: 0,
+      essential_kit: 0,
+      fast_tag: 0,
+      vehicle_road_tax: 0,
+    });
+    setSelectedWarrentyPrice(0);
+    setHandlingChargSlctd(false);
+    setEssentialKitSlctd(false);
+    setFastTagSlctd(false);
+    calculateOnRoadPrice(false, false, false);
+    setTaxPercent("");
+    setLifeTaxAmount(0);
+    setInsuranceDiscount("");
+    setAccDiscount("");
+    setPaidAccessoriesListNew([]);
+    setSelectedPaidAccessoriesPrice(0);
+    setTotalOnRoadPrice(0);
+    setTcsAmount(0);
+    setTotalOnRoadPriceAfterDiscount(0);
   };
 
   return (
@@ -1072,6 +1261,7 @@ export const ProformaComp = ({
            
             setSelectedProfroma(item.name)
             updateProformaDataforSelectedValue(item.id, item.name, [...proformaDataForDropdown]);
+
           } else if (dropDownKey === "INSURANCE_TYPE") {
             setSelectedInsurencePrice(item.cost);
           } else if (dropDownKey === "WARRANTY") {
@@ -1104,6 +1294,9 @@ export const ProformaComp = ({
               setDropDownData({ key: dropDownKey, value: names, id: "" })
             );
             return;
+          }
+          else if (dropDownKey === "REGISTRATION_CHARGES") {
+            setSelectedRegistrationCharges(item);
           }
           dispatch(
             setDropDownData({
@@ -1149,13 +1342,13 @@ export const ProformaComp = ({
           style={{ flex: 1, }}
           color={Colors.PINK}
           labelStyle={{ textTransform: "none" }}
-          onPress={() => newPerformaClick()}>
+          onPress={() => newProformaClick()}>
           New Proforma
         </Button>
       </View>
 
       <View>
-        {isNewPerformaClicked ? <List.AccordionGroup
+        {isnewProformaClicked ? <List.AccordionGroup
           expandedId={openAccordian}
           onAccordionPress={(expandedId) => updateAccordian(expandedId)}
         >
@@ -1282,10 +1475,10 @@ export const ProformaComp = ({
                   ", " +
                   selector.proforma_state + ", " + selector.proforma_pincode}
               </Text>
+              
               <TextAndAmountComp title={"LESSEE"} text={
-                selector.enquiry_details_response.dmsAccountDto.salutation +" "+
-                selector.enquiry_details_response.dmsAccountDto.firstName + " " +
-                selector.enquiry_details_response.dmsAccountDto.lastName
+                 
+                formateLesseName()
                 } />
               <TextAndAmountComp title={"LESSOR"} text={
               selector.proforma_orgName
@@ -1390,9 +1583,10 @@ export const ProformaComp = ({
                   }}>
                   <TextInput
                     value={taxPercent}
-                    style={[{ fontSize: 14, fontWeight: "400" }]}
+                    style={[{ fontSize: 14, fontWeight: "400",color:Colors.BLACK }]}
                     keyboardType={"number-pad"}
                     onChangeText={(text) => {
+                    
                       setTaxPercent(text);
                       if (text !== "") {
                         setLifeTaxAmount(getLifeTaxNew(Number(text)));
@@ -1409,10 +1603,34 @@ export const ProformaComp = ({
 
               <Text style={GlobalStyle.underline}></Text>
 
-              <TextAndAmountComp
+              <View style={styles.symbolview}>
+                <View style={{ width: "70%" }}>
+                  <DropDownSelectionItem
+                    disabled={!isInputsEditable()}
+                    label={"Registration Charges:"}
+                    value={selectedRegistrationCharges?.name}
+                    onPress={() =>
+                      showDropDownModelMethod(
+                        "REGISTRATION_CHARGES",
+                        "Registration Charges"
+                      )
+                    }
+                  />
+                </View>
+
+                <Text style={styles.shadowText}>
+                  {rupeeSymbol +
+                    " " +
+                    `${selectedRegistrationCharges?.cost
+                      ? selectedRegistrationCharges?.cost
+                      : "0.00"
+                    }`}
+                </Text>
+              </View>
+              {/* <TextAndAmountComp
                 title={"Registration Charges:"}
                 amount={priceInfomationData.registration_charges.toFixed(2)}
-              />
+              /> */}
               <Text style={GlobalStyle.underline}></Text>
 
               <View style={styles.symbolview}>
@@ -1571,6 +1789,250 @@ export const ProformaComp = ({
                 amoutStyle={{ fontSize: 18, fontWeight: "800" }}
               />
               {/* <Text style={GlobalStyle.underline}></Text> */}
+
+
+              {/* // 6.Offer Price */}
+              {/* <List.Accordion
+                id={"6"}
+                title={"Offer Price"}
+                description={
+                  rupeeSymbol + " " + totalOnRoadPriceAfterDiscount.toFixed(2)
+                }
+                titleStyle={{
+                  color: openAccordian === "6" ? Colors.BLACK : Colors.BLACK,
+                  fontSize: 16,
+                  fontWeight: "600",
+                }}
+                descriptionStyle={{
+                  color: openAccordian === "6" ? Colors.BLACK : Colors.BLACK,
+                  paddingTop: 5,
+                  fontSize: 16,
+                  fontWeight: "600",
+                }}
+                style={[
+                  {
+                    backgroundColor:
+                      openAccordian === "6" ? Colors.RED : Colors.WHITE,
+                  },
+                  styles.accordianBorder,
+                ]}
+              > */}
+                <TextinputComp
+                  disabled={!isInputsEditable()}
+                  style={styles.offerPriceTextInput}
+                  label={"Consumer Offer:"}
+                  value={selector.consumer_offer}
+                  showLeftAffixText={true}
+                  leftAffixText={rupeeSymbol}
+                  keyboardType="number-pad"
+                  onChangeText={(text) =>
+                    dispatch(
+                      setOfferPriceDetails({
+                        key: "CONSUMER_OFFER",
+                        text: text,
+                      })
+                    )
+                  }
+                />
+                <Text style={GlobalStyle.underline}></Text>
+                <TextinputComp
+                  disabled={!isInputsEditable()}
+                  style={styles.offerPriceTextInput}
+                  label={"Exchange Offer:"}
+                  value={selector.exchange_offer}
+                  showLeftAffixText={true}
+                  keyboardType="number-pad"
+                  leftAffixText={rupeeSymbol}
+                  onChangeText={(text) =>
+                    dispatch(
+                      setOfferPriceDetails({
+                        key: "EXCHANGE_OFFER",
+                        text: text,
+                      })
+                    )
+                  }
+                />
+                <Text style={GlobalStyle.underline}></Text>
+                <TextinputComp
+                  disabled={!isInputsEditable()}
+                  style={styles.offerPriceTextInput}
+                  label={"Corporate Offer:"}
+                  value={selector.corporate_offer}
+                  showLeftAffixText={true}
+                  leftAffixText={rupeeSymbol}
+                  keyboardType="number-pad"
+                  onChangeText={(text) =>
+                    dispatch(
+                      setOfferPriceDetails({
+                        key: "CORPORATE_OFFER",
+                        text: text,
+                      })
+                    )
+                  }
+                />
+                <Text style={GlobalStyle.underline}></Text>
+                <TextinputComp
+                  disabled={!isInputsEditable()}
+                  style={styles.offerPriceTextInput}
+                  label={"Promotional Offer:"}
+                  value={selector.promotional_offer}
+                  showLeftAffixText={true}
+                  keyboardType="number-pad"
+                  leftAffixText={rupeeSymbol}
+                  onChangeText={(text) =>
+                    dispatch(
+                      setOfferPriceDetails({
+                        key: "PROMOTIONAL_OFFER",
+                        text: text,
+                      })
+                    )
+                  }
+                />
+                <Text style={GlobalStyle.underline}></Text>
+                <TextinputComp
+                  disabled={!isInputsEditable()}
+                  style={styles.offerPriceTextInput}
+                  label={"Cash Discount:"}
+                  value={selector.cash_discount}
+                  showLeftAffixText={true}
+                  keyboardType="number-pad"
+                  leftAffixText={rupeeSymbol}
+                  onChangeText={(text) =>
+                    dispatch(
+                      setOfferPriceDetails({
+                        key: "CASH_DISCOUNT",
+                        text: text,
+                      })
+                    )
+                  }
+                />
+                <Text style={GlobalStyle.underline}></Text>
+                <TextinputComp
+                  disabled={!isInputsEditable()}
+                  style={styles.offerPriceTextInput}
+                  label={"Foc Accessories:"}
+                  value={selector.for_accessories}
+                  showLeftAffixText={true}
+                  keyboardType="number-pad"
+                  leftAffixText={rupeeSymbol}
+                  onChangeText={(text) =>
+                    dispatch(
+                      setOfferPriceDetails({
+                        key: "FOR_ACCESSORIES",
+                        text: text,
+                      })
+                    )
+                  }
+                />
+                <Text style={GlobalStyle.underline}></Text>
+                <TextinputComp
+                  disabled={!isInputsEditable()}
+                  style={styles.offerPriceTextInput}
+                  label={"Insurance Discount:"}
+                  value={selector.insurance_discount}
+                  showLeftAffixText={true}
+                  keyboardType="number-pad"
+                  leftAffixText={rupeeSymbol}
+                  onChangeText={(text) =>
+                    dispatch(
+                      setOfferPriceDetails({
+                        key: "INSURANCE_DISCOUNT",
+                        text: text,
+                      })
+                    )
+                  }
+                />
+                <Text style={GlobalStyle.underline}></Text>
+                <TextinputComp
+                  disabled={!isInputsEditable()}
+                  style={styles.offerPriceTextInput}
+                  label={"Accessories Discount:"}
+                  value={selector.accessories_discount}
+                  showLeftAffixText={true}
+                  keyboardType="number-pad"
+                  leftAffixText={rupeeSymbol}
+                  onChangeText={(text) =>
+                    dispatch(
+                      setOfferPriceDetails({
+                        key: "ACCESSORIES_DISCOUNT",
+                        text: text,
+                      })
+                    )
+                  }
+                />
+                <Text style={GlobalStyle.underline}></Text>
+
+                {/* <View style={styles.textAndAmountView}>
+                                    <Text style={{ fontSize: 16, fontWeight: '400', color: Colors.GRAY }}>{"Insurance Discount:"}</Text>
+                                    <View style={{ width: 80, height: 30, justifyContent: 'center', paddingHorizontal: 10, borderBottomWidth: 1, borderBottomColor: '#d1d1d1' }}>
+                                        <TextInput
+                                            value={insuranceDiscount}
+                                            style={[{ fontSize: 14, fontWeight: "400", }]}
+                                            keyboardType={"number-pad"}
+                                            onChangeText={(text) => {
+                                                setInsuranceDiscount(text)
+                                            }}
+                                        />
+                                    </View>
+                                </View> */}
+                {/* <View style={styles.textAndAmountView}>
+                                    <Text style={{ fontSize: 16, fontWeight: '400', color: Colors.GRAY }}>{"Accessories Discount:"}</Text>
+                                    <View style={{ width: 80, height: 30, justifyContent: 'center', paddingHorizontal: 10, borderBottomWidth: 1, borderBottomColor: '#d1d1d1' }}>
+                                        <TextInput
+                                            value={accDiscount}
+                                            style={[{ fontSize: 14, fontWeight: "400", }]}
+                                            keyboardType={"number-pad"}
+                                            onChangeText={(text) => {
+                                                setAccDiscount(text)
+                                            }}
+                                        />
+                                    </View>
+                                </View> */}
+                <TextinputComp
+                  disabled={!isInputsEditable()}
+                  style={styles.offerPriceTextInput}
+                  label={"Additional Offer 1:"}
+                  value={selector.additional_offer_1}
+                  showLeftAffixText={true}
+                  keyboardType="number-pad"
+                  leftAffixText={rupeeSymbol}
+                  onChangeText={(text) =>
+                    dispatch(
+                      setOfferPriceDetails({
+                        key: "ADDITIONAL_OFFER_1",
+                        text: text,
+                      })
+                    )
+                  }
+                />
+                <Text style={GlobalStyle.underline}></Text>
+                <TextinputComp
+                  disabled={!isInputsEditable()}
+                  style={styles.offerPriceTextInput}
+                  label={"Additional Offer 2:"}
+                  value={selector.additional_offer_2}
+                  showLeftAffixText={true}
+                  keyboardType="number-pad"
+                  leftAffixText={rupeeSymbol}
+                  onChangeText={(text) =>
+                    dispatch(
+                      setOfferPriceDetails({
+                        key: "ADDITIONAL_OFFER_2",
+                        text: text,
+                      })
+                    )
+                  }
+                />
+                <Text style={GlobalStyle.underline}></Text>
+
+                <TextAndAmountComp
+                  title={"On Road Price After Discount:"}
+                  amount={totalOnRoadPriceAfterDiscount.toFixed(2)}
+                  titleStyle={{ fontSize: 18, fontWeight: "800" }}
+                  amoutStyle={{ fontSize: 18, fontWeight: "800" }}
+                />
+                {/* <Text style={GlobalStyle.underline}></Text> */}
+              {/* </List.Accordion> */}
             </View>
             <View
               style={{

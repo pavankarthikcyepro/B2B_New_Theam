@@ -272,7 +272,6 @@ export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk(
       ),
       JSON.stringify(payload)
     );
-    //console.log("proforma", URL.PROFORMA_LOGO_NAME(data.orgId, data.branchId));
 
     const response = await client.get(
       URL.GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS(
@@ -637,6 +636,17 @@ const initialState = {
   isOpened: false,
   refNo: "",
   rmfgYear: null,
+  //offerprice
+  consumer_offer: "",
+  exchange_offer: "",
+  corporate_offer: "",
+  promotional_offer: "",
+  cash_discount: "",
+  for_accessories: "",
+  additional_offer_1: "",
+  additional_offer_2: "",
+  accessories_discount:"",
+  insurance_discount:""
 };
 
 const enquiryDetailsOverViewSlice = createSlice({
@@ -699,6 +709,17 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.r_insurence_document_checked = false;
       state.dmsLeadProducts = [];
       state.refNo = "";
+      //offerprice
+      state.consumer_offer = "";
+      state.exchange_offer = "";
+      state.corporate_offer = "";
+      state.promotional_offer = "";
+      state.cash_discount = "";
+      state.for_accessories = "";
+      state.additional_offer_1 = "";
+      state.additional_offer_2 = "";
+      state.accessories_discount = "",
+      state.insurance_discount = ""
     },
     clearState2: (state, action) => {
       state.enableEdit = false;
@@ -755,6 +776,15 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.r_insurence_document_checked = false;
       state.dmsLeadProducts = [];
       state.refNo = "";
+      //offerprice
+      state.consumer_offer = "";
+      state.exchange_offer = "";
+      state.corporate_offer = "";
+      state.promotional_offer = "";
+      state.cash_discount = "";
+      state.for_accessories = "";
+      state.additional_offer_1 = "";
+      state.additional_offer_2 = "";
     },
     setEditable: (state, action) => {
       console.log("pressed");
@@ -2069,6 +2099,95 @@ const enquiryDetailsOverViewSlice = createSlice({
     updateRefNo: (state, action) => {
       state.refNo = action.payload;
     },
+    setOfferPriceDataForSelectedProforma: (state ,action) =>{
+     
+      let oth_performa_column = action.payload;
+      
+      if(action.payload){
+        state.consumer_offer = oth_performa_column.special_scheme 
+        ? oth_performa_column.special_scheme.toString(): "";
+
+        state.exchange_offer = oth_performa_column.exchange_offers 
+        ? oth_performa_column.exchange_offers.toString(): "";
+      
+        state.corporate_offer = oth_performa_column.corporate_offer
+          ? oth_performa_column.corporate_offer.toString() : "";
+        
+        state.promotional_offer = oth_performa_column.promotional_offers
+          ? oth_performa_column.promotional_offers.toString() : "";
+
+        state.cash_discount = oth_performa_column.cash_discount
+          ? oth_performa_column.cash_discount.toString() : "";
+
+        state.for_accessories = oth_performa_column.foc_accessories
+          ? oth_performa_column.foc_accessories.toString() : "";
+
+        state.additional_offer_1 = oth_performa_column.additional_offer1
+          ? oth_performa_column.additional_offer1.toString() : "";
+
+        state.additional_offer_2 = oth_performa_column.additional_offer2
+          ? oth_performa_column.additional_offer2.toString() : "";
+
+        state.accessories_discount = oth_performa_column.accessories_discount
+          ? oth_performa_column.accessories_discount.toString() : "";
+
+        state.insurance_discount = oth_performa_column.insurance_discount
+          ? oth_performa_column.insurance_discount.toString() : "";
+      }
+    },
+
+    clearOfferPriceData: (state,action)=>{
+      
+      state.consumer_offer = "";
+      state.exchange_offer = "";
+      state.corporate_offer = "";
+      state.promotional_offer = "";
+      state.cash_discount = "";
+      state.for_accessories = "";
+      state.additional_offer_1 = "";
+      state.additional_offer_2 = "";
+      state.accessories_discount = "",
+        state.insurance_discount = ""
+    },
+    setOfferPriceDetails: (
+      state,
+      action: PayloadAction<PersonalIntroModel>
+    ) => {
+      const { key, text } = action.payload;
+      switch (key) {
+        case "CONSUMER_OFFER":
+          state.consumer_offer = text;
+          console.log("manhtanffff ",text)
+          break;
+        case "EXCHANGE_OFFER":
+          state.exchange_offer = text;
+          break;
+        case "CORPORATE_OFFER":
+          state.corporate_offer = text;
+          break;
+        case "PROMOTIONAL_OFFER":
+          state.promotional_offer = text;
+          break;
+        case "CASH_DISCOUNT":
+          state.cash_discount = text;
+          break;
+        case "FOR_ACCESSORIES":
+          state.for_accessories = text;
+          break;
+        case "ADDITIONAL_OFFER_1":
+          state.additional_offer_1 = text;
+          break;
+        case "ADDITIONAL_OFFER_2":
+          state.additional_offer_2 = text;
+          break;
+        case "ACCESSORIES_DISCOUNT":
+          state.accessories_discount = text;
+          break;
+        case "INSURANCE_DISCOUNT":
+          state.insurance_discount = text;
+          break;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(getEnquiryDetailsApi.pending, (state) => {
@@ -2142,7 +2261,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     builder.addCase(
       getOnRoadPriceAndInsurenceDetailsApi.fulfilled,
       (state, action) => {
-        console.log("proforma action.payload", action.payload);
+        console.log("proforma action.payload", JSON.stringify(action.payload));
 
         if (action.payload) {
           state.vehicle_on_road_price_insurence_details_response =
@@ -2378,5 +2497,8 @@ export const {
   clearPermanentAddr,
   updateAddressByPincode2,
   updatedmsLeadProduct,
+  setOfferPriceDetails,
+  setOfferPriceDataForSelectedProforma,
+  clearOfferPriceData
 } = enquiryDetailsOverViewSlice.actions;
 export default enquiryDetailsOverViewSlice.reducer;
