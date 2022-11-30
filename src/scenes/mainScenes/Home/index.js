@@ -80,6 +80,7 @@ import empData from "../../../get_target_params_for_emp.json";
 import allData from "../../../get_target_params_for_all_emps.json";
 import targetData from "../../../get_target_params.json";
 import ReactNativeModal from "react-native-modal";
+import Carousel, { Pagination } from "react-native-snap-carousel";
 
 const HomeScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
@@ -105,6 +106,7 @@ const HomeScreen = ({ route, navigation }) => {
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [options, setOptions] = useState({});
+  const [activeBannerIndex, setActiveBannerIndex] = useState(0);
 
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {
@@ -879,6 +881,47 @@ const HomeScreen = ({ route, navigation }) => {
       </ReactNativeModal>
     );
   };
+
+  const renderBannerList = () => {
+    return (
+      <View>
+        <View style={styles.bannerListContainer}>
+          <Carousel
+            data={selector.bannerList}
+            keyExtractor={(item, index) => item._id + "_" + index}
+            renderItem={renderBanner}
+            sliderWidth={Dimensions.get("screen").width}
+            itemWidth={160}
+            hasParallaxImages={true}
+            inactiveSlideScale={1}
+            inactiveSlideOpacity={1}
+            onSnapToItem={(index) => setActiveBannerIndex(index)}
+            autoplay={true}
+            autoplayInterval={3000}
+            loop={true}
+          />
+        </View>
+        <Pagination
+          dotsLength={selector.bannerList.length}
+          activeDotIndex={activeBannerIndex}
+          containerStyle={styles.paginationContainer}
+          dotColor={Colors.PINK}
+          dotStyle={styles.paginationDot}
+          inactiveDotStyle={styles.inactiveDotStyle}
+          inactiveDotColor={Colors.GRAY}
+          inactiveDotOpacity={0.4}
+          inactiveDotScale={0.6}
+        />
+      </View>
+    );
+  };
+
+  const renderBanner = ({ item, index }) => {
+    return (
+      <Image source={{ uri: item.fileUrl }} style={styles.bannerImage} resizeMode="contain" />
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <RenderModal />
@@ -1056,6 +1099,8 @@ const HomeScreen = ({ route, navigation }) => {
             </>
           )}
         </View>
+        
+        {selector.bannerList.length > 0 && renderBannerList()}
 
         {/* 1111 */}
         <View>
@@ -1380,5 +1425,31 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     alignSelf: "center",
     // opacity: 0.7,
+  },
+
+  bannerListContainer: {},
+  bannerImage: {
+    marginTop: 10,
+    marginBottom: 10,
+    padding: 15,
+    width: 150,
+    height: 150,
+    backgroundColor: Colors.BLACK,
+    borderRadius: 5,
+  },
+  paginationContainer: {
+    paddingVertical: 0,
+    marginBottom: 10
+  },
+  paginationDot: {
+    height: 10,
+    width: 10,
+    borderRadius: 5,
+    marginHorizontal: -7,
+  },
+  inactiveDotStyle: {
+    height: 14,
+    width: 14,
+    borderRadius: 7,
   },
 });

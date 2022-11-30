@@ -661,6 +661,7 @@ export const homeSlice = createSlice({
     designationList: [],
     deptList: [],
     sourceModelData: [],
+    bannerList: [],
   },
   reducers: {
     dateSelected: (state, action) => {
@@ -679,7 +680,6 @@ export const homeSlice = createSlice({
       state.isDSE = action.payload;
     },
     updateTargetData: (state, action) => {
-
       state.target_parameters_data = action.payload.targetData;
       state.all_target_parameters_data = action.payload.allTargetData;
       // state.all_emp_parameters_data = action.payload.allEmpData;
@@ -695,6 +695,7 @@ export const homeSlice = createSlice({
       state.tableData = data;
       state.datesData = dates;
       state.menuList = [];
+      state.bannerList = [];
       state.vehicle_model_list_for_filters = [];
       state.customer_type_list = [];
       state.source_of_enquiry_list = [];
@@ -739,6 +740,11 @@ export const homeSlice = createSlice({
       .addCase(getMenuList.fulfilled, (state, action) => {
         const dmsEntityObj = action.payload.dmsEntity;
         const menuList = dmsEntityObj.menuList;
+        const { banners } = dmsEntityObj;
+
+        if (banners.length > 0) {
+          state.bannerList = banners;
+        }
 
         if (menuList.length > 0) {
           let newMenuList = [];
@@ -769,7 +775,6 @@ export const homeSlice = createSlice({
         state.branchesList = [];
       })
       .addCase(updateIsTeam.fulfilled, (state, action) => {
-
         state.isTeam = action.payload;
       })
       .addCase(getCustomerTypeList.fulfilled, (state, action) => {
@@ -825,8 +830,7 @@ export const homeSlice = createSlice({
           state.filter_drop_down_data = action.payload;
         }
       })
-      .addCase(getOrganaizationHirarchyList.rejected, (state, action) => {
-      })
+      .addCase(getOrganaizationHirarchyList.rejected, (state, action) => {})
       // Get Lead Source Table List
       .addCase(getLeadSourceTableList.pending, (state, action) => {
         state.lead_source_table_data = [];
@@ -907,7 +911,6 @@ export const homeSlice = createSlice({
       })
       .addCase(getTargetParametersAllData.fulfilled, (state, action) => {
         if (action.payload) {
-
           // state.all_target_parameters_data = [];
           // state.all_emp_parameters_data = [];
           state.isTeamPresent =
@@ -1015,7 +1018,6 @@ export const homeSlice = createSlice({
         getTargetParametersEmpDataInsights.fulfilled,
         (state, action) => {
           if (action.payload) {
-
             state.insights_target_parameters_data = action.payload;
             AsyncStore.storeData("TARGET_EMP", JSON.stringify(action.payload));
           }
@@ -1033,7 +1035,6 @@ export const homeSlice = createSlice({
       })
       .addCase(getNewTargetParametersAllData.fulfilled, (state, action) => {
         if (action.payload) {
-
           // state.all_target_parameters_data = [];
           // state.all_emp_parameters_data = [];
           state.isTeamPresent =
@@ -1059,7 +1060,6 @@ export const homeSlice = createSlice({
 
       .addCase(getTotalTargetParametersData.pending, (state, action) => {
         if (action.payload) {
-
           state.totalParameters = action.payload;
         }
       })
