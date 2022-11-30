@@ -184,6 +184,8 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
       );
       const savedJson = await saveData.json();
       console.log("savedJson", savedJson, absentRequest);
+      !absentRequest &&
+        AsyncStore.storeData(AsyncStore.Keys.IS_PRESENT, new Date().getDate());
       !absentRequest && inVisible();
       // if (savedJson.success) {
       //   !absentRequest && inVisible();
@@ -211,6 +213,8 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
         tempPayload
       );
       const updatedJson = await updateData.json();
+      present &&
+        AsyncStore.storeData(AsyncStore.Keys.IS_PRESENT, new Date().getDate());
       // console.log("updatedJson", updatedJson);
       !absentRequest && inVisible();
       // if (updatedJson.success) {

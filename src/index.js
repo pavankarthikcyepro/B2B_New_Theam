@@ -31,7 +31,7 @@ import {
   saveLocation,
 } from "./networking/endpoints";
 import PushNotificationIOS from "@react-native-community/push-notification-ios";
-import { Platform } from "react-native";
+import { Platform, AppState } from "react-native";
 import PushNotification from "react-native-push-notification";
 
 const officeLocation = {
@@ -213,9 +213,16 @@ const AppScreen = () => {
         if (startDate <= now && now <= startBetween) {
           sendLocalNotification();
         }
-        if (now >= startBetween) {
-          MarkAbsent();
+        // console.log("AppState", AppState.currentState);
+        if (
+          AppState.currentState === "background" ||
+          AppState.currentState === "inactive"
+        ) {
+          if (now >= startBetween) {
+            MarkAbsent();
+          }
         }
+
         if (endBetween <= now && now <= endDate) {
           sendLocalNotification();
         }

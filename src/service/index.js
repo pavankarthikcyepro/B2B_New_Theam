@@ -21,31 +21,41 @@ export const sleep = (time) =>
 export const MarkAbsent = async (absentRequest = false) => {
   try {
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-    if (employeeData) {
-      const jsonObj = JSON.parse(employeeData);
-      let payload = {
-        id: 0,
-        orgId: jsonObj.orgId,
-        empId: jsonObj.empId,
-        branchId: jsonObj.branchId,
-        isPresent: 0,
-        isAbsent: 1,
-        status: "Active",
-        comments: "",
-        reason: "",
-      };
-      const response = await client.get(
-        URL.GET_ATTENDANCE_EMPID(jsonObj.empId, jsonObj.orgId)
-      );
-      const json = await response.json();
-      console.log("OKOKOKOK", json[json?.length - 1]);
-      let latestDate = new Date(
-        json[json?.length - 1]?.createdtimestamp
-      )?.getDate();
-      let todaysDate = new Date().getDate();
-      if (json?.length !== 0 || latestDate !== todaysDate) {
-        saveData(payload, true);
+    let isPresent = await AsyncStore.getData(AsyncStore.Keys.IS_PRESENT);
+    if (isPresent) {
+      if (isPresent !== new Date().getDate()) {
+        if (employeeData) {
+          const jsonObj = JSON.parse(employeeData);
+          let payload = {
+            id: 0,
+            orgId: jsonObj.orgId,
+            empId: jsonObj.empId,
+            branchId: jsonObj.branchId,
+            isPresent: 0,
+            isAbsent: 1,
+            status: "Active",
+            comments: "",
+            reason: "",
+          };
+          const response = await client.get(
+            URL.GET_ATTENDANCE_EMPID(jsonObj.empId, jsonObj.orgId)
+          );
+          const json = await response.json();
+          console.log("OKOKOKOK", json[json?.length - 1]);
+          let latestDate = new Date(
+            json[json?.length - 1]?.createdtimestamp
+          )?.getDate();
+          let todaysDate = new Date().getDate();
+          if (json?.length !== 0 && latestDate !== todaysDate) {
+            saveData(payload, true);
+            AsyncStore.storeData(AsyncStore.Keys.IS_PRESENT, todaysDate);
+          }
+        }
+      }else{
+        return
       }
+    } else {
+      AsyncStore.storeData(AsyncStore.Keys.IS_PRESENT, "0");
     }
   } catch (error) {
     console.error("MAIN", error);

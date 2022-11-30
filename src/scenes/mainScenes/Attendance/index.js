@@ -130,6 +130,7 @@ const AttendanceScreen = ({ route }) => {
               start: formatedDate,
               // duration: "00:20:00",
               note: element.comments,
+              reason: element.reason,
               color: element.isPresent === 1 ? Colors.GREEN : "#ff5d68",
               status: element.isPresent === 1 ? "Present" : "Absent",
             };
@@ -306,7 +307,16 @@ const AttendanceScreen = ({ route }) => {
                   style={{ ...styles.eventNote, backgroundColor: event.color }}
                 >
                   <Text style={styles.eventText}>{event.status}</Text>
-                  <Text style={styles.eventText}>{event.note}</Text>
+                  {event.note?.length > 0 && (
+                    <Text style={styles.eventText}>
+                      {"Comment: " + event.note}
+                    </Text>
+                  )}
+                  {event.reason?.length > 0 && (
+                    <Text style={styles.eventText}>
+                      {"Reason: " + event.reason}
+                    </Text>
+                  )}
                 </View>
               );
             }}
