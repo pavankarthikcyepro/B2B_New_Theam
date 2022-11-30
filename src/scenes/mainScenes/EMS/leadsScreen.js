@@ -504,6 +504,7 @@ const LeadsScreen = ({ route, navigation }) => {
                                 sourceData, from, to, defLeadStage, defLeadStatus) => {
         setSearchedData([]);
         setLeadsList([]);
+        setSelectedToDate(moment().add(0, "day").endOf("month").format(dateFormat))
         setLoader(true);
         const employeeData = await AsyncStore.getData(
             AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -586,6 +587,16 @@ const LeadsScreen = ({ route, navigation }) => {
                     leadStages.splice(invoiceIndex, 1);
                 }
             }
+
+            let isLive = false;
+            if (
+              route?.params?.param &&
+              route?.params?.moduleType == "live-leads"
+            ) {
+              isLive = true;
+              from = "2021-01-01";
+            }
+
             let newPayload = {
                 "startdate": from ? from : selectedFromDate,
                 "enddate": to ? to : selectedToDate,
@@ -595,20 +606,26 @@ const LeadsScreen = ({ route, navigation }) => {
                 "empId": employeeDetail ? route?.params?.employeeDetail?.empId : jsonObj.empId,
                 "status": "",
                 "offset": 0,
-                "limit": 500,
+                "limit": 5000,
                 "leadStage": leadStages,
                 "leadStatus": defLeadStatus ? defLeadStatus : leadStatus.length === 0 ? defualtLeadStatus : leadStatus
             };
-            Promise.all([dispatch(getLeadsList(newPayload))]).then((response) => {
+            let data = {
+              newPayload,
+              isLive,
+            };
+            Promise.all([dispatch(getLeadsList(data))])
+              .then((response) => {
                 setLoader(false);
-                let newData = response[0].payload?.dmsEntity?.leadDtoPage?.content;
+                let newData =
+                  response[0].payload?.dmsEntity?.leadDtoPage?.content;
                 setSearchedData(newData);
                 setLeadsList(newData);
-            })
-                .catch((error) => {
-                    setLoader(false);
-                    console.log(error);
-                });
+              })
+              .catch((error) => {
+                setLoader(false);
+                console.log(error);
+              });
         }
     }
 

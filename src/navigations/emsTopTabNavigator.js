@@ -9,7 +9,6 @@ import * as AsyncStore from "../asyncStore";
 import ProceedToBookingScreen from "../scenes/mainScenes/MyTasks/proceedToBookingScreen";
 import Leads from "../scenes/mainScenes/EMS/leadsScreen";
 import { StyleSheet, Text, View } from "react-native";
-import TextTicker from "react-native-text-ticker";
 import { useSelector } from "react-redux";
 
 export const EmsTopTabNavigatorIdentifiers = {
@@ -62,28 +61,17 @@ const Badge = ({ focused, title, countList }) => {
       >
         {title}
       </Text>
-      <View
-        style={styles.badgeContainer}
-      >
-        <TextTicker
-          duration={10000}
-          loop={true}
-          bounce={false}
-          repeatSpacer={50}
-          marqueeDelay={0}
-          style={styles.badgeAnimatedContainer}
-        >
-          <Text style={styles.badgeText}>
-            {title == "CONTACTS"
-              ? countList
-                ? countList.length
-                : 0
-              : countList &&
-                countList?.dmsEntity?.leadDtoPage?.numberOfElements > 0
-              ? countList.dmsEntity.leadDtoPage.numberOfElements
-              : 0}
-          </Text>
-        </TextTicker>
+      <View style={styles.badgeContainer}>
+        <Text style={styles.badgeText}>
+          {title == "CONTACTS"
+            ? countList
+              ? countList.length
+              : 0
+            : countList &&
+              countList?.dmsEntity?.leadDtoPage?.numberOfElements > 0
+            ? countList.dmsEntity.leadDtoPage.numberOfElements
+            : 0}
+        </Text>
       </View>
     </View>
   );
@@ -155,22 +143,13 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   badgeContainer: {
-    width: 20,
-    height: 20,
-    borderColor: Colors.PINK,
-    backgroundColor: Colors.PINK,
-    borderWidth: 1,
     marginLeft: 3,
-    borderRadius: 20 / 2,
     bottom: 4,
     alignSelf: "flex-start",
     justifyContent: "center",
     alignItems: "center",
   },
-  badgeAnimatedContainer: {
-    marginBottom: 0,
-  },
-  badgeText: { fontSize: 11, color: Colors.WHITE },
+  badgeText: { fontSize: 13, color: Colors.PINK, fontWeight: "bold" },
 });
 
 export { EMSTopTabNavigatorOne, EMSTopTabNavigatorTwo };

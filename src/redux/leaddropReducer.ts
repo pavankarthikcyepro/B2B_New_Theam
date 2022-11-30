@@ -54,9 +54,11 @@ export const getSubMenu = createAsyncThunk(
 export const getLeadsList = createAsyncThunk(
   "DROPANALYSIS/getLeadsList",
   async (payload, { rejectWithValue }) => {
-    console.log("PAYLOAD getLeadsList EN: ", URL.GET_LEAD_LIST_2());
-
-    const response = await client.post(URL.GET_LEAD_LIST_2(), payload);
+    let url = URL.GET_LEAD_LIST_2();
+    if (payload?.isLive) {
+      url = url + "Live";
+    }
+    const response = await client.post(url, payload.newPayload);
     const json = await response.json();
     console.log("ENQ getLeadsList LIST:", JSON.stringify(json));
 
@@ -189,7 +191,21 @@ const leaddropListSlice = createSlice({
     leadList: [],
     defualtStatus: [],
   },
-  reducers: {},
+  reducers: {
+    clearLeadDropState :(state, action) => {
+      state.leadDropList= [],
+      state.pageNumber= 0,
+      state.totalPages= 1,
+      state.isLoading= false,
+      state.isLoadingExtraData= false,
+      state.status= "",
+      state.approvalStatus= "",
+      state.subMenu= [],
+      state.menu= [],
+      state.leadList= [],
+      state.defualtStatus= []
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(getMenu.pending, (state, action) => {
       console.log("dropanalysis getMenu pending", action);
@@ -335,5 +351,5 @@ const leaddropListSlice = createSlice({
   },
 });
 
-export const {} = leaddropListSlice.actions;
+export const { clearLeadDropState } = leaddropListSlice.actions;
 export default leaddropListSlice.reducer;

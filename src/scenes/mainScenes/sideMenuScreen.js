@@ -51,6 +51,8 @@ import {
   TRANSFER_STR,
 } from "../../redux/sideMenuReducer";
 import { clearState } from "../../redux/homeReducer";
+import { clearEnqState } from "../../redux/enquiryReducer";
+import { clearLeadDropState } from "../../redux/leaddropReducer";
 import ReactNativeModal from "react-native-modal";
 
 const screenWidth = Dimensions.get("window").width;
@@ -300,6 +302,8 @@ const SideMenuScreen = ({ navigation }) => {
     navigation.closeDrawer();
     //realm.close();
     dispatch(clearState());
+    dispatch(clearEnqState());
+    dispatch(clearLeadDropState());
     signOut();
   };
 
