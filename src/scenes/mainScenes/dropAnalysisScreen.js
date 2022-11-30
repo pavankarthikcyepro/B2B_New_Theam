@@ -168,9 +168,11 @@ const DropAnalysisScreen = ({ navigation }) => {
         if (employeeData) {
             const jsonObj = await JSON.parse(employeeData);
             // await setOrgId(jsonObj.orgId)
+
             if (
               jsonObj?.hrmsRole.toLowerCase().includes("manager") ||
               jsonObj?.hrmsRole.toLowerCase() == "admin" ||
+              jsonObj?.hrmsRole.toLowerCase() == "sales head" ||
               jsonObj?.hrmsRole.toLowerCase() == "md"
             ) {
               setIsManager(true);

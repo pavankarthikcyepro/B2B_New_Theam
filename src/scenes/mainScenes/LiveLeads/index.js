@@ -465,21 +465,22 @@ const LiveLeadsScreen = ({ route, navigation }) => {
         }
 
         const payload1 = {
-            ...payload,
-            "pageNo": 0,
-            "size": 5,
-        }
+          ...payload,
+          pageNo: 0,
+          size: 5,
+          endDate: moment().add(0, "day").endOf("month").format("YYYY-MM-DD"),
+        };
         const payload2 = {
-            "orgId": orgId,
-            "selectedEmpId": payload.empId,
-            "endDate": payload.endDate,
-            "loggedInEmpId": payload.empId,
-            "empId": payload.empId,
-            "startDate": payload.startDate,
-            "levelSelected": null,
-            "pageNo": 0,
-            "size": 100,
-        }
+          orgId: orgId,
+          selectedEmpId: payload.empId,
+          endDate: moment().add(0, "day").endOf("month").format("YYYY-MM-DD"),
+          loggedInEmpId: payload.empId,
+          empId: payload.empId,
+          startDate: payload.startDate,
+          levelSelected: null,
+          pageNo: 0,
+          size: 5000,
+        };
         Promise.allSettled([
             //dispatch(getTargetParametersAllData(payload1)),
             dispatch(getTotalTargetParametersData(payload2)), // grand total
