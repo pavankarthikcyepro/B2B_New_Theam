@@ -277,7 +277,6 @@ const TestDriveScreen = ({ route, navigation }) => {
                             primaryModel = dmsLeadProducts[0];
                         }
 
-
                         const {model, variant, fuel, transimmisionType} = primaryModel;
                         setSelectedVehicleDetails({
                             model,
@@ -297,40 +296,45 @@ const TestDriveScreen = ({ route, navigation }) => {
 
     // Handle Task Details Response
     useEffect(() => {
-        if (
-          selector.test_drive_vehicle_list_for_drop_down.length > 0 &&
-          selectedVehicleDetails?.varient !== ""
-        ) {
-          let tempObj = { ...selectedVehicleDetails };
-          let findModel = [];
-          findModel = selector.test_drive_vehicle_list_for_drop_down.filter(
+      if (
+        selector.test_drive_vehicle_list_for_drop_down.length > 0 &&
+        selectedVehicleDetails?.varient !== ""
+      ) {
+        let tempObj = { ...selectedVehicleDetails };
+        let findModel = [];
+        findModel = selector.test_drive_vehicle_list_for_drop_down.filter(
+          (item) => {
+            return item.model == selectedVehicleDetails.model;
+          }
+        );
+        tempObj.vehicleId = findModel[0].vehicleId;
+
+        if (findModel.length > 0) {
+          let findVarient = [];
+          findVarient = selector.test_drive_varients_obj_for_drop_down[findModel[0].model].filter(
             (item) => {
-              return (
-                item.varientName === selectedVehicleDetails.varient ||
-                item.model === selectedVehicleDetails.model
-              );
+              return item.varientName == selectedVehicleDetails.varient;
             }
           );
-          if (findModel.length > 0) {
-            tempObj.vehicleId = findModel[0].vehicleId;
-            tempObj.varientId = findModel[0].varientId;
 
-            if (
-              selector.test_drive_varients_obj_for_drop_down[findModel[0].model]
-            ) {
-              const varientsData =
-                selector.test_drive_varients_obj_for_drop_down[
-                  findModel[0].model
-                ];
-              setVarientListForDropDown(varientsData);
-            }
-          } else {
-            tempObj.fuelType = "";
-            tempObj.transType = "";
+          tempObj.varientId = findVarient[0].varientId;
+
+          if (
+            selector.test_drive_varients_obj_for_drop_down[findModel[0].model]
+          ) {
+            const varientsData =
+              selector.test_drive_varients_obj_for_drop_down[
+                findModel[0].model
+              ];
+            setVarientListForDropDown(varientsData);
           }
-
-          setSelectedVehicleDetails(tempObj);
+        } else {
+          tempObj.fuelType = "";
+          tempObj.transType = "";
         }
+
+        setSelectedVehicleDetails(tempObj);
+      }
     }, [selector.test_drive_vehicle_list_for_drop_down]);
 
     useEffect(() => {
@@ -752,6 +756,7 @@ const TestDriveScreen = ({ route, navigation }) => {
         const payload = {
             appointment: appointmentObj,
         };
+
         dispatch(bookTestDriveAppointmentApi(payload));
         // navigation.goBack()
     };
