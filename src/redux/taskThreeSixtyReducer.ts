@@ -57,7 +57,6 @@ const taskThreeSixtySlice = createSlice({
             state.wrokflow_response_status = "pending";
         })
         builder.addCase(getWorkFlow.fulfilled, (state, action) => {
-            console.log("S getWorkFlow: ", JSON.stringify(action.payload));
             if (action.payload?.dmsEntity) {
                 if (action.payload.dmsEntity?.tasks) {
                     state.wrokflow_response = action.payload.dmsEntity.tasks;
@@ -67,7 +66,6 @@ const taskThreeSixtySlice = createSlice({
             state.isLoading = false;
         })
         builder.addCase(getWorkFlow.rejected, (state, action) => {
-            // console.log("F getWorkFlow: ", JSON.stringify(action.payload));
             state.wrokflow_response = [];
             state.wrokflow_response_status = "failed";
             state.isLoading = false;
@@ -79,7 +77,6 @@ const taskThreeSixtySlice = createSlice({
             state.isLoading = true;
         })
         builder.addCase(getEnquiryDetails.fulfilled, (state, action) => {
-            console.log("S getEnquiryDetails: ", JSON.stringify(action.payload));
             if (action.payload?.dmsEntity) {
                 if (action.payload.dmsEntity?.dmsLeadDto) {
                     state.enquiry_leadDto_response = action.payload.dmsEntity.dmsLeadDto;
@@ -89,7 +86,6 @@ const taskThreeSixtySlice = createSlice({
             state.isLoading = false;
         })
         builder.addCase(getEnquiryDetails.rejected, (state, action) => {
-            console.log("F getEnquiryDetails: ", JSON.stringify(action.payload));
             state.enquiry_leadDto_response = {};
             state.enquiry_leadDto_response_status = "failed";
             state.isLoading = false;
@@ -99,13 +95,11 @@ const taskThreeSixtySlice = createSlice({
             state.leadAge = 0
         })
         builder.addCase(getLeadAge.fulfilled, (state, action) => {
-            console.log("S getLeadAge: ", JSON.stringify(action.payload));
             if (action.payload?.leadAge) {
                 state.leadAge = action.payload?.leadAge
             }
         })
         builder.addCase(getLeadAge.rejected, (state, action) => {
-            console.log("F getLeadAge: ", JSON.stringify(action.payload));
             state.leadAge = 0
         })
     }

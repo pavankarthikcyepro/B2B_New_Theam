@@ -188,7 +188,6 @@ const MapIcon = ({ navigation }) => {
             icon="google-maps"
             color={Colors.WHITE}
             size={25}
-            //onPress={() => console.log('Mpas icon pressed')}
             onPress={() => {
                 Linking.openURL(
                     `https://www.google.com/maps/search/?api=1&query=india`
@@ -634,8 +633,6 @@ const TabNavigator = ({ navigation, route }) => {
     // let routeName = getFocusedRouteNameFromRoute(route);
     let routeName = nav.params.screen;
 
-    // console.log("---navigation props", nav)
-    // console.log("-----------condation", routeName.name === "MONTHLY_TARGET")
     return (
         <Tab.Navigator
             // initialRouteName={routeName.name === "MONTHLY_TARGET" ? TabStackIdentifiers.planning : TabStackIdentifiers.home}

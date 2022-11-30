@@ -40,7 +40,7 @@ const NotificationScreen = () => {
                 mode="text"
                 labelStyle={{ fontSize: 14, color: Colors.RED, textTransform: 'none', textAlign: 'right', paddingRight: 0, marginRight: 0 }}
                 contentStyle={{ margin: 0, padding: 0 }}
-                onPress={() => console.log('Pressed')}
+                onPress={() => {}}
               >
                 Mark all read
               </Button> : null}

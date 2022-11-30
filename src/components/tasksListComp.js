@@ -70,7 +70,6 @@ export class TasksListComp extends PureComponent {
 // export const TasksListComp = ({ data, totalWidth, type }) => {
 
 //     const itemWidth = totalWidth / 8;
-//     console.log(itemWidth)
 
 //     return (
 //     )

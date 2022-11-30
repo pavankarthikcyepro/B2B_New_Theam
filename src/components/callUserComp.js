@@ -7,24 +7,23 @@ import { callNumber } from '../utils/helperFunctions';
 const screenWidth = Dimensions.get('window').width;
 
 const CallItem = ({ title, mobile, onPress }) => {
-
-    return (
-        <TouchableOpacity onPress={onPress}>
-            <View style={styles.view2}>
-                <IconButton
-                    icon="sim"
-                    color={Colors.RED}
-                    size={20}
-                    onPress={() => console.log('Pressed')}
-                />
-                <View >
-                    <Text style={styles.text1}>{title}</Text>
-                    <Text style={styles.text2}>{mobile}</Text>
-                </View>
-            </View>
-        </TouchableOpacity>
-    )
-}
+  return (
+    <TouchableOpacity onPress={onPress}>
+      <View style={styles.view2}>
+        <IconButton
+          icon="sim"
+          color={Colors.RED}
+          size={20}
+          onPress={() => {}}
+        />
+        <View>
+          <Text style={styles.text1}>{title}</Text>
+          <Text style={styles.text2}>{mobile}</Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+};
 
 const CallUserComponent = ({ visible = false, onRequestClose }) => {
 

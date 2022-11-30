@@ -99,11 +99,9 @@ const etvbrlReportScreen = () => {
 
     const downloadReport = async () => {
         if (selectedLocation.id == null) {
-            console.log("error");
             setLocationError("Please Select Location");
             return;
         }
-        console.log("first")
         setLoading(true);
         const payload = {
             branchIdList: selectedDealer,
@@ -111,18 +109,13 @@ const etvbrlReportScreen = () => {
             orgId: orgId,
             toDate: selectedToDate
         }
-        console.log("downloadReport payload", payload)
-        console.log("download Url", URL.DOWNLOAD_REPORT())
         const response = await client.post(URL.DOWNLOAD_REPORT(), payload);
         const report = await response.json();
-        console.log("REPORT:", JSON.stringify(report));
         const { config, fs } = RNFetchBlob;
         let downloadDir = Platform.select({ ios: fs.dirs.DocumentDir, android: fs.dirs.DownloadDir });
         let date = new Date();
         let file_ext = getFileExtention(report.downloadUrl);
-        console.log("FiLE: ", file_ext);
         file_ext = '.' + file_ext[0];
-        console.log({file_ext})
         let options = {}
         if (Platform.OS === 'android') {
             options = {
@@ -137,7 +130,6 @@ const etvbrlReportScreen = () => {
             config(options)
                 .fetch('GET', report.downloadUrl)
                 .then((res) => {
-                    console.log(JSON.stringify(res), "sucess");
                     setLoading(false);
                     RNFetchBlob.android.actionViewIntent(res.path());
                     // do some magic here
@@ -203,7 +195,6 @@ const etvbrlReportScreen = () => {
                             setSelectedDealer([...dealerCodes]);
                             setDealerName(names);
                         }
-                        console.log({ dealerCodes })
                     } else {
                      setSelectedLocation({name: item.name, id:item.id})
                     }
@@ -217,7 +208,6 @@ const etvbrlReportScreen = () => {
                 mode={"date"}
                 value={new Date(Date.now())}
                 onChange={(event, selectedDate) => {
-                    console.log("date: ", selectedDate);
                     if (Platform.OS === "android") {
                         if (selectedDate) {
                             updateSelectedDate(selectedDate, datePickerId)

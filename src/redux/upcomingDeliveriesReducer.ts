@@ -39,7 +39,6 @@ export const slice = createSlice({
             state.isLoading = true;
         })
         builder.addCase(getUpcmoingDeliveriesListApi.fulfilled, (state, action) => {
-            console.log('res: ', action.payload);
             const dmsEntityObj = action.payload?.dmsEntity;
             if (dmsEntityObj) {
                 state.totalPages = dmsEntityObj.leadDtoPage.totalPages;
@@ -55,7 +54,6 @@ export const slice = createSlice({
             state.isLoadingExtraData = true;
         })
         builder.addCase(getMoreUpcmoingDeliveriesListApi.fulfilled, (state, action) => {
-            console.log('res: ', action.payload);
             const dmsEntityObj = action.payload?.dmsEntity;
             if (dmsEntityObj) {
                 state.pageNumber = dmsEntityObj.leadDtoPage.pageable.pageNumber;

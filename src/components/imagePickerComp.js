@@ -82,7 +82,6 @@ const ImagePickerComponent = ({ visible, keyId = "", onDismiss, selectedImage })
     }
 
     const handleResponse = (res) => {
-        // console.log('res: ', res);
         if (res.assets) {
             let data = res.assets[0];
             let imageObject = {
@@ -96,7 +95,6 @@ const ImagePickerComponent = ({ visible, keyId = "", onDismiss, selectedImage })
             selectedImage(imageObject, keyId);
         }
         else if (res.didCancel) {
-            console.log('user cancelled!');
         }
         else if (res.errorCode) {
             switch (res.errorCode) {

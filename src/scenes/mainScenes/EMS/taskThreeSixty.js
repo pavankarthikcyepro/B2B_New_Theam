@@ -35,7 +35,6 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
 
     useEffect(async () => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-        console.log("$$$$$ LOGIN EMP:", employeeData);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
             setUserRole(jsonObj.hrmsRole)
@@ -52,8 +51,6 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
         })
     }, [navigation])
 
-    // console.log({ dataForSectionList })
-    // console.log("dataForSectionList", dataForSectionList[1].data)
 
 
     // Handle enquiry Details response
@@ -114,7 +111,6 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
     }
 
     const itemClicked = (item) => {
-        console.log("ITEM: ", JSON.stringify(item));
         const taskName = item.taskName;
         const taskId = item.taskId;
         const universalId = item.universalId;
@@ -128,12 +124,10 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
         }
 
         const trimName = taskName.toLowerCase().trim();
-        console.log({trimName})
         const finalTaskName1 = trimName.replace(/ /g, "");
       const finalTaskName = finalTaskName1.replace(/-/g, "");
         let navigationId = ""
         let taskNameNew = ''
-        console.log("FINAL TASK NAME: ", finalTaskName);
         switch (finalTaskName) {
             case "testdrive":
                 navigationId = AppNavigator.EmsStackIdentifiers.testDrive;
@@ -180,10 +174,8 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                 taskNameNew = ''
                 break;
         }
-        console.log("NAVIGATION ID: ", navigationId);
         if (!navigationId) { return }
         if (navigationId === AppNavigator.EmsStackIdentifiers.confirmedPreEnq) {
-            console.log("ITEM DATA:", JSON.stringify(itemData));
             navigation.navigate(navigationId, { itemData: itemData, fromCreatePreEnquiry: false })
         }
         else {

@@ -106,10 +106,8 @@ const PreEnquiryScreen = ({ route, navigation }) => {
         //     let newIndex = contact[0].allLeadsSubstagesEntity;
         //     setDefualtLeadStage(newIndex[0].leadStage ? newIndex[0].leadStage : []);
         //     setdefualtLeadStatus(newIndex[0].leadStatus ? newIndex[0].leadStatus : []);
-        //     console.log('GDFDB: 1');
         //     getDataFromDB(newIndex[0].leadStage ? newIndex[0].leadStage : [], newIndex[0].leadStatus ? newIndex[0].leadStatus : []);
         // }).catch((err) => {
-        //     console.log(err);
         //     setLoader(false);
         // })
         // getAsyncData().then(data => {
@@ -165,10 +163,8 @@ const PreEnquiryScreen = ({ route, navigation }) => {
 
     useEffect(() => {
         setSearchQuery('');
-        console.log('selector.pre_enquiry_list----->', selector.pre_enquiry_list);
         if (selector.pre_enquiry_list.length > 0) {
             setSearchedData(selector.pre_enquiry_list)
-            // console.log("PreEnquiryAfterScreen:", selector.pre_enquiry_list[0])
         }
         else {
             setSearchedData([])
@@ -178,7 +174,6 @@ const PreEnquiryScreen = ({ route, navigation }) => {
     useEffect(() => {
         // navigation.addListener('focus', () => {
             // getAsyncData(lastMonthFirstDate, currentDate).then(data => {
-            //     console.log(data)
             // });
             if (route && route.params && route.params.moduleType) {
                 const liveLeadsStartDate = route?.params?.moduleType === 'live-leads' ? '2021-01-01' : lastMonthFirstDate;
@@ -189,7 +184,6 @@ const PreEnquiryScreen = ({ route, navigation }) => {
                 setFromDateState(lastMonthFirstDate);
                 setToDateState(currentDate);
             }
-            console.log("DATE &&&&", fromDateRef.current, toDateRef.current, lastMonthFirstDate, currentDate)
             getDataFromDB()
           // });
 
@@ -252,7 +246,6 @@ const PreEnquiryScreen = ({ route, navigation }) => {
 
     const getPreEnquiryListFromServer = (empId, startDate, endDate) => {
         const payload = getPayloadData(empId, startDate, endDate, 0);
-        console.log("payload called", payload)
         dispatch(getPreEnquiryData(payload));
     }
 
@@ -334,7 +327,6 @@ const PreEnquiryScreen = ({ route, navigation }) => {
                 setSearchedData(newData);
             })
                 .catch((error) => {
-                    console.log(error);
                     setLoader(false);
                 });
         }
@@ -433,7 +425,6 @@ const PreEnquiryScreen = ({ route, navigation }) => {
         dispatch(getPreEnquiryData(payload2));
     }
 
-    // console.log({vehicleModelList})
 
     const renderFooter = () => {
         if (!selector.isLoadingExtraData) { return null }
@@ -464,7 +455,6 @@ const PreEnquiryScreen = ({ route, navigation }) => {
           maximumDate={new Date(liveLeadsEndDate.toString())}
           value={new Date()}
           onChange={(event, selectedDate) => {
-            console.log("date: ", selectedDate);
             setShowDatePicker(false);
             if (Platform.OS === "android") {
               if (selectedDate) {
@@ -488,7 +478,6 @@ const PreEnquiryScreen = ({ route, navigation }) => {
           modelList={vehicleModelList}
           sourceList={sourceList}
           submitCallback={(payload) => {
-            // console.log("payload: ", payload);
             applySelectedFilters(payload);
             setSortAndFilterVisible(false);
           }}
@@ -599,14 +588,12 @@ const PreEnquiryScreen = ({ route, navigation }) => {
                           leadStatus={item.leadStatus}
                           needStatus={"YES"}
                           onItemPress={() => {
-                            console.log("ENQ: ", JSON.stringify(item));
                             navigation.navigate(
                               AppNavigator.EmsStackIdentifiers.task360,
                               { universalId: item.universalId, itemData: item }
                             );
                           }}
                           onDocPress={() => {
-                            console.log("ITEM:", JSON.stringify(item));
                             navigation.navigate(
                               AppNavigator.EmsStackIdentifiers.confirmedPreEnq,
                               { itemData: item, fromCreatePreEnquiry: false }

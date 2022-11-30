@@ -39,7 +39,6 @@ const dropDownData = [
 ];
 
 export const getPrebookingDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getPrebookingDetailsApi", async (universalId, { rejectWithValue }) => {
-  console.log("%$%$%$%$:", URL.ENQUIRY_DETAILS(universalId));
 
   const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
   try {
@@ -59,7 +58,6 @@ export const updatePrebookingDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLI
   const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
   try {
     const json = await response.json();
-    // console.log("DATA:", JSON.stringify(json));
 
     if (response.status != 200) {
       return rejectWithValue(json);
@@ -72,12 +70,10 @@ export const updatePrebookingDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLI
 })
 
 export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getOnRoadPriceAndInsurenceDetailsApi", async (payload, { rejectWithValue }) => {
-  console.log("PAYLOAD:", URL.GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS(payload["varientId"], payload["orgId"]), JSON.stringify(payload));
 
   const response = await client.get(URL.GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS(payload["varientId"], payload["orgId"]));
   try {
     const json = await response.json();
-    // console.log("INSURANCE:", JSON.stringify(json));
 
     if (response.status != 200) {
       return rejectWithValue(json);
@@ -92,12 +88,10 @@ export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk("PREBOONING
 
 export const dropPreBooingApi = createAsyncThunk("PREBOONING_FORMS_SLICE/dropPreBooingApi", async (payload, { rejectWithValue }) => {
 
-  console.log("DROP PAYLOAD: ", URL.DROP_ENQUIRY(), payload);
 
   const response = await client.post(URL.DROP_ENQUIRY(), payload);
   try {
     const json = await response.json();
-    console.log("DROP RES: ", JSON.stringify(json));
 
     if (response.status != 200) {
       return rejectWithValue(json);
@@ -113,7 +107,6 @@ export const sendEditedOnRoadPriceDetails = createAsyncThunk("PREBOONING_FORMS_S
   const response = await client.put(URL.SEND_ON_ROAD_PRICE_DETAILS(), payload);
   try {
     const json = await response.json();
-    console.log("DATA:", JSON.stringify(json));
 
     if (response.status != 200) {
       return rejectWithValue(json);
@@ -130,7 +123,6 @@ export const sendOnRoadPriceDetails = createAsyncThunk("PREBOONING_FORMS_SLICE/s
   const response = await client.post(URL.SEND_ON_ROAD_PRICE_DETAILS(), payload);
   try {
     const json = await response.json();
-    console.log("DATA:", JSON.stringify(json));
 
     if (response.status != 200) {
       return rejectWithValue(json);
@@ -162,7 +154,6 @@ export const getDropDataApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getDropDa
   const response = await client.post(URL.GET_DROP_DATA(), payload);
   try {
     const json = await response.json();
-    // console.log("DROP:", JSON.stringify(json));
 
     if (response.status != 200) {
       return rejectWithValue(json);
@@ -194,7 +185,6 @@ export const getOnRoadPriceDtoListApi = createAsyncThunk("PREBOONING_FORMS_SLICE
   const response = await client.get(URL.GET_ON_ROAD_PRICE_DTO_LIST(leadId));
   try {
     const json = await response.json();
-    console.log("DATA:", JSON.stringify(json));
     if (response.status != 200) {
       return rejectWithValue(json);
     }
@@ -207,12 +197,10 @@ export const getOnRoadPriceDtoListApi = createAsyncThunk("PREBOONING_FORMS_SLICE
 
 export const preBookingPaymentApi = createAsyncThunk("PREBOONING_FORMS_SLICE/preBookingPaymentApi", async (payload, { rejectWithValue }) => {
 
-  console.log("URL PPP", URL.PRE_BOOKING_PAYMENT(), JSON.stringify(payload));
 
   const response = await client.post(URL.PRE_BOOKING_PAYMENT(), payload);
   try {
     const json = await response.json();
-    console.log("RES:", JSON.stringify(json));
 
     if (response.status != 200) {
       return rejectWithValue(json);
@@ -229,7 +217,6 @@ export const postBookingAmountApi = createAsyncThunk("PREBOONING_FORMS_SLICE/pos
   const response = await client.post(URL.BOOKING_AMOUNT(), payload);
   try {
     const json = await response.json();
-    console.log("postBookingAmountApi", JSON.stringify(json));
 
     if (response.status != 200) {
       return rejectWithValue(json);
@@ -242,7 +229,6 @@ export const postBookingAmountApi = createAsyncThunk("PREBOONING_FORMS_SLICE/pos
 })
 
 export const getPaymentDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getPaymentDetailsApi", async (leadId, { rejectWithValue }) => {
-  console.log("LEAD ID:", leadId, URL.GET_PRE_BOOKING_PAYMENT_DETAILS(leadId));
   const response = await client.get(URL.GET_PRE_BOOKING_PAYMENT_DETAILS(leadId));
   try {
     const json = await response.json();
@@ -292,7 +278,6 @@ export const updateRef = createAsyncThunk("ENQUIRY_FORM_SLICE/updateRef",
     const response = await client.post(URL.UPDATE_REF(), payload);
     try {
       // const json = await response.json();
-      console.log("UPDATE REF", response);
 
       if (!response.ok) {
         return rejectWithValue(response);
@@ -612,7 +597,6 @@ const prebookingFormSlice = createSlice({
     updatedmsLeadProduct: (state, action) => {
       // alert(JSON.stringify(action.payload))
       const data = action.payload;
-      console.log("updatedmsLeadProduct: ", JSON.stringify(action.payload));
       state.dmsLeadProducts = data;
     },
     setDropDownData: (state, action: PayloadAction<DropDownModelNew>) => {
@@ -717,7 +701,6 @@ const prebookingFormSlice = createSlice({
       state.showImagePicker = !state.showImagePicker;
     },
     setDatePicker: (state, action) => {
-      console.log("ACTIONDATE===>", state);
       switch (action.payload) {
         case "DATE_OF_BIRTH":
           state.minDate = null;
@@ -742,7 +725,6 @@ const prebookingFormSlice = createSlice({
     updateSelectedDate: (state, action: PayloadAction<CustomerDetailModel>) => {
       const { key, text } = action.payload;
       const selectedDate = convertTimeStampToDateString(text, "DD/MM/YYYY");
-      console.log("REDUXDATESELECT------>>>", selectedDate);
       switch (state.datePickerKeyId) {
         case "DATE_OF_BIRTH":
           state.date_of_birth = selectedDate;
@@ -757,7 +739,6 @@ const prebookingFormSlice = createSlice({
           break;
         case "CUSTOMER_PREFERRED_DATE":
           state.customer_preferred_date = selectedDate;
-          console.log("selector===-=-==-=>", state.customer_preferred_date);
           break;
         case "TENTATIVE_DELIVERY_DATE":
           state.tentative_delivery_date = selectedDate;
@@ -773,7 +754,6 @@ const prebookingFormSlice = createSlice({
           state.dd_date = selectedDate;
           break;
         case "NONE":
-          console.log("NONE");
           break;
       }
       state.showDatepicker = !state.showDatepicker;
@@ -1091,7 +1071,6 @@ const prebookingFormSlice = createSlice({
       const total = Number(
         moment.duration(current.diff(given)).asYears()
       ).toFixed(0);
-      console.log("DOB:", given, total);
 
       if (Number(total) > 0) {
         state.age = total.toString();
@@ -1102,10 +1081,6 @@ const prebookingFormSlice = createSlice({
       ///state.buyer_type = dms_C_Or_A_Dto.buyerType? dms_C_Or_A_Dto.buyerType:"";
     },
     updateDmsLeadDtoData: (state, action) => {
-      console.log(
-        "updateDmsLeadDtoData=-=-=-=-==-=>: ",
-        JSON.stringify(action.payload)
-      );
 
       const dmsLeadDto = action.payload;
       state.enquiry_segment = dmsLeadDto.enquirySegment
@@ -1239,7 +1214,6 @@ const prebookingFormSlice = createSlice({
             item.model === state.pre_booking_details_response?.dmsLeadDto?.model
         );
         dataObj = { ...modelData[0] };
-        console.log("$$$$$$$$$ MODEL $$$$$$$$$$", modelData[0]);
       }
       state.lead_product_id = dataObj.id ? dataObj.id : "";
       state.model = dataObj.model ? dataObj.model : "";
@@ -1308,7 +1282,6 @@ const prebookingFormSlice = createSlice({
         ? dataObj.bookingAmount.toString()
         : "";
       state.payment_at = dataObj.paymentAt ? dataObj.paymentAt : "";
-      console.log("BOOKING MODE: ", dataObj.modeOfPayment);
 
       state.booking_payment_mode = dataObj.modeOfPayment
         ? dataObj.modeOfPayment
@@ -1323,7 +1296,6 @@ const prebookingFormSlice = createSlice({
     updateDmsAttachments: (state, action) => {
       state.pan_number = "";
       state.adhaar_number = "";
-      console.log("DOCS:", JSON.stringify(action.payload));
 
       const dmsAttachments = action.payload;
       const attachments = [...dmsAttachments];
@@ -1476,10 +1448,6 @@ const prebookingFormSlice = createSlice({
       state.isLoading = false;
     });
     builder.addCase(updatePrebookingDetailsApi.rejected, (state, action) => {
-      console.log(
-        "F updatePrebookingDetailsApi: ",
-        JSON.stringify(action.payload)
-      );
       // if (action.payload["message"]) {
       //   showToastRedAlert(action.payload["message"]);
       // }
@@ -1503,10 +1471,6 @@ const prebookingFormSlice = createSlice({
           if (action.payload.insuranceAddOn.length > 0) {
             let addOnNames = "",
               price = 0;
-            console.log(
-              "ADD-ONS: ",
-              JSON.stringify(action.payload.insuranceAddOn)
-            );
 
             action.payload.insuranceAddOn.forEach((element, index) => {
               addOnNames +=
@@ -1649,7 +1613,6 @@ const prebookingFormSlice = createSlice({
           state.registrationCharges = dataObj.registrationCharges
             ? dataObj.registrationCharges
             : 0;
-          // console.log('corporate_offercorporate_offer',dataObj.corporateOffer.toString());
         }
       }
       state.isLoading = false;
@@ -1786,7 +1749,6 @@ const prebookingFormSlice = createSlice({
     });
     builder.addCase(getPaymentDetailsApi.fulfilled, (state, action) => {
       if (action.payload) {
-        console.log("PAYMENT DATA: ", JSON.stringify(action.payload));
 
         state.existing_payment_details_response = action.payload;
         state.type_of_upi = action.payload.typeUpi

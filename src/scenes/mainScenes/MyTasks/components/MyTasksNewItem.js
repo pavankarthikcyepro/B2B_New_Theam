@@ -52,10 +52,8 @@ const callWebViewRecord = async ({ navigator, phone, uniqueId, type }) => {
 
         // await alert("phone" + phone + "  type" + type + "  uniqueId" + uniqueId + "  userName" + extensionId + "  pwd " + password)
         //alert(uri)
-        console.log("call recording uri=", uri)
         if (extensionId && extensionId != null && extensionId != '') {
             var granted = await navigatetoCallWebView();
-            console.log("granted status", granted)
 
             if (granted) {
                 navigator.navigate(AppNavigator.EmsStackIdentifiers.webViewComp, {
@@ -74,7 +72,6 @@ const callWebViewRecord = async ({ navigator, phone, uniqueId, type }) => {
         // alert(phone + uniqueId + "/" + type + "/" + password)
 
     } catch (error) {
-        console.log("call record issue", error)
     }
 
 
