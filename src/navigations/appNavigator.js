@@ -81,6 +81,7 @@ import SourceModel from "../scenes/mainScenes/Home/TabScreens/components/Employe
 import LiveLeadsScreen from "../scenes/mainScenes/LiveLeads";
 import { EMSTopTabNavigatorTwo } from "./emsTopTabNavigator";
 import { AppNavigator } from ".";
+import AddNewEnquiryScreen from "../scenes/mainScenes/EMS/addNewEnquiry";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -270,6 +271,7 @@ export const EmsStackIdentifiers = {
   bookingForm: "BOOKING_FORM",
   webViewComp: "webViewComp",
   ProformaScreen: "PROFORMA_SCREEN",
+  newEnquiry: "NEW_ENQUIRY"
 };
 
 export const PreBookingStackIdentifiers = {
@@ -421,6 +423,12 @@ const EmsStackNavigator = ({ navigation }) => {
           component={EnquiryFormScreen}
           options={{ title: "Enquiry Form" }}
         />
+        <EmsStack.Screen
+          name={EmsStackIdentifiers.newEnquiry}
+          component={AddNewEnquiryScreen}
+          options={{ title: "Enquiry Form" }}
+        />
+
         <EmsStack.Screen
           name={EmsStackIdentifiers.preBookingForm}
           component={PreBookingFormScreen}
