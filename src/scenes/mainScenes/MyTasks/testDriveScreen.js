@@ -311,22 +311,26 @@ const TestDriveScreen = ({ route, navigation }) => {
 
         if (findModel.length > 0) {
           let findVarient = [];
-          findVarient = selector.test_drive_varients_obj_for_drop_down[findModel[0].model].filter(
-            (item) => {
-              return item.varientName == selectedVehicleDetails.varient;
+          findVarient = selector.test_drive_varients_obj_for_drop_down[
+            findModel[0].model
+          ].filter((item) => {
+            return item.varientName == selectedVehicleDetails.varient;
+          });
+
+          if (findVarient.length > 0) {
+            tempObj.varientId = findVarient[0].varientId;
+
+            if (
+              selector.test_drive_varients_obj_for_drop_down[findModel[0].model]
+            ) {
+              const varientsData =
+                selector.test_drive_varients_obj_for_drop_down[
+                  findModel[0].model
+                ];
+              setVarientListForDropDown(varientsData);
             }
-          );
-
-          tempObj.varientId = findVarient[0].varientId;
-
-          if (
-            selector.test_drive_varients_obj_for_drop_down[findModel[0].model]
-          ) {
-            const varientsData =
-              selector.test_drive_varients_obj_for_drop_down[
-                findModel[0].model
-              ];
-            setVarientListForDropDown(varientsData);
+          } else {
+            tempObj.varientId = findModel[0].varientId;
           }
         } else {
           tempObj.fuelType = "";
