@@ -891,7 +891,7 @@ const HomeScreen = ({ route, navigation }) => {
             keyExtractor={(item, index) => item._id + "_" + index}
             renderItem={renderBanner}
             sliderWidth={Dimensions.get("screen").width}
-            itemWidth={130}
+            itemWidth={Dimensions.get("screen").width - 50}
             hasParallaxImages={true}
             inactiveSlideScale={1}
             inactiveSlideOpacity={1}
@@ -1432,14 +1432,14 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
     padding: 15,
-    width: 120,
-    height: 120,
+    width: Dimensions.get("screen").width - 70,
+    height: Dimensions.get("screen").width / 2.3,
     backgroundColor: Colors.BLACK,
     borderRadius: 5,
   },
   paginationContainer: {
     paddingVertical: 0,
-    marginBottom: 10
+    marginBottom: 10,
   },
   paginationDot: {
     height: 10,

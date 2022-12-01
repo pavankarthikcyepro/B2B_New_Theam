@@ -952,7 +952,6 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         data={dataForDropDown}
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
-
           if (dropDownKey === "SOURCE_OF_ENQUIRY") {
             if (item.name === "Event") {
               getEventListFromServer();
@@ -1006,7 +1005,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
           style={{ flex: 1 }}
         >
           <View style={styles.view1}>
-          <Text style={styles.text1}>{"Create New Contact"}</Text>
+            <Text style={styles.text1}>{"Create New Contact"}</Text>
             {/* <View style={{ flexDirection: "row", alignItems: "center" }}>
               <Checkbox.Android
                 status={
@@ -1159,6 +1158,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             <TextinputComp
               style={styles.textInputComp}
               value={selector.mobile}
+              disabled={fromEdit}
               label={"Mobile Number*"}
               keyboardType={"phone-pad"}
               maxLength={10}
