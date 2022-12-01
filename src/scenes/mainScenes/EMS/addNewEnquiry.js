@@ -33,6 +33,7 @@ import {
   TextinputComp,
   DropDownComponant,
   DatePickerComponent,
+  SelectEmployeeComponant,
 } from "../../../components";
 import { ModelListitemCom } from "./components/ModelListitemCom";
 import { ProformaComp } from "./components/ProformComp";
@@ -168,6 +169,8 @@ import {
   EnquiryTypes21,
   EnquiryTypes22,
 } from "../../../jsonData/preEnquiryScreenJsonData";
+import { getEmployeesListApi } from "../../../redux/confirmedPreEnquiryReducer";
+import { client } from "../../../networking/client";
 
 const theme = {
   ...DefaultTheme,
@@ -211,6 +214,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
   const homeSelector = useSelector((state) => state.homeReducer);
   const proceedToPreSelector = useSelector(
     (state) => state.proceedToPreBookingReducer
+  );
+  const employeeSelector = useSelector(
+    (state) => state.confirmedPreEnquiryReducer
   );
   const [openAccordian, setOpenAccordian] = useState("0");
   const [componentAppear, setComponentAppear] = useState(false);
@@ -273,6 +279,12 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
   const [makerData, setMakerData] = useState([]);
   const [subSourceData, setSubSourceData] = useState([]);
+  const [sourceData, setSourceData] = useState(0);
+  const [subsourceID, setSubSourceId] = useState(0);
+  const [showEmployeeSelectModel, setEmployeeSelectModel] = useState(false);
+  const [employeesData, setEmployeesData] = useState([]);
+  const [disabled, setDisabled] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState("");
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -307,41 +319,6 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
   //     clearInterval(interval)
   //   }
   // }, [autoSave, selector]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      // if (enqDetails?.leadStage === "ENQUIRY" && enqDetails?.leadStatus === null) {
-      //   updateEnquiry();
-      // }
-    }, 5000);
-    return () => {
-      clearInterval(interval);
-    };
-    // let interval;
-    // interval = setInterval(() => {
-    //   updateEnquiry()
-    // }, 60000);
-    // navigation.addListener('blur', () => {
-    //   clearInterval(interval)
-    // })
-  }, [updateEnquiry, selector, uploadedImagesDataObj]);
-
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     autoSave()
-  //   }, 10000);
-  //   return () => {
-  //     clearInterval(interval)
-  //   }
-  // }, [selector])
-
-  // useEffect(() => {
-  //   let autoSaveInterval;
-  //     autoSaveInterval = setInterval(() => {
-  //       autoSave()
-  //     }, 6000);
-  //     return () => clearInterval(autoSaveInterval);
-  // }, [])
 
   const clearLocalData = () => {
     setOpenAccordian("0");
@@ -436,6 +413,27 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     //   );
     // };
   }, []);
+
+  useEffect(() => {
+    if (
+      employeeSelector.employees_list.length > 0 &&
+      employeeSelector.employees_list_status === "success"
+    ) {
+      let newData = [];
+      employeeSelector.employees_list.forEach((element) => {
+        const obj = {
+          id: element.empId,
+          name: element.empName,
+          selected: false,
+        };
+        newData.push(obj);
+      });
+      setEmployeesData([...newData]);
+      if (selector.source_of_enquiry) {
+        setEmployeeSelectModel(true);
+      }
+    }
+  }, [employeeSelector.employees_list, employeeSelector.employees_list_status]);
 
   const getAuthToken = async () => {
     const token = await AsyncStore.getData(AsyncStore.Keys.USER_TOKEN);
@@ -1112,7 +1110,6 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       showToast("please enter alphabetics only in lastname");
       return;
     }
-
     if (selector.enquiry_segment.length == 0) {
       scrollToPos(2);
       setOpenAccordian("1");
@@ -1331,199 +1328,295 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     //   return;
     // }
 
-    if (isCheckPanOrAadhaar("pan", selector.pan_number)) {
-      scrollToPos(6);
-      setOpenAccordian("6");
-      showToast("Please enter proper PAN number");
-      return;
-    }
+    // if (isCheckPanOrAadhaar("pan", selector.pan_number)) {
+    //   scrollToPos(6);
+    //   setOpenAccordian("6");
+    //   showToast("Please enter proper PAN number");
+    //   return;
+    // }
 
-    if (isCheckPanOrAadhaar("aadhaar", selector.adhaar_number)) {
-      scrollToPos(6);
-      setOpenAccordian("6");
-      showToast("Please enter proper Aadhaar number");
-      return;
-    }
+    // if (isCheckPanOrAadhaar("aadhaar", selector.adhaar_number)) {
+    //   scrollToPos(6);
+    //   setOpenAccordian("6");
+    //   showToast("Please enter proper Aadhaar number");
+    //   return;
+    // }
 
-    if (
-      selector.gstin_number.length > 0 &&
-      !isValidateAplhaNumeric(selector.gstin_number)
-    ) {
-      scrollToPos(6);
-      setOpenAccordian("6");
-      showToast("Please enter proper gstin number");
-      return;
-    }
+    // if (
+    //   selector.gstin_number.length > 0 &&
+    //   !isValidateAplhaNumeric(selector.gstin_number)
+    // ) {
+    //   scrollToPos(6);
+    //   setOpenAccordian("6");
+    //   showToast("Please enter proper gstin number");
+    //   return;
+    // }
 
-    if (!selector.enquiry_details_response) {
-      return;
-    }
+    // if (!selector.enquiry_details_response) {
+    //   return;
+    // }
 
     let dmsContactOrAccountDto = {};
     let dmsLeadDto = {};
     let formData;
 
-    const dmsEntity = selector.enquiry_details_response;
-    if (dmsEntity.hasOwnProperty("dmsContactDto"))
-      dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsContactDto);
-    else if (dmsEntity.hasOwnProperty("dmsAccountDto"))
-      dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsAccountDto);
+    // const dmsEntity = selector.enquiry_details_response;
+    // if (dmsEntity.hasOwnProperty("dmsContactDto"))
+    //   dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsContactDto);
+    // else if (dmsEntity.hasOwnProperty("dmsAccountDto"))
+    //   dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsAccountDto);
 
-    if (dmsEntity.hasOwnProperty("dmsLeadDto")) {
-      try {
-        dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
-      } catch (error) {}
-      dmsLeadDto.firstName = selector.firstName;
-      dmsLeadDto.lastName = selector.lastName;
-      dmsLeadDto.phone = selector.mobile;
-      dmsLeadDto.dmsLeadProducts = carModelsList;
+    if (true) {
+      // try {
+      //   dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
+      // } catch (error) {}
+      // dmsLeadDto.firstName = selector.firstName;
+      // dmsLeadDto.lastName = selector.lastName;
+      // dmsLeadDto.phone = selector.mobile;
+      // dmsLeadDto.dmsLeadProducts = carModelsList;
 
       let primaryModel = carModelsList.filter((item) => item.isPrimary === "Y");
-      dmsLeadDto.model = primaryModel[0].model;
+      // dmsLeadDto.model = primaryModel[0].model;
 
       const employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
       );
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
-        let empObj = {
-          branchId: jsonObj.branchs[0]?.branchId,
-          modifiedBy: jsonObj.empName,
-          orgId: jsonObj.orgId,
-          ownerName: jsonObj.empName,
+        let payloadx = {
+          dmsAccountDto: {
+            branchId: jsonObj.branchs[0]?.branchId,
+            company: "",
+            createdBy: jsonObj.empName,
+            customerType: selector.customer_type,
+            email: "",
+            enquirySource: sourceData,
+            subSource: subsourceID,
+            firstName: selector.firstName,
+            lastName: selector.lastName,
+            modifiedBy: jsonObj.empName,
+            orgId: jsonObj.orgId,
+            ownerName: jsonObj.empName,
+            phone: selector.mobile,
+            secondaryPhone: "",
+            status: "PREENQUIRY",
+          },
+          dmsLeadDto: {
+            branchId: jsonObj.branchs[0]?.branchId,
+            createdBy: jsonObj.empName,
+            enquirySegment: selector.enquiry_segment,
+            firstName: selector.firstName,
+            lastName: selector.lastName,
+            leadStage: "PREENQUIRY",
+            model: primaryModel[0].model,
+            organizationId: jsonObj.orgId,
+            phone: selector.mobile,
+            sourceOfEnquiry: sourceData,
+            eventCode: "",
+            email: "",
+            referencenumber: "",
+            salesConsultant:
+              selectedEmployee.length > 0 ? selectedEmployee : null,
+            dmsAddresses: [
+              {
+                addressType: "Communication",
+                houseNo: selector.houseNum,
+                street: selector.streetName,
+                city: selector.city,
+                district: selector.district,
+                pincode: selector.pincode,
+                state: selector.state,
+                village: selector.village,
+                county: "India",
+                rural: selector.urban_or_rural === 2 ? true : false,
+                urban: selector.urban_or_rural === 1 ? true : false,
+                id: 0,
+              },
+              {
+                addressType: "Permanent",
+                houseNo: selector.p_houseNum,
+                street: selector.p_streetName,
+                city: selector.p_city,
+                district: selector.p_district,
+                pincode: selector.p_pincode,
+                state: selector.p_state,
+                village: selector.p_village,
+                county: "India",
+                rural: selector.p_urban_or_rural === 2 ? true : false,
+                urban: selector.p_urban_or_rural === 1 ? true : false,
+                id: 0,
+              },
+            ],
+            subSource: selector.sub_source_of_enquiry,
+          },
         };
-        let tempAttachments = Object.assign([], dmsLeadDto.dmsAttachments);
-
-        let imgObjArr = [];
-        if (Object.keys(uploadedImagesDataObj).length > 0) {
-          imgObjArr = Object.entries(uploadedImagesDataObj).map((e) => ({
-            name: e[0],
-            value: e[1],
-          }));
-        }
-
-        for (let i = 0; i < imgObjArr.length; i++) {
-          let isAvailable = false;
-          for (let j = 0; j < tempAttachments.length; j++) {
-            if (tempAttachments[j].documentType == imgObjArr[i].name) {
-              isAvailable = true;
-              break;
+        let payloady = {
+          dmsContactDto: payloadx.dmsAccountDto,
+          dmsLeadDto: payloadx.dmsLeadDto,
+        };
+        try {
+          if (
+            selector.customer_type === "Individual" &&
+            selector.enquiry_segment === "Personal"
+          ) {
+            const response = await client.post(URL.ENQUIRY_CONTACT(), payloady);
+            const json = await response.json();
+            if (json.success) {
+              navigation.goBack();
+            } else {
+              showToast(json.message);
+            }
+          } else {
+            const response1 = await client.post(
+              URL.ENQURIY_ACCOUNT(),
+              payloadx
+            );
+            const json1 = await response1.json();
+            if (json1.success) {
+              navigation.goBack();
+            } else {
+              showToast(json1.message);
             }
           }
 
-          if (!isAvailable) {
-            let newObj = {
-              ...dmsAttachmentsObj,
-              documentPath: imgObjArr[i].value.documentPath,
-              fileName: imgObjArr[i].value.fileName,
-              keyName: imgObjArr[i].value.keyName,
-              documentType: imgObjArr[i].name,
-              createdBy: convertDateStringToMilliseconds(new Date()),
-              ...empObj,
-            };
-
-            if (imgObjArr[i].name === "pan" && selector.pan_number) {
-              newObj.documentNumber = selector.pan_number;
-            } else if (
-              imgObjArr[i].name == "aadhar" &&
-              selector.adhaar_number
-            ) {
-              newObj.documentNumber = selector.adhaar_number;
-            } else if (
-              imgObjArr[i].name == "employeeId" &&
-              selector.employee_id
-            ) {
-              newObj.documentNumber = selector.employee_id;
-            }
-
-            tempAttachments.push(Object.assign({}, newObj));
-          }
+          // navigation.goBack();
+        } catch (error) {
+          console.error(error);
         }
 
-        let panArr = tempAttachments.filter((item) => {
-          return item.documentType === "pan";
-        });
+        // let tempAttachments = Object.assign([], dmsLeadDto.dmsAttachments);
 
-        let aadharArr = tempAttachments.filter((item) => {
-          return item.documentType === "aadhar";
-        });
+        // let imgObjArr = [];
+        // if (Object.keys(uploadedImagesDataObj).length > 0) {
+        //   imgObjArr = Object.entries(uploadedImagesDataObj).map((e) => ({
+        //     name: e[0],
+        //     value: e[1],
+        //   }));
+        // }
 
-        let empArr = tempAttachments.filter((item) => {
-          return item.documentType === "employeeId";
-        });
+        // for (let i = 0; i < imgObjArr.length; i++) {
+        //   let isAvailable = false;
+        //   for (let j = 0; j < tempAttachments.length; j++) {
+        //     if (tempAttachments[j].documentType == imgObjArr[i].name) {
+        //       isAvailable = true;
+        //       break;
+        //     }
+        //   }
 
-        // if pan number
-        if (!panArr.length && selector.pan_number) {
-          newObj = {
-            ...dmsAttachmentsObj,
-            documentNumber: selector.pan_number,
-            documentType: "pan",
-            ...empObj,
-          };
-          tempAttachments.push(Object.assign({}, newObj));
-        }
+        //   if (!isAvailable) {
+        //     let newObj = {
+        //       ...dmsAttachmentsObj,
+        //       documentPath: imgObjArr[i].value.documentPath,
+        //       fileName: imgObjArr[i].value.fileName,
+        //       keyName: imgObjArr[i].value.keyName,
+        //       documentType: imgObjArr[i].name,
+        //       createdBy: convertDateStringToMilliseconds(new Date()),
+        //       ...empObj,
+        //     };
 
-        // if aadhar number
-        if (!aadharArr.length && selector.adhaar_number) {
-          newObj = {
-            ...dmsAttachmentsObj,
-            documentNumber: selector.adhaar_number,
-            documentType: "aadhar",
-            ...empObj,
-          };
-          tempAttachments.push(Object.assign({}, newObj));
-        }
+        //     if (imgObjArr[i].name === "pan" && selector.pan_number) {
+        //       newObj.documentNumber = selector.pan_number;
+        //     } else if (
+        //       imgObjArr[i].name == "aadhar" &&
+        //       selector.adhaar_number
+        //     ) {
+        //       newObj.documentNumber = selector.adhaar_number;
+        //     } else if (
+        //       imgObjArr[i].name == "employeeId" &&
+        //       selector.employee_id
+        //     ) {
+        //       newObj.documentNumber = selector.employee_id;
+        //     }
 
-        // if emp id
-        if (!empArr.length && selector.employee_id) {
-          newObj = {
-            ...dmsAttachmentsObj,
-            documentNumber: selector.employee_id,
-            documentType: "employeeId",
-            ...empObj,
-          };
-          tempAttachments.push(Object.assign({}, newObj));
-        }
+        //     tempAttachments.push(Object.assign({}, newObj));
+        //   }
+        // }
 
-        dmsLeadDto.dmsAttachments = Object.assign([], tempAttachments);
+        // let panArr = tempAttachments.filter((item) => {
+        //   return item.documentType === "pan";
+        // });
+
+        // let aadharArr = tempAttachments.filter((item) => {
+        //   return item.documentType === "aadhar";
+        // });
+
+        // let empArr = tempAttachments.filter((item) => {
+        //   return item.documentType === "employeeId";
+        // });
+
+        // // if pan number
+        // if (!panArr.length && selector.pan_number) {
+        //   newObj = {
+        //     ...dmsAttachmentsObj,
+        //     documentNumber: selector.pan_number,
+        //     documentType: "pan",
+        //     ...empObj,
+        //   };
+        //   tempAttachments.push(Object.assign({}, newObj));
+        // }
+
+        // // if aadhar number
+        // if (!aadharArr.length && selector.adhaar_number) {
+        //   newObj = {
+        //     ...dmsAttachmentsObj,
+        //     documentNumber: selector.adhaar_number,
+        //     documentType: "aadhar",
+        //     ...empObj,
+        //   };
+        //   tempAttachments.push(Object.assign({}, newObj));
+        // }
+
+        // // if emp id
+        // if (!empArr.length && selector.employee_id) {
+        //   newObj = {
+        //     ...dmsAttachmentsObj,
+        //     documentNumber: selector.employee_id,
+        //     documentType: "employeeId",
+        //     ...empObj,
+        //   };
+        //   tempAttachments.push(Object.assign({}, newObj));
+        // }
+
+        // dmsLeadDto.dmsAttachments = Object.assign([], tempAttachments);
       }
     }
 
-    if (selector.enquiry_details_response.hasOwnProperty("dmsContactDto")) {
-      formData = {
-        dmsContactDto: dmsContactOrAccountDto,
-        dmsLeadDto: dmsLeadDto,
-      };
-    } else {
-      formData = {
-        dmsAccountDto: dmsContactOrAccountDto,
-        dmsLeadDto: dmsLeadDto,
-      };
-    }
+    // if (selector.enquiry_details_response.hasOwnProperty("dmsContactDto")) {
+    //   formData = {
+    //     dmsContactDto: dmsContactOrAccountDto,
+    //     dmsLeadDto: dmsLeadDto,
+    //   };
+    // } else {
+    //   formData = {
+    //     dmsAccountDto: dmsContactOrAccountDto,
+    //     dmsLeadDto: dmsLeadDto,
+    //   };
+    // }
 
-    setTypeOfActionDispatched("UPDATE_ENQUIRY");
-    let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-    if (employeeData) {
-      const jsonObj = JSON.parse(employeeData);
-      const refPayload = {
-        branchid: jsonObj.branchs[0]?.branchId,
-        leadstage: "ENQUIRY",
-        orgid: jsonObj.orgId,
-        universalId: universalId,
-      };
-      return;
-      Promise.all([
-        dispatch(updateEnquiryDetailsApi(formData)),
-        dispatch(customerLeadRef(refPayload)),
-      ]).then(async (res) => {
-        const payload = {
-          refNo: res[1].payload.dmsEntity.leadCustomerReference.referencenumber,
-          orgId: jsonObj.orgId,
-          stageCompleted: "ENQUIRY",
-        };
-        dispatch(updateRef(payload));
-      });
-    }
+    // console.log("formData", formData);
+    // setTypeOfActionDispatched("UPDATE_ENQUIRY");
+    // let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    // if (employeeData) {
+    //   const jsonObj = JSON.parse(employeeData);
+    //   const refPayload = {
+    //     branchid: jsonObj.branchs[0]?.branchId,
+    //     leadstage: "ENQUIRY",
+    //     orgid: jsonObj.orgId,
+    //     universalId: universalId,
+    //   };
+    //   return;
+    //   Promise.all([
+    //     dispatch(updateEnquiryDetailsApi(formData)),
+    //     dispatch(customerLeadRef(refPayload)),
+    //   ]).then(async (res) => {
+    //     const payload = {
+    //       refNo: res[1].payload.dmsEntity.leadCustomerReference.referencenumber,
+    //       orgId: jsonObj.orgId,
+    //       stageCompleted: "ENQUIRY",
+    //     };
+    //     dispatch(updateRef(payload));
+    //   });
+    // }
   };
 
   const mapContactOrAccountDto = (prevData) => {
@@ -2886,8 +2979,34 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       setSubSourceData([]);
     }
   };
+
+  const getEmployeeListFromServer = async (sourceOfEnquiryId) => {
+    const data = {
+      sourceId: sourceOfEnquiryId,
+      orgId: userData.orgId,
+      branchId: userData.branchId,
+    };
+    Promise.all([dispatch(getEmployeesListApi(data))]).then(async (res) => {});
+  };
+
+  const updateEmployee = (employeeObj) => {
+    console.log("employeeObj", employeeObj.name);
+    setSelectedEmployee(employeeObj.name);
+    setEmployeeSelectModel(false);
+  };
+
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
+      <SelectEmployeeComponant
+        visible={showEmployeeSelectModel}
+        headerTitle={"Select Employee"}
+        data={employeesData}
+        selectedEmployee={(employee) => updateEmployee(employee)}
+        onRequestClose={() => {
+          setDisabled(false);
+          setEmployeeSelectModel(false);
+        }}
+      />
       <ImagePickerComponent
         visible={selector.showImagePicker}
         keyId={selector.imagePickerKeyId}
@@ -2903,6 +3022,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
         data={dataForDropDown}
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
+          console.log(item, dropDownKey);
           if (dropDownKey === "MODEL") {
             updateVariantModelsData(item.name, false);
           } else if (dropDownKey === "VARIENT") {
@@ -2931,11 +3051,15 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
             );
           }
           if (dropDownKey === "SOURCE_OF_ENQUIRY") {
-            console.log("sssss", item);
             if (item.name === "Event") {
               getEventListFromServer();
             }
+            getEmployeeListFromServer(item.id);
+            setSourceData(item.id);
             updateSubSourceData(item);
+          }
+          if (dropDownKey === "SUB_SOURCE_OF_ENQUIRY") {
+            setSubSourceId(item.id);
           }
           setShowDropDownModel(false);
           dispatch(
@@ -3382,10 +3506,20 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     )
                   }
                 />
-
+                <Text
+                  style={[
+                    GlobalStyle.underline,
+                    {
+                      backgroundColor:
+                        isSubmitPress && selector.enquiry_segment === ""
+                          ? "red"
+                          : "rgba(208, 212, 214, 0.7)",
+                    },
+                  ]}
+                ></Text>
                 <DropDownSelectionItem
                   label={"Customer Type*"}
-                  // disabled={!selector.enableEdit}
+                  disabled={selector.enquiry_segment.length > 0 ? false : true}
                   value={selector.customer_type}
                   onPress={() =>
                     showDropDownModelMethod(
@@ -3394,7 +3528,17 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     )
                   }
                 />
-
+                <Text
+                  style={[
+                    GlobalStyle.underline,
+                    {
+                      backgroundColor:
+                        isSubmitPress && selector.customer_type === ""
+                          ? "red"
+                          : "rgba(208, 212, 214, 0.7)",
+                    },
+                  ]}
+                ></Text>
                 {selector.customer_type.toLowerCase() === "fleet" ||
                 selector.customer_type.toLowerCase() === "institution" ||
                 selector.customer_type.toLowerCase() === "corporate" ||
@@ -3464,6 +3608,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                 <View>
                   <DropDownSelectionItem
                     label={"Sub Source Of Enquiry"}
+                    disabled={employeesData.length > 0 ? false : true}
                     value={selector.sub_source_of_enquiry}
                     onPress={() =>
                       showDropDownModelMethod(
@@ -3745,7 +3890,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                   value={selector.houseNum}
                   label={"H.No"}
                   maxLength={50}
-                  // keyboardType={"number-pad"}
+                  keyboardType={"number-pad"}
                   onChangeText={(text) =>
                     dispatch(
                       setCommunicationAddress({ key: "HOUSE_NO", text: text })
@@ -6107,7 +6252,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
           {!isDropSelected && (
             <View style={styles.actionBtnView}>
-              <Button
+              {/* <Button
                 mode="contained"
                 style={{ width: 120 }}
                 color={Colors.GRAY}
@@ -6115,7 +6260,20 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                 onPress={() => setIsDropSelected(true)}
               >
                 Lost
-              </Button>
+              </Button> */}
+              {employeesData.length > 0 && (
+                <Button
+                  mode="contained"
+                  style={{ width: 120 }}
+                  color={Colors.PINK}
+                  labelStyle={{ textTransform: "none" }}
+                  onPress={() => {
+                    setEmployeeSelectModel(true);
+                  }}
+                >
+                  Allocate
+                </Button>
+              )}
               <Button
                 mode="contained"
                 style={{ width: 120 }}
