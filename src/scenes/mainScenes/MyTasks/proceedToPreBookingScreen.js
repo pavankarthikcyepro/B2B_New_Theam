@@ -102,7 +102,6 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
 
     const getCurrentLocation = () => {
         Geolocation.getCurrentPosition(info => {
-            console.log(info)
             setCurrentLocation({
                 lat: info.coords.latitude,
                 long: info.coords.longitude
@@ -264,7 +263,6 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
             universalId: universalId
         }
         const url = URL.CUSTOMER_LEAD_REFERENCE();
-        console.log("PPPLLL: ", payload);
         await fetch(url, {
             headers: {
                 'Content-Type': 'application/json',
@@ -348,16 +346,13 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
 
     const goToParentScreen = () => {
         if (identifier === "PROCEED_TO_PRE_BOOKING") {
-            console.log("INSIDE ", identifier);
             getMyTasksListFromServer();
             navigation.navigate(EmsTopTabNavigatorIdentifiers.leads)
         }
         else if (identifier === "PROCEED_TO_BOOKING") {
-            console.log("INSIDE ", identifier);
             navigation.navigate(EmsTopTabNavigatorIdentifiers.leads)
         }
         else {
-            console.log("INSIDE ELSE", identifier);
             navigation.popToTop();
         }
         dispatch(clearState());

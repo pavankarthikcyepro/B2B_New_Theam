@@ -131,7 +131,6 @@ const ListComponent = ({ route, navigation }) => {
 
   // useEffect(() => {
   //   navigation.addListener("focus", () => {
-  //     console.log("CALLED %%%");
   //     setSelectedFilter("TODAY");
   //     setIndex(0);
   //     // setMyTasksData([...defaultData]);
@@ -141,7 +140,6 @@ const ListComponent = ({ route, navigation }) => {
   // }, [navigation]);
 
   useEffect(() => {
-    console.log("CALLED USE");
     setMyTasksData([...defaultData]);
     setMyTeamsData([...defaultData]);
     initialTask(selectedFilter);
@@ -180,9 +178,7 @@ const ListComponent = ({ route, navigation }) => {
           var lastday = new Date(curr.setDate(last)).toUTCString();
           startDate = moment(firstday).format(dateFormat);
           endDate = moment(lastday).format(dateFormat);
-          console.log("DATE: ", startDate, endDate);
         }
-        console.log("called List Componet", route.params.from, index);
         if (route.params.from === "TODAY") {
           if (index === 0) {
             let payload = {};
@@ -203,29 +199,21 @@ const ListComponent = ({ route, navigation }) => {
                 dataType: "todaysData",
               };
             }
-            console.log("PAYLOAD TODAY: ", payload);
             Promise.all([dispatch(getTodayMyTasksListApi(payload))]).then(
               (res) => {
                 let tempData = [...defaultData];
                 const todaysData = res[0].payload.todaysData[0];
-                console.log(
-                  "ALL DATA:",
-                  JSON.stringify(res[0].payload.todaysData[0])
-                );
                 const filteredData = todaysData.tasksList.filter((element) => {
                   const trimName = element.taskName.toLowerCase().trim();
                   const finalTaskName = trimName.replace(/ /g, "");
                   return taskNames.includes(finalTaskName);
                 });
-                console.log("TODAY: ", JSON.stringify(filteredData));
                 if (filteredData.length > 0) {
                   for (let i = 0; i < filteredData.length; i++) {
                     let index = -1;
-                    console.log(tempData);
                     index = tempData.findIndex(
                       (item) => item.taskName === filteredData[i].taskName
                     );
-                    console.log(filteredData[i].taskName, index);
                     if (index !== -1) {
                       tempData[index].taskCnt = filteredData[i].taskCnt;
                       tempData[index].myTaskList = filteredData[i].myTaskList;
@@ -236,7 +224,6 @@ const ListComponent = ({ route, navigation }) => {
                   }
                 }
                 // else{
-                //     console.log(JSON.stringify(defaultData));
                 //     // setMyTasksData([])
                 //     setMyTasksData([...defaultData]);
                 // }
@@ -261,10 +248,8 @@ const ListComponent = ({ route, navigation }) => {
                 dataType: "todaysData",
               };
             }
-            console.log("PAYLOAD TODAY TEAM: ", payload);
             Promise.all([dispatch(getTodayTeamTasksListApi(payload))]).then(
               (res) => {
-                console.log("INSIDE SUCCESS");
                 let tempArr = [];
                 let tempTaskName = "";
                 let allData = res[0].payload.todaysData;
@@ -377,7 +362,6 @@ const ListComponent = ({ route, navigation }) => {
                     index = tempData.findIndex(
                       (item) => item.taskName === filteredData[i].taskName
                     );
-                    console.log(filteredData[i].taskName, index);
                     if (index !== -1) {
                       tempData[index].taskCnt = filteredData[i].taskCnt;
                       tempData[index].myTaskList = filteredData[i].myTaskList;
@@ -476,7 +460,6 @@ const ListComponent = ({ route, navigation }) => {
                           index = tempData.findIndex(
                             (item) => item.taskName === tempArr[i].taskName
                           );
-                          console.log(tempArr[i].taskName, index);
                           if (index !== -1) {
                             tempData[index].taskCnt = tempArr[i].taskCnt;
                             tempData[index].myTaskList = tempArr[i].myTaskList;
@@ -516,7 +499,6 @@ const ListComponent = ({ route, navigation }) => {
                 ignoreDateFilter: true,
               };
             }
-            console.log("PAYLOAD PENDING: ", payload);
             Promise.all([dispatch(getPendingMyTasksListApi(payload))]).then(
               (res) => {
                 const todaysData = res[0].payload.pendingData[0];
@@ -532,7 +514,6 @@ const ListComponent = ({ route, navigation }) => {
                     index = tempData.findIndex(
                       (item) => item.taskName === filteredData[i].taskName
                     );
-                    console.log(filteredData[i].taskName, index);
                     if (index !== -1) {
                       tempData[index].taskCnt = filteredData[i].taskCnt;
                       tempData[index].myTaskList = filteredData[i].myTaskList;
@@ -565,7 +546,6 @@ const ListComponent = ({ route, navigation }) => {
                 ignoreDateFilter: true,
               };
             }
-            console.log("PAYLOAD PENDING TEAM: ", payload);
             Promise.all([dispatch(getPendingTeamTasksListApi(payload))]).then(
               (res) => {
                 // const todaysData = res[0].payload.pendingData[0];
@@ -633,7 +613,6 @@ const ListComponent = ({ route, navigation }) => {
                           index = tempData.findIndex(
                             (item) => item.taskName === tempArr[i].taskName
                           );
-                          console.log(tempArr[i].taskName, index);
                           if (index !== -1) {
                             tempData[index].taskCnt = tempArr[i].taskCnt;
                             tempData[index].myTaskList = tempArr[i].myTaskList;
@@ -673,7 +652,6 @@ const ListComponent = ({ route, navigation }) => {
                 ignoreDateFilter: true,
               };
             }
-            console.log("PAYLOAD RESCHEDULE: ", payload);
             Promise.all([dispatch(getRescheduleMyTasksListApi(payload))]).then(
               (res) => {
                 const todaysData = res[0].payload.rescheduledData[0];
@@ -689,7 +667,6 @@ const ListComponent = ({ route, navigation }) => {
                     index = tempData.findIndex(
                       (item) => item.taskName === filteredData[i].taskName
                     );
-                    console.log(filteredData[i].taskName, index);
                     if (index !== -1) {
                       tempData[index].taskCnt = filteredData[i].taskCnt;
                       tempData[index].myTaskList = filteredData[i].myTaskList;
@@ -722,7 +699,6 @@ const ListComponent = ({ route, navigation }) => {
                 ignoreDateFilter: true,
               };
             }
-            console.log("PAYLOAD RESCHEDULE TEAM: ", payload);
             Promise.all([
               dispatch(getRescheduleTeamTasksListApi(payload)),
             ]).then((res) => {
@@ -782,7 +758,6 @@ const ListComponent = ({ route, navigation }) => {
                         index = tempData.findIndex(
                           (item) => item.taskName === tempArr[i].taskName
                         );
-                        console.log(tempArr[i].taskName, index);
                         if (index !== -1) {
                           tempData[index].taskCnt = tempArr[i].taskCnt;
                           tempData[index].myTaskList = tempArr[i].myTaskList;
@@ -822,7 +797,6 @@ const ListComponent = ({ route, navigation }) => {
               };
             }
 
-            // console.log("PAYLOAD COMPLETED: ", payload);
             Promise.all([dispatch(getCompletedMyTasksListApi(payload))]).then(
               (res) => {
                 const todaysData = res[0].payload.completedData[0];
@@ -838,7 +812,6 @@ const ListComponent = ({ route, navigation }) => {
                     index = tempData.findIndex(
                       (item) => item.taskName === filteredData[i].taskName
                     );
-                    console.log(filteredData[i].taskName, index);
                     if (index !== -1) {
                       tempData[index].taskCnt = filteredData[i].taskCnt;
                       tempData[index].myTaskList = filteredData[i].myTaskList;
@@ -871,7 +844,6 @@ const ListComponent = ({ route, navigation }) => {
                 ignoreDateFilter: true,
               };
             }
-            console.log("PAYLOAD COMPLETED TEAM: ", payload);
             Promise.all([
               dispatch(getCompletedTeamTasksListApi(payload)),
             ]).then((res) => {
@@ -931,7 +903,6 @@ const ListComponent = ({ route, navigation }) => {
                         index = tempData.findIndex(
                           (item) => item.taskName === tempArr[i].taskName
                         );
-                        console.log(tempArr[i].taskName, index);
                         if (index !== -1) {
                           tempData[index].taskCnt = tempArr[i].taskCnt;
                           tempData[index].myTaskList = tempArr[i].myTaskList;
@@ -951,13 +922,10 @@ const ListComponent = ({ route, navigation }) => {
         }
       }
     } catch (error) {
-      console.log(error);
     }
   };
 
   useEffect(() => {
-    // console.log('data: ', selector.mytasksLisResponse);
-    // console.log("role: ", selector.role);
     let data = {
       // todaysData: selector.myTodayData,
       // upcomingData: selector.myUpcomingData,
@@ -982,7 +950,6 @@ const ListComponent = ({ route, navigation }) => {
     // }
 
     // if (status === "success") {
-    // console.log("called List Componet", route.params.from)
     // if (route.params.from === "TODAY") {
     //     const todaysData = data.todaysData[0];
     //     const filteredData = todaysData.tasksList.filter(element => {
@@ -1100,7 +1067,6 @@ const ListComponent = ({ route, navigation }) => {
   };
 
   const itemClicked = (item) => {
-    console.log("TASKS: ", JSON.stringify(item.myTaskList));
     if (item.myTaskList.length > 0) {
       navigation.navigate(MyTasksStackIdentifiers.tasksListScreen, {
         data: item.myTaskList,
@@ -1660,7 +1626,6 @@ const ListComponent = ({ route, navigation }) => {
           style={{ width: "100%", height: "100%" }}
           activeOpacity={1}
           onPress={() => {
-            console.log("CLICK");
             setIsOpenFilter(false);
           }}
         >

@@ -65,7 +65,7 @@ export const showAlertMessage = (title = "", message = "") => {
         [
             {
                 text: "Ok",
-                onPress: () => console.log("ok Pressed"),
+                onPress: () => {},
                 style: "cancel"
             },
         ]

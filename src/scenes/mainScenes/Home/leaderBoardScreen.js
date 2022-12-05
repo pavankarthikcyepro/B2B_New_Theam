@@ -91,7 +91,6 @@ export default function leaderBoardScreen() {
             "startDate": moment.utc(firstDay).format('YYYY-MM-DD'),
             "orgId": jsonObj.orgId
         };
-        console.log("leader board"+JSON.stringify(payload))
        // alert(JSON.stringify(payload))
         dispatch(getLeaderBoardList(payload));
     }
@@ -198,9 +197,7 @@ export default function leaderBoardScreen() {
                             renderRightIcon={() => (
                                 <Image style={{ height: 5, width: 10 }} source={require('../../../assets/images/Polygon.png')} />
                             )}
-                            onChange={async (item) => {
-                                console.log("£££", item);
-                            }}
+                            onChange={async (item) => {}}
                         />
                     </View>
 
@@ -221,9 +218,7 @@ export default function leaderBoardScreen() {
                             renderRightIcon={() => (
                                 <Image style={{ height: 5, width: 10 }} source={require('../../../assets/images/Polygon.png')} />
                             )}
-                            onChange={async (item) => {
-                                console.log("£££", item);
-                            }}
+                            onChange={async (item) => {}}
                         />
                     </View>
                 </View>

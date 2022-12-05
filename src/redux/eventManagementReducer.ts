@@ -133,7 +133,6 @@ export const eventmanagementSlice = createSlice({
       state.isLoadingExtraData = true;
     })
     builder.addCase(getMoreEventsListApi.fulfilled, (state, action) => {
-      console.log('res: ', action.payload);
       if (action.payload) {
         state.pageNumber = action.payload.pageable.pageNumber;
         const content = action.payload.content;

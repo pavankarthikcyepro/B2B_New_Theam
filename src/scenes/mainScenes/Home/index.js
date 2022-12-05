@@ -90,6 +90,7 @@ import {
   officeRadius,
 } from "../../../service";
 import ReactNativeModal from "react-native-modal";
+import Carousel, { Pagination } from "react-native-snap-carousel";
 
 const officeLocation = {
   latitude: 37.33233141,
@@ -123,11 +124,12 @@ const HomeScreen = ({ route, navigation }) => {
   const [initialPosition, setInitialPosition] = useState({});
   const [showModal, setShowModal] = useState(false);
   const [options, setOptions] = useState({});
+  const [activeBannerIndex, setActiveBannerIndex] = useState(0);
 
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {
       getCurrentLocation();
-      setTargetData().then((r) => console.log(r)); //Commented to resolved filter issue for Home Screen
+      setTargetData().then(() =>{}); //Commented to resolved filter issue for Home Screen
     });
   }, [navigation]);
 
@@ -483,12 +485,8 @@ const HomeScreen = ({ route, navigation }) => {
           empId: jsonObj.empId,
         };
         getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
-          .then((x) =>
-            console.log(`getAllTargetParametersDataFromServer:: success: ${x}`)
-          )
-          .catch((y) =>
-            console.log(`getAllTargetParametersDataFromServer:: error: ${y}`)
-          );
+          .then((x) => {})
+          .catch((y) => {});
       }
       if (jsonObj?.hrmsRole.toLowerCase().includes("manager")) {
         dispatch(updateIsManager(true));
@@ -555,18 +553,10 @@ const HomeScreen = ({ route, navigation }) => {
           })
         ),
           getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
-            .then((x) =>
-              console.log(
-                `getAllTargetParametersDataFromServer:: success: ${x}`
-              )
-            )
-            .catch((y) =>
-              console.log(`getAllTargetParametersDataFromServer:: error: ${y}`)
-            );
+            .then((x) => {})
+            .catch((y) => {});
       } else {
-        getTargetParametersDataFromServer(payload).catch((y) =>
-          console.log("getTargetParametersDataFromServer:: home/index.js: ", y)
-        );
+        getTargetParametersDataFromServer(payload).catch((y) => {});
       }
     }
   };
@@ -598,9 +588,7 @@ const HomeScreen = ({ route, navigation }) => {
     ]).then(() => {});
 
     getTaskTableDataFromServer(empId, payload);
-    getTargetParametersDataFromServer(payload).catch((y) =>
-      console.log("587 home/index.js: ", y)
-    );
+    getTargetParametersDataFromServer(payload).catch((y) => {});
   };
 
   const getTaskTableDataFromServer = (empId, oldPayload) => {
@@ -854,11 +842,9 @@ const HomeScreen = ({ route, navigation }) => {
             Promise.all([dispatch(downloadFile(newPayload))])
               .then(async (res) => {
                 if (res[0]?.payload?.downloadUrl) {
-                  console.log(res[0]?.payload);
                   let path = res[0]?.payload;
                   if (Platform.OS === "android") {
                     for (const property in path) {
-                      console.log(`${property}: ${path[property]}`);
                       downloadInLocal(path[property]);
                     }
                   }
@@ -1003,6 +989,46 @@ const HomeScreen = ({ route, navigation }) => {
           </TouchableWithoutFeedback>
         </View>
       </ReactNativeModal>
+    );
+  };
+
+  const renderBannerList = () => {
+    return (
+      <View>
+        <View style={styles.bannerListContainer}>
+          <Carousel
+            data={selector.bannerList}
+            keyExtractor={(item, index) => item._id + "_" + index}
+            renderItem={renderBanner}
+            sliderWidth={Dimensions.get("screen").width}
+            itemWidth={Dimensions.get("screen").width - 50}
+            hasParallaxImages={true}
+            inactiveSlideScale={1}
+            inactiveSlideOpacity={1}
+            onSnapToItem={(index) => setActiveBannerIndex(index)}
+            autoplay={true}
+            autoplayInterval={3000}
+            loop={true}
+          />
+        </View>
+        <Pagination
+          dotsLength={selector.bannerList.length}
+          activeDotIndex={activeBannerIndex}
+          containerStyle={styles.paginationContainer}
+          dotColor={Colors.PINK}
+          dotStyle={styles.paginationDot}
+          inactiveDotStyle={styles.inactiveDotStyle}
+          inactiveDotColor={Colors.GRAY}
+          inactiveDotOpacity={0.4}
+          inactiveDotScale={0.6}
+        />
+      </View>
+    );
+  };
+
+  const renderBanner = ({ item, index }) => {
+    return (
+      <Image source={{ uri: item.fileUrl }} style={styles.bannerImage} resizeMode="contain" />
     );
   };
 
@@ -1195,6 +1221,8 @@ const HomeScreen = ({ route, navigation }) => {
             </>
           )}
         </View>
+        
+        {selector.bannerList.length > 0 && renderBannerList()}
 
         {/* 1111 */}
         <View>
@@ -1519,5 +1547,31 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     alignSelf: "center",
     // opacity: 0.7,
+  },
+
+  bannerListContainer: {},
+  bannerImage: {
+    marginTop: 10,
+    marginBottom: 10,
+    padding: 15,
+    width: Dimensions.get("screen").width - 70,
+    height: Dimensions.get("screen").width / 2.3,
+    backgroundColor: Colors.BLACK,
+    borderRadius: 5,
+  },
+  paginationContainer: {
+    paddingVertical: 0,
+    marginBottom: 10,
+  },
+  paginationDot: {
+    height: 10,
+    width: 10,
+    borderRadius: 5,
+    marginHorizontal: -7,
+  },
+  inactiveDotStyle: {
+    height: 14,
+    width: 14,
+    borderRadius: 7,
   },
 });

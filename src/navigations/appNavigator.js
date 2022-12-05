@@ -83,6 +83,7 @@ import { EMSTopTabNavigatorTwo } from "./emsTopTabNavigator";
 import { AppNavigator } from ".";
 import MapScreen from "../scenes/mainScenes/Map";
 import AttendanceScreen from "../scenes/mainScenes/Attendance";
+import AddNewEnquiryScreen from "../scenes/mainScenes/EMS/addNewEnquiry";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -190,7 +191,6 @@ const MapIcon = ({ navigation }) => {
             icon="google-maps"
             color={Colors.WHITE}
             size={25}
-            //onPress={() => console.log('Mpas icon pressed')}
             onPress={() => {
                 Linking.openURL(
                     `https://www.google.com/maps/search/?api=1&query=india`
@@ -273,6 +273,7 @@ export const EmsStackIdentifiers = {
   bookingForm: "BOOKING_FORM",
   webViewComp: "webViewComp",
   ProformaScreen: "PROFORMA_SCREEN",
+  newEnquiry: "NEW_ENQUIRY"
 };
 
 export const PreBookingStackIdentifiers = {
@@ -430,6 +431,12 @@ const EmsStackNavigator = ({ navigation }) => {
           component={EnquiryFormScreen}
           options={{ title: "Enquiry Form" }}
         />
+        <EmsStack.Screen
+          name={EmsStackIdentifiers.newEnquiry}
+          component={AddNewEnquiryScreen}
+          options={{ title: "Enquiry Form" }}
+        />
+
         <EmsStack.Screen
           name={EmsStackIdentifiers.preBookingForm}
           component={PreBookingFormScreen}
@@ -643,8 +650,6 @@ const TabNavigator = ({ navigation, route }) => {
     // let routeName = getFocusedRouteNameFromRoute(route);
     let routeName = nav.params.screen;
 
-    // console.log("---navigation props", nav)
-    // console.log("-----------condation", routeName.name === "MONTHLY_TARGET")
     return (
         <Tab.Navigator
             // initialRouteName={routeName.name === "MONTHLY_TARGET" ? TabStackIdentifiers.planning : TabStackIdentifiers.home}

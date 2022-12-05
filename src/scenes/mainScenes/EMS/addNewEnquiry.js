@@ -33,6 +33,7 @@ import {
   TextinputComp,
   DropDownComponant,
   DatePickerComponent,
+  SelectEmployeeComponant,
 } from "../../../components";
 import { ModelListitemCom } from "./components/ModelListitemCom";
 import { ProformaComp } from "./components/ProformComp";
@@ -157,14 +158,19 @@ import {
   clearState as preClearState,
 } from "../../../redux/proceedToPreBookingReducer";
 import { EmsTopTabNavigatorIdentifiers } from "../../../navigations/emsTopTabNavigator";
-import { getCurrentTasksListApi, getPendingTasksListApi } from "../../../redux/mytaskReducer";
+import {
+  getCurrentTasksListApi,
+  getPendingTasksListApi,
+} from "../../../redux/mytaskReducer";
 import {
   CustomerTypesObj,
   CustomerTypesObj21,
   CustomerTypesObj22,
   EnquiryTypes21,
-  EnquiryTypes22
+  EnquiryTypes22,
 } from "../../../jsonData/preEnquiryScreenJsonData";
+import { getEmployeesListApi } from "../../../redux/confirmedPreEnquiryReducer";
+import { client } from "../../../networking/client";
 
 const theme = {
   ...DefaultTheme,
@@ -200,17 +206,21 @@ const dmsAttachmentsObj = {
   tinNumber: null,
 };
 
-const DetailsOverviewScreen = ({ route, navigation }) => {
+const AddNewEnquiryScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const headNavigation = useNavigation();
   let scrollRef = useRef(null);
   const selector = useSelector((state) => state.enquiryFormReducer);
+  const homeSelector = useSelector((state) => state.homeReducer);
   const proceedToPreSelector = useSelector(
     (state) => state.proceedToPreBookingReducer
   );
+  const employeeSelector = useSelector(
+    (state) => state.confirmedPreEnquiryReducer
+  );
   const [openAccordian, setOpenAccordian] = useState("0");
   const [componentAppear, setComponentAppear] = useState(false);
-  const { universalId, enqDetails, leadStatus, leadStage } = route.params;
+  //   const { universalId, enqDetails, leadStatus, leadStage } = route.params;
   const [showDropDownModel, setShowDropDownModel] = useState(false);
   const [dataForDropDown, setDataForDropDown] = useState([]);
   const [dropDownKey, setDropDownKey] = useState("");
@@ -233,7 +243,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     orgId: "",
     employeeId: "",
     employeeName: "",
-    isSelfManager: ""
+    isSelfManager: "",
   });
   const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
   const [modelsList, setModelsList] = useState([]);
@@ -266,8 +276,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const [currentLocation, setCurrentLocation] = useState(null);
   const [authToken, setAuthToken] = useState("");
-  
+
   const [makerData, setMakerData] = useState([]);
+  const [subSourceData, setSubSourceData] = useState([]);
+  const [sourceData, setSourceData] = useState(0);
+  const [subsourceID, setSubSourceId] = useState(0);
+  const [showEmployeeSelectModel, setEmployeeSelectModel] = useState(false);
+  const [employeesData, setEmployeesData] = useState([]);
+  const [disabled, setDisabled] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState("");
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -303,41 +320,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   //   }
   // }, [autoSave, selector]);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      // if (enqDetails?.leadStage === "ENQUIRY" && enqDetails?.leadStatus === null) {
-      updateEnquiry();
-      // }
-    }, 5000);
-    return () => {
-      clearInterval(interval);
-    };
-    // let interval;
-    // interval = setInterval(() => {
-    //   updateEnquiry()
-    // }, 60000);
-    // navigation.addListener('blur', () => {
-    //   clearInterval(interval)
-    // })
-  }, [updateEnquiry, selector, uploadedImagesDataObj]);
-
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     autoSave()
-  //   }, 10000);
-  //   return () => {
-  //     clearInterval(interval)
-  //   }
-  // }, [selector])
-
-  // useEffect(() => {
-  //   let autoSaveInterval;
-  //     autoSaveInterval = setInterval(() => {
-  //       autoSave()
-  //     }, 6000);
-  //     return () => clearInterval(autoSaveInterval);
-  // }, [])
-
   const clearLocalData = () => {
     setOpenAccordian("0");
     setComponentAppear(false);
@@ -362,7 +344,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       orgId: "",
       employeeId: "",
       employeeName: "",
-      isSelfManager: ""
+      isSelfManager: "",
     });
     setUploadedImagesDataObj({});
     setTypeOfActionDispatched("");
@@ -408,8 +390,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     return () => {
       dispatch(clearStateData());
       clearLocalData();
-    }
-  }, [])
+    };
+  }, []);
 
   useEffect(() => {
     getAuthToken();
@@ -431,6 +413,27 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     //   );
     // };
   }, []);
+
+  useEffect(() => {
+    if (
+      employeeSelector.employees_list.length > 0 &&
+      employeeSelector.employees_list_status === "success"
+    ) {
+      let newData = [];
+      employeeSelector.employees_list.forEach((element) => {
+        const obj = {
+          id: element.empId,
+          name: element.empName,
+          selected: false,
+        };
+        newData.push(obj);
+      });
+      setEmployeesData([...newData]);
+      if (selector.source_of_enquiry) {
+        setEmployeeSelectModel(true);
+      }
+    }
+  }, [employeeSelector.employees_list, employeeSelector.employees_list_status]);
 
   const getAuthToken = async () => {
     const token = await AsyncStore.getData(AsyncStore.Keys.USER_TOKEN);
@@ -486,7 +489,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         orgId: jsonObj.orgId,
         employeeId: jsonObj.empId,
         employeeName: jsonObj.empName,
-        isSelfManager: jsonObj.isSelfManager
+        isSelfManager: jsonObj.isSelfManager,
       });
       getCarMakeListFromServer(jsonObj.orgId);
       getCarModelListFromServer(jsonObj.orgId);
@@ -547,6 +550,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           }
         },
         (rejected) => {
+          console.log("getCarModelListFromServer Failed");
         }
       )
       .finally(() => {
@@ -668,7 +672,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           let tempAddr = [];
           if (res.length > 0) {
             for (let i = 0; i < res.length; i++) {
-              if (res[i].Block === selector.village || res[i].Name === selector.village) {
+              if (
+                res[i].Block === selector.village ||
+                res[i].Name === selector.village
+              ) {
                 setDefaultAddress(res[i]);
               }
               tempAddr.push({ label: res[i].Name, value: res[i] });
@@ -680,6 +687,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           // dispatch(updateAddressByPincode(resolve));
         },
         (rejected) => {
+          console.log("rejected...: ", rejected);
         }
       );
     }
@@ -730,7 +738,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       );
       // Update Attachment details
 
-      saveAttachmentDetailsInLocalObject(dmsLeadDto.dmsAttachments, dmsLeadDto.dmsExchagedetails);
+      saveAttachmentDetailsInLocalObject(
+        dmsLeadDto.dmsAttachments,
+        dmsLeadDto.dmsExchagedetails
+      );
       dispatch(updateDmsAttachmentDetails(dmsLeadDto.dmsAttachments));
     }
   }, [selector.enquiry_details_response]); //selector.enquiry_details_response
@@ -743,7 +754,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     if (dmsAttachments.length > 0) {
       const dataObj = {};
       dmsAttachments.forEach((item, index) => {
-        if(!dataObj[item.documentType]){
+        if (!dataObj[item.documentType]) {
           const obj = {
             documentPath: item.documentPath,
             documentType: item.documentType,
@@ -800,6 +811,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             );
           })
           .catch(() => {
+            console.log("INSIDE CATCH");
           });
       }
       // dispatch(getEnquiryDetailsApi({universalId, leadStage, leadStatus}));
@@ -863,7 +875,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       }
 
       await setCarModelsList(array);
-    } catch (error) { }
+    } catch (error) {}
   };
 
   const updateEnquiry = async () => {
@@ -985,14 +997,17 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         dmsLeadDto.dmsAttachments = tempAttachments;
       }
 
-      var tempDmsLeadProducts = selector.dmsLeadProducts
-      var tempArr = [...carModelsList, ...tempDmsLeadProducts.filter(a => a)]
+      var tempDmsLeadProducts = selector.dmsLeadProducts;
+      var tempArr = [...carModelsList, ...tempDmsLeadProducts.filter((a) => a)];
 
       dmsLeadDto.dmsLeadProducts = tempArr.filter((value, index) => {
         const _value = JSON.stringify(value);
-        return index === tempArr.findIndex(obj => {
-          return JSON.stringify(obj) === _value;
-        });
+        return (
+          index ===
+          tempArr.findIndex((obj) => {
+            return JSON.stringify(obj) === _value;
+          })
+        );
       });
     }
 
@@ -1020,6 +1035,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   };
 
   const checkModelSelection = () => {
+    console.log("carModelsList", carModelsList);
     let error = false;
     for (let i = 0; i < carModelsList.length; i++) {
       if (carModelsList[i].model.length == 0) {
@@ -1066,22 +1082,34 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         return;
       }
     }
-
-
+    if (selector.firstName.length == 0) {
+      scrollToPos(0);
+      setOpenAccordian("2");
+      showToastRedAlert("Please enter first name");
+      return;
+    }
     if (!isValidate(selector.firstName)) {
       scrollToPos(0);
       setOpenAccordian("2");
       showToast("please enter alphabetics only in firstname");
       return;
     }
-
+    if (selector.lastName.length == 0) {
+      scrollToPos(0);
+      showToastRedAlert("Please enter last name");
+      return;
+    }
+    if (selector.mobile.length == 0) {
+      scrollToPos(0);
+      showToastRedAlert("Please enter mobile number");
+      return;
+    }
     if (!isValidate(selector.lastName)) {
       scrollToPos(0);
       setOpenAccordian("2");
       showToast("please enter alphabetics only in lastname");
       return;
     }
-
     if (selector.enquiry_segment.length == 0) {
       scrollToPos(2);
       setOpenAccordian("1");
@@ -1134,6 +1162,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       return;
     }
 
+    if (carModelsList[0].model === undefined) {
+      scrollToPos(4);
+      setOpenAccordian("4");
+      return;
+    }
     if (checkModelSelection()) {
       scrollToPos(4);
       setOpenAccordian("4");
@@ -1295,192 +1328,295 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     //   return;
     // }
 
-    if (isCheckPanOrAadhaar("pan", selector.pan_number)) {
-      scrollToPos(6);
-      setOpenAccordian("6");
-      showToast("Please enter proper PAN number");
-      return;
-    }
-    
-    if (isCheckPanOrAadhaar("aadhaar", selector.adhaar_number)) {
-      scrollToPos(6);
-      setOpenAccordian("6");
-      showToast("Please enter proper Aadhaar number");
-      return;
-    }
+    // if (isCheckPanOrAadhaar("pan", selector.pan_number)) {
+    //   scrollToPos(6);
+    //   setOpenAccordian("6");
+    //   showToast("Please enter proper PAN number");
+    //   return;
+    // }
 
-    if (
-      selector.gstin_number.length > 0 &&
-      !isValidateAplhaNumeric(selector.gstin_number)
-    ) {
-      scrollToPos(6);
-      setOpenAccordian("6");
-      showToast("Please enter proper gstin number");
-      return;
-    }
+    // if (isCheckPanOrAadhaar("aadhaar", selector.adhaar_number)) {
+    //   scrollToPos(6);
+    //   setOpenAccordian("6");
+    //   showToast("Please enter proper Aadhaar number");
+    //   return;
+    // }
 
-    if (!selector.enquiry_details_response) {
-      return;
-    }
+    // if (
+    //   selector.gstin_number.length > 0 &&
+    //   !isValidateAplhaNumeric(selector.gstin_number)
+    // ) {
+    //   scrollToPos(6);
+    //   setOpenAccordian("6");
+    //   showToast("Please enter proper gstin number");
+    //   return;
+    // }
+
+    // if (!selector.enquiry_details_response) {
+    //   return;
+    // }
 
     let dmsContactOrAccountDto = {};
     let dmsLeadDto = {};
     let formData;
 
-    const dmsEntity = selector.enquiry_details_response;
-    if (dmsEntity.hasOwnProperty("dmsContactDto"))
-      dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsContactDto);
-    else if (dmsEntity.hasOwnProperty("dmsAccountDto"))
-      dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsAccountDto);
+    // const dmsEntity = selector.enquiry_details_response;
+    // if (dmsEntity.hasOwnProperty("dmsContactDto"))
+    //   dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsContactDto);
+    // else if (dmsEntity.hasOwnProperty("dmsAccountDto"))
+    //   dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsAccountDto);
 
-    if (dmsEntity.hasOwnProperty("dmsLeadDto")) {
-      try {
-        dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
-      } catch (error) { }
-      dmsLeadDto.firstName = selector.firstName;
-      dmsLeadDto.lastName = selector.lastName;
-      dmsLeadDto.phone = selector.mobile;
-      dmsLeadDto.dmsLeadProducts = carModelsList;
+    if (true) {
+      // try {
+      //   dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
+      // } catch (error) {}
+      // dmsLeadDto.firstName = selector.firstName;
+      // dmsLeadDto.lastName = selector.lastName;
+      // dmsLeadDto.phone = selector.mobile;
+      // dmsLeadDto.dmsLeadProducts = carModelsList;
 
       let primaryModel = carModelsList.filter((item) => item.isPrimary === "Y");
-      dmsLeadDto.model = primaryModel[0].model;
+      // dmsLeadDto.model = primaryModel[0].model;
 
       const employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
       );
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
-        let empObj = {
-          branchId: jsonObj.branchs[0]?.branchId,
-          modifiedBy: jsonObj.empName,
-          orgId: jsonObj.orgId,
-          ownerName: jsonObj.empName,
+        let payloadx = {
+          dmsAccountDto: {
+            branchId: jsonObj.branchs[0]?.branchId,
+            company: "",
+            createdBy: jsonObj.empName,
+            customerType: selector.customer_type,
+            email: "",
+            enquirySource: sourceData,
+            subSource: subsourceID,
+            firstName: selector.firstName,
+            lastName: selector.lastName,
+            modifiedBy: jsonObj.empName,
+            orgId: jsonObj.orgId,
+            ownerName: jsonObj.empName,
+            phone: selector.mobile,
+            secondaryPhone: "",
+            status: "PREENQUIRY",
+          },
+          dmsLeadDto: {
+            branchId: jsonObj.branchs[0]?.branchId,
+            createdBy: jsonObj.empName,
+            enquirySegment: selector.enquiry_segment,
+            firstName: selector.firstName,
+            lastName: selector.lastName,
+            leadStage: "PREENQUIRY",
+            model: primaryModel[0].model,
+            organizationId: jsonObj.orgId,
+            phone: selector.mobile,
+            sourceOfEnquiry: sourceData,
+            eventCode: "",
+            email: "",
+            referencenumber: "",
+            salesConsultant:
+              selectedEmployee.length > 0 ? selectedEmployee : null,
+            dmsAddresses: [
+              {
+                addressType: "Communication",
+                houseNo: selector.houseNum,
+                street: selector.streetName,
+                city: selector.city,
+                district: selector.district,
+                pincode: selector.pincode,
+                state: selector.state,
+                village: selector.village,
+                county: "India",
+                rural: selector.urban_or_rural === 2 ? true : false,
+                urban: selector.urban_or_rural === 1 ? true : false,
+                id: 0,
+              },
+              {
+                addressType: "Permanent",
+                houseNo: selector.p_houseNum,
+                street: selector.p_streetName,
+                city: selector.p_city,
+                district: selector.p_district,
+                pincode: selector.p_pincode,
+                state: selector.p_state,
+                village: selector.p_village,
+                county: "India",
+                rural: selector.p_urban_or_rural === 2 ? true : false,
+                urban: selector.p_urban_or_rural === 1 ? true : false,
+                id: 0,
+              },
+            ],
+            subSource: selector.sub_source_of_enquiry,
+          },
         };
-        let tempAttachments = Object.assign([], dmsLeadDto.dmsAttachments);
-
-        let imgObjArr = [];
-        if (Object.keys(uploadedImagesDataObj).length > 0) {
-          imgObjArr = Object.entries(uploadedImagesDataObj).map((e) => ({
-            name: e[0],
-            value: e[1],
-          }));
-        }
-
-        for (let i = 0; i < imgObjArr.length; i++) {
-          let isAvailable = false;
-          for (let j = 0; j < tempAttachments.length; j++) {
-            if(tempAttachments[j].documentType == imgObjArr[i].name){
-              isAvailable = true;
-              break;
+        let payloady = {
+          dmsContactDto: payloadx.dmsAccountDto,
+          dmsLeadDto: payloadx.dmsLeadDto,
+        };
+        try {
+          if (
+            selector.customer_type === "Individual" &&
+            selector.enquiry_segment === "Personal"
+          ) {
+            const response = await client.post(URL.ENQUIRY_CONTACT(), payloady);
+            const json = await response.json();
+            if (json.success) {
+              navigation.goBack();
+            } else {
+              showToast(json.message);
+            }
+          } else {
+            const response1 = await client.post(
+              URL.ENQURIY_ACCOUNT(),
+              payloadx
+            );
+            const json1 = await response1.json();
+            if (json1.success) {
+              navigation.goBack();
+            } else {
+              showToast(json1.message);
             }
           }
 
-          if (!isAvailable) {
-            let newObj = {
-              ...dmsAttachmentsObj,
-              documentPath: imgObjArr[i].value.documentPath,
-              fileName: imgObjArr[i].value.fileName,
-              keyName: imgObjArr[i].value.keyName,
-              documentType: imgObjArr[i].name,
-              createdBy: convertDateStringToMilliseconds(new Date()),
-              ...empObj,
-            };
-
-            if (imgObjArr[i].name === "pan" && selector.pan_number){
-              newObj.documentNumber = selector.pan_number;
-            }else if (imgObjArr[i].name == "aadhar" && selector.adhaar_number) {
-              newObj.documentNumber = selector.adhaar_number;
-            } else if (imgObjArr[i].name == "employeeId" && selector.employee_id) {
-              newObj.documentNumber = selector.employee_id;
-            }
-
-            tempAttachments.push(Object.assign({}, newObj));
-          }
+          // navigation.goBack();
+        } catch (error) {
+          console.error(error);
         }
 
-        let panArr = tempAttachments.filter((item) => {
-          return item.documentType === "pan";
-        });
+        // let tempAttachments = Object.assign([], dmsLeadDto.dmsAttachments);
 
-        let aadharArr = tempAttachments.filter((item) => {
-          return item.documentType === "aadhar";
-        });
+        // let imgObjArr = [];
+        // if (Object.keys(uploadedImagesDataObj).length > 0) {
+        //   imgObjArr = Object.entries(uploadedImagesDataObj).map((e) => ({
+        //     name: e[0],
+        //     value: e[1],
+        //   }));
+        // }
 
-        let empArr = tempAttachments.filter((item) => {
-          return item.documentType === "employeeId";
-        });
+        // for (let i = 0; i < imgObjArr.length; i++) {
+        //   let isAvailable = false;
+        //   for (let j = 0; j < tempAttachments.length; j++) {
+        //     if (tempAttachments[j].documentType == imgObjArr[i].name) {
+        //       isAvailable = true;
+        //       break;
+        //     }
+        //   }
 
-        // if pan number
-        if (!panArr.length && selector.pan_number) {
-          newObj = {
-            ...dmsAttachmentsObj,
-            documentNumber: selector.pan_number,
-            documentType: "pan",
-            ...empObj,
-          };
-          tempAttachments.push(Object.assign({}, newObj));
-        }
+        //   if (!isAvailable) {
+        //     let newObj = {
+        //       ...dmsAttachmentsObj,
+        //       documentPath: imgObjArr[i].value.documentPath,
+        //       fileName: imgObjArr[i].value.fileName,
+        //       keyName: imgObjArr[i].value.keyName,
+        //       documentType: imgObjArr[i].name,
+        //       createdBy: convertDateStringToMilliseconds(new Date()),
+        //       ...empObj,
+        //     };
 
-        // if aadhar number
-        if (!aadharArr.length && selector.adhaar_number) {
-          newObj = {
-            ...dmsAttachmentsObj,
-            documentNumber: selector.adhaar_number,
-            documentType: "aadhar",
-            ...empObj,
-          };
-          tempAttachments.push(Object.assign({}, newObj));
-        }
+        //     if (imgObjArr[i].name === "pan" && selector.pan_number) {
+        //       newObj.documentNumber = selector.pan_number;
+        //     } else if (
+        //       imgObjArr[i].name == "aadhar" &&
+        //       selector.adhaar_number
+        //     ) {
+        //       newObj.documentNumber = selector.adhaar_number;
+        //     } else if (
+        //       imgObjArr[i].name == "employeeId" &&
+        //       selector.employee_id
+        //     ) {
+        //       newObj.documentNumber = selector.employee_id;
+        //     }
 
-        // if emp id
-        if (!empArr.length && selector.employee_id) {
-          newObj = {
-            ...dmsAttachmentsObj,
-            documentNumber: selector.employee_id,
-            documentType: "employeeId",
-            ...empObj,
-          };
-          tempAttachments.push(Object.assign({}, newObj));
-        }
+        //     tempAttachments.push(Object.assign({}, newObj));
+        //   }
+        // }
 
-        dmsLeadDto.dmsAttachments = Object.assign([], tempAttachments);
+        // let panArr = tempAttachments.filter((item) => {
+        //   return item.documentType === "pan";
+        // });
+
+        // let aadharArr = tempAttachments.filter((item) => {
+        //   return item.documentType === "aadhar";
+        // });
+
+        // let empArr = tempAttachments.filter((item) => {
+        //   return item.documentType === "employeeId";
+        // });
+
+        // // if pan number
+        // if (!panArr.length && selector.pan_number) {
+        //   newObj = {
+        //     ...dmsAttachmentsObj,
+        //     documentNumber: selector.pan_number,
+        //     documentType: "pan",
+        //     ...empObj,
+        //   };
+        //   tempAttachments.push(Object.assign({}, newObj));
+        // }
+
+        // // if aadhar number
+        // if (!aadharArr.length && selector.adhaar_number) {
+        //   newObj = {
+        //     ...dmsAttachmentsObj,
+        //     documentNumber: selector.adhaar_number,
+        //     documentType: "aadhar",
+        //     ...empObj,
+        //   };
+        //   tempAttachments.push(Object.assign({}, newObj));
+        // }
+
+        // // if emp id
+        // if (!empArr.length && selector.employee_id) {
+        //   newObj = {
+        //     ...dmsAttachmentsObj,
+        //     documentNumber: selector.employee_id,
+        //     documentType: "employeeId",
+        //     ...empObj,
+        //   };
+        //   tempAttachments.push(Object.assign({}, newObj));
+        // }
+
+        // dmsLeadDto.dmsAttachments = Object.assign([], tempAttachments);
       }
     }
 
-    if (selector.enquiry_details_response.hasOwnProperty("dmsContactDto")) {
-      formData = {
-        dmsContactDto: dmsContactOrAccountDto,
-        dmsLeadDto: dmsLeadDto,
-      };
-    } else {
-      formData = {
-        dmsAccountDto: dmsContactOrAccountDto,
-        dmsLeadDto: dmsLeadDto,
-      };
-    }
+    // if (selector.enquiry_details_response.hasOwnProperty("dmsContactDto")) {
+    //   formData = {
+    //     dmsContactDto: dmsContactOrAccountDto,
+    //     dmsLeadDto: dmsLeadDto,
+    //   };
+    // } else {
+    //   formData = {
+    //     dmsAccountDto: dmsContactOrAccountDto,
+    //     dmsLeadDto: dmsLeadDto,
+    //   };
+    // }
 
-    setTypeOfActionDispatched("UPDATE_ENQUIRY");
-    let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-    if (employeeData) {
-      const jsonObj = JSON.parse(employeeData);
-      const refPayload = {
-        branchid: jsonObj.branchs[0]?.branchId,
-        leadstage: "ENQUIRY",
-        orgid: jsonObj.orgId,
-        universalId: universalId,
-      };
-      Promise.all([
-        dispatch(updateEnquiryDetailsApi(formData)),
-        dispatch(customerLeadRef(refPayload)),
-      ]).then(async (res) => {
-        const payload = {
-          refNo: res[1].payload.dmsEntity.leadCustomerReference.referencenumber,
-          orgId: jsonObj.orgId,
-          stageCompleted: "ENQUIRY",
-        };
-        dispatch(updateRef(payload));
-      });
-    }
+    // console.log("formData", formData);
+    // setTypeOfActionDispatched("UPDATE_ENQUIRY");
+    // let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    // if (employeeData) {
+    //   const jsonObj = JSON.parse(employeeData);
+    //   const refPayload = {
+    //     branchid: jsonObj.branchs[0]?.branchId,
+    //     leadstage: "ENQUIRY",
+    //     orgid: jsonObj.orgId,
+    //     universalId: universalId,
+    //   };
+    //   return;
+    //   Promise.all([
+    //     dispatch(updateEnquiryDetailsApi(formData)),
+    //     dispatch(customerLeadRef(refPayload)),
+    //   ]).then(async (res) => {
+    //     const payload = {
+    //       refNo: res[1].payload.dmsEntity.leadCustomerReference.referencenumber,
+    //       orgId: jsonObj.orgId,
+    //       stageCompleted: "ENQUIRY",
+    //     };
+    //     dispatch(updateRef(payload));
+    //   });
+    // }
   };
 
   const mapContactOrAccountDto = (prevData) => {
@@ -1919,7 +2055,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             [
               {
                 text: "Cancel",
-                onPress: () => {},
+                onPress: () => console.log("Cancel Pressed"),
                 style: "cancel",
               },
               {
@@ -2049,10 +2185,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   // Handle Enquiry Update response
   useEffect(() => {
     if (typeOfActionDispatched === "PROCEED_TO_PREBOOKING") {
-
       if (
         proceedToPreSelector.update_enquiry_details_response_status ===
-        "success" &&
+          "success" &&
         proceedToPreSelector.update_enquiry_details_response
       ) {
         if (typeOfActionDispatched === "PROCEED_TO_PREBOOKING") {
@@ -2078,7 +2213,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   ]);
 
   const displayCreateEnquiryAlert = () => {
-
     let refNumber = "";
     if (proceedToPreSelector.update_enquiry_details_response) {
       refNumber =
@@ -2146,7 +2280,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           (selector.enquiry_details_response.dmsLeadDto.buyerType ===
             "Replacement Buyer" ||
             selector.enquiry_details_response.dmsLeadDto.buyerType ===
-            "Exchange Buyer")
+              "Exchange Buyer")
         ) {
           pendingTaskNames.push("Evaluation : Pending \n");
         }
@@ -2174,9 +2308,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       const jsonObj = JSON.parse(employeeData);
       if (
         selector.enquiry_details_response.dmsLeadDto.salesConsultant ==
-        jsonObj.empName ||
+          jsonObj.empName ||
         selector.enquiry_details_response.dmsLeadDto.createdBy ==
-        jsonObj.empName
+          jsonObj.empName
       ) {
         if (universalId) {
           const endUrl = universalId + "?" + "stage=Enquiry";
@@ -2308,24 +2442,34 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         //   return;
         // }
 
-        let customerTypes = []
-        customerTypes = CustomerTypesObj21[selector.enquiry_segment.toLowerCase()]
+        let customerTypes = [];
+        customerTypes =
+          CustomerTypesObj21[selector.enquiry_segment.toLowerCase()];
         if (orgId === 21) {
-          customerTypes = CustomerTypesObj21[selector.enquiry_segment.toLowerCase()];
+          customerTypes =
+            CustomerTypesObj21[selector.enquiry_segment.toLowerCase()];
           selector.customerType = "";
-        }
-        else if (orgId === 22) {
-          customerTypes = CustomerTypesObj22[selector.enquiry_segment.toLowerCase()];
+        } else if (orgId === 22) {
+          customerTypes =
+            CustomerTypesObj22[selector.enquiry_segment.toLowerCase()];
           selector.customerType = "";
-        }
-        else {
-          customerTypes = CustomerTypesObj[selector.enquiry_segment.toLowerCase()];
+        } else {
+          customerTypes =
+            CustomerTypesObj[selector.enquiry_segment.toLowerCase()];
           selector.customerType = "";
         }
         setDataForDropDown([...customerTypes]);
         break;
+      case "SOURCE_OF_ENQUIRY":
+        if (homeSelector.source_of_enquiry_list.length === 0) {
+          showToast("No data found");
+          return;
+        } else {
+        }
+        setDataForDropDown([...homeSelector.source_of_enquiry_list]);
+        break;
       case "SUB_SOURCE_OF_ENQUIRY":
-        setDataForDropDown([...Enquiry_Sub_Source_Type_Data]);
+        setDataForDropDown([...subSourceData]);
         break;
       case "ENQUIRY_CATEGORY":
         setDataForDropDown([...Enquiry_Category_Type_Data]);
@@ -2735,6 +2879,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         // dispatch(updateAddressByPincode(resolve));
       },
       (rejected) => {
+        console.log("rejected...: ", rejected);
       }
     );
   };
@@ -2761,6 +2906,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         // dispatch(updateAddressByPincode(resolve));
       },
       (rejected) => {
+        console.log("rejected...: ", rejected);
       }
     );
   };
@@ -2789,14 +2935,78 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       selector?.p_district == selector?.district &&
       selector?.p_state == selector?.state
     ) {
-      return "YES"
+      return "YES";
     } else {
-      return "NO"
+      return "NO";
     }
-  }
+  };
+  const getEventListFromServer = (startDate, endDate) => {
+    if (
+      startDate === undefined ||
+      startDate === null ||
+      endDate === undefined ||
+      endDate === null
+    ) {
+      return;
+    }
+
+    const payload = {
+      startDate: startDate,
+      endDate: endDate,
+      empId: userData.employeeId,
+      branchId: userData.branchId,
+      orgId: userData.orgId,
+    };
+    dispatch(getEventListApi(payload));
+  };
+
+  updateSubSourceData = (item) => {
+    console.log("item: ", JSON.stringify(item));
+    if (item.subsource && item.subsource.length > 0) {
+      console.log("INSIDE IF");
+      const updatedData = [];
+      item.subsource.forEach((subItem, index) => {
+        const newItem = { ...subItem };
+        newItem.name = subItem.subSource;
+        if (newItem.status === "Active") {
+          updatedData.push(newItem);
+        }
+      });
+      console.log("DATA: ", JSON.stringify(updatedData));
+      setSubSourceData(updatedData);
+    } else {
+      console.log("INSIDE ELSE");
+      setSubSourceData([]);
+    }
+  };
+
+  const getEmployeeListFromServer = async (sourceOfEnquiryId) => {
+    const data = {
+      sourceId: sourceOfEnquiryId,
+      orgId: userData.orgId,
+      branchId: userData.branchId,
+    };
+    Promise.all([dispatch(getEmployeesListApi(data))]).then(async (res) => {});
+  };
+
+  const updateEmployee = (employeeObj) => {
+    console.log("employeeObj", employeeObj.name);
+    setSelectedEmployee(employeeObj.name);
+    setEmployeeSelectModel(false);
+  };
 
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
+      <SelectEmployeeComponant
+        visible={showEmployeeSelectModel}
+        headerTitle={"Select Employee"}
+        data={employeesData}
+        selectedEmployee={(employee) => updateEmployee(employee)}
+        onRequestClose={() => {
+          setDisabled(false);
+          setEmployeeSelectModel(false);
+        }}
+      />
       <ImagePickerComponent
         visible={selector.showImagePicker}
         keyId={selector.imagePickerKeyId}
@@ -2812,6 +3022,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         data={dataForDropDown}
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
+          console.log(item, dropDownKey);
           if (dropDownKey === "MODEL") {
             updateVariantModelsData(item.name, false);
           } else if (dropDownKey === "VARIENT") {
@@ -2839,7 +3050,17 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               setFinancialDetails({ key: "RATE_OF_INTEREST", text: "" })
             );
           }
-
+          if (dropDownKey === "SOURCE_OF_ENQUIRY") {
+            if (item.name === "Event") {
+              getEventListFromServer();
+            }
+            getEmployeeListFromServer(item.id);
+            setSourceData(item.id);
+            updateSubSourceData(item);
+          }
+          if (dropDownKey === "SUB_SOURCE_OF_ENQUIRY") {
+            setSubSourceId(item.id);
+          }
           setShowDropDownModel(false);
           dispatch(
             setDropDownData({
@@ -3135,7 +3356,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.mobile}
                   label={"Mobile Number*"}
-                  editable={false}
+                  editable={true}
                   maxLength={10}
                   keyboardType={"phone-pad"}
                   onChangeText={(text) =>
@@ -3285,10 +3506,20 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     )
                   }
                 />
-
+                <Text
+                  style={[
+                    GlobalStyle.underline,
+                    {
+                      backgroundColor:
+                        isSubmitPress && selector.enquiry_segment === ""
+                          ? "red"
+                          : "rgba(208, 212, 214, 0.7)",
+                    },
+                  ]}
+                ></Text>
                 <DropDownSelectionItem
                   label={"Customer Type*"}
-                  // disabled={!selector.enableEdit}
+                  disabled={selector.enquiry_segment.length > 0 ? false : true}
                   value={selector.customer_type}
                   onPress={() =>
                     showDropDownModelMethod(
@@ -3297,7 +3528,17 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     )
                   }
                 />
-
+                <Text
+                  style={[
+                    GlobalStyle.underline,
+                    {
+                      backgroundColor:
+                        isSubmitPress && selector.customer_type === ""
+                          ? "red"
+                          : "rgba(208, 212, 214, 0.7)",
+                    },
+                  ]}
+                ></Text>
                 {selector.customer_type.toLowerCase() === "fleet" ||
                 selector.customer_type.toLowerCase() === "institution" ||
                 selector.customer_type.toLowerCase() === "corporate" ||
@@ -3324,13 +3565,24 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <Text style={GlobalStyle.underline}></Text>
                   </View>
                 ) : null}
-
-                <TextinputComp
+                <View>
+                  <DropDownSelectionItem
+                    label={"Source Of Enquiry"}
+                    value={selector.source_of_enquiry}
+                    onPress={() =>
+                      showDropDownModelMethod(
+                        "SOURCE_OF_ENQUIRY",
+                        "Source Of Enquiry"
+                      )
+                    }
+                  />
+                </View>
+                {/* <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.source_of_enquiry}
                   label={"Source Of Enquiry*"}
-                  editable={false}
-                />
+                  editable={true}
+                /> */}
                 <Text style={GlobalStyle.underline}></Text>
 
                 {selector.source_of_enquiry.toLowerCase() === "event" && (
@@ -3345,27 +3597,28 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   </View>
                 )}
 
-                {(selector.source_of_enquiry
+                {/* {(selector.source_of_enquiry
                   .toLowerCase()
                   .trim()
                   .replace(/ /g, "") === "digitalmarketing" ||
                   selector.source_of_enquiry
                     .toLowerCase()
                     .trim()
-                    .replace(/ /g, "") === "socialnetwork") && (
-                  <View>
-                    <DropDownSelectionItem
-                      label={"Sub Source Of Enquiry"}
-                      value={selector.sub_source_of_enquiry}
-                      onPress={() =>
-                        showDropDownModelMethod(
-                          "SUB_SOURCE_OF_ENQUIRY",
-                          "Sub Source Of Enquiry"
-                        )
-                      }
-                    />
-                  </View>
-                )}
+                    .replace(/ /g, "") === "socialnetwork") && ( */}
+                <View>
+                  <DropDownSelectionItem
+                    label={"Sub Source Of Enquiry"}
+                    disabled={employeesData.length > 0 ? false : true}
+                    value={selector.sub_source_of_enquiry}
+                    onPress={() =>
+                      showDropDownModelMethod(
+                        "SUB_SOURCE_OF_ENQUIRY",
+                        "Sub Source Of Enquiry"
+                      )
+                    }
+                  />
+                </View>
+                {/* )} */}
 
                 {selector.source_of_enquiry.toLowerCase() === "reference" && (
                   <View>
@@ -3637,7 +3890,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   value={selector.houseNum}
                   label={"H.No"}
                   maxLength={50}
-                  // keyboardType={"number-pad"}
+                  keyboardType={"number-pad"}
                   onChangeText={(text) =>
                     dispatch(
                       setCommunicationAddress({ key: "HOUSE_NO", text: text })
@@ -5999,7 +6252,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
           {!isDropSelected && (
             <View style={styles.actionBtnView}>
-              <Button
+              {/* <Button
                 mode="contained"
                 style={{ width: 120 }}
                 color={Colors.GRAY}
@@ -6007,7 +6260,20 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 onPress={() => setIsDropSelected(true)}
               >
                 Lost
-              </Button>
+              </Button> */}
+              {employeesData.length > 0 && (
+                <Button
+                  mode="contained"
+                  style={{ width: 120 }}
+                  color={Colors.PINK}
+                  labelStyle={{ textTransform: "none" }}
+                  onPress={() => {
+                    setEmployeeSelectModel(true);
+                  }}
+                >
+                  Allocate
+                </Button>
+              )}
               <Button
                 mode="contained"
                 style={{ width: 120 }}
@@ -6095,7 +6361,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   );
 };
 
-export default DetailsOverviewScreen;
+export default AddNewEnquiryScreen;
 
 const styles = StyleSheet.create({
   container: {

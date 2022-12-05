@@ -6,11 +6,9 @@ import { showToast } from "../utils/toast";
 export const getMenu = createAsyncThunk(
   "DROPANALYSIS/getMenu",
   async (payload, { rejectWithValue }) => {
-    console.log("PAYLOAD EN: ", URL.GET_MENU_DROP_DOWN_DATA());
 
     const response = await client.get(URL.GET_MENU_DROP_DOWN_DATA());
     const json = await response.json();
-    console.log("ENQ LIST:", JSON.stringify(json));
 
     if (!response.ok) {
       return rejectWithValue(json);
@@ -22,11 +20,9 @@ export const getMenu = createAsyncThunk(
 export const getStatus = createAsyncThunk(
   "DROPANALYSIS/getStatus",
   async (payload, { rejectWithValue }) => {
-    console.log("PAYLOAD EN: ", URL.GET_ALL_STATUS());
 
     const response = await client.get(URL.GET_ALL_STATUS());
     const json = await response.json();
-    console.log("ENQ LIST:", JSON.stringify(json));
 
     if (!response.ok) {
       return rejectWithValue(json);
@@ -38,11 +34,9 @@ export const getStatus = createAsyncThunk(
 export const getSubMenu = createAsyncThunk(
   "DROPANALYSIS/getSubMenu",
   async (payload, { rejectWithValue }) => {
-    console.log("PAYLOAD EN: ", URL.GET_SUB_MENU(payload));
 
     const response = await client.get(URL.GET_SUB_MENU(payload));
     const json = await response.json();
-    console.log("ENQ LIST:", JSON.stringify(json));
 
     if (!response.ok) {
       return rejectWithValue(json);
@@ -60,7 +54,6 @@ export const getLeadsList = createAsyncThunk(
     }
     const response = await client.post(url, payload.newPayload);
     const json = await response.json();
-    console.log("ENQ getLeadsList LIST:", JSON.stringify(json));
 
     if (!response.ok) {
       return rejectWithValue(json);
@@ -116,11 +109,9 @@ export const getMoreLeadDropList = createAsyncThunk(
 export const updateSingleApproval = createAsyncThunk(
   "DROPANALYSIS/updateSingleApproval",
   async (payload, { rejectWithValue }) => {
-    console.log("PAYLOAD EN: ", JSON.stringify(payload));
 
     const response = await client.post(URL.UPDATE_SINGLEAPPROVAL(), payload);
     const json = await response.json();
-    console.log("ENQ LIST:", JSON.stringify(json));
 
     if (!response.ok) {
       return rejectWithValue(json);
@@ -147,12 +138,10 @@ export const leadStatusDropped = createAsyncThunk(
 export const revokeDrop = createAsyncThunk(
   "DROPANALYSIS/revokeDrop",
   async (payload, { rejectWithValue }) => {
-    console.log("PAYLOAD REVOKE: ", URL.REVOKE(payload["leadId"]));
 
     const response = await client.get(URL.REVOKE(payload["leadId"]));
     // const json = await response.json()
 
-    console.log("REVOKE RES: ", response);
 
     if (!response.ok) {
       return rejectWithValue(response);
@@ -164,11 +153,9 @@ export const revokeDrop = createAsyncThunk(
 export const updateBulkApproval = createAsyncThunk(
   "DROPANALYSIS/updateBulkApproval",
   async (payload, { rejectWithValue }) => {
-    console.log("PAYLOAD EN: ", JSON.stringify(payload));
 
     const response = await client.post(URL.UPDATE_BULKAPPROVAL(), payload);
     const json = await response.json();
-    console.log("ENQ LIST:", JSON.stringify(json));
 
     if (!response.ok) {
       return rejectWithValue(json);
@@ -208,43 +195,33 @@ const leaddropListSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(getMenu.pending, (state, action) => {
-      console.log("dropanalysis getMenu pending", action);
       state.menu = [];
     });
     builder.addCase(getMenu.fulfilled, (state, action) => {
-      console.log("dropanalysis getMenu sucess", JSON.stringify(action));
       state.menu = action.payload;
     });
     builder.addCase(getMenu.rejected, (state, action) => {
-      console.log("dropanalysis getMenu", "rejected");
       state.menu = [];
     });
     builder.addCase(getSubMenu.pending, (state, action) => {
-      console.log("dropanalysis pending", action);
       state.subMenu = [];
     });
     builder.addCase(getSubMenu.fulfilled, (state, action) => {
-      console.log("dropanalysis sucess", JSON.stringify(action));
       state.subMenu = action.payload;
     });
     builder.addCase(getSubMenu.rejected, (state, action) => {
-      console.log("dropanalysis", "rejected");
       state.subMenu = [];
     });
     builder.addCase(getStatus.pending, (state, action) => {
-      console.log("dropanalysis pending", action);
       state.defualtStatus = [];
     });
     builder.addCase(getStatus.fulfilled, (state, action) => {
-      console.log("dropanalysis sucess", JSON.stringify(action));
       state.defualtStatus = action.payload;
     });
     builder.addCase(getStatus.rejected, (state, action) => {
-      console.log("dropanalysis", "rejected");
       state.defualtStatus = [];
     });
     builder.addCase(getLeadDropList.pending, (state, action) => {
-      console.log("dropanalysis pending", action);
       state.totalPages = 1;
       state.pageNumber = 0;
       state.leadDropList = [];
@@ -264,7 +241,6 @@ const leaddropListSlice = createSlice({
       state.status = "sucess";
     });
     builder.addCase(getLeadDropList.rejected, (state, action) => {
-      console.log("dropanalysis", "rejected");
 
       state.totalPages = 1;
       state.pageNumber = 0;
@@ -273,14 +249,12 @@ const leaddropListSlice = createSlice({
       state.status = "failed";
     });
     builder.addCase(getLeadsList.pending, (state, action) => {
-      console.log("dropanalysis pending", action);
       state.leadList = [];
     });
     builder.addCase(getLeadsList.fulfilled, (state, action) => {
       state.leadList = action.payload;
     });
     builder.addCase(getLeadsList.rejected, (state, action) => {
-      console.log("dropanalysis", "rejected");
       state.leadList = [];
     });
     builder.addCase(getMoreLeadDropList.pending, (state) => {
@@ -289,8 +263,6 @@ const leaddropListSlice = createSlice({
       state.isLoadingExtraData = true;
     });
     builder.addCase(getMoreLeadDropList.fulfilled, (state, action) => {
-      // console.log('res: ', action.payload);
-      console.log("dropanalysis success", action.payload);
 
       const dmsLeadDropInfos = action.payload?.dmsLeadDropInfos;
       state.totalPages = 1;
@@ -311,7 +283,6 @@ const leaddropListSlice = createSlice({
 
     builder.addCase(updateSingleApproval.pending, (state) => {});
     builder.addCase(updateSingleApproval.fulfilled, (state, action) => {
-      // console.log('res: ', action.payload);
       const status = action.payload?.status;
       // if (status === 'SUCCESS') {
       //     showToast("Successfully updated");
@@ -328,13 +299,11 @@ const leaddropListSlice = createSlice({
 
     builder.addCase(revokeDrop.pending, (state) => {});
     builder.addCase(revokeDrop.fulfilled, (state, action) => {
-      // console.log('res: ', action.payload);
     });
     builder.addCase(revokeDrop.rejected, (state, action) => {});
 
     builder.addCase(updateBulkApproval.pending, (state) => {});
     builder.addCase(updateBulkApproval.fulfilled, (state, action) => {
-      console.log("builk uplres: ", action.payload);
       if (action.payload.length > 0) {
         showToast("Successfully updated");
       }

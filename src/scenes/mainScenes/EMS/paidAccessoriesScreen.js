@@ -48,11 +48,9 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
     const [tableData, setTableData] = useState([]);
     const { accessorylist } = route.params;
 
-console.log("ACCCCC=====>", accessorylist);
 
 
     useEffect(() => {
-        console.log("accessorylist:---->>>> ", accessorylist)
         let newFormatTableData = [];
         accessorylist.forEach((item) => {
             newFormatTableData.push({
@@ -65,7 +63,6 @@ console.log("ACCCCC=====>", accessorylist);
 
     const updatedItem = (index) => {
       const data = [...tableData];
-     console.log('SLECT=====>', tableData)
       const selectedItem = data[index];
       selectedItem.selected = !selectedItem.selected;
       data[index] = selectedItem;
@@ -74,7 +71,6 @@ console.log("ACCCCC=====>", accessorylist);
 
     const addSelected = () => {
         let itemSelected = false;
-        console.log('TAB=========>', tableData)
         for (const item of tableData) {
             if (item.selected) {
                 itemSelected = true
@@ -84,7 +80,6 @@ console.log("ACCCCC=====>", accessorylist);
         }
 
         if (itemSelected) {
-             console.log("CLK=============>")
             route.params.onGoBack([...tableData]);
             navigation.goBack();
         }

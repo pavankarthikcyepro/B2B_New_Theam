@@ -24,6 +24,7 @@ export const hrms_url =
   "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8088/hrms";
 export const sales_url =
   "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales";
+// "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/account/enquiryAccount?allocateDse=false"
 export const roleManagement_url =
   "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8089/role-management";
 export const vehicleInfoService_url =
@@ -99,6 +100,7 @@ export const getLocationCoordinates =
 export const reasonDropDown =
   "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/dynamic-forms/dropdown";
   
+
 const URL = {
   LOGIN: () => hrms_url + "/emplogin",
   LEADS_LIST_API: () => sales_url + "/lead/all",
@@ -538,6 +540,12 @@ const URL = {
     getDetailsByempIdAndorgId + `/${empId}/${orgId}`,
   GET_LOCATION_COORDINATES: (empId, orgId) =>
     getLocationCoordinates + `/${empId}/${orgId}`,
+  ENQURIY_ACCOUNT: () => {
+    return sales_url + `/account/enquiryAccount?allocateDse=false`;
+  },
+  ENQUIRY_CONTACT: () => {
+    return sales_url + `/contact/enquiryContact?allocateDse=false`;
+  },
 };
 
 // bankFinancier, incuranceCompany, enqueryCategory, deliveryCheckList, sublostReason

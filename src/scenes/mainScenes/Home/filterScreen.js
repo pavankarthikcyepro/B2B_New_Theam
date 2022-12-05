@@ -175,7 +175,6 @@ const FilterScreen = ({ navigation }) => {
 
     const updateSelectedItems = (data, index, initalCall = false) => {
 
-        // console.log("index: ", index)
 
         const totalDataObjLocal = { ...totalDataObj };
 
@@ -248,7 +247,6 @@ const FilterScreen = ({ navigation }) => {
             "sublevels": data
         }
         totalDataObjLocal[key] = newOBJ;
-        // console.log("totalDataObjLocal: ", JSON.stringify(totalDataObjLocal));
         setTotalDataObj({ ...totalDataObjLocal });
         initalCall && submitBtnClicked(totalDataObjLocal);
     }
@@ -297,7 +295,6 @@ const FilterScreen = ({ navigation }) => {
                 })
             }
         }
-        // console.log("selectedIds: ", selectedIds);
         if (selectedIds.length > 0) {
             setIsLoading(true);
             getDashboadTableDataFromServer(selectedIds, "LEVEL");
@@ -331,11 +328,9 @@ const FilterScreen = ({ navigation }) => {
             selectedIds: selectedIds
         }
 
-        // console.log("PAYLOAD 1:", payload1);
         Promise.all([
             dispatch(getEmployeesDropDownData(payload1))
         ]).then(() => {
-            console.log("CALLED");
             Promise.all([
                 dispatch(getLeadSourceTableList(payload)),
                 dispatch(getVehicleModelTableList(payload)),
@@ -350,7 +345,6 @@ const FilterScreen = ({ navigation }) => {
                 dispatch(getTargetParametersData(payload2)),
                 dispatch(getTargetParametersEmpDataInsights(payload2))  // Added to filter an Home Screen's INSIGHT
             ]).then(() => {
-                console.log("SUCCESS");
             }).catch(() => {
                 setIsLoading(false);
             })
@@ -431,7 +425,6 @@ const FilterScreen = ({ navigation }) => {
                 }
             })
         }
-        // console.log("selectedIds: ", selectedIds);
         if (selectedIds.length > 0) {
             getDashboadTableDataFromServer(selectedIds, "EMPLOYEE");
         }
@@ -482,7 +475,6 @@ const FilterScreen = ({ navigation }) => {
                 mode={"date"}
                 value={new Date(Date.now())}
                 onChange={(event, selectedDate) => {
-                    // console.log("date: ", selectedDate);
                     if (Platform.OS === "android") {
                         if (selectedDate) {
                             updateSelectedDate(selectedDate, datePickerId);

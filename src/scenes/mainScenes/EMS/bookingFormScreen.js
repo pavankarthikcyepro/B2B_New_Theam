@@ -5,7 +5,7 @@ import {
     View,
     Text,
     Platform,
-    ScrollView,
+    ScrollView, TouchableOpacity,
     Keyboard,
     ActivityIndicator,
     KeyboardAvoidingView,
@@ -111,6 +111,7 @@ import {
 import URL from "../../../networking/endpoints";
 import uuid from "react-native-uuid";
 import { DropComponent } from "./components/dropComp";
+import { set } from "immer/dist/internal";
 
 const rupeeSymbol = "\u20B9";
 
@@ -201,11 +202,14 @@ const PaidAccessoriesTextAndAmountComp = ({
 };
 
 const BookingFormScreen = ({ route, navigation }) => {
+    const [, updateState] = React.useState();
+    const forceUpdate = React.useCallback(() => updateState({}), []);
     const dispatch = useDispatch();
     const selector = useSelector((state) => state.bookingFormReducer);
     const { universalId, accessoriesList } = route.params;
     const [openAccordian, setOpenAccordian] = useState(0);
     const [componentAppear, setComponentAppear] = useState(false);
+    const [otherPrices, setOtherPrices] = useState(0);
     const [userData, setUserData] = useState({
         orgId: "",
         employeeId: "",
@@ -292,6 +296,7 @@ const BookingFormScreen = ({ route, navigation }) => {
     const [initialTotalAmt, setInitialTotalAmt] = useState(0);
     const [registrationChargesType, setRegistrationChargesType] = useState([]);
     const [selectedRegistrationCharges, setSelectedRegistrationCharges] = useState({});
+    const [addNewInput, setAddNewInput] = useState([{ name: '', price: '' }]);
     const clearLocalData = () => {
         setOpenAccordian(0);
         setComponentAppear(false);
@@ -679,7 +684,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                 let totalPrice = 0;
                 dmsLeadDto.dmsAccessories.forEach((item) => {
                     if (item.dmsAccessoriesType === "MRP") {
-                      totalPrice += item.amount;
+                        totalPrice += item.amount;
                     }
                 });
                 setSelectedPaidAccessoriesPrice(totalPrice);
@@ -1270,6 +1275,7 @@ const BookingFormScreen = ({ route, navigation }) => {
         postOnRoadPriceTable.tcs = tcsAmount;
         postOnRoadPriceTable.warrantyAmount = selectedWarrentyPrice;
         postOnRoadPriceTable.warrantyName = selector.warranty;
+        postOnRoadPriceTable.otherPricesData = addNewInput;
 
         dispatch(sendOnRoadPriceDetails(postOnRoadPriceTable));
     };
@@ -2010,6 +2016,53 @@ const BookingFormScreen = ({ route, navigation }) => {
             };
             dispatch(getDropSubReasonDataApi(payload));
         }
+
+    }
+    const addHandler = () => {
+        // const _inputs = [...addNewInput];
+        // _inputs.push({ key: '', value: '' });
+        // setAddNewInput(_inputs);
+        setAddNewInput([...addNewInput, { name: '', price: '' }])
+    }
+
+    const deleteHandler = (index) => {
+        console.log('deleteIn', index);
+        // addNewInput.filter((input, index) => index != key);
+        // const _inputs = addNewInput.filter((input, index) => index != index);
+        // setAddNewInput(_inputs);
+        addNewInput.splice(index, 1);
+        // console.log('addNewInput',addNewInput);
+        setAddNewInput(addNewInput)
+        forceUpdate()
+
+    }
+    const saveHandler = () => {
+       
+      
+      
+        if(addNewInput.length >0)
+        {
+            var totalprice = 0;
+            for(let data of addNewInput){
+                console.log(JSON.stringify(data));
+                totalprice = totalprice + Number(data.price)
+                setOtherPrices(totalprice)
+               
+            }
+            setTotalOnRoadPrice(totalprice+totalOnRoadPrice)
+            console.log(totalprice);
+        }
+        else alert("Add atleast one price")
+
+    }
+    const inputHandlerName = (value, index) => {
+        addNewInput[index].name = value;
+        setAddNewInput(addNewInput)
+    }
+    const inputHandlerPrice = (value, index) => {
+        addNewInput[index].price = value;
+        setAddNewInput(addNewInput)
+        // console.log('addNewInputaddNewInput:', addNewInput);
 
     }
     return (
@@ -3367,17 +3420,17 @@ const BookingFormScreen = ({ route, navigation }) => {
                                     >
                                         {selectedPaidAccessoriesList?.map((item, index) => {
                                             if (
-                                              item?.dmsAccessoriesType !== "FOC"
-                                            ){
+                                                item?.dmsAccessoriesType !== "FOC"
+                                            ) {
                                                 return (
-                                                  <Text
-                                                    style={styles.accessoriText}
-                                                    key={"ACC" + index}
-                                                  >
-                                                    {item.accessoriesName +
-                                                      " - " +
-                                                      item.amount}
-                                                  </Text>
+                                                    <Text
+                                                        style={styles.accessoriText}
+                                                        key={"ACC" + index}
+                                                    >
+                                                        {item.accessoriesName +
+                                                            " - " +
+                                                            item.amount}
+                                                    </Text>
                                                 );
                                             }
                                             return null;
@@ -3408,7 +3461,42 @@ const BookingFormScreen = ({ route, navigation }) => {
                   amount={priceInfomationData.fast_tag.toFixed(2)}
                 /> */}
                                 <Text style={GlobalStyle.underline}></Text>
+                                <Text style={styles.otherPriceTextStyle}>Add Other Prices</Text>
+                                <View style={{
+                                    backgroundColor: Colors.WHITE,
+                                    paddingLeft: 12,
+                                    paddingTop: 5,
+                                }}>
+                                    {addNewInput.map((input, key) => {
+                                        return (
+                                            <View key={key} style={styles.inputContainer}>
+                                                <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
+                                                    <TextInput style={{width: '33%', height: 40, borderBottomWidth: 1 }}
+                                                        placeholder={"Name"} value={input.key}
+                                                        onChangeText={(name) => inputHandlerName(name, key)} />
+                                                    <TextInput style={{  width: '33%', height: 40, marginLeft: 20, borderBottomWidth: 1 }}
+                                                        placeholder={"Price"}
+                                                        keyboardType={"decimal-pad"}
+                                                        onChangeText={(value) => inputHandlerPrice(value, key)} />
+                                                    <TouchableOpacity onPress={() => deleteHandler(key)} style={{ height: 25, marginLeft: 10 }}>
+                                                        <Text style={{ color: Colors.BLACK, fontSize: 13, borderWidth: 1, borderColor: Colors.BLACK,paddingHorizontal:5 }}>Remove</Text>
+                                                    </TouchableOpacity>
+                                                </View>
 
+                                            </View>
+                                        )
+                                    }
+                                    )}
+                                    <View style={{ flexDirection: 'row',alignSelf:'flex-end', marginVertical: 20,paddingRight:12 }}>
+                                        <TouchableOpacity onPress={() => addHandler()} >
+                                            <Text style={{ color: Colors.WHITE, fontSize: 13, backgroundColor: Colors.RED, paddingHorizontal: 10, paddingVertical: 5 }}>Add</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => saveHandler()} style={{ marginLeft: 20,}}>
+                                            <Text style={{ color: Colors.WHITE, fontSize: 13, backgroundColor: Colors.RED, paddingHorizontal: 10, paddingVertical: 5 }}>Save</Text>
+                                        </TouchableOpacity>
+                                    </View>
+
+                                </View>
                                 <TextAndAmountComp
                                     title={"On Road Price:"}
                                     disabled={true}
@@ -4440,10 +4528,25 @@ const styles = StyleSheet.create({
         fontWeight: "400",
         color: Colors.GRAY,
     },
+    otherPriceTextStyle: {
+        fontSize: 14,
+        fontWeight: "400",
+        color: Colors.GRAY,
+        backgroundColor: '#fff',
+        paddingLeft: 12
+    },
     leftLabel: {
         fontSize: 14,
         fontWeight: "400",
         maxWidth: "70%",
         color: Colors.GRAY,
     },
+    inputContainer: {
+        // flexDirection: 'row',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        marginTop:5
+        // borderBottomWidth: 1,
+        // borderBottomColor: Colors.GRAY
+    }
 });
