@@ -60,8 +60,6 @@ export default class DateRangePicker extends Component<Props> {
         if (!this.props.initialRange) return
         let [fromDate, toDate] = this.props.initialRange
         let maxDate = this.props.maxDate;
-        console.log(fromDate + '||' + toDate);
-        console.log('props: ', this.props);
         let markedDates = {[fromDate]: {startingDay: true, color: this.props.theme.markColor, textColor: this.props.theme.markTextColor}}
         let [mMarkedDates, range] = this.setupMarkedDates(fromDate, toDate, markedDates)
         this.setState({markedDates: mMarkedDates, fromDate: fromDate, maxDate})

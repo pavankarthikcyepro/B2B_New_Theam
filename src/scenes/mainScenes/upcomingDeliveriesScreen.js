@@ -121,7 +121,6 @@ const UpcomingDeliveriesScreen = () => {
         mode={"date"}
         value={new Date(Date.now())}
         onChange={(event, selectedDate) => {
-          console.log("date: ", selectedDate);
           if (Platform.OS === "android") {
             if (selectedDate) {
               updateSelectedDate(selectedDate, datePickerId);
@@ -180,9 +179,7 @@ const UpcomingDeliveriesScreen = () => {
                     modelName={item.model ? item.model : ""}
                     chasissNo={item.chassisNo}
                     bgColor={color}
-                    onPress={() => {
-                      console.log("onpress");
-                    }}
+                    onPress={() => {}}
                     onCallPress={() => callNumber(item.phone)}
                   />
                 );

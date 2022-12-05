@@ -38,7 +38,6 @@ export const getPrebookingDetailsApi = createAsyncThunk(
     const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
     try {
       const json = await response.json();
-      // console.log("DETAILS getPrebookingDetailsApi:", JSON.stringify(json));
       
       if (response.status != 200) {
         return rejectWithValue(json);
@@ -81,7 +80,6 @@ export const updatePrebookingDetailsApi = createAsyncThunk(
 export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk(
   "BOOKING_FORMS_SLICE/getOnRoadPriceAndInsurenceDetailsApi",
   async (payload, { rejectWithValue }) => {
-    console.log("PAYLOAD VARIANT:", URL.GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS(payload["varientId"], payload["orgId"]), JSON.stringify(payload));
     const response = await client.get(
       URL.GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS(
         payload["varientId"],
@@ -160,7 +158,6 @@ export const getCustomerTypesApi = createAsyncThunk(
     const response = await client.get(URL.GET_CUSTOMER_TYPES(orgId));
     try {
       const json = await response.json();
-      console.log("SUCCESS");
       
       if (response.status != 200) {
         return rejectWithValue(json);
@@ -787,7 +784,6 @@ const bookingFormSlice = createSlice({
           state.dd_date = selectedDate;
           break;
         case "NONE":
-          console.log("NONE");
           break;
       }
       state.showDatepicker = !state.showDatepicker;
@@ -1096,7 +1092,6 @@ const bookingFormSlice = createSlice({
       const total = Number(
         moment.duration(current.diff(given)).asYears()
       ).toFixed(0);
-      console.log("DOB:", given, total);
 
       if (Number(total) > 0) {
         state.age = total.toString();
@@ -1279,7 +1274,6 @@ const bookingFormSlice = createSlice({
         ? dataObj.bookingAmount.toString()
         : "";
       state.payment_at = dataObj.paymentAt ? dataObj.paymentAt : "";
-      console.log("BOOKING PAYMENT MODE: ", dataObj.modeOfPayment);
       state.booking_payment_mode = dataObj.modeOfPayment
         ? dataObj.modeOfPayment
         : "";
@@ -1370,10 +1364,6 @@ const bookingFormSlice = createSlice({
       state.isLoading = false;
     });
     builder.addCase(updatePrebookingDetailsApi.rejected, (state, action) => {
-      console.log(
-        "F updatePrebookingDetailsApi: ",
-        JSON.stringify(action.payload)
-      );
       state.update_pre_booking_details_response = "failed";
       state.isLoading = false;
     });
@@ -1446,7 +1436,6 @@ const bookingFormSlice = createSlice({
     builder.addCase(sendOnRoadPriceDetails.rejected, (state, action) => {
       state.send_onRoad_price_details_response = null;
       state.isLoading = false;
-      console.log("6666", action.payload);
       // if (action.payload["message"]) {
       //   showToastRedAlert(
       //     action.payload["message"] || "Something went wrong"
@@ -1640,8 +1629,6 @@ const bookingFormSlice = createSlice({
       state.isLoading = false;
     });
     builder.addCase(preBookingPaymentApi.rejected, (state, action) => {
-      console.log("1111", action.payload);
-      
       // if (action.payload["message"]) {
       //   showToastRedAlert(action.payload["message"]);
       // }
@@ -1664,7 +1651,6 @@ const bookingFormSlice = createSlice({
       state.isLoading = false;
     });
     builder.addCase(postBookingAmountApi.rejected, (state, action) => {
-      console.log("2222", action.payload);
       // if (action.payload["message"]) {
       //   showToastRedAlert(action.payload["message"]);
       // }
@@ -1680,7 +1666,6 @@ const bookingFormSlice = createSlice({
     });
     builder.addCase(getPaymentDetailsApi.fulfilled, (state, action) => {
       if (action.payload) {
-        console.log("DATA TTTTT: ", JSON.stringify(action.payload));
         state.existing_payment_details_response = action.payload;
         state.type_of_upi = action.payload.typeUpi
           ? action.payload.typeUpi
@@ -1714,7 +1699,6 @@ const bookingFormSlice = createSlice({
       state.isLoading = false;
     });
     builder.addCase(getPaymentDetailsApi.rejected, (state, action) => {
-      // console.log("3333", action.payload);
       // if (action.payload["message"]) {
       //   showToastRedAlert(action.payload["message"]);
       // }
@@ -1737,7 +1721,6 @@ const bookingFormSlice = createSlice({
       state.isLoading = false;
     });
     builder.addCase(getBookingAmountDetailsApi.rejected, (state, action) => {
-      console.log("4444", action.payload);
       // if (action.payload["message"]) {
       //   showToastRedAlert(action.payload["message"]);
       // }
@@ -1759,7 +1742,6 @@ const bookingFormSlice = createSlice({
       state.assigned_tasks_list_status = "success";
     });
     builder.addCase(getAssignedTasksApi.rejected, (state, action) => {
-      console.log("5555", action.payload);
       // if (action.payload["message"]) {
       //   showToastRedAlert(action.payload["message"]);
       // }

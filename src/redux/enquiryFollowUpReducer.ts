@@ -22,7 +22,6 @@ export const getTaskDetailsApi = createAsyncThunk(
   async (taskId, { rejectWithValue }) => {
     const response = await client.get(URL.GET_TASK_DETAILS(taskId));
     const json = await response.json();
-    console.log("TASK DTLS:", JSON.stringify(json));
 
     if (!response.ok) {
       return rejectWithValue(json);
@@ -54,11 +53,9 @@ export const getEnquiryDetailsApi = createAsyncThunk("ENQUIRY_FOLLOW_UP_SLICE/ge
 })
 
 export const getReasonList = createAsyncThunk("ENQUIRY_FOLLOW_UP_SLICE/getReasonList", async (payload: any, { rejectWithValue }) => {
-  console.log("REASON URL:", URL.REASON_LIST(payload.orgId, payload.taskName));
 
   const response = await client.get(URL.REASON_LIST(payload.orgId, payload.taskName));
   const json = await response.json()
-  console.log("REASON: ", JSON.stringify(json));
 
   if (!response.ok) {
     return rejectWithValue(json);
@@ -197,12 +194,10 @@ const slice = createSlice({
       state.update_task_response_status = null;
     });
     builder.addCase(updateTaskApi.fulfilled, (state, action) => {
-      console.log("S updateTaskApi", JSON.stringify(action.payload));
       state.is_loading_for_task_update = false;
       state.update_task_response_status = "success";
     });
     builder.addCase(updateTaskApi.rejected, (state, action) => {
-      console.log("F updateTaskApi", JSON.stringify(action.payload));
       state.is_loading_for_task_update = false;
       state.update_task_response_status = "failed";
     });
@@ -215,11 +210,9 @@ const slice = createSlice({
     builder.addCase(getEnquiryDetailsApi.fulfilled, (state, action) => {
       if (action.payload.dmsEntity) {
         const dmsLeadDto = action.payload.dmsEntity.dmsLeadDto;
-        console.log("selectedModelObj:", dmsLeadDto)
 
         if (dmsLeadDto.dmsLeadProducts && dmsLeadDto.dmsLeadProducts.length > 0) {
           const selectedModelObj = dmsLeadDto.dmsLeadProducts[0];
-          console.log("selectedModelObj2:", selectedModelObj)
           state.model = selectedModelObj.model;
           state.varient = selectedModelObj.variant;
         }

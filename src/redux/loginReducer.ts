@@ -75,7 +75,6 @@ export const getMenuList = createAsyncThunk(
   "LOGIN_SLICE/getMenuList",
   async (name, { rejectWithValue }) => {
     const response = await client.get(URL.MENULIST_API(name));
-    console.log("empid api", URL.MENULIST_API(name))
     const json = await response.json();
     if (!response.ok) {
       return rejectWithValue(json);
@@ -89,7 +88,6 @@ export const getEmpId = createAsyncThunk(
   async (name, { rejectWithValue }) => {
     const response = await client.get(URL.GET_EMPID(name));
     const json = await response.json();
-    console.log("empy id res-----------------", json)
     if (!response.ok) {
       alert('not ok')
       return rejectWithValue(json);
@@ -197,7 +195,6 @@ export const loginSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(postUserData.fulfilled, (state, action) => {
-        // console.log("res2: ", action.payload);
         const dataObj = action.payload;
         if (dataObj.status == "200") {
           state.status = "sucess";
@@ -215,7 +212,6 @@ export const loginSlice = createSlice({
         }
       })
       .addCase(postUserData.rejected, (state, action) => {
-        console.log("res3: ", action.payload);
         state.status = "failed";
         state.isLoading = false;
         if (action.payload != undefined && action.payload["errorMessage"]) {
@@ -227,7 +223,6 @@ export const loginSlice = createSlice({
         state.offlineStatus = "pending";
       })
       .addCase(getPreEnquiryData.fulfilled, (state, action) => {
-        console.log("res: ", action.payload);
         const dmsEntityObj = action.payload?.dmsEntity;
         if (dmsEntityObj) {
           const data = dmsEntityObj.leadDtoPage.content;
@@ -247,13 +242,11 @@ export const loginSlice = createSlice({
         state.offlineStatus = "completed";
       })
       .addCase(getEmpId.pending, (state) => {
-        console.log("Login emplouee id ------: ", "pending");
 
         state.isLoading = true;
         state.empIdStatus = "pending";
       })
       .addCase(getEmpId.fulfilled, (state, action) => {
-        console.log("Login emplouee id ------: ", action.payload.dmsEntity.loginEmployee.empId);
 
         const empEntityObj = action.payload?.dmsEntity;
         if (empEntityObj) {
@@ -271,7 +264,6 @@ export const loginSlice = createSlice({
         state.empIdStatus = "completed";
       })
       .addCase(getEmpId.rejected, (state) => {
-        console.log("Login emplouee id ------: ", "failed");
 
         state.isLoading = false;
         state.empIdStatus = "completed";
@@ -314,7 +306,6 @@ export const loginSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(getCustomerTypeList.fulfilled, (state, action) => {
-        console.log("customer_type_list: ", action.payload);
         const data = action.payload;
         data.forEach((item) => {
           realm.write(() => {

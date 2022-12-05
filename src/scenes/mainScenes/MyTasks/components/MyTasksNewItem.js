@@ -52,10 +52,8 @@ const callWebViewRecord = async ({ navigator, phone, uniqueId, type }) => {
 
         // await alert("phone" + phone + "  type" + type + "  uniqueId" + uniqueId + "  userName" + extensionId + "  pwd " + password)
         //alert(uri)
-        console.log("call recording uri=", uri)
         if (extensionId && extensionId != null && extensionId != '') {
             var granted = await navigatetoCallWebView();
-            console.log("granted status", granted)
 
             if (granted) {
                 navigator.navigate(AppNavigator.EmsStackIdentifiers.webViewComp, {
@@ -74,7 +72,6 @@ const callWebViewRecord = async ({ navigator, phone, uniqueId, type }) => {
         // alert(phone + uniqueId + "/" + type + "/" + password)
 
     } catch (error) {
-        console.log("call record issue", error)
     }
 
 
@@ -157,11 +154,13 @@ export const MyTaskNewItem = ({ from = "MY_TASKS", navigator, type, uniqueId, na
                         {from !== 'PRE_ENQUIRY' &&
                             <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                                 <>
-                                    {enqCat !== '' && enqCat?.length > 0 &&
-                                        <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                                            <Text style={[styles.text3, { color: getCategoryTextColor(enqCat) }]}>{enqCat}</Text>
-                                            <Text style={{ fontWeight: '600', color: Colors.BLACK }}> | </Text>
-                                        </View>
+                                    {leadStage == 'ENQUIRY' &&
+                                        (enqCat !== '' && enqCat?.length > 0 &&
+                                            <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                                                <Text style={[styles.text3, { color: getCategoryTextColor(enqCat) }]}>{enqCat}</Text>
+                                                <Text style={{ fontWeight: '600', color: Colors.BLACK }}> | </Text>
+                                            </View>)
+
                                     }
                                 </>
                                 <Text style={[styles.text3, { color: getStageColor(leadStage, leadStatus) }]}>{leadStage === 'PREBOOKING' ? 'BOOKING APPROVAL' : leadStage}</Text>

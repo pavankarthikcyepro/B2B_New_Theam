@@ -43,7 +43,6 @@ export const getEnquiryDetailsApi = createAsyncThunk("PROCEED_TO_PRE_BOOKING_SLI
 })
 
 export const updateEnquiryDetailsApi = createAsyncThunk("PROCEED_TO_PRE_BOOKING_SLICE/updateEnquiryDetailsApi", async (payload, { rejectWithValue }) => {
-    console.log("PROCEED TO PRE BOOKING:", URL.UPDATE_ENQUIRY_DETAILS(), payload);
     
     const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
     const json = await response.json()
@@ -68,7 +67,6 @@ export const dropEnquiryApi = createAsyncThunk("PROCEED_TO_PRE_BOOKING_SLICE/dro
     const response = await client.post(URL.DROP_ENQUIRY(), payload);
     try {
         const json = await response.json()
-        console.log("DATA $$$$$$$", JSON.stringify(json));
 
         if (!response.ok) {
             return rejectWithValue(json);

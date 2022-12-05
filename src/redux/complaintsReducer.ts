@@ -7,7 +7,6 @@ export const getComplaintsListApi = createAsyncThunk("COMPLAINTS/getComplaintsLi
 
   const response = await client.post(URL.GET_COMPLAINTS(), payload);
   const json = await response.json()
-  console.log(json)
   if (!response.ok) {
     return rejectWithValue(json);
   }
@@ -41,7 +40,6 @@ export const complaintsSlice = createSlice({
       state.isLoading = true;
     })
     builder.addCase(getComplaintsListApi.fulfilled, (state, action) => {
-      // console.log("S getComplaintsListApi: ", action.payload);
       if (action.payload) {
         const dataObj = action.payload;
         state.total_objects_count = dataObj.totalCnt ? dataObj.totalCnt : 0;
@@ -51,7 +49,6 @@ export const complaintsSlice = createSlice({
       state.isLoading = false;
     })
     builder.addCase(getComplaintsListApi.rejected, (state, action) => {
-      // console.log("F getComplaintsListApi: ", action.payload);
       state.isLoading = false;
     })
     // Get More Complaints List

@@ -5,7 +5,6 @@ import { Colors } from "../../styles";
 const ForgotScreen = ({navigation}) => {
   const passwordClicked = () => {
     navigation.navigate("CHANGE_PASSWORD_SCREEN");
-    console.log('password reset')
   }
 
   return (

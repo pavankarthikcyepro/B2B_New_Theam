@@ -69,7 +69,6 @@ const DropAnalysisScreen = ({ navigation }) => {
 
     useEffect(() => {
         if (selector.leadDropList.length > 0) {
-            console.log("ENQ DATA: ", JSON.stringify(selector.leadDropList));
             let data = [...selector.leadDropList];
             data = data.filter(x => x.status.toLowerCase() !== 'rejected');
             setSearchedData(data)
@@ -444,7 +443,6 @@ const DropAnalysisScreen = ({ navigation }) => {
                     mode={"date"}
                     value={new Date(Date.now())}
                     onChange={(event, selectedDate) => {
-                        console.log("date: ", selectedDate);
                         setShowDatePicker(false)
                         if (Platform.OS === "android") {
                             if (selectedDate) {
@@ -463,7 +461,6 @@ const DropAnalysisScreen = ({ navigation }) => {
                     modelList={vehicleModelList}
                     sourceList={sourceList}
                     submitCallback={(payload) => {
-                        // console.log("payload: ", payload);
                         applySelectedFilters(payload);
                         setSortAndFilterVisible(false);
                     }}

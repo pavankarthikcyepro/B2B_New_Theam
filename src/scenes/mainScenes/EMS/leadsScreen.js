@@ -157,108 +157,106 @@ const LeadsScreen = ({ route, navigation }) => {
 
 
     useEffect(() => {
-        if (route?.params) {
-            const liveLeadsStartDate =
-                route?.params?.moduleType === "live-leads"
-                    ? "2021-01-01"
-                    : lastMonthFirstDate;
-            const liveLeadsEndDate =
-                route?.params?.moduleType === "live-leads"
-                    ? moment().format(dateFormat)
-                    : currentDate;
-            setFromDateState(liveLeadsStartDate);
-            setToDateState(liveLeadsEndDate);
-        } else {
-            setFromDateState(lastMonthFirstDate);
-            setToDateState(currentDate);
-        }
-
-        if (
-            route &&
-            route.params &&
-            route.params.fromScreen &&
-            (route.params.fromScreen === "contacts" ||
-                route.params.fromScreen === "enquiry" ||
-                route.params.fromScreen === "proceedToBookingApproval" ||
-                route.params.fromScreen === "booking" ||
-                route.params.fromScreen === "bookingApproval")
-        ) {
+      if (route?.params) {
+        const liveLeadsStartDate =
+          route?.params?.moduleType === "live-leads"
+            ? "2021-01-01"
+            : lastMonthFirstDate;
+        const liveLeadsEndDate =
+          route?.params?.moduleType === "live-leads"
+            ? moment().format(dateFormat)
+            : currentDate;
+        setFromDateState(liveLeadsStartDate);
+        setToDateState(liveLeadsEndDate);
+      } else {
+        setFromDateState(lastMonthFirstDate);
+        setToDateState(currentDate);
+      }
+      
+      if (
+        route &&
+        route.params &&
+        route.params.fromScreen &&
+        (route.params.fromScreen === "contacts" ||
+          route.params.fromScreen === "enquiry" ||
+          route.params.fromScreen === "proceedToBookingApproval" ||
+          route.params.fromScreen === "booking" ||
+          route.params.fromScreen === "bookingApproval")
+      ) {
+        setLoader(true);
+        onRefresh();
+      } else if (isFocused) {
+        Promise.all([dispatch(getMenu()), dispatch(getStatus())])
+          .then(async ([res, res2]) => {
             setLoader(true);
-            onRefresh();
-        } else if (isFocused) {
-            Promise.all([dispatch(getMenu()), dispatch(getStatus())])
-                .then(async ([res, res2]) => {
-                    setLoader(true);
-                    let path = res.payload;
-                    let path2 = res2.payload;
-                    let leadStage = [];
-                    let leadStatus = [];
-                    let newAre = path2 && path2.filter((e) => e.menu !== "Contact");
-                    for (let i = 0; i < newAre.length; i++) {
-                        let x = newAre[i].allLeadsSubstagesEntity;
-                        for (let j = 0; j < x.length; j++) {
-                            if (x[j].leadStage) {
-                                leadStage = [...leadStage, ...x[j].leadStage];
-                            }
-                        }
-                    }
-                    leadStage = leadStage.filter(function (item, index, inputArray) {
-                        return inputArray.indexOf(item) == index;
-                    });
-                    setDefualtLeadStage(leadStage);
-                    setdefualtLeadStatus(leadStatus);
-                    const newArr = path.map((v) => ({ ...v, checked: false }));
-                    setTempStore(newArr);
-                    if (route.params) {
-                        managerFilter(newArr);
-                    } else {
-                        defualtCall(newArr, leadStage, leadStatus);
-                    }
-                })
-                .catch((err) => {
-                    console.log("ERROdddR", err);
-                    setLoader(false);
-                    setLeadsFilterDropDownText("All");
-                    setSubMenu([]);
-                });
-        } else {
-            Promise.all([dispatch(getMenu()), dispatch(getStatus())])
-                .then(async ([res, res2]) => {
-                    setLoader(true);
-                    let path = res.payload;
-                    let path2 = res2.payload;
-                    let leadStage = [];
-                    let leadStatus = [];
-                    let newAre = path2.filter((e) => e.menu !== "Contact");
-                    for (let i = 0; i < newAre.length; i++) {
-                        let x = newAre[i].allLeadsSubstagesEntity;
-                        for (let j = 0; j < x.length; j++) {
-                            if (x[j]?.leadStage) {
-                                leadStage = [...leadStage, ...x[j].leadStage];
-                            }
-                        }
-                    }
-                    leadStage = leadStage.filter(function (item, index, inputArray) {
-                        return inputArray.indexOf(item) == index;
-                    });
-                    setDefualtLeadStage(leadStage);
-                    setdefualtLeadStatus(leadStatus);
-                    const newArr = path.map((v) => ({ ...v, checked: false }));
-                    setTempStore(newArr);
-                    if (route.params) {
-                        managerFilter(newArr);
-                    } else {
-                        setLeadsFilterData(newArr);
-                        defualtCall(newArr, leadStage, leadStatus);
-                    }
-                })
-                .catch((err) => {
-                    console.log("EdddRROR", err);
-                    setLoader(false);
-                    setLeadsFilterDropDownText("All");
-                    setSubMenu([]);
-                });
-        }
+            let path = res.payload;
+            let path2 = res2.payload;
+            let leadStage = [];
+            let leadStatus = [];
+            let newAre = path2 && path2.filter((e) => e.menu !== "Contact");
+            for (let i = 0; i < newAre.length; i++) {
+              let x = newAre[i].allLeadsSubstagesEntity;
+              for (let j = 0; j < x.length; j++) {
+                if (x[j].leadStage) {
+                  leadStage = [...leadStage, ...x[j].leadStage];
+                }
+              }
+            }
+            leadStage = leadStage.filter(function (item, index, inputArray) {
+              return inputArray.indexOf(item) == index;
+            });
+            setDefualtLeadStage(leadStage);
+            setdefualtLeadStatus(leadStatus);
+            const newArr = path.map((v) => ({ ...v, checked: false }));
+            setTempStore(newArr);
+            if (route.params) {
+              managerFilter(newArr);
+            } else {
+              defualtCall(newArr, leadStage, leadStatus);
+            }
+          })
+          .catch((err) => {
+            setLoader(false);
+            setLeadsFilterDropDownText("All");
+            setSubMenu([]);
+          });
+      } else {
+        Promise.all([dispatch(getMenu()), dispatch(getStatus())])
+          .then(async ([res, res2]) => {
+            setLoader(true);
+            let path = res.payload;
+            let path2 = res2.payload;
+            let leadStage = [];
+            let leadStatus = [];
+            let newAre = path2.filter((e) => e.menu !== "Contact");
+            for (let i = 0; i < newAre.length; i++) {
+              let x = newAre[i].allLeadsSubstagesEntity;
+              for (let j = 0; j < x.length; j++) {
+                if (x[j]?.leadStage) {
+                  leadStage = [...leadStage, ...x[j].leadStage];
+                }
+              }
+            }
+            leadStage = leadStage.filter(function (item, index, inputArray) {
+              return inputArray.indexOf(item) == index;
+            });
+            setDefualtLeadStage(leadStage);
+            setdefualtLeadStatus(leadStatus);
+            const newArr = path.map((v) => ({ ...v, checked: false }));
+            setTempStore(newArr);
+            if (route.params) {
+              managerFilter(newArr);
+            } else {
+              setLeadsFilterData(newArr);
+              defualtCall(newArr, leadStage, leadStatus);
+            }
+          })
+          .catch((err) => {
+            setLoader(false);
+            setLeadsFilterDropDownText("All");
+            setSubMenu([]);
+          });
+      }
     }, [route.params]);
 
     const defualtCall = async (tempStores, leadStage, leadStatus) => {
@@ -489,9 +487,7 @@ const LeadsScreen = ({ route, navigation }) => {
                 } else {
                     NewSubMenu(path);
                 }
-            }).catch((error) =>
-                console.log("Error", error)
-            );
+            }).catch((error) => {});
     }
 
     const NewSubMenu = (item) => {
@@ -615,17 +611,16 @@ const LeadsScreen = ({ route, navigation }) => {
                 isLive,
             };
             Promise.all([dispatch(getLeadsList(data))])
-                .then((response) => {
-                    setLoader(false);
-                    let newData =
-                        response[0].payload?.dmsEntity?.leadDtoPage?.content;
-                    setSearchedData(newData);
-                    setLeadsList(newData);
-                })
-                .catch((error) => {
-                    setLoader(false);
-                    console.log(error);
-                });
+              .then((response) => {
+                setLoader(false);
+                let newData =
+                  response[0].payload?.dmsEntity?.leadDtoPage?.content;
+                setSearchedData(newData);
+                setLeadsList(newData);
+              })
+              .catch((error) => {
+                setLoader(false);
+              });
         }
     }
 
@@ -655,7 +650,6 @@ const LeadsScreen = ({ route, navigation }) => {
         updateSelectedDate(from, 'FROM_DATE');
         updateSelectedDate(to, 'TO_DATE');
         setShowDatePicker(false);
-        // console.log('live leads: from to: ', from, to);
         // onTempFliter(tempFilterPayload, isEmpty(tempEmployee) ? null : tempEmployee,
         //     tempVehicleModelList, tempCategoryList, tempSourceList, from, to, tempLeadStage, tempLeadStatus);
         // return
@@ -690,7 +684,6 @@ const LeadsScreen = ({ route, navigation }) => {
             defualtCall(newArr, leadStage, leadStatus);
             setTempEmployee({});
         }).catch((err) => {
-            console.log("EdddRROR", err);
             setLoader(false);
             setLeadsFilterDropDownText("All");
             setSubMenu([]);
@@ -708,8 +701,7 @@ const LeadsScreen = ({ route, navigation }) => {
                 maximumDate={new Date(liveLeadsEndDate.toString())}
                 value={new Date()}
                 onChange={(event, selectedDate) => {
-                    console.log("date: ", selectedDate);
-                    setShowDatePicker(false);
+                    setShowDatePicker(false)
                     if (Platform.OS === "android") {
                         if (selectedDate) {
                             updateSelectedDate(selectedDate, datePickerId);
@@ -774,7 +766,6 @@ const LeadsScreen = ({ route, navigation }) => {
                         setLeadsSubMenuFilterVisible(false);
                     }}
                     onChange={(x) => {
-                        // console.log("onChange", x);
                     }}
                 />
             </View>

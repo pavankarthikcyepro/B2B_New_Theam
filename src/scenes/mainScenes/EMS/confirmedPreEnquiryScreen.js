@@ -285,9 +285,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
 
         GetDropList(orgId, token, "Pre%20Enquiry").then(resolve => {
             setDropData(resolve);
-        }, reject => {
-            console.log("Getting pre enquiry list faild")
-        })
+        }, reject => {})
     }
 
     const getCurrentLocation = () => {
@@ -425,7 +423,6 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     };
 
     {/*  const PostPreEnquiryLead = async (enquiryDetailsObj) => {
-        console.log("DROP PAY: ", URL.DROP_ENQUIRY(), payload);
         setIsLoading(true);
         await fetch(URL.DROP_ENQUIRY(), {
             method: "POST",
@@ -543,7 +540,6 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                 //         "orgid": jsonObj.orgId,
                 //         "universalId": itemData.universalId
                 //     }
-                //     console.log("PAYLOAD LEAD REF:", payload);
                 //     customerLeadReference(payload)
                 //    // dispatch(customerLeadRef(payload))
 

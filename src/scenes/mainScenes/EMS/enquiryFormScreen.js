@@ -547,7 +547,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           }
         },
         (rejected) => {
-          console.log("getCarModelListFromServer Failed");
         }
       )
       .finally(() => {
@@ -681,7 +680,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           // dispatch(updateAddressByPincode(resolve));
         },
         (rejected) => {
-          console.log("rejected...: ", rejected);
         }
       );
     }
@@ -802,7 +800,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             );
           })
           .catch(() => {
-            console.log("INSIDE CATCH");
           });
       }
       // dispatch(getEnquiryDetailsApi({universalId, leadStage, leadStatus}));
@@ -1922,7 +1919,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             [
               {
                 text: "Cancel",
-                onPress: () => console.log("Cancel Pressed"),
+                onPress: () => {},
                 style: "cancel",
               },
               {
@@ -2738,7 +2735,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         // dispatch(updateAddressByPincode(resolve));
       },
       (rejected) => {
-        console.log("rejected...: ", rejected);
       }
     );
   };
@@ -2765,7 +2761,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         // dispatch(updateAddressByPincode(resolve));
       },
       (rejected) => {
-        console.log("rejected...: ", rejected);
       }
     );
   };
