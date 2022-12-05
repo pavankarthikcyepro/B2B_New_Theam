@@ -60,7 +60,7 @@ export const RenderSelfInsights = (args) => {
       return (
         <View
           style={{ flexDirection: "row", marginLeft: 8 }}
-          key={`${item.paramShortName}_${index}`}
+          key={`${item?.paramShortName}_${index}`}
         >
           {/* row title */}
           <View
@@ -71,7 +71,7 @@ export const RenderSelfInsights = (args) => {
             }}
           >
             <Text>
-              {item.paramName === "DROPPED" ? "Lost" : item.paramShortName}
+              {item.paramName === "DROPPED" ? "Lost" : item?.paramShortName}
             </Text>
           </View>
 

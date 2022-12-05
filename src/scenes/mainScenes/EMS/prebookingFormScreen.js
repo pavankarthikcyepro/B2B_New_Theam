@@ -1216,16 +1216,15 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       if (dmsOnRoadPriceDtoObj.accessoriesDiscount) {
         setAccDiscount(dmsOnRoadPriceDtoObj.accessoriesDiscount.toString());
       }
-      if (dmsOnRoadPriceDtoObj.otherPricesData.length > 0) {
+
+      if (dmsOnRoadPriceDtoObj.otherPricesData?.length > 0) {
         dmsOnRoadPriceDtoObj.otherPricesData.forEach((item, i) => {
-          console.log('dmsOnRoadPriceDtoObj.otherPricesData', item, i);
           addNewInput.push({
             name: item.name,
             amount: item.amount,
           });
           setAddNewInput(addNewInput)
         });
-        console.log(addNewInput);
       }
     }
   };
@@ -3216,30 +3215,23 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   }
 
   const deleteHandler = (index) => {
-    console.log('deleteIn', index);
     // addNewInput.filter((input, index) => index != key);
     // const _inputs = addNewInput.filter((input, index) => index != index);
     // setAddNewInput(_inputs);
     addNewInput.splice(index, 1);
-    // console.log('addNewInput',addNewInput);
     setAddNewInput(addNewInput)
     forceUpdate()
 
   }
   const saveHandler = () => {
-
-
-
     if (addNewInput.length > 0) {
       var totalprice = 0;
       for (let data of addNewInput) {
-        console.log(JSON.stringify(data));
         totalprice = totalprice + Number(data.price)
         setOtherPrices(totalprice)
 
       }
       setTotalOnRoadPrice(totalprice + totalOnRoadPrice)
-      console.log(totalprice);
     }
     else alert("Add atleast one price")
 
@@ -3250,9 +3242,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   }
   const inputHandlerPrice = (value, index) => {
     addNewInput[index].amount = value;
-    setAddNewInput(addNewInput)
-    // console.log('addNewInputaddNewInput:', addNewInput);
-
+    setAddNewInput(addNewInput);
   }
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
