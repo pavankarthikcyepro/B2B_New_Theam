@@ -259,6 +259,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const { universalId, accessoriesList, leadStatus, leadStage } = route.params;
   const [openAccordian, setOpenAccordian] = useState(0);
   const [componentAppear, setComponentAppear] = useState(false);
+  const [otherPrices, setOtherPrices] = useState(0);
   const [userData, setUserData] = useState({
     orgId: "",
     employeeId: "",
@@ -369,7 +370,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [registrationChargesType, setRegistrationChargesType] = useState([]);
   const [selectedRegistrationCharges, setSelectedRegistrationCharges] = useState({});
   const [isLoading, setIsLoading] = useState(false)
-  const [addNewInput, setAddNewInput] = useState([{ name: '', price: '' }]);
+  const [addNewInput, setAddNewInput] = useState([]);
 
   // Edit buttons shows
   useEffect(() => {
@@ -1218,7 +1219,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       }
 
       if (dmsOnRoadPriceDtoObj.otherPricesData?.length > 0) {
+       // console.log("Other prices", dmsOnRoadPriceDtoObj.otherPricesData)
+       // alert("other prices data", JSON.stringify(dmsOnRoadPriceDtoObj.OtherPricesData))
         dmsOnRoadPriceDtoObj.otherPricesData.forEach((item, i) => {
+         // setAddNewInput([])
           addNewInput.push({
             name: item.name,
             amount: item.amount,
@@ -2053,6 +2057,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     postOnRoadPriceTable.tcs = tcsAmount;
     postOnRoadPriceTable.warrantyAmount = selectedWarrentyPrice;
     postOnRoadPriceTable.warrantyName = selector.warranty;
+    postOnRoadPriceTable.otherPricesData = addNewInput;
 
     postOnRoadPriceTable.form_or_pan = selector.form_or_pan;
 
@@ -2229,7 +2234,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
         // if pan number
         if (!panArr.length && selector.pan_number) {
-          newObj = {
+        let  newObj = {
             ...dmsAttachmentsObj,
             documentNumber: selector.pan_number,
             documentType: "pan",
@@ -3212,37 +3217,49 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     // _inputs.push({ key: '', value: '' });
     // setAddNewInput(_inputs);
     setAddNewInput([...addNewInput, { name: '', amount: '' }])
+    forceUpdate()
   }
 
   const deleteHandler = (index) => {
     // addNewInput.filter((input, index) => index != key);
     // const _inputs = addNewInput.filter((input, index) => index != index);
     // setAddNewInput(_inputs);
+   var amt =  addNewInput[index].amount;
+
+    setTotalOnRoadPrice(totalOnRoadPrice - Number(amt))
+   
     addNewInput.splice(index, 1);
     setAddNewInput(addNewInput)
     forceUpdate()
 
   }
   const saveHandler = () => {
-    if (addNewInput.length > 0) {
-      var totalprice = 0;
-      for (let data of addNewInput) {
-        totalprice = totalprice + Number(data.price)
-        setOtherPrices(totalprice)
-
+    try{
+      if (addNewInput.length > 0) {
+        var totalprice = 0;
+        for (let data of addNewInput) {
+          totalprice = totalprice + Number(data.amount)
+          setOtherPrices(totalprice)
+        }
+       
+        setTotalOnRoadPrice(totalprice + Number(totalOnRoadPrice))
       }
-      setTotalOnRoadPrice(totalprice + totalOnRoadPrice)
+      else alert("Add atleast one price")
+    }catch(error){
+      console.log(error)
     }
-    else alert("Add atleast one price")
+   
 
   }
   const inputHandlerName = (value, index) => {
     addNewInput[index].name = value;
     setAddNewInput(addNewInput)
+    forceUpdate()
   }
   const inputHandlerPrice = (value, index) => {
     addNewInput[index].amount = value;
     setAddNewInput(addNewInput);
+    forceUpdate()
   }
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
@@ -5664,16 +5681,19 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   paddingTop: 5,
                 }}>
                   {addNewInput.map((input, key) => {
+                    console.log(input.amount)
                     return (
                       <View key={key} style={styles.inputContainer}>
                         <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
-                          <TextInput style={{ backgroundColor: Colors.LIGHT_GRAY, width: '33%', height: 50, borderBottomWidth: 1 }}
-                            placeholder={"Name"} value={input.key}
-                            onChangeText={(name) => inputHandlerName(name, key)} />
-                          <TextInput style={{ backgroundColor: Colors.LIGHT_GRAY, width: '33%', height: 50, marginLeft: 20, borderBottomWidth: 1 }}
-                            placeholder={"Price"}
+                          <TextInput style={{ backgroundColor: Colors.LIGHT_GRAY, width: '33%', height: 40, borderBottomWidth: 1 }}
+                            placeholder={"Name"} 
+                            onChangeText={(name) => inputHandlerName(name, key)} 
+                            value={addNewInput[key].name} />
+                          <TextInput style={{ backgroundColor: Colors.LIGHT_GRAY, width: '33%', height: 40, marginLeft: 20, borderBottomWidth: 1 }}
+                            placeholder={"Price"} 
                             keyboardType={"decimal-pad"}
-                            onChangeText={(value) => inputHandlerPrice(value, key)} />
+                            onChangeText={(value) => inputHandlerPrice(value, key)} 
+                            value={addNewInput[key].amount}/>
                           <TouchableOpacity onPress={() => deleteHandler(key)} style={{ height: 25, marginLeft: 10 }}>
                             <Text style={{ color: Colors.BLACK, fontSize: 13, borderWidth: 1, borderColor: Colors.BLACK, paddingHorizontal: 5 }}>Remove</Text>
                           </TouchableOpacity>
