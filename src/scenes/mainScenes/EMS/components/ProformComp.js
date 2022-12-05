@@ -207,9 +207,13 @@ export const ProformaComp = ({
   const [selectedProfroma, setSelectedProfroma] = useState("");
   const [selectedProfromaData, setSelectedProfromaData] = useState([]);
   const [proformaNo, setProformaNo] = useState("");
+  const [selectedVehicleID, setselectedVehicleID] = useState("");
+  const [selectedProformaID, setselectedProformaID] = useState("");
+  
+  const [selectedvehicleImageId, setselectedvehicleImageId] = useState("");
   const [selectedRegistrationCharges, setSelectedRegistrationCharges] = useState({});
   const [registrationChargesType, setRegistrationChargesType] = useState([]);
-  
+  const [focPrice, setFocPrice] = useState(selector.for_accessories);
 
 
   const [selectedCarVarientsData, setSelectedCarVarientsData] = useState({
@@ -270,6 +274,7 @@ export const ProformaComp = ({
       AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
         setUserToken(token);
       });
+      
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
         const data = {
@@ -318,6 +323,7 @@ export const ProformaComp = ({
   useEffect(() => {
     if (route.params?.accessoriesList) {
       updatePaidAccessroies(route.params?.accessoriesList);
+     
     }
   }, [route.params?.accessoriesList]);
 
@@ -415,6 +421,7 @@ export const ProformaComp = ({
           }
         }
       }
+    
       setSelectedPaidAccessoriesList([...dmsLeadDto.dmsAccessories]);
       setPaidAccessoriesListNew([
         ...dmsLeadDto.dmsAccessories.filter(
@@ -436,6 +443,7 @@ export const ProformaComp = ({
             ...item,
             name: item.policy_name,
           });
+        
           if (selector.insurance_type === item.policy_name) {
             setSelectedInsurencePrice(item.cost);
           }
@@ -520,7 +528,20 @@ export const ProformaComp = ({
     }
   }, [selector.vehicle_on_road_price_insurence_details_response]);
 
+
+  useEffect(() => {
+    // setTotalOnRoadPriceAfterDiscount(totalOnRoadPriceAfterDiscount - focPrice)
+   
+    dispatch(
+      setOfferPriceDetails({
+        key: "FOR_ACCESSORIES",
+        text: focPrice.toString(),
+      })
+    )
+  }, [focPrice]);
+
   const updatePaidAccessroies = (tableData) => {
+    
     let totalPrice = 0,
       totFoc = 0,
       totMrp = 0;
@@ -542,6 +563,14 @@ export const ProformaComp = ({
             allotmentStatus: null,
             dmsAccessoriesType: item.item,
           });
+
+        
+          // dispatch(
+          //   setOfferPriceDetails({
+          //     key: "FOR_ACCESSORIES",
+          //     text: item.cost.toString(),
+          //   })
+          // )
         }
         if (item.item !== "FOC") {
           totMrp += item.cost;
@@ -570,6 +599,18 @@ export const ProformaComp = ({
 
     setSelectedPaidAccessoriesList([...newFormatSelectedAccessories]);
     setPaidAccessoriesListNew([...tempPaidAcc]);
+    if (totFoc > 0) {
+      setFocPrice(totFoc)
+    }
+    else {
+      
+      dispatch(
+        setOfferPriceDetails({
+          key: "FOR_ACCESSORIES",
+          text: selector.foc_accessoriesFromServer.toString() ? selector.foc_accessoriesFromServer.toString() :"",
+        })
+      )
+    }
     // setSelectedFOCAccessoriesList([...newFormatSelectedFOCAccessories]);
   };
 
@@ -582,6 +623,10 @@ export const ProformaComp = ({
     setCarColor("")
     clearPriceConfirmationData();
     dispatch(clearOfferPriceData());
+    setselectedProformaID("");
+    setselectedVehicleID("");
+    setSelectedVarientId("");
+    setselectedvehicleImageId("");
   }
   const selectPerformaClick = () => {
     setisSelectPerformaClick(true)
@@ -785,18 +830,41 @@ export const ProformaComp = ({
     var proformaStatus = "";
     if (from === "save") {
       proformaStatus = "ENQUIRYCOMPLETED";
-    } else {
-      proformaStatus = "SENTFORAPPROVAL";
-      const data = {
+      const data1 = {
+        vehicleId: selectedVehicleID,
+        varientId: selectedVarientId,
+        vehicleImageId: selectedvehicleImageId,
+        performaUUID: proformaNo,
+
+
+
         crmUniversalId: universalId,
-        id: null,
+        id: "",
         performa_status: proformaStatus,
         performa_comments: "xyz",
         oth_performa_column: {
+          // ex_showroom_price: priceInfomationData.ex_showroom_price,
+          // lifeTaxPercentage: taxPercent,
+          // life_tax: lifeTaxAmount,
+          // registration_charges: priceInfomationData.registration_charges,
+          // insurance_type: selector.insurance_type,
+          // insurance_value: selectedInsurencePrice,
+          // add_on_covers: selectedAddOnsPrice,
+          // waranty_name: selector.waranty_name,
+          // waranty_value: selectedWarrentyPrice,
+          // handling_charges: priceInfomationData.handling_charges,
+          // essential_kit: priceInfomationData.essential_kit,
+          // tcs_amount: tcsAmount,
+          // paid_access: selectedPaidAccessoriesPrice,
+          // fast_tag: priceInfomationData.fast_tag,
+          // on_road_price: totalOnRoadPrice,
+
+
           ex_showroom_price: priceInfomationData.ex_showroom_price,
           lifeTaxPercentage: taxPercent,
           life_tax: lifeTaxAmount,
-          registration_charges: priceInfomationData.registration_charges,
+          registration_charges: selectedRegistrationCharges?.cost ? selectedRegistrationCharges?.cost : 0,
+          registrationType: selectedRegistrationCharges?.name ? selectedRegistrationCharges?.name : "",
           insurance_type: selector.insurance_type,
           insurance_value: selectedInsurencePrice,
           add_on_covers: selectedAddOnsPrice,
@@ -808,6 +876,97 @@ export const ProformaComp = ({
           paid_access: selectedPaidAccessoriesPrice,
           fast_tag: priceInfomationData.fast_tag,
           on_road_price: totalOnRoadPrice,
+
+          cgstsgstTaxPercentage: "",
+          cessTaxPercentage: "",
+          cgstsgst_tax: 0,
+          cess_tax: 0,
+
+          insurance_addon_data: "",
+          accessory_items: [...selectedPaidAccessoriesList],
+          promotional_offers: selector.promotional_offer,
+          special_scheme: selector.consumer_offer,
+          exchange_offers: selector.exchange_offer,
+          corporate_offer: selector.corporate_offer,
+          cash_discount: selector.cash_discount,
+          insurance_discount: selector.insurance_discount,
+          accessories_discount: selector.accessories_discount,
+          foc_accessories: selector.for_accessories,
+          additional_offer1: selector.additional_offer_1,
+          additional_offer2: selector.additional_offer_2
+
+        }
+      }
+      dispatch(postProformaInvoiceDetails(data1));
+    } else {
+      proformaStatus = "SENTFORAPPROVAL";
+      // todo
+     
+      const data = {
+        vehicleId:selectedVehicleID,
+        varientId: selectedVarientId,
+        vehicleImageId: selectedvehicleImageId,
+        performaUUID:proformaNo,
+
+
+
+        crmUniversalId: universalId,
+        id: selectedProformaID,
+        performa_status: proformaStatus,
+        performa_comments: "xyz",
+        oth_performa_column: {
+          // ex_showroom_price: priceInfomationData.ex_showroom_price,
+          // lifeTaxPercentage: taxPercent,
+          // life_tax: lifeTaxAmount,
+          // registration_charges: priceInfomationData.registration_charges,
+          // insurance_type: selector.insurance_type,
+          // insurance_value: selectedInsurencePrice,
+          // add_on_covers: selectedAddOnsPrice,
+          // waranty_name: selector.waranty_name,
+          // waranty_value: selectedWarrentyPrice,
+          // handling_charges: priceInfomationData.handling_charges,
+          // essential_kit: priceInfomationData.essential_kit,
+          // tcs_amount: tcsAmount,
+          // paid_access: selectedPaidAccessoriesPrice,
+          // fast_tag: priceInfomationData.fast_tag,
+          // on_road_price: totalOnRoadPrice,
+
+
+          ex_showroom_price: priceInfomationData.ex_showroom_price,
+          lifeTaxPercentage: taxPercent,
+          life_tax: lifeTaxAmount,
+          registration_charges: selectedRegistrationCharges?.cost ? selectedRegistrationCharges?.cost : 0,
+          registrationType: selectedRegistrationCharges?.name ? selectedRegistrationCharges?.name : "",
+          insurance_type: selector.insurance_type,
+          insurance_value: selectedInsurencePrice,
+          add_on_covers: selectedAddOnsPrice,
+          waranty_name: selector.waranty_name,
+          waranty_value: selectedWarrentyPrice,
+          handling_charges: priceInfomationData.handling_charges,
+          essential_kit: priceInfomationData.essential_kit,
+          tcs_amount: tcsAmount,
+          paid_access: selectedPaidAccessoriesPrice,
+          fast_tag: priceInfomationData.fast_tag,
+          on_road_price: totalOnRoadPrice,
+
+          cgstsgstTaxPercentage : "",
+          cessTaxPercentage : "",
+          cgstsgst_tax : 0,
+          cess_tax : 0,
+      
+          insurance_addon_data:"",
+          accessory_items: [...selectedPaidAccessoriesList],
+          promotional_offers : selector.promotional_offer,
+          special_scheme : selector.consumer_offer,
+          exchange_offers : selector.exchange_offer,
+          corporate_offer : selector.corporate_offer,
+          cash_discount : selector.cash_discount,
+          insurance_discount : selector.insurance_discount,
+          accessories_discount : selector.accessories_discount,
+          foc_accessories : selector.for_accessories,
+          additional_offer1 : selector.additional_offer_1,
+          additional_offer2 : selector.additional_offer_2
+
         },
       };
       dispatch(postProformaInvoiceDetails(data));
@@ -1003,6 +1162,7 @@ export const ProformaComp = ({
     setLifeTaxAmount(lifeTax);
     totalPrice += lifeTax;
     totalPrice += priceInfomationData.registration_charges;
+    totalPrice += selectedRegistrationCharges?.cost || 0;
     totalPrice += selectedInsurencePrice;
     if (selector.insurance_type !== "") {
       totalPrice += selectedAddOnsPrice;
@@ -1095,10 +1255,94 @@ export const ProformaComp = ({
       if (mArray.length > 0) {
          newSelectedProforma = mArray.filter((item) => item.id === id);
         
+         
         setProformaNo(newSelectedProforma[0].performaUUID);
-        let oth_performa_column =JSON.parse(newSelectedProforma[0].oth_performa_column)
+        setselectedVehicleID(newSelectedProforma[0].vehicleId);
+        setSelectedVarientId(newSelectedProforma[0].varientId);
+        setselectedvehicleImageId(newSelectedProforma[0].vehicleImageId);
+        setselectedProformaID(newSelectedProforma[0].id);
+
+        let oth_performa_column = JSON.parse(newSelectedProforma[0].oth_performa_column)
         
-        dispatch(setOfferPriceDataForSelectedProforma(oth_performa_column))
+        
+          dispatch(setOfferPriceDataForSelectedProforma(oth_performa_column))
+
+          setSelectedWarrentyPrice(Number(oth_performa_column.waranty_value));
+          dispatch(
+            setDropDownData({ key: "WARRANTY", value: oth_performa_column.waranty_name, id: "" })
+          );
+        setTaxPercent(oth_performa_column.lifeTaxPercentage.toString());
+        setLifeTaxAmount(getLifeTaxNew(Number(oth_performa_column.lifeTaxPercentage)));
+       
+        let tempRegistrationCharge = {
+          cost: oth_performa_column.registration_charges,
+          name: oth_performa_column.registrationType
+        }
+        setSelectedRegistrationCharges(tempRegistrationCharge);
+        dispatch(
+          setDropDownData({ key: "INSURANCE_TYPE", value: oth_performa_column.insurance_type, id: "" })
+        );
+        setSelectedInsurencePrice(oth_performa_column.insurance_value);
+        // let tempAddonData = {
+        //   cost: oth_performa_column.add_on_covers,
+        //   document_name: "Zero Dip",
+        //   name: "Zero Dip",
+        //   selected: true
+        // }
+        setSelectedAddOnsPrice(Number(oth_performa_column.add_on_covers))
+        
+        if (Number(oth_performa_column.handling_charges) > 0 ){
+          setHandlingChargSlctd(true);
+        }else{
+          setHandlingChargSlctd(false);
+        }
+        if (Number(oth_performa_column.essential_kit) > 0){
+          setEssentialKitSlctd(true);
+        }else{
+          setEssentialKitSlctd(false);
+        }
+     
+        if (Number(oth_performa_column.paid_access) > 0){
+          setSelectedPaidAccessoriesPrice(oth_performa_column.paid_access)
+        }else{
+          setSelectedPaidAccessoriesPrice(0)
+        }
+
+      
+        if (oth_performa_column.accessory_items.length > 0){
+          let tempAccessoryArr = [];
+         
+          oth_performa_column.accessory_items.forEach((item) => {
+         
+            tempAccessoryArr.push({
+              "id": item.id,
+              "vehicleId": "",
+              "origanistionId": orgId,
+              "category": "",
+              "item": item.dmsAccessoriesType,
+              "partName": item.accessoriesName,
+              "cost": item.amount,
+              "createdBy": "",
+              "partNo": "",
+              "imageUrl": "",
+              "createdDate": "",
+              "modifiedBy": "",
+              "modifiedDate": null,
+              "selected": true
+            })
+            
+          })
+
+          updatePaidAccessroies(tempAccessoryArr);
+        }  
+        
+        if (Number(oth_performa_column.fast_tag) > 0){
+          setFastTagSlctd(true);
+        }else{
+          setFastTagSlctd(false);
+        }
+        
+        
         // todo need to figurout how to do auto fill for warranty etc 
         // setPriceInformationData({
         //   ex_showroom_price: oth_performa_column.ex_showroom_price,
@@ -1153,7 +1397,7 @@ export const ProformaComp = ({
      
       setCarModel(carModalNameTemp);
       setCarVariant(carModalVarientNameTemp);
-      setSelectedVarientId(newSelectedProforma[0].varientId);
+   
       setCarColor(carModalColorTemp);
       
       dispatch(
@@ -1233,6 +1477,8 @@ export const ProformaComp = ({
             setCarModel(item.name)
             setCarVariant("")
             setCarColor("")
+            setselectedVehicleID(item.id);
+       
             updateVariantModelsData(item.name, orgId, carModelsData);
           } else if (dropDownKey === "VARIENT") {
             setCarVariant(item.name)
@@ -1245,6 +1491,7 @@ export const ProformaComp = ({
           }
           else if (dropDownKey === "COLOR") {
             setCarColor(item.name)
+            setselectedvehicleImageId(item.id)
             // updateColor(item);
           }
           else if (dropDownKey === "SELECTPERFORMA") {
@@ -1253,6 +1500,7 @@ export const ProformaComp = ({
             updateProformaDataforSelectedValue(item.id, item.name, [...proformaDataForDropdown]);
 
           } else if (dropDownKey === "INSURANCE_TYPE") {
+            
             setSelectedInsurencePrice(item.cost);
           } else if (dropDownKey === "WARRANTY") {
             setSelectedWarrentyPrice(Number(item.cost));
@@ -1264,6 +1512,7 @@ export const ProformaComp = ({
             };
             dispatch(getDropSubReasonDataApi(payload));
           } else if (dropDownKey === "INSURENCE_ADD_ONS") {
+           
             let totalCost = 0;
             let names = "";
             let insurenceAddOns = [];

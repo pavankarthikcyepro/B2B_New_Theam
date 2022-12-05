@@ -587,7 +587,8 @@ const initialState = {
   additional_offer_1: "",
   additional_offer_2: "",
   accessories_discount:"",
-  insurance_discount:""
+  insurance_discount:"",
+  foc_accessoriesFromServer :"",
 };
 
 const enquiryDetailsOverViewSlice = createSlice({
@@ -660,7 +661,8 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.additional_offer_1 = "";
       state.additional_offer_2 = "";
       state.accessories_discount = "",
-      state.insurance_discount = ""
+      state.insurance_discount = "",
+        state.foc_accessoriesFromServer = ""
     },
     clearState2: (state, action) => {
       state.enableEdit = false;
@@ -726,6 +728,7 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.for_accessories = "";
       state.additional_offer_1 = "";
       state.additional_offer_2 = "";
+      state.foc_accessoriesFromServer = "";
     },
     setEditable: (state, action) => {
       state.enableEdit = !state.enableEdit;
@@ -2045,6 +2048,9 @@ const enquiryDetailsOverViewSlice = createSlice({
           ? oth_performa_column.cash_discount.toString() : "";
 
         state.for_accessories = oth_performa_column.foc_accessories
+          ? oth_performa_column.foc_accessories.toString() : "";
+
+        state.foc_accessoriesFromServer = oth_performa_column.foc_accessories
           ? oth_performa_column.foc_accessories.toString() : "";
 
         state.additional_offer_1 = oth_performa_column.additional_offer1
