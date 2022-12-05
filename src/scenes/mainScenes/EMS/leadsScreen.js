@@ -447,24 +447,23 @@ const LeadsScreen = ({ route, navigation }) => {
                 let path = response[0]?.payload[0]?.allLeadsSubstagesEntity;
                 if (getAllData) {
                     setSearchedData([]);
-                    // const newArr = path.map(object => {
-                    //     if (object.subMenu == "ALL") {
-                    //         return { ...object, checked: true };
-                    //     }
-                    //     return object;
-                    // });
-                    // setTempFilterPayload(newArr);
-                    // onTempFliter(newArr, employeeDetail,);
-                    // setSubMenu(newArr);
-                    // setLeadsSubMenuFilterDropDownText("ALL");
-
-
                     const x = path.map(object => {
-                        if (object.subMenu === item) {
+                        if (object.subMenu == "ALL") {
                             return { ...object, checked: true };
                         }
                         return object;
                     });
+                    // const newArr = path.filter((e) => e.subMenu == "ALL");
+                    // setTempFilterPayload(newArr);
+                    // onTempFliter(newArr, employeeDetail,);
+                    // setSubMenu(newArr);
+                    // setLeadsSubMenuFilterDropDownText("ALL");
+                    // const x = path.map(object => {
+                    //     if (object.subMenu === item) {
+                    //         return { ...object, checked: true };
+                    //     }
+                    //     return object;
+                    // });
                     setSubMenu([...x]);
                     setTempFilterPayload(x);
                     onTempFliter(x, isEmpty(tempEmployee) ? null : tempEmployee, tempVehicleModelList, tempCategoryList, tempSourceList, selectedFromDate, selectedToDate);
