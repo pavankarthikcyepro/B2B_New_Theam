@@ -296,7 +296,7 @@ const BookingFormScreen = ({ route, navigation }) => {
     const [initialTotalAmt, setInitialTotalAmt] = useState(0);
     const [registrationChargesType, setRegistrationChargesType] = useState([]);
     const [selectedRegistrationCharges, setSelectedRegistrationCharges] = useState({});
-    const [addNewInput, setAddNewInput] = useState([{ name: '', price: '' }]);
+    const [addNewInput, setAddNewInput] = useState([]);
     const clearLocalData = () => {
         setOpenAccordian(0);
         setComponentAppear(false);
@@ -788,6 +788,16 @@ const BookingFormScreen = ({ route, navigation }) => {
             }
             if (dmsOnRoadPriceDtoObj.accessoriesDiscount) {
                 setAccDiscount(dmsOnRoadPriceDtoObj.accessoriesDiscount.toString())
+            }
+            if (dmsOnRoadPriceDtoObj.otherPricesData?.length > 0) {
+               // alert("other prices data")
+                dmsOnRoadPriceDtoObj.otherPricesData.forEach((item, i) => {
+                    addNewInput.push({
+                        name: item.name,
+                        amount: item.amount,
+                    });
+                    setAddNewInput(addNewInput)
+                });
             }
         }
     }, [selector.on_road_price_dto_list_response]);
@@ -2022,7 +2032,8 @@ const BookingFormScreen = ({ route, navigation }) => {
         // const _inputs = [...addNewInput];
         // _inputs.push({ key: '', value: '' });
         // setAddNewInput(_inputs);
-        setAddNewInput([...addNewInput, { name: '', price: '' }])
+        setAddNewInput([...addNewInput, { name: '', amount: '' }])
+        forceUpdate()
     }
 
     const deleteHandler = (index) => {
@@ -2030,6 +2041,8 @@ const BookingFormScreen = ({ route, navigation }) => {
         // addNewInput.filter((input, index) => index != key);
         // const _inputs = addNewInput.filter((input, index) => index != index);
         // setAddNewInput(_inputs);
+        var amt = addNewInput[index].amount;
+        setTotalOnRoadPrice(totalOnRoadPrice - Number(amt))
         addNewInput.splice(index, 1);
         // console.log('addNewInput',addNewInput);
         setAddNewInput(addNewInput)
@@ -2045,7 +2058,7 @@ const BookingFormScreen = ({ route, navigation }) => {
             var totalprice = 0;
             for(let data of addNewInput){
                 console.log(JSON.stringify(data));
-                totalprice = totalprice + Number(data.price)
+                totalprice = totalprice + Number(data.amount)
                 setOtherPrices(totalprice)
                
             }
@@ -2058,10 +2071,12 @@ const BookingFormScreen = ({ route, navigation }) => {
     const inputHandlerName = (value, index) => {
         addNewInput[index].name = value;
         setAddNewInput(addNewInput)
+        forceUpdate()
     }
     const inputHandlerPrice = (value, index) => {
-        addNewInput[index].price = value;
+        addNewInput[index].amount = value;
         setAddNewInput(addNewInput)
+        forceUpdate()
         // console.log('addNewInputaddNewInput:', addNewInput);
 
     }
@@ -3472,12 +3487,14 @@ const BookingFormScreen = ({ route, navigation }) => {
                                             <View key={key} style={styles.inputContainer}>
                                                 <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
                                                     <TextInput style={{width: '33%', height: 40, borderBottomWidth: 1 }}
-                                                        placeholder={"Name"} value={input.key}
-                                                        onChangeText={(name) => inputHandlerName(name, key)} />
+                                                        placeholder={"Name"} 
+                                                        onChangeText={(name) => inputHandlerName(name, key)} 
+                                                        value={addNewInput[key].name}/>
                                                     <TextInput style={{  width: '33%', height: 40, marginLeft: 20, borderBottomWidth: 1 }}
-                                                        placeholder={"Price"}
+                                                        placeholder={"Price"} 
                                                         keyboardType={"decimal-pad"}
-                                                        onChangeText={(value) => inputHandlerPrice(value, key)} />
+                                                        onChangeText={(value) => inputHandlerPrice(value, key)}
+                                                        value={addNewInput[key].amount} />
                                                     <TouchableOpacity onPress={() => deleteHandler(key)} style={{ height: 25, marginLeft: 10 }}>
                                                         <Text style={{ color: Colors.BLACK, fontSize: 13, borderWidth: 1, borderColor: Colors.BLACK,paddingHorizontal:5 }}>Remove</Text>
                                                     </TouchableOpacity>
