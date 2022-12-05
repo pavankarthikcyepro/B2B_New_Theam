@@ -497,7 +497,7 @@ const LeadsScreen = ({ route, navigation }) => {
     }
 
     const onTempFliter = async (item, employeeDetail = {}, modelData, categoryFilters,
-                                sourceData, from, to, defLeadStage, defLeadStatus) => {
+        sourceData, from, to, defLeadStage, defLeadStatus) => {
         setSearchedData([]);
         setLeadsList([]);
         setSelectedToDate(moment().add(0, "day").endOf("month").format(dateFormat))
@@ -515,7 +515,7 @@ const LeadsScreen = ({ route, navigation }) => {
             let model = [];
 
             for (let i = 0; i < newArray.length; i++) {
-                if (newArray[i].leadStage){
+                if (newArray[i].leadStage) {
                     for (let j = 0; j < newArray[i].leadStage.length; j++) {
                         leadStage.push(newArray[i].leadStage[j]);
                     }
@@ -586,11 +586,11 @@ const LeadsScreen = ({ route, navigation }) => {
 
             let isLive = false;
             if (
-              route?.params?.param &&
-              route?.params?.moduleType == "live-leads"
+                route?.params?.param &&
+                route?.params?.moduleType == "live-leads"
             ) {
-              isLive = true;
-              from = "2021-01-01";
+                isLive = true;
+                from = "2021-01-01";
             }
 
             let newPayload = {
@@ -607,8 +607,8 @@ const LeadsScreen = ({ route, navigation }) => {
                 "leadStatus": defLeadStatus ? defLeadStatus : leadStatus.length === 0 ? defualtLeadStatus : leadStatus
             };
             let data = {
-              newPayload,
-              isLive,
+                newPayload,
+                isLive,
             };
             Promise.all([dispatch(getLeadsList(data))])
               .then((response) => {
@@ -713,40 +713,57 @@ const LeadsScreen = ({ route, navigation }) => {
                 onRequestClose={() => setShowDatePicker(false)}
             />
             <View>
-                <SingleLeadSelectComp visible={leadsFilterVisible} modelList={leadsFilterData} submitCallback={(x) => {
-                    setLeadsFilterData([...x]);
-                    setLeadsFilterVisible(false);
-                    const data = x.filter(y => y.checked);
-                    if (data.length === 3) {
-                        setLeadsFilterDropDownText('All')
-                    } else {
-                        const names = data.map(y => y.menu);
-                        getSubMenuList(names.toString());
-                        setLeadsFilterDropDownText(names.toString());
-                    }
-                }} cancelClicked={() => {
-                    setLeadsFilterVisible(false)
-                }}
+                <SingleLeadSelectComp
+                    visible={leadsFilterVisible}
+                    modelList={leadsFilterData}
+                    submitCallback={(x) => {
+                        setLeadsFilterData([...x]);
+                        setLeadsFilterVisible(false);
+                        const data = x.filter((y) => y.checked);
+                        if (data.length === 3) {
+                            setLeadsFilterDropDownText("All");
+                        } else {
+                            const names = data.map((y) => y.menu);
+                            getSubMenuList(names.toString());
+                            setLeadsFilterDropDownText(names.toString());
+                        }
+                    }}
+                    cancelClicked={() => {
+                        setLeadsFilterVisible(false);
+                    }}
                     selectAll={async () => {
                         setSubMenu([]);
                         defualtCall(tempStore);
                     }}
                 />
-                <LeadsFilterComp visible={leadsSubMenuFilterVisible} modelList={subMenu} submitCallback={(x) => {
-                    setSubMenu([...x]);
-                    setTempFilterPayload(x);
-                    onTempFliter(x, isEmpty(tempEmployee) ? null : tempEmployee, tempVehicleModelList, tempCategoryList, tempSourceList, selectedFromDate, selectedToDate);
-                    setLeadsSubMenuFilterVisible(false);
-                    const data = x.filter(y => y.checked);
-                    if (data.length === subMenu.length) {
-                        setLeadsSubMenuFilterDropDownText('All')
-                    } else {
-                        const names = data.map(y => y?.subMenu);
-                        setLeadsSubMenuFilterDropDownText(names.toString() ? names.toString() : "Select Sub Menu");
-                    }
-                }}
+                <LeadsFilterComp
+                    visible={leadsSubMenuFilterVisible}
+                    modelList={subMenu}
+                    submitCallback={(x) => {
+                        setSubMenu([...x]);
+                        setTempFilterPayload(x);
+                        onTempFliter(
+                            x,
+                            isEmpty(tempEmployee) ? null : tempEmployee,
+                            tempVehicleModelList,
+                            tempCategoryList,
+                            tempSourceList,
+                            selectedFromDate,
+                            selectedToDate
+                        );
+                        setLeadsSubMenuFilterVisible(false);
+                        const data = x.filter((y) => y.checked);
+                        if (data.length === subMenu.length) {
+                            setLeadsSubMenuFilterDropDownText("All");
+                        } else {
+                            const names = data.map((y) => y?.subMenu);
+                            setLeadsSubMenuFilterDropDownText(
+                                names.toString() ? names.toString() : "Select Sub Menu"
+                            );
+                        }
+                    }}
                     cancelClicked={() => {
-                        setLeadsSubMenuFilterVisible(false)
+                        setLeadsSubMenuFilterVisible(false);
                     }}
                     onChange={(x) => {
                     }}
@@ -768,71 +785,136 @@ const LeadsScreen = ({ route, navigation }) => {
             />
 
             <View style={styles.view1}>
-                    <View style={{ width: "80%" }}>
-                        <DateRangeComp
-                            fromDate={selectedFromDate}
-                            toDate={selectedToDate}
-                            fromDateClicked={() => showDatePickerMethod("FROM_DATE")}
-                            toDateClicked={() => showDatePickerMethod("TO_DATE")}
+                <View style={{ width: "80%" }}>
+                    <DateRangeComp
+                        fromDate={selectedFromDate}
+                        toDate={selectedToDate}
+                        fromDateClicked={() => showDatePickerMethod("FROM_DATE")}
+                        toDateClicked={() => showDatePickerMethod("TO_DATE")}
+                    />
+                </View>
+                <Pressable onPress={() => setSortAndFilterVisible(true)}>
+                    <View
+                        style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            borderColor: Colors.BORDER_COLOR,
+                            borderWidth: 1,
+                            borderRadius: 4,
+                            backgroundColor: Colors.WHITE,
+                            paddingLeft: 8,
+                            height: 50,
+                            justifyContent: "center",
+                        }}
+                    >
+                        <Text style={styles.text1}>{"Filter"}</Text>
+                        <IconButton
+                            icon={"filter-outline"}
+                            size={16}
+                            color={Colors.RED}
+                            style={{ margin: 0, padding: 0 }}
                         />
                     </View>
-                    <Pressable onPress={() => setSortAndFilterVisible(true)}>
-                        <View
-                        style={{ flexDirection: 'row', alignItems: 'center', borderColor: Colors.BORDER_COLOR, borderWidth: 1, borderRadius: 4, backgroundColor: Colors.WHITE, paddingLeft: 8, height: 50, justifyContent: 'center' }}>
-                            <Text style={styles.text1}>{'Filter'}</Text>
-                            <IconButton icon={'filter-outline'} size={16} color={Colors.RED} style={{ margin: 0, padding: 0 }} />
-                        </View>
-                    </Pressable>
+                </Pressable>
             </View>
-            <View style={{flexDirection: 'row', justifyContent: 'space-between',
-                borderColor: Colors.LIGHT_GRAY,
-                paddingHorizontal: 6,
-                paddingBottom: 4,
-                backgroundColor: Colors.WHITE, marginTop: -6}}>
-                <View style={{width: subMenu?.length > 1 ? '45%' : '100%'}}>
-                    <Pressable onPress={() => {
-                        setLeadsFilterVisible(true);
-                    }}>
-                        <View style={{
-                            borderWidth: 0.5,
-                            borderColor: Colors.BORDER_COLOR,
-                            borderRadius: 4,
-                            flexDirection: 'row',
-                            justifyContent: 'space-between',
-                            alignItems: 'center'
-                        }}>
-                            <Text style={{ width: '80%', paddingHorizontal: 5, paddingVertical: 2, fontSize: 12, fontWeight: "600" }}
-                                numberOfLines={2}>{leadsFilterDropDownText}</Text>
-                            <IconButton icon={leadsFilterVisible ? 'chevron-up' : 'chevron-down'} size={20}
-                                color={Colors.RED}
-                                style={{ margin: 0, padding: 0 }} />
-                        </View>
-                    </Pressable>
-                </View>
-                {subMenu?.length > 1 &&
-                    <View style={{ width: '50%', alignSelf: "center", backgroundColor: 'white', marginBottom: 5 }}>
-                        <Pressable onPress={() => {
-                            setLeadsSubMenuFilterVisible(true);
-                        }}>
-                            <View style={{
+            <View
+                style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    borderColor: Colors.LIGHT_GRAY,
+                    paddingHorizontal: 6,
+                    paddingBottom: 4,
+                    backgroundColor: Colors.WHITE,
+                    marginTop: -6,
+                }}
+            >
+                <View style={{ width: subMenu?.length > 1 ? "45%" : "100%" }}>
+                    <Pressable
+                        onPress={() => {
+                            setLeadsFilterVisible(true);
+                        }}
+                    >
+                        <View
+                            style={{
                                 borderWidth: 0.5,
                                 borderColor: Colors.BORDER_COLOR,
                                 borderRadius: 4,
-                                flexDirection: 'row',
-                                justifyContent: 'space-between',
-                                alignItems: 'center'
-                            }}>
-                                <Text style={{ width: '70%', paddingHorizontal: 4, paddingVertical: 2, fontSize: 12, fontWeight: "600" }}
-                                      numberOfLines={2}>{leadsSubMenuFilterDropDownText}</Text>
-                                <IconButton icon={leadsSubMenuFilterVisible ? 'chevron-up' : 'chevron-down'} size={20}
-                                            color={Colors.RED}
-                                            style={{ margin: 0, padding: 0, width: '10%' }} />
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                            }}
+                        >
+                            <Text
+                                style={{
+                                    width: "80%",
+                                    paddingHorizontal: 5,
+                                    paddingVertical: 2,
+                                    fontSize: 12,
+                                    fontWeight: "600",
+                                }}
+                                numberOfLines={2}
+                            >
+                                {leadsFilterDropDownText}
+                            </Text>
+                            <IconButton
+                                icon={leadsFilterVisible ? "chevron-up" : "chevron-down"}
+                                size={20}
+                                color={Colors.RED}
+                                style={{ margin: 0, padding: 0 }}
+                            />
+                        </View>
+                    </Pressable>
+                </View>
+                {subMenu?.length > 1 && (
+                    <View
+                        style={{
+                            width: "50%",
+                            alignSelf: "center",
+                            backgroundColor: "white",
+                            marginBottom: 5,
+                        }}
+                    >
+                        <Pressable
+                            onPress={() => {
+                                setLeadsSubMenuFilterVisible(true);
+                            }}
+                        >
+                            <View
+                                style={{
+                                    borderWidth: 0.5,
+                                    borderColor: Colors.BORDER_COLOR,
+                                    borderRadius: 4,
+                                    flexDirection: "row",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                }}
+                            >
+                                <Text
+                                    style={{
+                                        width: "70%",
+                                        paddingHorizontal: 4,
+                                        paddingVertical: 2,
+                                        fontSize: 12,
+                                        fontWeight: "600",
+                                    }}
+                                    numberOfLines={2}
+                                >
+                                    {leadsSubMenuFilterDropDownText}
+                                </Text>
+                                <IconButton
+                                    icon={
+                                        leadsSubMenuFilterVisible ? "chevron-up" : "chevron-down"
+                                    }
+                                    size={20}
+                                    color={Colors.RED}
+                                    style={{ margin: 0, padding: 0, width: "10%" }}
+                                />
                             </View>
                         </Pressable>
-                    </View>}
+                    </View>
+                )}
             </View>
             <View>
-
                 <Searchbar
                     placeholder="Search"
                     onChangeText={onChangeSearch}
@@ -840,18 +922,28 @@ const LeadsScreen = ({ route, navigation }) => {
                     style={styles.searchBar}
                 />
             </View>
-            {searchedData && searchedData.length === 0 ? <EmptyListView title={"No Data Found"} isLoading={selector.isLoading || loader} /> :
-                <View style={[{ backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10 }]}>
+            {searchedData && searchedData.length === 0 ? (
+                <EmptyListView
+                    title={"No Data Found"}
+                    isLoading={selector.isLoading || loader}
+                />
+            ) : (
+                <View
+                    style={[
+                        { backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10 },
+                    ]}
+                >
                     <FlatList
                         data={searchedData}
                         extraData={searchedData}
                         keyExtractor={(item, index) => index.toString()}
-                        refreshControl={(
+                        refreshControl={
                             <RefreshControl
                                 refreshing={selector.isLoading}
                                 // onRefresh={() => getEnquiryListFromServer(employeeId, selectedFromDate, selectedToDate)}
-                                progressViewOffset={200} />
-                        )}
+                                progressViewOffset={200}
+                            />
+                        }
                         showsVerticalScrollIndicator={false}
                         onEndReachedThreshold={0}
                         // onEndReached={() => {
@@ -870,10 +962,20 @@ const LeadsScreen = ({ route, navigation }) => {
                                     <View>
                                         <MyTaskNewItem
                                             from={item.leadStage}
-                                            name={getFirstLetterUpperCase(item.firstName) + " " + getFirstLetterUpperCase(item.lastName)}
+                                            name={
+                                                getFirstLetterUpperCase(item.firstName) +
+                                                " " +
+                                                getFirstLetterUpperCase(item.lastName)
+                                            }
                                             navigator={navigation}
                                             uniqueId={item.leadId}
-                                            type={item.leadStage === 'ENQUIRY' ? 'Enq' : item.leadStage === 'BOOKING' ? 'Book' : 'PreBook'}
+                                            type={
+                                                item.leadStage === "ENQUIRY"
+                                                    ? "Enq"
+                                                    : item.leadStage === "BOOKING"
+                                                        ? "Book"
+                                                        : "PreBook"
+                                            }
                                             status={""}
                                             created={item.modifiedDate}
                                             dmsLead={item.salesConsultant}
@@ -885,30 +987,36 @@ const LeadsScreen = ({ route, navigation }) => {
                                             needStatus={"YES"}
                                             enqCat={item.enquiryCategory}
                                             onItemPress={() => {
-                                                navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, {
-                                                    universalId: item.universalId,
-                                                    mobileNo: item.phone,
-                                                    leadStatus: item.leadStatus
-                                                })
+                                                navigation.navigate(
+                                                    AppNavigator.EmsStackIdentifiers.task360,
+                                                    {
+                                                        universalId: item.universalId,
+                                                        mobileNo: item.phone,
+                                                        leadStatus: item.leadStatus,
+                                                    }
+                                                );
                                             }}
                                             onDocPress={() => {
-                                                let route = AppNavigator.EmsStackIdentifiers.detailsOverview;
+                                                let route =
+                                                    AppNavigator.EmsStackIdentifiers.detailsOverview;
                                                 switch (item.leadStage) {
-                                                    case 'BOOKING':
-                                                        route = AppNavigator.EmsStackIdentifiers.bookingForm;
+                                                    case "BOOKING":
+                                                        route =
+                                                            AppNavigator.EmsStackIdentifiers.bookingForm;
                                                         break;
-                                                    case 'PRE_BOOKING':
-                                                    case 'PREBOOKING':
-                                                        route = AppNavigator.EmsStackIdentifiers.preBookingForm;
+                                                    case "PRE_BOOKING":
+                                                    case "PREBOOKING":
+                                                        route =
+                                                            AppNavigator.EmsStackIdentifiers.preBookingForm;
                                                         break;
-
                                                 }
+                                                console.log(route);
                                                 navigation.navigate(route, {
                                                     universalId: item.universalId,
                                                     enqDetails: item,
                                                     leadStatus: item.leadStatus,
-                                                    leadStage: item.leadStage
-                                                })
+                                                    leadStage: item.leadStage,
+                                                });
                                             }}
                                         />
                                     </View>
@@ -916,13 +1024,28 @@ const LeadsScreen = ({ route, navigation }) => {
                             );
                         }}
                     />
-                </View>}
+                </View>
+            )}
             <TouchableOpacity
                 onPress={() => {
-                    setLoader(true); onRefresh();}}
-                style={[GlobalStyle.shadow, styles.floatingBtn]}
+                    setLoader(true);
+                    onRefresh();
+                }}
+                style={[GlobalStyle.shadow, styles.floatingBtn, {
+                    bottom: 85
+                }]}
             >
                 <Entypo size={30} name="refresh" color={Colors.WHITE} />
+            </TouchableOpacity>
+            <TouchableOpacity
+                onPress={() => {
+                    navigation.navigate(
+                      AppNavigator.EmsStackIdentifiers.newEnquiry
+                    );
+                }}
+                style={[GlobalStyle.shadow, styles.floatingBtn]}
+            >
+                <Entypo size={35} name="plus" color={Colors.WHITE} />
             </TouchableOpacity>
         </SafeAreaView>
     );
