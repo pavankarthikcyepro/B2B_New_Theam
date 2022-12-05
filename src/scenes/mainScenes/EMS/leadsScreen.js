@@ -102,21 +102,24 @@ const LeadsScreen = ({ route, navigation }) => {
                 let tempData = []
                 tempData = leadsList.filter((item) => {
                     return (
-                        `${item.firstName} ${item.lastName}`
-                            .toLowerCase()
-                            .includes(appSelector.searchKey.toLowerCase()) ||
-                        item.phone
-                            .toLowerCase()
-                            .includes(appSelector.searchKey.toLowerCase()) ||
-                        item.enquirySource
-                            .toLowerCase()
-                            .includes(appSelector.searchKey.toLowerCase()) ||
-                        item.enquiryCategory
-                            ?.toLowerCase()
-                            .includes(appSelector.searchKey.toLowerCase()) ||
-                        item?.model
-                            ?.toLowerCase()
-                            .includes(appSelector.searchKey.toLowerCase())
+                      `${item.firstName} ${item.lastName}`
+                        .toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase()) ||
+                      item.phone
+                        .toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase()) ||
+                      item.enquirySource
+                        .toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase()) ||
+                      item.enquiryCategory
+                        ?.toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase()) ||
+                      item?.leadId.toString()
+                        ?.toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase()) ||
+                      item?.model
+                        ?.toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase())
                     );
                 })
                 setSearchedData([]);
@@ -957,69 +960,69 @@ const LeadsScreen = ({ route, navigation }) => {
                                 color = Colors.LIGHT_GRAY;
                             }
                             return (
-                                <>
-                                    <View>
-                                        <MyTaskNewItem
-                                            from={item.leadStage}
-                                            name={
-                                                getFirstLetterUpperCase(item.firstName) +
-                                                " " +
-                                                getFirstLetterUpperCase(item.lastName)
-                                            }
-                                            navigator={navigation}
-                                            uniqueId={item.leadId}
-                                            type={
-                                                item.leadStage === "ENQUIRY"
-                                                    ? "Enq"
-                                                    : item.leadStage === "BOOKING"
-                                                        ? "Book"
-                                                        : "PreBook"
-                                            }
-                                            status={""}
-                                            created={item.modifiedDate}
-                                            dmsLead={item.salesConsultant}
-                                            phone={item.phone}
-                                            source={item.enquirySource}
-                                            model={item.model}
-                                            leadStatus={item.leadStatus}
-                                            leadStage={item.leadStage}
-                                            needStatus={"YES"}
-                                            enqCat={item.enquiryCategory}
-                                            onItemPress={() => {
-                                                navigation.navigate(
-                                                    AppNavigator.EmsStackIdentifiers.task360,
-                                                    {
-                                                        universalId: item.universalId,
-                                                        mobileNo: item.phone,
-                                                        leadStatus: item.leadStatus,
-                                                    }
-                                                );
-                                            }}
-                                            onDocPress={() => {
-                                                let route =
-                                                    AppNavigator.EmsStackIdentifiers.detailsOverview;
-                                                switch (item.leadStage) {
-                                                    case "BOOKING":
-                                                        route =
-                                                            AppNavigator.EmsStackIdentifiers.bookingForm;
-                                                        break;
-                                                    case "PRE_BOOKING":
-                                                    case "PREBOOKING":
-                                                        route =
-                                                            AppNavigator.EmsStackIdentifiers.preBookingForm;
-                                                        break;
-                                                }
-                                                console.log(route);
-                                                navigation.navigate(route, {
-                                                    universalId: item.universalId,
-                                                    enqDetails: item,
-                                                    leadStatus: item.leadStatus,
-                                                    leadStage: item.leadStage,
-                                                });
-                                            }}
-                                        />
-                                    </View>
-                                </>
+                              <>
+                                <View>
+                                  <MyTaskNewItem
+                                    from={item.leadStage}
+                                    name={
+                                      getFirstLetterUpperCase(item.firstName) +
+                                      " " +
+                                      getFirstLetterUpperCase(item.lastName)
+                                    }
+                                    navigator={navigation}
+                                    uniqueId={item.leadId}
+                                    type={
+                                      item.leadStage === "ENQUIRY"
+                                        ? "Enq"
+                                        : item.leadStage === "BOOKING"
+                                        ? "Book"
+                                        : "PreBook"
+                                    }
+                                    status={""}
+                                    created={item.modifiedDate}
+                                    dmsLead={item.salesConsultant}
+                                    phone={item.phone}
+                                    source={item.enquirySource}
+                                    model={item.model}
+                                    leadStatus={item.leadStatus}
+                                    leadStage={item.leadStage}
+                                    needStatus={"YES"}
+                                    enqCat={item.enquiryCategory}
+                                    onItemPress={() => {
+                                      navigation.navigate(
+                                        AppNavigator.EmsStackIdentifiers.task360,
+                                        {
+                                          universalId: item.universalId,
+                                          mobileNo: item.phone,
+                                          leadStatus: item.leadStatus,
+                                        }
+                                      );
+                                    }}
+                                    onDocPress={() => {
+                                      let route =
+                                        AppNavigator.EmsStackIdentifiers.detailsOverview;
+                                      switch (item.leadStage) {
+                                        case "BOOKING":
+                                          route =
+                                            AppNavigator.EmsStackIdentifiers.bookingForm;
+                                          break;
+                                        case "PRE_BOOKING":
+                                        case "PREBOOKING":
+                                          route =
+                                            AppNavigator.EmsStackIdentifiers.preBookingForm;
+                                          break;
+                                      }
+                                      console.log(route);
+                                      navigation.navigate(route, {
+                                        universalId: item.universalId,
+                                        enqDetails: item,
+                                        leadStatus: item.leadStatus,
+                                        leadStage: item.leadStage,
+                                      });
+                                    }}
+                                  />
+                                </View>
+                              </>
                             );
                         }}
                     />

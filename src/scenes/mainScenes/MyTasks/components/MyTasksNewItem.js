@@ -77,7 +77,7 @@ const callWebViewRecord = async ({ navigator, phone, uniqueId, type }) => {
 
 }
 
-export const MyTaskNewItem = ({ from = "MY_TASKS", navigator, type, uniqueId, name, status, created, dmsLead, phone, source, model, leadStatus = '', leadStage = '', needStatus = '', enqCat = '', onItemPress, onDocPress }) => {
+export const MyTaskNewItem = ({ from = "MY_TASKS", navigator, type, uniqueId = "", name, status, created, dmsLead, phone, source, model, leadStatus = '', leadStage = '', needStatus = '', enqCat = '', onItemPress, onDocPress }) => {
     let date = "";
     if (from == "MY_TASKS") {
         date = moment(created, "YYYY-MM-DD hh-mm-s").format("DD/MM/YYYY h:mm a");
@@ -131,144 +131,189 @@ export const MyTaskNewItem = ({ from = "MY_TASKS", navigator, type, uniqueId, na
     }
 
     return (
-        <TouchableOpacity onPress={onItemPress} style={styles.section}>
-            <View
-                style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    position: "relative"
-                }}
-            >
-                <View style={{ width: "65%" }}>
-                    <View style={{ flexDirection: "row" }}>
-                        <View style={{ maxWidth: "73%" }}>
-                            <Text style={styles.text1}>{name}</Text>
-                        </View>
-                        {/*<Text style={styles.catText}>{enqCat}</Text>*/}
-                    </View>
-                    <Text style={styles.text2}>{date}</Text>
-                    <Text style={styles.text2}>{source + " - " + dmsLead}</Text>
-                    <Text style={styles.text2}>{phone}</Text>
-                    <>
-                        {from !== 'PRE_ENQUIRY' &&
-                            <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                                <>
-                                    {leadStage == 'ENQUIRY' &&
-                                        (enqCat !== '' && enqCat?.length > 0 &&
-                                            <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                                                <Text style={[styles.text3, { color: getCategoryTextColor(enqCat) }]}>{enqCat}</Text>
-                                                <Text style={{ fontWeight: '600', color: Colors.BLACK }}> | </Text>
-                                            </View>)
-
-                                    }
-                                </>
-                                <Text style={[styles.text3, { color: getStageColor(leadStage, leadStatus) }]}>{leadStage === 'PREBOOKING' ? 'BOOKING APPROVAL' : leadStage}</Text>
-                            </View>
-                        }
-                    </>
-                </View>
-                <View style={{ width: "35%", alignItems: "center" }}>
-                    <View style={styles.modal}>
-                        <Text style={styles.text4}>{model}</Text>
-                        {/* <Text style={styles.text4}>{"Jeep Compact SUV"}</Text> */}
-                    </View>
-                    {/* <View style={{ height: 8 }}></View> */}
-                    <View
-                        style={{
-                            flexDirection: "row",
-                            width: "100%",
-                            justifyContent: "space-evenly",
-                        }}
-                    >
-                        <IconComp
-                            iconName={"format-list-bulleted-square"}
-                            disabled={true}
-                            opacity={cannotEditLead() ? 0.5 : 1}
-                            onPress={() => {
-                                cannotEditLead() ?
-                                showToastRedAlert("You don't have Permission"):
-                                onDocPress() }}
-                        />
-                        <View style={{ padding: 5 }} />
-                        <IconComp
-                            iconName={"phone-outline"}
-                            onPress={() =>
-                                // cannotEditLead() ?
-                                //     showToastRedAlert("You don't have Permission") :
-                                    callWebViewRecord({
-                                        navigator,
-                                        phone,
-                                        uniqueId,
-                                        type,
-                                    })
-                            }
-                        />
-                        <View style={{ padding: 5 }} />
-                        <IconComp
-                            iconName={"whatsapp"}
-                            onPress={() => 
-                            // cannotEditLead() ? showToastRedAlert("You don't have Permission") : 
-                            sendWhatsApp(phone)}
-                        />
-                    </View>
-                </View>
+      <TouchableOpacity onPress={onItemPress} style={styles.section}>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            position: "relative",
+          }}
+        >
+          <View style={{ width: "65%" }}>
+            <View style={{ flexDirection: "row" }}>
+              <View style={{ maxWidth: "73%" }}>
+                <Text style={styles.text1}>{name}</Text>
+              </View>
+              {/*<Text style={styles.catText}>{enqCat}</Text>*/}
             </View>
-        </TouchableOpacity>
+            <Text style={styles.text2}>{date}</Text>
+            <Text style={styles.text2}>{source + " - " + dmsLead}</Text>
+            <Text style={styles.text2}>{phone}</Text>
+            <>
+              {from !== "PRE_ENQUIRY" && (
+                <View
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                  }}
+                >
+                  <>
+                    {leadStage == "ENQUIRY" &&
+                      enqCat !== "" &&
+                      enqCat?.length > 0 && (
+                        <View
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Text
+                            style={[
+                              styles.text3,
+                              { color: getCategoryTextColor(enqCat) },
+                            ]}
+                          >
+                            {enqCat}
+                          </Text>
+                          <Text
+                            style={{ fontWeight: "600", color: Colors.BLACK }}
+                          >
+                            {" "}
+                            |{" "}
+                          </Text>
+                        </View>
+                      )}
+                  </>
+                  <Text
+                    style={[
+                      styles.text3,
+                      { color: getStageColor(leadStage, leadStatus) },
+                    ]}
+                  >
+                    {leadStage === "PREBOOKING"
+                      ? "BOOKING APPROVAL"
+                      : leadStage}
+                  </Text>
+                </View>
+              )}
+            </>
+          </View>
+          <View style={{ width: "35%", alignItems: "center" }}>
+            {uniqueId ? (
+              <Text style={styles.leadIdText}>Lead ID : {uniqueId}</Text>
+            ) : null}
+            <View style={styles.modal}>
+              <Text style={styles.text4}>{model}</Text>
+              {/* <Text style={styles.text4}>{"Jeep Compact SUV"}</Text> */}
+            </View>
+            {/* <View style={{ height: 8 }}></View> */}
+            <View
+              style={{
+                flexDirection: "row",
+                width: "100%",
+                justifyContent: "space-evenly",
+              }}
+            >
+              <IconComp
+                iconName={"format-list-bulleted-square"}
+                disabled={true}
+                opacity={cannotEditLead() ? 0.5 : 1}
+                onPress={() => {
+                  cannotEditLead()
+                    ? showToastRedAlert("You don't have Permission")
+                    : onDocPress();
+                }}
+              />
+              <View style={{ padding: 5 }} />
+              <IconComp
+                iconName={"phone-outline"}
+                onPress={() =>
+                  // cannotEditLead() ?
+                  //     showToastRedAlert("You don't have Permission") :
+                  callWebViewRecord({
+                    navigator,
+                    phone,
+                    uniqueId,
+                    type,
+                  })
+                }
+              />
+              <View style={{ padding: 5 }} />
+              <IconComp
+                iconName={"whatsapp"}
+                onPress={() =>
+                  // cannotEditLead() ? showToastRedAlert("You don't have Permission") :
+                  sendWhatsApp(phone)
+                }
+              />
+            </View>
+          </View>
+        </View>
+      </TouchableOpacity>
     );
 }
 
 const styles = StyleSheet.create({
-    text1: {
-        color: Colors.BLACK,
-        fontSize: 16,
-        fontWeight: '700',
-        marginBottom: 5
-    },
-    text2: {
-        color: Colors.BLACK,
-        fontSize: 14,
-        fontWeight: '600',
-        marginBottom: 5
-    },
-    text3: {
-        color: Colors.DARK_GRAY,
-        fontSize: 12,
-        fontWeight: '600',
-    },
-    text4: {
-        color: Colors.WHITE,
-        fontSize: 11,
-        fontWeight: "bold",
-        textAlign: "center",
-        paddingHorizontal: 2
-    },
-    section: {
-        // flex: 1,
-        // padding: 5,
-        backgroundColor: Colors.WHITE,
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-        borderRadius: 8,
-        elevation: 3,
-        marginHorizontal: 5,
-        marginVertical: 6
-    },
-    modal: {
-        backgroundColor: Colors.RED,
-        borderRadius: 4,
-        width: "100%",
-        minHeight: 21,
-        justifyContent: "center",
-        alignItems: "center",
-        marginBottom: 10
-    },
-    catText: {
-        color: "#7b79f6",
-        fontSize: 16,
-        fontWeight: '700',
-        marginBottom: 5,
-        marginLeft: 5,
-        textTransform: 'uppercase'
-    },
-})
+  text1: {
+    color: Colors.BLACK,
+    fontSize: 16,
+    fontWeight: "700",
+    marginBottom: 5,
+  },
+  text2: {
+    color: Colors.BLACK,
+    fontSize: 14,
+    fontWeight: "600",
+    marginBottom: 5,
+  },
+  leadIdText: {
+    color: Colors.BLACK,
+    fontSize: 14,
+    fontWeight: "600",
+    marginBottom: 5,
+  },
+  text3: {
+    color: Colors.DARK_GRAY,
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  text4: {
+    color: Colors.WHITE,
+    fontSize: 11,
+    fontWeight: "bold",
+    textAlign: "center",
+    paddingHorizontal: 2,
+  },
+  section: {
+    // flex: 1,
+    // padding: 5,
+    backgroundColor: Colors.WHITE,
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    borderRadius: 8,
+    elevation: 3,
+    marginHorizontal: 5,
+    marginVertical: 6,
+  },
+  modal: {
+    backgroundColor: Colors.RED,
+    borderRadius: 4,
+    width: "100%",
+    minHeight: 21,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  catText: {
+    color: "#7b79f6",
+    fontSize: 16,
+    fontWeight: "700",
+    marginBottom: 5,
+    marginLeft: 5,
+    textTransform: "uppercase",
+  },
+});

@@ -1064,7 +1064,7 @@ const HomeScreen = ({ route, navigation }) => {
         branchClicked={() => moveToSelectBranch()}
         filterClicked={() => moveToFilter()}
       />
-      <View style={{ flex: 1, paddingHorizontal: 10 }}>
+      <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1, paddingHorizontal: 10 }}>
         {/* 0000 */}
         <View>
           {isButtonPresent && (
@@ -1221,7 +1221,7 @@ const HomeScreen = ({ route, navigation }) => {
             </>
           )}
         </View>
-        
+
         {selector.bannerList.length > 0 && renderBannerList()}
 
         {/* 1111 */}
@@ -1373,7 +1373,7 @@ const HomeScreen = ({ route, navigation }) => {
             )}
           </View>
         </View>
-      </View>
+      </ScrollView>
       <LoaderComponent visible={loading} />
     </SafeAreaView>
   );

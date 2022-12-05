@@ -11,8 +11,12 @@ import com.facebook.soloader.SoLoader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import com.facebook.react.bridge.JSIModulePackage;
+<<<<<<< HEAD
 import com.swmansion.reanimated.ReanimatedJSIModulePackage;
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
+=======
+//import com.swmansion.reanimated.ReanimatedJSIModulePackage;
+>>>>>>> fb03ee2ee4406feb7564f28e119b06d72146cd88
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -33,10 +37,10 @@ public class MainApplication extends Application implements ReactApplication {
           return packages;
         }
 
-        @Override
-        protected JSIModulePackage getJSIModulePackage() { 
-          return new ReanimatedJSIModulePackage(); 
-        }
+//        @Override
+//        protected JSIModulePackage getJSIModulePackage() {
+//          return new ReanimatedJSIModulePackage();
+//        }
 
         @Override
         protected String getJSMainModuleName() {
