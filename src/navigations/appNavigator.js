@@ -81,6 +81,8 @@ import SourceModel from "../scenes/mainScenes/Home/TabScreens/components/Employe
 import LiveLeadsScreen from "../scenes/mainScenes/LiveLeads";
 import { EMSTopTabNavigatorTwo } from "./emsTopTabNavigator";
 import { AppNavigator } from ".";
+import MapScreen from "../scenes/mainScenes/Map";
+import AttendanceScreen from "../scenes/mainScenes/Attendance";
 import AddNewEnquiryScreen from "../scenes/mainScenes/EMS/addNewEnquiry";
 
 const drawerWidth = 300;
@@ -96,7 +98,7 @@ const screeOptionStyle = {
     headerBackTitleVisible: false,
 };
 
-const MenuIcon = ({ navigation }) => {
+export const MenuIcon = ({ navigation }) => {
 
     return (
         <IconButton
@@ -230,6 +232,7 @@ export const DrawerStackIdentifiers = {
     evtbrlReport: "EVTBRL_REPORT",
     dropAnalysis:'DROP_ANALYSIS',
     liveLeads: 'LIVE_LEADS',
+    attendance: 'Attendance'
 };
 
 export const TabStackIdentifiers = {
@@ -241,14 +244,14 @@ export const TabStackIdentifiers = {
 };
 
 export const HomeStackIdentifiers = {
-    filter: "FILTER",
-    select_branch: "SELECT_BRANCH",
-    test: "TEST",
-    leaderboard: "LEADERBOARD",
-    branchRanking: "BRANCH_RANKING",
-    sourceModel: "SOURCE_MODEL",
-    home: "HOME_SCREEN",
-
+  filter: "FILTER",
+  select_branch: "SELECT_BRANCH",
+  test: "TEST",
+  leaderboard: "LEADERBOARD",
+  branchRanking: "BRANCH_RANKING",
+  sourceModel: "SOURCE_MODEL",
+  home: "HOME_SCREEN",
+  location: "MAP_TRACKER",
 };
 
 export const EmsStackIdentifiers = {
@@ -305,70 +308,76 @@ const HomeStack = createStackNavigator();
 
 const HomeStackNavigator = ({ navigation }) => {
     return (
-        <HomeStack.Navigator
-            initialRouteName={"Home"}
-            screenOptions={screeOptionStyle}
-        >
-            <HomeStack.Screen
-                name="Home"
-                component={HomeScreen}
-                initialParams={{ branchName: "" }}
-                options={{
-                    title: "Dashboard",
-                    headerShown: false,
-                    headerLeft: () => <MenuIcon navigation={navigation} />,
-                    headerRight: () => {
-                        return (
-                            <View style={{ flexDirection: "row" }}>
-
-                                {/* <NotficationIcon
+      <HomeStack.Navigator
+        initialRouteName={"Home"}
+        screenOptions={screeOptionStyle}
+      >
+        <HomeStack.Screen
+          name="Home"
+          component={HomeScreen}
+          initialParams={{ branchName: "" }}
+          options={{
+            title: "Dashboard",
+            headerShown: false,
+            headerLeft: () => <MenuIcon navigation={navigation} />,
+            headerRight: () => {
+              return (
+                <View style={{ flexDirection: "row" }}>
+                  {/* <NotficationIcon
                   navigation={navigation}
                   identifier={"NOTIF_1"}
                 /> */}
-                            </View>
-                        );
-                    },
-                }}
-            />
+                </View>
+              );
+            },
+          }}
+        />
 
-            <HomeStack.Screen
-                name={"NOTIF_1"}
-                component={NotificationScreen}
-                options={{ title: "Notifications" }}
-            />
-            <HomeStack.Screen
-                name={HomeStackIdentifiers.filter}
-                component={FilterScreen}
-                options={{ title: "Filters" }}
-            />
-            <HomeStack.Screen
-                name={HomeStackIdentifiers.select_branch}
-                component={SelectBranchComp}
-                options={{ title: "Select Branch" }}
-            />
-            <HomeStack.Screen
-                name={HomeStackIdentifiers.test}
-                component={TestScreen}
-                options={{ title: "Test Screen" }}
-            />
-            <HomeStack.Screen
-                name={HomeStackIdentifiers.leaderboard}
-                component={leaderBoardScreen}
-                options={{ title: "LeaderBoard" }}
-            />
-            <HomeStack.Screen
-                name={HomeStackIdentifiers.branchRanking}
-                component={branchRankingScreen}
-                options={{ title: "Branch ranking" }}
-            />
-            <HomeStack.Screen
-                name={HomeStackIdentifiers.sourceModel}
-                component={SourceModel}
-                options={{
-                    title: "Source/Model"
-                }}
-            />
-        </HomeStack.Navigator>
+        <HomeStack.Screen
+          name={"NOTIF_1"}
+          component={NotificationScreen}
+          options={{ title: "Notifications" }}
+        />
+        <HomeStack.Screen
+          name={HomeStackIdentifiers.filter}
+          component={FilterScreen}
+          options={{ title: "Filters" }}
+        />
+        <HomeStack.Screen
+          name={HomeStackIdentifiers.select_branch}
+          component={SelectBranchComp}
+          options={{ title: "Select Branch" }}
+        />
+        <HomeStack.Screen
+          name={HomeStackIdentifiers.test}
+          component={TestScreen}
+          options={{ title: "Test Screen" }}
+        />
+        <HomeStack.Screen
+          name={HomeStackIdentifiers.leaderboard}
+          component={leaderBoardScreen}
+          options={{ title: "LeaderBoard" }}
+        />
+        <HomeStack.Screen
+          name={HomeStackIdentifiers.branchRanking}
+          component={branchRankingScreen}
+          options={{ title: "Branch ranking" }}
+        />
+        <HomeStack.Screen
+          name={HomeStackIdentifiers.sourceModel}
+          component={SourceModel}
+          options={{
+            title: "Source/Model",
+          }}
+        />
+        <MainDrawerNavigator.Screen
+          name={HomeStackIdentifiers.location}
+          component={MapScreen}
+          options={{
+            title: "Map",
+          }}
+        />
+      </HomeStack.Navigator>
     );
 };
 
@@ -1027,83 +1036,95 @@ const BookingStackNavigator = ({ navigation }) => {
 
 const MainDrawerNavigator = createDrawerNavigator();
 
-const MainStackDrawerNavigator = () => {
-    return (
-        <MainDrawerNavigator.Navigator
-            drawerStyle={{
-                width: drawerWidth,
-            }}
-            drawerContent={(props) => <SideMenuScreen {...props} />}
-            initialRouteName={DrawerStackIdentifiers.home}
-        >
-            <MainDrawerNavigator.Screen
-                name={DrawerStackIdentifiers.home}
-                component={TabNavigator}
-                initialParams={{ screen: DrawerStackIdentifiers.home }}
-            />
-            <MainDrawerNavigator.Screen
-                name={DrawerStackIdentifiers.upcomingDeliveries}
-                component={UpcomingDeliveriestStackNavigator}
-            />
-            <MainDrawerNavigator.Screen
-                name={DrawerStackIdentifiers.complaint}
-                component={ComplaintStackNavigator}
-            />
-            <MainDrawerNavigator.Screen
-                name={DrawerStackIdentifiers.settings}
-                component={SettingsStackNavigator}
-            />
-            <MainDrawerNavigator.Screen
-                name={DrawerStackIdentifiers.digitalPayment}
-                component={DigitalPaymentStackNavigator}
-            />
-            <MainDrawerNavigator.Screen
-                name={DrawerStackIdentifiers.helpdesk}
-                component={HelpDeskStackNavigator}
-            />
-            <MainDrawerNavigator.Screen
-                name={DrawerStackIdentifiers.monthlyTarget}
-                component={MonthlyTargetStackNavigator}
-                initialParams={{ screen: DrawerStackIdentifiers.monthlyTarget }}
-            />
-            <MainDrawerNavigator.Screen
-                name={DrawerStackIdentifiers.taskManagement}
-                component={TaskManagementStackNavigator}
-            />
-            <MainDrawerNavigator.Screen
-                name={DrawerStackIdentifiers.dropAnalysis}
-                component={DropAnalysisStackNavigator}
-            />
-            <MainDrawerNavigator.Screen
-                name={DrawerStackIdentifiers.liveLeads}
-                component={LiveLeadsStackNavigator}
-            />
-            <MainDrawerNavigator.Screen
-                name={DrawerStackIdentifiers.taskTransfer}
-                component={TaskTransferStackNavigator}
-            />
+const MainStackDrawerNavigator = ({ navigation }) => {
+  return (
+    <MainDrawerNavigator.Navigator
+      drawerStyle={{
+        width: drawerWidth,
+      }}
+      drawerContent={(props) => <SideMenuScreen {...props} />}
+      initialRouteName={DrawerStackIdentifiers.home}
+    >
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.home}
+        component={TabNavigator}
+        initialParams={{ screen: DrawerStackIdentifiers.home }}
+      />
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.upcomingDeliveries}
+        component={UpcomingDeliveriestStackNavigator}
+      />
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.complaint}
+        component={ComplaintStackNavigator}
+      />
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.settings}
+        component={SettingsStackNavigator}
+      />
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.digitalPayment}
+        component={DigitalPaymentStackNavigator}
+      />
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.helpdesk}
+        component={HelpDeskStackNavigator}
+      />
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.monthlyTarget}
+        component={MonthlyTargetStackNavigator}
+        initialParams={{ screen: DrawerStackIdentifiers.monthlyTarget }}
+      />
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.taskManagement}
+        component={TaskManagementStackNavigator}
+      />
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.dropAnalysis}
+        component={DropAnalysisStackNavigator}
+      />
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.liveLeads}
+        component={LiveLeadsStackNavigator}
+      />
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.taskTransfer}
+        component={TaskTransferStackNavigator}
+      />
 
-            <MainDrawerNavigator.Screen
-                name={DrawerStackIdentifiers.eventManagement}
-                component={EventManagementStackNavigator}
-            />
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.eventManagement}
+        component={EventManagementStackNavigator}
+      />
 
-            <MainDrawerNavigator.Screen
-                name={DrawerStackIdentifiers.evtbrlReport}
-                component={TabNavigator}
-                initialParams={{ screen: "EVTBRL_REPORT" }}
-            />
-
-            {/* <MainDrawerNavigator.Screen
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.evtbrlReport}
+        component={TabNavigator}
+        initialParams={{ screen: "EVTBRL_REPORT" }}
+      />
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.attendance}
+        component={AttendanceScreen}
+        options={{
+          title: "Attendance",
+          // headerLeft: () => <MenuIcon navigation={navigation} />,
+          headerShown: true,
+          headerStyle: screeOptionStyle.headerStyle,
+          headerTitleStyle: screeOptionStyle.headerTitleStyle,
+          headerTintColor: screeOptionStyle.headerTintColor,
+          headerBackTitleVisible: screeOptionStyle.headerBackTitleVisible,
+        }}
+      />
+      {/* <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.preBooking}
         component={PreBookingStackNavigator}
       /> */}
-            <MainDrawerNavigator.Screen
-                name={"Target Settings"}
-                component={TargetSettingsScreen}
-            />
-        </MainDrawerNavigator.Navigator>
-    );
+      <MainDrawerNavigator.Screen
+        name={"Target Settings"}
+        component={TargetSettingsScreen}
+      />
+    </MainDrawerNavigator.Navigator>
+  );
 };
 
 // const MainStackNavigator = createStackNavigator();

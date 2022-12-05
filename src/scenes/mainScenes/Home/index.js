@@ -13,10 +13,11 @@ import {
   Keyboard,
   Image,
   Platform,
+  PermissionsAndroid,
   TouchableWithoutFeedback,
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
-import { IconButton, Card, Button } from "react-native-paper";
+import { IconButton, Card, Button, Portal } from "react-native-paper";
 import VectorImage from "react-native-vector-image";
 import { useDispatch, useSelector } from "react-redux";
 import { FILTER, SPEED } from "../../../assets/svg";
@@ -79,8 +80,22 @@ import RNFetchBlob from "rn-fetch-blob";
 import empData from "../../../get_target_params_for_emp.json";
 import allData from "../../../get_target_params_for_all_emps.json";
 import targetData from "../../../get_target_params.json";
+import AttendanceForm from "../../../components/AttendanceForm";
+import URL from "../../../networking/endpoints";
+import { client } from "../../../networking/client";
+import Geolocation from "@react-native-community/geolocation";
+import {
+  createDateTime,
+  getDistanceBetweenTwoPoints,
+  officeRadius,
+} from "../../../service";
 import ReactNativeModal from "react-native-modal";
 import Carousel, { Pagination } from "react-native-snap-carousel";
+
+const officeLocation = {
+  latitude: 37.33233141,
+  longitude: -122.0312186,
+};
 
 const HomeScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
@@ -104,15 +119,111 @@ const HomeScreen = ({ route, navigation }) => {
   const [headerText, setHeaderText] = useState("");
   const [isButtonPresent, setIsButtonPresent] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [attendance, setAttendance] = useState(false);
+  const [reason, setReason] = useState(false);
+  const [initialPosition, setInitialPosition] = useState({});
   const [showModal, setShowModal] = useState(false);
   const [options, setOptions] = useState({});
   const [activeBannerIndex, setActiveBannerIndex] = useState(0);
 
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {
-      setTargetData().then((r) => {}); //Commented to resolved filter issue for Home Screen
+      getCurrentLocation();
+      setTargetData().then(() =>{}); //Commented to resolved filter issue for Home Screen
     });
   }, [navigation]);
+
+  const getCurrentLocation = async () => {
+    try {
+      if (Platform.OS === "ios") {
+        Geolocation.requestAuthorization();
+        Geolocation.setRNConfiguration({
+          skipPermissionRequests: false,
+          authorizationLevel: "whenInUse",
+        });
+      }
+      Geolocation.getCurrentPosition(
+        (position) => {
+          const initialPosition = JSON.stringify(position);
+          let json = JSON.parse(initialPosition);
+          setInitialPosition(json.coords);
+        },
+        (error) => {
+          console.log(JSON.stringify(error));
+        },
+        { enableHighAccuracy: true }
+      );
+    } catch (error) {
+      console.log("ERROR", error);
+    }
+  };
+  useEffect(() => {
+    if (selector.isModalVisible && !isEmpty(initialPosition)) {
+      getDetails();
+    }
+  }, [selector.isModalVisible, initialPosition]);
+
+  function isEmpty(obj) {
+    return Object.keys(obj).length === 0;
+  }
+
+  const getDetails = async () => {
+    try {
+      var startDate = createDateTime("8:30");
+      var startBetween = createDateTime("9:30");
+      var endBetween = createDateTime("20:30");
+      var endDate = createDateTime("21:30");
+      var now = new Date();
+      var isBetween = startDate <= now && now <= endDate;
+      if (isBetween) {
+        let employeeData = await AsyncStore.getData(
+          AsyncStore.Keys.LOGIN_EMPLOYEE
+        );
+        if (employeeData) {
+          const jsonObj = JSON.parse(employeeData);
+          const response = await client.get(
+            URL.GET_ATTENDANCE_EMPID(jsonObj.empId, jsonObj.orgId)
+          );
+          const json = await response.json();
+          if (json.length != 0) {
+            let date = new Date(json[json.length - 1].createdtimestamp);
+            let dist = getDistanceBetweenTwoPoints(
+              officeLocation.latitude,
+              officeLocation.longitude,
+              initialPosition?.latitude,
+              initialPosition?.longitude
+            );
+            if (dist > officeRadius) {
+              setReason(true); ///true for reason
+            } else {
+              setReason(false);
+            }
+            if (date.getDate() != new Date().getDate()) {
+              if (startDate <= now && now <= startBetween) {
+                setAttendance(true);
+              } else {
+                setAttendance(false);
+              }
+            } else {
+              if (endBetween <= now && now <= endDate) {
+                setAttendance(true);
+              } else {
+                setAttendance(false);
+              }
+            }
+          } else {
+           if (startDate <= now && now <= startBetween) {
+             setAttendance(true);
+           } else {
+             setAttendance(false);
+           }
+          }
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const setTargetData = async () => {
     let obj = {
@@ -756,9 +867,7 @@ const HomeScreen = ({ route, navigation }) => {
         });
     }
   };
-  function isEmpty(obj) {
-    return Object.keys(obj).length === 0;
-  }
+
   const downloadInLocal = async (url) => {
     const { config, fs } = RNFetchBlob;
     let downloadDir = Platform.select({
@@ -830,6 +939,7 @@ const HomeScreen = ({ route, navigation }) => {
     // To get the file extension
     return /[.]/.exec(fileUrl) ? /[^.]+$/.exec(fileUrl) : undefined;
   };
+
   const RenderModal = () => {
     return (
       <ReactNativeModal
@@ -925,6 +1035,13 @@ const HomeScreen = ({ route, navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <RenderModal />
+      <AttendanceForm
+        visible={attendance}
+        showReason={reason}
+        inVisible={() => {
+          setAttendance(false);
+        }}
+      />
       <DropDownComponant
         visible={showDropDownModel}
         headerTitle={dropDownTitle}
@@ -932,9 +1049,14 @@ const HomeScreen = ({ route, navigation }) => {
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
           setShowDropDownModel(false);
-          setDropDownData({ key: dropDownKey, value: item.name, id: item.id });
+          setDropDownData({
+            key: dropDownKey,
+            value: item.name,
+            id: item.id,
+          });
         }}
       />
+      {/* <Button onPress={()=>{navigation.navigate(AppNavigator.HomeStackIdentifiers.location);}} /> */}
       <HeaderComp
         title={headerText}
         branchName={selectedBranchName}

@@ -89,6 +89,17 @@ export const dashboardLiveLeads =
   "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8083";
 export const profileImageUpdate =
   "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic";
+export const saveLocation =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeTracking/saveEmployeeTracking";
+export const locationUpdate =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeTracking/updateEmployeeTracking";
+export const getDetailsByempIdAndorgId =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeTracking/getDetailsByempIdAndorgId";
+export const getLocationCoordinates =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeTracking/getLocationByempIdAndorgId";
+export const reasonDropDown =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/dynamic-forms/dropdown";
+  
 
 const URL = {
   LOGIN: () => hrms_url + "/emplogin",
@@ -502,6 +513,33 @@ const URL = {
     `${dashboardLiveLeads}/dashboard/v4/get_target_params_for_all_emps`,
   GET_TOTAL_OF_TEAM: () =>
     `${dashboard}/v2/get_target_params_immediate_hierarchy`,
+  GET_ATTENDANCE_EMPID: (empId, orgId) => {
+    return (
+      sales_url +
+      "/employeeAttendance/getAttendanceByempIdAndorgId" +
+      `/${empId}/${orgId}`
+    );
+  },
+  SAVE_EMPLOYEE_ATTENDANCE: () => {
+    return sales_url + "/employeeAttendance/saveEmployeeAttendance";
+  },
+  UPDATE_EMPLOYEE_ATTENDANCE: (id) => {
+    return (
+      sales_url + "/employeeAttendance/updateEmployeeAttendance" + `/${id}`
+    );
+  },
+  DELETE_EMPLOYEE_ATTENDANCE: (id) => {
+    return (
+      sales_url + "/employeeAttendance/deleteEmployeeAttendance" + `/${id}`
+    );
+  },
+  GET_EMPLOYEES_ATTENDANCE_DETAILS: () => {
+    return sales_url + "/employeeAttendance/getEmployeeAttendanceDetails";
+  },
+  GET_LOCATION: (empId, orgId) =>
+    getDetailsByempIdAndorgId + `/${empId}/${orgId}`,
+  GET_LOCATION_COORDINATES: (empId, orgId) =>
+    getLocationCoordinates + `/${empId}/${orgId}`,
   ENQURIY_ACCOUNT: () => {
     return sales_url + `/account/enquiryAccount?allocateDse=false`;
   },
