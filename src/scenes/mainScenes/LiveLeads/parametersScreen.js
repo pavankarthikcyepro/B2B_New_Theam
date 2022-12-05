@@ -50,6 +50,7 @@ const ParametersScreen = ({ route }) => {
   const [selfInsightsData, setSelfInsightsData] = useState([]);
 
   const [allParameters, setAllParameters] = useState([]);
+  const [myParameters, setMyParameters] = useState([]);
 
   const [employeeListDropdownItem, setEmployeeListDropdownItem] = useState(0);
   const [
@@ -278,6 +279,12 @@ const ParametersScreen = ({ route }) => {
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
         if (selector.all_emp_parameters_data.length > 0) {
+          let myParams = [
+            ...selector.all_emp_parameters_data.filter(
+              (item) => item.empId === jsonObj.empId
+            ),
+          ];
+          setMyParameters(myParams);
           let tempParams = [
             ...selector.all_emp_parameters_data.filter(
               (item) => item.empId !== jsonObj.empId
@@ -657,6 +664,94 @@ const ParametersScreen = ({ route }) => {
                   </View>
                 </View>
                 {/* Employee params section */}
+                {myParameters.length > 0 &&
+                  myParameters.map((item, index) => {
+                    return (
+                      <View key={`${item.empId} ${index}`}>
+                        <View
+                          style={{
+                            paddingHorizontal: 8,
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            marginTop: 12,
+                            width: "100%",
+                          }}
+                        >
+                          <Text style={{ fontSize: 12, fontWeight: "600" }}>
+                            {item.empName}
+                          </Text>
+                          <Pressable
+                            onPress={() => {
+                              navigation.navigate(
+                                AppNavigator.HomeStackIdentifiers.sourceModel,
+                                {
+                                  empId: item.empId,
+                                  headerTitle: item.empName,
+                                  loggedInEmpId:
+                                    selector.login_employee_details.empId,
+                                  orgId: selector.login_employee_details.orgId,
+                                  type: "TEAM",
+                                  moduleType: "live-leads",
+                                }
+                              );
+                            }}
+                          >
+                            <Text
+                              style={{
+                                fontSize: 12,
+                                fontWeight: "600",
+                                color: Colors.BLUE,
+                              }}
+                            >
+                              Source/Model
+                            </Text>
+                          </Pressable>
+                        </View>
+                        {/*Source/Model View END */}
+                        <View
+                          style={[
+                            { flexDirection: "row" },
+                            item.isOpenInner && {
+                              borderRadius: 10,
+                              borderWidth: 1,
+                              borderColor: "#C62159",
+                            },
+                          ]}
+                        >
+                          {/*RIGHT SIDE VIEW*/}
+                          <View
+                            style={[
+                              {
+                                width: "100%",
+                                minHeight: 40,
+                                flexDirection: "column",
+                                paddingHorizontal: 5,
+                              },
+                            ]}
+                          >
+                            <View
+                              style={{
+                                width: "100%",
+                                minHeight: 40,
+                                flexDirection: "row",
+                              }}
+                            >
+                              <RenderLevel1NameView
+                                level={0}
+                                item={item}
+                                branchName={getBranchName(item.branchId)}
+                                color={"#C62159"}
+                                titleClick={() => {}}
+                                disable={true}
+                              />
+                              {renderData(item, "#C62159")}
+                            </View>
+                          </View>
+                        </View>
+                      </View>
+                    );
+                  })}
                 {allParameters.length > 0 &&
                   allParameters.map((item, index) => {
                     return (
@@ -2784,6 +2879,7 @@ export const RenderLevel1NameView = ({
   branchName = "",
   color,
   titleClick,
+  disable = false,
 }) => {
   return (
     <View
@@ -2797,6 +2893,7 @@ export const RenderLevel1NameView = ({
     >
       <View style={{ justifyContent: "center", alignItems: "center" }}>
         <TouchableOpacity
+          disabled={disable}
           style={{
             width: 30,
             height: 30,

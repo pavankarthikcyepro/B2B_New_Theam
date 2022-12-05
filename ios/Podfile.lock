@@ -342,7 +342,11 @@ PODS:
     - React-perflogger (= 0.64.3)
   - ReactNativeART (1.2.0):
     - React
+<<<<<<< HEAD
+  - RealmJS (10.23.0):
+=======
   - RealmJS (10.21.1):
+>>>>>>> 12e57ee0ef199b01566a9355faca08365b61bbac
     - GCDWebServer
     - React
   - rn-fetch-blob (0.12.0):
@@ -357,7 +361,11 @@ PODS:
     - React-Core
   - RNGestureHandler (2.7.0):
     - React-Core
+<<<<<<< HEAD
+  - RNReanimated (2.12.0):
+=======
   - RNReanimated (2.10.0):
+>>>>>>> 12e57ee0ef199b01566a9355faca08365b61bbac
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -597,8 +605,13 @@ SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
+<<<<<<< HEAD
+  FBLazyVector: fa8275d5086566e22a26ddc385ab5772e7f9b1bd
+  FBReactNativeSpec: 31da7dbb2452fbc9427dc5ed832e8d4ebcf45b2f
+=======
   FBLazyVector: c71c5917ec0ad2de41d5d06a5855f6d5eda06971
   FBReactNativeSpec: 2da89ba1aa56b26da79cf993d785d472e0d76f86
+>>>>>>> 12e57ee0ef199b01566a9355faca08365b61bbac
   Flipper: d3da1aa199aad94455ae725e9f3aa43f3ec17021
   Flipper-DoubleConversion: 38631e41ef4f9b12861c67d17cb5518d06badc41
   Flipper-Folly: 755929a4f851b2fb2c347d533a23f191b008554c
@@ -644,15 +657,25 @@ SPEC CHECKSUMS:
   React-runtimeexecutor: 493d9abb8b23c3f84e19ae221eeba92cadcb70dc
   ReactCommon: 8fea6422328e2fc093e25c9fac67adbcf0f04fb4
   ReactNativeART: 78edc68dd4a1e675338cd0cd113319cf3a65f2ab
+<<<<<<< HEAD
+  RealmJS: 0b5e6581baefb5ba72ecef7e0f4ca0c211d64b63
+=======
   RealmJS: 96af0fcb0bf79530e090067df590650917c27b20
+>>>>>>> 12e57ee0ef199b01566a9355faca08365b61bbac
   rn-fetch-blob: f065bb7ab7fb48dd002629f8bdcb0336602d3cba
   RNCAsyncStorage: 0c357f3156fcb16c8589ede67cc036330b6698ca
   RNCMaskedView: 0e1bc4bfa8365eba5fbbb71e07fbdc0555249489
   RNDateTimePicker: 7658208086d86d09e1627b5c34ba0cf237c60140
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
+<<<<<<< HEAD
+  RNGestureHandler: 62232ba8f562f7dea5ba1b3383494eb5bf97a4d3
+  RNReanimated: 69f427ef749f923934a9c1485ad439dd001fb73c
+  RNScreens: 34cc502acf1b916c582c60003dc3089fa01dc66d
+=======
   RNGestureHandler: 7673697e7c0e9391adefae4faa087442bc04af33
   RNReanimated: cce4727fde9f4da9b800d999fa9975ea7a021dcf
   RNScreens: f3230dd008a7d0ce5c0a8bc78ff12cf2315bda24
+>>>>>>> 12e57ee0ef199b01566a9355faca08365b61bbac
   RNSnackbar: be3333a21a453ccc272f41a8add5a71f7d44dfcd
   RNSVG: ecd661f380a07ba690c9c5929c475a44f432d674
   RNVectorIcons: 31cebfcf94e8cf8686eb5303ae0357da64d7a5a4
