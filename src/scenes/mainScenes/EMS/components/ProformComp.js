@@ -270,7 +270,6 @@ export const ProformaComp = ({
       AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
         setUserToken(token);
       });
-      console.log("$$$$$  LOGIN EMP:", employeeData);
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
         const data = {
@@ -317,7 +316,6 @@ export const ProformaComp = ({
   ]);
 
   useEffect(() => {
-    //console.log("accessoriesList======>: ", route?.params?.lists.names);
     if (route.params?.accessoriesList) {
       updatePaidAccessroies(route.params?.accessoriesList);
     }
@@ -401,7 +399,6 @@ export const ProformaComp = ({
     if (selector.enquiry_details_response) {
       // Update Paid Accesories
       const dmsLeadDto = selector.enquiry_details_response.dmsLeadDto;
-      console.log("PAID ACC:", JSON.stringify(dmsLeadDto.dmsAccessories));
       if (dmsLeadDto.dmsAccessories.length > 0) {
         let initialValue = 0;
         let totalPrice = 0,
@@ -532,7 +529,6 @@ export const ProformaComp = ({
     let tempPaidAcc = [];
     tableData.forEach((item) => {
       if (item.selected) {
-        console.log("TYPE:", item.item);
         totalPrice += item.cost;
         if (item.item === "FOC") {
           totFoc += item.cost;
@@ -787,12 +783,9 @@ export const ProformaComp = ({
   };
   const saveProformaDetails = async (from) => {
     var proformaStatus = "";
-    console.log("fromfrom", from);
     if (from === "save") {
-      console.log("fromfromiffff", from);
       proformaStatus = "ENQUIRYCOMPLETED";
     } else {
-      console.log("fromfrom", from);
       proformaStatus = "SENTFORAPPROVAL";
       const data = {
         crmUniversalId: universalId,
@@ -904,7 +897,6 @@ export const ProformaComp = ({
           //  alert("entry---------",JSON.stringify(selector.dmsLeadProducts))
         },
         (rejected) => {
-          console.log("getCarModelListFromServer Failed");
         }
       )
       .finally(() => { });
@@ -959,7 +951,6 @@ export const ProformaComp = ({
     let arrTemp = varientList.filter(function (obj) {
       return obj.name === selectedVarientName;
     });
-    console.log("VARIENT LIST: ", arrTemp[0]);
     let carModelObj = arrTemp.length > 0 ? arrTemp[0] : undefined;
     if (carModelObj !== undefined) {
       let newArray = [];
@@ -1005,7 +996,6 @@ export const ProformaComp = ({
     essentialSelected,
     fastTagSelected
   ) => {
-    console.log("CALLED");
     let totalPrice = 0;
     totalPrice += priceInfomationData.ex_showroom_price;
     // const lifeTax = getLifeTax();
@@ -1277,7 +1267,6 @@ export const ProformaComp = ({
             let totalCost = 0;
             let names = "";
             let insurenceAddOns = [];
-            console.log("ADD-ON ITEM:", JSON.stringify(item));
             if (item.length > 0) {
               item.forEach((obj, index) => {
                 totalCost += Number(obj.cost);

@@ -60,7 +60,6 @@ const LocalButtonComp = ({ title, onPress, disabled }) => {
 };
 
 const EnquiryFollowUpScreen = ({ route, navigation }) => {
-  console.log('route-----', route?.params?.model);
   const { taskId, identifier, universalId, reasonTaskName } = route.params;
   const selector = useSelector((state) => state.enquiryFollowUpReducer);
 
@@ -108,7 +107,6 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     navigation.addListener('focus', () => {
-      console.log("TYPE:", reasonTaskName);
       getCurrentLocation()
       let taskName = reasonTaskName;
       if (taskName === 'Contacts followup') { // this change is to send the previously used taskName value to the service call.
@@ -120,7 +118,6 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
 
   const getCurrentLocation = () => {
     Geolocation.getCurrentPosition(info => {
-      console.log(info)
       setCurrentLocation({
         lat: info.coords.latitude,
         long: info.coords.longitude
@@ -133,7 +130,6 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
       let findIndex = reasonList.findIndex((item) => {
         return item.value === selector.reason
       })
-      console.log("DEFAULT INDEX:", findIndex);
       if (findIndex !== -1) {
         setDefaultReasonIndex(reasonList[findIndex].value)
       }
@@ -159,11 +155,6 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
     }
   }, [selector.enquiry_details_response]);
 
-  console.log(
-    'selector.enquiry_detail---',
-    selector.enquiry_details_response?.dmsLeadDto?.model
-  );
-
   const getReasonListData = async (taskName) => {
 
     setLoading(true)
@@ -177,11 +168,9 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
             ? "PreBooking FollowUp"
             : taskName,
       };
-      console.log('123421: ', payload)
       Promise.all([
         dispatch(getReasonList(payload))
       ]).then((res) => {
-        console.log("all done", JSON.stringify(res));
         let tempReasonList = [];
         let allReasons = res[0].payload;
         if (allReasons.length > 0) {
@@ -228,7 +217,6 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
       }
       setCarModelsData([...modalList]);
     }, (rejected) => {
-      console.log("getCarModelListFromServer Failed")
     }).finally(() => {
       // Get Enquiry Details
       getEnquiryDetailsFromServer();
@@ -342,18 +330,26 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
       return;
     }
 
+    if (type == 'RESCHEDULE') {
+      if (selector.actual_start_time.trim().length === 0) {
+        showToast("Please select next followup date");
+        return;
+      }
+
+    }
+    var defaultDate = moment()
     const newTaskObj = { ...selector.task_details_response };
     newTaskObj.reason = selector.reason === 'Other' ? otherReason : selector.reason;
     newTaskObj.customerRemarks = selector.customer_remarks;
     newTaskObj.employeeRemarks = selector.employee_remarks;
     newTaskObj.taskActualStartTime = convertDateStringToMillisecondsUsingMoment(
-      selector.actual_start_time
+      selector.actual_start_time != '' ? selector.actual_start_time : defaultDate
     );
     newTaskObj.lat = currentLocation ? currentLocation.lat.toString() : null;
     newTaskObj.lon = currentLocation ? currentLocation.long.toString() : null;
     // dataObj.dmsExpectedDeliveryDate = convertDateStringToMillisecondsUsingMoment(selector.expected_delivery_date);
     newTaskObj.taskActualEndTime = convertDateStringToMillisecondsUsingMoment(
-      selector.actual_end_time
+      selector.actual_end_time != '' ? selector.actual_start_time : defaultDate
     );
     switch (type) {
       case "CLOSE":
@@ -425,7 +421,6 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
         maximumDate={selector.maxDate}
         value={new Date(Date.now())}
         onChange={(event, selectedDate) => {
-          console.log("date: ", selectedDate);
           if (Platform.OS === "android") {
             //setDatePickerVisible(false);
           }
@@ -524,7 +519,6 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
                 // onFocus={() => setIsFocus(true)}
                 // onBlur={() => setIsFocus(false)}
                 onChange={(val) => {
-                  console.log("£££", val);
                   dispatch(
                     setEnquiryFollowUpDetails({
                       key: "REASON",

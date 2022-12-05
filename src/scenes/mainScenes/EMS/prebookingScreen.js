@@ -137,7 +137,6 @@ const PreBookingScreen = ({ navigation }) => {
             setFromDateState(lastMonthFirstDate);
             const tomorrowDate = moment().add(1, "day").format(dateFormat)
             setToDateState(currentDate);
-            console.log("$$$$$$$$$$$$$ PRE BOOKING SCREEN $$$$$$$$$$$$$$$");
             // getPreBookingListFromServer(empIdStateRef.current, fromDateRef.current, toDateRef.current);
             getDataFromDB()
         });
@@ -288,7 +287,6 @@ const PreBookingScreen = ({ navigation }) => {
                 mode={"date"}
                 value={new Date(Date.now())}
                 onChange={(event, selectedDate) => {
-                    console.log("date: ", selectedDate);
                     setShowDatePicker(false)
                     if (Platform.OS === "android") {
                         if (selectedDate) {
@@ -307,7 +305,6 @@ const PreBookingScreen = ({ navigation }) => {
                 modelList={vehicleModelList}
                 sourceList={sourceList}
                 submitCallback={(payload) => {
-                    // console.log("payload: ", payload);
                     applySelectedFilters(payload);
                     setSortAndFilterVisible(false);
                 }}
@@ -388,7 +385,6 @@ const PreBookingScreen = ({ navigation }) => {
                                             needStatus={"YES"}
                                             enqCat={item.enquiryCategory}
                                             onItemPress={() =>  {
-                                                console.log("PBK: ", JSON.stringify(item));
                                                 navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, { universalId: item.universalId, mobileNo: item.phone, leadStatus: item.leadStatus })
                                             }}
                                             onDocPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.preBookingForm, { universalId: item.universalId , leadStage: item.leadStage, leadStatus: item.leadStatus})}

@@ -21,7 +21,6 @@ const ActiveScreen = ({ navigation }) => {
   const [authToken, setAuthToken] = useState("");
 
   useEffect(() => {
-    console.log("activescreen displayed");
     getAsyncStorageData();
   }, []);
 
@@ -58,12 +57,8 @@ const ActiveScreen = ({ navigation }) => {
       body: JSON.stringify(payload),
     })
       .then((response) => response.json())
-      .then((json) => {
-        console.log("complaints response: ", json);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+      .then((json) => {})
+      .catch((error) => {});
   };
 
   return (

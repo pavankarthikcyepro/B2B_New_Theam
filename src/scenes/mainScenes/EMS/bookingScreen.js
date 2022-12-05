@@ -160,7 +160,6 @@ const BookingScreen = ({ navigation }) => {
             setFromDateState(lastMonthFirstDate);
             const tomorrowDate = moment().add(1, "day").format(dateFormat)
             setToDateState(currentDate);
-            console.log("$$$$$$$$$$$$$ BOOKING SCREEN $$$$$$$$$$$$$$$");
             getDataFromDB()
         });
 
@@ -336,7 +335,6 @@ const BookingScreen = ({ navigation }) => {
                 mode={"date"}
                 value={new Date(Date.now())}
                 onChange={(event, selectedDate) => {
-                    console.log("date: ", selectedDate);
                     setShowDatePicker(false);
                     if (Platform.OS === "android") {
                         if (selectedDate) {
@@ -355,7 +353,6 @@ const BookingScreen = ({ navigation }) => {
                 modelList={vehicleModelList}
                 sourceList={sourceList}
                 submitCallback={(payload) => {
-                    // console.log("payload: ", payload);
                     applySelectedFilters(payload);
                     setSortAndFilterVisible(false);
                 }}
@@ -457,12 +454,10 @@ const BookingScreen = ({ navigation }) => {
                                     enqCat={item.enquiryCategory}
                                     onItemPress={() =>
                                         {
-                                                console.log("PBK: ", JSON.stringify(item));
                                                 navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, { universalId: item.universalId, leadStatus: item.leadStatus })
                                             }
                                     }
                                     onDocPress={() => {
-                                      console.log("BK DTLS:", item);
                                       navigation.navigate(
                                         AppNavigator.EmsStackIdentifiers
                                           .bookingForm,

@@ -16,34 +16,27 @@ const ChildComp = ({ route, navigation, }) => {
 
     const { accessorylist, key } = route.params;
     const myContext = useContext(AccessoriesContext);
-    // console.log('KEY========>', route.params.key)
 
 
     useEffect(async () => {
 
         const selectedAccessory = accessorylist.filter(x => x.selected);
-        console.log(selectedAccessory.length);
         await addItemInAsyncStorage(key, selectedAccessory).then(r => {});
 
-        // console.log("AA: ", accessorylist, key);
         setTableData([...accessorylist]);
         setSearchedData([...accessorylist]);
     }, [accessorylist])
 
     const updatedItem = (index, item) => {
-        // console.log("ITEM:", index, item);
         const data = [...tableData];
         const searchData = [...searchedData];
         const selectedItem = item;
-        // console.log("SELECTED ITEM:", selectedItem);
         let innerIndex = data.findIndex((innerItem) => {
             return innerItem.id === item.id
         })
-        // console.log("INDEX", innerIndex);
         const isSelected = selectedItem.selected;
         if (isSelected) {
-            removeItemInAsyncStorage(key, selectedItem).then(r => {
-                console.log(r)})
+            removeItemInAsyncStorage(key, selectedItem).then(r => {})
         } else {
             addItemInAsyncStorage(key, selectedItem)
         }
@@ -57,7 +50,6 @@ const ChildComp = ({ route, navigation, }) => {
     const addItemInAsyncStorage = async (key, item) => {
 
         const existingData = await AsyncStorage.getData(key);
-        console.log("exis=======>:  ", existingData);
         let data = [];
         if (!existingData) {
             data = item;
@@ -70,7 +62,6 @@ const ChildComp = ({ route, navigation, }) => {
     const removeItemInAsyncStorage = async (key, item) => {
 
         const existingData = await AsyncStorage.getData(key);
-        console.log("exis1: ", existingData);
         if (!existingData) { return }
         const parsedData = JSON.parse(existingData);
         let newData = [];
@@ -90,7 +81,6 @@ const ChildComp = ({ route, navigation, }) => {
                         value={searchKey}
                         placeholder={"Search"}
                         onChangeText={(text) => {
-                            console.log(text);
                             setSearchKey(text)
                             if (text === '') {
                                 setSearchedData([...tableData])

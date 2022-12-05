@@ -111,7 +111,6 @@ const HomeVisitScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     navigation.addListener('focus', () => {
-      console.log("TYPE:", reasonTaskName);
       getCurrentLocation()
       getReasonListData(reasonTaskName)
     })
@@ -119,7 +118,6 @@ const HomeVisitScreen = ({ route, navigation }) => {
 
   const getCurrentLocation = () => {
     Geolocation.getCurrentPosition(info => {
-      console.log(info)
       setCurrentLocation({
         lat: info.coords.latitude,
         long: info.coords.longitude
@@ -133,7 +131,6 @@ const HomeVisitScreen = ({ route, navigation }) => {
       let findIndex = reasonList.findIndex((item) => {
         return item.value === selector.reason
       })
-      console.log("DEFAULT INDEX:", findIndex);
       if (findIndex !== -1) {
         setDefaultReasonIndex(reasonList[findIndex].value)
       }
@@ -157,7 +154,6 @@ const HomeVisitScreen = ({ route, navigation }) => {
       Promise.all([
         dispatch(getReasonList(payload))
       ]).then((res) => {
-        console.log("all done", JSON.stringify(res));
         let tempReasonList = [];
         let allReasons = res[0].payload;
         if (allReasons.length > 0) {
@@ -293,7 +289,6 @@ const HomeVisitScreen = ({ route, navigation }) => {
       }
       newTaskObj.taskStatus = "RESCHEDULED";
     }
-    console.log("PAYLOAD:", JSON.stringify(newTaskObj));
     dispatch(updateTaskApi(newTaskObj));
     setActionType(actionType);
   };
@@ -366,7 +361,6 @@ const HomeVisitScreen = ({ route, navigation }) => {
           maximumDate={selector.maxDate}
           value={new Date(Date.now())}
           onChange={(event, selectedDate) => {
-            console.log("date: ", selectedDate);
             if (Platform.OS === "android") {
               //setDatePickerVisible(false);
             }
@@ -449,7 +443,6 @@ const HomeVisitScreen = ({ route, navigation }) => {
                 // onFocus={() => setIsFocus(true)}
                 // onBlur={() => setIsFocus(false)}
                 onChange={(val) => {
-                  console.log("£££", val);
                   dispatch(
                     setHomeVisitDetails({ key: "REASON", text: val.value })
                   );

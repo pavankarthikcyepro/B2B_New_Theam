@@ -107,15 +107,12 @@ export const ModelListitemCom = ({
     onChangeSubmit();
     switch (key) {
       case "MODEL":
-        console.log("onpreseed", carModelsData);
         setDataForDropDown([...carModelsData]);
         break;
       case "VARIENT":
-        console.log("TTTTT: ", selectedCarVarientsData);
         setDataForDropDown([...selectedCarVarientsData.varientListForDropDown]);
         break;
       case "COLOR":
-        console.log("TTTTT: ", carColorsData);
         setDataForDropDown([...carColorsData]);
         break;
     }
@@ -142,7 +139,6 @@ export const ModelListitemCom = ({
   }, [navigation]);
   const getAsyncstoreData = async () => {
     try {
-      console.log("CAR MODEL:", item.model);
       const employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
       );
@@ -196,7 +192,6 @@ export const ModelListitemCom = ({
     if (!selectedModelName || selectedModelName.length === 0) {
       return;
     }
-    console.log("CALLED MODEL: ", selectedModelName, carModelsData);
     let arrTemp = carModelsData.filter(function (obj) {
       return obj.model === selectedModelName;
     });
@@ -273,7 +268,6 @@ export const ModelListitemCom = ({
           updateColorsDataForSelectedVarient(selectedVarientName, [...mArray]);
         }
       }
-      //console.log("MARRAY: ", mArray);
     }
   };
 
@@ -281,7 +275,6 @@ export const ModelListitemCom = ({
     if (!selectedModelName || selectedModelName.length === 0) {
       return;
     }
-    // console.log("CALLED MODEL: ", selectedModelName, carModelsData);
     let arrTemp = carModelsData.filter(function (obj) {
       return obj.model === selectedModelName;
     });
@@ -405,7 +398,6 @@ export const ModelListitemCom = ({
         }
       }
       return variants;
-      // await console.log("VARIANTS=====", JSON.stringify(variants))
       // alert(JSON.stringify(variants))
     } catch (error) { }
   };
@@ -450,9 +442,7 @@ export const ModelListitemCom = ({
   };
 
   useEffect(() => {
-    console.log("UPDATE CAR MODEL", carModelsData);
     if (carModelsData.length > 0) {
-      console.log("CALLED$$$$$$$$");
       if (item?.model) {
         setInitialValients(item?.model);
       }
@@ -460,7 +450,6 @@ export const ModelListitemCom = ({
   }, [carModelsData]);
 
   useEffect(() => {
-    console.log("VARIENTS: ", selectedCarVarientsData);
     if (selectedCarVarientsData.varientList.length > 0) {
       try {
         // alert("is variant "+isVariantUpdated)
@@ -477,7 +466,6 @@ export const ModelListitemCom = ({
 
   const getCarModelListFromServer = (orgId) => {
     // Call Api
-    console.log("CALLED LIST API");
     GetCarModelList(orgId)
       .then(
         (resolve) => {
@@ -496,7 +484,6 @@ export const ModelListitemCom = ({
         },
         (rejected) => {
           // alert("reject")
-          console.log("getCarModelListFromServer Failed");
         }
       )
       .finally(() => {
@@ -544,7 +531,6 @@ export const ModelListitemCom = ({
         data={dataForDropDown}
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
-          console.log("ITEM:", JSON.stringify(item));
           if (dropDownKey === "MODEL") {
             updateVariantModelsData(item.name, false);
           } else if (dropDownKey === "VARIENT") {
