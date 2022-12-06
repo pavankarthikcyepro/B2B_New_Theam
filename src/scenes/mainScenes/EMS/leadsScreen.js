@@ -447,7 +447,7 @@ const LeadsScreen = ({ route, navigation }) => {
                 let path = response[0]?.payload[0]?.allLeadsSubstagesEntity;
                 if (getAllData) {
                     setSearchedData([]);
-                    // const newArr = path.map(object => {
+                    // const x = path.map(object => {
                     //     if (object.subMenu == "ALL") {
                     //         return { ...object, checked: true };
                     //     }
@@ -577,12 +577,12 @@ const LeadsScreen = ({ route, navigation }) => {
                 }
             }
             const leadStages = defLeadStage ? defLeadStage : leadStage.length === 0 ? defualtLeadStage : leadStage;
-            if (leadStages && leadStages.length > 0) {
-                const invoiceIndex = leadStages.findIndex(x => x === 'INVOICECOMPLETED');
-                if (invoiceIndex !== -1) {
-                    leadStages.splice(invoiceIndex, 1);
-                }
-            }
+            // if (leadStages && leadStages.length > 0) {
+            //     const invoiceIndex = leadStages.findIndex(x => x === 'INVOICECOMPLETED');
+            //     if (invoiceIndex !== -1) {
+            //         leadStages.splice(invoiceIndex, 1);
+            //     }
+            // }
 
             let isLive = false;
             if (
