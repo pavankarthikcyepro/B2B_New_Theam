@@ -1236,7 +1236,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             setOtherPrices(totalprice);
           }
         }
-        setAddNewInput(Object.assign([], addNewInput));
+        setAddNewInput(Object.assign([], newArr));
       }
     }
   };
@@ -5710,7 +5710,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   </Text>
 
                   <TouchableOpacity
-                    style={styles.addIcon}
+                    style={[
+                      styles.addIcon,
+                      { backgroundColor: isInputsEditable()  ? Colors.RED : Colors.GRAY },
+                    ]}
+                    disabled={!isInputsEditable()}
                     onPress={() => addHandler()}
                   >
                     <Text
@@ -5750,6 +5754,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           }}
                         >
                           <TextInput
+                            editable={isInputsEditable()}
                             style={[
                               styles.otherPriceInput,
                               {
@@ -5765,6 +5770,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             value={item.name}
                           />
                           <TextInput
+                            editable={isInputsEditable()}
                             style={[
                               styles.otherPriceInput,
                               {
@@ -5782,6 +5788,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             value={`${item.amount}`}
                           />
                           <TouchableOpacity
+                            disabled={!isInputsEditable()}
                             onPress={() => deleteHandler(index)}
                             style={{ marginLeft: 10 }}
                           >
@@ -5789,6 +5796,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                               icon="trash-can-outline"
                               color={Colors.PINK}
                               size={25}
+                              disabled={!isInputsEditable()}
                             />
                           </TouchableOpacity>
                         </View>
