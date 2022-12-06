@@ -32,7 +32,6 @@ export const getEnquiryDetailsApi = createAsyncThunk(
 
     const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
     const json = await response.json();
-
     if (!response.ok) {
       return rejectWithValue(json);
     }
@@ -408,6 +407,8 @@ const initialState = {
   maxDate: null,
 
   //Proforma Invoice
+  proforma_API_respData: "",
+  proforma_API_response: "",
   proforma_listingdata : [],
   proforma_houseNo : "",
   proforma_address:"",
@@ -2088,7 +2089,6 @@ const enquiryDetailsOverViewSlice = createSlice({
       switch (key) {
         case "CONSUMER_OFFER":
           state.consumer_offer = text;
-          console.log("manhtanffff ",text)
           break;
         case "EXCHANGE_OFFER":
           state.exchange_offer = text;
@@ -2130,6 +2130,7 @@ const enquiryDetailsOverViewSlice = createSlice({
       //  state.enquiry_details_response = action.payload.dmsEntity;
       state.enquiry_details_response = action.payload;
       state.isOpened = true;
+      
       // }
       state.isLoading = false;
     });
@@ -2190,7 +2191,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     builder.addCase(
       getOnRoadPriceAndInsurenceDetailsApi.fulfilled,
       (state, action) => {
-        console.log("proforma action.payload", JSON.stringify(action.payload));
+        
 
         if (action.payload) {
           state.vehicle_on_road_price_insurence_details_response =
@@ -2222,17 +2223,57 @@ const enquiryDetailsOverViewSlice = createSlice({
       }
     );
     builder.addCase(postProformaInvoiceDetails.pending, (state) => {
+      state.isLoading = true ;
+      state.proforma_API_response = "pending";
+      state.proforma_API_respData = "";
     });
     builder.addCase(postProformaInvoiceDetails.fulfilled, (state, action) => {
       // if (action.payload.dmsEntity) {
       //  state.enquiry_details_response = action.payload.dmsEntity;
-      if (action.payload && action.payload.crmUniversalId)
-        showToast("Successfully updated");
+      if(action.payload){
+     
+        
+
+      if (action.payload && action.payload.crmUniversalId &&
+         action.payload.performa_status ==="ENQUIRYCOMPLETED"){
+
+        showToast("Proforma invoice saved successfully"); 
+        state.proforma_API_response = "ENQUIRYCOMPLETED";
+        state.proforma_API_respData = action.payload.id;
+
+      } else if (action.payload.performa_status === "SENTFORAPPROVAL"){
+
+        showToast("Proforma invoice sent for approval"); 
+        state.proforma_API_response = "SENTFORAPPROVAL";
+        state.proforma_API_respData = action.payload.id;
+
+      } else if (action.payload.performa_status === "APPROVED"){
+
+        state.proforma_API_response = "APPROVED";
+        showToast("Proforma invoice approved successfully"); 
+        state.proforma_API_respData = action.payload.id;
+
+      } else if (action.payload.performa_status === "REJECTED") {
+
+        showToast("Proforma invoice rejected successfully");
+        state.proforma_API_response = "REJECTED";
+        state.proforma_API_respData = action.payload.id;
+
+      }
+
+        state.isLoading = false;
+        // state.proforma_API_response = "fullfilled";
+    }
+        // showToast("Successfully updated");
+     
       // state.enquiry_details_response = action.payload;
       // state.isOpened = true
       // }
     });
     builder.addCase(postProformaInvoiceDetails.rejected, (state, action) => {
+      state.isLoading = false;
+      state.proforma_API_response = "rejected";
+      state.proforma_API_respData ="";
     });
     builder.addCase(getEnquiryDetailsApiAuto.pending, (state) => {
       state.isLoading = true;

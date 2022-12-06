@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Keyboard, Text, TextInput, Pressable, Image } from "react-native";
+import { View, StyleSheet, Keyboard, Text, TextInput, Pressable, Image, Alert } from "react-native";
 import { DropDownSelectionItem } from "../../../../pureComponents";
 import { TextinputComp, DropDownComponant } from "../../../../components";
 import { GlobalStyle, Colors } from "../../../../styles";
 import { showToast } from "../../../../utils/toast";
 import { useDispatch, useSelector } from "react-redux";
-import { Checkbox, List, Button, IconButton } from "react-native-paper";
+import { Checkbox, List, Button, IconButton, Switch } from "react-native-paper";
 import moment from "moment";
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import Mailer from 'react-native-mail';
@@ -16,7 +16,7 @@ import * as AsyncStore from "../../../../asyncStore";
 import {
   getLogoNameApi, getOnRoadPriceAndInsurenceDetailsApi, setDropDownData,
    postProformaInvoiceDetails, getProformaListingDetailsApi, setOfferPriceDetails,
-  setOfferPriceDataForSelectedProforma, clearOfferPriceData
+  setOfferPriceDataForSelectedProforma, clearOfferPriceData, clearStateData
 } from "../../../../redux/enquiryFormReducer";
 import { getFocusedRouteNameFromRoute, useNavigation } from "@react-navigation/native";
 import {
@@ -123,7 +123,7 @@ const PaidAccessoriesTextAndAmountComp = ({
   );
 };
 export const ProformaComp = ({
-  userData,
+
   route,
   branchId,
   modelDetails,
@@ -189,7 +189,10 @@ export const ProformaComp = ({
   const [selectedPaidAccessoriesList, setSelectedPaidAccessoriesList] =
     useState([]);
   const [selectedInsurenceAddons, setSelectedInsurenceAddons] = useState([]);
-  const [showApproveRejectBtn, setShowApproveRejectBtn] = useState(false);
+  const [showApproveRejectBtn, setShowApproveRejectBtn] = useState(false); 
+  const [showSendForApprovBtn, setshowSendForApprovBtn] = useState(false);
+  const [showSaveBtn, setshowSaveBtn] = useState(false);
+
   const [showPrebookingPaymentSection, setShowPrebookingPaymentSection] =
     useState(false);
   const [showSubmitDropBtn, setShowSubmitDropBtn] = useState(false);
@@ -214,14 +217,23 @@ export const ProformaComp = ({
   const [selectedRegistrationCharges, setSelectedRegistrationCharges] = useState({});
   const [registrationChargesType, setRegistrationChargesType] = useState([]);
   const [focPrice, setFocPrice] = useState(selector.for_accessories);
-
+  const [userData, setUserData] = useState({
+    orgId: "",
+    employeeId: "",
+    employeeName: "",
+    isManager: false,
+    editEnable: false,
+    isPreBookingApprover: false,
+    isSelfManager: ""
+  });
+  const [selectedDate, setSelectedDate] = useState(moment().format("DD/MM/YYYY"));
 
   const [selectedCarVarientsData, setSelectedCarVarientsData] = useState({
     varientList: [],
     varientListForDropDown: [],
   });
   const [carColorsData, setCarColorsData] = useState([]);
-  // const [carModalData, setcarModalData] = useState([]);
+  const [isDownLoadVisible, setisDownLoadVisible] = useState(false);
 
   useEffect(() => {
     getUserData();
@@ -254,12 +266,32 @@ export const ProformaComp = ({
   }, [selector.proforma_listingdata])
   
   const formateLesseName = () =>{
-    let salutationTemp = selector.enquiry_details_response.dmsAccountDto.salutation ? 
-        selector.enquiry_details_response.dmsAccountDto.salutation+" " : "";
-    let firstNameTemp = selector.enquiry_details_response.dmsAccountDto.firstName ? 
-      selector.enquiry_details_response.dmsAccountDto.firstName + " " : "";
-    let lastNametemp = selector.enquiry_details_response.dmsAccountDto.lastName?
-      selector.enquiry_details_response.dmsAccountDto.lastName : "";
+    if (!selector.enquiry_details_response) {
+      return;
+    }
+   
+    let tempDmsdata = "";
+    const dmsEntity = selector.enquiry_details_response;
+    if (dmsEntity.hasOwnProperty("dmsContactDto"))
+      tempDmsdata = selector.enquiry_details_response.dmsContactDto;
+    else if (dmsEntity.hasOwnProperty("dmsAccountDto")){
+      tempDmsdata = selector.enquiry_details_response.dmsAccountDto;
+    }
+    
+     
+    let salutationTemp = 
+      tempDmsdata.salutation ? 
+        tempDmsdata.salutation+" " : "";
+
+        
+    let firstNameTemp = 
+    tempDmsdata.firstName ? 
+        tempDmsdata.firstName + " " : "";
+
+
+    let lastNametemp = 
+      tempDmsdata.lastName  ?
+        tempDmsdata.lastName : "";
 
       return salutationTemp+firstNameTemp+lastNametemp
       // selector.enquiry_details_response.dmsAccountDto.firstName + " " +
@@ -277,6 +309,34 @@ export const ProformaComp = ({
       
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
+
+        let isManager = false,
+            editEnable = false;
+        let isPreBookingApprover = false;
+        if (
+          jsonObj.hrmsRole === "MD" ||
+          jsonObj.hrmsRole === "General Manager" ||
+          jsonObj.hrmsRole === "Manager" ||
+          jsonObj.hrmsRole === "Sales Manager"
+        ) {
+          isManager = true;
+        }
+        if (jsonObj.roles.includes("PreBooking Approver")) {
+         
+          editEnable = true;
+          isPreBookingApprover = true;
+        }
+        setUserData({
+          orgId: jsonObj.orgId,
+          employeeId: jsonObj.empId,
+          employeeName: jsonObj.empName,
+          isManager: isManager,
+          editEnable: editEnable,
+          isPreBookingApprover: isPreBookingApprover,
+          isSelfManager: jsonObj.isSelfManager
+        });
+
+        
         const data = {
           branchId: branchId,
           orgId: jsonObj.orgId,
@@ -405,6 +465,8 @@ export const ProformaComp = ({
     if (selector.enquiry_details_response) {
       // Update Paid Accesories
       const dmsLeadDto = selector.enquiry_details_response.dmsLeadDto;
+     
+      
       if (dmsLeadDto.dmsAccessories.length > 0) {
         let initialValue = 0;
         let totalPrice = 0,
@@ -428,6 +490,7 @@ export const ProformaComp = ({
           (item) => item.dmsAccessoriesType !== "FOC"
         ),
       ]);
+      formateLesseName();
     }
   }, [selector?.enquiry_details_response]);
 
@@ -540,6 +603,40 @@ export const ProformaComp = ({
     )
   }, [focPrice]);
 
+  useEffect(() => {
+    if (selector.proforma_API_response === "fullfilled"){
+        // goParentScreen();
+    }
+    var key = selector.proforma_API_response;
+    switch(key){
+
+      case "ENQUIRYCOMPLETED":
+        setshowSendForApprovBtn(true);
+        setselectedProformaID(selector.proforma_API_respData)
+        break;
+      case "SENTFORAPPROVAL":
+        setselectedProformaID(selector.proforma_API_respData)
+        setshowSaveBtn(false);
+        setshowSendForApprovBtn(false);
+        setShowApproveRejectBtn(true);
+        break;
+      case "APPROVED":
+        setisDownLoadVisible(true)
+        setselectedProformaID(selector.proforma_API_respData)
+        setShowApproveRejectBtn(false)
+        break;
+      case "REJECTED" :
+        setshowSaveBtn(true)
+        setselectedProformaID(selector.proforma_API_respData)
+        setShowApproveRejectBtn(false);
+        break;
+      // default:
+    }
+  
+  
+  }, [selector.proforma_API_response])
+  
+
   const updatePaidAccessroies = (tableData) => {
     
     let totalPrice = 0,
@@ -615,6 +712,8 @@ export const ProformaComp = ({
   };
 
   const newProformaClick = () => {
+    setshowSaveBtn(true);
+    setshowSendForApprovBtn(false);
     setisnewProformaClicked(true)
     setSelectedProfroma("")
     setSelectedProfromaData([])
@@ -627,6 +726,11 @@ export const ProformaComp = ({
     setselectedVehicleID("");
     setSelectedVarientId("");
     setselectedvehicleImageId("");
+    setShowApproveRejectBtn(false);
+    setProformaNo("");
+    setSelectedDate(moment().format("DD/MM/YYYY"));
+    setisDownLoadVisible(false);
+    
   }
   const selectPerformaClick = () => {
     setisSelectPerformaClick(true)
@@ -821,7 +925,15 @@ export const ProformaComp = ({
         );
       }
 
-      alert(file.filePath);
+      // alert(file.filePath);
+      Alert.alert(
+        'File Downloaded to following location',
+        `${file.filePath}`, // <- this part is optional, you can pass an empty string
+        [
+          { text: 'OK', onPress: () => console.log('OK Pressed') },
+        ],
+        { cancelable: false },
+      );
     } catch (error) {
       alert(error);
     }
@@ -836,29 +948,63 @@ export const ProformaComp = ({
         vehicleImageId: selectedvehicleImageId,
         performaUUID: proformaNo,
 
-
-
         crmUniversalId: universalId,
-        id: "",
+        id: selectedProformaID ? selectedProformaID :"",
         performa_status: proformaStatus,
         performa_comments: "xyz",
         oth_performa_column: {
-          // ex_showroom_price: priceInfomationData.ex_showroom_price,
-          // lifeTaxPercentage: taxPercent,
-          // life_tax: lifeTaxAmount,
-          // registration_charges: priceInfomationData.registration_charges,
-          // insurance_type: selector.insurance_type,
-          // insurance_value: selectedInsurencePrice,
-          // add_on_covers: selectedAddOnsPrice,
-          // waranty_name: selector.waranty_name,
-          // waranty_value: selectedWarrentyPrice,
-          // handling_charges: priceInfomationData.handling_charges,
-          // essential_kit: priceInfomationData.essential_kit,
-          // tcs_amount: tcsAmount,
-          // paid_access: selectedPaidAccessoriesPrice,
-          // fast_tag: priceInfomationData.fast_tag,
-          // on_road_price: totalOnRoadPrice,
+          ex_showroom_price: priceInfomationData.ex_showroom_price,
+          lifeTaxPercentage: taxPercent,
+          life_tax: lifeTaxAmount,
+          registration_charges: selectedRegistrationCharges?.cost ? selectedRegistrationCharges?.cost : 0,
+          registrationType: selectedRegistrationCharges?.name ? selectedRegistrationCharges?.name : "",
+          insurance_type: selector.insurance_type,
+          insurance_value: selectedInsurencePrice,
+          add_on_covers: selectedAddOnsPrice,
+          waranty_name: selector.waranty_name,
+          waranty_value: selectedWarrentyPrice,
+          handling_charges: priceInfomationData.handling_charges,
+          essential_kit: priceInfomationData.essential_kit,
+          tcs_amount: tcsAmount,
+          paid_access: selectedPaidAccessoriesPrice,
+          fast_tag: priceInfomationData.fast_tag,
+          on_road_price: totalOnRoadPrice,
 
+          cgstsgstTaxPercentage: "",
+          cessTaxPercentage: "",
+          cgstsgst_tax: 0,
+          cess_tax: 0,
+
+          insurance_addon_data: "",
+          accessory_items: [...selectedPaidAccessoriesList],
+          promotional_offers: selector.promotional_offer,
+          special_scheme: selector.consumer_offer,
+          exchange_offers: selector.exchange_offer,
+          corporate_offer: selector.corporate_offer,
+          cash_discount: selector.cash_discount,
+          insurance_discount: selector.insurance_discount,
+          accessories_discount: selector.accessories_discount,
+          foc_accessories: selector.for_accessories,
+          additional_offer1: selector.additional_offer_1,
+          additional_offer2: selector.additional_offer_2
+
+        }
+      }
+      dispatch(postProformaInvoiceDetails(data1));
+    }
+    else if (from ==="APPROVED"){
+      proformaStatus = "APPROVED";
+      const data1 = {
+        vehicleId: selectedVehicleID,
+        varientId: selectedVarientId,
+        vehicleImageId: selectedvehicleImageId,
+        performaUUID: proformaNo,
+
+        crmUniversalId: universalId,
+        id: selectedProformaID,
+        performa_status: proformaStatus,
+        performa_comments: "xyz",
+        oth_performa_column: {
 
           ex_showroom_price: priceInfomationData.ex_showroom_price,
           lifeTaxPercentage: taxPercent,
@@ -898,7 +1044,61 @@ export const ProformaComp = ({
         }
       }
       dispatch(postProformaInvoiceDetails(data1));
-    } else {
+    }
+
+    else if (from === "REJECTED")
+    {
+      proformaStatus = "REJECTED";
+      const data1 = {
+        vehicleId: selectedVehicleID,
+        varientId: selectedVarientId,
+        vehicleImageId: selectedvehicleImageId,
+        performaUUID: proformaNo,
+        crmUniversalId: universalId,
+        id: selectedProformaID,
+        performa_status: proformaStatus,
+        performa_comments: "xyz",
+        oth_performa_column: {
+          ex_showroom_price: priceInfomationData.ex_showroom_price,
+          lifeTaxPercentage: taxPercent,
+          life_tax: lifeTaxAmount,
+          registration_charges: selectedRegistrationCharges?.cost ? selectedRegistrationCharges?.cost : 0,
+          registrationType: selectedRegistrationCharges?.name ? selectedRegistrationCharges?.name : "",
+          insurance_type: selector.insurance_type,
+          insurance_value: selectedInsurencePrice,
+          add_on_covers: selectedAddOnsPrice,
+          waranty_name: selector.waranty_name,
+          waranty_value: selectedWarrentyPrice,
+          handling_charges: priceInfomationData.handling_charges,
+          essential_kit: priceInfomationData.essential_kit,
+          tcs_amount: tcsAmount,
+          paid_access: selectedPaidAccessoriesPrice,
+          fast_tag: priceInfomationData.fast_tag,
+          on_road_price: totalOnRoadPrice,
+
+          cgstsgstTaxPercentage: "",
+          cessTaxPercentage: "",
+          cgstsgst_tax: 0,
+          cess_tax: 0,
+
+          insurance_addon_data: "",
+          accessory_items: [...selectedPaidAccessoriesList],
+          promotional_offers: selector.promotional_offer,
+          special_scheme: selector.consumer_offer,
+          exchange_offers: selector.exchange_offer,
+          corporate_offer: selector.corporate_offer,
+          cash_discount: selector.cash_discount,
+          insurance_discount: selector.insurance_discount,
+          accessories_discount: selector.accessories_discount,
+          foc_accessories: selector.for_accessories,
+          additional_offer1: selector.additional_offer_1,
+          additional_offer2: selector.additional_offer_2
+
+        }
+      }
+      dispatch(postProformaInvoiceDetails(data1));
+    }
+    else {
       proformaStatus = "SENTFORAPPROVAL";
       // todo
      
@@ -908,30 +1108,12 @@ export const ProformaComp = ({
         vehicleImageId: selectedvehicleImageId,
         performaUUID:proformaNo,
 
-
-
         crmUniversalId: universalId,
         id: selectedProformaID,
         performa_status: proformaStatus,
         performa_comments: "xyz",
         oth_performa_column: {
-          // ex_showroom_price: priceInfomationData.ex_showroom_price,
-          // lifeTaxPercentage: taxPercent,
-          // life_tax: lifeTaxAmount,
-          // registration_charges: priceInfomationData.registration_charges,
-          // insurance_type: selector.insurance_type,
-          // insurance_value: selectedInsurencePrice,
-          // add_on_covers: selectedAddOnsPrice,
-          // waranty_name: selector.waranty_name,
-          // waranty_value: selectedWarrentyPrice,
-          // handling_charges: priceInfomationData.handling_charges,
-          // essential_kit: priceInfomationData.essential_kit,
-          // tcs_amount: tcsAmount,
-          // paid_access: selectedPaidAccessoriesPrice,
-          // fast_tag: priceInfomationData.fast_tag,
-          // on_road_price: totalOnRoadPrice,
-
-
+         
           ex_showroom_price: priceInfomationData.ex_showroom_price,
           lifeTaxPercentage: taxPercent,
           life_tax: lifeTaxAmount,
@@ -1051,7 +1233,7 @@ export const ProformaComp = ({
             });
           }
           setCarModelsData([...modalList]);
-          updateVariantModelsData(modelDetails.model, orgId, modalList);
+          // updateVariantModelsData(modelDetails.model, orgId, modalList);
 
           //  alert("entry---------",JSON.stringify(selector.dmsLeadProducts))
         },
@@ -1251,11 +1433,36 @@ export const ProformaComp = ({
       let newSelectedProforma = [];
       let mArray = selector.proforma_listingdata;
    
-    
+        
       if (mArray.length > 0) {
          newSelectedProforma = mArray.filter((item) => item.id === id);
-        
-         
+         // todo
+      
+        if (newSelectedProforma[0].performa_status === "PENDING_APPROVAL" ||
+          newSelectedProforma[0].performa_status === "SENTFORAPPROVAL") {
+          setShowApproveRejectBtn(true);
+          setshowSendForApprovBtn(false);
+          setshowSaveBtn(false);
+        }
+        if (newSelectedProforma[0].performa_status === "APPROVED" || newSelectedProforma[0].performa_status === "APPROVE"){
+          setisDownLoadVisible(true);
+          
+        }else{
+          // setisDownLoadVisible(false);
+        }
+        if (newSelectedProforma[0].performa_status === "ENQUIRYCOMPLETED") {
+            setshowSaveBtn(true);
+            setshowSendForApprovBtn(true);
+          }
+
+        if (newSelectedProforma[0].performa_status === "REJECT" || newSelectedProforma[0].performa_status === "REJECTED") {
+          setisDownLoadVisible(false);
+          setshowSendForApprovBtn(true);
+          setshowSaveBtn(true);
+        } else {
+          // setisDownLoadVisible();
+        }
+        setSelectedDate(moment(newSelectedProforma[0].created_date).format("DD/MM/YYYY"));
         setProformaNo(newSelectedProforma[0].performaUUID);
         setselectedVehicleID(newSelectedProforma[0].vehicleId);
         setSelectedVarientId(newSelectedProforma[0].varientId);
@@ -1282,14 +1489,24 @@ export const ProformaComp = ({
         dispatch(
           setDropDownData({ key: "INSURANCE_TYPE", value: oth_performa_column.insurance_type, id: "" })
         );
-        setSelectedInsurencePrice(oth_performa_column.insurance_value);
+        if (Number(oth_performa_column.insurance_value) > 0){
+          setSelectedInsurencePrice(Number(oth_performa_column.insurance_value));
+        }else{
+          setSelectedInsurencePrice(0);
+        }
+        
         // let tempAddonData = {
         //   cost: oth_performa_column.add_on_covers,
         //   document_name: "Zero Dip",
         //   name: "Zero Dip",
         //   selected: true
         // }
-        setSelectedAddOnsPrice(Number(oth_performa_column.add_on_covers))
+        if (Number(oth_performa_column.add_on_covers) > 0 ){
+          setSelectedAddOnsPrice(Number(oth_performa_column.add_on_covers));
+        }else{
+          setSelectedAddOnsPrice(0);
+        }
+       
         
         if (Number(oth_performa_column.handling_charges) > 0 ){
           setHandlingChargSlctd(true);
@@ -1460,8 +1677,50 @@ export const ProformaComp = ({
     setTotalOnRoadPrice(0);
     setTcsAmount(0);
     setTotalOnRoadPriceAfterDiscount(0);
+    // setHandlingChargSlctd(false);
+    // setEssentialKitSlctd(false);
+    // setSelectedPaidAccessoriesPrice(0)
+    // setFastTagSlctd(false);
+    setSelectedAddOnsPrice(0);
+    // setSelectedInsurencePrice(0);
+
+    dispatch(
+      setDropDownData({ key: "INSURANCE_TYPE", value: "", id: "" })
+    );
+    dispatch(
+      setDropDownData({ key: "WARRANTY", value: "", id: "" })
+    );
+
   };
 
+  // Check for lead created by manager
+  const isLeadCreatedBySelf = () => {
+   
+    let isCreatedBy = false;
+    if (
+      userData &&
+      selector &&
+      selector.enquiry_details_response &&
+      selector.enquiry_details_response.dmsLeadDto
+    ) {
+      
+      if (
+        userData.employeeName ==
+        selector.enquiry_details_response.dmsLeadDto.createdBy
+      ) {
+        isCreatedBy = true;
+      }
+    }
+    
+    return isCreatedBy;
+  }
+
+
+  const goParentScreen = () => {
+    dispatch(clearStateData());
+    newProformaClick();
+    navigation.goBack();
+  };
   return (
     <View>
       <DropDownComponant
@@ -1545,24 +1804,8 @@ export const ProformaComp = ({
           );
         }}
       />
-      <View style={{ flexDirection: "row", alignSelf: "flex-end" }}>
-        <Button
-          mode="contained"
-          style={{ width: '30%', marginRight: 10 }}
-          color={Colors.PINK}
-          labelStyle={{ textTransform: "none" }}
-          onPress={() => downloadPdf("downlaod")}>
-          Download
-        </Button>
-        <Button
-          mode="contained"
-          style={{ width: '30%', }}
-          color={Colors.PINK}
-          labelStyle={{ textTransform: "none" }}
-          onPress={() => downloadPdf("email")}>
-          Email
-        </Button>
-      </View>
+    
+     
 
       <View style={{ flexDirection: "row", alignSelf: "flex-end", marginTop: '2%' }}>
         <Button
@@ -1727,7 +1970,7 @@ export const ProformaComp = ({
               {/* <TextAndAmountComp title={"Name"} text={modelDetails?.model} /> */}
               <TextAndAmountComp
                 title={"Date"}
-                text={moment().format("DD/MM/YYYY")}
+                text={selectedDate}
               />
               {/* <TextAndAmountComp title={"Name"} text={modelDetails?.model} />
               <TextAndAmountComp title={"Model"} text={modelDetails?.variant} />
@@ -2272,29 +2515,119 @@ export const ProformaComp = ({
                 {/* <Text style={GlobalStyle.underline}></Text> */}
               {/* </List.Accordion> */}
             </View>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                margin: 15,
-              }}>
-              <Button
-                mode="contained"
-                style={{ width: 120 }}
-                color={Colors.PINK}
-                labelStyle={{ textTransform: "none" }}
-                onPress={() => saveProformaDetails("save")}>
-                Save
-              </Button>
-              <Button
-                mode="contained"
-                style={{ width: 160 }}
-                color={Colors.PINK}
-                labelStyle={{ textTransform: "none" }}
-                onPress={() => saveProformaDetails("approval")}>
-                Sent For Approval
-              </Button>
-            </View>
+            {/* {showApproveRejectBtn && */}
+              <View
+                style={{
+                  flexDirection: "row", alignSelf: "flex-end"
+                  
+                }}>
+              {showSaveBtn &&
+                  <Button
+                    mode="contained"
+                    style={{ flex:1,marginRight: showSendForApprovBtn?  10: 0 }}
+                    color={Colors.PINK}
+                    labelStyle={{ textTransform: "none" }}
+                    onPress={() => saveProformaDetails("save")}>
+                    Save
+                  </Button>
+                  }
+
+                {showSendForApprovBtn &&
+                  <Button
+                    mode="contained"
+                    style={{ flex: 1 }}
+                    color={Colors.PINK}
+                    labelStyle={{ textTransform: "none" }}
+                  onPress={() => saveProformaDetails("SENTFORAPPROVAL")}>
+                    Send For Approval
+                  </Button>}
+
+              </View>
+            {/* } */}
+           
+
+            {showApproveRejectBtn &&
+              // !isLeadCreatedBySelf() &&
+              userData.isPreBookingApprover &&
+               (
+                <View style={styles.actionBtnView}>
+                  {!isRejectSelected && (
+                    <Button
+                      mode="contained"
+                    style={{ flex: 1, marginRight: 10 }}
+                      color={Colors.GREEN}
+                      labelStyle={{ textTransform: "none" }}
+                    onPress={() => saveProformaDetails("APPROVED")}
+                    >
+                      Approve
+                    </Button>
+                  )}
+                {!isRejectSelected && <Button
+                  mode="contained"
+                  style={{ flex: 1, }}
+                  color={Colors.RED}
+                  labelStyle={{ textTransform: "none" }}
+                  onPress={() =>
+                    isRejectSelected
+                      ? saveProformaDetails("REJECTED")
+                      : setIsRejectSelected(true)
+                  }
+                >
+                  {isRejectSelected ? "Submit" : "Reject"}
+                </Button>}
+                </View>
+              )}
+            {isDownLoadVisible &&
+              <View style={{ flexDirection: "row", alignSelf: "flex-end" }}>
+                <Button
+                  mode="contained"
+                  style={{ flex: 1, marginRight: 10 }}
+                  // style={{ width: '30%', marginRight: 10 }}
+                  color={Colors.PINK}
+                  labelStyle={{ textTransform: "none" }}
+                  onPress={() => downloadPdf("downlaod")}>
+                  Download
+                </Button>
+                <Button
+                  mode="contained"
+                  style={{ flex: 1, }}
+                  // style={{ width: '30%', }}
+                  color={Colors.PINK}
+                  labelStyle={{ textTransform: "none" }}
+                  onPress={() => downloadPdf("email")}>
+                  Email
+                </Button>
+              </View>}
+
+            {/* {showApproveRejectBtn && userData.isSelfManager == "Y" ? (
+              <View style={styles.actionBtnView}>
+                {!isRejectSelected && (
+                  <Button
+                    mode="contained"
+                    style={{ width: 120 }}
+                    color={Colors.GREEN}
+                    labelStyle={{ textTransform: "none" }}
+                    onPress={() => approveOrRejectMethod("APPROVE")}
+                  >
+                    Approve
+                  </Button>
+                )}
+                <Button
+                  mode="contained"
+                  color={Colors.RED}
+                  labelStyle={{ textTransform: "none" }}
+                  onPress={() =>
+                    isRejectSelected
+                      ? approveOrRejectMethod("REJECT")
+                      : setIsRejectSelected(true)
+                  }
+                >
+                  {isRejectSelected ? "Submit" : "Reject"}
+                </Button>
+              </View>
+            ) : null} */}
+
+
           </> : null}
 
       </View>
@@ -2322,7 +2655,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   actionBtnView: {
-    paddingTop: 20,
+    paddingTop: 10,
     paddingBottom: 10,
     flexDirection: "row",
     justifyContent: "space-evenly",
@@ -2353,5 +2686,11 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderRadius: 4,
     borderColor: "#7a7b7d",
-  }
+  },
+  leftLabel: {
+    fontSize: 14,
+    fontWeight: "400",
+    maxWidth: "70%",
+    color: Colors.GRAY,
+  },
 })
