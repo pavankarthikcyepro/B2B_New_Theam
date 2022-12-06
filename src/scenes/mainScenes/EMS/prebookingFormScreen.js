@@ -521,6 +521,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     setTotalOnRoadPriceAfterDiscount(0);
     setTotalOnRoadPrice(0);
     setOtherPrices(0);
+    setOtherPriceErrorNameIndex(null);
+    setOtherPriceErrorAmountIndex(null);
     clearLocalData();
     navigation.goBack();
   };
@@ -530,6 +532,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     setTotalOnRoadPriceAfterDiscount(0);
     setTotalOnRoadPrice(0);
     setOtherPrices(0);
+    setOtherPriceErrorNameIndex(null);
+    setOtherPriceErrorAmountIndex(null);
     clearLocalData();
     navigation.navigate(EmsTopTabNavigatorIdentifiers.leads, {
       fromScreen: "bookingApproval",
@@ -3267,18 +3271,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     }
     newArr.splice(index, 1);
     setAddNewInput(Object.assign([], newArr));
-  };
-
-  const saveHandler = () => {
-    if (addNewInput.length > 0) {
-      var totalprice = 0;
-      for (let data of addNewInput) {
-        totalprice = totalprice + Number(data.amount);
-        setOtherPrices(totalprice);
-      }
-    } else {
-      alert("Add atleast one price");
-    }
   };
 
   const inputHandlerName = (value, index) => {
