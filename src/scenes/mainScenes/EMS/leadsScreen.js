@@ -606,14 +606,18 @@ const LeadsScreen = ({ route, navigation }) => {
           // setTempFilterPayload(newArr);
           // onTempFliter(newArr, employeeDetail,);
           // setSubMenu(newArr);
-          // setLeadsSubMenuFilterDropDownText("ALL");
-
-          const x = path.map((object) => {
-            if (object.subMenu === condition) {
-              return { ...object, checked: true };
-            }
-            return object;
-          });
+        //   setLeadsSubMenuFilterDropDownText("ALL");
+          const x =
+            item === "Delivery"
+              ? path.map((object) => {
+                   return { ...object, checked: true };
+                })
+              : path.map((object) => {
+                  if (object.subMenu === condition) {
+                    return { ...object, checked: true };
+                  }
+                  return object;
+                });
           setSubMenu([...x]);
           setTempFilterPayload(x);
           onTempFliter(
@@ -755,21 +759,26 @@ const LeadsScreen = ({ route, navigation }) => {
         : leadStage.length === 0
         ? defualtLeadStage
         : leadStage;
-      // if (leadStages && leadStages.length > 0) {
-      //     const invoiceIndex = leadStages.findIndex(x => x === 'INVOICECOMPLETED');
-      //     if (invoiceIndex !== -1) {
-      //         leadStages.splice(invoiceIndex, 1);
-      //     }
-      // }
+      if (
+        leadStages &&
+        leadStages.length > 0 &&
+        route?.params?.param !== "Retail"
+      ) {
+        const invoiceIndex = leadStages.findIndex(
+          (x) => x === "INVOICECOMPLETED"
+        );
+        if (invoiceIndex !== -1) {
+          leadStages.splice(invoiceIndex, 1);
+        }
+      }
 
       let isLive = false;
       if (route?.params?.param && route?.params?.moduleType == "live-leads") {
         isLive = true;
         from = "2021-01-01";
-      }else if (route?.params?.param && route?.params?.moduleType == "home") {
+      } else if (route?.params?.param && route?.params?.moduleType == "home") {
         from = lastMonthFirstDate;
-      }else{
-
+      } else {
       }
       let newPayload = {
         startdate: from ? from : selectedFromDate,
@@ -912,7 +921,7 @@ const LeadsScreen = ({ route, navigation }) => {
               setLeadsFilterDropDownText("All");
             } else {
               const names = data.map((y) => y.menu);
-              getSubMenuList(names.toString());
+              getSubMenuList(names.toString(), true);
               setLeadsFilterDropDownText(names.toString());
             }
           }}
@@ -1065,19 +1074,12 @@ const LeadsScreen = ({ route, navigation }) => {
               onPress={() => {
                 setLeadsSubMenuFilterVisible(true);
               }}
-              disabled={
-                route?.params?.moduleType === "live-leads" && !refreshed
-                  ? true
-                  : false
-              }
+              disabled={true ? true : false}
             >
               <View
                 style={{
                   borderWidth: 0.5,
-                  borderColor:
-                    route?.params?.moduleType === "live-leads" && !refreshed
-                      ? Colors.GRAY
-                      : Colors.BORDER_COLOR,
+                  borderColor: true ? Colors.GRAY : Colors.BORDER_COLOR,
                   borderRadius: 4,
                   flexDirection: "row",
                   justifyContent: "space-between",
@@ -1091,10 +1093,7 @@ const LeadsScreen = ({ route, navigation }) => {
                     paddingVertical: 2,
                     fontSize: 12,
                     fontWeight: "600",
-                    color:
-                      route?.params?.moduleType === "live-leads" && !refreshed
-                        ? Colors.GRAY
-                        : Colors.BLACK,
+                    color: true ? Colors.GRAY : Colors.BLACK,
                   }}
                   numberOfLines={2}
                 >
@@ -1105,11 +1104,7 @@ const LeadsScreen = ({ route, navigation }) => {
                     leadsSubMenuFilterVisible ? "chevron-up" : "chevron-down"
                   }
                   size={20}
-                  color={
-                    route?.params?.moduleType === "live-leads" && !refreshed
-                      ? Colors.GRAY
-                      : Colors.RED
-                  }
+                  color={true ? Colors.GRAY : Colors.RED}
                   style={{ margin: 0, padding: 0 }}
                 />
               </View>
