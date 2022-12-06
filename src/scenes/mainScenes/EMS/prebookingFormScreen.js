@@ -372,16 +372,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [otherPriceErrorNameIndex, setOtherPriceErrorNameIndex] = useState(null);
   const [otherPriceErrorAmountIndexInput, setOtherPriceErrorAmountIndex] = useState(null);
 
-  useEffect(() => {
-    if (addNewInput.length > 0) {
-      var totalprice = 0;
-      for (let data of addNewInput) {
-        totalprice = totalprice + Number(data.amount);
-        setOtherPrices(totalprice);
-      }
-    }
-  }, [addNewInput]);
-
   // Edit buttons shows
   useEffect(() => {
     if (
@@ -531,6 +521,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     setTotalOnRoadPriceAfterDiscount(0);
     setTotalOnRoadPrice(0);
     setOtherPrices(0);
+    setOtherPriceErrorNameIndex(null);
+    setOtherPriceErrorAmountIndex(null);
     clearLocalData();
     navigation.goBack();
   };
@@ -540,6 +532,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     setTotalOnRoadPriceAfterDiscount(0);
     setTotalOnRoadPrice(0);
     setOtherPrices(0);
+    setOtherPriceErrorNameIndex(null);
+    setOtherPriceErrorAmountIndex(null);
     clearLocalData();
     navigation.navigate(EmsTopTabNavigatorIdentifiers.leads, {
       fromScreen: "bookingApproval",
@@ -1232,18 +1226,34 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       }
 
       if (dmsOnRoadPriceDtoObj.otherPricesData?.length > 0) {
-       // alert("other prices data", JSON.stringify(dmsOnRoadPriceDtoObj.OtherPricesData))
+        let newArr = [];
         dmsOnRoadPriceDtoObj.otherPricesData.forEach((item, i) => {
-         // setAddNewInput([])
-          addNewInput.push({
+          newArr.push({
             name: item.name,
             amount: item.amount,
           });
-          setAddNewInput(addNewInput)
         });
+        if (newArr.length > 0) {
+          var totalprice = 0;
+          for (let data of newArr) {
+            totalprice = totalprice + Number(data.amount);
+            setOtherPrices(totalprice);
+          }
+        }
+        setAddNewInput(Object.assign([], newArr));
       }
     }
   };
+
+  useEffect(() => {
+    if (addNewInput.length > 0) {
+      var totalprice = 0;
+      for (let data of addNewInput) {
+        totalprice = totalprice + Number(data.amount);
+        setOtherPrices(totalprice);
+      }
+    }
+  }, [addNewInput]);
 
   useEffect(() => {
     calculateOnRoadPriceAfterDiscount()
@@ -3090,7 +3100,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         showToastRedAlert(
           error.message ? error.message : "Something went wrong"
         );
-        console.error("error", error);
       });
   };
 
@@ -3262,18 +3271,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     }
     newArr.splice(index, 1);
     setAddNewInput(Object.assign([], newArr));
-  };
-
-  const saveHandler = () => {
-    if (addNewInput.length > 0) {
-      var totalprice = 0;
-      for (let data of addNewInput) {
-        totalprice = totalprice + Number(data.amount);
-        setOtherPrices(totalprice);
-      }
-    } else {
-      alert("Add atleast one price");
-    }
   };
 
   const inputHandlerName = (value, index) => {
@@ -5705,7 +5702,15 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   </Text>
 
                   <TouchableOpacity
-                    style={styles.addIcon}
+                    style={[
+                      styles.addIcon,
+                      {
+                        backgroundColor: isInputsEditable()
+                          ? Colors.RED
+                          : Colors.GRAY,
+                      },
+                    ]}
+                    disabled={!isInputsEditable()}
                     onPress={() => addHandler()}
                   >
                     <Text
@@ -5745,6 +5750,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           }}
                         >
                           <TextInput
+                            editable={isInputsEditable()}
                             style={[
                               styles.otherPriceInput,
                               {
@@ -5760,6 +5766,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             value={item.name}
                           />
                           <TextInput
+                            editable={isInputsEditable()}
                             style={[
                               styles.otherPriceInput,
                               {
@@ -5774,9 +5781,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             onChangeText={(value) =>
                               inputHandlerPrice(value, index)
                             }
-                            value={item.amount}
+                            value={`${item.amount}`}
                           />
                           <TouchableOpacity
+                            disabled={!isInputsEditable()}
                             onPress={() => deleteHandler(index)}
                             style={{ marginLeft: 10 }}
                           >
@@ -5784,6 +5792,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                               icon="trash-can-outline"
                               color={Colors.PINK}
                               size={25}
+                              disabled={!isInputsEditable()}
                             />
                           </TouchableOpacity>
                         </View>
@@ -5806,7 +5815,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
               <List.Accordion
                 id={"6"}
                 title={"Offer Price"}
-                description={rupeeSymbol + " " + getActualPrice().toFixed(2)}
+                description={
+                  rupeeSymbol + " " + getActualPriceAfterDiscount().toFixed(2)
+                }
                 titleStyle={{
                   color: openAccordian === "6" ? Colors.BLACK : Colors.BLACK,
                   fontSize: 16,
