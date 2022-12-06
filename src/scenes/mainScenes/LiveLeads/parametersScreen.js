@@ -382,7 +382,7 @@ const ParametersScreen = ({ route }) => {
       .format(dateFormat);
     return {
       empId: item,
-      endDate: currentDate,
+      endDate: monthLastDate,
       levelSelected: null,
       loggedInEmpId: item,
       orgId: jsonObj.orgId,

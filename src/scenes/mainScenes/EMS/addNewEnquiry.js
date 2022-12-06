@@ -1381,15 +1381,22 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       const employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
       );
+
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
+        let empObj = {
+          branchId: jsonObj.branchs[0]?.branchId,
+          modifiedBy: jsonObj.empName,
+          orgId: jsonObj.orgId,
+          ownerName: jsonObj.empName,
+        };
         let payloadx = {
           dmsAccountDto: {
             branchId: jsonObj.branchs[0]?.branchId,
-            company: "",
+            company: selector.company_name,
             createdBy: jsonObj.empName,
             customerType: selector.customer_type,
-            email: "",
+            email: selector.email,
             enquirySource: sourceData,
             subSource: subsourceID,
             firstName: selector.firstName,
@@ -1398,7 +1405,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
             orgId: jsonObj.orgId,
             ownerName: jsonObj.empName,
             phone: selector.mobile,
-            secondaryPhone: "",
+            secondaryPhone: selector.alterMobile,
             status: "PREENQUIRY",
           },
           dmsLeadDto: {
@@ -1412,9 +1419,10 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
             organizationId: jsonObj.orgId,
             phone: selector.mobile,
             sourceOfEnquiry: sourceData,
-            eventCode: "",
-            email: "",
+            eventCode: selector.event_code,
+            email: selector.email,
             referencenumber: "",
+            buyerType: selector.buyer_type,
             salesConsultant:
               selectedEmployee.length > 0 ? selectedEmployee : null,
             dmsAddresses: [
@@ -1428,6 +1436,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                 state: selector.state,
                 village: selector.village,
                 county: "India",
+                mandal: selector.mandal,
                 rural: selector.urban_or_rural === 2 ? true : false,
                 urban: selector.urban_or_rural === 1 ? true : false,
                 id: 0,
@@ -1442,14 +1451,208 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                 state: selector.p_state,
                 village: selector.p_village,
                 county: "India",
+                mandal: selector.p_mandal,
                 rural: selector.p_urban_or_rural === 2 ? true : false,
                 urban: selector.p_urban_or_rural === 1 ? true : false,
+                id: 0,
+              },
+            ],
+            dmsLeadProducts: carModelsList,
+            dmsExchagedetails: [
+              {
+                buyerType: selector.buyer_type,
+                brand: selector.a_make,
+                varient: selector.a_varient,
+                fuelType: selector.r_fuel_type,
+                regNo: selector.a_reg_no,
+                kiloMeters: selector.r_kms_driven_or_odometer_reading,
+                hypothication: selector.r_hypothication_name,
+                model: selector.r_model,
+                color: selector.a_color,
+                transmission: selector.r_transmission_type,
+                yearofManufacture: selector.r_mfg_year,
+                hypothicationBranch: selector.r_hypothication_branch,
+                hypothicationRequirement: selector.r_hypothication_checked,
+                expectedPrice: selector.r_expected_price
+                  ? Number(selector.r_expected_price)
+                  : null,
+                registrationDate: moment(
+                  selector.r_registration_date,
+                  "DD/MM/YYYY"
+                ),
+                registrationValidityDate: moment(
+                  selector.r_registration_validity_date,
+                  "DD/MM/YYYY"
+                ),
+                insuranceAvailable: `${selector.r_insurence_checked}`,
+                insuranceDocumentAvailable:
+                  selector.r_insurence_document_checked,
+                insuranceType: selector.r_insurence_type,
+                insuranceFromDate: moment(
+                  selector.r_insurence_from_date,
+                  "DD/MM/YYYY"
+                ),
+                insuranceToDate: moment(
+                  selector.r_insurence_to_date,
+                  "DD/MM/YYYY"
+                ),
+                insuranceCompanyName: selector.r_insurence_company_name,
+                insuranceDocumentKey: "",
+                regDocumentKey: selector.regDocumentKey,
+                insuranceExpiryDate: selector.r_insurence_to_date
+                  ? moment(selector.r_insurence_to_date, "DD/MM/YYYY")
+                  : "",
+                id: 0,
+              },
+            ],
+            dmsLeadScoreCards: [
+              {
+                lookingForAnyOtherBrand:
+                  selector.c_looking_for_any_other_brand_checked,
+                brand: selector.c_make,
+                otherMake: selector.c_make_other_name,
+                model: selector.c_model,
+                otherModel: selector.c_model_other_name,
+                variant: selector.c_variant,
+                color: selector.c_color,
+                fuel: selector.c_fuel_type,
+                transmissionType: selector.c_transmission_type,
+                dealershipName: selector.c_dealership_name,
+                dealershipLocation: selector.c_dealership_location,
+                priceRange: selector.c_price_range,
+                decisionPendingReason: selector.c_dealership_pending_reason,
+                onRoadPriceanyDifference: selector.c_on_road_price,
+                customerFrom: "",
+                village: "",
+                hamlet: "",
+                mandal: "",
+                mandalHq: "",
+                town: "",
+                dist: "",
+                distHq: "",
+                voiceofCustomerRemarks: "",
+                id: 0,
+              },
+            ],
+            dmsfinancedetails: [
+              {
+                financeType: selector.retail_finance,
+                financeCategory: selector.finance_category,
+                downPayment: selector.down_payment,
+                loanAmount: selector.loan_amount
+                  ? Number(selector.loan_amount)
+                  : null,
+                financeCompany: selector.bank_or_finance,
+                expectedTenureYears: selector.loan_of_tenure,
+                annualIncome: selector.approx_annual_income,
+                location: selector.location,
+                rateOfInterest: selector.rate_of_interest,
+                emi: selector.emi,
                 id: 0,
               },
             ],
             subSource: selector.sub_source_of_enquiry,
           },
         };
+
+        let tempAttachments = Object.assign(
+          [],
+          payloadx.dmsLeadDto.dmsAttachments
+        );
+
+        let imgObjArr = [];
+        if (Object.keys(uploadedImagesDataObj).length > 0) {
+          imgObjArr = Object.entries(uploadedImagesDataObj).map((e) => ({
+            name: e[0],
+            value: e[1],
+          }));
+        }
+
+        for (let i = 0; i < imgObjArr.length; i++) {
+          let isAvailable = false;
+          for (let j = 0; j < tempAttachments.length; j++) {
+            if (tempAttachments[j].documentType == imgObjArr[i].name) {
+              isAvailable = true;
+              break;
+            }
+          }
+
+          if (!isAvailable) {
+            let newObj = {
+              ...dmsAttachmentsObj,
+              documentPath: imgObjArr[i].value.documentPath,
+              fileName: imgObjArr[i].value.fileName,
+              keyName: imgObjArr[i].value.keyName,
+              documentType: imgObjArr[i].name,
+              createdBy: convertDateStringToMilliseconds(new Date()),
+              ...empObj,
+            };
+
+            if (imgObjArr[i].name === "pan" && selector.pan_number) {
+              newObj.documentNumber = selector.pan_number;
+            } else if (
+              imgObjArr[i].name == "aadhar" &&
+              selector.adhaar_number
+            ) {
+              newObj.documentNumber = selector.adhaar_number;
+            } else if (
+              imgObjArr[i].name == "employeeId" &&
+              selector.employee_id
+            ) {
+              newObj.documentNumber = selector.employee_id;
+            }
+
+            tempAttachments.push(Object.assign({}, newObj));
+          }
+        }
+
+        let panArr = tempAttachments.filter((item) => {
+          return item.documentType === "pan";
+        });
+
+        let aadharArr = tempAttachments.filter((item) => {
+          return item.documentType === "aadhar";
+        });
+
+        let empArr = tempAttachments.filter((item) => {
+          return item.documentType === "employeeId";
+        });
+
+        // if pan number
+        if (!panArr.length && selector.pan_number) {
+          newObj = {
+            ...dmsAttachmentsObj,
+            documentNumber: selector.pan_number,
+            documentType: "pan",
+            ...empObj,
+          };
+          tempAttachments.push(Object.assign({}, newObj));
+        }
+
+        // if aadhar number
+        if (!aadharArr.length && selector.adhaar_number) {
+          newObj = {
+            ...dmsAttachmentsObj,
+            documentNumber: selector.adhaar_number,
+            documentType: "aadhar",
+            ...empObj,
+          };
+          tempAttachments.push(Object.assign({}, newObj));
+        }
+
+        // if emp id
+        if (!empArr.length && selector.employee_id) {
+          newObj = {
+            ...dmsAttachmentsObj,
+            documentNumber: selector.employee_id,
+            documentType: "employeeId",
+            ...empObj,
+          };
+          tempAttachments.push(Object.assign({}, newObj));
+        }
+
+        payloadx.dmsLeadDto.dmsAttachments = Object.assign([], tempAttachments);
+        console.log(JSON.stringify(payloadx));
         let payloady = {
           dmsContactDto: payloadx.dmsAccountDto,
           dmsLeadDto: payloadx.dmsLeadDto,
@@ -1483,104 +1686,8 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
         } catch (error) {
           console.error(error);
         }
-
-        // let tempAttachments = Object.assign([], dmsLeadDto.dmsAttachments);
-
-        // let imgObjArr = [];
-        // if (Object.keys(uploadedImagesDataObj).length > 0) {
-        //   imgObjArr = Object.entries(uploadedImagesDataObj).map((e) => ({
-        //     name: e[0],
-        //     value: e[1],
-        //   }));
-        // }
-
-        // for (let i = 0; i < imgObjArr.length; i++) {
-        //   let isAvailable = false;
-        //   for (let j = 0; j < tempAttachments.length; j++) {
-        //     if (tempAttachments[j].documentType == imgObjArr[i].name) {
-        //       isAvailable = true;
-        //       break;
-        //     }
-        //   }
-
-        //   if (!isAvailable) {
-        //     let newObj = {
-        //       ...dmsAttachmentsObj,
-        //       documentPath: imgObjArr[i].value.documentPath,
-        //       fileName: imgObjArr[i].value.fileName,
-        //       keyName: imgObjArr[i].value.keyName,
-        //       documentType: imgObjArr[i].name,
-        //       createdBy: convertDateStringToMilliseconds(new Date()),
-        //       ...empObj,
-        //     };
-
-        //     if (imgObjArr[i].name === "pan" && selector.pan_number) {
-        //       newObj.documentNumber = selector.pan_number;
-        //     } else if (
-        //       imgObjArr[i].name == "aadhar" &&
-        //       selector.adhaar_number
-        //     ) {
-        //       newObj.documentNumber = selector.adhaar_number;
-        //     } else if (
-        //       imgObjArr[i].name == "employeeId" &&
-        //       selector.employee_id
-        //     ) {
-        //       newObj.documentNumber = selector.employee_id;
-        //     }
-
-        //     tempAttachments.push(Object.assign({}, newObj));
-        //   }
-        // }
-
-        // let panArr = tempAttachments.filter((item) => {
-        //   return item.documentType === "pan";
-        // });
-
-        // let aadharArr = tempAttachments.filter((item) => {
-        //   return item.documentType === "aadhar";
-        // });
-
-        // let empArr = tempAttachments.filter((item) => {
-        //   return item.documentType === "employeeId";
-        // });
-
-        // // if pan number
-        // if (!panArr.length && selector.pan_number) {
-        //   newObj = {
-        //     ...dmsAttachmentsObj,
-        //     documentNumber: selector.pan_number,
-        //     documentType: "pan",
-        //     ...empObj,
-        //   };
-        //   tempAttachments.push(Object.assign({}, newObj));
-        // }
-
-        // // if aadhar number
-        // if (!aadharArr.length && selector.adhaar_number) {
-        //   newObj = {
-        //     ...dmsAttachmentsObj,
-        //     documentNumber: selector.adhaar_number,
-        //     documentType: "aadhar",
-        //     ...empObj,
-        //   };
-        //   tempAttachments.push(Object.assign({}, newObj));
-        // }
-
-        // // if emp id
-        // if (!empArr.length && selector.employee_id) {
-        //   newObj = {
-        //     ...dmsAttachmentsObj,
-        //     documentNumber: selector.employee_id,
-        //     documentType: "employeeId",
-        //     ...empObj,
-        //   };
-        //   tempAttachments.push(Object.assign({}, newObj));
-        // }
-
-        // dmsLeadDto.dmsAttachments = Object.assign([], tempAttachments);
       }
     }
-
     // if (selector.enquiry_details_response.hasOwnProperty("dmsContactDto")) {
     //   formData = {
     //     dmsContactDto: dmsContactOrAccountDto,
