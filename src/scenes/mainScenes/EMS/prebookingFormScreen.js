@@ -372,16 +372,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [otherPriceErrorNameIndex, setOtherPriceErrorNameIndex] = useState(null);
   const [otherPriceErrorAmountIndexInput, setOtherPriceErrorAmountIndex] = useState(null);
 
-  useEffect(() => {
-    if (addNewInput.length > 0) {
-      var totalprice = 0;
-      for (let data of addNewInput) {
-        totalprice = totalprice + Number(data.amount);
-        setOtherPrices(totalprice);
-      }
-    }
-  }, [addNewInput]);
-
   // Edit buttons shows
   useEffect(() => {
     if (
@@ -1232,18 +1222,34 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       }
 
       if (dmsOnRoadPriceDtoObj.otherPricesData?.length > 0) {
-       // alert("other prices data", JSON.stringify(dmsOnRoadPriceDtoObj.OtherPricesData))
+        let newArr = [];
         dmsOnRoadPriceDtoObj.otherPricesData.forEach((item, i) => {
-         // setAddNewInput([])
-          addNewInput.push({
+          newArr.push({
             name: item.name,
             amount: item.amount,
           });
-          setAddNewInput(addNewInput)
         });
+        if (newArr.length > 0) {
+          var totalprice = 0;
+          for (let data of newArr) {
+            totalprice = totalprice + Number(data.amount);
+            setOtherPrices(totalprice);
+          }
+        }
+        setAddNewInput(Object.assign([], addNewInput));
       }
     }
   };
+
+  useEffect(() => {
+    if (addNewInput.length > 0) {
+      var totalprice = 0;
+      for (let data of addNewInput) {
+        totalprice = totalprice + Number(data.amount);
+        setOtherPrices(totalprice);
+      }
+    }
+  }, [addNewInput]);
 
   useEffect(() => {
     calculateOnRoadPriceAfterDiscount()
@@ -3090,7 +3096,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         showToastRedAlert(
           error.message ? error.message : "Something went wrong"
         );
-        console.error("error", error);
       });
   };
 
@@ -5774,7 +5779,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             onChangeText={(value) =>
                               inputHandlerPrice(value, index)
                             }
-                            value={item.amount}
+                            value={`${item.amount}`}
                           />
                           <TouchableOpacity
                             onPress={() => deleteHandler(index)}
