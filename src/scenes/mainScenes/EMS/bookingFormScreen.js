@@ -382,7 +382,6 @@ const BookingFormScreen = ({ route, navigation }) => {
 
     useEffect(() => {
         navigation.addListener('blur', () => {
-            console.log("CALLED BLUR");
             setTotalOnRoadPriceAfterDiscount(0);
             setTotalOnRoadPrice(0)
             clearLocalData()
@@ -391,7 +390,6 @@ const BookingFormScreen = ({ route, navigation }) => {
     }, [navigation]);
 
     const goParentScreen = () => {
-      console.log("CALLED BACK");
       setTotalOnRoadPriceAfterDiscount(0);
       setTotalOnRoadPrice(0);
       setOtherPrices(0);
@@ -402,7 +400,6 @@ const BookingFormScreen = ({ route, navigation }) => {
 
     useEffect(() => {
         navigation.addListener('focus', () => {
-            console.log("CALLED FOCUS");
             setComponentAppear(true);
             getAsyncstoreData();
             getBranchId();
@@ -425,7 +422,6 @@ const BookingFormScreen = ({ route, navigation }) => {
 
     const getCustomerType = async () => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-        // console.log("$$$$$ LOGIN EMP:", employeeData);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
             dispatch(getCustomerTypesApi(jsonObj.orgId));
@@ -433,7 +429,6 @@ const BookingFormScreen = ({ route, navigation }) => {
     }
 
     useEffect(() => {
-        console.log("accessoriesList: ", accessoriesList);
         if (route.params?.accessoriesList) {
             updatePaidAccessroies(route.params?.accessoriesList);
         }
@@ -485,14 +480,12 @@ const BookingFormScreen = ({ route, navigation }) => {
 
     const getBranchId = () => {
         AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_ID).then((branchId) => {
-            console.log("branch id:", branchId);
             setSelectedBranchId(branchId);
         });
     };
 
     useEffect(() => {
         if (selector.pan_number) {
-            console.log("%%%%%%%%%%", selector.pan_number, selector.form_or_pan);
             dispatch(
                 setDocumentUploadDetails({
                     key: "PAN_NUMBER",
@@ -526,7 +519,6 @@ const BookingFormScreen = ({ route, navigation }) => {
         );
         let tempToken = await AsyncStore.getData(AsyncStore.Keys.USER_TOKEN);
         if (employeeData) {
-            // console.log("EMP DATA:", employeeData);
             const jsonObj = JSON.parse(employeeData);
             let isManager = false,
                 editEnable = false;
@@ -563,7 +555,6 @@ const BookingFormScreen = ({ route, navigation }) => {
             //     dispatch(getDropDataApi(payload)),
             //     getCarModelListFromServer(jsonObj.orgId),
             // ]).then(() => {
-            //     console.log("all done");
             // });
             dispatch(getDropDataApi(payload))
             getCarModelListFromServer(jsonObj.orgId)
@@ -585,9 +576,7 @@ const BookingFormScreen = ({ route, navigation }) => {
             (resolve) => {
                 setDropData(resolve);
             },
-            (reject) => {
-                console.error("Getting drop list faild");
-            }
+            (reject) => {}
         );
     };
 
@@ -609,9 +598,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                     }
                     setCarModelsData([...modelList]);
                 },
-                (rejected) => {
-                    console.log("getCarModelListFromServer Failed");
-                }
+                (rejected) => {}
             )
             .finally(() => {
                 // Get PreBooking Details
@@ -633,15 +620,12 @@ const BookingFormScreen = ({ route, navigation }) => {
                 });
                 setFinanceBanksList([...bankList]);
             },
-            (error) => {
-                console.error(error);
-            }
+            (error) => {}
         );
     };
 
     // Handle Pre-Booking Details Response
     useEffect(() => {
-        console.log("BOOKING DATA: ", JSON.stringify(selector.pre_booking_details_response));
         if (selector.pre_booking_details_response) {
             let dmsContactOrAccountDto;
             if (
@@ -664,7 +648,6 @@ const BookingFormScreen = ({ route, navigation }) => {
                 setShowApproveRejectBtn(true);
             }
             if (dmsLeadDto.leadStatus === "PREBOOKINGCOMPLETED") {
-                console.log("INSIDE dmsLeadDto.leadStatus === PREBOOKINGCOMPLETED");
                 setShowPrebookingPaymentSection(true);
                 // Get Payment Details
                 dispatch(getPaymentDetailsApi(dmsLeadDto.id));
@@ -729,7 +712,6 @@ const BookingFormScreen = ({ route, navigation }) => {
             AsyncStore.Keys.LOGIN_EMPLOYEE
         );
         if (employeeData) {
-            console.log("EMP DATA:", employeeData);
             const jsonObj = JSON.parse(employeeData);
             let endUrl =
                 "?limit=10&offset=" + "0" + "&status=PREBOOKING&empId=" + jsonObj.empId;
@@ -1022,15 +1004,12 @@ const BookingFormScreen = ({ route, navigation }) => {
             return;
         }
 
-        console.log("coming..: ");
         let arrTemp = carModelsData.filter(function (obj) {
             return obj.model === selectedModelName;
         });
-        console.log("arrTemp: ", arrTemp.length);
 
         let carModelObj = arrTemp.length > 0 ? arrTemp[0] : undefined;
         if (carModelObj !== undefined) {
-            console.log("INSIDE IF");
             let newArray = [];
             let mArray = carModelObj.varients;
             setSelectedModelId(carModelObj.vehicleId);
@@ -1123,7 +1102,6 @@ const BookingFormScreen = ({ route, navigation }) => {
         essentialSelected,
         fastTagSelected
     ) => {
-        console.log("CALLED");
         let totalPrice = 0;
         totalPrice += priceInfomationData.ex_showroom_price;
         // const lifeTax = getLifeTax();
@@ -1152,7 +1130,6 @@ const BookingFormScreen = ({ route, navigation }) => {
         if (selector.registrationCharges) {
             totalPrice += Number(selector.registrationCharges);
         }
-        console.log("LIFE TAX PRICE: ", lifeTax, priceInfomationData.registration_charges, selectedInsurencePrice, selectedAddOnsPrice, selectedWarrentyPrice, handleSelected, priceInfomationData.handling_charges, essentialSelected, priceInfomationData.essential_kit, tcsPrice, fastTagSelected, priceInfomationData.fast_tag, selectedPaidAccessoriesPrice);
         // setTotalOnRoadPriceAfterDiscount(totalPrice - selectedFOCAccessoriesPrice);
         totalPrice += selectedPaidAccessoriesPrice;
         setTotalOnRoadPrice(totalPrice);
@@ -1178,7 +1155,6 @@ const BookingFormScreen = ({ route, navigation }) => {
         // if (insuranceDiscount !== '') {
         //     totalPrice -= Number(insuranceDiscount);
         // }
-        console.log("OFFER DISCOUNT: ", totalOnRoadPrice, selector.consumer_offer, selector.exchange_offer, selector.corporate_offer, selector.promotional_offer, selector.cash_discount, selector.for_accessories, selector.insurance_discount, selector.accessories_discount, selector.additional_offer_1, selector.additional_offer_2, accDiscount, insuranceDiscount);
         setTotalOnRoadPriceAfterDiscount(totalPrice);
     };
 
@@ -1533,7 +1509,6 @@ const BookingFormScreen = ({ route, navigation }) => {
         dmsBooking.modeOfPayment = trimStr2;
         dmsBooking.otherVehicle = selector.vechicle_registration;
         dmsBooking.deliveryLocation = selector.delivery_location;
-        // console.log("dmsBooking: ", dmsBooking);
         return dmsBooking;
     };
 
@@ -1542,7 +1517,6 @@ const BookingFormScreen = ({ route, navigation }) => {
         if (dmsAttachments.length > 0) {
             dmsAttachments.forEach((obj, index) => {
                 const item = uploadedImagesDataObj[obj.documentType];
-                // console.log("uploadedImagesDataObj2: ", uploadedImagesDataObj);
                 const object = formatAttachment(
                     { ...obj },
                     item,
@@ -1552,7 +1526,6 @@ const BookingFormScreen = ({ route, navigation }) => {
                 dmsAttachments[index] = object;
             });
         } else {
-            // console.log("uploadedImagesDataObj1: ", uploadedImagesDataObj);
             Object.keys(uploadedImagesDataObj).forEach((key, index) => {
                 const item = uploadedImagesDataObj[key];
                 const object = formatAttachment({}, item, index, item.documentType);
@@ -1845,9 +1818,7 @@ const BookingFormScreen = ({ route, navigation }) => {
             (res) => {
                 setPaidAccessoriesList([...res]);
             },
-            (err) => {
-                console.error("Paid Accossories List: ", err);
-            }
+            (err) => {}
         );
     };
 
@@ -1930,7 +1901,6 @@ const BookingFormScreen = ({ route, navigation }) => {
         })
             .then((response) => response.json())
             .then((response) => {
-                //console.log('response', response);
                 if (response) {
                     const dataObj = { ...uploadedImagesDataObj };
                     dataObj[response.documentType] = response;
@@ -1941,7 +1911,6 @@ const BookingFormScreen = ({ route, navigation }) => {
                 showToastRedAlert(
                     error.message ? error.message : "Something went wrong"
                 );
-                console.error("error", error);
             });
     };
 
@@ -2023,9 +1992,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                 // dispatch an action to update address
                 dispatch(updateAddressByPincode(resolve));
             },
-            (rejected) => {
-                console.log("rejected...: ", rejected);
-            }
+            (rejected) => {}
         );
     };
 
@@ -2141,7 +2108,6 @@ const BookingFormScreen = ({ route, navigation }) => {
           keyId={selector.imagePickerKeyId}
           onDismiss={() => dispatch(setImagePicker(""))}
           selectedImage={(data, keyId) => {
-            console.log("imageObj: ", data, keyId);
             uploadSelectedImage(data, keyId);
           }}
           // onDismiss={() => dispatch(setImagePicker(""))}
@@ -2208,7 +2174,6 @@ const BookingFormScreen = ({ route, navigation }) => {
           minimumDate={selector.minDate}
           maximumDate={selector.maxDate}
           onChange={(event, selectedDate) => {
-            console.log("date: ", selectedDate);
             if (Platform.OS === "android") {
               if (!selectedDate) {
                 dispatch(
@@ -3227,7 +3192,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                 <List.Accordion
                   id={"5"}
                   title={"Price Confirmation"}
-                  description={rupeeSymbol + " " + totalOnRoadPrice.toFixed(2)}
+                  description={rupeeSymbol + " " + getActualPrice().toFixed(2)}
                   titleStyle={{
                     color: openAccordian === "5" ? Colors.BLACK : Colors.BLACK,
                     fontSize: 16,
@@ -3677,7 +3642,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                   <TextAndAmountComp
                     title={"On Road Price:"}
                     disabled={true}
-                    amount={totalOnRoadPrice.toFixed(2)}
+                    amount={getActualPrice().toFixed(2)}
                     titleStyle={{ fontSize: 18, fontWeight: "800" }}
                     amoutStyle={{ fontSize: 18, fontWeight: "800" }}
                   />
@@ -3690,7 +3655,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                   id={"6"}
                   title={"Offer Price"}
                   description={
-                    rupeeSymbol + " " + totalOnRoadPriceAfterDiscount.toFixed(2)
+                    rupeeSymbol + " " + getActualPriceAfterDiscount().toFixed(2)
                   }
                   titleStyle={{
                     color: openAccordian === "6" ? Colors.BLACK : Colors.BLACK,
@@ -3895,7 +3860,7 @@ const BookingFormScreen = ({ route, navigation }) => {
 
                   <TextAndAmountComp
                     title={"On Road Price After Discount:"}
-                    amount={totalOnRoadPriceAfterDiscount.toFixed(2)}
+                    amount={getActualPriceAfterDiscount().toFixed(2)}
                     titleStyle={{ fontSize: 18, fontWeight: "800" }}
                     amoutStyle={{ fontSize: 18, fontWeight: "800" }}
                   />
