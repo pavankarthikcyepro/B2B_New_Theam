@@ -251,8 +251,6 @@ const PaidAccessoriesTextAndAmountComp = ({
 };
 
 const PrebookingFormScreen = ({ route, navigation }) => {
-  const [, updateState] = React.useState();
-  const forceUpdate = React.useCallback(() => updateState({}), []);
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.preBookingFormReducer);
   let scrollRef = useRef(null)
@@ -371,6 +369,18 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [selectedRegistrationCharges, setSelectedRegistrationCharges] = useState({});
   const [isLoading, setIsLoading] = useState(false)
   const [addNewInput, setAddNewInput] = useState([]);
+  const [otherPriceErrorNameIndex, setOtherPriceErrorNameIndex] = useState(null);
+  const [otherPriceErrorAmountIndexInput, setOtherPriceErrorAmountIndex] = useState(null);
+
+  useEffect(() => {
+    if (addNewInput.length > 0) {
+      var totalprice = 0;
+      for (let data of addNewInput) {
+        totalprice = totalprice + Number(data.amount);
+        setOtherPrices(totalprice);
+      }
+    }
+  }, [addNewInput]);
 
   // Edit buttons shows
   useEffect(() => {
@@ -519,16 +529,18 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const goParentScreen = () => {
     dispatch(clearState());
     setTotalOnRoadPriceAfterDiscount(0);
-    setTotalOnRoadPrice(0)
-    clearLocalData()
+    setTotalOnRoadPrice(0);
+    setOtherPrices(0);
+    clearLocalData();
     navigation.goBack();
   };
 
   const goToLeadScreen = () => {
     dispatch(clearState());
     setTotalOnRoadPriceAfterDiscount(0);
-    setTotalOnRoadPrice(0)
-    clearLocalData()
+    setTotalOnRoadPrice(0);
+    setOtherPrices(0);
+    clearLocalData();
     navigation.navigate(EmsTopTabNavigatorIdentifiers.leads, {
       fromScreen: "bookingApproval",
     });
@@ -613,6 +625,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     setSelectedPaidAccessoriesPrice(0);
     setTotalOnRoadPrice(0);
     setTotalOnRoadPriceAfterDiscount(0);
+    setOtherPrices(0);
     setPriceInformationData({
       ex_showroom_price: 0,
       ex_showroom_price_csd: 0,
@@ -1219,7 +1232,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       }
 
       if (dmsOnRoadPriceDtoObj.otherPricesData?.length > 0) {
-       // console.log("Other prices", dmsOnRoadPriceDtoObj.otherPricesData)
        // alert("other prices data", JSON.stringify(dmsOnRoadPriceDtoObj.OtherPricesData))
         dmsOnRoadPriceDtoObj.otherPricesData.forEach((item, i) => {
          // setAddNewInput([])
@@ -3212,55 +3224,97 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const randomNumberGenerator = () => {
     return Math.floor(Math.random() * 1000);
   };
+
   const addHandler = () => {
-    // const _inputs = [...addNewInput];
-    // _inputs.push({ key: '', value: '' });
-    // setAddNewInput(_inputs);
-    setAddNewInput([...addNewInput, { name: '', amount: '' }])
-    forceUpdate()
-  }
+    let isEmpty = false;
+    let toast = "please enter name";
+    if (addNewInput.length > 0) {
+      for (let i = 0; i < addNewInput.length; i++) {
+        if (addNewInput[i].name == "") {
+          setOtherPriceErrorAmountIndex(null);
+          setOtherPriceErrorNameIndex(i);
+          isEmpty = true;
+          break;
+        } else if (addNewInput[i].amount == "") {
+          setOtherPriceErrorNameIndex(null);
+          setOtherPriceErrorAmountIndex(i);
+          toast = "please enter amount";
+          isEmpty = true;
+          break;
+        }
+      }
+    }
+
+    if (isEmpty) {
+      showToast(toast);
+      return;
+    }
+    setOtherPriceErrorAmountIndex(null);
+    setOtherPriceErrorNameIndex(null);
+    setAddNewInput([...addNewInput, { name: "", amount: "" }]);
+  };
 
   const deleteHandler = (index) => {
-    // addNewInput.filter((input, index) => index != key);
-    // const _inputs = addNewInput.filter((input, index) => index != index);
-    // setAddNewInput(_inputs);
-   var amt =  addNewInput[index].amount;
-
-    setTotalOnRoadPrice(totalOnRoadPrice - Number(amt))
-   
-    addNewInput.splice(index, 1);
-    setAddNewInput(addNewInput)
-    forceUpdate()
-
-  }
-  const saveHandler = () => {
-    try{
-      if (addNewInput.length > 0) {
-        var totalprice = 0;
-        for (let data of addNewInput) {
-          totalprice = totalprice + Number(data.amount)
-          setOtherPrices(totalprice)
-        }
-       
-        setTotalOnRoadPrice(totalprice + Number(totalOnRoadPrice))
-      }
-      else alert("Add atleast one price")
-    }catch(error){
-      console.log(error)
+    let newArr = Object.assign([],addNewInput);
+    if (newArr[index]?.amount) {
+      var amt = newArr[index].amount;
+      setOtherPrices(otherPrices - Number(amt));
     }
-   
+    newArr.splice(index, 1);
+    setAddNewInput(Object.assign([], newArr));
+  };
 
-  }
+  const saveHandler = () => {
+    if (addNewInput.length > 0) {
+      var totalprice = 0;
+      for (let data of addNewInput) {
+        totalprice = totalprice + Number(data.amount);
+        setOtherPrices(totalprice);
+      }
+    } else {
+      alert("Add atleast one price");
+    }
+  };
+
   const inputHandlerName = (value, index) => {
-    addNewInput[index].name = value;
-    setAddNewInput(addNewInput)
-    forceUpdate()
-  }
+    let newArr = Object.assign([], addNewInput);
+    newArr[index].name = value;
+    setAddNewInput(Object.assign([], newArr));
+  };
+  
   const inputHandlerPrice = (value, index) => {
-    addNewInput[index].amount = value;
-    setAddNewInput(addNewInput);
-    forceUpdate()
-  }
+    let newArr = Object.assign([], addNewInput);
+    newArr[index].amount = value;
+    setAddNewInput(Object.assign([], newArr));
+  };
+
+  const getActualPrice = () => {
+    let amount = Number(totalOnRoadPrice) + Number(otherPrices);
+    return amount;
+  };
+  
+  const getActualPriceAfterDiscount = () => {
+    let amount = Number(totalOnRoadPriceAfterDiscount) + Number(otherPrices);
+    return amount;
+  };
+
+  const checkIsError = (type, index) => {
+    let isError = false;
+    if (type == "amount") {
+      if (
+        otherPriceErrorAmountIndexInput != null &&
+        otherPriceErrorAmountIndexInput == index
+      ) {
+        isError = true;
+      }
+    } else {
+      if (otherPriceErrorNameIndex != null && otherPriceErrorNameIndex == index) {
+        isError = true;
+      }
+    }
+    return isError;
+  };
+
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
       <LoaderComponent visible={isLoading} />
@@ -3271,7 +3325,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         selectedImage={(data, keyId) => {
           uploadSelectedImage(data, keyId);
         }}
-      // onDismiss={() => dispatch(setImagePicker(""))}
+        // onDismiss={() => dispatch(setImagePicker(""))}
       />
 
       <DropDownComponant
@@ -3359,9 +3413,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         onChange={(event, selectedDate) => {
           if (Platform.OS === "android") {
             if (!selectedDate) {
-              dispatch(
-                updateSelectedDate({ key: "NONE", text: selectedDate })
-              );
+              dispatch(updateSelectedDate({ key: "NONE", text: selectedDate }));
             } else {
               dispatch(updateSelectedDate({ key: "", text: selectedDate }));
             }
@@ -3518,9 +3570,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   label={"Mobile Number*"}
                   maxLength={10}
                   onChangeText={(text) =>
-                    dispatch(
-                      setCustomerDetails({ key: "MOBILE", text: text })
-                    )
+                    dispatch(setCustomerDetails({ key: "MOBILE", text: text }))
                   }
                 />
                 <Text
@@ -3642,9 +3692,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       maxLength={3}
                       keyboardType={"number-pad"}
                       onChangeText={(text) =>
-                        dispatch(
-                          setCustomerDetails({ key: "AGE", text: text })
-                        )
+                        dispatch(setCustomerDetails({ key: "AGE", text: text }))
                       }
                     />
                     <Text style={GlobalStyle.underline}></Text>
@@ -3982,9 +4030,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     label={"No"}
                     value={"no"}
                     status={
-                      selector.is_permanent_address_same === "NO"
-                        ? true
-                        : false
+                      selector.is_permanent_address_same === "NO" ? true : false
                     }
                     onPress={() => {
                       dispatch(
@@ -4583,9 +4629,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       <ImageSelectItem
                         disabled={!isInputsEditable()}
                         name={"Upload Aadhaar"}
-                        onPress={() =>
-                          dispatch(setImagePicker("UPLOAD_ADHAR"))
-                        }
+                        onPress={() => dispatch(setImagePicker("UPLOAD_ADHAR"))}
                       />
                       {uploadedImagesDataObj.aadhar?.fileName ? (
                         <View style={{ flexDirection: "row" }}>
@@ -4600,9 +4644,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                               alignItems: "center",
                             }}
                             onPress={() => {
-                              if (
-                                uploadedImagesDataObj.aadhar?.documentPath
-                              ) {
+                              if (uploadedImagesDataObj.aadhar?.documentPath) {
                                 setImagePath(
                                   uploadedImagesDataObj.aadhar?.documentPath
                                 );
@@ -4634,9 +4676,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 {/* // Employeed ID */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                  (selector.customer_type.toLowerCase() === "corporate" ||
-                    selector.customer_type.toLowerCase() === "government" ||
-                    selector.customer_type.toLowerCase() === "retired") ? (
+                (selector.customer_type.toLowerCase() === "corporate" ||
+                  selector.customer_type.toLowerCase() === "government" ||
+                  selector.customer_type.toLowerCase() === "retired") ? (
                   <View>
                     <TextinputComp
                       disabled={!isInputsEditable()}
@@ -4698,9 +4740,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
                             disabled={!isInputsEditable()}
-                            fileName={
-                              uploadedImagesDataObj.employeeId.fileName
-                            }
+                            fileName={uploadedImagesDataObj.employeeId.fileName}
                             from={"EMPLOYEE_ID"}
                           />
                         </View>
@@ -4711,8 +4751,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 {/* Last 3 month payslip */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                  (selector.customer_type.toLowerCase() === "corporate" ||
-                    selector.customer_type.toLowerCase() === "government") ? (
+                (selector.customer_type.toLowerCase() === "corporate" ||
+                  selector.customer_type.toLowerCase() === "government") ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -4736,9 +4776,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             alignItems: "center",
                           }}
                           onPress={() => {
-                            if (
-                              uploadedImagesDataObj.payslips?.documentPath
-                            ) {
+                            if (uploadedImagesDataObj.payslips?.documentPath) {
                               setImagePath(
                                 uploadedImagesDataObj.payslips?.documentPath
                               );
@@ -4769,7 +4807,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 {/* Patta Pass book */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                  selector.customer_type.toLowerCase() === "farmer" ? (
+                selector.customer_type.toLowerCase() === "farmer" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -4794,8 +4832,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           }}
                           onPress={() => {
                             if (
-                              uploadedImagesDataObj.pattaPassBook
-                                ?.documentPath
+                              uploadedImagesDataObj.pattaPassBook?.documentPath
                             ) {
                               setImagePath(
                                 uploadedImagesDataObj.pattaPassBook
@@ -4828,11 +4865,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
                           disabled={
-                            userData.isManager
-                              ? isEdit
-                                ? false
-                                : true
-                              : false
+                            userData.isManager ? (isEdit ? false : true) : false
                           }
                           style={{
                             width: "20%",
@@ -4844,8 +4877,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           }}
                           onPress={() => {
                             if (
-                              uploadedImagesDataObj?.pattaPassBook
-                                ?.documentPath
+                              uploadedImagesDataObj?.pattaPassBook?.documentPath
                             ) {
                               setImagePath(
                                 uploadedImagesDataObj?.pattaPassBook
@@ -4886,7 +4918,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 {/* Pension Letter */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                  selector.customer_type.toLowerCase() === "retired" ? (
+                selector.customer_type.toLowerCase() === "retired" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -4911,8 +4943,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           }}
                           onPress={() => {
                             if (
-                              uploadedImagesDataObj.pensionLetter
-                                ?.documentPath
+                              uploadedImagesDataObj.pensionLetter?.documentPath
                             ) {
                               setImagePath(
                                 uploadedImagesDataObj.pensionLetter
@@ -4947,7 +4978,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 {/* IMA Certificate */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                  selector.customer_type.toLowerCase() === "doctor" ? (
+                selector.customer_type.toLowerCase() === "doctor" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -4972,8 +5003,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           }}
                           onPress={() => {
                             if (
-                              uploadedImagesDataObj.imaCertificate
-                                ?.documentPath
+                              uploadedImagesDataObj.imaCertificate?.documentPath
                             ) {
                               setImagePath(
                                 uploadedImagesDataObj.imaCertificate
@@ -5008,7 +5038,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 {/* Leasing Confirmation */}
                 {selector.enquiry_segment.toLowerCase() === "commercial" &&
-                  selector.customer_type.toLowerCase() === "fleet" ? (
+                selector.customer_type.toLowerCase() === "fleet" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -5040,8 +5070,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                 ?.documentPath
                             ) {
                               setImagePath(
-                                uploadedImagesDataObj
-                                  .leasingConfirmationLetter?.documentPath
+                                uploadedImagesDataObj.leasingConfirmationLetter
+                                  ?.documentPath
                               );
                             }
                           }}
@@ -5084,8 +5114,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                 ?.documentPath
                             ) {
                               setImagePath(
-                                uploadedImagesDataObj
-                                  .leasingConfirmationLetter?.documentPath
+                                uploadedImagesDataObj.leasingConfirmationLetter
+                                  ?.documentPath
                               );
                             }
                           }}
@@ -5116,7 +5146,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 {/* Address Proof */}
                 {selector.enquiry_segment.toLowerCase() === "company" &&
-                  selector.customer_type.toLowerCase() === "institution" ? (
+                selector.customer_type.toLowerCase() === "institution" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -5179,8 +5209,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                               uploadedImagesDataObj.addressProof?.documentPath
                             ) {
                               setImagePath(
-                                uploadedImagesDataObj.addressProof
-                                  ?.documentPath
+                                uploadedImagesDataObj.addressProof?.documentPath
                               );
                             }
                           }}
@@ -5229,8 +5258,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 {/* GSTIN Number */}
                 {(selector.enquiry_segment.toLowerCase() === "company" &&
                   selector.customer_type.toLowerCase() === "institution") ||
-                  selector.customer_type_category == "B2B" ||
-                  selector.customer_type_category == "B2C" ? (
+                selector.customer_type_category == "B2B" ||
+                selector.customer_type_category == "B2C" ? (
                   <View>
                     <TextinputComp
                       disabled={!isInputsEditable()}
@@ -5332,7 +5361,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
               <List.Accordion
                 id={"5"}
                 title={"Price Confirmation"}
-                description={rupeeSymbol + " " + totalOnRoadPrice.toFixed(2)}
+                description={rupeeSymbol + " " + getActualPrice().toFixed(2)}
                 titleStyle={{
                   color: openAccordian === "5" ? Colors.BLACK : Colors.BLACK,
                   fontSize: 16,
@@ -5384,10 +5413,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       label={"Vehicle Type"}
                       value={selector.vehicle_type}
                       onPress={() =>
-                        showDropDownModelMethod(
-                          "VEHICLE_TYPE",
-                          "Vehicle Type"
-                        )
+                        showDropDownModelMethod("VEHICLE_TYPE", "Vehicle Type")
                       }
                     />
                     <TextinputComp
@@ -5476,9 +5502,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   <Text style={styles.shadowText}>
                     {rupeeSymbol +
                       " " +
-                      `${selectedRegistrationCharges?.cost
-                        ? selectedRegistrationCharges?.cost
-                        : "0.00"
+                      `${
+                        selectedRegistrationCharges?.cost
+                          ? selectedRegistrationCharges?.cost
+                          : "0.00"
                       }`}
                   </Text>
                 </View>
@@ -5633,10 +5660,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   >
                     {paidAccessoriesListNew.map((item, index) => {
                       return (
-                        <Text
-                          style={styles.accessoriText}
-                          key={"ACC" + index}
-                        >
+                        <Text style={styles.accessoriText} key={"ACC" + index}>
                           {item.accessoriesName + " - " + item.amount}
                         </Text>
                       );
@@ -5674,48 +5698,103 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   amount={priceInfomationData.fast_tag.toFixed(2)}
                 /> */}
                 <Text style={GlobalStyle.underline}></Text>
-                <Text style={styles.otherPriceTextStyle}>Add Other Prices</Text>
-                <View style={{
-                  backgroundColor: Colors.WHITE,
-                  paddingLeft: 12,
-                  paddingTop: 5,
-                }}>
-                  {addNewInput.map((input, key) => {
-                    console.log(input.amount)
-                    return (
-                      <View key={key} style={styles.inputContainer}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
-                          <TextInput style={{ backgroundColor: Colors.LIGHT_GRAY, width: '33%', height: 40, borderBottomWidth: 1 }}
-                            placeholder={"Name"} 
-                            onChangeText={(name) => inputHandlerName(name, key)} 
-                            value={addNewInput[key].name} />
-                          <TextInput style={{ backgroundColor: Colors.LIGHT_GRAY, width: '33%', height: 40, marginLeft: 20, borderBottomWidth: 1 }}
-                            placeholder={"Price"} 
+
+                <View style={styles.otherPriceTitleRow}>
+                  <Text style={styles.otherPriceTextStyle}>
+                    Add Other Prices
+                  </Text>
+
+                  <TouchableOpacity
+                    style={styles.addIcon}
+                    onPress={() => addHandler()}
+                  >
+                    <Text
+                      style={{
+                        color: Colors.WHITE,
+                        fontSize: 13,
+                      }}
+                    >
+                      +
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+
+                <View
+                  style={{
+                    backgroundColor: Colors.WHITE,
+                    paddingTop: 5,
+                  }}
+                >
+                  <FlatList
+                    data={addNewInput}
+                    extraData={[
+                      addNewInput,
+                      otherPriceErrorAmountIndexInput,
+                      otherPriceErrorNameIndex,
+                    ]}
+                    showsVerticalScrollIndicator={false}
+                    renderItem={({ item, index }) => {
+                      return (
+                        <View
+                          key={index}
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            paddingHorizontal: 10,
+                          }}
+                        >
+                          <TextInput
+                            style={[
+                              styles.otherPriceInput,
+                              {
+                                borderColor: checkIsError("name", index)
+                                  ? Colors.RED
+                                  : null,
+                              },
+                            ]}
+                            placeholder={"Name"}
+                            onChangeText={(name) =>
+                              inputHandlerName(name, index)
+                            }
+                            value={item.name}
+                          />
+                          <TextInput
+                            style={[
+                              styles.otherPriceInput,
+                              {
+                                marginLeft: 20,
+                                borderColor: checkIsError("amount", index)
+                                  ? Colors.RED
+                                  : null,
+                              },
+                            ]}
+                            placeholder={"Amount"}
                             keyboardType={"decimal-pad"}
-                            onChangeText={(value) => inputHandlerPrice(value, key)} 
-                            value={addNewInput[key].amount}/>
-                          <TouchableOpacity onPress={() => deleteHandler(key)} style={{ height: 25, marginLeft: 10 }}>
-                            <Text style={{ color: Colors.BLACK, fontSize: 13, borderWidth: 1, borderColor: Colors.BLACK, paddingHorizontal: 5 }}>Remove</Text>
+                            onChangeText={(value) =>
+                              inputHandlerPrice(value, index)
+                            }
+                            value={item.amount}
+                          />
+                          <TouchableOpacity
+                            onPress={() => deleteHandler(index)}
+                            style={{ marginLeft: 10 }}
+                          >
+                            <IconButton
+                              icon="trash-can-outline"
+                              color={Colors.PINK}
+                              size={25}
+                            />
                           </TouchableOpacity>
                         </View>
-
-                      </View>
-                    )
-                  }
-                  )}
-                  <View style={{ flexDirection: 'row', alignSelf: 'flex-end', marginVertical: 20, paddingRight: 12 }}>
-                    <TouchableOpacity onPress={() => addHandler()} >
-                      <Text style={{ color: Colors.WHITE, fontSize: 13, backgroundColor: Colors.RED, paddingHorizontal: 10, paddingVertical: 5 }}>Add</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => saveHandler()} style={{ marginLeft: 20, }}>
-                      <Text style={{ color: Colors.WHITE, fontSize: 13, backgroundColor: Colors.RED, paddingHorizontal: 10, paddingVertical: 5 }}>Save</Text>
-                    </TouchableOpacity>
-                  </View>
-
+                      );
+                    }}
+                  />
                 </View>
+
                 <TextAndAmountComp
                   title={"On Road Price:"}
-                  amount={totalOnRoadPrice.toFixed(2)}
+                  amount={getActualPrice().toFixed(2)}
                   titleStyle={{ fontSize: 18, fontWeight: "800" }}
                   amoutStyle={{ fontSize: 18, fontWeight: "800" }}
                 />
@@ -5727,9 +5806,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
               <List.Accordion
                 id={"6"}
                 title={"Offer Price"}
-                description={
-                  rupeeSymbol + " " + totalOnRoadPriceAfterDiscount.toFixed(2)
-                }
+                description={rupeeSymbol + " " + getActualPrice().toFixed(2)}
                 titleStyle={{
                   color: openAccordian === "6" ? Colors.BLACK : Colors.BLACK,
                   fontSize: 16,
@@ -5959,7 +6036,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 <TextAndAmountComp
                   title={"On Road Price After Discount:"}
-                  amount={totalOnRoadPriceAfterDiscount.toFixed(2)}
+                  amount={getActualPriceAfterDiscount().toFixed(2)}
                   titleStyle={{ fontSize: 18, fontWeight: "800" }}
                   amoutStyle={{ fontSize: 18, fontWeight: "800" }}
                 />
@@ -5989,10 +6066,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   label={"Retail Finance*"}
                   value={selector.retail_finance}
                   onPress={() =>
-                    showDropDownModelMethod(
-                      "RETAIL_FINANCE",
-                      "Retail Finance"
-                    )
+                    showDropDownModelMethod("RETAIL_FINANCE", "Retail Finance")
                   }
                 />
 
@@ -6199,10 +6273,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       label={"Bank/Financer"}
                       value={selector.bank_or_finance}
                       onPress={() =>
-                        showDropDownModelMethod(
-                          "BANK_FINANCE",
-                          "Bank/Financer"
-                        )
+                        showDropDownModelMethod("BANK_FINANCE", "Bank/Financer")
                       }
                     />
 
@@ -6412,8 +6483,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   id={"11"}
                   title={"Manager Reject Remarks"}
                   titleStyle={{
-                    color:
-                      openAccordian === "11" ? Colors.BLACK : Colors.BLACK,
+                    color: openAccordian === "11" ? Colors.BLACK : Colors.BLACK,
                     fontSize: 16,
                     fontWeight: "600",
                   }}
@@ -6452,8 +6522,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   id={"12"}
                   title={"Booking Payment Details"}
                   titleStyle={{
-                    color:
-                      openAccordian === "12" ? Colors.BLACK : Colors.BLACK,
+                    color: openAccordian === "12" ? Colors.BLACK : Colors.BLACK,
                     fontSize: 16,
                     fontWeight: "600",
                   }}
@@ -6469,9 +6538,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
                         name={"Receipt Doc*"}
-                        onPress={() =>
-                          dispatch(setImagePicker("RECEIPT_DOC"))
-                        }
+                        onPress={() => dispatch(setImagePicker("RECEIPT_DOC"))}
                       />
                     </View>
                     {uploadedImagesDataObj.receipt?.fileName ? (
@@ -6566,44 +6633,44 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                   {(selector.booking_payment_mode === "InternetBanking" ||
                     selector.booking_payment_mode === "Internet Banking") && (
-                      <View>
-                        <TextinputComp
-                          style={styles.textInputStyle}
-                          value={selector.utr_no}
-                          label={"UTR No"}
-                          onChangeText={(text) =>
-                            dispatch(
-                              setPreBookingPaymentDetials({
-                                key: "UTR_NO",
-                                text: text,
-                              })
-                            )
-                          }
-                        />
-                        <Text style={GlobalStyle.underline}></Text>
-                        <DateSelectItem
-                          label={"Transaction Date"}
-                          value={selector.transaction_date}
-                          onPress={() =>
-                            dispatch(setDatePicker("TRANSACTION_DATE"))
-                          }
-                        />
-                        <TextinputComp
-                          style={styles.textInputStyle}
-                          value={selector.comapany_bank_name}
-                          label={"Company Bank Name"}
-                          onChangeText={(text) =>
-                            dispatch(
-                              setPreBookingPaymentDetials({
-                                key: "COMPANY_BANK_NAME",
-                                text: text,
-                              })
-                            )
-                          }
-                        />
-                        <Text style={GlobalStyle.underline}></Text>
-                      </View>
-                    )}
+                    <View>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.utr_no}
+                        label={"UTR No"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setPreBookingPaymentDetials({
+                              key: "UTR_NO",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <DateSelectItem
+                        label={"Transaction Date"}
+                        value={selector.transaction_date}
+                        onPress={() =>
+                          dispatch(setDatePicker("TRANSACTION_DATE"))
+                        }
+                      />
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.comapany_bank_name}
+                        label={"Company Bank Name"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setPreBookingPaymentDetials({
+                              key: "COMPANY_BANK_NAME",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
 
                   {selector.booking_payment_mode === "Cheque" && (
                     <View>
@@ -6663,8 +6730,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   id={"10"}
                   title={"Booking Approval Lost Section"}
                   titleStyle={{
-                    color:
-                      openAccordian === "10" ? Colors.BLACK : Colors.BLACK,
+                    color: openAccordian === "10" ? Colors.BLACK : Colors.BLACK,
                     fontSize: 16,
                     fontWeight: "600",
                   }}
@@ -6796,7 +6862,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   disabled={selector.isLoading || isLoading}
                   labelStyle={{ textTransform: "none" }}
                   onPress={() => {
-                    submitClicked()
+                    submitClicked();
                   }}
                 >
                   SUBMIT
@@ -7075,16 +7141,16 @@ const styles = StyleSheet.create({
     color: Colors.GRAY,
   },
   dropdownContainer: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 16,
     // borderWidth: 1,
-    width: '100%',
+    width: "100%",
     height: 50,
-    borderRadius: 5
+    borderRadius: 5,
   },
   dropdown: {
     height: 50,
-    borderColor: 'gray',
+    borderColor: "gray",
     borderWidth: 0.5,
     borderRadius: 8,
     paddingHorizontal: 8,
@@ -7093,8 +7159,8 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   label: {
-    position: 'absolute',
-    backgroundColor: 'white',
+    position: "absolute",
+    backgroundColor: "white",
     left: 22,
     top: 8,
     zIndex: 999,
@@ -7106,8 +7172,8 @@ const styles = StyleSheet.create({
   },
   selectedTextStyle: {
     fontSize: 16,
-    color: '#000',
-    fontWeight: '400'
+    color: "#000",
+    fontWeight: "400",
   },
   iconStyle: {
     width: 20,
@@ -7117,19 +7183,30 @@ const styles = StyleSheet.create({
     height: 40,
     fontSize: 16,
   },
+  otherPriceInput: {
+    backgroundColor: Colors.LIGHT_GRAY,
+    width: "33%",
+    height: 40,
+    borderBottomWidth: 1,
+  },
+  otherPriceTitleRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: Colors.WHITE,
+    paddingTop: 7
+  },
+  addIcon: {
+    backgroundColor: Colors.RED,
+    paddingVertical: 4,
+    paddingHorizontal: 12,
+    borderRadius: 5,
+    marginRight: 20,
+  },
   otherPriceTextStyle: {
     fontSize: 14,
     fontWeight: "400",
     color: Colors.GRAY,
-    backgroundColor: '#fff',
-    paddingLeft: 12
+    paddingLeft: 12,
   },
-  inputContainer: {
-    // flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    marginTop: 5
-    // borderBottomWidth: 1,
-    // borderBottomColor: Colors.GRAY
-  }
 });
