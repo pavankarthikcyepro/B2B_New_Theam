@@ -5704,7 +5704,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   <TouchableOpacity
                     style={[
                       styles.addIcon,
-                      { backgroundColor: isInputsEditable()  ? Colors.RED : Colors.GRAY },
+                      {
+                        backgroundColor: isInputsEditable()
+                          ? Colors.RED
+                          : Colors.GRAY,
+                      },
                     ]}
                     disabled={!isInputsEditable()}
                     onPress={() => addHandler()}
@@ -5811,7 +5815,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
               <List.Accordion
                 id={"6"}
                 title={"Offer Price"}
-                description={rupeeSymbol + " " + getActualPrice().toFixed(2)}
+                description={
+                  rupeeSymbol + " " + getActualPriceAfterDiscount().toFixed(2)
+                }
                 titleStyle={{
                   color: openAccordian === "6" ? Colors.BLACK : Colors.BLACK,
                   fontSize: 16,
