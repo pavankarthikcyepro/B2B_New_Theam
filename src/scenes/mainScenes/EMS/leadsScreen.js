@@ -154,12 +154,20 @@ const LeadsScreen = ({ route, navigation }) => {
         const newArr2 = modelList.map(v => ({ ...v, checked: v.menu == route?.params?.param ? true : false }));
         setLeadsFilterData([...newArr2]);
         setTempEmployee(route?.params?.employeeDetail ? route?.params?.employeeDetail : null);
+                console.log(
+                  "managerFilter",
+                  alreadyFilterMenu,
+                  route?.params?.param,
+                  route?.params?.employeeDetail
+                );
+
         getSubMenuList(alreadyFilterMenu[0].menu, true, route?.params?.employeeDetail ? route?.params?.employeeDetail : null);
         setLeadsFilterDropDownText(alreadyFilterMenu[0].menu);
     }, [route?.params, leadsFilterData]);
 
 
     useEffect(() => {
+        console.log(route?.params);
       if (route?.params) {
         const liveLeadsStartDate =
           route?.params?.moduleType === "live-leads"
@@ -263,6 +271,7 @@ const LeadsScreen = ({ route, navigation }) => {
     }, [route.params]);
 
     const defualtCall = async (tempStores, leadStage, leadStatus) => {
+        console.log("defualtCall",tempStores, leadStage);
         setLeadsFilterData(newArr);
         setSubMenu([]);
         setLeadsFilterDropDownText('All');
@@ -456,7 +465,7 @@ const LeadsScreen = ({ route, navigation }) => {
                         }
                         return object;
                     });
-                    // const newArr = path.filter((e) => e.subMenu == "ALL");
+                    const newArr = path.filter((e) => e.subMenu == "ALL");
                     // setTempFilterPayload(newArr);
                     // onTempFliter(newArr, employeeDetail,);
                     // setSubMenu(newArr);
@@ -467,9 +476,18 @@ const LeadsScreen = ({ route, navigation }) => {
                     //     }
                     //     return object;
                     // });
+                    console.log(newArr);
                     setSubMenu([...x]);
                     setTempFilterPayload(x);
-                    onTempFliter(x, isEmpty(tempEmployee) ? null : tempEmployee, tempVehicleModelList, tempCategoryList, tempSourceList, selectedFromDate, selectedToDate);
+                    onTempFliter(
+                      x,
+                      isEmpty(tempEmployee) ? null : tempEmployee,
+                      tempVehicleModelList,
+                      tempCategoryList,
+                      tempSourceList,
+                      selectedFromDate,
+                      selectedToDate,
+                    );
                     setLeadsSubMenuFilterVisible(false);
                     const data = x.filter(y => y.checked);
                     if (data.length === subMenu.length) {
@@ -579,12 +597,12 @@ const LeadsScreen = ({ route, navigation }) => {
                 }
             }
             const leadStages = defLeadStage ? defLeadStage : leadStage.length === 0 ? defualtLeadStage : leadStage;
-            if (leadStages && leadStages.length > 0) {
-                const invoiceIndex = leadStages.findIndex(x => x === 'INVOICECOMPLETED');
-                if (invoiceIndex !== -1) {
-                    leadStages.splice(invoiceIndex, 1);
-                }
-            }
+            // if (leadStages && leadStages.length > 0) {
+            //     const invoiceIndex = leadStages.findIndex(x => x === 'INVOICECOMPLETED');
+            //     if (invoiceIndex !== -1) {
+            //         leadStages.splice(invoiceIndex, 1);
+            //     }
+            // }
 
             let isLive = false;
             if (
