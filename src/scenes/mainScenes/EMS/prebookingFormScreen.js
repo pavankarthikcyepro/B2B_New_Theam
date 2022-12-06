@@ -521,6 +521,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     setTotalOnRoadPriceAfterDiscount(0);
     setTotalOnRoadPrice(0);
     setOtherPrices(0);
+    setOtherPriceErrorNameIndex(null);
+    setOtherPriceErrorAmountIndex(null);
     clearLocalData();
     navigation.goBack();
   };
@@ -530,6 +532,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     setTotalOnRoadPriceAfterDiscount(0);
     setTotalOnRoadPrice(0);
     setOtherPrices(0);
+    setOtherPriceErrorNameIndex(null);
+    setOtherPriceErrorAmountIndex(null);
     clearLocalData();
     navigation.navigate(EmsTopTabNavigatorIdentifiers.leads, {
       fromScreen: "bookingApproval",
@@ -3269,18 +3273,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     setAddNewInput(Object.assign([], newArr));
   };
 
-  const saveHandler = () => {
-    if (addNewInput.length > 0) {
-      var totalprice = 0;
-      for (let data of addNewInput) {
-        totalprice = totalprice + Number(data.amount);
-        setOtherPrices(totalprice);
-      }
-    } else {
-      alert("Add atleast one price");
-    }
-  };
-
   const inputHandlerName = (value, index) => {
     let newArr = Object.assign([], addNewInput);
     newArr[index].name = value;
@@ -5712,7 +5704,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   <TouchableOpacity
                     style={[
                       styles.addIcon,
-                      { backgroundColor: isInputsEditable()  ? Colors.RED : Colors.GRAY },
+                      {
+                        backgroundColor: isInputsEditable()
+                          ? Colors.RED
+                          : Colors.GRAY,
+                      },
                     ]}
                     disabled={!isInputsEditable()}
                     onPress={() => addHandler()}
@@ -5819,7 +5815,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
               <List.Accordion
                 id={"6"}
                 title={"Offer Price"}
-                description={rupeeSymbol + " " + getActualPrice().toFixed(2)}
+                description={
+                  rupeeSymbol + " " + getActualPriceAfterDiscount().toFixed(2)
+                }
                 titleStyle={{
                   color: openAccordian === "6" ? Colors.BLACK : Colors.BLACK,
                   fontSize: 16,
