@@ -129,6 +129,7 @@ const MainParamScreen = ({ route, navigation }) => {
                         return Number(item.employeeId) === Number(loggedInEmpDetails?.empId)
                     })
                 }
+                console.log("TTT 1: ", JSON.stringify(ownDataArray));
                 if (ownDataArray.length > 0) {
                     setAllOwnData(ownDataArray)
                     let ownDataArray2 = []
@@ -142,6 +143,7 @@ const MainParamScreen = ({ route, navigation }) => {
                             return selector.endDate === item.endDate && selector.startDate === item.startDate
                         })
                     }
+                    console.log("TTT 2: ", JSON.stringify(ownDataArray2));
                     if (ownDataArray2.length > 0) {
                         setIsNoTargetAvailable(false)
                         setOwnData(ownDataArray2[0])
@@ -177,6 +179,7 @@ const MainParamScreen = ({ route, navigation }) => {
                 })
             }
         });
+        console.log("paramsArray", paramsArray);
         setUpdateTeamsParamsData([...paramsArray]);
     }
 
@@ -215,6 +218,7 @@ const MainParamScreen = ({ route, navigation }) => {
                     return Number(item.employeeId) === Number(loggedInEmpDetails?.empId)
                 })
             }
+            console.log("TTT 1: ", JSON.stringify(ownDataArray));
             if (ownDataArray.length > 0) {
                 setAllOwnData(ownDataArray)
                 let ownDataArray2 = []
@@ -228,6 +232,7 @@ const MainParamScreen = ({ route, navigation }) => {
                         return selector.endDate === item.endDate && selector.startDate === item.startDate
                     })
                 }
+                console.log("TTT 2: targetMapping", JSON.stringify(ownDataArray2));
                 if (ownDataArray2.length > 0) {
                     setOwnData(ownDataArray2[0])
                     if (ownDataArray2[0]?.targetName) {
@@ -260,6 +265,7 @@ const MainParamScreen = ({ route, navigation }) => {
                     return selector.endDate === item.endDate && selector.startDate === item.startDate
                 })
             }
+            console.log("TTT: ", JSON.stringify(ownDataArray));
             if (ownDataArray.length > 0) {
                 setOwnData(ownDataArray[0])
                 if (ownDataArray[0]?.targetName) {
@@ -276,6 +282,7 @@ const MainParamScreen = ({ route, navigation }) => {
 
     useEffect(async () => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+        // console.log("$$$$$ LOGIN EMP:", employeeData);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData)
             const payload = {
@@ -284,6 +291,7 @@ const MainParamScreen = ({ route, navigation }) => {
                 "size": 500,
                 "targetType": selector.targetType
             }
+            console.log("PAYLOAD", payload);
             //dispatch(getAllTargetMapping(payload))
         }
     }, [selector.targetType])
@@ -322,6 +330,7 @@ const MainParamScreen = ({ route, navigation }) => {
             showToast("Please enter retail value")
         }
         else {
+            console.log("CALLED ADD");
             setOpenRetail(false)
             let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
             if (employeeData) {
@@ -339,9 +348,11 @@ const MainParamScreen = ({ route, navigation }) => {
                     // "targetName": selector.targetType === 'MONTHLY' ? selector.selectedMonth.value : selector.selectedSpecial.keyId
                     "targetName": targetName !== '' ? targetName : "DEFAULT"
                 }
+                console.log("PAYLOAD:", payload);
                 Promise.all([
                     dispatch(addTargetMapping(payload))
                 ]).then(() => {
+                    console.log('I did everything!');
                     setSelectedUser(null)
                     setRetail('')
                     setSelectedBranch(null)
@@ -367,6 +378,7 @@ const MainParamScreen = ({ route, navigation }) => {
             showToast("Please enter retail value")
         }
         else {
+            console.log("CALLED EDIT");
             setOpenRetail(false)
             let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
             if (employeeData) {
@@ -385,14 +397,17 @@ const MainParamScreen = ({ route, navigation }) => {
                     "targetName": targetName !== '' ? targetName : "DEFAULT"
                 }
 
+                console.log("PAYLOAD EDIT:", payload);
                 Promise.all([
                     dispatch(editTargetMapping(payload))
                 ]).then((response) => {
+                    console.log("response", response);
                     setSelectedUser(null)
                     setRetail('')
                     setSelectedBranch(null)
                     setDefaultBranch(null)
                     setIsNoTargetAvailable(false)
+                    console.log('I did everything!');
                     const payload2 = {
                         "empId": jsonObj.empId,
                         "pageNo": 1,
@@ -401,6 +416,7 @@ const MainParamScreen = ({ route, navigation }) => {
                     }
                     dispatch(getAllTargetMapping(payload2))
                 }).catch((error) => {
+                    console.log("ERROR", error);
                 });
             }
         }
@@ -409,6 +425,7 @@ const MainParamScreen = ({ route, navigation }) => {
     const getTotal = (key) => {
         let total = 0;
         for (let i = 0; i < selector.targetMapping.length; i++) {
+            // console.log("RTRTRTRTRTR:", selector.targetMapping[i], selector.endDate, selector.startDate, selector.targetType);
             if (selector.targetMapping[i][key] !== null && selector.endDate === selector.targetMapping[i].endDate && selector.startDate === selector.targetMapping[i].startDate && selector.targetMapping[i].targetType === selector.targetType) {
                 total += parseInt(selector.targetMapping[i][key])
             }
@@ -495,7 +512,9 @@ const MainParamScreen = ({ route, navigation }) => {
             Promise.all([
                 dispatch(saveSelfTargetParams(payload))
             ]).then((x) => {
+                console.log('daata: ', x)
             }).catch((y) => {
+                console.log('daata: errr', y)
             })
         }
     }
@@ -522,6 +541,7 @@ const MainParamScreen = ({ route, navigation }) => {
             Promise.all([
                 dispatch(saveTeamTargetParams(payload))
             ]).then((x) => {
+                console.log('daata---: ', selector.targetMapping)
                 if (Array.isArray(x) && x[0].payload.message.toLowerCase() === 'not updated') {
                     const payload2 = {
                         "empId": loggedInEmpDetails.empId,
@@ -532,10 +552,13 @@ const MainParamScreen = ({ route, navigation }) => {
                     Promise.all([
                         dispatch(getAllTargetMapping(payload2))
                     ]).then((x) => {
+                        console.log('daata: ', x)
                     }).catch((y) => {
+                        console.log('daata: errr', y)
                     })
                 }
             }).catch((y) => {
+                console.log('daata---: errr', y)
             })
         }
     }
@@ -557,8 +580,8 @@ const MainParamScreen = ({ route, navigation }) => {
         return (
             <>
                 {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
-                    <View key={index}>
-                        <TextInput key={index} editable={editParameters} style={editParameters ? styles.textBox : styles.textBoxDisabled}
+                    <View key={index} style={{ height: 40, justifyContent: 'center' }}>
+                        <TextInput key={index} editable={editParameters} style={editParameters ? styles.textBox : styles.textBoxDisabledEX}
                             value={param} onChangeText={(x) => onChangeTeamParamValue(curIndex, x, item.id, type)} />
                     </View>
                 }
@@ -610,7 +633,9 @@ const MainParamScreen = ({ route, navigation }) => {
                                     Promise.all([
                                         dispatch(getAllTargetMapping(payload2))
                                     ]).then((x) => {
+                                        console.log('daata: ', x)
                                     }).catch((y) => {
+                                        console.log('daata: errr', y)
                                     })
                                 } else {
                                     const data = { ...masterSelfParameters };
@@ -634,48 +659,49 @@ const MainParamScreen = ({ route, navigation }) => {
                 <View>
                     <ScrollView contentContainerStyle={{ paddingRight: 20, flexDirection: 'column' }} horizontal={true} directionalLockEnabled={true}>
                         <View style={{ flexDirection: 'row' }}>
-                            <View style={{ width: 100, height: 40 }}>
+                            <View style={{ width: 98, height: 40 }}>
 
                             </View>
                             <View style={{ height: 40, flexDirection: 'row' }}>
-                                <View style={styles.itemBox}>
+                                <View style={styles.itemBoxEX}>
                                     <Text style={{ color: '#FA03B9' }}>Retail</Text>
                                 </View>
-                                <View style={styles.itemBox}>
-                                    <Text style={{ color: '#FA03B9' }}>Enquiry</Text>
+                                <View style={styles.itemBoxEX}>
+                                    <Text style={{ color: '#FA03B9' }}>Enq</Text>
                                 </View>
-                                <View style={styles.itemBox}>
-                                    <Text style={{ color: '#9E31BE' }}>Test Drive</Text>
+                                <View style={styles.itemBoxEX}>
+                                    <Text style={{ color: '#9E31BE' }}>TD</Text>
                                 </View>
-                                <View style={styles.itemBox}>
+                                <View style={styles.itemBoxEX}>
                                     <Text style={{ color: '#1C95A6' }}>Visit</Text>
                                 </View>
-                                <View style={styles.itemBox}>
-                                    <Text style={{ color: '#C62159' }}>Booking</Text>
+                                <View style={styles.itemBoxEX}>
+                                    <Text style={{ color: '#C62159' }}>Bkg</Text>
                                 </View>
-                                {/* <View style={styles.itemBox}>
+                                {/* <View style={styles.itemBoxEX}>
                                     <Text style={{ color: '#9E31BE' }}>Retail</Text>
                                 </View> */}
-                                <View style={styles.itemBox}>
-                                    <Text style={{ color: '#EC3466' }}>Exchange</Text>
+                                <View style={styles.itemBoxEX}>
+                                    <Text style={{ color: '#EC3466' }}>Exg</Text>
                                 </View>
-                                <View style={styles.itemBox}>
-                                    <Text style={{ color: '#1C95A6' }}>Finance</Text>
+                                <View style={styles.itemBoxEX}>
+                                    <Text style={{ color: '#1C95A6' }}>Fin</Text>
                                 </View>
-                                <View style={styles.itemBox}>
-                                    <Text style={{ color: '#1C95A6' }}>Insurance</Text>
+                                <View style={styles.itemBoxEX}>
+                                    <Text style={{ color: '#1C95A6' }}>Ins</Text>
                                 </View>
-                                <View style={styles.itemBox}>
-                                    <Text style={{ color: '#C62159' }}>Exwarranty</Text>
+                                <View style={styles.itemBoxEX}>
+                                    <Text style={{ color: '#C62159' }}>ExW</Text>
                                 </View>
-                                {/*<View style={styles.itemBox}>*/}
+                                {/*<View style={styles.itemBoxEX}>*/}
                                 {/*  <Text style={{ color: '#EC3466' }}>Total</Text>*/}
                                 {/*</View>*/}
-                                <View style={styles.itemBox}>
-                                    <Text style={{ color: '#0c0c0c' }}>Accessories</Text>
+                                <View style={styles.itemBoxEX}>
+                                    <Text style={{ color: '#0c0c0c' }}>Acc</Text>
                                 </View>
                             </View>
                         </View>
+                        <View style={{ height: 1, width: '100%', backgroundColor: Colors.GRAY }} />
                         {selector.targetMapping.length > 0 && selector.targetMapping.map((item, index) => {
                             return (
                                 <>
@@ -690,7 +716,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                                 }
                                             </View>
 
-                                            <View style={{ width: 88, alignItems: "center" }}>
+                                            <View style={{ alignItems: "center", }}>
                                                 {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
                                                     <TouchableOpacity onPress={() => {
                                                         setSelectedDropdownData([{ label: item?.branchName, value: item?.branch }])
@@ -711,14 +737,14 @@ const MainParamScreen = ({ route, navigation }) => {
                                                         setSelectedUser(item)
 
                                                         setOpenRetail(true)
-                                                    }} style={{ width: 80, height: 40, borderWidth: 1, borderRadius: 5, borderColor: 'blue', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }} >
-                                                        <Text style={styles.textInput}>{item?.retailTarget ? item?.retailTarget : 0}</Text>
+                                                    }} style={{ justifyContent: 'center', alignItems: 'center', textAlign: 'center', height: 40, backgroundColor: Colors.BORDER_COLOR, paddingHorizontal: 10, borderTopColor: 'transparent', borderBottomColor: 'transparent', borderLeftColor: Colors.LIGHT_GRAY2, borderRightColor: Colors.LIGHT_GRAY2, borderWidth: 0.5 }} >
+                                                        <Text style={{ ...styles.textInput, color: Colors.RED, textDecorationLine: "underline", }}>{item?.retailTarget ? item?.retailTarget : 0}</Text>
                                                     </TouchableOpacity>}
                                             </View>
 
                                             {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
                                                 ["enquiry", "testDrive", "homeVisit", "booking", "exchange", "finance", "insurance", "exWarranty", "accessories"].map((subItem) => (
-                                                    <View key={index} style={{ width: 88, alignItems: "center" }}>
+                                                    <View key={index} style={{ alignItems: "center" }}>
                                                         {RenderTeamsTargetData(item, subItem, index)}
                                                     </View>
                                                 ))}
@@ -744,16 +770,16 @@ const MainParamScreen = ({ route, navigation }) => {
                                             </View>
                                         </View>
 
-                                        <View style={{ width: 88, alignItems: "center" }}>
-                                            <TouchableOpacity style={{ width: 80, height: 40, borderWidth: 1, borderRadius: 5, borderColor: 'blue', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }} >
-                                                <Text style={styles.textInput}>{getTotal("retailTarget")}</Text>
+                                        <View style={{ alignItems: "center" }}>
+                                            <TouchableOpacity style={{ height: 40, justifyContent: 'center', alignItems: 'center', textAlign: 'center', backgroundColor: Colors.BORDER_COLOR, paddingHorizontal: 10, borderTopColor: 'transparent', borderBottomColor: 'transparent', borderLeftColor: Colors.LIGHT_GRAY2, borderRightColor: Colors.LIGHT_GRAY2, borderWidth: 1 }} >
+                                                <Text style={{ ...styles.textInput, color: Colors.RED, textDecorationLine: 'underline' }}>{getTotal("retailTarget")}</Text>
                                             </TouchableOpacity>
                                         </View>
 
                                         {["enquiry", "testDrive", "homeVisit", "booking", "exchange", "finance", "insurance", "exWarranty", "accessories"].map((item) => (
-                                            <View style={{ width: 88, alignItems: "center" }}>
-                                                <TouchableOpacity style={styles.textBoxDisabled} >
-                                                    <Text style={styles.textInput}>{getTotal(item)}</Text>
+                                            <View style={{ alignItems: "center" }}>
+                                                <TouchableOpacity style={{ ...styles.textBoxDisabledEX, height: 40, }} >
+                                                    <Text style={{ ...styles.textInput, color: Colors.RED, textDecorationLine: 'underline' }}>{getTotal(item)}</Text>
                                                 </TouchableOpacity>
                                             </View>
                                         ))
@@ -949,8 +975,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                 // else {
                                 //     setAddOrEdit('E')
                                 // }
-                                if (loggedInEmpDetails.primaryDepartment === 'Sales')
-                                {
+                                if (loggedInEmpDetails.primaryDepartment === 'Sales') {
                                     if (ownData.retailTarget !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate) {
                                         setSelectedBranch({ label: ownData.branchName, value: ownData.branch })
                                         setDefaultBranch(ownData.branch)
@@ -1049,8 +1074,10 @@ const MainParamScreen = ({ route, navigation }) => {
                                 // onFocus={() => setIsFocus(true)}
                                 // onBlur={() => setIsFocus(false)}
                                 onChange={async (item) => {
+                                    console.log("£££", item);
                                     setSelectedBranch(item)
                                     if (selector.isTeam) {
+                                        console.log("£££££££");
                                         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
                                         if (employeeData) {
                                             const jsonObj = JSON.parse(employeeData);
@@ -1062,6 +1089,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                             Promise.all([
                                                 dispatch(getEmployeesDropDownData(payload))
                                             ]).then(() => {
+                                                console.log('DROP', selector.employees_drop_down_data);
                                             })
                                         }
                                     }
@@ -1089,7 +1117,9 @@ const MainParamScreen = ({ route, navigation }) => {
                                             // onFocus={() => setIsFocus(true)}
                                             // onBlur={() => setIsFocus(false)}
                                             onChange={val => {
+                                                // console.log("£££", val);
                                                 let tempVal = otherDropDownSelectedValue;
+                                                // console.log("$$$$", JSON.stringify(tempVal));
                                                 tempVal.push({
                                                     key: item.title,
                                                     value: val
@@ -1118,6 +1148,7 @@ const MainParamScreen = ({ route, navigation }) => {
                         </View>
                         <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
                             <TouchableOpacity style={{ width: '38%', backgroundColor: Colors.RED, height: 40, marginRight: 10, borderRadius: 5, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                                // console.log("££££",selectedUser);
                                 // if (addOrEdit === 'A') {
                                 //     editTargetData()
                                 // }
@@ -1165,8 +1196,12 @@ const styles = StyleSheet.create({
     text: { fontSize: 14, fontWeight: '500' },
     nameWrap: { width: '100%', flexDirection: 'row', marginBottom: 10, marginLeft: 10, marginTop: 10 },
     nameBox: { width: 80, justifyContent: 'center', alignItems: 'center', marginRight: 5 },
-    textBox: { width: 80, height: 40, borderWidth: 1, borderRadius: 5, borderColor: 'blue', marginRight: 5, justifyContent: 'center', alignItems: 'center', textAlign: 'center' },
+    textBox: { width: 50, height: 25, borderWidth: 1, borderRadius: 5, borderColor: 'blue', marginRight: 5, justifyContent: 'center', alignItems: 'center', textAlign: 'center' },
     textBoxDisabled: { width: 80, height: 40, borderWidth: 1, borderRadius: 5, borderColor: '#d1d1d1', marginRight: 5, justifyContent: 'center', alignItems: 'center', textAlign: 'center' },
+    textBoxDisabledEX: {
+        backgroundColor: Colors.BORDER_COLOR, paddingHorizontal: 10, justifyContent: 'center', alignItems: 'center', textAlign: 'center', color: Colors.RED, textDecorationLine: 'underline',
+        borderTopColor: 'transparent', borderBottomColor: 'transparent', borderLeftColor: Colors.LIGHT_GRAY2, borderRightColor: Colors.LIGHT_GRAY2, borderWidth: 0.5
+    },
     textInput: {
         fontSize: 14,
         // color: 'red'
@@ -1219,6 +1254,7 @@ const styles = StyleSheet.create({
     editParamsButton: { borderStyle: 'solid', borderWidth: 1, paddingEnd: 4, margin: 4, alignSelf: 'flex-end' },
     editParamsBtnView: { display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
     itemBox: { width: 88, height: 40, justifyContent: 'center', alignItems: 'center' },
+    itemBoxEX: { paddingHorizontal: 10, height: 40, justifyContent: 'center', alignItems: 'center' },
     totalView: { width: 40, minHeight: 40, alignItems: 'center', justifyContent: 'center' },
     totalText: { width: 60, fontSize: 12, color: '#000', fontWeight: '500', textAlign: 'center' }
 });
