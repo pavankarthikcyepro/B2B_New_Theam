@@ -261,7 +261,7 @@ PODS:
     - React-Core
   - react-native-html-to-pdf (0.12.0):
     - React-Core
-  - react-native-image-picker (4.10.0):
+  - react-native-image-picker (4.10.2):
     - React-Core
   - react-native-mail (6.1.1):
     - React-Core
@@ -274,7 +274,7 @@ PODS:
     - Toast (~> 4.0.0)
   - react-native-switch-audio-output (1.1.2):
     - React
-  - react-native-webview (11.23.1):
+  - react-native-webview (11.25.0):
     - React-Core
   - React-perflogger (0.64.4)
   - React-RCTActionSheet (0.64.4):
@@ -342,12 +342,12 @@ PODS:
     - React-perflogger (= 0.64.4)
   - ReactNativeART (1.2.0):
     - React
-  - RealmJS (10.23.0):
+  - RealmJS (10.24.0):
     - GCDWebServer
     - React
   - rn-fetch-blob (0.12.0):
     - React-Core
-  - RNCAsyncStorage (1.17.10):
+  - RNCAsyncStorage (1.17.11):
     - React-Core
   - RNCMaskedView (0.1.11):
     - React
@@ -357,39 +357,14 @@ PODS:
     - React-Core
   - RNGestureHandler (2.8.0):
     - React-Core
-  - RNReanimated (2.12.0):
-    - DoubleConversion
-    - FBLazyVector
-    - FBReactNativeSpec
-    - glog
-    - RCT-Folly
-    - RCTRequired
-    - RCTTypeSafety
-    - React-callinvoker
+  - RNReanimated (1.13.4):
     - React-Core
-    - React-Core/DevSupport
-    - React-Core/RCTWebSocket
-    - React-CoreModules
-    - React-cxxreact
-    - React-jsi
-    - React-jsiexecutor
-    - React-jsinspector
-    - React-RCTActionSheet
-    - React-RCTAnimation
-    - React-RCTBlob
-    - React-RCTImage
-    - React-RCTLinking
-    - React-RCTNetwork
-    - React-RCTSettings
-    - React-RCTText
-    - ReactCommon/turbomodule/core
-    - Yoga
   - RNScreens (3.18.2):
     - React-Core
     - React-RCTImage
   - RNSnackbar (2.4.0):
     - React-Core
-  - RNSVG (12.4.4):
+  - RNSVG (12.5.0):
     - React-Core
   - RNVectorIcons (8.1.0):
     - React-Core
@@ -624,13 +599,13 @@ SPEC CHECKSUMS:
   react-native-flipper: 4bfe0a324e663f1ae2f76ad0da75673de6895efe
   react-native-geolocation: 69f4fd37650b8e7fee91816d395e62dd16f5ab8d
   react-native-html-to-pdf: 4c5c6e26819fe202971061594058877aa9b25265
-  react-native-image-picker: 4bc9ed38c8be255b515d8c88babbaf74973f91a8
+  react-native-image-picker: bf34f3f516d139ed3e24c5f5a381a91819e349ea
   react-native-mail: 8fdcd3aef007c33a6877a18eb4cf7447a1d4ce4a
   react-native-safe-area-context: 9e40fb181dac02619414ba1294d6c2a807056ab9
   react-native-segmented-control: 06607462630512ff8eef652ec560e6235a30cc3e
   react-native-simple-toast: 8ee5d23f0b92b935ab7434cdb65159ce12dfb4b7
   react-native-switch-audio-output: d435f857bfe73f9b6263c7101432ea2785b854d7
-  react-native-webview: d33e2db8925d090871ffeb232dfa50cb3a727581
+  react-native-webview: a71da846ed2e9085440e1d6659c04e285528834b
   React-perflogger: 5a890ca0911669421b7611661e9b58f91c805f5c
   React-RCTActionSheet: bd180e0879f8424a73650c5c28fbef4f3b5b27fb
   React-RCTAnimation: 1004d2b4be1f2cedfdc4cb2326adc95b989e6c6b
@@ -644,17 +619,17 @@ SPEC CHECKSUMS:
   React-runtimeexecutor: 5b441857030bb6c3abaa7517f333cb01875ae499
   ReactCommon: b4a65d2d6e9eeffd4b32dde1245962b3f43907d0
   ReactNativeART: 78edc68dd4a1e675338cd0cd113319cf3a65f2ab
-  RealmJS: 0b5e6581baefb5ba72ecef7e0f4ca0c211d64b63
+  RealmJS: 2e45ca6ed4c3732be369219b41816e890ce51024
   rn-fetch-blob: f065bb7ab7fb48dd002629f8bdcb0336602d3cba
-  RNCAsyncStorage: 0c357f3156fcb16c8589ede67cc036330b6698ca
+  RNCAsyncStorage: 8616bd5a58af409453ea4e1b246521bb76578d60
   RNCMaskedView: 0e1bc4bfa8365eba5fbbb71e07fbdc0555249489
   RNDateTimePicker: 7658208086d86d09e1627b5c34ba0cf237c60140
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
   RNGestureHandler: 62232ba8f562f7dea5ba1b3383494eb5bf97a4d3
-  RNReanimated: 69f427ef749f923934a9c1485ad439dd001fb73c
+  RNReanimated: c1b56d030d1616239861534d9adb531f8cffab68
   RNScreens: 34cc502acf1b916c582c60003dc3089fa01dc66d
   RNSnackbar: be3333a21a453ccc272f41a8add5a71f7d44dfcd
-  RNSVG: ecd661f380a07ba690c9c5929c475a44f432d674
+  RNSVG: 6adc5c52d2488a476248413064b7f2832e639057
   RNVectorIcons: 31cebfcf94e8cf8686eb5303ae0357da64d7a5a4
   Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
   Yoga: d1fc3575b8b68891ff5ef3c276daa855e841eb32
