@@ -193,7 +193,6 @@ const LeadsScreen = ({ route, navigation }) => {
   );
 
   useEffect(() => {
-    console.log("INITI",route?.params);
     if (route?.params) {
       const liveLeadsStartDate =
         route?.params?.moduleType === "live-leads"
@@ -299,7 +298,7 @@ const LeadsScreen = ({ route, navigation }) => {
           setSubMenu([]);
         });
     }
-  }, [isFocused]);
+  }, [route.params]);
 
   const defualtCall = async (tempStores, leadStage, leadStatus) => {
     setLeadsFilterData(newArr);

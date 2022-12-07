@@ -1690,7 +1690,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
             const json = await response.json();
             if (json.success) {
               showToastRedAlert("Enquiry is generated Successfully");
-              navigation.goBack();
+              goToLeadScreen();
             } else {
               showToast(json.message);
             }
@@ -1702,7 +1702,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
             const json1 = await response1.json();
             if (json1.success) {
               showToastRedAlert("Enquiry is generated Successfully");
-              navigation.goBack();
+              goToLeadScreen();
             } else {
               showToast(json1.message);
             }
@@ -6404,7 +6404,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                   Allocate
                 </Button>
               )}
-              {selectedEmployee !== "" && (
+              {selectedEmployee !== ""&& (
                 <Button
                   mode="contained"
                   style={{ width: 120 }}
