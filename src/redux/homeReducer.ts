@@ -649,6 +649,7 @@ export const homeSlice = createSlice({
     isTeam: false,
     isTeamPresent: false,
     isMD: false,
+    isRankHide: false,
     isDSE: false,
     self_target_parameters_data: empData,
     insights_target_parameters_data: empData,
@@ -675,6 +676,9 @@ export const homeSlice = createSlice({
     },
     updateIsMD: (state, action) => {
       state.isMD = action.payload;
+    },
+    updateIsRankHide: (state, action) => {
+      state.isRankHide = action.payload;
     },
     updateIsDSE: (state, action) => {
       state.isDSE = action.payload;
@@ -722,6 +726,7 @@ export const homeSlice = createSlice({
       state.isTeam = false;
       state.isTeamPresent = false;
       state.isMD = false;
+      state.isRankHide = false;
       state.isDSE = false;
       state.employee_list = [];
       state.reporting_manager_list = [];
@@ -1188,6 +1193,7 @@ export const {
   updateFilterDropDownData,
   updateIsTeamPresent,
   updateIsMD,
+  updateIsRankHide,
   updateIsDSE,
   clearState,
   updateTargetData,

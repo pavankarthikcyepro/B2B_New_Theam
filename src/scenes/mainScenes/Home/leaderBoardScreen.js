@@ -202,7 +202,7 @@ export default function leaderBoardScreen() {
               }}
             >
               <Text style={styles.rankHeadingText}>Dealer Ranking</Text>
-              {groupDealerRank !== null && (
+              {!selector.isRankHide && groupDealerRank !== null && (
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
                   <Text style={styles.rankText}>{groupDealerRank}</Text>
                   <Text style={{ ...styles.rankText, color: Colors.GRAY }}>
