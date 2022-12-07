@@ -429,9 +429,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
         newData.push(obj);
       });
       setEmployeesData([...newData]);
-      if (selector.source_of_enquiry) {
-        setEmployeeSelectModel(true);
-      }
+      // if (selector.source_of_enquiry) {
+      //   setEmployeeSelectModel(true);
+      // }
     }
   }, [employeeSelector.employees_list, employeeSelector.employees_list_status]);
 
@@ -2784,7 +2784,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       type: `image/${fileType}`,
       uri: Platform.OS === "ios" ? photoUri.replace("file://", "") : photoUri,
     });
-    formData.append("universalId", universalId);
+    // formData.append("universalId", universalId);
 
     switch (keyId) {
       case "UPLOAD_PAN":
@@ -2824,7 +2824,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
         formData.append("documentType", "default");
         break;
     }
-
+    console.log("formData", JSON.stringify(formData));
     await fetch(URL.UPLOAD_DOCUMENT(), {
       method: "POST",
       headers: {
@@ -2834,6 +2834,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     })
       .then((response) => response.json())
       .then((response) => {
+        console.log(response);
         if (response) {
           if (keyId === "UPLOAD_REG_DOC") {
             dispatch(
@@ -2862,6 +2863,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
               })
             );
           } else {
+            console.log("response,response", response);
             const dataObj = { ...uploadedImagesDataObj };
             dataObj[response.documentType] = response;
             setUploadedImagesDataObj({ ...dataObj });
