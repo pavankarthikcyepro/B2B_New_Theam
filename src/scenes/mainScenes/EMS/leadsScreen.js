@@ -41,7 +41,7 @@ import {
   getStatus,
   getSubMenu,
 } from "../../../redux/leaddropReducer";
-import { useIsFocused } from "@react-navigation/native";
+import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 import Entypo from "react-native-vector-icons/FontAwesome";
 
 const dateFormat = "YYYY-MM-DD";
@@ -193,6 +193,7 @@ const LeadsScreen = ({ route, navigation }) => {
   );
 
   useEffect(() => {
+    console.log("INITI",route?.params);
     if (route?.params) {
       const liveLeadsStartDate =
         route?.params?.moduleType === "live-leads"
@@ -298,7 +299,7 @@ const LeadsScreen = ({ route, navigation }) => {
           setSubMenu([]);
         });
     }
-  }, [route.params]);
+  }, [isFocused]);
 
   const defualtCall = async (tempStores, leadStage, leadStatus) => {
     setLeadsFilterData(newArr);
