@@ -47,6 +47,17 @@ const itemWidth = baseItemWidth - 10;
 const series = [60, 40];
 const sliceColor = ["#5BBD66", Colors.RED];
 
+const globalDateFormat = "YYYY-MM-DD";
+const globalCurrentDate = moment().format(globalDateFormat);
+const globalStartDate = moment(globalCurrentDate, globalDateFormat)
+  .subtract(0, "months")
+  .startOf("month")
+  .format(globalDateFormat);
+const globalEndDate = moment(globalCurrentDate, globalDateFormat)
+  .subtract(0, "months")
+  .endOf("month")
+  .format(globalDateFormat);
+
 const NoDataFound = () => {
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -81,7 +92,17 @@ const ListComponent = ({ route, navigation }) => {
 
   useEffect(() => {
     if (isFocused) {
-      initialTask(selectedFilter);
+      if (route.params) {
+        if (homeSelector.isTeamPresent && !homeSelector.isDSE) {
+          setIndex(1);
+          changeTab(1);
+        }
+        initialTask(route.params.from ? "MONTH" : "TODAY");
+        setSelectedFilter("MONTH");
+        setIsOpenFilter(false);
+      } else {
+        initialTask(selectedFilter);
+      }
     }
   }, [isFocused]);
 
@@ -774,10 +795,6 @@ const ListComponent = ({ route, navigation }) => {
             });
           }
         } else if (route.params.from === "CLOSED") {
-          if (homeSelector.isTeamPresent && !homeSelector.isDSE) {
-            setIndex(1);
-            changeTab(1);
-          }
           if (index === 0) {
             let payload = {};
             if (selectedFilterLocal !== "ALL") {
@@ -799,7 +816,6 @@ const ListComponent = ({ route, navigation }) => {
                 ignoreDateFilter: true,
               };
             }
-
             Promise.all([dispatch(getCompletedMyTasksListApi(payload))]).then(
               (res) => {
                 const todaysData = res[0].payload.completedData[0];
@@ -834,8 +850,8 @@ const ListComponent = ({ route, navigation }) => {
                 loggedInEmpId: jsonObj.empId,
                 onlyForEmp: false,
                 dataType: "completedData",
-                startDate: startDate,
-                endDate: endDate,
+                startDate: route.params.from ? globalStartDate : startDate,
+                endDate: route.params.from ? globalEndDate : endDate,
                 ignoreDateFilter: false,
               };
             } else {
@@ -1502,7 +1518,7 @@ const ListComponent = ({ route, navigation }) => {
 
       {index === 1 && myTeamsData.length > 0 && (
         <FlatList
-          data={checkForTaskData(myTasksData)}
+          data={checkForTaskData(myTeamsData)}
           style={{ flex: 1 }}
           numColumns={3}
           extraData={myTeamsData}

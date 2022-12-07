@@ -1689,8 +1689,11 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
             const response = await client.post(URL.ENQUIRY_CONTACT(), payloady);
             const json = await response.json();
             if (json.success) {
-              showToastRedAlert("Enquiry is generated Successfully");
-              goToLeadScreen();
+              displayCreateEnquiryLeadAlert(
+                json?.dmsEntity?.leadCustomerReference?.referencenumber
+              );
+              // showToastRedAlert("Enquiry is generated Successfully");
+              // goToLeadScreen();
             } else {
               showToast(json.message);
             }
@@ -1701,8 +1704,11 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
             );
             const json1 = await response1.json();
             if (json1.success) {
-              showToastRedAlert("Enquiry is generated Successfully");
-              goToLeadScreen();
+              displayCreateEnquiryLeadAlert(
+                json1?.dmsEntity?.leadCustomerReference?.referencenumber
+              );
+              // showToastRedAlert("Enquiry is generated Successfully");
+              // goToLeadScreen();
             } else {
               showToast(json1.message);
             }
@@ -3126,6 +3132,21 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     setEmployeeSelectModel(false);
   };
 
+const displayCreateEnquiryLeadAlert = async (data) => {
+  Alert.alert(
+    "Enquiry Created Successfully",
+    "Enquiry Number: " + data,
+    [
+      {
+        text: "OK",
+        onPress: () => {
+          goToLeadScreen();
+        },
+      },
+    ],
+    { cancelable: false }
+  );
+};
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
       <SelectEmployeeComponant
