@@ -39,8 +39,6 @@ const TopTabNavigator = ({ titles, data }) => {
       tabBarOptions={tabBarOptions}
     >
       {titles.map((title, index) => {
-        console.log("titles: ", title);
-        console.log("titles data: ", data[title].length);
         return (
           <TopTab.Screen
             name={title}
@@ -67,11 +65,6 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
   });
 
   useEffect(() => {
-    console.log(
-      "accessorylist: ",
-      selectedAccessoryList.length,
-      accessorylist.length
-    );
     const titleNames = [];
     const dataObj = {};
 
@@ -83,8 +76,8 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
         return (
           innerItem.accessoriesName === item.partName &&
           Number(innerItem.amount) === Number(item.cost) &&
-          innerItem?.dmsAccessoriesType === item.item &&
-          innerItem?.id === item.id
+          innerItem?.dmsAccessoriesType === item.item 
+          // && innerItem?.id === item.id
         );
       });
 
@@ -120,28 +113,22 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
     try {
       const asyncStorageData = await AsyncStorage.getData(key);
       let existingData;
-      console.log(">>>>>>>>>><<<<<<<<<<<, main: ", asyncStorageData);
       if (
         asyncStorageData &&
         asyncStorageData.length &&
         typeof asyncStorageData === "string"
       ) {
-        console.log(">>>>>>>>>><<<<<<<<<<<, Async: ", asyncStorageData);
         existingData = JSON.parse(asyncStorageData);
       }
-      console.log(">>>>>>>>>><<<<<<<<<<<, exis???????: ", existingData);
       const itemExists = existingData.findIndex((x) => x.id === item.id);
       let data = [];
       if (itemExists === -1) {
-        console.log("exis??????? DATA NA: ", existingData, " :key: ", key);
         data = [item];
       } else {
-        console.log("exis??????? DATA AV: ", existingData, " :key: ", key);
 
         data = [...existingData, item];
       }
 
-      console.log("exis??????? final: ", key);
       const uniqueTags = [];
       data.map((item) => {
         const findItem = uniqueTags.find((x) => x.id === item.id);
@@ -149,25 +136,19 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
       });
       await AsyncStorage.storeData(key, JSON.stringify(uniqueTags));
     } catch (e) {
-      console.log(">>>>>>>>>><<<<<<<<<<<, ", e);
     }
   };
 
   const addSelected = async () => {
-    //console.log("WORKING");
     const data = await AsyncStorage.multiGetData(accessoriesData.names);
-    console.log("data......: ACC. NAMES ", accessoriesData.names);
     let allData = [];
     accessoriesData.names.forEach((item, index) => {
-      console.log("data......: ACC. NAMES item ", item);
 
       const selectedData = data[index][1];
-      console.log("selectedData: ", selectedData?.length);
       if (selectedData) {
         allData = allData.concat(JSON.parse(selectedData));
       }
     });
-    console.log("allData==========>: ", JSON.stringify(allData));
 
     navigation.navigate({
       name: AppNavigator.EmsStackIdentifiers.preBookingForm,

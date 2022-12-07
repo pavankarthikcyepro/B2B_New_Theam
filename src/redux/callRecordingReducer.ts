@@ -49,7 +49,6 @@ export const callrecordingSlice = createSlice({
                 AsyncStore.storeData(AsyncStore.Keys.EXTENSION_ID, state.user_name.toString())
                 AsyncStore.storeData(AsyncStore.Keys.EXTENSSION_PWD, state.password.toString())
 
-                console.log("invicidual data", state.user_name)
               //  state.complaints_list = dataObj.data ? dataObj.data : [];
             }
             state.isLoading = false;

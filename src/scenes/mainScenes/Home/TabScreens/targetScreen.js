@@ -91,7 +91,6 @@ export const ParameterScreen = () => {
       }
       setTableDataObject(dataObj);
       setTableData(selector.target_parameters_data);
-      // console.log("chartDataLocal: ", chartDataLocal)
       setChartData(chartDataLocal);
       setNamesData(namesDataLocal);
     } else {
@@ -161,7 +160,6 @@ export const LeadSourceScreen = () => {
 
   useEffect(() => {
     if (selector.lead_source_table_data) {
-      // console.log("test: ", selector.lead_source_table_data)
       const namesDataLocal = [];
       const chartDataLocal = [];
 
@@ -421,11 +419,6 @@ const targetData = [
 
 const TargetScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
-  //console.log("ACHIEVE========>", selector.totalParameters);
-  console.log(
-    "ACC==--=-=-=-==-=>>",
-    selector.self_target_parameters_data
-  );
   const dispatch = useDispatch();
 
   const [retailData, setRetailData] = useState(null);
@@ -465,7 +458,6 @@ const TargetScreen = ({ route, navigation }) => {
   const getEmployeeListFromServer = async (user) => {
     // dispatch(getEmployeesList(424));
     // const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-    // console.log("EMP DTLS: ", employeeData);
     // if (employeeData) {
     //   const jsonObj = JSON.parse(employeeData);
     //   const payloadDept = {
@@ -475,7 +467,6 @@ const TargetScreen = ({ route, navigation }) => {
     //     "parentId": user.branchId
     //   }
     //   Promise.all([dispatch(getDeptDropdown(payloadDept))]).then((res1) => {
-    //     console.log("TTTRRR: ", JSON.stringify(res1));
     //     let dept = [];
     //     dept = res1[0].payload.filter((item) => item.value === jsonObj.primaryDepartment)
     //     const payloadDesig = {
@@ -494,7 +485,6 @@ const TargetScreen = ({ route, navigation }) => {
     //         "deptId": dept ? dept[0].id : 0,
     //         "desigId": desig ? desig[0].id : 0
     //       }
-    //       console.log("EMP PAYLOAD: ", payload);
     //       dispatch(getEmployeesList(payload));
     //     })
     //   })
@@ -504,13 +494,11 @@ const TargetScreen = ({ route, navigation }) => {
     const payload = {
       "empId": user.empId
     }
-    console.log("EMP PAYLOAD: ", payload);
     dispatch(getEmployeesList(payload));
   }
 
   const getReportingManagerListFromServer = async (user) => {
     const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-    console.log("EMP DTLS: ", employeeData);
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
       dispatch(delegateTask({
@@ -538,7 +526,6 @@ const TargetScreen = ({ route, navigation }) => {
         setReoprtingManagerDropdownList([]);
         setSelectedUser(null);
         const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-        console.log("EMP DTLS: ", employeeData);
         if (employeeData) {
           const jsonObj = JSON.parse(employeeData);
           const dateFormat = "YYYY-MM-DD";
@@ -556,12 +543,10 @@ const TargetScreen = ({ route, navigation }) => {
             "pageNo": 0,
             "size": 100
           }
-          console.log("$$$$PAYLOAD:", payload2);
           Promise.allSettled([
             dispatch(getNewTargetParametersAllData(payload2)),
             dispatch(getTotalTargetParametersData(payload2)),
           ]).then(() => {
-            console.log('I did everything!');
           });
         }
       })
@@ -591,7 +576,6 @@ const TargetScreen = ({ route, navigation }) => {
       tempBooking = dashboardSelfParamsData.filter((item) => {
         return item.paramName.toLowerCase() === 'booking'
       })
-      console.log("%%%TEMP BOOK", tempBooking);
       if (tempBooking.length > 0) {
         setBookingData(tempBooking[0])
       }
@@ -681,7 +665,6 @@ const TargetScreen = ({ route, navigation }) => {
   useEffect(async () => {
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     if (employeeData) {
-      console.log('HUmbley::: ', selector.login_employee_details.hasOwnProperty('roles'));
       const jsonObj = JSON.parse(employeeData);
       if (selector.login_employee_details.hasOwnProperty('roles') && selector.login_employee_details.roles.length > 0) {
         let rolesArr = [];
@@ -689,7 +672,6 @@ const TargetScreen = ({ route, navigation }) => {
           return item === "Admin Prod" || item === "App Admin" || item === "Manager" || item === "TL" || item === "General Manager" || item === "branch manager" || item === "Testdrive_Manager"
         })
         if (rolesArr.length > 0) {
-          // console.log("%%%%% TEAM:", rolesArr);
           setIsTeamPresent(true)
         }
       }
@@ -702,7 +684,6 @@ const TargetScreen = ({ route, navigation }) => {
   }, [selector.isTeam])
 
   const handleModalDropdownDataForShuffle = (user) => {
-    console.log("USER: ", user);
     if (delegateButtonClick) {
       getReportingManagerListFromServer(user);
       setShowShuffleModal(true);
@@ -736,9 +717,7 @@ const TargetScreen = ({ route, navigation }) => {
           }
           // tempParams[i]["isOpenInner"] = false;
           // tempParams[i]["employeeTargetAchievements"] = [];
-          console.log("%%%%^^^:", tempParams[i]);
           if (i === tempParams.length - 1) {
-            console.log("MODIFIED DATA: ", JSON.stringify(tempParams));
             setAllParameters([...tempParams]);
           }
         }
@@ -902,10 +881,8 @@ const TargetScreen = ({ route, navigation }) => {
                 />
               )}
               onChange={async (item) => {
-                console.log("£££", item.value);
                 if (delegateButtonClick) {
                   setReoprtingManagerListDropdownItem(item.value);
-                  console.log(reoprtingManagerListDropdownItem);
                 } else {
                   setEmployeeListDropdownItem(item.value);
                 }
@@ -926,7 +903,6 @@ const TargetScreen = ({ route, navigation }) => {
                       setDelegateButtonClick(true);
                       setHeaderTitle('Reporting Managers');
                       setDropDownPlaceHolder(state => state = 'Reporting Manager');
-                      console.log("TDTDTDTDTDTD: ", employeeListDropdownItem);
                       getReportingManagerListFromServer(selectedUser);
                     }
                   }}>
@@ -1054,7 +1030,6 @@ const TargetScreen = ({ route, navigation }) => {
                             }
                             if (!current) {
                               let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-                              // console.log("$$$$$ LOGIN EMP:", employeeData);
                               if (employeeData) {
                                 const jsonObj = JSON.parse(employeeData);
                                 const dateFormat = "YYYY-MM-DD";
@@ -1072,11 +1047,9 @@ const TargetScreen = ({ route, navigation }) => {
                                   "pageNo": 0,
                                   "size": 100
                                 }
-                                console.log("PPPLLL", payload);
                                 Promise.all([
                                   dispatch(getUserWiseTargetParameters(payload))
                                 ]).then((res) => {
-                                  console.log("DATA:", JSON.stringify(res));
                                   let tempRawData = [];
                                   tempRawData = res[0]?.payload?.employeeTargetAchievements.filter((emp) => emp.empId !== item.empId);
                                   if (tempRawData.length > 0) {
@@ -1137,7 +1110,6 @@ const TargetScreen = ({ route, navigation }) => {
 
                                 if (!current) {
                                   let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-                                  // console.log("$$$$$ LOGIN EMP:", employeeData);
                                   if (employeeData) {
                                     const jsonObj = JSON.parse(employeeData);
                                     const dateFormat = "YYYY-MM-DD";
@@ -1155,11 +1127,9 @@ const TargetScreen = ({ route, navigation }) => {
                                       "pageNo": 0,
                                       "size": 100
                                     }
-                                    console.log("PPPLLL", payload);
                                     Promise.all([
                                       dispatch(getUserWiseTargetParameters(payload))
                                     ]).then((res) => {
-                                      console.log("DATA:", JSON.stringify(res));
                                       let tempRawData = [];
                                       tempRawData = res[0]?.payload?.employeeTargetAchievements.filter((item) => item.empId !== innerItem1.empId);
                                       if (tempRawData.length > 0) {
@@ -1212,7 +1182,6 @@ const TargetScreen = ({ route, navigation }) => {
 
                                         if (!current) {
                                           let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-                                          // console.log("$$$$$ LOGIN EMP:", employeeData);
                                           if (employeeData) {
                                             const jsonObj = JSON.parse(employeeData);
                                             const dateFormat = "YYYY-MM-DD";
@@ -1230,11 +1199,9 @@ const TargetScreen = ({ route, navigation }) => {
                                               "pageNo": 0,
                                               "size": 100
                                             }
-                                            console.log("PPPLLL", payload);
                                             Promise.all([
                                               dispatch(getUserWiseTargetParameters(payload))
                                             ]).then((res) => {
-                                              console.log("DATA:", JSON.stringify(res));
                                               let tempRawData = [];
                                               tempRawData = res[0]?.payload?.employeeTargetAchievements.filter((item) => item.empId !== innerItem2.empId);
                                               if (tempRawData.length > 0) {
@@ -1289,7 +1256,6 @@ const TargetScreen = ({ route, navigation }) => {
 
                                                 if (!current) {
                                                   let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-                                                  // console.log("$$$$$ LOGIN EMP:", employeeData);
                                                   if (employeeData) {
                                                     const jsonObj = JSON.parse(employeeData);
                                                     const dateFormat = "YYYY-MM-DD";
@@ -1307,11 +1273,9 @@ const TargetScreen = ({ route, navigation }) => {
                                                       "pageNo": 0,
                                                       "size": 100
                                                     }
-                                                    console.log("PPPLLL", payload);
                                                     Promise.all([
                                                       dispatch(getUserWiseTargetParameters(payload))
                                                     ]).then((res) => {
-                                                      console.log("DATA:", JSON.stringify(res));
                                                       let tempRawData = [];
                                                       tempRawData = res[0]?.payload?.employeeTargetAchievements.filter((item) => item.empId !== innerItem3.empId);
                                                       if (tempRawData.length > 0) {
@@ -1359,7 +1323,6 @@ const TargetScreen = ({ route, navigation }) => {
 
                                                         if (!current) {
                                                           let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-                                                          // console.log("$$$$$ LOGIN EMP:", employeeData);
                                                           if (employeeData) {
                                                             const jsonObj = JSON.parse(employeeData);
                                                             const dateFormat = "YYYY-MM-DD";
@@ -1377,11 +1340,9 @@ const TargetScreen = ({ route, navigation }) => {
                                                               "pageNo": 0,
                                                               "size": 100
                                                             }
-                                                            console.log("PPPLLL", payload);
                                                             Promise.all([
                                                               dispatch(getUserWiseTargetParameters(payload))
                                                             ]).then((res) => {
-                                                              console.log("DATA:", JSON.stringify(res));
                                                               let tempRawData = [];
                                                               tempRawData = res[0]?.payload?.employeeTargetAchievements.filter((item) => item.empId !== innerItem4.empId);
                                                               if (tempRawData.length > 0) {
@@ -1429,7 +1390,6 @@ const TargetScreen = ({ route, navigation }) => {
 
                                                                 if (!current) {
                                                                   let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-                                                                  // console.log("$$$$$ LOGIN EMP:", employeeData);
                                                                   if (employeeData) {
                                                                     const jsonObj = JSON.parse(employeeData);
                                                                     const dateFormat = "YYYY-MM-DD";
@@ -1447,11 +1407,9 @@ const TargetScreen = ({ route, navigation }) => {
                                                                       "pageNo": 0,
                                                                       "size": 100
                                                                     }
-                                                                    console.log("PPPLLL", payload);
                                                                     Promise.all([
                                                                       dispatch(getUserWiseTargetParameters(payload))
                                                                     ]).then((res) => {
-                                                                      console.log("DATA:", JSON.stringify(res));
                                                                       let tempRawData = [];
                                                                       tempRawData = res[0]?.payload?.employeeTargetAchievements.filter((item) => item.empId !== innerItem5.empId);
                                                                       if (tempRawData.length > 0) {
@@ -1499,7 +1457,6 @@ const TargetScreen = ({ route, navigation }) => {
 
                                                                         if (!current) {
                                                                           let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-                                                                          // console.log("$$$$$ LOGIN EMP:", employeeData);
                                                                           if (employeeData) {
                                                                             const jsonObj = JSON.parse(employeeData);
                                                                             const dateFormat = "YYYY-MM-DD";
@@ -1517,11 +1474,9 @@ const TargetScreen = ({ route, navigation }) => {
                                                                               "pageNo": 0,
                                                                               "size": 100
                                                                             }
-                                                                            console.log("PPPLLL", payload);
                                                                             Promise.all([
                                                                               dispatch(getUserWiseTargetParameters(payload))
                                                                             ]).then((res) => {
-                                                                              console.log("DATA:", JSON.stringify(res));
                                                                               let tempRawData = [];
                                                                               tempRawData = res[0]?.payload?.employeeTargetAchievements.filter((item) => item.empId !== innerItem6.empId);
                                                                               if (tempRawData.length > 0) {

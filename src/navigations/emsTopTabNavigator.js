@@ -4,11 +4,12 @@ import PreEnquiryScreen from "../scenes/mainScenes/EMS/preEnquiryScreen";
 import EnquiryScreen from "../scenes/mainScenes/EMS/enquiryScreen";
 import PreBookingScreen from "../scenes/mainScenes/EMS/prebookingScreen";
 import BookingScreen from "../scenes/mainScenes/EMS/bookingScreen";
-
 import { Colors } from "../styles";
 import * as AsyncStore from "../asyncStore";
 import ProceedToBookingScreen from "../scenes/mainScenes/MyTasks/proceedToBookingScreen";
 import Leads from "../scenes/mainScenes/EMS/leadsScreen";
+import { StyleSheet, Text, View } from "react-native";
+import { useSelector } from "react-redux";
 
 export const EmsTopTabNavigatorIdentifiers = {
   preEnquiry: "PRE_ENQUIRY",
@@ -49,8 +50,36 @@ const EMSTopTabNavigatorOne = () => {
   );
 };
 
-const EMSTopTabNavigatorTwo = () => {
+const Badge = ({ focused, title, countList }) => {
+  return (
+    <View style={styles.tabContainer}>
+      <Text
+        style={[
+          styles.titleText,
+          { color: focused ? Colors.RED : Colors.DARK_GRAY },
+        ]}
+      >
+        {title}
+      </Text>
+      <View style={styles.badgeContainer}>
+        <Text style={styles.badgeText}>
+          {title == "CONTACTS"
+            ? countList
+              ? countList.length
+              : 0
+            : countList &&
+              countList?.dmsEntity?.leadDtoPage?.numberOfElements > 0
+            ? countList.dmsEntity.leadDtoPage.numberOfElements
+            : 0}
+        </Text>
+      </View>
+    </View>
+  );
+};
 
+const EMSTopTabNavigatorTwo = () => {
+  const { pre_enquiry_list } = useSelector((state) => state.preEnquiryReducer);
+  const { leadList } = useSelector((state) => state.leaddropReducer);
   return (
     <EMSTopTab.Navigator
       initialRouteName={EmsTopTabNavigatorIdentifiers.preEnquiry}
@@ -59,14 +88,24 @@ const EMSTopTabNavigatorTwo = () => {
       <EMSTopTab.Screen
         name={EmsTopTabNavigatorIdentifiers.preEnquiry}
         component={PreEnquiryScreen}
-        options={{ title: "Contacts",  }}
-
+        options={{
+          title: ({ focused }) => (
+            <Badge
+              title={"CONTACTS"}
+              focused={focused}
+              countList={pre_enquiry_list}
+            />
+          ),
+        }}
       />
       <EMSTopTab.Screen
         name={EmsTopTabNavigatorIdentifiers.leads}
         component={Leads}
-        options={{ title: "Leads",  }}
-
+        options={{
+          title: ({ focused }) => (
+            <Badge title={"LEADS"} focused={focused} countList={leadList} />
+          ),
+        }}
       />
       {/*<EMSTopTab.Screen*/}
       {/*  name={EmsTopTabNavigatorIdentifiers.enquiry}*/}
@@ -92,5 +131,25 @@ const EMSTopTabNavigatorTwo = () => {
     </EMSTopTab.Navigator>
   );
 };
+
+const styles = StyleSheet.create({
+  tabContainer: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    position: "relative",
+  },
+  titleText: {
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  badgeContainer: {
+    marginLeft: 3,
+    bottom: 4,
+    alignSelf: "flex-start",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  badgeText: { fontSize: 13, color: Colors.PINK, fontWeight: "bold" },
+});
 
 export { EMSTopTabNavigatorOne, EMSTopTabNavigatorTwo };

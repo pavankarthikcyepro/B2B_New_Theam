@@ -29,7 +29,6 @@ const DigitalPaymentScreen = ({navigation}) => {
     } else {
       setDataList("https://www.bigpharmacy.com.my/scripts/timthumb.php")
     }
-    console.log({qr})
   }
 
   return (

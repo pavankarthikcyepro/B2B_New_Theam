@@ -8,7 +8,6 @@ export const getEmployeesActiveBranch = createAsyncThunk("TARGET_SETTINGS/getEmp
 
     const response = await client.get(URL.GET_EMPLOYEES_ACTIVE_BRANCHES(payload.orgId, payload.empId))
     const json = await response.json()
-    // console.log("$$$$%%%$$ BRANCH: ", JSON.stringify(json));
     if (!response.ok) {
         return rejectWithValue(json);
     }
@@ -19,7 +18,6 @@ export const getEmployeesRolls = createAsyncThunk("TARGET_SETTINGS/getEmployeesR
 
     const response = await client.get(URL.GET_EMPLOYEES_ROLES(payload.empId))
     const json = await response.json()
-    // console.log("$$$$%%%$$ ROLLS:", JSON.stringify(json));
 
     if (!response.ok) {
         return rejectWithValue(json);
@@ -28,11 +26,9 @@ export const getEmployeesRolls = createAsyncThunk("TARGET_SETTINGS/getEmployeesR
 })
 
 export const addTargetMapping = createAsyncThunk("TARGET_SETTINGS/addTargetMapping", async (payload: any, { rejectWithValue }) => {
-    console.log("PAYLOAD:", URL.ADD_TARGET_MAPPING(), JSON.stringify(payload))
     const response = await client.post(URL.ADD_TARGET_MAPPING(), payload)
 
     const json = await response.json()
-    console.log("$$$$%%%$$ ADD:", JSON.stringify(json));
     if (json?.message) {
         showToast(json.message)
     }
@@ -46,7 +42,6 @@ export const editTargetMapping = createAsyncThunk("TARGET_SETTINGS/editTargetMap
 
     const response = await client.post(URL.EDIT_TARGET_MAPPING(), payload)
     const json = await response.json()
-    console.log("$$$$%%%$$ EDIT:", JSON.stringify(json));
     if (json?.message){
         showToast(json.message)
     }
@@ -60,7 +55,6 @@ export const getEmployeesDropDownData = createAsyncThunk("TARGET_SETTINGS/getEmp
 
     const response = await client.post(URL.GET_EMPLOYEES_DROP_DOWN_DATA(payload.orgId, payload.empId), payload.selectedIds)
     const json = await response.json()
-    // console.log("$$$$$$$$$ DROP DOWN2:", JSON.stringify(json));
 
     if (!response.ok) {
         return rejectWithValue(json);
@@ -71,7 +65,6 @@ export const getEmployeesDropDownData = createAsyncThunk("TARGET_SETTINGS/getEmp
 export const getAllTargetMapping = createAsyncThunk("TARGET_SETTINGS/getAllTargetMapping", async (payload: any, { rejectWithValue }) => {
     const response = await client.post(URL.GET_ALL_TARGET_MAPPING(), payload)
     const json = await response.json()
-    console.log("$$$$$$$$$ TARGET:", JSON.stringify(json));
     if (!response.ok) {
         return rejectWithValue(json);
     }
@@ -90,10 +83,8 @@ export const getSpecialDropValue = createAsyncThunk("TARGET_SETTINGS/getSpecialD
 })
 
 export const saveSelfTargetParams = createAsyncThunk("TARGET_SETTINGS/saveSelfTargetParams", async (payload: any, { rejectWithValue }) => {
-    console.log('$$$$%%%$$ EDIT save params: payload:: ', payload)
     const response = await client.post(URL.UPDATE_SELF_TARGET_PARAMS(), payload)
     const json = await response.json()
-    console.log("$$$$%%%$$ EDIT save params:", JSON.stringify(json));
     if (json?.message){
         showToast(json.message)
     }
@@ -103,10 +94,8 @@ export const saveSelfTargetParams = createAsyncThunk("TARGET_SETTINGS/saveSelfTa
     return json;
 })
 export const saveTeamTargetParams = createAsyncThunk("TARGET_SETTINGS/saveTeamTargetParams", async (payload: any, { rejectWithValue }) => {
-    console.log('$$$$%%%$$ EDIT save TEAM params: payload:: ', payload)
     const response = await client.post(URL.UPDATE_TEAM_TARGET_PARAMS(), payload)
     const json = await response.json()
-    console.log("$$$$%%%$$ EDIT save TEAM params:", JSON.stringify(json));
     if (json?.message){
         showToast(json.message)
     }
@@ -224,7 +213,6 @@ export const targetSettingsSlice = createSlice({
                 state.isLoading = true;
             })
             .addCase(getEmployeesActiveBranch.fulfilled, (state, action) => {
-                // console.log('menu_list: ', JSON.stringify(action.payload));
                 state.isLoading = false;
 
                 state.activeBranches = action.payload;
@@ -242,7 +230,6 @@ export const targetSettingsSlice = createSlice({
             .addCase(getEmployeesRolls.fulfilled, (state, action) => {
                 state.isLoading = false;
 
-                // console.log('menu_list: ', JSON.stringify(action.payload));
                 state.roles = action.payload;
             })
             .addCase(getEmployeesRolls.rejected, (state, action) => {
@@ -257,7 +244,6 @@ export const targetSettingsSlice = createSlice({
             })
             .addCase(getAllTargetMapping.fulfilled, (state, action) => {
                 state.isLoading = false;
-                console.log('menu_list: ', JSON.stringify(action.payload));
                 state.targetMapping = []
                 state.targetMapping = action.payload.data ? action.payload.data : [];
                 state.isDataLoaded = true
@@ -305,7 +291,6 @@ export const targetSettingsSlice = createSlice({
             .addCase(getEmployeesDropDownData.fulfilled, (state, action) => {
                 state.isLoading = false;
 
-                console.log("S getEmployeesDropDownData: ", JSON.stringify(action.payload));
                 if (action.payload) {
                     state.employees_drop_down_data = action.payload;
                 }
@@ -323,7 +308,6 @@ export const targetSettingsSlice = createSlice({
             .addCase(getSpecialDropValue.fulfilled, (state, action) => {
                 state.isLoading = false;
 
-                console.log("$$$$$$$$$ SPECIAL1:", JSON.stringify(action.payload));
                 if (action.payload.length > 0) {
                     let temp = [];
                     for (let i = 0; i < action.payload.length; i++){

@@ -56,7 +56,6 @@ const TaskListScreen = ({ route, navigation }) => {
         const finalTaskName = trimName.replace(/ /g, "");
         let navigationId = ""
         let taskNameNew = ''
-        console.log("FINAL TASK NAME:", finalTaskName);
         switch (finalTaskName) {
             case "testdrive":
                 navigationId = AppNavigator.MyTasksStackIdentifiers.testDrive;
@@ -117,7 +116,6 @@ const TaskListScreen = ({ route, navigation }) => {
                                     setSearchedData(route.params.data);
                                 }
                                 else{
-                                    console.log(route.params.data[0]);
                                     let tempData = [];
                                     tempData = route.params.data.filter(item => {
                                         return (

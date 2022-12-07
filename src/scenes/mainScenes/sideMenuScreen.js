@@ -50,6 +50,8 @@ import {
   TRANSFER_STR,
 } from "../../redux/sideMenuReducer";
 import { clearState } from "../../redux/homeReducer";
+import { clearEnqState } from "../../redux/enquiryReducer";
+import { clearLeadDropState } from "../../redux/leaddropReducer";
 import ReactNativeModal from "react-native-modal";
 
 const screenWidth = Dimensions.get("window").width;
@@ -137,7 +139,6 @@ const SideMenuScreen = ({ navigation }) => {
 
   const getUserRole = async () => {
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-    // console.log("$$$$$ LOGIN EMP:", employeeData);
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
       setHrmsRole(jsonObj.hrmsRole);
@@ -168,7 +169,6 @@ const SideMenuScreen = ({ navigation }) => {
   };
 
   const getProfilePic = (userData) => {
-    // console.log(`http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`);
     fetch(
       `http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
     )
@@ -292,6 +292,8 @@ const SideMenuScreen = ({ navigation }) => {
     navigation.closeDrawer();
     //realm.close();
     dispatch(clearState());
+    dispatch(clearEnqState());
+    dispatch(clearLeadDropState());
     signOut();
   };
 
@@ -314,12 +316,10 @@ const SideMenuScreen = ({ navigation }) => {
       } else if (Response.assets) {
         let Object = Response.assets[0];
         const uriLink = Object.uri;
-        // console.log('assets: ', uri);
         const uriObject = {
           uri: uriLink,
         };
         // setImageUri(uriObject);
-        console.log({ uriObject });
         if (isExist) {
           updateProfilePic(uriObject);
         } else {
@@ -360,10 +360,6 @@ const SideMenuScreen = ({ navigation }) => {
         };
         const response = await client.post(URL.SAVE_PROFILE(), inputData);
         const saveProfile = await response.json();
-        console.log(
-          "save json",
-          saveProfile.dmsEntity.employeeProfileDtos[0].documentPath
-        );
         if (saveProfile.success) {
           setIsExist(true);
           let newInitial = {
@@ -402,7 +398,6 @@ const SideMenuScreen = ({ navigation }) => {
           "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
       );
     } catch (err) {
-      console.log(err);
     }
   };
 
@@ -452,7 +447,6 @@ const SideMenuScreen = ({ navigation }) => {
     //     //     "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
     //     // );
     // } catch (err) {
-    //     console.log(err);
     // }
   };
 

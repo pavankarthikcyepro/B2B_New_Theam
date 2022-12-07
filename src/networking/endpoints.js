@@ -1,4 +1,3 @@
-
 // Production Urls:
 
 // export const hrms_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8088/hrms";
@@ -21,40 +20,75 @@
 // export const lostSubLost = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Lost_SubLost_AllDetails"
 
 // Dev End Points
-export const hrms_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8088/hrms";
-export const sales_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales";
-export const roleManagement_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8089/role-management";
-export const vehicleInfoService_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8090/vehicle-information-service";
-export const ops_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8084/ops"
-export const inventory_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8087/inventory";
-export const vehicleServices_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8083/vehicle-services";
-export const admin_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8082/admin";
-export const notificationServices_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8086/notification-service";
-export const customerService_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8085/customer-service";
-export const dynamicReports_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/dynamic-reports";
-export const dynamicForms = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/dynamic-forms";
-export const orgnaizationHirarchy = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/oh";
-export const dashboard = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/dashboard";
-export const dfGetAll = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/df-get-all"
-export const subSourceAllDetails = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Source_SubSource_AllDetails"
-export const salesGap = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/sales-gap"
-export const lostSubLost = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Lost_SubLost_AllDetails"
-export const getBranch = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/oh";
-export const downloadFile = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8093/dynamic-reports";
-export const downloadFile1 = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8095/dynamic-reports/etvbrl_report_download";
-export const downloadFile2 = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8095/dynamic-reports/etvbrl_report";
-export const tasktransfer = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/sales-gap/target-dropdown";
-export const getTaskList = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/task-delegation/get_task_list";
-export const getEmployeeData = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8089/role-management/employee/dept-employees";
-export const getEmployeeList = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employees/reporting/all/emp"
-export const getReportingMangerList = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employees/all/reportingManagers/orgId"
-export const updateEmployeeTaskDelegate = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employees/emp"
-export const getLeaderBoardData = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/dashboard/v2/get_emp_target_ranking/org"
-export const getBranchRankingData = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/dashboard/v2/get_emp_target_ranking"
-export const getEnquiryVehicleModelData = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Other_Maker_AllDetails";
-export const deleteModelCard = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/lead"
-export const dashboardLiveLeads = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8083";
-export const profileImageUpdate = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic";
+export const hrms_url =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8088/hrms";
+export const sales_url =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales";
+// "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/account/enquiryAccount?allocateDse=false"
+export const roleManagement_url =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8089/role-management";
+export const vehicleInfoService_url =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8090/vehicle-information-service";
+export const ops_url =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8084/ops";
+export const inventory_url =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8087/inventory";
+export const vehicleServices_url =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8083/vehicle-services";
+export const admin_url =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8082/admin";
+export const notificationServices_url =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8086/notification-service";
+export const customerService_url =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8085/customer-service";
+export const dynamicReports_url =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/dynamic-reports";
+export const dynamicForms =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/dynamic-forms";
+export const orgnaizationHirarchy =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/oh";
+export const dashboard =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/dashboard";
+export const dfGetAll =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/df-get-all";
+export const subSourceAllDetails =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Source_SubSource_AllDetails";
+export const salesGap =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/sales-gap";
+export const lostSubLost =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Lost_SubLost_AllDetails";
+export const getBranch =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/oh";
+export const downloadFile =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8093/dynamic-reports";
+export const downloadFile1 =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8095/dynamic-reports/etvbrl_report_download";
+export const downloadFile2 =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8095/dynamic-reports/etvbrl_report";
+export const tasktransfer =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/sales-gap/target-dropdown";
+export const getTaskList =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/task-delegation/get_task_list";
+export const getEmployeeData =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8089/role-management/employee/dept-employees";
+export const getEmployeeList =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employees/reporting/all/emp";
+export const getReportingMangerList =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employees/all/reportingManagers/orgId";
+export const updateEmployeeTaskDelegate =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employees/emp";
+export const getLeaderBoardData =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/dashboard/v2/get_emp_target_ranking/org";
+export const getBranchRankingData =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/dashboard/v2/get_emp_target_ranking";
+export const getEnquiryVehicleModelData =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Other_Maker_AllDetails";
+export const deleteModelCard =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/lead";
+export const dashboardLiveLeads =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8083";
+export const profileImageUpdate =
+  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic";
 
 const URL = {
   LOGIN: () => hrms_url + "/emplogin",
@@ -66,9 +100,7 @@ const URL = {
     );
   },
   DELETE_MODEL_CARD: (value) => {
-    return (
-      deleteModelCard + `/delete_leadProduct?id=${value}`
-    )
+    return deleteModelCard + `/delete_leadProduct?id=${value}`;
   },
   LEADS_LIST_API_FILTER: () => sales_url + "/lead/allByDate",
   MENULIST_API: (userName) => {
@@ -80,9 +112,7 @@ const URL = {
     );
   },
   ENQUIRY_VEHICLE_MODELS: (orgId) => {
-    return (
-      getEnquiryVehicleModelData + "?organizationId=" + orgId
-    );
+    return getEnquiryVehicleModelData + "?organizationId=" + orgId;
   },
   GET_EMPID: (userName) => {
     return roleManagement_url + "/user/" + userName;
@@ -149,10 +179,7 @@ const URL = {
     );
   },
   GET_PAID_ACCESSORIES_LIST2: (vehicleId, orgId) => {
-    return (
-      sales_url +
-      `/allotment/${vehicleId}/${orgId}`
-    );
+    return sales_url + `/allotment/${vehicleId}/${orgId}`;
   },
   GET_ON_ROAD_PRICE_DTO_LIST: (leadId) => {
     return sales_url + `/on-road-price/lead/${leadId}`;
@@ -253,13 +280,22 @@ const URL = {
   UPDATE_SINGLEAPPROVAL: () => {
     return sales_url + "/lead-drop";
   },
+  LEAD_DROPPED: () => sales_url + "/lead",
   UPDATE_BULKAPPROVAL: () => {
     return sales_url + "/lead-drop/bulkdrop";
   },
   REVOKE: (id) => {
     return sales_url + "/lead-drop/updateStatusEnquire/ENQUIRY/" + id;
   },
-  GET_LEADDROP_LIST: (branchId, empName, orgId, offSet, limit) => {
+  GET_LEADDROP_LIST: (
+    branchId,
+    empName,
+    orgId,
+    offSet,
+    limit,
+    startDate,
+    endDate
+  ) => {
     return (
       sales_url +
       "/lead-drop/details?branch=" +
@@ -271,34 +307,36 @@ const URL = {
       "&offset=" +
       offSet +
       "&orgId=" +
-      orgId
+      orgId +
+      `&startdate=${startDate}&enddate=${endDate}`
     );
   },
   GET_SUB_MENU: (stage) => {
-    return (
-      sales_url +
-      "/lead/stagedropdown?menu=" + stage
-    );
+    return sales_url + "/lead/stagedropdown?menu=" + stage;
   },
   GET_LEAD_LIST: (branchId, empName, empId, offSet, limit) => {
     return (
-      sales_url + "/lead/allLeads?limit=" +
-      limit + "&offset=" +
-      offSet + "&empId=" +
-      empId + "&branchId=" +
-      branchId + "&empName=" + empName
+      sales_url +
+      "/lead/allLeads?limit=" +
+      limit +
+      "&offset=" +
+      offSet +
+      "&empId=" +
+      empId +
+      "&branchId=" +
+      branchId +
+      "&empName=" +
+      empName
     );
   },
   GET_LEAD_LIST_2: () => {
-    return (sales_url + "/lead/allByDateNew");
+    return sales_url + "/lead/allByDateNew";
   },
-  GET_ALL_STATUS:()=>{
-    return (sales_url + "/lead/alldatadropdown");
+  GET_ALL_STATUS: () => {
+    return sales_url + "/lead/alldatadropdown";
   },
   GET_MENU_DROP_DOWN_DATA: () => {
-    return (
-      sales_url +
-      "/lead/menudropdown");
+    return sales_url + "/lead/menudropdown";
   },
   GET_EMPLOYEES_DROP_DOWN_DATA: (orgId, employeeId) => {
     return orgnaizationHirarchy + `/active-dropdowns/${orgId}/${employeeId}`;
@@ -390,7 +428,8 @@ const URL = {
   GET_TASK_LIST: (taskId) => {
     return `${getTaskList}/${taskId}`;
   },
-  GET_TEAMS_TARGET_PARAMS: () => dashboard + "/v4/get_target_params_for_all_emps",
+  GET_TEAMS_TARGET_PARAMS: () =>
+    dashboard + "/v4/get_target_params_for_all_emps",
   // GET_TOTAL_TARGET_PARAMS: () => dashboard + "/v4/get_target_params",
   GET_TOTAL_TARGET_PARAMS: () => dashboard + "/v2/get_target_params",
   GET_EMPLOYEE_DETAILS: (orgId, branchId, deptId, desigId) => {
@@ -418,7 +457,7 @@ const URL = {
     return `${getLeaderBoardData}/${orgId}`;
   },
   GET_BRANCH_RANKING_DATA: (orgId, branchId) => {
-    return getBranchRankingData + '/org/' + orgId + '/branch/' + branchId;
+    return getBranchRankingData + "/org/" + orgId + "/branch/" + branchId;
   },
   EMPLOYEE_DATA_UPDATE: (empID, managerID) => {
     return `${updateEmployeeTaskDelegate}/${empID}/reportingManager/${managerID}/update`;
@@ -433,7 +472,10 @@ const URL = {
     return `${getEmployeeData}?orgId=${orgId}&branchId=${branchId}&deptId=${deptId}&desigId=${desigId}`;
   },
   TRANSFER_TASK: (fromUserId, toUserId) => {
-    return sales_url + `/task-delegation/process/selected?emplIdFrom=${fromUserId}&emplIdTo=${toUserId}`;
+    return (
+      sales_url +
+      `/task-delegation/process/selected?emplIdFrom=${fromUserId}&emplIdTo=${toUserId}`
+    );
   },
   UPDATE_SELF_TARGET_PARAMS: () => {
     return `${salesGap}/target-update1`;
@@ -441,17 +483,32 @@ const URL = {
   UPDATE_TEAM_TARGET_PARAMS: () => {
     return `${salesGap}/target-update`;
   },
-  MODEL_SOURCE_SELF: () => `${dashboard}/v2/get_target_params_for_emp_model_source`,
-  GET_LIVE_LEADS_MODEL_SOURCE_SELF: () => `${dashboardLiveLeads}/dashboard/v2/get_target_params_for_emp_model_source`,
-  GET_LIVE_LEADS_MODEL_SOURCE_INSIGHTS: () => `${dashboardLiveLeads}/dashboard/v2/get_target_params_model_source`,
-  GET_LIVE_LEADS_MODEL_SOURCE_TEAM: () => `${dashboardLiveLeads}/dashboard/v4/get_target_params_for_all_emps_model_source`,
+  MODEL_SOURCE_SELF: () =>
+    `${dashboard}/v2/get_target_params_for_emp_model_source`,
+  GET_LIVE_LEADS_MODEL_SOURCE_SELF: () =>
+    `${dashboardLiveLeads}/dashboard/v2/get_target_params_for_emp_model_source`,
+  GET_LIVE_LEADS_MODEL_SOURCE_INSIGHTS: () =>
+    `${dashboardLiveLeads}/dashboard/v2/get_target_params_model_source`,
+  GET_LIVE_LEADS_MODEL_SOURCE_TEAM: () =>
+    `${dashboardLiveLeads}/dashboard/v4/get_target_params_for_all_emps_model_source`,
   MODEL_SOURCE_INSIGHTS: () => `${dashboard}/v2/get_target_params_model_source`,
-  MODEL_SOURCE_TEAM: () => `${dashboard}/v4/get_target_params_for_all_emps_model_source`,
-  GET_LIVE_LEADS_SELF: () => `${dashboardLiveLeads}/dashboard/v2/get_target_params_for_emp`,
-  GET_LIVE_LEADS_INSIGHTS: () => `${dashboardLiveLeads}/dashboard/v2/get_target_params`,
-  GET_LIVE_LEADS_TEAM: () => `${dashboardLiveLeads}/dashboard/v4/get_target_params_for_all_emps`,
-  GET_TOTAL_OF_TEAM: () => `${dashboard}/v2/get_target_params_immediate_hierarchy`
-}
+  MODEL_SOURCE_TEAM: () =>
+    `${dashboard}/v4/get_target_params_for_all_emps_model_source`,
+  GET_LIVE_LEADS_SELF: () =>
+    `${dashboardLiveLeads}/dashboard/v2/get_target_params_for_emp`,
+  GET_LIVE_LEADS_INSIGHTS: () =>
+    `${dashboardLiveLeads}/dashboard/v2/get_target_params`,
+  GET_LIVE_LEADS_TEAM: () =>
+    `${dashboardLiveLeads}/dashboard/v4/get_target_params_for_all_emps`,
+  GET_TOTAL_OF_TEAM: () =>
+    `${dashboard}/v2/get_target_params_immediate_hierarchy`,
+  ENQURIY_ACCOUNT: () => {
+    return sales_url + `/account/enquiryAccount?allocateDse=false`;
+  },
+  ENQUIRY_CONTACT: () => {
+    return sales_url + `/contact/enquiryContact?allocateDse=false`;
+  },
+};
 
 // bankFinancier, incuranceCompany, enqueryCategory, deliveryCheckList, sublostReason
 // http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8091/df-get-all/1/%22Active%22/1/enqueryCategory

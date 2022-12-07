@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
+  Animated,
   Dimensions,
   Pressable,
   StyleSheet,
@@ -68,6 +69,8 @@ const TargetScreen = ({ route }) => {
   );
   const [dropDownPlaceHolder, setDropDownPlaceHolder] = useState("Employees");
   const [allParameters, setAllParameters] = useState([]);
+  const [myParameters, setMyParameters] = useState([]);
+
   const [selectedName, setSelectedName] = useState("");
 
   const [employeeListDropdownItem, setEmployeeListDropdownItem] = useState(0);
@@ -85,6 +88,8 @@ const TargetScreen = ({ route }) => {
   const [toggleParamsIndex, setToggleParamsIndex] = useState(0);
   const [toggleParamsMetaData, setToggleParamsMetaData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const translation = useRef(new Animated.Value(0)).current
+  const [slideRight, setSlideRight] = useState()
   const scrollViewRef = useRef();
   const paramsMetadata = [
     // 'Enquiry', 'Test Drive', 'Home Visit', 'Booking', 'INVOICE', 'Finance', 'Insurance', 'Exchange', 'EXTENDEDWARRANTY', 'Accessories'
@@ -476,6 +481,12 @@ const TargetScreen = ({ route }) => {
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
         if (selector.all_emp_parameters_data.length > 0) {
+          let myParams = [
+            ...selector.all_emp_parameters_data.filter(
+              (item) => item.empId === jsonObj.empId
+            ),
+          ];
+          setMyParameters(myParams);
           let tempParams = [
             ...selector.all_emp_parameters_data.filter(
               (item) => item.empId !== jsonObj.empId
@@ -514,6 +525,33 @@ const TargetScreen = ({ route }) => {
     }
   }, [selector.all_emp_parameters_data]);
 
+  useEffect(() => {
+    navigation.addListener('focus', () => {
+      setSelfInsightsData([]);
+      setLostLeadsData(null);
+      setAccData(null);
+      setExwData(null);
+      setInsData(null);
+      setFinData(null);
+      setExgData(null);
+      setTDData(null);
+      setVisitData(null);
+      setEnqData(null);
+      setBookingData(null);
+      setRetailData(null);
+      setSlideRight(0);
+    })
+    setSlideRight(0)
+  }, [navigation, selector.isTeam])
+
+  useEffect(() => {
+    Animated.timing(translation, {
+      toValue: slideRight,
+      duration: 0,
+      useNativeDriver: true,
+    }).start()
+  }, [slideRight])
+
   const getColor = (ach, tar) => {
     if (ach > 0 && tar === 0) {
       return "#1C95A6";
@@ -529,7 +567,6 @@ const TargetScreen = ({ route }) => {
       }
     }
   };
-
   // Main Dashboard params Data
   const renderData = (item, color) => {
     return (
@@ -674,9 +711,7 @@ const TargetScreen = ({ route }) => {
                   if (newIds.length >= 2) {
                     for (let i = 0; i < newIds.length; i++) {
                       const element = newIds[i].toString();
-                      let tempPayload = getTotalPayload(employeeData,
-                        element,
-                      );
+                      let tempPayload = getTotalPayload(employeeData, element);
                       const response = await client.post(
                         URL.GET_TOTAL_TARGET_PARAMS(),
                         tempPayload
@@ -714,7 +749,7 @@ const TargetScreen = ({ route }) => {
   };
 
   return (
-    <>
+    <React.Fragment>
       {!selector.isLoading ? (
         <View style={styles.container}>
           {selector.isTeam ? (
@@ -774,6 +809,12 @@ const TargetScreen = ({ route }) => {
                   onContentSizeChange={(contentWidth, contentHeight) => {
                     scrollViewRef?.current?.scrollTo({ y: 0, animated: true });
                   }}
+                  onScroll={(e) => {
+                    setSlideRight(e.nativeEvent.contentOffset.x)
+                    // handleScroll(e)
+                  }}
+                  bounces={false}
+                  scrollEventThrottle={16}
                 >
                   <View>
                     {/* TOP Header view */}
@@ -826,8 +867,101 @@ const TargetScreen = ({ route }) => {
                     {/* Employee params section */}
                     <ScrollView
                       style={{ height: Dimensions.get("screen").height / 2.2 }}
-                      // style={{ height: selector.isMD ? "81%" : "80%" }}
+                    // style={{ height: selector.isMD ? "81%" : "80%" }}
                     >
+                      {myParameters.length > 0 &&
+                        myParameters.map((item, index) => {
+                          return (
+                            <View key={`${item.empId} ${index}`}>
+                              <View
+                                style={{
+                                  paddingHorizontal: 8,
+                                  display: "flex",
+                                  flexDirection: "row",
+                                  justifyContent: "space-between",
+                                  marginTop: 12,
+                                  width: Dimensions.get("screen").width - 28,
+                                }}
+                              >
+                                <Text
+                                  style={{
+                                    fontSize: 12,
+                                    fontWeight: "600",
+                                    textTransform: "capitalize",
+                                  }}
+                                >
+                                  {item.empName}
+                                </Text>
+                                <SourceModelView
+                                  onClick={() => {
+                                    navigation.navigate(
+                                      AppNavigator.HomeStackIdentifiers
+                                        .sourceModel,
+                                      {
+                                        empId: item.empId,
+                                        headerTitle: item.empName,
+                                        loggedInEmpId:
+                                          selector.login_employee_details.empId,
+                                        orgId:
+                                          selector.login_employee_details.orgId,
+                                        type: "TEAM",
+                                        moduleType: "home",
+                                      }
+                                    );
+                                  }}
+                                  style={{
+                                    transform: [
+                                      { translateX: translation }
+                                    ]
+                                  }}
+                                />
+                              </View>
+                              {/*Source/Model View END */}
+                              <View
+                                style={[
+                                  { flexDirection: "row" },
+                                  item.isOpenInner && {
+                                    borderRadius: 10,
+                                    borderWidth: 2,
+                                    borderColor: "#C62159",
+                                    marginHorizontal: 6,
+                                    overflow: "hidden",
+                                  },
+                                ]}
+                              >
+                                {/*RIGHT SIDE VIEW*/}
+                                <View
+                                  style={[
+                                    {
+                                      width: "100%",
+                                      minHeight: 40,
+                                      flexDirection: "column",
+                                      paddingHorizontal: 2,
+                                    },
+                                  ]}
+                                >
+                                  <View
+                                    style={{
+                                      width: "100%",
+                                      minHeight: 40,
+                                      flexDirection: "row",
+                                    }}
+                                  >
+                                    <RenderLevel1NameView
+                                      level={0}
+                                      item={item}
+                                      branchName={getBranchName(item.branchId)}
+                                      color={"#C62159"}
+                                      titleClick={() => { }}
+                                      disable={true}
+                                    />
+                                    {renderData(item, "#C62159")}
+                                  </View>
+                                </View>
+                              </View>
+                            </View>
+                          );
+                        })}
                       {allParameters.length > 0 &&
                         allParameters.map((item, index) => {
                           return (
@@ -868,6 +1002,12 @@ const TargetScreen = ({ route }) => {
                                       }
                                     );
                                   }}
+                                  style={{
+                                    transform: [
+                                      { translateX: translation }
+                                    ]
+                                  }
+                                  }
                                 />
                               </View>
                               {/*Source/Model View END */}
@@ -920,7 +1060,7 @@ const TargetScreen = ({ route }) => {
 
                                   {item.isOpenInner &&
                                     item.employeeTargetAchievements.length >
-                                      0 &&
+                                    0 &&
                                     item.employeeTargetAchievements.map(
                                       (innerItem1, innerIndex1) => {
                                         return (
@@ -990,6 +1130,11 @@ const TargetScreen = ({ route }) => {
                                                           moduleType: "home",
                                                         }
                                                       );
+                                                    }}
+                                                    style={{
+                                                      transform: [
+                                                        { translateX: translation }
+                                                      ]
                                                     }}
                                                   />
                                                 </View>
@@ -1093,6 +1238,11 @@ const TargetScreen = ({ route }) => {
                                                                     "home",
                                                                 }
                                                               );
+                                                            }}
+                                                            style={{
+                                                              transform: [
+                                                                { translateX: translation }
+                                                              ]
                                                             }}
                                                           />
                                                         </View>
@@ -1202,6 +1352,11 @@ const TargetScreen = ({ route }) => {
                                                                           }
                                                                         );
                                                                       }}
+                                                                      style={{
+                                                                        transform: [
+                                                                          { translateX: translation }
+                                                                        ]
+                                                                      }}
                                                                     />
                                                                   </View>
                                                                   <View
@@ -1251,7 +1406,7 @@ const TargetScreen = ({ route }) => {
                                                                     innerItem3
                                                                       .employeeTargetAchievements
                                                                       .length >
-                                                                      0 &&
+                                                                    0 &&
                                                                     innerItem3.employeeTargetAchievements.map(
                                                                       (
                                                                         innerItem4,
@@ -1332,7 +1487,7 @@ const TargetScreen = ({ route }) => {
                                                                               innerItem4
                                                                                 .employeeTargetAchievements
                                                                                 .length >
-                                                                                0 &&
+                                                                              0 &&
                                                                               innerItem4.employeeTargetAchievements.map(
                                                                                 (
                                                                                   innerItem5,
@@ -1416,7 +1571,7 @@ const TargetScreen = ({ route }) => {
                                                                                         innerItem5
                                                                                           .employeeTargetAchievements
                                                                                           .length >
-                                                                                          0 &&
+                                                                                        0 &&
                                                                                         innerItem5.employeeTargetAchievements.map(
                                                                                           (
                                                                                             innerItem6,
@@ -1538,7 +1693,11 @@ const TargetScreen = ({ route }) => {
                       style={{ width: Dimensions.get("screen").width - 35 }}
                     >
                       <SourceModelView
-                        style={{ alignSelf: "flex-end" }}
+                        style={{
+                          transform: [
+                            { translateX: translation }
+                          ], alignSelf: "flex-end"
+                        }}
                         onClick={async () => {
                           let employeeData = await AsyncStore.getData(
                             AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -1672,7 +1831,6 @@ const TargetScreen = ({ route }) => {
                   </View>
 
                   <SourceModelView
-                    style={{ alignSelf: "flex-end" }}
                     onClick={() => {
                       navigation.navigate(
                         AppNavigator.HomeStackIdentifiers.sourceModel,
@@ -1721,12 +1879,13 @@ const TargetScreen = ({ route }) => {
                     />
                   </View>
                 </>
+
                 <View
                   style={{
                     flexDirection: "row",
-                    marginTop: 16,
                     justifyContent: "space-between",
                     marginHorizontal: 8,
+                    marginTop: 16,
                   }}
                 >
                   <View style={{ flexGrow: 1 }}>
@@ -1749,7 +1908,7 @@ const TargetScreen = ({ route }) => {
                               Math.floor(
                                 (parseInt(bookingData?.achievment) /
                                   parseInt(enqData?.achievment)) *
-                                  100
+                                100
                               ) > 40
                                 ? "#14ce40"
                                 : "#ff0000",
@@ -1758,13 +1917,13 @@ const TargetScreen = ({ route }) => {
                           }}
                         >
                           {parseInt(bookingData?.achievment) === 0 ||
-                          parseInt(enqData?.achievment) === 0
+                            parseInt(enqData?.achievment) === 0
                             ? 0
                             : Math.round(
-                                (parseInt(bookingData?.achievment) /
-                                  parseInt(enqData?.achievment)) *
-                                  100
-                              )}
+                              (parseInt(bookingData?.achievment) /
+                                parseInt(enqData?.achievment)) *
+                              100
+                            )}
                           %
                         </Text>
                       ) : (
@@ -1797,7 +1956,7 @@ const TargetScreen = ({ route }) => {
                               Math.floor(
                                 (parseInt(visitData?.achievment) /
                                   parseInt(enqData?.achievment)) *
-                                  100
+                                100
                               ) > 40
                                 ? "#14ce40"
                                 : "#ff0000",
@@ -1806,13 +1965,13 @@ const TargetScreen = ({ route }) => {
                           }}
                         >
                           {parseInt(enqData?.achievment) === 0 ||
-                          parseInt(visitData?.achievment) === 0
+                            parseInt(visitData?.achievment) === 0
                             ? 0
                             : Math.round(
-                                (parseInt(visitData?.achievment) /
-                                  parseInt(enqData?.achievment)) *
-                                  100
-                              )}
+                              (parseInt(visitData?.achievment) /
+                                parseInt(enqData?.achievment)) *
+                              100
+                            )}
                           %
                         </Text>
                       ) : (
@@ -1845,7 +2004,7 @@ const TargetScreen = ({ route }) => {
                               Math.floor(
                                 (parseInt(finData?.achievment) /
                                   parseInt(retailData?.achievment)) *
-                                  100
+                                100
                               ) > 40
                                 ? "#14ce40"
                                 : "#ff0000",
@@ -1854,13 +2013,13 @@ const TargetScreen = ({ route }) => {
                           }}
                         >
                           {parseInt(finData?.achievment) === 0 ||
-                          parseInt(retailData?.achievment) === 0
+                            parseInt(retailData?.achievment) === 0
                             ? 0
                             : Math.round(
-                                (parseInt(finData?.achievment) /
-                                  parseInt(retailData?.achievment)) *
-                                  100
-                              )}
+                              (parseInt(finData?.achievment) /
+                                parseInt(retailData?.achievment)) *
+                              100
+                            )}
                           %
                         </Text>
                       ) : (
@@ -1895,7 +2054,7 @@ const TargetScreen = ({ route }) => {
                               Math.floor(
                                 (parseInt(retailData?.achievment) /
                                   parseInt(bookingData?.achievment)) *
-                                  100
+                                100
                               ) > 40
                                 ? "#14ce40"
                                 : "#ff0000",
@@ -1904,13 +2063,13 @@ const TargetScreen = ({ route }) => {
                           }}
                         >
                           {parseInt(bookingData?.achievment) === 0 ||
-                          parseInt(retailData?.achievment) === 0
+                            parseInt(retailData?.achievment) === 0
                             ? 0
                             : Math.round(
-                                (parseInt(retailData?.achievment) /
-                                  parseInt(bookingData?.achievment)) *
-                                  100
-                              )}
+                              (parseInt(retailData?.achievment) /
+                                parseInt(bookingData?.achievment)) *
+                              100
+                            )}
                           %
                         </Text>
                       )}
@@ -1934,7 +2093,7 @@ const TargetScreen = ({ route }) => {
                               Math.round(
                                 (parseInt(TDData?.achievment) /
                                   parseInt(enqData?.achievment)) *
-                                  100
+                                100
                               ) > 40
                                 ? "#14ce40"
                                 : "#ff0000",
@@ -1943,13 +2102,13 @@ const TargetScreen = ({ route }) => {
                           }}
                         >
                           {parseInt(TDData?.achievment) === 0 ||
-                          parseInt(enqData?.achievment) === 0
+                            parseInt(enqData?.achievment) === 0
                             ? 0
                             : Math.floor(
-                                (parseInt(TDData?.achievment) /
-                                  parseInt(enqData?.achievment)) *
-                                  100
-                              )}
+                              (parseInt(TDData?.achievment) /
+                                parseInt(enqData?.achievment)) *
+                              100
+                            )}
                           %
                         </Text>
                       )}
@@ -1973,7 +2132,7 @@ const TargetScreen = ({ route }) => {
                               Math.round(
                                 (parseInt(insData?.achievment) /
                                   parseInt(retailData?.achievment)) *
-                                  100
+                                100
                               ) > 40
                                 ? "#14ce40"
                                 : "#ff0000",
@@ -1982,13 +2141,13 @@ const TargetScreen = ({ route }) => {
                           }}
                         >
                           {parseInt(insData?.achievment) === 0 ||
-                          parseInt(retailData?.achievment) === 0
+                            parseInt(retailData?.achievment) === 0
                             ? 0
                             : Math.floor(
-                                (parseInt(insData?.achievment) /
-                                  parseInt(retailData?.achievment)) *
-                                  100
-                              )}
+                              (parseInt(insData?.achievment) /
+                                parseInt(retailData?.achievment)) *
+                              100
+                            )}
                           %
                         </Text>
                       )}
@@ -2014,7 +2173,7 @@ const TargetScreen = ({ route }) => {
                               Math.floor(
                                 (parseInt(retailData?.achievment) /
                                   parseInt(enqData?.achievment)) *
-                                  100
+                                100
                               ) > 40
                                 ? "#14ce40"
                                 : "#ff0000",
@@ -2023,13 +2182,13 @@ const TargetScreen = ({ route }) => {
                           }}
                         >
                           {parseInt(retailData?.achievment) === 0 ||
-                          parseInt(enqData?.achievment) === 0
+                            parseInt(enqData?.achievment) === 0
                             ? 0
                             : Math.round(
-                                (parseInt(retailData?.achievment) /
-                                  parseInt(enqData?.achievment)) *
-                                  100
-                              )}
+                              (parseInt(retailData?.achievment) /
+                                parseInt(enqData?.achievment)) *
+                              100
+                            )}
                           %
                         </Text>
                       )}
@@ -2053,7 +2212,7 @@ const TargetScreen = ({ route }) => {
                               Math.round(
                                 (parseInt(exgData?.achievment) /
                                   parseInt(retailData?.achievment)) *
-                                  100
+                                100
                               ) > 40
                                 ? "#14ce40"
                                 : "#ff0000",
@@ -2062,13 +2221,13 @@ const TargetScreen = ({ route }) => {
                           }}
                         >
                           {parseInt(exgData?.achievment) === 0 ||
-                          parseInt(retailData?.achievment) === 0
+                            parseInt(retailData?.achievment) === 0
                             ? 0
                             : Math.floor(
-                                (parseInt(exgData?.achievment) /
-                                  parseInt(retailData?.achievment)) *
-                                  100
-                              )}
+                              (parseInt(exgData?.achievment) /
+                                parseInt(retailData?.achievment)) *
+                              100
+                            )}
                           %
                         </Text>
                       )}
@@ -2092,7 +2251,7 @@ const TargetScreen = ({ route }) => {
                               Math.floor(
                                 (parseInt(exwData?.achievment) /
                                   parseInt(retailData?.achievment)) *
-                                  100
+                                100
                               ) > 40
                                 ? "#14ce40"
                                 : "#ff0000",
@@ -2101,13 +2260,13 @@ const TargetScreen = ({ route }) => {
                           }}
                         >
                           {parseInt(exwData?.achievment) === 0 ||
-                          parseInt(retailData?.achievment) === 0
+                            parseInt(retailData?.achievment) === 0
                             ? 0
                             : Math.round(
-                                (parseInt(exwData?.achievment) /
-                                  parseInt(retailData?.achievment)) *
-                                  100
-                              )}
+                              (parseInt(exwData?.achievment) /
+                                parseInt(retailData?.achievment)) *
+                              100
+                            )}
                           %
                         </Text>
                       ) : (
@@ -2142,7 +2301,7 @@ const TargetScreen = ({ route }) => {
                             Math.round(
                               (parseInt(accData?.achievment) /
                                 parseInt(retailData?.achievment)) *
-                                100
+                              100
                             ) > 40
                               ? "#14ce40"
                               : "#ff0000",
@@ -2151,13 +2310,12 @@ const TargetScreen = ({ route }) => {
                         }}
                       >
                         {parseInt(accData?.achievment) === 0 ||
-                        parseInt(retailData?.achievment) === 0
+                          parseInt(retailData?.achievment) === 0
                           ? 0
                           : Math.floor(
-                              (parseInt(accData?.achievment) /
-                                parseInt(retailData?.achievment)) *
-                                100
-                            )}
+                            parseInt(accData?.achievment) /
+                            parseInt(retailData?.achievment)
+                          )}
                       </Text>
                     )}
                   </View>
@@ -2170,10 +2328,10 @@ const TargetScreen = ({ route }) => {
       ) : (
         <LoaderComponent
           visible={selector.isLoading}
-          onRequestClose={() => {}}
+          onRequestClose={() => { }}
         />
       )}
-    </>
+    </React.Fragment>
   );
 };
 
@@ -2181,19 +2339,21 @@ export default TargetScreen;
 
 export const SourceModelView = ({ style = null, onClick }) => {
   return (
-    <Pressable style={style} onPress={onClick}>
-      <Text
-        style={{
-          fontSize: 12,
-          fontWeight: "600",
-          color: Colors.BLUE,
-          marginLeft: 8,
-          textDecorationLine: "underline",
-        }}
-      >
-        Source/Model
-      </Text>
-    </Pressable>
+    <Animated.View style={style}>
+      <Pressable onPress={onClick}>
+        <Text
+          style={{
+            fontSize: 12,
+            fontWeight: "600",
+            color: Colors.BLUE,
+            marginLeft: 8,
+            textDecorationLine: "underline",
+          }}
+        >
+          Source/Model
+        </Text>
+      </Pressable>
+    </Animated.View>
   );
 };
 
@@ -2203,6 +2363,7 @@ export const RenderLevel1NameView = ({
   branchName = "",
   color,
   titleClick,
+  disable = false,
 }) => {
   return (
     <View
@@ -2218,6 +2379,7 @@ export const RenderLevel1NameView = ({
         style={{ width: 60, justifyContent: "center", alignItems: "center" }}
       >
         <TouchableOpacity
+          disabled={disable}
           style={{
             width: 30,
             height: 30,

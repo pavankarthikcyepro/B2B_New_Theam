@@ -56,7 +56,6 @@ export const DropComponent = ({
                 const selectedObj = data.filter((value, index) => {
                     return value.name == reason;
                 })
-                console.log("sub: ", JSON.stringify(selectedObj));
                 if (selectedObj.length > 0) {
                     const subSlots = selectedObj[0]["sublostreasons"] || [];
                     subSlots.forEach((obj) => {
