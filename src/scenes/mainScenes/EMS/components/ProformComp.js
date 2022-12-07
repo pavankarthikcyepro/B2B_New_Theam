@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Keyboard, Text, TextInput, Pressable, Image, Alert } from "react-native";
+import { View, StyleSheet, Keyboard, Text, TextInput, Pressable, Image, Alert, Platform } from "react-native";
 import { DropDownSelectionItem } from "../../../../pureComponents";
 import { TextinputComp, DropDownComponant } from "../../../../components";
 import { GlobalStyle, Colors } from "../../../../styles";
@@ -711,6 +711,8 @@ export const ProformaComp = ({
     // setSelectedFOCAccessoriesList([...newFormatSelectedFOCAccessories]);
   };
 
+
+
   const newProformaClick = () => {
     setshowSaveBtn(true);
     setshowSendForApprovBtn(false);
@@ -737,6 +739,258 @@ export const ProformaComp = ({
     setisnewProformaClicked(false)
     showDropDownModelMethod("SELECTPERFORMA", "Select Proforma")
   }
+
+  const downloadPdf2 = async (from) => {
+    try {
+      let siteTypeName =
+        (await '<div style="border: 1px solid black;color: black;font-weight: bold" >') +
+            '<div>' +
+             '<div    id="proforma" style="margin: 0px; width: 1100px; height: 100%">' +
+        
+        '<table  class="ttable;" style="width: 100%; border: 1px solid black;border - collapse: collapse; ">' + 
+        " <tr>" +
+        '<td   class="tCenter" colspan="4" style="text-align: center;color: black!important;  ">' +
+                  '<strong>PROFORMA INVOICE</strong>' +
+              "</td>" +
+         "</tr>" +
+
+      "<tr>" +
+        '<td   >' +
+          // '<div   class="row align-items-center">' +
+            // '<div   class="col-md-2 col-2">' +
+              '<img   style="width: 100px; height: auto;" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gIoSUNDX1BST0ZJTEUAAQEAAAIYAAAAAAQwAABtbnRyUkdCIFhZWiAAAAAAAAAAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAAHRyWFlaAAABZAAAABRnWFlaAAABeAAAABRiWFlaAAABjAAAABRyVFJDAAABoAAAAChnVFJDAAABoAAAAChiVFJDAAABoAAAACh3dHB0AAAByAAAABRjcHJ0AAAB3AAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAFgAAAAcAHMAUgBHAEIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFhZWiAAAAAAAABvogAAOPUAAAOQWFlaIAAAAAAAAGKZAAC3hQAAGNpYWVogAAAAAAAAJKAAAA+EAAC2z3BhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABYWVogAAAAAAAA9tYAAQAAAADTLW1sdWMAAAAAAAAAAQAAAAxlblVTAAAAIAAAABwARwBvAG8AZwBsAGUAIABJAG4AYwAuACAAMgAwADEANv/bAEMAAwICAgICAwICAgMDAwMEBgQEBAQECAYGBQYJCAoKCQgJCQoMDwwKCw4LCQkNEQ0ODxAQERAKDBITEhATDxAQEP/bAEMBAwMDBAMECAQECBALCQsQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEP/AABEIAbcDKgMBIgACEQEDEQH/xAAdAAEAAgIDAQEAAAAAAAAAAAAACAkBBwQFBgMC/8QAXhAAAQMDAgMEAwYQCAsFCQEAAAECAwQFEQYHCBIhCTFBURMiYRRXcYG00RUYGSMyNzhCcnR1kZOUobFSVIKSlbKz0hYXJDM0Q1Zic3bTJSdGZsImREVTVWSDhaLB/8QAFAEBAAAAAAAAAAAAAAAAAAAAAP/EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhEDEQA/AKqgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADbWxHDhrTiCfeo9H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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf/2Q==">' +
+            // '</div>' +
+        '</td>' +
+            '<td>'+ 
+              '<div   class="col-md-8 orgname">' +
+                '<p  > PPS Jeep </p>' +
+                '<p   class="orgname-pad"> GSTN: TS0877223QQW </p>' +
+                '<p  >Bldg no. 386/1/383/362/70</p>' +
+                '<p   class="orgaddr-pad">GR Grand Plaza, Near JP Nagar Metro Station, Jaraganahalli Village, Kanakapura Main Road</p> ' +
+                '<p   class="orgaddr-pad">JP Nagar - IC0700043</p> ' +
+                '<p   class="orgaddr-pad">Bangalore - 560078</p> ' +
+                '<p   class="orgaddr-pad">Bangalore</p> ' +
+              '</div>'+
+            '</td>' +
+          // '</div>'+
+        '<td>' +
+                '<tr   >' +
+                '<td    >PROFORMA NO :</td>' +
+                '<td    > PPSJeep/2022-25708 </td>' +
+                '</tr>' +
+                '<tr   >' +
+                '<td   >DATE</td>' +
+                '<td   >7-Dec-2022</td>' +
+                '</tr>' +
+                '<tr   >' +
+                '<td   >PAN NO :</td>' +
+                '<td    style="text-transform: uppercase"> gfhfgh5453 </td>' +
+                '</tr>' +
+                '<tr   >' +
+                '<td   >GST NO :</td>' +
+                '<td    style="text-transform: uppercase"> 345345435345435 </td>' +
+                '</tr>' + 
+        '</td>' +
+      "</tr>"+
+
+ 
+
+
+
+
+
+     '<tr      class="tCenter">' +
+       '<td      colspan="4"><strong     >NEW JEEP COMPASS Model TRAILHAWK 4x4(O2) 2.0D AT</strong></td>' +
+    '</tr>' +
+    '<tr      class="tCenter">'+
+       '<td      colspan="4"><strong     >Exotica Red+Black Roof</strong></td>' +
+    '</tr>' +
+    '<tr>' +
+       '<td  width="25%"><strong     >PARTICULARS</strong></td>' +
+       '<td      style="text-align: right" width="25%"><strong     >AMOUNT</strong></td>' +
+       '<td      width="25%"><strong     >DISCOUNT</strong></td>' +
+       '<td      style="text-align: right" width="25%"><strong     >AMOUNT</strong></td>' +
+    '</tr>' +
+   '<tr>' +
+       '<td      width="25%">Ex-Showroom Price</td>' +
+       '<td      class="talign" width="25%"> 3097000 </td>' +
+       '<td      width="25%">Consumer Offer</td>' +
+       '<td      class="talign" width="25%"> 0 </td>' +
+    '</tr>' +
+    '<tr >' +
+       '<td      width="25%">Life Tax</td>' +
+       '<td      class="talign" width="25%"> 0 </td>' +
+       '<td      width="25%">Exchange Offer</td>' +
+      '<td      class="talign" width="25%"> 0 </td>' +
+    '</tr>' +
+    '<tr>' +
+       '<td     >Registration Charges</td>' +
+       '<td      class="talign"> 0 </td>' + 
+       '<td      width="25%">Corporate Offer</td>' +
+       '<td      class="talign" width="25%"> 0 </td>' +
+    '</tr>' +
+    '<tr>' +
+       '<td     >Insurance ()</td>' +
+       '<td      class="talign"> 0 </td>' +
+       '<td     >Promotional Offers</td>' +
+       '<td      class="talign"> 0 </td>' +
+    '</tr>' +
+    '<tr >' +
+       '<td     >Add-on Insurance</td>' +
+       '<td      class="talign">  </td>' +
+       '<td     >Cash Discount</td>' +
+       '<td      class="talign"> 0 </td>' +
+    '</tr>' +
+    '<tr     >'+
+       '<td     >Warranty ()</td>' +
+       '<td      class="talign"> 0 </td>' +
+       '<td     >FOC Accessories</td>' +
+       '<td      class="talign"> 0 </td>' +
+    '</tr>' +
+    '<tr     >' +
+       '<td     >Handling Charges:</td>' +
+       '<td      class="talign"> 0 </td>' +
+       '<td     >Insurance Discount</td>' +
+       '<td      class="talign"> 0 </td>' +
+    '</tr>' +
+    '<tr     >' +
+       '<td     >Essential Kit:</td>' +
+       '<td      class="talign">0</td>' +
+       '<td     >Accessories Discount</td>' +
+       '<td      class="talign"> 0 </td>' +
+    '</tr>' +
+    '<tr >' +
+       '<td     >TCS(&gt;10Lakhs -&gt; 1%):</td>' +
+        '<td      class="talign"> 30970 </td>' +
+        '<td     >Additional Offer 1</td>' +
+        '<td      class="talign"> 0 </td>' +
+    '</tr>' +
+        '<tr     >' +
+        '<td     >Paid Accessories:</td>' +
+        '<td      class="talign"> 0 </td>' +
+        '<td     >Additional Offer 2</td>' +
+        '<td      class="talign">0</td>' +
+    '</tr>'+
+    '<tr     >'+
+        '<td     >Fast Tag</td>' +
+        '<td      class="talign"> 0 </td>' +
+       '<td     ></td>' +
+        '<td      class="talign"></td>' +
+    '</tr>'+
+    '<tr     >' +
+        '<td     ></td>' +
+        '<td      class="talign"></td>' +
+        '<td     ></td>' +
+        '<td      class="talign"></td>' +
+    '</tr > ' +
+
+
+
+        '<tr      >' +
+          '<td       class="tCenter" style="background-color: rgb(228, 212, 190)"><strong      >NET ON ROAD PRICE</strong></td>' +
+        '<td       class="talign" style="background-color: rgb(228, 212, 190)"><strong      >3127970</strong></td>' +
+        '<td       class="tCenter" style="background-color: rgb(228, 212, 190)"><strong      >NET ON ROAD PRICE AFTER DISCOUNT</strong></td>' +
+        '<td       class="talign" style="background-color: rgb(228, 212, 190)"><strong      >3127970</strong></td>' +
+        '</tr>' +
+
+
+        '<tr      >' +
+        '<td       colspan="4">' +
+        '<p       style="text-decoration: underline">TERMS AND CONDITIONS</p>' +
+          
+        '<div       class="ng-star-inserted"> 1) An Intellectual Property clause will inform users that the contents, logo and other visual media you created is your property and is protected by copyright laws. </div>' +
+        '<div       class="ng-star-inserted"> 2) A Termination clause will inform users that any accounts on your website and mobile app, or users access to your website and app, can be terminated in case of abuses or at your sole discretion. </div > ' +
+      '<div       class="ng-star-inserted"> 3) A Governing Law clause will inform users which laws govern the agreement. These laws should come from the country in which your company is headquartered or the country from which you operate your website and mobile app. </div>' +
+        '<div       class="ng-star-inserted"> 4) A Links to Other Websites clause will inform users that you are not responsible for any third party websites that you link to. This kind of clause will generally inform users that they are responsible for reading and agreeing (or disagreeing) with the Terms and Conditions or Privacy Policies of these third parties. </div>' +
+        '<div       class="ng-star-inserted"> 5) If your website or mobile app allows users to create content and make that content public to other users, a Content clause will inform users that they own the rights to the content they have created. This clause usually mentions that users must give you (the website or mobile app developer/owner) a license so that you can share this content on your website/mobile app and to make it available to other users. </div>' +
+        '<div       class="ng-star-inserted"> 6) Because the content created by users is public to other users, a DMCA notice clause (or Copyright Infringement ) section is helpful to inform users and copyright authors that, if any content is found to be a copyright infringement, you will respond to any DMCA takedown notices received and you will take down the content. </div>' +
+        '<div       class="ng-star-inserted"> 7) A Limit What Users Can Do clause can inform users that by agreeing to use your service, theyre also agreeing to not do certain things.This can be part of a very long and thorough list in your Terms and Conditions agreement so as to encompass the most amount of negative uses. </div > ' +
+      '<div       class="ng-star-inserted"> 8) Collection of settings initializing the jsPDF-instance </div>' +
+        '</td>' +
+        '</tr>' +
+
+        '<tr      >' +
+        '<td       colspan="4">' +
+        '<div       class="row">' +
+        '<div       class="col-md-12"><span       class="pull-right"><b      >For, PPS Jeep</b></span></div>' +
+        '</div>' +
+        '<div       class="row" style="margin-top: 20px">' +
+        '<div       class="col-md-12"><span       class="pull-right"><b      >Authorised Signatory</b></span></div>' +
+        '</div>' +
+        '</td>' +
+        '</tr>' +
+
+
+
+        "</table>" +
+ '</div >' +
+    '</div >' +
+ '</div >';
+
+        
+      let bottomPitch =
+        (await '<div style="padding-top:10px;" >') +
+        "<p>" +
+        "Thank you for using our LED Savings Calculator. Energy Lighting Services is based in Nashville, Tennessee, and has been retrofitting commercial buildings all over North America with LED lighting systems since 2010. We would be honored to help you with your project needs.Please reach out to us if you have any questions.www.energylightingservices.com  855.270.3300  info@elsco.org" +
+        "<p>" +
+        "</div>";
+      let finalHtmlText = await siteTypeName;
+      let directoryPath = "";
+      if (Platform.OS === "android") {
+        directoryPath = "Download";
+      }
+      else {
+        directoryPath = "Documents";
+      }
+      let options = {
+        html: finalHtmlText,
+        fileName: "ProformaInvoice",
+        directory: directoryPath,
+      };
+      let file = await RNHTMLtoPDF.convert(options);
+      var PdfData = await RNFS.readFile(file.filePath, "base64").then();
+
+      // RNFS.copyFile(file.filePath + "/ProformaInvoice.pdf", RNFS.DocumentDirectoryPath + "/ProformaInvoice2.pdf")
+
+     
+      if (from === "email") {
+        await Mailer.mail(
+          {
+            subject: "Invoice",
+            //  recipients: ['radhadevi8958@gmail.com'],
+            body: "",
+            attachments: [
+              {
+                path: file.filePath, // The absolute path of the file from which to read data.
+                type: "pdf", // Mime Type: jpg, png, doc, ppt, html, pdf
+                name: "ProformaInvoice.pdf", // Optional: Custom filename for attachment
+              },
+            ],
+          },
+          (error, event) => {
+            if (error) {
+              AlertIOS.alert(
+                "Error",
+                "Could not send mail. Please send a mail to support@example.com"
+              );
+            }
+          }
+        );
+      }
+
+      // alert(file.filePath);
+      Alert.alert(
+        'File Downloaded to following location',
+        `${file.filePath}`, // <- this part is optional, you can pass an empty string
+        [
+          { text: 'OK', onPress: () => console.log('OK Pressed') },
+        ],
+        { cancelable: false },
+      );
+    } catch (error) {
+      alert(error);
+    }
+  };
 
   const downloadPdf = async (from) => {
     try {
@@ -780,7 +1034,7 @@ export const ProformaComp = ({
         '<td style="background-color:rgb(185, 200, 241);" colspan="4" ><strong>PROFORMA INVOICE</strong></td>' +
         "</tr>" +
         '<tr class="tCenter">' +
-        '<td style=" border: 1px solid black; border-collapse: collapse;" >NAME :</td>' +
+        '<td` style=" border: 1px solid black; border-collapse: collapse;"` >NAME :</td>' +
         '<td style=" border: 1px solid black; border-collapse: collapse;">' +
         modelDetails.model +
         "</td>" +
@@ -793,19 +1047,19 @@ export const ProformaComp = ({
         '<td style=" border: 1px solid black; border-collapse: collapse;"colspan="2" rowspan="4"></td>' +
         '<td style=" border: 1px solid black; border-collapse: collapse;">MODEL</td>' +
         '<td style=" border: 1px solid black; border-collapse: collapse;">' +
-        modelDetails.model +
+        carModel +
         "</td>" +
         "</tr>" +
         '<tr class="tCenter">' +
         '<td style=" border: 1px solid black; border-collapse: collapse;" >VARIANT</td>' +
         '<td style=" border: 1px solid black; border-collapse: collapse;">' +
-        modelDetails.variant +
+        carVariant +
         "</td>" +
         " </tr > " +
         '< tr class="tCenter" > ' +
         '<td style=" border: 1px solid black; border-collapse: collapse;">COLOUR</td>' +
         '<td style=" border: 1px solid black; border-collapse: collapse;">' +
-        modelDetails.color +
+       carColor +
         "</td>" +
         "</tr>" +
         "< tr > " +
@@ -892,14 +1146,25 @@ export const ProformaComp = ({
         "<p>" +
         "</div>";
       let finalHtmlText = await siteTypeName;
-
+      let directoryPath = "";
+      if (Platform.OS === "android") {
+        directoryPath = "Download";
+      }
+      else {
+        directoryPath = "Documents";
+      }
       let options = {
         html: finalHtmlText,
         fileName: "ProformaInvoice",
-        directory: "B2B",
+        directory: directoryPath,
       };
       let file = await RNHTMLtoPDF.convert(options);
       var PdfData = await RNFS.readFile(file.filePath, "base64").then();
+
+      // RNFS.copyFile(file.filePath + "/ProformaInvoice.pdf", RNFS.DocumentDirectoryPath + "/ProformaInvoice2.pdf")
+
+    
+      
       if (from === "email") {
         await Mailer.mail(
           {
@@ -946,7 +1211,7 @@ export const ProformaComp = ({
         vehicleId: selectedVehicleID,
         varientId: selectedVarientId,
         vehicleImageId: selectedvehicleImageId,
-        performaUUID: proformaNo,
+        performaUUID: proformaNo? proformaNo :"",
 
         crmUniversalId: universalId,
         id: selectedProformaID ? selectedProformaID :"",
@@ -1106,7 +1371,7 @@ export const ProformaComp = ({
         vehicleId:selectedVehicleID,
         varientId: selectedVarientId,
         vehicleImageId: selectedvehicleImageId,
-        performaUUID:proformaNo,
+        performaUUID: proformaNo ? proformaNo : "",
 
         crmUniversalId: universalId,
         id: selectedProformaID,
@@ -1468,7 +1733,7 @@ export const ProformaComp = ({
         setSelectedVarientId(newSelectedProforma[0].varientId);
         setselectedvehicleImageId(newSelectedProforma[0].vehicleImageId);
         setselectedProformaID(newSelectedProforma[0].id);
-
+       
         let oth_performa_column = JSON.parse(newSelectedProforma[0].oth_performa_column)
         
         
@@ -2585,7 +2850,7 @@ export const ProformaComp = ({
                   // style={{ width: '30%', marginRight: 10 }}
                   color={Colors.PINK}
                   labelStyle={{ textTransform: "none" }}
-                  onPress={() => downloadPdf("downlaod")}>
+                  onPress={() => downloadPdf2("downlaod")}>
                   Download
                 </Button>
                 <Button
