@@ -89,7 +89,7 @@ const TargetScreen = ({ route }) => {
   const [toggleParamsMetaData, setToggleParamsMetaData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const translation = useRef(new Animated.Value(0)).current
-  const [slideRight,setSlideRight] = useState()
+  const [slideRight, setSlideRight] = useState()
   const scrollViewRef = useRef();
   const paramsMetadata = [
     // 'Enquiry', 'Test Drive', 'Home Visit', 'Booking', 'INVOICE', 'Finance', 'Insurance', 'Exchange', 'EXTENDEDWARRANTY', 'Accessories'
@@ -527,7 +527,19 @@ const TargetScreen = ({ route }) => {
 
   useEffect(() => {
     navigation.addListener('focus', () => {
-      setSlideRight(0)
+      setSelfInsightsData([]);
+      setLostLeadsData(null);
+      setAccData(null);
+      setExwData(null);
+      setInsData(null);
+      setFinData(null);
+      setExgData(null);
+      setTDData(null);
+      setVisitData(null);
+      setEnqData(null);
+      setBookingData(null);
+      setRetailData(null);
+      setSlideRight(0);
     })
     setSlideRight(0)
   }, [navigation, selector.isTeam])
@@ -539,7 +551,7 @@ const TargetScreen = ({ route }) => {
       useNativeDriver: true,
     }).start()
   }, [slideRight])
-  
+
   const getColor = (ach, tar) => {
     if (ach > 0 && tar === 0) {
       return "#1C95A6";

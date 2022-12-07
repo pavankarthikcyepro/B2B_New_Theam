@@ -139,6 +139,12 @@ const ParametersScreen = ({ route }) => {
   };
 
   useEffect(() => {
+     navigation.addListener("focus", () => {
+    setSelfInsightsData([]);
+     });
+  }, [navigation]);
+
+  useEffect(() => {
     const dateFormat = "YYYY-MM-DD";
     const currentDate = moment().format(dateFormat);
     const monthLastDate = moment(currentDate, dateFormat)
@@ -382,7 +388,7 @@ const ParametersScreen = ({ route }) => {
       .format(dateFormat);
     return {
       empId: item,
-      endDate: currentDate,
+      endDate: monthLastDate,
       levelSelected: null,
       loggedInEmpId: item,
       orgId: jsonObj.orgId,
@@ -1244,7 +1250,8 @@ const ParametersScreen = ({ route }) => {
                                                               innerIndex1
                                                             ].employeeTargetAchievements[
                                                               innerIndex2
-                                                            ].isOpenInner = !current;
+                                                            ].isOpenInner =
+                                                              !current;
                                                           }
                                                         }
 
@@ -2848,15 +2855,17 @@ const ParametersScreen = ({ route }) => {
 
             <View>
               {/*<RenderSelfInsights data={selfInsightsData} type={togglePercentage} navigation={navigation} moduleType={'live-leads'}/>*/}
-              {selfInsightsData && selfInsightsData.length > 0 && (
-                <FlatList
-                  data={selfInsightsData}
-                  keyExtractor={(item, index) => index.toString()}
-                  renderItem={({ item, index }) =>
-                    renderSelfInsightsView(item, index)
-                  }
-                />
-              )}
+              {selfInsightsData &&
+                selfInsightsData.length > 0 &&
+                !selector.isLoading && (
+                  <FlatList
+                    data={selfInsightsData}
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={({ item, index }) =>
+                      renderSelfInsightsView(item, index)
+                    }
+                  />
+                )}
             </View>
           </>
         )}
