@@ -59,12 +59,12 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
   const [reasonList, setReasonList] = useState([]);
   const [userData, setUserData] = useState({});
   const [punched, setPunched] = useState(false);
-
-  useEffect(() => {
-    if (!present) {
-      callAPI(true);
-    }
-  }, [present]);
+  const [active, setActive] = useState(false);
+  // useEffect(() => {
+  //   if (!present) {
+  //     callAPI(true);
+  //   }
+  // }, [present]);
 
   useEffect(() => {
     getReason();
@@ -252,9 +252,13 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
               </Text>
               {}
               <Text style={styles.greetingText}>
-                {isBetween ? "Good Morning," : isAfterNoon ? "Good Afternoon," :"Good Evening,"}
+                {isBetween
+                  ? "Good Morning,"
+                  : isAfterNoon
+                  ? "Good Afternoon,"
+                  : "Good Evening,"}
               </Text>
-              {present ? (
+              {present || !active? (
                 <Text style={styles.greetingText}>
                   {isBetween && !punched
                     ? "Please Punch Your Attendance"
@@ -281,7 +285,7 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
               )}
             </View>
           </View>
-          {present && (
+          {/* {present  && ( */}
             <View style={{ flexDirection: "row" }}>
               <RadioTextItem
                 label={"Present"}
@@ -298,7 +302,7 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
                 onPress={() => setPresent(false)}
               />
             </View>
-          )}
+          {/* )} */}
           {showReason && (
             <>
               <View style={{ flexDirection: "row", marginTop: 10 }}>
@@ -362,7 +366,7 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
             </>
           )}
           <View style={{ flexDirection: "row", marginTop: 10, width: "100%" }}>
-            {present ? (
+            {present || !active ? (
               <>
                 <LocalButtonComp
                   title={"Submit"}
@@ -372,7 +376,8 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
                 <LocalButtonComp
                   title={"Close"}
                   onPress={() => {
-                    setPresent(false);
+                    inVisible();
+                    // setPresent(false);
                   }}
                   disabled={false}
                 />

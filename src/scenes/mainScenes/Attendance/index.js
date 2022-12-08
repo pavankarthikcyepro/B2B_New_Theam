@@ -51,22 +51,31 @@ const AttendanceScreen = ({ route }) => {
   }, [navigation]);
 
   useEffect(() => {
-    getCurrentLocation();
+    navigation.addListener("focus", () => {
+      getCurrentLocation();
+      // setLoading(true);
+      // getAttendance();
+    });
+  }, [navigation]);
+
+  useEffect(() => {
     setLoading(true);
     getAttendance();
   }, []);
-
+  
   const getCurrentLocation = async () => {
+    console.log("oooo");
     try {
-      if (Platform.OS === "ios") {
-        Geolocation.requestAuthorization();
-        Geolocation.setRNConfiguration({
-          skipPermissionRequests: false,
-          authorizationLevel: "whenInUse",
-        });
-      }
+      // if (Platform.OS === "ios") {
+      //   Geolocation.requestAuthorization();
+      //   Geolocation.setRNConfiguration({
+      //     skipPermissionRequests: false,
+      //     authorizationLevel: "whenInUse",
+      //   });
+      // }
       Geolocation.getCurrentPosition(
         (position) => {
+          console.log("Sss", position);
           const initialPosition = JSON.stringify(position);
           let json = JSON.parse(initialPosition);
           setInitialPosition(json.coords);
@@ -76,16 +85,17 @@ const AttendanceScreen = ({ route }) => {
             json?.coords?.latitude,
             json?.coords?.longitude
           );
+          console.log("LLLLL", dist);
           if (dist > officeRadius) {
             setReason(true); ///true for reason
           } else {
             setReason(false);
           }
-        },
-        (error) => {
-          console.log(JSON.stringify(error));
-        },
-        { enableHighAccuracy: true }
+        }
+        // (error) => {
+        //   console.log(JSON.stringify(error));
+        // },
+        // { enableHighAccuracy: true }
       );
     } catch (error) {
       console.log("ERROR", error);
