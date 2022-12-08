@@ -428,8 +428,6 @@ const LiveLeadsScreen = ({ route, navigation }) => {
             "pageNo": 0,
             "size": 5,
         }
-                console.log("payload1sss", payload1);
-
         Promise.allSettled([
             dispatch(getTargetParametersData(payload1)),
             dispatch(!isTeamPresentLocal ? getTargetParametersEmpData(payload1) : getTargetParametersEmpDataInsights(payload1))
@@ -465,7 +463,6 @@ const LiveLeadsScreen = ({ route, navigation }) => {
           pageNo: 0,
           size: 5000,
         };
-        console.log("payload1", payload1);
         Promise.allSettled([
             //dispatch(getTargetParametersAllData(payload1)),
             dispatch(getTotalTargetParametersData(payload2)), // grand total
