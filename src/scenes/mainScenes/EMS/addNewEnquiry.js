@@ -1062,18 +1062,18 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     //Personal Intro
     setIsSubmitPress(true);
 
-    if (selector.enquiry_segment.toLowerCase() == "personal") {
-      if (
-        selector.dateOfBirth.length == 0
-        // ||
-        // selector.anniversaryDate.length == 0
-      ) {
-        scrollToPos(0);
-        setOpenAccordian("2");
-        showToast("Please fill required fields in Personal Intro");
-        return;
-      }
-    }
+    // if (selector.enquiry_segment.toLowerCase() == "personal") {
+    //   if (
+    //     selector.dateOfBirth.length == 0
+    //     // ||
+    //     // selector.anniversaryDate.length == 0
+    //   ) {
+    //     scrollToPos(0);
+    //     setOpenAccordian("2");
+    //     showToast("Please fill required fields in Personal Intro");
+    //     return;
+    //   }
+    // }
 
     if (selector.enquiry_segment.toLowerCase() == "personal") {
       if (selector.gender.length == 0) {
