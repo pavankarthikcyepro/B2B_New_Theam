@@ -56,41 +56,41 @@ const AttendanceScreen = ({ route }) => {
     getAttendance();
   }, []);
 
-   const getCurrentLocation = async () => {
-     try {
-       if (Platform.OS === "ios") {
-         Geolocation.requestAuthorization();
-         Geolocation.setRNConfiguration({
-           skipPermissionRequests: false,
-           authorizationLevel: "whenInUse",
-         });
-       }
-       Geolocation.getCurrentPosition(
-         (position) => {
-           const initialPosition = JSON.stringify(position);
-           let json = JSON.parse(initialPosition);
-           setInitialPosition(json.coords);
-            let dist = getDistanceBetweenTwoPoints(
-              officeLocation.latitude,
-              officeLocation.longitude,
-              json?.coords?.latitude,
-              json?.coords?.longitude
-            );
-            if (dist > officeRadius) {
-              setReason(true); ///true for reason
-            } else {
-              setReason(false);
-            }
-         },
-         (error) => {
-           console.log(JSON.stringify(error));
-         },
-         { enableHighAccuracy: true }
-       );
-     } catch (error) {
-       console.log("ERROR", error);
-     }
-   };
+  const getCurrentLocation = async () => {
+    try {
+      if (Platform.OS === "ios") {
+        Geolocation.requestAuthorization();
+        Geolocation.setRNConfiguration({
+          skipPermissionRequests: false,
+          authorizationLevel: "whenInUse",
+        });
+      }
+      Geolocation.getCurrentPosition(
+        (position) => {
+          const initialPosition = JSON.stringify(position);
+          let json = JSON.parse(initialPosition);
+          setInitialPosition(json.coords);
+          let dist = getDistanceBetweenTwoPoints(
+            officeLocation.latitude,
+            officeLocation.longitude,
+            json?.coords?.latitude,
+            json?.coords?.longitude
+          );
+          if (dist > officeRadius) {
+            setReason(true); ///true for reason
+          } else {
+            setReason(false);
+          }
+        },
+        (error) => {
+          console.log(JSON.stringify(error));
+        },
+        { enableHighAccuracy: true }
+      );
+    } catch (error) {
+      console.log("ERROR", error);
+    }
+  };
 
   const getAttendance = async () => {
     try {
@@ -106,7 +106,7 @@ const AttendanceScreen = ({ route }) => {
         if (json) {
           let newArray = [];
           let dateArray = [];
-          let weekArray =[];
+          let weekArray = [];
           for (let i = 0; i < json.length; i++) {
             const element = json[i];
             let format = {
@@ -123,7 +123,7 @@ const AttendanceScreen = ({ route }) => {
                 },
               },
             };
-            
+
             let date = new Date(element.createdtimestamp);
             let formatedDate = moment(date).format(dateFormat);
             let weekReport = {
@@ -154,7 +154,6 @@ const AttendanceScreen = ({ route }) => {
   };
 
   const isCurrentDate = (day) => {
-
     let selectedDate = day.dateString;
     if (currentDate === selectedDate) {
       setAttendance(true);
@@ -162,7 +161,7 @@ const AttendanceScreen = ({ route }) => {
   };
 
   const isCurrentDateForWeekView = (day) => {
-    let selectedDate =  moment(day).format(dateFormat);
+    let selectedDate = moment(day).format(dateFormat);
     if (currentDate === selectedDate) {
       setAttendance(true);
     }
@@ -273,7 +272,7 @@ const AttendanceScreen = ({ route }) => {
               monthTextColor: Colors.RED,
               indicatorColor: Colors.RED,
               dayTextColor: Colors.BLACK,
-              selectedDayBackgroundColor: Colors.LIGHT_SKY_BLUE,
+              selectedDayBackgroundColor: Colors.GRAY,
               textDayFontWeight: "500",
             }}
             markingType={"custom"}
@@ -510,9 +509,9 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: "10%",
   },
-  eventText:{
-    fontSize:17,
-    fontWeight:'500',
-    color: Colors.WHITE
-  }
+  eventText: {
+    fontSize: 17,
+    fontWeight: "500",
+    color: Colors.WHITE,
+  },
 });

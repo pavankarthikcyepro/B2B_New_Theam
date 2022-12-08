@@ -42,7 +42,7 @@ import * as AsyncStore from "../../asyncStore";
 import { showAlertMessage, showToast } from "../../utils/toast";
 import BackgroundService from "react-native-background-actions";
 import Geolocation from "@react-native-community/geolocation";
-import { distanceFilterValue, getDistanceBetweenTwoPoints, options, sendAlertLocalNotification, sendLocalNotification, sleep } from "../../service";
+import { distanceFilterValue, getDistanceBetweenTwoPoints, officeRadius, options, sendAlertLocalNotification, sendLocalNotification, sleep } from "../../service";
 import {
   getDetailsByempIdAndorgId,
   locationUpdate,

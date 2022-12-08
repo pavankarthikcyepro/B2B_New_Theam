@@ -41,9 +41,11 @@ const LocalButtonComp = ({ title, onPress, disabled }) => {
 };
 
 var startDate = createDateTime("8:30");
-var endDate = createDateTime("12:00");
+var midDate =createDateTime("12:00")
+var endDate = createDateTime("16:00");
 var now = new Date();
-var isBetween = startDate <= now && now <= endDate;
+var isBetween = startDate <= now && now <= midDate;
+var isAfterNoon = midDate <= now && now <= endDate;
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
 
@@ -81,12 +83,14 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
           URL.GET_ATTENDANCE_EMPID(jsonObj.empId, jsonObj.orgId)
         );
         const json = await response.json();
+        console.log(json[json?.length - 1]);
         const lastDate = moment().format(dateFormat);
         const lastPresentDate = new Date(
           json[json?.length - 1]?.createdtimestamp
         ).getDate();
         const todaysDate = new Date().getDate();
-        if (todaysDate === lastPresentDate) {
+          let present = json[json?.length - 1].isPresent;
+        if (todaysDate === lastPresentDate && present == 1) {
           setPunched(true);
         }
       }
@@ -185,7 +189,7 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
       const savedJson = await saveData.json();
       console.log("savedJson", savedJson, absentRequest);
       !absentRequest &&
-        AsyncStore.storeData(AsyncStore.Keys.IS_PRESENT, new Date().getDate());
+        AsyncStore.storeJsonData(AsyncStore.Keys.IS_PRESENT, new Date().getDate().toString());
       !absentRequest && inVisible();
       // if (savedJson.success) {
       //   !absentRequest && inVisible();
@@ -214,7 +218,10 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
       );
       const updatedJson = await updateData.json();
       present &&
-        AsyncStore.storeData(AsyncStore.Keys.IS_PRESENT, new Date().getDate());
+        AsyncStore.storeData(
+          AsyncStore.Keys.IS_PRESENT,
+          new Date().getDate().toString()
+        );
       // console.log("updatedJson", updatedJson);
       !absentRequest && inVisible();
       // if (updatedJson.success) {
@@ -245,7 +252,7 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
               </Text>
               {}
               <Text style={styles.greetingText}>
-                {isBetween ? "Good Morning," : "Good Evening,"}
+                {isBetween ? "Good Morning," : isAfterNoon ? "Good Afternoon," :"Good Evening,"}
               </Text>
               {present ? (
                 <Text style={styles.greetingText}>
@@ -255,7 +262,7 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
                 </Text>
               ) : (
                 <Text style={styles.greetingText}>
-                  {"Today your Attendance is Locked as Absent , For More info "}
+                  {"Today your Attendance is Locked as Absent, For More info "}
                   <Text
                     onPress={() => {
                       navigation.navigate(
@@ -283,13 +290,13 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
                 status={present ? true : false}
                 onPress={() => setPresent(true)}
               />
-              {/* <RadioTextItem
-              label={"Absent"}
-              value={"Absent"}
-              disabled={false}
-              status={!present ? true : false}
-              onPress={() => onAbsent()}
-            /> */}
+              <RadioTextItem
+                label={"Absent"}
+                value={"Absent"}
+                disabled={false}
+                status={!present ? true : false}
+                onPress={() => setPresent(false)}
+              />
             </View>
           )}
           {showReason && (
