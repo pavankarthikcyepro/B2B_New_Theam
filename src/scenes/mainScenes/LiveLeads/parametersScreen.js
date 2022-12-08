@@ -2836,6 +2836,7 @@ const ParametersScreen = ({ route }) => {
                       loggedInEmpId: selector.login_employee_details.empId,
                       type: selector.isDSE ? "SELF" : "INSIGHTS",
                       moduleType: "live-leads",
+                      orgId: selector.login_employee_details.orgId,
                     }
                   );
                 }}
