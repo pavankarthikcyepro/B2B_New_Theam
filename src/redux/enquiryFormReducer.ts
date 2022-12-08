@@ -376,6 +376,22 @@ export const getPendingTasksApi = createAsyncThunk(
   }
 );
 
+export const getTermsAndConditionsOrgwise = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/getTermsAndConditionsOrgwise",
+  async (endUrl, { rejectWithValue }) => {
+    const response = await client.get(URL.PROFORMA_TERMS_N_CONDITIONS(endUrl));
+    // const url = URL.PROFORMA_TERMS_N_CONDITIONS() + endUrl;
+
+    // const response = await client.get(url);
+    const json = await response.json();
+    
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 interface PersonalIntroModel {
   key: string;
   text: string;
@@ -407,11 +423,14 @@ const initialState = {
   maxDate: null,
 
   //Proforma Invoice
+  getTermsNConditions_res:"",
+  getTermsNConditions_res_status:"",
   proforma_API_respData: "",
   proforma_API_response: "",
   proforma_listingdata : [],
   proforma_houseNo : "",
   proforma_address:"",
+  profprma_street:"",
   proforma_gstnNumber:"",
   proforma_orgName: "",
   proforma_logo: "",
@@ -2145,6 +2164,7 @@ const enquiryDetailsOverViewSlice = createSlice({
       //  state.enquiry_details_response = action.payload.dmsEntity;
       const data = action.payload;
       if (data && data.orgName) {
+       
         state.proforma_orgName = data.orgName;
         state.proforma_logo = data.url;
         state.proforma_branch = data.branchName;
@@ -2153,7 +2173,8 @@ const enquiryDetailsOverViewSlice = createSlice({
         state.proforma_pincode = data.pincode;
         state.proforma_gstnNumber = data.gstnNumber;
         state.proforma_houseNo = data.houseNo;
-        state.proforma_address = `${data.houseNo}  ${data.street}`
+        state.proforma_address = `${data.houseNo}  ${data.street}`;
+        state.profprma_street = data.street;
       }
       state.isLoading = false;
     });
@@ -2239,25 +2260,25 @@ const enquiryDetailsOverViewSlice = createSlice({
 
         showToast("Proforma invoice saved successfully"); 
         state.proforma_API_response = "ENQUIRYCOMPLETED";
-        state.proforma_API_respData = action.payload.id;
+        state.proforma_API_respData = action.payload;
 
       } else if (action.payload.performa_status === "SENTFORAPPROVAL"){
 
         showToast("Proforma invoice sent for approval"); 
         state.proforma_API_response = "SENTFORAPPROVAL";
-        state.proforma_API_respData = action.payload.id;
+        state.proforma_API_respData = action.payload;
 
       } else if (action.payload.performa_status === "APPROVED"){
 
         state.proforma_API_response = "APPROVED";
         showToast("Proforma invoice approved successfully"); 
-        state.proforma_API_respData = action.payload.id;
+        state.proforma_API_respData = action.payload;
 
       } else if (action.payload.performa_status === "REJECTED") {
 
         showToast("Proforma invoice rejected successfully");
         state.proforma_API_response = "REJECTED";
-        state.proforma_API_respData = action.payload.id;
+        state.proforma_API_respData = action.payload;
 
       }
 
@@ -2410,6 +2431,25 @@ const enquiryDetailsOverViewSlice = createSlice({
       updateEnquiryDetailsApiAutoSave.rejected,
       (state, action) => {}
     );
+
+    // Get terms and conditions org wise
+    builder.addCase(getTermsAndConditionsOrgwise.pending, (state, action) => {
+      state.getTermsNConditions_res_status = "pending";
+      state.getTermsNConditions_res = [];
+      state.isLoading = true;
+    });
+    builder.addCase(getTermsAndConditionsOrgwise.fulfilled, (state, action) => {
+      if (action.payload) {
+        state.getTermsNConditions_res_status = "success";
+        state.getTermsNConditions_res = action.payload;
+      }
+      state.isLoading = false;
+    });
+    builder.addCase(getTermsAndConditionsOrgwise.rejected, (state, action) => {
+      state.getTermsNConditions_res_status = "failed";
+      state.getTermsNConditions_res = [];
+      state.isLoading = false;
+    });
   },
 });
 
@@ -2448,6 +2488,6 @@ export const {
   updatedmsLeadProduct,
   setOfferPriceDetails,
   setOfferPriceDataForSelectedProforma,
-  clearOfferPriceData
+  clearOfferPriceData, 
 } = enquiryDetailsOverViewSlice.actions;
 export default enquiryDetailsOverViewSlice.reducer;
