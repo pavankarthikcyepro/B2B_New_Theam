@@ -1062,18 +1062,18 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     //Personal Intro
     setIsSubmitPress(true);
 
-    if (selector.enquiry_segment.toLowerCase() == "personal") {
-      if (
-        selector.dateOfBirth.length == 0
-        // ||
-        // selector.anniversaryDate.length == 0
-      ) {
-        scrollToPos(0);
-        setOpenAccordian("2");
-        showToast("Please fill required fields in Personal Intro");
-        return;
-      }
-    }
+    // if (selector.enquiry_segment.toLowerCase() == "personal") {
+    //   if (
+    //     selector.dateOfBirth.length == 0
+    //     // ||
+    //     // selector.anniversaryDate.length == 0
+    //   ) {
+    //     scrollToPos(0);
+    //     setOpenAccordian("2");
+    //     showToast("Please fill required fields in Personal Intro");
+    //     return;
+    //   }
+    // }
 
     if (selector.enquiry_segment.toLowerCase() == "personal") {
       if (selector.gender.length == 0) {
@@ -1449,6 +1449,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
             buyerType: selector.buyer_type,
             salesConsultant:
               selectedEmployee.length > 0 ? selectedEmployee : null,
+            dmsExpectedDeliveryDate: selector.expected_delivery_date
+              ? Number(selector.expected_delivery_date)
+              : convertDateStringToMillisecondsUsingMoment(new Date()),
             dmsAddresses: [
               {
                 addressType: "Communication",
@@ -1485,14 +1488,29 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
             dmsExchagedetails: [
               {
                 buyerType: selector.buyer_type,
-                brand: selector.a_make,
-                varient: selector.a_varient,
+                brand:
+                  selector.buyer_type === "Additional Buyer"
+                    ? selector.a_make
+                    : selector.r_make,
+                varient:
+                  selector.buyer_type === "Additional Buyer"
+                    ? selector.a_varient
+                    : selector.a_varient,
                 fuelType: selector.r_fuel_type,
-                regNo: selector.a_reg_no,
+                regNo:
+                  selector.buyer_type === "Additional Buyer"
+                    ? selector.a_reg_no
+                    : selector.r_reg_no,
                 kiloMeters: selector.r_kms_driven_or_odometer_reading,
                 hypothication: selector.r_hypothication_name,
-                model: selector.r_model,
-                color: selector.a_color,
+                model:
+                  selector.buyer_type === "Additional Buyer"
+                    ? selector.a_model
+                    : selector.r_model,
+                color:
+                  selector.buyer_type === "Additional Buyer"
+                    ? selector.a_color
+                    : selector.r_color,
                 transmission: selector.r_transmission_type,
                 yearofManufacture: selector.r_mfg_year,
                 hypothicationBranch: selector.r_hypothication_branch,
@@ -1521,7 +1539,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                   "DD/MM/YYYY"
                 ),
                 insuranceCompanyName: selector.r_insurence_company_name,
-                insuranceDocumentKey: "",
+                insuranceDocumentKey: selector.insuranceDocumentKey,
                 regDocumentKey: selector.regDocumentKey,
                 insuranceExpiryDate: selector.r_insurence_to_date
                   ? moment(selector.r_insurence_to_date, "DD/MM/YYYY")
@@ -1554,7 +1572,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                 town: "",
                 dist: "",
                 distHq: "",
-                voiceofCustomerRemarks: "",
+                voiceofCustomerRemarks: selector.c_voice_of_customer_remarks,
                 id: 0,
               },
             ],
@@ -3132,21 +3150,21 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     setEmployeeSelectModel(false);
   };
 
-const displayCreateEnquiryLeadAlert = async (data) => {
-  Alert.alert(
-    "Enquiry Created Successfully",
-    "Enquiry Number: " + data,
-    [
-      {
-        text: "OK",
-        onPress: () => {
-          goToLeadScreen();
+  const displayCreateEnquiryLeadAlert = async (data) => {
+    Alert.alert(
+      "Enquiry Created Successfully",
+      "Enquiry Number: " + data,
+      [
+        {
+          text: "OK",
+          onPress: () => {
+            goToLeadScreen();
+          },
         },
-      },
-    ],
-    { cancelable: false }
-  );
-};
+      ],
+      { cancelable: false }
+    );
+  };
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
       <SelectEmployeeComponant
@@ -6425,7 +6443,7 @@ const displayCreateEnquiryLeadAlert = async (data) => {
                   Allocate
                 </Button>
               )}
-              {selectedEmployee !== ""&& (
+              {selectedEmployee !== "" && (
                 <Button
                   mode="contained"
                   style={{ width: 120 }}
