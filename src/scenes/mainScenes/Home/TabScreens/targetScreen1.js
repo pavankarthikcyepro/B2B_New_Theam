@@ -486,37 +486,45 @@ const TargetScreen = ({ route }) => {
               (item) => item.empId === jsonObj.empId
             ),
           ];
-          setMyParameters(myParams);
-          let tempParams = [
-            ...selector.all_emp_parameters_data.filter(
-              (item) => item.empId !== jsonObj.empId
-            ),
-          ];
-          for (let i = 0; i < tempParams.length; i++) {
-            tempParams[i] = {
-              ...tempParams[i],
-              isOpenInner: false,
-              employeeTargetAchievements: [],
-              tempTargetAchievements: tempParams[i]?.targetAchievements,
-            };
-            // tempParams[i]["isOpenInner"] = false;
-            // tempParams[i]["employeeTargetAchievements"] = [];
-            if (i === tempParams.length - 1) {
-              setAllParameters([...tempParams]);
-            }
-            let newIds = tempParams.map((emp) => emp.empId);
-            for (let k = 0; k < newIds.length; k++) {
-              const element = newIds[k].toString();
-              let tempPayload = getTotalPayload(employeeData, element);
-              const response = await client.post(
-                URL.GET_TOTAL_TARGET_PARAMS(),
-                tempPayload
-              );
-              const json = await response.json();
-              tempParams[k].targetAchievements = json;
-              setAllParameters([...tempParams]);
-            }
-          }
+          myParams[0] = {
+            ...myParams[0],
+            isOpenInner: false,
+            employeeTargetAchievements: [],
+            targetAchievements: selector.totalParameters,
+            tempTargetAchievements: myParams[0]?.targetAchievements,
+          };
+          setAllParameters(myParams);
+          // setMyParameters(myParams);
+          // let tempParams = [
+          //   ...selector.all_emp_parameters_data.filter(
+          //     (item) => item.empId !== jsonObj.empId
+          //   ),
+          // ];
+          // for (let i = 0; i < tempParams.length; i++) {
+          //   tempParams[i] = {
+          //     ...tempParams[i],
+          //     isOpenInner: false,
+          //     employeeTargetAchievements: [],
+          //     tempTargetAchievements: tempParams[i]?.targetAchievements,
+          //   };
+          //   // tempParams[i]["isOpenInner"] = false;
+          //   // tempParams[i]["employeeTargetAchievements"] = [];
+          //   if (i === tempParams.length - 1) {
+          //     setAllParameters([...tempParams]);
+          //   }
+          //   let newIds = tempParams.map((emp) => emp.empId);
+          //   for (let k = 0; k < newIds.length; k++) {
+          //     const element = newIds[k].toString();
+          //     let tempPayload = getTotalPayload(employeeData, element);
+          //     const response = await client.post(
+          //       URL.GET_TOTAL_TARGET_PARAMS(),
+          //       tempPayload
+          //     );
+          //     const json = await response.json();
+          //     tempParams[k].targetAchievements = json;
+          //     setAllParameters([...tempParams]);
+          //   }
+          // }
         }
       }
       setIsLoading(false);
@@ -869,99 +877,6 @@ const TargetScreen = ({ route }) => {
                       style={{ height: Dimensions.get("screen").height / 2.2 }}
                     // style={{ height: selector.isMD ? "81%" : "80%" }}
                     >
-                      {myParameters.length > 0 &&
-                        myParameters.map((item, index) => {
-                          return (
-                            <View key={`${item.empId} ${index}`}>
-                              <View
-                                style={{
-                                  paddingHorizontal: 8,
-                                  display: "flex",
-                                  flexDirection: "row",
-                                  justifyContent: "space-between",
-                                  marginTop: 12,
-                                  width: Dimensions.get("screen").width - 28,
-                                }}
-                              >
-                                <Text
-                                  style={{
-                                    fontSize: 12,
-                                    fontWeight: "600",
-                                    textTransform: "capitalize",
-                                  }}
-                                >
-                                  {item.empName}
-                                </Text>
-                                <SourceModelView
-                                  onClick={() => {
-                                    navigation.navigate(
-                                      AppNavigator.HomeStackIdentifiers
-                                        .sourceModel,
-                                      {
-                                        empId: item.empId,
-                                        headerTitle: item.empName,
-                                        loggedInEmpId:
-                                          selector.login_employee_details.empId,
-                                        orgId:
-                                          selector.login_employee_details.orgId,
-                                        type: "TEAM",
-                                        moduleType: "home",
-                                      }
-                                    );
-                                  }}
-                                  style={{
-                                    transform: [
-                                      { translateX: translation }
-                                    ]
-                                  }}
-                                />
-                              </View>
-                              {/*Source/Model View END */}
-                              <View
-                                style={[
-                                  { flexDirection: "row" },
-                                  item.isOpenInner && {
-                                    borderRadius: 10,
-                                    borderWidth: 2,
-                                    borderColor: "#C62159",
-                                    marginHorizontal: 6,
-                                    overflow: "hidden",
-                                  },
-                                ]}
-                              >
-                                {/*RIGHT SIDE VIEW*/}
-                                <View
-                                  style={[
-                                    {
-                                      width: "100%",
-                                      minHeight: 40,
-                                      flexDirection: "column",
-                                      paddingHorizontal: 2,
-                                    },
-                                  ]}
-                                >
-                                  <View
-                                    style={{
-                                      width: "100%",
-                                      minHeight: 40,
-                                      flexDirection: "row",
-                                    }}
-                                  >
-                                    <RenderLevel1NameView
-                                      level={0}
-                                      item={item}
-                                      branchName={getBranchName(item.branchId)}
-                                      color={"#C62159"}
-                                      titleClick={() => { }}
-                                      disable={true}
-                                    />
-                                    {renderData(item, "#C62159")}
-                                  </View>
-                                </View>
-                              </View>
-                            </View>
-                          );
-                        })}
                       {allParameters.length > 0 &&
                         allParameters.map((item, index) => {
                           return (
