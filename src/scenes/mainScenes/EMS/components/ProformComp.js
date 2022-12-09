@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Keyboard, Text, TextInput, Pressable, Image, Alert, Platform } from "react-native";
+import { View, StyleSheet, Keyboard, Text, TextInput, Pressable, Image, Alert, Platform, TouchableOpacity, FlatList } from "react-native";
 import { DropDownSelectionItem } from "../../../../pureComponents";
 import { TextinputComp, DropDownComponant } from "../../../../components";
 import { GlobalStyle, Colors } from "../../../../styles";
@@ -235,6 +235,10 @@ export const ProformaComp = ({
   const [carColorsData, setCarColorsData] = useState([]);
   const [isDownLoadVisible, setisDownLoadVisible] = useState(false);
   const [termNconditionData,settermsNConditionData] =useState([]);
+  const [addNewInput, setAddNewInput] = useState([]);
+  const [otherPriceErrorNameIndex, setOtherPriceErrorNameIndex] = useState(null);
+  const [otherPriceErrorAmountIndexInput, setOtherPriceErrorAmountIndex] = useState(null);
+  const [otherPrices, setOtherPrices] = useState(0);
 
   useEffect(() => {
     getUserData();
@@ -358,7 +362,7 @@ export const ProformaComp = ({
      
       
       settermsNConditionData(selector.getTermsNConditions_res.configData.split(/\r?\n/))
-      
+    
       
     }
   
@@ -658,6 +662,15 @@ export const ProformaComp = ({
   
   }, [selector.proforma_API_response])
   
+  useEffect(() => {
+    if (addNewInput.length > 0) {
+      var totalprice = 0;
+      for (let data of addNewInput) {
+        totalprice = totalprice + Number(data.amount);
+        setOtherPrices(totalprice);
+      }
+    }
+  }, [addNewInput]);
 
   const updatePaidAccessroies = (tableData) => {
     
@@ -915,12 +928,22 @@ export const ProformaComp = ({
         '<td  style="border: 1px solid black; border - collapse: collapse; "   >Additional Offer 2</td>' +
               '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;">' + selector.additional_offer_2.toString() + '</td>' +
     '</tr>'+
-    '<tr     >'+
+        '<tr     >' +
         '<td   style="border: 1px solid black; border - collapse: collapse; "  >Fast Tag</td>' +
         '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + `${fastTagSlctd ? priceInfomationData?.fast_tag?.toFixed(2) : 0}` + ' </td>' +
-       '<td   style="border: 1px solid black; border - collapse: collapse; "  ></td>' +
+        '<td   style="border: 1px solid black; border - collapse: collapse; "  > </td>' +
         '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"></td>' +
-    '</tr>'+
+        '</tr>' +
+
+        addNewInput.map((item) => {
+          return '<tr     >' +
+            '<td    style="border: 1px solid black; border - collapse: collapse; "  >' + item.name +'</td>' +
+            '<td      class="taligns" style="text-align: right; border: 1px solid black; border - collapse: collapse;">' + item.amount +'</td>' +
+            '<td  style="border: 1px solid black; border - collapse: collapse; "    ></td>' +
+            '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"></td>' +
+            '</tr > ' 
+        }).join(' ') +
+
     '<tr     >' +
         '<td    style="border: 1px solid black; border - collapse: collapse; "  ></td>' +
         '<td      class="taligns" style="text-align: right; border: 1px solid black; border - collapse: collapse;"></td>' +
@@ -1249,6 +1272,7 @@ export const ProformaComp = ({
   // };
   const saveProformaDetails = async (from) => {
     var proformaStatus = "";
+    
     if (from === "save") {
       proformaStatus = "ENQUIRYCOMPLETED";
       const data1 = {
@@ -1278,6 +1302,7 @@ export const ProformaComp = ({
           paid_access: selectedPaidAccessoriesPrice,
           fast_tag: `${fastTagSlctd ? priceInfomationData?.fast_tag?.toFixed(2) : 0}`,
           on_road_price: totalOnRoadPrice,
+          otherPricesData : addNewInput,
 
           cgstsgstTaxPercentage: "",
           cessTaxPercentage: "",
@@ -1331,6 +1356,7 @@ export const ProformaComp = ({
           paid_access: selectedPaidAccessoriesPrice,
           fast_tag: `${fastTagSlctd ? priceInfomationData?.fast_tag?.toFixed(2) : 0}`,
           on_road_price: totalOnRoadPrice,
+          otherPricesData: addNewInput,
 
           cgstsgstTaxPercentage: "",
           cessTaxPercentage: "",
@@ -1384,6 +1410,7 @@ export const ProformaComp = ({
           paid_access: selectedPaidAccessoriesPrice,
           fast_tag: `${fastTagSlctd ? priceInfomationData?.fast_tag?.toFixed(2) : 0}`,
           on_road_price: totalOnRoadPrice,
+          otherPricesData: addNewInput,
 
           cgstsgstTaxPercentage: "",
           cessTaxPercentage: "",
@@ -1439,6 +1466,7 @@ export const ProformaComp = ({
           paid_access: selectedPaidAccessoriesPrice,
           fast_tag: `${fastTagSlctd ? priceInfomationData?.fast_tag?.toFixed(2) : 0}`,
           on_road_price: totalOnRoadPrice,
+          otherPricesData: addNewInput,
 
           cgstsgstTaxPercentage : "",
           cessTaxPercentage : "",
@@ -1646,6 +1674,7 @@ export const ProformaComp = ({
     essentialSelected,
     fastTagSelected
   ) => {
+    // todo
     let totalPrice = 0;
     totalPrice += priceInfomationData.ex_showroom_price;
     // const lifeTax = getLifeTax();
@@ -1746,7 +1775,7 @@ export const ProformaComp = ({
       if (mArray.length > 0) {
          newSelectedProforma = mArray.filter((item) => item.id === id);
          // todo
-      
+          
         if (newSelectedProforma[0].performa_status === "PENDING_APPROVAL" ||
           newSelectedProforma[0].performa_status === "SENTFORAPPROVAL") {
           setShowApproveRejectBtn(true);
@@ -1868,6 +1897,26 @@ export const ProformaComp = ({
           setFastTagSlctd(false);
         }
         
+
+        // other price data 
+        if (oth_performa_column.otherPricesData?.length > 0) {
+          let newArr = [];
+          oth_performa_column.otherPricesData.forEach((item, i) => {
+            newArr.push({
+              name: item.name,
+              amount: item.amount,
+            });
+          });
+          if (newArr.length > 0) {
+            var totalprice = 0;
+            for (let data of newArr) {
+              totalprice = totalprice + Number(data.amount);
+              setOtherPrices(totalprice);
+            }
+          }
+          setAddNewInput(Object.assign([], newArr));
+        }
+        
         
         // todo need to figurout how to do auto fill for warranty etc 
         // setPriceInformationData({
@@ -1986,6 +2035,10 @@ export const ProformaComp = ({
     setTotalOnRoadPrice(0);
     setTcsAmount(0);
     setTotalOnRoadPriceAfterDiscount(0);
+    setOtherPrices(0)
+    setOtherPriceErrorNameIndex(null);
+    setOtherPriceErrorAmountIndex(null);
+    setAddNewInput([]);
     // setHandlingChargSlctd(false);
     // setEssentialKitSlctd(false);
     // setSelectedPaidAccessoriesPrice(0)
@@ -2030,6 +2083,86 @@ export const ProformaComp = ({
     newProformaClick();
     navigation.goBack();
   };
+
+
+  const addHandler = () => {
+    let isEmpty = false;
+    let toast = "please enter name";
+    if (addNewInput.length > 0) {
+      for (let i = 0; i < addNewInput.length; i++) {
+        if (addNewInput[i].name == "") {
+          setOtherPriceErrorAmountIndex(null);
+          setOtherPriceErrorNameIndex(i);
+          isEmpty = true;
+          break;
+        } else if (addNewInput[i].amount == "") {
+          setOtherPriceErrorNameIndex(null);
+          setOtherPriceErrorAmountIndex(i);
+          toast = "please enter amount";
+          isEmpty = true;
+          break;
+        }
+      }
+    }
+
+    if (isEmpty) {
+      showToast(toast);
+      return;
+    }
+    setOtherPriceErrorAmountIndex(null);
+    setOtherPriceErrorNameIndex(null);
+    setAddNewInput([...addNewInput, { name: "", amount: "" }]);
+  };
+
+  const deleteHandler = (index) => {
+    let newArr = Object.assign([], addNewInput);
+    if (newArr[index]?.amount) {
+      var amt = newArr[index].amount;
+      setOtherPrices(otherPrices - Number(amt));
+    }
+    newArr.splice(index, 1);
+    setAddNewInput(Object.assign([], newArr));
+  };
+
+  const inputHandlerName = (value, index) => {
+    let newArr = Object.assign([], addNewInput);
+    newArr[index].name = value;
+    setAddNewInput(Object.assign([], newArr));
+  };
+
+  const inputHandlerPrice = (value, index) => {
+    let newArr = Object.assign([], addNewInput);
+    newArr[index].amount = value;
+    setAddNewInput(Object.assign([], newArr));
+  };
+
+  const checkIsError = (type, index) => {
+    let isError = false;
+    if (type == "amount") {
+      if (
+        otherPriceErrorAmountIndexInput != null &&
+        otherPriceErrorAmountIndexInput == index
+      ) {
+        isError = true;
+      }
+    } else {
+      if (otherPriceErrorNameIndex != null && otherPriceErrorNameIndex == index) {
+        isError = true;
+      }
+    }
+    return isError;
+  };
+
+  const getActualPrice = () => {
+    let amount = Number(totalOnRoadPrice) + Number(otherPrices);
+    return amount;
+  };
+
+  const getActualPriceAfterDiscount = () => {
+    let amount = Number(totalOnRoadPriceAfterDiscount) + Number(otherPrices);
+    return amount;
+  };
+
   return (
     <View>
       <DropDownComponant
@@ -2572,9 +2705,116 @@ export const ProformaComp = ({
                 /> */}
               <Text style={GlobalStyle.underline}></Text>
 
+              {/* for other price  */}
+              <View style={styles.otherPriceTitleRow}>
+                <Text style={styles.otherPriceTextStyle}>
+                  Add Other Prices
+                </Text>
+
+                <TouchableOpacity 
+                  style={[
+                    styles.addIcon,
+                    {
+                      backgroundColor: isInputsEditable()
+                        ? Colors.RED
+                        : Colors.GRAY,
+                    },
+                  ]}
+                  disabled={!isInputsEditable()}
+                  onPress={() => addHandler()}
+                >
+                  <Text
+                    style={{
+                      color: Colors.WHITE,
+                      fontSize: 13,
+                    }}
+                  >
+                    +
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              <View
+                style={{
+                  backgroundColor: Colors.WHITE,
+                  paddingTop: 5,
+                }}
+              >
+                <FlatList
+                  data={addNewInput}
+                  extraData={[
+                    addNewInput,
+                    otherPriceErrorAmountIndexInput,
+                    otherPriceErrorNameIndex,
+                  ]}
+                  showsVerticalScrollIndicator={false}
+                  renderItem={({ item, index }) => {
+                    return (
+                      <View
+                        key={index}
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          paddingHorizontal: 10,
+                        }}
+                      >
+                        <TextInput
+                          editable={isInputsEditable()}
+                          style={[
+                            styles.otherPriceInput,
+                            {
+                              borderColor: checkIsError("name", index)
+                                ? Colors.RED
+                                : null,
+                            },
+                          ]}
+                          placeholder={"Name"}
+                          onChangeText={(name) =>
+                            inputHandlerName(name, index)
+                          }
+                          value={item.name}
+                        />
+                        <TextInput
+                          editable={isInputsEditable()}
+                          style={[
+                            styles.otherPriceInput,
+                            {
+                              marginLeft: 20,
+                              borderColor: checkIsError("amount", index)
+                                ? Colors.RED
+                                : null,
+                            },
+                          ]}
+                          placeholder={"Amount"}
+                          keyboardType={"decimal-pad"}
+                          onChangeText={(value) =>
+                            inputHandlerPrice(value, index)
+                          }
+                          value={`${item.amount}`}
+                        />
+                        <TouchableOpacity
+                          disabled={!isInputsEditable()}
+                          onPress={() => deleteHandler(index)}
+                          style={{ marginLeft: 10 }}
+                        >
+                          <IconButton
+                            icon="trash-can-outline"
+                            color={Colors.PINK}
+                            size={25}
+                            disabled={!isInputsEditable()}
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    );
+                  }}
+                />
+              </View>
+
               <TextAndAmountComp
                 title={"On Road Price:"}
-                amount={totalOnRoadPrice.toFixed(2)}
+                // amount={totalOnRoadPrice.toFixed(2)}
+                amount={getActualPrice().toFixed(2)}
                 titleStyle={{ fontSize: 18, fontWeight: "800" }}
                 amoutStyle={{ fontSize: 18, fontWeight: "800" }}
               />
@@ -2817,7 +3057,8 @@ export const ProformaComp = ({
 
                 <TextAndAmountComp
                   title={"On Road Price After Discount:"}
-                  amount={totalOnRoadPriceAfterDiscount.toFixed(2)}
+                  // amount={totalOnRoadPriceAfterDiscount.toFixed(2)}
+                amount={getActualPriceAfterDiscount().toFixed(2)}
                   titleStyle={{ fontSize: 18, fontWeight: "800" }}
                   amoutStyle={{ fontSize: 18, fontWeight: "800" }}
                 />
@@ -3001,5 +3242,31 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     maxWidth: "70%",
     color: Colors.GRAY,
+  },
+  otherPriceInput: {
+    backgroundColor: Colors.LIGHT_GRAY,
+    width: "33%",
+    height: 40,
+    borderBottomWidth: 1,
+  },
+  otherPriceTitleRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: Colors.WHITE,
+    paddingTop: 7
+  },
+  addIcon: {
+    backgroundColor: Colors.RED,
+    paddingVertical: 4,
+    paddingHorizontal: 12,
+    borderRadius: 5,
+    marginRight: 20,
+  },
+  otherPriceTextStyle: {
+    fontSize: 14,
+    fontWeight: "400",
+    color: Colors.GRAY,
+    paddingLeft: 12,
   },
 })
