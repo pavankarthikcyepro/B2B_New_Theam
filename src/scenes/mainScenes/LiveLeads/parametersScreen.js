@@ -513,6 +513,7 @@ const ParametersScreen = ({ route }) => {
         navigation.navigate("LEADS", {
           param: paramName === "INVOICE" ? "Retail" : paramName,
           moduleType: "live-leads",
+          employeeDetail: "",
         });
       }, 1000);
     } else if (isContact) {
@@ -520,6 +521,7 @@ const ParametersScreen = ({ route }) => {
       setTimeout(() => {
         navigation.navigate(EmsTopTabNavigatorIdentifiers.preEnquiry, {
           moduleType: "live-leads",
+          employeeDetail: "",
         });
       }, 100);
     }
