@@ -323,7 +323,8 @@ const LeadsScreen = ({ route, navigation }) => {
       lastMonthFirstDate,
       currentDate,
       leadStage,
-      []
+      [],
+      true
     );
     // return
     // await applyLeadsFilter(newArr, lastMonthFirstDate, currentDate);
@@ -622,7 +623,7 @@ const LeadsScreen = ({ route, navigation }) => {
           setTempFilterPayload(x);
           onTempFliter(
             x,
-            isEmpty(tempEmployee) ? null : tempEmployee,
+            employeeDetail,
             tempVehicleModelList,
             tempCategoryList,
             tempSourceList,
@@ -675,7 +676,8 @@ const LeadsScreen = ({ route, navigation }) => {
     from,
     to,
     defLeadStage,
-    defLeadStatus
+    defLeadStatus,
+    isRefresh = false
   ) => {
     setSearchedData([]);
     setLeadsList([]);
@@ -773,13 +775,18 @@ const LeadsScreen = ({ route, navigation }) => {
       }
 
       let isLive = false;
-      if (route?.params?.param && route?.params?.moduleType == "live-leads") {
+      if (
+        route?.params?.param &&
+        route?.params?.moduleType == "live-leads" &&
+        !isRefresh
+      ) {
         isLive = true;
         from = "2021-01-01";
       } else if (route?.params?.param && route?.params?.moduleType == "home") {
         from = lastMonthFirstDate;
       } else {
       }
+
       let newPayload = {
         startdate: from ? from : selectedFromDate,
         enddate: to ? to : selectedToDate,
@@ -851,6 +858,7 @@ const LeadsScreen = ({ route, navigation }) => {
   }
 
   const onRefresh = async () => {
+    setSelectedFromDate(lastMonthFirstDate);
     Promise.all([dispatch(getMenu()), dispatch(getStatus())])
       .then(async ([res, res2]) => {
         let path = res.payload;

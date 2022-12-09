@@ -114,6 +114,7 @@ export const RenderSelfInsights = (args) => {
                       navigation.navigate("LEADS", {
                         param: param === "INVOICE" ? "Retail" : param,
                         moduleType: "home",
+                        employeeDetail: ""
                       });
                     }, 1000);
                   } else if (param == "Home Visit" || param == "Test Drive") {
