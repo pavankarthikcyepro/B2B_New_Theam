@@ -41,7 +41,7 @@ import {
   getStatus,
   getSubMenu,
 } from "../../../redux/leaddropReducer";
-import { useIsFocused } from "@react-navigation/native";
+import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 import Entypo from "react-native-vector-icons/FontAwesome";
 
 const dateFormat = "YYYY-MM-DD";

@@ -429,9 +429,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
         newData.push(obj);
       });
       setEmployeesData([...newData]);
-      if (selector.source_of_enquiry) {
-        setEmployeeSelectModel(true);
-      }
+      // if (selector.source_of_enquiry) {
+      //   setEmployeeSelectModel(true);
+      // }
     }
   }, [employeeSelector.employees_list, employeeSelector.employees_list_status]);
 
@@ -1035,7 +1035,6 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
   };
 
   const checkModelSelection = () => {
-    console.log("carModelsList", carModelsList);
     let error = false;
     for (let i = 0; i < carModelsList.length; i++) {
       if (carModelsList[i].model.length == 0) {
@@ -1069,6 +1068,8 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     //     // ||
     //     // selector.anniversaryDate.length == 0
     //   ) {
+    //     scrollToPos(0);
+    //     setOpenAccordian("2");
     //     showToast("Please fill required fields in Personal Intro");
     //     return;
     //   }
@@ -1131,22 +1132,22 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       return;
     }
 
-    // if (
-    //   selector.p_pincode.length == 0 ||
-    //   selector.p_urban_or_rural.length == 0 ||
-    //   selector.p_houseNum.length == 0 ||
-    //   selector.p_streetName.length == 0 ||
-    //   selector.p_village.length == 0 ||
-    //   selector.p_mandal.length == 0 ||
-    //   selector.p_city.length == 0 ||
-    //   selector.p_district.length == 0 ||
-    //   selector.p_state.length == 0
-    // ) {
-    //   scrollToPos(14);
-    //   setOpenAccordian("3");
-    //   showToast("Please fill permanent address ");
-    //   return;
-    // }
+    if (
+      selector.p_pincode.length == 0 ||
+      selector.p_urban_or_rural.length == 0 ||
+      selector.p_houseNum.length == 0 ||
+      selector.p_streetName.length == 0 ||
+      selector.p_village.length == 0 ||
+      selector.p_mandal.length == 0 ||
+      selector.p_city.length == 0 ||
+      selector.p_district.length == 0 ||
+      selector.p_state.length == 0
+    ) {
+      scrollToPos(14);
+      setOpenAccordian("3");
+      showToast("Please fill permanent address ");
+      return;
+    }
 
     if (selector.p_pincode.length == 0) {
       scrollToPos(14);
@@ -1192,39 +1193,36 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       showToast("Please fill required fields in Finance Details");
       return;
     }
-    // if (selector.retail_finance === "In House") {
-    //   if (
-    //     selector.finance_category.length == 0) {
-    //     showToast("Please fill finance category");
-    //     return;
-    //   }
-    //   if (
-    //     selector.loan_of_tenure.length == 0
-    //   ) {
-    //     showToast("Please fill loan of tenure");
-    //     return;
-    //   }
-    //   if (selector.emi.length == 0) {
-    //     showToast("Please fill emi");
-    //     return;
-    //   }
-    //   if (selector.approx_annual_income.length == 0) {
-    //     showToast("Please fill approx annual income");
-    //     return;
-    //   }
-    //   if (selector.bank_or_finance.length == 0) {
-    //     showToast("Please fill bank/Finance");
-    //     return;
-    //   }
-    // }
+    if (selector.retail_finance === "In House") {
+      if (selector.finance_category.length == 0) {
+        showToast("Please fill finance category");
+        return;
+      }
+      if (selector.loan_of_tenure.length == 0) {
+        showToast("Please fill loan of tenure");
+        return;
+      }
+      if (selector.emi.length == 0) {
+        showToast("Please fill emi");
+        return;
+      }
+      if (selector.approx_annual_income.length == 0) {
+        showToast("Please fill approx annual income");
+        return;
+      }
+      if (selector.bank_or_finance.length == 0) {
+        showToast("Please fill bank/Finance");
+        return;
+      }
+    }
 
     // Leashing
-    // if (selector.retail_finance == "Leasing") {
-    //   if (selector.leashing_name.length == 0) {
-    //     showToast("Please fill required fields in leasing name");
-    //     return;
-    //   }
-    // }
+    if (selector.retail_finance == "Leasing") {
+      if (selector.leashing_name.length == 0) {
+        showToast("Please fill required fields in leasing name");
+        return;
+      }
+    }
 
     //Customer Customer need Analysis
     // if (selector.c_voice_of_customer_remarks == 0) {
@@ -1233,24 +1231,24 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     // }
 
     if (selector.buyer_type === "Additional Buyer") {
-      // if (
-      //   selector.a_make == 0 ||
-      //   selector.a_model == 0 ||
-      //   selector.a_varient == 0 ||
-      //   selector.a_color == 0 ||
-      //   selector.a_reg_no == 0
-      // ) {
-      //   scrollToPos(8)
-      //   setOpenAccordian('8')
-      //   showToast("Please fill required fields in Addtional buyer ");
-      //   return;
-      // }
-      // if (!isValidateAlphabetics(selector.a_varient)) {
-      //   scrollToPos(8)
-      //   setOpenAccordian('8')
-      //   showToast("Please enter alphabetics only in varient ");
-      //   return;
-      // }
+      if (
+        selector.a_make == 0 ||
+        selector.a_model == 0 ||
+        selector.a_varient == 0 ||
+        selector.a_color == 0 ||
+        selector.a_reg_no == 0
+      ) {
+        scrollToPos(8);
+        setOpenAccordian("8");
+        showToast("Please fill required fields in Addtional buyer ");
+        return;
+      }
+      if (!isValidateAlphabetics(selector.a_varient)) {
+        scrollToPos(8);
+        setOpenAccordian("8");
+        showToast("Please enter alphabetics only in varient ");
+        return;
+      }
       if (!isValidateAlphabetics(selector.a_color)) {
         scrollToPos(8);
         setOpenAccordian("8");
@@ -1320,37 +1318,37 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       }
     }
 
-    // if (
-    //   selector.leashing_name.length > 0 &&
-    //   !isValidateAlphabetics(selector.leashing_name)
-    // ) {
-    //   showToast("Please enter proper leasing name");
-    //   return;
-    // }
+    if (
+      selector.leashing_name.length > 0 &&
+      !isValidateAlphabetics(selector.leashing_name)
+    ) {
+      showToast("Please enter proper leasing name");
+      return;
+    }
 
-    // if (isCheckPanOrAadhaar("pan", selector.pan_number)) {
-    //   scrollToPos(6);
-    //   setOpenAccordian("6");
-    //   showToast("Please enter proper PAN number");
-    //   return;
-    // }
+    if (isCheckPanOrAadhaar("pan", selector.pan_number)) {
+      scrollToPos(6);
+      setOpenAccordian("6");
+      showToast("Please enter proper PAN number");
+      return;
+    }
 
-    // if (isCheckPanOrAadhaar("aadhaar", selector.adhaar_number)) {
-    //   scrollToPos(6);
-    //   setOpenAccordian("6");
-    //   showToast("Please enter proper Aadhaar number");
-    //   return;
-    // }
+    if (isCheckPanOrAadhaar("aadhaar", selector.adhaar_number)) {
+      scrollToPos(6);
+      setOpenAccordian("6");
+      showToast("Please enter proper Aadhaar number");
+      return;
+    }
 
-    // if (
-    //   selector.gstin_number.length > 0 &&
-    //   !isValidateAplhaNumeric(selector.gstin_number)
-    // ) {
-    //   scrollToPos(6);
-    //   setOpenAccordian("6");
-    //   showToast("Please enter proper gstin number");
-    //   return;
-    // }
+    if (
+      selector.gstin_number.length > 0 &&
+      !isValidateAplhaNumeric(selector.gstin_number)
+    ) {
+      scrollToPos(6);
+      setOpenAccordian("6");
+      showToast("Please enter proper gstin number");
+      return;
+    }
 
     // if (!selector.enquiry_details_response) {
     //   return;
@@ -1407,6 +1405,32 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
             phone: selector.mobile,
             secondaryPhone: selector.alterMobile,
             status: "PREENQUIRY",
+            age: selector.age,
+            anniversaryDate: selector.anniversaryDate
+              ? convertDateStringToMillisecondsUsingMoment(
+                  selector.anniversaryDate
+                )
+              : "",
+            annualRevenue: selector.approx_annual_income,
+            dateOfBirth: selector.dateOfBirth
+              ? convertDateStringToMillisecondsUsingMoment(selector.dateOfBirth)
+              : "",
+            gender: selector.gender,
+            kmsTravelledInMonth: selector.kms_travelled_month,
+            membersInFamily: selector.members,
+            occupation: selector.occupation,
+            primeExpectationFromCar: selector.prime_expectation_from_car,
+            referedByFirstname: selector.rf_by_first_name,
+            referedByLastname: selector.rf_by_last_name,
+            refferedMobileNo: selector.rf_by_mobile,
+            refferedSource: selector.rf_by_source,
+            reffered_Sourcelocation: selector.rf_by_source_location,
+            salutation: selector.salutation,
+            whoDrives: selector.who_drives,
+            relation: selector.relation,
+            relationName: selector.relationName,
+            designation: selector.designation,
+            companyName: selector.company_name,
           },
           dmsLeadDto: {
             branchId: jsonObj.branchs[0]?.branchId,
@@ -1425,6 +1449,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
             buyerType: selector.buyer_type,
             salesConsultant:
               selectedEmployee.length > 0 ? selectedEmployee : null,
+            dmsExpectedDeliveryDate: selector.expected_delivery_date
+              ? Number(selector.expected_delivery_date)
+              : convertDateStringToMillisecondsUsingMoment(new Date()),
             dmsAddresses: [
               {
                 addressType: "Communication",
@@ -1461,14 +1488,29 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
             dmsExchagedetails: [
               {
                 buyerType: selector.buyer_type,
-                brand: selector.a_make,
-                varient: selector.a_varient,
+                brand:
+                  selector.buyer_type === "Additional Buyer"
+                    ? selector.a_make
+                    : selector.r_make,
+                varient:
+                  selector.buyer_type === "Additional Buyer"
+                    ? selector.a_varient
+                    : selector.a_varient,
                 fuelType: selector.r_fuel_type,
-                regNo: selector.a_reg_no,
+                regNo:
+                  selector.buyer_type === "Additional Buyer"
+                    ? selector.a_reg_no
+                    : selector.r_reg_no,
                 kiloMeters: selector.r_kms_driven_or_odometer_reading,
                 hypothication: selector.r_hypothication_name,
-                model: selector.r_model,
-                color: selector.a_color,
+                model:
+                  selector.buyer_type === "Additional Buyer"
+                    ? selector.a_model
+                    : selector.r_model,
+                color:
+                  selector.buyer_type === "Additional Buyer"
+                    ? selector.a_color
+                    : selector.r_color,
                 transmission: selector.r_transmission_type,
                 yearofManufacture: selector.r_mfg_year,
                 hypothicationBranch: selector.r_hypothication_branch,
@@ -1497,7 +1539,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                   "DD/MM/YYYY"
                 ),
                 insuranceCompanyName: selector.r_insurence_company_name,
-                insuranceDocumentKey: "",
+                insuranceDocumentKey: selector.insuranceDocumentKey,
                 regDocumentKey: selector.regDocumentKey,
                 insuranceExpiryDate: selector.r_insurence_to_date
                   ? moment(selector.r_insurence_to_date, "DD/MM/YYYY")
@@ -1530,7 +1572,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                 town: "",
                 dist: "",
                 distHq: "",
-                voiceofCustomerRemarks: "",
+                voiceofCustomerRemarks: selector.c_voice_of_customer_remarks,
                 id: 0,
               },
             ],
@@ -1665,7 +1707,11 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
             const response = await client.post(URL.ENQUIRY_CONTACT(), payloady);
             const json = await response.json();
             if (json.success) {
-              navigation.goBack();
+              displayCreateEnquiryLeadAlert(
+                json?.dmsEntity?.leadCustomerReference?.referencenumber
+              );
+              // showToastRedAlert("Enquiry is generated Successfully");
+              // goToLeadScreen();
             } else {
               showToast(json.message);
             }
@@ -1676,12 +1722,15 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
             );
             const json1 = await response1.json();
             if (json1.success) {
-              navigation.goBack();
+              displayCreateEnquiryLeadAlert(
+                json1?.dmsEntity?.leadCustomerReference?.referencenumber
+              );
+              // showToastRedAlert("Enquiry is generated Successfully");
+              // goToLeadScreen();
             } else {
               showToast(json1.message);
             }
           }
-
           // navigation.goBack();
         } catch (error) {
           console.error(error);
@@ -2784,7 +2833,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       type: `image/${fileType}`,
       uri: Platform.OS === "ios" ? photoUri.replace("file://", "") : photoUri,
     });
-    formData.append("universalId", universalId);
+    // formData.append("universalId", universalId);
 
     switch (keyId) {
       case "UPLOAD_PAN":
@@ -2824,7 +2873,6 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
         formData.append("documentType", "default");
         break;
     }
-
     await fetch(URL.UPLOAD_DOCUMENT(), {
       method: "POST",
       headers: {
@@ -2862,6 +2910,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
               })
             );
           } else {
+            console.log("response,response", response);
             const dataObj = { ...uploadedImagesDataObj };
             dataObj[response.documentType] = response;
             setUploadedImagesDataObj({ ...dataObj });
@@ -3097,11 +3146,25 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
   };
 
   const updateEmployee = (employeeObj) => {
-    console.log("employeeObj", employeeObj.name);
     setSelectedEmployee(employeeObj.name);
     setEmployeeSelectModel(false);
   };
 
+  const displayCreateEnquiryLeadAlert = async (data) => {
+    Alert.alert(
+      "Enquiry Created Successfully",
+      "Enquiry Number: " + data,
+      [
+        {
+          text: "OK",
+          onPress: () => {
+            goToLeadScreen();
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
       <SelectEmployeeComponant
@@ -3129,7 +3192,6 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
         data={dataForDropDown}
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
-          console.log(item, dropDownKey);
           if (dropDownKey === "MODEL") {
             updateVariantModelsData(item.name, false);
           } else if (dropDownKey === "VARIENT") {
@@ -6381,15 +6443,17 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                   Allocate
                 </Button>
               )}
-              <Button
-                mode="contained"
-                style={{ width: 120 }}
-                color={Colors.PINK}
-                labelStyle={{ textTransform: "none" }}
-                onPress={submitClicked}
-              >
-                Submit
-              </Button>
+              {selectedEmployee !== "" && (
+                <Button
+                  mode="contained"
+                  style={{ width: 120 }}
+                  color={Colors.PINK}
+                  labelStyle={{ textTransform: "none" }}
+                  onPress={submitClicked}
+                >
+                  Submit
+                </Button>
+              )}
             </View>
           )}
           {showPreBookingBtn && !isDropSelected && (
