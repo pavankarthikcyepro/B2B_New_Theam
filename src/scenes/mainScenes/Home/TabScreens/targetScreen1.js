@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
   Dimensions,
@@ -900,16 +900,6 @@ const TargetScreen = ({ route }) => {
                                 }}
                               >
                                 <Text
-                                  onPress={() => {
-                                    navigation.navigate(
-                                      AppNavigator.HomeStackIdentifiers
-                                        .location,
-                                      {
-                                        empId: item.empId,
-                                        orgId: item.orgId,
-                                      }
-                                    );
-                                  }}
                                   style={{
                                     fontSize: 12,
                                     fontWeight: "600",
@@ -976,6 +966,7 @@ const TargetScreen = ({ route }) => {
                                       item={item}
                                       branchName={getBranchName(item.branchId)}
                                       color={"#C62159"}
+                                      navigation={navigation}
                                       titleClick={async () => {
                                         let localData = [...allParameters];
                                         await onEmployeeNameClick(
@@ -984,7 +975,6 @@ const TargetScreen = ({ route }) => {
                                           localData
                                         );
                                       }}
-                                      navigation={navigation}
                                     />
                                     {renderData(item, "#C62159")}
                                   </View>
@@ -1039,19 +1029,6 @@ const TargetScreen = ({ route }) => {
                                                   }}
                                                 >
                                                   <Text
-                                                    onPress={() => {
-                                                      navigation.navigate(
-                                                        AppNavigator
-                                                          .HomeStackIdentifiers
-                                                          .location,
-                                                        {
-                                                          empId:
-                                                            innerItem1.empId,
-                                                          orgId:
-                                                            innerItem1.orgId,
-                                                        }
-                                                      );
-                                                    }}
                                                     style={{
                                                       fontSize: 10,
                                                       fontWeight: "500",
@@ -1095,6 +1072,7 @@ const TargetScreen = ({ route }) => {
                                                     level={1}
                                                     item={innerItem1}
                                                     color={Colors.CORAL}
+                                                    navigation={navigation}
                                                     titleClick={async () => {
                                                       const localData = [
                                                         ...allParameters,
@@ -1108,7 +1086,6 @@ const TargetScreen = ({ route }) => {
                                                         localParameter
                                                       );
                                                     }}
-                                                    navigation={navigation}
                                                   />
                                                   {renderData(
                                                     innerItem1,
@@ -1163,19 +1140,6 @@ const TargetScreen = ({ route }) => {
                                                           }}
                                                         >
                                                           <Text
-                                                            onPress={() => {
-                                                              navigation.navigate(
-                                                                AppNavigator
-                                                                  .HomeStackIdentifiers
-                                                                  .location,
-                                                                {
-                                                                  empId:
-                                                                    innerItem2.empId,
-                                                                  orgId:
-                                                                    innerItem2.orgId,
-                                                                }
-                                                              );
-                                                            }}
                                                             style={{
                                                               fontSize: 10,
                                                               fontWeight: "500",
@@ -1220,6 +1184,9 @@ const TargetScreen = ({ route }) => {
                                                             level={2}
                                                             item={innerItem2}
                                                             color={"#2C97DE"}
+                                                            navigation={
+                                                              navigation
+                                                            }
                                                             titleClick={async () => {
                                                               const localData =
                                                                 [
@@ -1237,9 +1204,6 @@ const TargetScreen = ({ route }) => {
                                                                 localParameter
                                                               );
                                                             }}
-                                                            navigation={
-                                                              navigation
-                                                            }
                                                           />
                                                           {renderData(
                                                             innerItem2,
@@ -1292,19 +1256,6 @@ const TargetScreen = ({ route }) => {
                                                                     }}
                                                                   >
                                                                     <Text
-                                                                      onPress={() => {
-                                                                        navigation.navigate(
-                                                                          AppNavigator
-                                                                            .HomeStackIdentifiers
-                                                                            .location,
-                                                                          {
-                                                                            empId:
-                                                                              innerItem3.empId,
-                                                                            orgId:
-                                                                              innerItem3.orgId,
-                                                                          }
-                                                                        );
-                                                                      }}
                                                                       style={{
                                                                         fontSize: 10,
                                                                         fontWeight:
@@ -1357,6 +1308,9 @@ const TargetScreen = ({ route }) => {
                                                                       color={
                                                                         "#EC3466"
                                                                       }
+                                                                      navigation={
+                                                                        navigation
+                                                                      }
                                                                       titleClick={async () => {
                                                                         const localData =
                                                                           [
@@ -1379,9 +1333,6 @@ const TargetScreen = ({ route }) => {
                                                                           localParameter
                                                                         );
                                                                       }}
-                                                                      navigation={
-                                                                        navigation
-                                                                      }
                                                                     />
 
                                                                     {renderData(
@@ -1439,6 +1390,9 @@ const TargetScreen = ({ route }) => {
                                                                                 color={
                                                                                   "#1C95A6"
                                                                                 }
+                                                                                navigation={
+                                                                                  navigation
+                                                                                }
                                                                                 titleClick={async () => {
                                                                                   const localData =
                                                                                     [
@@ -1464,9 +1418,6 @@ const TargetScreen = ({ route }) => {
                                                                                     localParameter
                                                                                   );
                                                                                 }}
-                                                                                navigation={
-                                                                                  navigation
-                                                                                }
                                                                               />
                                                                               {renderData(
                                                                                 innerItem4,
@@ -1523,6 +1474,9 @@ const TargetScreen = ({ route }) => {
                                                                                           color={
                                                                                             "#C62159"
                                                                                           }
+                                                                                          navigation={
+                                                                                            navigation
+                                                                                          }
                                                                                           titleClick={async () => {
                                                                                             const localData =
                                                                                               [
@@ -1551,9 +1505,6 @@ const TargetScreen = ({ route }) => {
                                                                                               localParameter
                                                                                             );
                                                                                           }}
-                                                                                          navigation={
-                                                                                            navigation
-                                                                                          }
                                                                                         />
                                                                                         {renderData(
                                                                                           innerItem5,
@@ -1610,6 +1561,9 @@ const TargetScreen = ({ route }) => {
                                                                                                     color={
                                                                                                       "#C62159"
                                                                                                     }
+                                                                                                    navigation={
+                                                                                                      navigation
+                                                                                                    }
                                                                                                     titleClick={async () => {
                                                                                                       const localData =
                                                                                                         [
@@ -1641,9 +1595,6 @@ const TargetScreen = ({ route }) => {
                                                                                                         localParameter
                                                                                                       );
                                                                                                     }}
-                                                                                                    navigation={
-                                                                                                      navigation
-                                                                                                    }
                                                                                                   />
                                                                                                   {renderData(
                                                                                                     innerItem6,
