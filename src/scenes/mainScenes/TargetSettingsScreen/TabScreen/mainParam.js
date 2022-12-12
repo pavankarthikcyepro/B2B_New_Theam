@@ -36,21 +36,20 @@ import {
   saveTeamTargetParams,
 } from "../../../../redux/targetSettingsReducer";
 import {
+  getTotalTargetParametersData,
   getUserWiseTargetParameters,
   updateIsTeamPresent,
 } from "../../../../redux/homeReducer";
 import { showToast, showToastRedAlert } from "../../../../utils/toast";
 import { updateFuelAndTransmissionType } from "../../../../redux/preBookingFormReducer";
-import {
-  RenderLevel1NameView,
-  SourceModelView,
-} from "../../Home/TabScreens/targetScreen1";
+import { SourceModelView } from "../../Home/TabScreens/targetScreen1";
 import { RenderEmployeeParameters } from "../../Home/TabScreens/components/RenderEmployeeParameters";
 import { RenderGrandTotal } from "../../Home/TabScreens/components/RenderGrandTotal";
 import moment from "moment";
 import { client } from "../../../../networking/client";
 import URL from "../../../../networking/endpoints";
 import { RenderEmployeeTarget } from "../../Home/TabScreens/components/RenderEmployeeTarget";
+import { RenderGrandTargetTotal } from "../../Home/TabScreens/components/RenderGrandTargetTotal";
 
 const color = [
   "#9f31bf",
@@ -107,6 +106,7 @@ const MainParamScreen = ({ route, navigation }) => {
   );
   const [showChild, setShowChild] = useState(false);
   const [slideRight, setSlideRight] = useState();
+  const [isLoading, setIsLoading] = useState(false);
   const [allParameters, setAllParameters] = useState([
     {
       empName: "Chandrashekar S",
@@ -800,6 +800,73 @@ const MainParamScreen = ({ route, navigation }) => {
       setEmployeeDropDownDataLocal(newDataList);
     }
   }, [selector.employees_drop_down_data]);
+
+  useEffect(async () => {
+    try {
+      const employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        const dateFormat = "YYYY-MM-DD";
+        const currentDate = moment().format(dateFormat);
+        const monthFirstDate = moment(currentDate, dateFormat)
+          .subtract(0, "months")
+          .startOf("month")
+          .format(dateFormat);
+        const monthLastDate = moment(currentDate, dateFormat)
+          .subtract(0, "months")
+          .endOf("month")
+          .format(dateFormat);
+        const payload2 = {
+          orgId: jsonObj.orgId,
+          selectedEmpId: jsonObj.empId,
+          endDate: monthLastDate,
+          loggedInEmpId: jsonObj.empId,
+          empId: jsonObj.empId,
+          startDate: monthFirstDate,
+          levelSelected: null,
+          pageNo: 0,
+          size: 100,
+        };
+        const response = await client.post(URL.GET_TARGET_PARAMS(), payload2);
+        const json = await response.json();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+    
+  }, []);
+
+  useEffect(async () => {
+    setIsLoading(true);
+    try {
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        if (homeSelector.all_emp_parameters_data.length > 0) {
+          let myParams = [
+            ...homeSelector.all_emp_parameters_data.filter(
+              (item) => item.empId === jsonObj.empId
+            ),
+          ];
+          myParams[0] = {
+            ...myParams[0],
+            isOpenInner: false,
+            employeeTargetAchievements: [],
+            targetAchievements: homeSelector.totalParameters,
+            tempTargetAchievements: myParams[0]?.targetAchievements,
+          };
+          setAllParameters(myParams);
+        }
+      }
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+    }
+  }, [homeSelector.all_emp_parameters_data]);
 
   const addTargetData = async () => {
     if (selectedBranch === null) {
@@ -2072,7 +2139,7 @@ const MainParamScreen = ({ route, navigation }) => {
                           flexDirection: "row",
                         }}
                       >
-                        <RenderGrandTotal
+                        <RenderGrandTargetTotal
                           totalParams={homeSelector.totalParameters}
                           displayType={togglePercentage}
                           params={toggleParamsMetaData}
@@ -2849,6 +2916,79 @@ const MainParamScreen = ({ route, navigation }) => {
 
 export default MainParamScreen;
 
+export const RenderLevel1NameView = ({
+  level,
+  item,
+  branchName = "",
+  color,
+  titleClick,
+  disable = false,
+}) => {
+  return (
+    <View
+      style={{
+        width: 100,
+        justifyContent: "center",
+        textAlign: "center",
+        display: "flex",
+        flexDirection: "row",
+      }}
+    >
+      <View
+        style={{ width: 60, justifyContent: "center", alignItems: "center" }}
+      >
+        <TouchableOpacity
+          disabled={disable}
+          style={{
+            width: 30,
+            height: 30,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: color,
+            borderRadius: 20,
+            marginTop: 5,
+            marginBottom: 5,
+          }}
+          onPress={titleClick}
+        >
+          <Text
+            style={{
+              fontSize: 14,
+              color: "#fff",
+            }}
+          >
+            {item.empName.charAt(0)}
+          </Text>
+        </TouchableOpacity>
+        {level === 0 && !!branchName && (
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <IconButton
+              icon="map-marker"
+              style={{ padding: 0, margin: 0 }}
+              color={Colors.RED}
+              size={8}
+            />
+            <Text style={{ fontSize: 8 }} numberOfLines={2}>
+              {branchName}
+            </Text>
+          </View>
+        )}
+      </View>
+      <View
+        style={{
+          width: "25%",
+          justifyContent: "space-around",
+          textAlign: "center",
+          alignItems: "center",
+          flex: 1,
+        }}
+      >
+        {/* <Text style={{ fontSize: 10, fontWeight: "bold" }}>ACH</Text> */}
+        <Text style={{ fontSize: 10, fontWeight: "bold" }}>TGT</Text>
+      </View>
+    </View>
+  );
+};
 const styles = StyleSheet.create({
   container: {
     flex: 1,
