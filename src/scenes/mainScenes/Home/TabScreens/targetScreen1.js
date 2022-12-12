@@ -88,14 +88,8 @@ const TargetScreen = ({ route }) => {
   const [toggleParamsIndex, setToggleParamsIndex] = useState(0);
   const [toggleParamsMetaData, setToggleParamsMetaData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-<<<<<<< HEAD
-
-  const translation = useRef(new Animated.Value(0)).current
-  const [slideRight,setSlideRight] = useState()
-=======
   const translation = useRef(new Animated.Value(0)).current;
   const [slideRight, setSlideRight] = useState();
->>>>>>> dd67fb604ea03121699f584f5d0173ed564ea09a
   const scrollViewRef = useRef();
   const paramsMetadata = [
     // 'Enquiry', 'Test Drive', 'Home Visit', 'Booking', 'INVOICE', 'Finance', 'Insurance', 'Exchange', 'EXTENDEDWARRANTY', 'Accessories'
