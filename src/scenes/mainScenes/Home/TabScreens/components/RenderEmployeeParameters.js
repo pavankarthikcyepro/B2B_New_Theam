@@ -116,7 +116,10 @@ export const RenderEmployeeParameters = (parameter) => {
                   }}
                 >
                   <Text
-                    onPress={() => navigateToEmsScreen(param)}
+                    onPress={() =>
+                      selectedParameter?.achievment !== "0" &&
+                      navigateToEmsScreen(param)
+                    }
                     style={[
                       styles.totalText1,
                       {
