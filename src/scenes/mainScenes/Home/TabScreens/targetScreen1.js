@@ -88,8 +88,8 @@ const TargetScreen = ({ route }) => {
   const [toggleParamsIndex, setToggleParamsIndex] = useState(0);
   const [toggleParamsMetaData, setToggleParamsMetaData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const translation = useRef(new Animated.Value(0)).current
-  const [slideRight, setSlideRight] = useState()
+  const translation = useRef(new Animated.Value(0)).current;
+  const [slideRight, setSlideRight] = useState();
   const scrollViewRef = useRef();
   const paramsMetadata = [
     // 'Enquiry', 'Test Drive', 'Home Visit', 'Booking', 'INVOICE', 'Finance', 'Insurance', 'Exchange', 'EXTENDEDWARRANTY', 'Accessories'
@@ -246,7 +246,7 @@ const TargetScreen = ({ route }) => {
             Promise.allSettled([
               dispatch(getNewTargetParametersAllData(payload2)),
               dispatch(getTotalTargetParametersData(payload2)),
-            ]).then(() => { });
+            ]).then(() => {});
           }
         }
       );
@@ -262,7 +262,7 @@ const TargetScreen = ({ route }) => {
       .format(dateFormat);
     setDateDiff(
       (new Date(monthLastDate).getTime() - new Date(currentDate).getTime()) /
-      (1000 * 60 * 60 * 24)
+        (1000 * 60 * 60 * 24)
     );
 
     const isInsights = selector.isTeamPresent && !selector.isDSE;
@@ -384,7 +384,7 @@ const TargetScreen = ({ route }) => {
         .format(dateFormat);
       setDateDiff(
         (new Date(monthLastDate).getTime() - new Date(currentDate).getTime()) /
-        (1000 * 60 * 60 * 24)
+          (1000 * 60 * 60 * 24)
       );
     });
 
@@ -486,37 +486,45 @@ const TargetScreen = ({ route }) => {
               (item) => item.empId === jsonObj.empId
             ),
           ];
-          setMyParameters(myParams);
-          let tempParams = [
-            ...selector.all_emp_parameters_data.filter(
-              (item) => item.empId !== jsonObj.empId
-            ),
-          ];
-          for (let i = 0; i < tempParams.length; i++) {
-            tempParams[i] = {
-              ...tempParams[i],
-              isOpenInner: false,
-              employeeTargetAchievements: [],
-              tempTargetAchievements: tempParams[i]?.targetAchievements,
-            };
-            // tempParams[i]["isOpenInner"] = false;
-            // tempParams[i]["employeeTargetAchievements"] = [];
-            if (i === tempParams.length - 1) {
-              setAllParameters([...tempParams]);
-            }
-            let newIds = tempParams.map((emp) => emp.empId);
-            for (let k = 0; k < newIds.length; k++) {
-              const element = newIds[k].toString();
-              let tempPayload = getTotalPayload(employeeData, element);
-              const response = await client.post(
-                URL.GET_TOTAL_TARGET_PARAMS(),
-                tempPayload
-              );
-              const json = await response.json();
-              tempParams[k].targetAchievements = json;
-              setAllParameters([...tempParams]);
-            }
-          }
+          myParams[0] = {
+            ...myParams[0],
+            isOpenInner: false,
+            employeeTargetAchievements: [],
+            targetAchievements: selector.totalParameters,
+            tempTargetAchievements: myParams[0]?.targetAchievements,
+          };
+          setAllParameters(myParams);
+          // setMyParameters(myParams);
+          // let tempParams = [
+          //   ...selector.all_emp_parameters_data.filter(
+          //     (item) => item.empId !== jsonObj.empId
+          //   ),
+          // ];
+          // for (let i = 0; i < tempParams.length; i++) {
+          //   tempParams[i] = {
+          //     ...tempParams[i],
+          //     isOpenInner: false,
+          //     employeeTargetAchievements: [],
+          //     tempTargetAchievements: tempParams[i]?.targetAchievements,
+          //   };
+          //   // tempParams[i]["isOpenInner"] = false;
+          //   // tempParams[i]["employeeTargetAchievements"] = [];
+          //   if (i === tempParams.length - 1) {
+          //     setAllParameters([...tempParams]);
+          //   }
+          //   let newIds = tempParams.map((emp) => emp.empId);
+          //   for (let k = 0; k < newIds.length; k++) {
+          //     const element = newIds[k].toString();
+          //     let tempPayload = getTotalPayload(employeeData, element);
+          //     const response = await client.post(
+          //       URL.GET_TOTAL_TARGET_PARAMS(),
+          //       tempPayload
+          //     );
+          //     const json = await response.json();
+          //     tempParams[k].targetAchievements = json;
+          //     setAllParameters([...tempParams]);
+          //   }
+          // }
         }
       }
       setIsLoading(false);
@@ -526,7 +534,7 @@ const TargetScreen = ({ route }) => {
   }, [selector.all_emp_parameters_data]);
 
   useEffect(() => {
-    navigation.addListener('focus', () => {
+    navigation.addListener("focus", () => {
       setSelfInsightsData([]);
       setLostLeadsData(null);
       setAccData(null);
@@ -540,17 +548,17 @@ const TargetScreen = ({ route }) => {
       setBookingData(null);
       setRetailData(null);
       setSlideRight(0);
-    })
-    setSlideRight(0)
-  }, [navigation, selector.isTeam])
+    });
+    setSlideRight(0);
+  }, [navigation, selector.isTeam]);
 
   useEffect(() => {
     Animated.timing(translation, {
       toValue: slideRight,
       duration: 0,
       useNativeDriver: true,
-    }).start()
-  }, [slideRight])
+    }).start();
+  }, [slideRight]);
 
   const getColor = (ach, tar) => {
     if (ach > 0 && tar === 0) {
@@ -869,97 +877,6 @@ const TargetScreen = ({ route }) => {
                       style={{ height: Dimensions.get("screen").height / 2.2 }}
                       // style={{ height: selector.isMD ? "81%" : "80%" }}
                     >
-                      {myParameters.length > 0 &&
-                        myParameters.map((item, index) => {
-                          return (
-                            <View key={`${item.empId} ${index}`}>
-                              <View
-                                style={{
-                                  paddingHorizontal: 8,
-                                  display: "flex",
-                                  flexDirection: "row",
-                                  justifyContent: "space-between",
-                                  marginTop: 12,
-                                  width: Dimensions.get("screen").width - 28,
-                                }}
-                              >
-                                <Text
-                                  style={{
-                                    fontSize: 12,
-                                    fontWeight: "600",
-                                    textTransform: "capitalize",
-                                  }}
-                                >
-                                  {item.empName}
-                                </Text>
-                                <SourceModelView
-                                  onClick={() => {
-                                    navigation.navigate(
-                                      AppNavigator.HomeStackIdentifiers
-                                        .sourceModel,
-                                      {
-                                        empId: item.empId,
-                                        headerTitle: item.empName,
-                                        loggedInEmpId:
-                                          selector.login_employee_details.empId,
-                                        orgId:
-                                          selector.login_employee_details.orgId,
-                                        type: "TEAM",
-                                        moduleType: "home",
-                                      }
-                                    );
-                                  }}
-                                  style={{
-                                    transform: [{ translateX: translation }],
-                                  }}
-                                />
-                              </View>
-                              {/*Source/Model View END */}
-                              <View
-                                style={[
-                                  { flexDirection: "row" },
-                                  item.isOpenInner && {
-                                    borderRadius: 10,
-                                    borderWidth: 2,
-                                    borderColor: "#C62159",
-                                    marginHorizontal: 6,
-                                    overflow: "hidden",
-                                  },
-                                ]}
-                              >
-                                {/*RIGHT SIDE VIEW*/}
-                                <View
-                                  style={[
-                                    {
-                                      width: "100%",
-                                      minHeight: 40,
-                                      flexDirection: "column",
-                                      paddingHorizontal: 2,
-                                    },
-                                  ]}
-                                >
-                                  <View
-                                    style={{
-                                      width: "100%",
-                                      minHeight: 40,
-                                      flexDirection: "row",
-                                    }}
-                                  >
-                                    <RenderLevel1NameView
-                                      level={0}
-                                      item={item}
-                                      branchName={getBranchName(item.branchId)}
-                                      color={"#C62159"}
-                                      titleClick={() => {}}
-                                      disable={true}
-                                    />
-                                    {renderData(item, "#C62159")}
-                                  </View>
-                                </View>
-                              </View>
-                            </View>
-                          );
-                        })}
                       {allParameters.length > 0 &&
                         allParameters.map((item, index) => {
                           return (
@@ -1812,54 +1729,56 @@ const TargetScreen = ({ route }) => {
           ) : (
             // IF Self or insights
             <>
-              {!selector.isLoading && selfInsightsData.length > 0 &&
-              <View style={{ flexDirection: "row", marginVertical: 8 }}>
-                <View
-                  style={{
-                    width: "62%",
-                    justifyContent: "flex-start",
-                    alignItems: "center",
-                    height: 15,
-                    flexDirection: "row",
-                    paddingRight: 16,
-                  }}
-                >
+              {!selector.isLoading && selfInsightsData.length > 0 && (
+                <View style={{ flexDirection: "row", marginVertical: 8 }}>
                   <View
-                    style={[
-                      styles.percentageToggleView,
-                      { marginVertical: -8 },
-                    ]}
+                    style={{
+                      width: "62%",
+                      justifyContent: "flex-start",
+                      alignItems: "center",
+                      height: 15,
+                      flexDirection: "row",
+                      paddingRight: 16,
+                    }}
                   >
-                    <PercentageToggleControl
-                      toggleChange={(x) => setTogglePercentage(x)}
+                    <View
+                      style={[
+                        styles.percentageToggleView,
+                        { marginVertical: -8 },
+                      ]}
+                    >
+                      <PercentageToggleControl
+                        toggleChange={(x) => setTogglePercentage(x)}
+                      />
+                    </View>
+
+                    <SourceModelView
+                      onClick={() => {
+                        navigation.navigate(
+                          AppNavigator.HomeStackIdentifiers.sourceModel,
+                          {
+                            empId: selector.login_employee_details.empId,
+                            headerTitle: "Source/Model",
+                            loggedInEmpId:
+                              selector.login_employee_details.empId,
+                            type: selector.isDSE ? "SELF" : "INSIGHTS",
+                            moduleType: "home",
+                          }
+                        );
+                      }}
                     />
                   </View>
-
-                  <SourceModelView
-                    onClick={() => {
-                      navigation.navigate(
-                        AppNavigator.HomeStackIdentifiers.sourceModel,
-                        {
-                          empId: selector.login_employee_details.empId,
-                          headerTitle: "Source/Model",
-                          loggedInEmpId: selector.login_employee_details.empId,
-                          type: selector.isDSE ? "SELF" : "INSIGHTS",
-                          moduleType: "home",
-                        }
-                      );
-                    }}
-                  />
+                  <View style={{ width: "30%", flexDirection: "row" }}>
+                    <Text style={{ fontSize: 14, fontWeight: "600" }}>
+                      Balance
+                    </Text>
+                    <View style={{ marginRight: 15 }}></View>
+                    <Text style={{ fontSize: 14, fontWeight: "600" }}>
+                      AR/Day
+                    </Text>
+                  </View>
                 </View>
-                <View style={{ width: "30%", flexDirection: "row" }}>
-                  <Text style={{ fontSize: 14, fontWeight: "600" }}>
-                    Balance
-                  </Text>
-                  <View style={{ marginRight: 15 }}></View>
-                  <Text style={{ fontSize: 14, fontWeight: "600" }}>
-                    AR/Day
-                  </Text>
-                </View>
-              </View>}
+              )}
               {/* Header view end */}
               {!selector.isLoading && selfInsightsData.length > 0 && (
                 <ScrollView showsVerticalScrollIndicator={false}>
