@@ -139,9 +139,9 @@ const ParametersScreen = ({ route }) => {
   };
 
   useEffect(() => {
-     navigation.addListener("focus", () => {
-    setSelfInsightsData([]);
-     });
+    navigation.addListener("focus", () => {
+      setSelfInsightsData([]);
+    });
   }, [navigation]);
 
   useEffect(() => {
@@ -530,6 +530,11 @@ const ParametersScreen = ({ route }) => {
   const renderSelfInsightsView = (item, index) => {
     return (
       <Card
+        onPress={() =>
+          item?.achievment && item?.achievment > 0
+            ? navigateToEmsScreen(item)
+            : null
+        }
         style={[
           styles.paramCard,
           {
@@ -551,11 +556,6 @@ const ParametersScreen = ({ route }) => {
                     : "none",
               },
             ]}
-            onPress={() =>
-              item?.achievment && item?.achievment > 0
-                ? navigateToEmsScreen(item)
-                : null
-            }
           >
             {item?.achievment && item?.achievment > 0 ? item?.achievment : 0}
           </Text>
