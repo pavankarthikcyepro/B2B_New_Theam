@@ -461,7 +461,6 @@ const MainParamScreen = ({ route, navigation }) => {
         setLoggedInEmpDetails(jsonObj);
       }
       let data = [...paramsMetadata];
-      data = data.filter((x) => x.toggleIndex === 0);
       setToggleParamsMetaData([...data]);
     });
   }, [navigation]);
@@ -859,14 +858,45 @@ const MainParamScreen = ({ route, navigation }) => {
             targetAchievements: homeSelector.totalParameters,
             tempTargetAchievements: myParams[0]?.targetAchievements,
           };
-          setAllParameters(myParams);
+          // let payload = getEmployeePayloadTotal();
+          // const response = await client.post(
+          //   URL.GET_ALL_TARGET_MAPPING_SEARCH(),
+          //   payload
+          // );
+          // const json = await response.json();
+          // console.log("PARAMRRR", json);
+          // setAllParameters(myParams);
         }
       }
       setIsLoading(false);
     } catch (error) {
+      console.error(error);
       setIsLoading(false);
     }
   }, [homeSelector.all_emp_parameters_data]);
+
+   const getEmployeePayloadTotal = (employeeData, item) => {
+     const jsonObj = JSON.parse(employeeData);
+     const dateFormat = "YYYY-MM-DD";
+     const currentDate = moment().format(dateFormat);
+     const monthFirstDate = moment(currentDate, dateFormat)
+       .subtract(0, "months")
+       .startOf("month")
+       .format(dateFormat);
+     const monthLastDate = moment(currentDate, dateFormat)
+       .subtract(0, "months")
+       .endOf("month")
+       .format(dateFormat);
+     return {
+       loggedInEmpId: jsonObj.empId,
+       childEmpId: [942, 943],
+       pageNo: 1,
+       size: 500,
+       startDate: monthFirstDate,
+       endDate: monthLastDate,
+       branchNumber: [286, 287],
+     };
+   };
 
   const addTargetData = async () => {
     if (selectedBranch === null) {
@@ -1166,6 +1196,7 @@ const MainParamScreen = ({ route, navigation }) => {
       size: 100,
     };
   };
+
   const onEmployeeNameClick = async (item, index, lastParameter) => {
     try {
       let localData = [...allParameters];
