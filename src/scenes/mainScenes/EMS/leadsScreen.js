@@ -350,7 +350,7 @@ const LeadsScreen = ({ route, navigation }) => {
       empId: empId,
       status: leadType,
       offset: offSet,
-      limit: 500,
+      limit: 50000,
     };
   };
 
@@ -798,7 +798,7 @@ const LeadsScreen = ({ route, navigation }) => {
           : jsonObj.empId,
         status: "",
         offset: 0,
-        limit: 5000,
+        limit: 50000,
         leadStage: leadStages,
         leadStatus: defLeadStatus
           ? defLeadStatus

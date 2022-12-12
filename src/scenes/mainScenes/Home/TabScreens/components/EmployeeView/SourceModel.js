@@ -337,6 +337,7 @@ const SourceModel = ({ route, navigation }) => {
                       item={{ targetAchievements: data[x] }}
                       displayType={displayType}
                       moduleType={moduleType}
+                      sourceModelTotals={sourceModelTotals}
                     />
                   )}
                 </View>
