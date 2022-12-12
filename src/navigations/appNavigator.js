@@ -1036,95 +1036,86 @@ const BookingStackNavigator = ({ navigation }) => {
 
 const MainDrawerNavigator = createDrawerNavigator();
 
-const MainStackDrawerNavigator = ({ navigation }) => {
-  return (
-    <MainDrawerNavigator.Navigator
-      drawerStyle={{
-        width: drawerWidth,
-      }}
-      drawerContent={(props) => <SideMenuScreen {...props} />}
-      initialRouteName={DrawerStackIdentifiers.home}
-    >
-      <MainDrawerNavigator.Screen
-        name={DrawerStackIdentifiers.home}
-        component={TabNavigator}
-        initialParams={{ screen: DrawerStackIdentifiers.home }}
-      />
-      <MainDrawerNavigator.Screen
-        name={DrawerStackIdentifiers.upcomingDeliveries}
-        component={UpcomingDeliveriestStackNavigator}
-      />
-      <MainDrawerNavigator.Screen
-        name={DrawerStackIdentifiers.complaint}
-        component={ComplaintStackNavigator}
-      />
-      <MainDrawerNavigator.Screen
-        name={DrawerStackIdentifiers.settings}
-        component={SettingsStackNavigator}
-      />
-      <MainDrawerNavigator.Screen
-        name={DrawerStackIdentifiers.digitalPayment}
-        component={DigitalPaymentStackNavigator}
-      />
-      <MainDrawerNavigator.Screen
-        name={DrawerStackIdentifiers.helpdesk}
-        component={HelpDeskStackNavigator}
-      />
-      <MainDrawerNavigator.Screen
-        name={DrawerStackIdentifiers.monthlyTarget}
-        component={MonthlyTargetStackNavigator}
-        initialParams={{ screen: DrawerStackIdentifiers.monthlyTarget }}
-      />
-      <MainDrawerNavigator.Screen
-        name={DrawerStackIdentifiers.taskManagement}
-        component={TaskManagementStackNavigator}
-      />
-      <MainDrawerNavigator.Screen
-        name={DrawerStackIdentifiers.dropAnalysis}
-        component={DropAnalysisStackNavigator}
-      />
-      <MainDrawerNavigator.Screen
-        name={DrawerStackIdentifiers.liveLeads}
-        component={LiveLeadsStackNavigator}
-      />
-      <MainDrawerNavigator.Screen
-        name={DrawerStackIdentifiers.taskTransfer}
-        component={TaskTransferStackNavigator}
-      />
-
-      <MainDrawerNavigator.Screen
-        name={DrawerStackIdentifiers.eventManagement}
-        component={EventManagementStackNavigator}
-      />
-
-      <MainDrawerNavigator.Screen
-        name={DrawerStackIdentifiers.evtbrlReport}
-        component={TabNavigator}
-        initialParams={{ screen: "EVTBRL_REPORT" }}
-      />
-      <MainDrawerNavigator.Screen
-        name={DrawerStackIdentifiers.attendance}
-        component={AttendanceScreen}
-        options={{
-          title: "Attendance",
-          // headerLeft: () => <MenuIcon navigation={navigation} />,
-          headerShown: true,
-          headerStyle: screeOptionStyle.headerStyle,
-          headerTitleStyle: screeOptionStyle.headerTitleStyle,
-          headerTintColor: screeOptionStyle.headerTintColor,
-          headerBackTitleVisible: screeOptionStyle.headerBackTitleVisible,
+const MainStackDrawerNavigator = () => {
+    return (
+      <MainDrawerNavigator.Navigator
+        drawerStyle={{
+          width: drawerWidth,
         }}
-      />
-      {/* <MainDrawerNavigator.Screen
+        screenOptions={{
+          animationEnabled: false,
+        }}
+        drawerContent={(props) => <SideMenuScreen {...props} />}
+        initialRouteName={DrawerStackIdentifiers.home}
+      >
+        <MainDrawerNavigator.Screen
+          name={DrawerStackIdentifiers.home}
+          component={TabNavigator}
+          initialParams={{ screen: DrawerStackIdentifiers.home }}
+        />
+        <MainDrawerNavigator.Screen
+          name={DrawerStackIdentifiers.upcomingDeliveries}
+          component={UpcomingDeliveriestStackNavigator}
+        />
+        <MainDrawerNavigator.Screen
+          name={DrawerStackIdentifiers.complaint}
+          component={ComplaintStackNavigator}
+        />
+        <MainDrawerNavigator.Screen
+          name={DrawerStackIdentifiers.settings}
+          component={SettingsStackNavigator}
+        />
+        <MainDrawerNavigator.Screen
+          name={DrawerStackIdentifiers.digitalPayment}
+          component={DigitalPaymentStackNavigator}
+        />
+        <MainDrawerNavigator.Screen
+          name={DrawerStackIdentifiers.helpdesk}
+          component={HelpDeskStackNavigator}
+        />
+        <MainDrawerNavigator.Screen
+          name={DrawerStackIdentifiers.monthlyTarget}
+          component={MonthlyTargetStackNavigator}
+          initialParams={{ screen: DrawerStackIdentifiers.monthlyTarget }}
+        />
+        <MainDrawerNavigator.Screen
+          name={DrawerStackIdentifiers.taskManagement}
+          component={TaskManagementStackNavigator}
+        />
+        <MainDrawerNavigator.Screen
+          name={DrawerStackIdentifiers.dropAnalysis}
+          component={DropAnalysisStackNavigator}
+        />
+        <MainDrawerNavigator.Screen
+          name={DrawerStackIdentifiers.liveLeads}
+          component={LiveLeadsStackNavigator}
+        />
+        <MainDrawerNavigator.Screen
+          name={DrawerStackIdentifiers.taskTransfer}
+          component={TaskTransferStackNavigator}
+        />
+
+        <MainDrawerNavigator.Screen
+          name={DrawerStackIdentifiers.eventManagement}
+          component={EventManagementStackNavigator}
+        />
+
+        <MainDrawerNavigator.Screen
+          name={DrawerStackIdentifiers.evtbrlReport}
+          component={TabNavigator}
+          initialParams={{ screen: "EVTBRL_REPORT" }}
+        />
+
+        {/* <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.preBooking}
         component={PreBookingStackNavigator}
       /> */}
-      <MainDrawerNavigator.Screen
-        name={"Target Settings"}
-        component={TargetSettingsScreen}
-      />
-    </MainDrawerNavigator.Navigator>
-  );
+        <MainDrawerNavigator.Screen
+          name={"Target Settings"}
+          component={TargetSettingsScreen}
+        />
+      </MainDrawerNavigator.Navigator>
+    );
 };
 
 // const MainStackNavigator = createStackNavigator();

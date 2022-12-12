@@ -47,6 +47,17 @@ const itemWidth = baseItemWidth - 10;
 const series = [60, 40];
 const sliceColor = ["#5BBD66", Colors.RED];
 
+const globalDateFormat = "YYYY-MM-DD";
+const globalCurrentDate = moment().format(globalDateFormat);
+const globalStartDate = moment(globalCurrentDate, globalDateFormat)
+  .subtract(0, "months")
+  .startOf("month")
+  .format(globalDateFormat);
+const globalEndDate = moment(globalCurrentDate, globalDateFormat)
+  .subtract(0, "months")
+  .endOf("month")
+  .format(globalDateFormat);
+
 const NoDataFound = () => {
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -81,10 +92,19 @@ const ListComponent = ({ route, navigation }) => {
 
   useEffect(() => {
     if (isFocused) {
-      initialTask(selectedFilter);
+      if (route.params) {
+        if (homeSelector.isTeamPresent && !homeSelector.isDSE) {
+          setIndex(1);
+          changeTab(1);
+        }
+        initialTask(route.params.from ? "MONTH" : "TODAY");
+        setSelectedFilter("MONTH");
+        setIsOpenFilter(false);
+      } else {
+        initialTask(selectedFilter);
+      }
     }
   }, [isFocused]);
-
 
   const defaultData = [
     {
@@ -123,11 +143,11 @@ const ListComponent = ({ route, navigation }) => {
       myTaskList: [],
     },
   ];
- useEffect(() => {
-   setSelectedFilter("TODAY");
-   setIndex(0);
-   initialTask("TODAY");
- }, []);
+  useEffect(() => {
+    setSelectedFilter("TODAY");
+    setIndex(0);
+    initialTask("TODAY");
+  }, []);
 
   // useEffect(() => {
   //   navigation.addListener("focus", () => {
@@ -796,7 +816,6 @@ const ListComponent = ({ route, navigation }) => {
                 ignoreDateFilter: true,
               };
             }
-
             Promise.all([dispatch(getCompletedMyTasksListApi(payload))]).then(
               (res) => {
                 const todaysData = res[0].payload.completedData[0];
@@ -831,8 +850,8 @@ const ListComponent = ({ route, navigation }) => {
                 loggedInEmpId: jsonObj.empId,
                 onlyForEmp: false,
                 dataType: "completedData",
-                startDate: startDate,
-                endDate: endDate,
+                startDate: route.params.from ? globalStartDate : startDate,
+                endDate: route.params.from ? globalEndDate : endDate,
                 ignoreDateFilter: false,
               };
             } else {
@@ -844,85 +863,85 @@ const ListComponent = ({ route, navigation }) => {
                 ignoreDateFilter: true,
               };
             }
-            Promise.all([
-              dispatch(getCompletedTeamTasksListApi(payload)),
-            ]).then((res) => {
-              let tempArr = [];
-              let tempTaskName = "";
-              let allData = res[0].payload.completedData;
-              if (allData.length > 0) {
-                for (
-                  let nameIndex = 0;
-                  nameIndex < taskNames.length;
-                  nameIndex++
-                ) {
-                  let taskLists = [];
-                  for (let index = 0; index < allData.length; index++) {
-                    if (allData[index].tasksList.length > 0) {
-                      let userWiseTasks = allData[index].tasksList;
-                      for (
-                        let taskIndex = 0;
-                        taskIndex < userWiseTasks.length;
-                        taskIndex++
-                      ) {
-                        let trimName = userWiseTasks[taskIndex].taskName
-                          .toLowerCase()
-                          .trim();
-                        let finalTaskName = trimName.replace(/ /g, "");
-                        if (userWiseTasks[taskIndex].myTaskList.length > 0) {
-                          let allTasks = userWiseTasks[taskIndex].myTaskList;
-                          for (
-                            let innerIndex = 0;
-                            innerIndex < allTasks.length;
-                            innerIndex++
-                          ) {
-                            if (finalTaskName === taskNames[nameIndex]) {
-                              tempTaskName = userWiseTasks[taskIndex].taskName;
-                              taskLists.push(allTasks[innerIndex]);
+            Promise.all([dispatch(getCompletedTeamTasksListApi(payload))]).then(
+              (res) => {
+                let tempArr = [];
+                let tempTaskName = "";
+                let allData = res[0].payload.completedData;
+                if (allData.length > 0) {
+                  for (
+                    let nameIndex = 0;
+                    nameIndex < taskNames.length;
+                    nameIndex++
+                  ) {
+                    let taskLists = [];
+                    for (let index = 0; index < allData.length; index++) {
+                      if (allData[index].tasksList.length > 0) {
+                        let userWiseTasks = allData[index].tasksList;
+                        for (
+                          let taskIndex = 0;
+                          taskIndex < userWiseTasks.length;
+                          taskIndex++
+                        ) {
+                          let trimName = userWiseTasks[taskIndex].taskName
+                            .toLowerCase()
+                            .trim();
+                          let finalTaskName = trimName.replace(/ /g, "");
+                          if (userWiseTasks[taskIndex].myTaskList.length > 0) {
+                            let allTasks = userWiseTasks[taskIndex].myTaskList;
+                            for (
+                              let innerIndex = 0;
+                              innerIndex < allTasks.length;
+                              innerIndex++
+                            ) {
+                              if (finalTaskName === taskNames[nameIndex]) {
+                                tempTaskName =
+                                  userWiseTasks[taskIndex].taskName;
+                                taskLists.push(allTasks[innerIndex]);
+                              }
                             }
                           }
                         }
                       }
-                    }
-                    if (index === allData.length - 1) {
-                      if (taskLists.length > 0) {
-                        tempArr.push({
-                          taskCnt: taskLists.length,
-                          taskName: tempTaskName,
-                          myTaskList: taskLists,
-                        });
-                      }
-                    }
-                  }
-                  if (nameIndex === taskNames.length - 1) {
-                    // setMyTeamsData(tempArr);
-                    let tempData = [...defaultData];
-                    if (tempArr.length > 0) {
-                      for (let i = 0; i < tempArr.length; i++) {
-                        let index = -1;
-                        index = tempData.findIndex(
-                          (item) => item.taskName === tempArr[i].taskName
-                        );
-                        if (index !== -1) {
-                          tempData[index].taskCnt = tempArr[i].taskCnt;
-                          tempData[index].myTaskList = tempArr[i].myTaskList;
-                        }
-                        if (i === tempArr.length - 1) {
-                          setMyTeamsData(tempData);
+                      if (index === allData.length - 1) {
+                        if (taskLists.length > 0) {
+                          tempArr.push({
+                            taskCnt: taskLists.length,
+                            taskName: tempTaskName,
+                            myTaskList: taskLists,
+                          });
                         }
                       }
                     }
+                    if (nameIndex === taskNames.length - 1) {
+                      // setMyTeamsData(tempArr);
+                      let tempData = [...defaultData];
+                      if (tempArr.length > 0) {
+                        for (let i = 0; i < tempArr.length; i++) {
+                          let index = -1;
+                          index = tempData.findIndex(
+                            (item) => item.taskName === tempArr[i].taskName
+                          );
+                          if (index !== -1) {
+                            tempData[index].taskCnt = tempArr[i].taskCnt;
+                            tempData[index].myTaskList = tempArr[i].myTaskList;
+                          }
+                          if (i === tempArr.length - 1) {
+                            setMyTeamsData(tempData);
+                          }
+                        }
+                      }
+                    }
                   }
+                } else {
+                  setMyTeamsData([...defaultData]);
                 }
-              } else {
-                setMyTeamsData([...defaultData]);
               }
-            });
+            );
           }
         }
       }
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -1095,16 +1114,15 @@ const ListComponent = ({ route, navigation }) => {
 
     if (
       employeeData &&
-      (employeeData.hrmsRole === "Reception" || employeeData.hrmsRole === "Tele Caller")
+      (employeeData.hrmsRole === "Reception" ||
+        employeeData.hrmsRole === "Tele Caller")
     ) {
       newData = newData.filter((value) =>
         value.taskName === "Pre Enquiry Follow Up" ? true : false
       );
     } else {
       newData = newData.filter((value) =>
-        value.taskName === "Test Drive Approval"
-          ? false
-          : true
+        value.taskName === "Test Drive Approval" ? false : true
       );
     }
 
@@ -1500,7 +1518,7 @@ const ListComponent = ({ route, navigation }) => {
 
       {index === 1 && myTeamsData.length > 0 && (
         <FlatList
-          data={checkForTaskData(myTasksData)}
+          data={checkForTaskData(myTeamsData)}
           style={{ flex: 1 }}
           numColumns={3}
           extraData={myTeamsData}

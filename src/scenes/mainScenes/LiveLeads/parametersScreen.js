@@ -139,6 +139,12 @@ const ParametersScreen = ({ route }) => {
   };
 
   useEffect(() => {
+    navigation.addListener("focus", () => {
+      setSelfInsightsData([]);
+    });
+  }, [navigation]);
+
+  useEffect(() => {
     const dateFormat = "YYYY-MM-DD";
     const currentDate = moment().format(dateFormat);
     const monthLastDate = moment(currentDate, dateFormat)
@@ -382,7 +388,7 @@ const ParametersScreen = ({ route }) => {
       .format(dateFormat);
     return {
       empId: item,
-      endDate: currentDate,
+      endDate: monthLastDate,
       levelSelected: null,
       loggedInEmpId: item,
       orgId: jsonObj.orgId,
@@ -507,6 +513,7 @@ const ParametersScreen = ({ route }) => {
         navigation.navigate("LEADS", {
           param: paramName === "INVOICE" ? "Retail" : paramName,
           moduleType: "live-leads",
+          employeeDetail: "",
         });
       }, 1000);
     } else if (isContact) {
@@ -514,6 +521,7 @@ const ParametersScreen = ({ route }) => {
       setTimeout(() => {
         navigation.navigate(EmsTopTabNavigatorIdentifiers.preEnquiry, {
           moduleType: "live-leads",
+          employeeDetail: "",
         });
       }, 100);
     }
@@ -522,6 +530,11 @@ const ParametersScreen = ({ route }) => {
   const renderSelfInsightsView = (item, index) => {
     return (
       <Card
+        onPress={() =>
+          item?.achievment && item?.achievment > 0
+            ? navigateToEmsScreen(item)
+            : null
+        }
         style={[
           styles.paramCard,
           {
@@ -543,11 +556,6 @@ const ParametersScreen = ({ route }) => {
                     : "none",
               },
             ]}
-            onPress={() =>
-              item?.achievment && item?.achievment > 0
-                ? navigateToEmsScreen(item)
-                : null
-            }
           >
             {item?.achievment && item?.achievment > 0 ? item?.achievment : 0}
           </Text>
@@ -1244,7 +1252,8 @@ const ParametersScreen = ({ route }) => {
                                                               innerIndex1
                                                             ].employeeTargetAchievements[
                                                               innerIndex2
-                                                            ].isOpenInner = !current;
+                                                            ].isOpenInner =
+                                                              !current;
                                                           }
                                                         }
 
@@ -2829,6 +2838,7 @@ const ParametersScreen = ({ route }) => {
                       loggedInEmpId: selector.login_employee_details.empId,
                       type: selector.isDSE ? "SELF" : "INSIGHTS",
                       moduleType: "live-leads",
+                      orgId: selector.login_employee_details.orgId,
                     }
                   );
                 }}
@@ -2848,15 +2858,17 @@ const ParametersScreen = ({ route }) => {
 
             <View>
               {/*<RenderSelfInsights data={selfInsightsData} type={togglePercentage} navigation={navigation} moduleType={'live-leads'}/>*/}
-              {selfInsightsData && selfInsightsData.length > 0 && (
-                <FlatList
-                  data={selfInsightsData}
-                  keyExtractor={(item, index) => index.toString()}
-                  renderItem={({ item, index }) =>
-                    renderSelfInsightsView(item, index)
-                  }
-                />
-              )}
+              {selfInsightsData &&
+                selfInsightsData.length > 0 &&
+                !selector.isLoading && (
+                  <FlatList
+                    data={selfInsightsData}
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={({ item, index }) =>
+                      renderSelfInsightsView(item, index)
+                    }
+                  />
+                )}
             </View>
           </>
         )}

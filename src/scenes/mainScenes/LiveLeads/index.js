@@ -467,7 +467,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
             //dispatch(getTargetParametersAllData(payload1)),
             dispatch(getTotalTargetParametersData(payload2)), // grand total
             dispatch(getNewTargetParametersAllData(payload2)), // TEAM
-            dispatch(isTeamPresentLocal ? getTargetParametersEmpDataInsights(payload1) : getTargetParametersEmpData(payload1))
+            // dispatch(isTeamPresentLocal ? getTargetParametersEmpDataInsights(payload1) : getTargetParametersEmpData(payload1))
         ]).then(() => {}).catch(y => {});
     }
 

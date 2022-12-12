@@ -115,71 +115,108 @@ export default function leaderBoardScreen() {
         }, 2000);
     }, []);
 
-    const renderItemLeaderTopList = (item, extraIndex) => {
+    const renderTableTopRow = () => {
         return (
-            <View style={{ backgroundColor: "white", padding: 10, width: '100%' }}>
-                {extraIndex == 0 ? <View style={{ flexDirection: 'row', width: '100%', marginBottom: 5 }}>
-                    <Text style={{ color: '#F59D44', textAlign: 'center', flex: 1  }}>Rank</Text>
-                    <Text style={{ color: '#D81F9F', textAlign: 'center', flex: 1 }}>Employee Name</Text>
-                    <Text style={{ color: '#983AAA', textAlign: 'center', flex: 1 }}>Branch</Text>
-                    <Text style={{ color: '#328B91', textAlign: 'center', flex: 1 }}>Ret T/A%</Text>
-                    <Text style={{ color: '#E54875', textAlign: 'center', flex: 1 }}>Retails</Text>
-                </View> : null}
-                <View style={{ flexDirection: 'row', width: '100%' }}>
-                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.rank}</Text>
-                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.empName}</Text>
-                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.branchCode}</Text>
-                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.achivementPerc}</Text>
-                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.targetAchivements}</Text>
-                </View>
-            </View>
+          <View style={styles.tableTitleRow}>
+            <Text style={styles.tableTitleText}>Rank</Text>
+            <Text style={styles.tableTitleText}>Name</Text>
+            <Text style={styles.tableTitleText}>Branch</Text>
+            <Text style={styles.tableTitleText}>Ret T/A%</Text>
+            <Text style={styles.tableTitleText}>Retail</Text>
+          </View>
         );
     };
 
-    const renderItemLeaderBottomList = (item, extraIndex) => {
+    const renderViewAll = (type) => {
         return (
-            <View style={{ backgroundColor: "white", padding: 10, width: '100%' }}>
-                {extraIndex == 0 ? <View style={{ flexDirection: 'row', width: '100%', marginBottom: 5 }}>
-                    <Text style={{ color: '#F59D44', textAlign: 'center', flex: 1 }}>Rank</Text>
-                    <Text style={{ color: '#D81F9F', textAlign: 'center', flex: 1 }}>Employee Name</Text>
-                    <Text style={{ color: '#983AAA', textAlign: 'center', flex: 1 }}>Branch</Text>
-                    <Text style={{ color: '#328B91', textAlign: 'center', flex: 1 }}>Ret T/A%</Text>
-                    <Text style={{ color: '#E54875', textAlign: 'center', flex: 1 }}>Retails</Text>
-                </View> : null}
-                <View style={{ flexDirection: 'row', width: '100%' }}>
-                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.rank}</Text>
-                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.empName}</Text>
-                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.branchCode}</Text>
-                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.achivementPerc}</Text>
-                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.targetAchivements}</Text>
-                </View>
-            </View>
+          <TouchableOpacity
+            style={styles.viewAllContainer}
+            onPress={() => {
+              if (type == "top") {
+                setShowTop5View(!showTop5View);
+              } else {
+                setShowBottom5View(!showBottom5View);
+              }
+            }}
+          >
+            <Text style={styles.viewAllText}>
+              {type == "top"
+                ? showTop5View
+                  ? "View Less"
+                  : "View All"
+                : showBottom5View
+                ? "View Less"
+                : "View All"}
+            </Text>
+          </TouchableOpacity>
         );
+    }
+
+    const renderListItem = (item, extraIndex) => {
+      return (
+        <View style={styles.tableSubRow}>
+          <View style={styles.itemRow}>
+            <Text style={styles.itemRowText}>{item.rank}</Text>
+            <Text style={styles.itemRowText}>{getEmpName(item.empName)}</Text>
+            <Text style={styles.itemRowText}>{getBranchName(item.branchCode)}</Text>
+            <Text style={styles.itemRowText}>{item.achivementPerc}</Text>
+            <Text style={styles.itemRowText}>{item.targetAchivements}</Text>
+          </View>
+        </View>
+      );
+    };
+
+    const getEmpName = (value) => {
+      let name = value;
+      name = name.split(" ");
+      return name[0];
+    };
+    
+    const getBranchName = (value) => {
+      let branch = value;
+      branch = branch.split("-");
+      return branch[0].trim();
     };
 
     return (
-        <ScrollView showsVerticalScrollIndicator={false}>
-            <View style={styles.rankBox}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', alignSelf: 'center' }}>
-                    <View style={styles.rankIconBox}>
-                        <Image style={styles.rankIcon} source={require("../../../assets/images/perform_rank.png")} />
-                    </View>
-                    <View style={{
-                        marginTop: 5,
-                        marginLeft: 3
-                    }}>
-                        <Text style={styles.rankHeadingText}>Dealer Ranking</Text>
-                        {groupDealerRank !== null &&
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <Text style={styles.rankText}>{groupDealerRank}</Text>
-                                <Text style={{ ...styles.rankText, color: Colors.GRAY }}>/</Text>
-                                <Text style={{ ...styles.rankText, color: Colors.GRAY }}>{groupDealerCount}</Text>
-                            </View>
-                        }
-                    </View>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={styles.rankBox}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              alignSelf: "center",
+            }}
+          >
+            <View style={styles.rankIconBox}>
+              <Image
+                style={styles.rankIcon}
+                source={require("../../../assets/images/perform_rank.png")}
+              />
+            </View>
+            <View
+              style={{
+                marginTop: 5,
+                marginLeft: 3,
+              }}
+            >
+              <Text style={styles.rankHeadingText}>Dealer Ranking</Text>
+              {!selector.isRankHide && groupDealerRank !== null && (
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <Text style={styles.rankText}>{groupDealerRank}</Text>
+                  <Text style={{ ...styles.rankText, color: Colors.GRAY }}>
+                    /
+                  </Text>
+                  <Text style={{ ...styles.rankText, color: Colors.GRAY }}>
+                    {groupDealerCount}
+                  </Text>
                 </View>
+              )}
+            </View>
+          </View>
 
-               {/*} <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 20, justifyContent: 'space-around', width: '100%', padding: 10 }}>
+          {/*} <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 20, justifyContent: 'space-around', width: '100%', padding: 10 }}>
                     <View style={styles.dropWrap} pointerEvents="none">
                         <Dropdown
                             style={[styles.dropdownContainer,]}
@@ -223,177 +260,208 @@ export default function leaderBoardScreen() {
                     </View>
                 </View>
             */}
-                {top5RankList.length && bottom5RankList.length ? null : <LoaderComponent
-                    visible={selector.isLoading}
-                    onRequestClose={() => { }}
-                />}
+          {top5RankList.length && bottom5RankList.length ? null : (
+            <LoaderComponent
+              visible={selector.isLoading}
+              onRequestClose={() => {}}
+            />
+          )}
 
-                <View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', padding: 10 }}>
-                        <View style={{
-                            transform: [{ rotate: '45deg' }], width: 35, height: 35, borderRadius: 5, backgroundColor: '#BCE0BE', alignItems: 'center', justifyContent: 'center'
-                        }}>
-                            <View style={{ transform: [{ rotate: '315deg' }] }}>
-                                <ArrowIcon name="long-arrow-up" color={"#447E56"} size={20} />
-                            </View>
-                        </View>
-                        <Text style={{ marginLeft: 10, fontSize: 16, fontWeight: '400' }}>Top 5 Ranks</Text>
-                    </View>
-
-                    <View style={{
-                        height: showTop5View ? 480 : 280,
-                        width: '95%',
-                        backgroundColor: 'white',
-                        shadowColor: "#000",
-                        shadowOffset: {
-                            width: 0,
-                            height: 2,
-                        },
-                        shadowOpacity: 0.3,
-                        shadowRadius: 1,
-                        borderStyle: "solid",
-                        borderWidth: 1,
-                        borderColor: "#d2d2d2",
-                        borderRadius: 7,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        margin: 5,
-                        alignSelf: 'center'
-                    }}>
-                        <View style={{
-                            width: '98%', height: showTop5View ? 430 : 230
-                        }}>
-                            <FlatList
-                                data={showTop5View ? topRankList : top5RankList}
-                                nestedScrollEnabled={true}
-                                keyExtractor={(item, index) => index.toString()}
-                                renderItem={({ item, index }) => renderItemLeaderTopList(item, index)}
-                                showsVerticalScrollIndicator={false}
-                                maxToRenderPerBatch={5}
-                            />
-                        </View>
-
-                        <TouchableOpacity style={{ alignSelf: 'flex-end' }} onPress={() => { setShowTop5View(!showTop5View); }}>
-                            <Text style={{ color: 'red', alignSelf: 'flex-end', margin: 12 }}>{showTop5View ? 'View Less' : 'View All'}</Text>
-                        </TouchableOpacity>
-                    </View>
+          <View>
+            <View style={styles.titleContainer}>
+              <View style={styles.titleIconContainer}>
+                <View style={styles.topIconView}>
+                  <ArrowIcon name="long-arrow-up" color={"#447E56"} size={20} />
                 </View>
-
-                <View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', padding: 10 }}>
-                        <View style={{
-                            transform: [{ rotate: '45deg' }], width: 38, height: 38, borderRadius: 5, backgroundColor: '#FC827D', alignItems: 'center', justifyContent: 'center'
-                        }}>
-                            <View style={{ transform: [{ rotate: '315deg' }] }}>
-                                <ArrowIcon name="long-arrow-down" color={"#E40603"} size={20} />
-                            </View>
-                        </View>
-                        <Text style={{ marginLeft: 10, fontSize: 16, fontWeight: '400' }}>Low 5 Ranks</Text>
-                    </View>
-
-                    <View style={{
-                        height: showBottom5View ? 480 : 280,
-                        width: '95%',
-                        backgroundColor: 'white',
-                        shadowColor: "#000",
-                        shadowOffset: {
-                            width: 0,
-                            height: 2,
-                        },
-                        shadowOpacity: 0.3,
-                        shadowRadius: 1,
-                        borderStyle: "solid",
-                        borderWidth: 1,
-                        borderColor: "#d2d2d2",
-                        borderRadius: 7,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        margin: 5,
-                        alignSelf: 'center'
-                    }}>
-                        <View style={{ width: '98%', height: showBottom5View ? 430 : 230 }}>
-                            <FlatList
-                                data={showBottom5View ? reversebottomRankList : bottom5RankList}
-                                nestedScrollEnabled={true}
-                                keyExtractor={(item, index) => index.toString()}
-                                renderItem={({ item, index }) => renderItemLeaderBottomList(item, index)}
-                                showsVerticalScrollIndicator={false}
-                            />
-                        </View>
-
-                        <TouchableOpacity style={{ alignSelf: 'flex-end' }} onPress={() => { setShowBottom5View(!showBottom5View); }}>
-                            <Text style={{ color: 'red', alignSelf: 'flex-end', margin: 12 }}>{showBottom5View ? 'View Less' : 'View All'}</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
+              </View>
+              <Text style={{ marginLeft: 10, fontSize: 16, fontWeight: "400" }}>
+                Top 5 Ranks
+              </Text>
             </View>
-        </ScrollView>
-    )
+
+            <View
+              style={[
+                styles.tableContainer,
+                { height: showTop5View ? 480 : 280 },
+              ]}
+            >
+              {renderTableTopRow()}
+              <FlatList
+                data={showTop5View ? topRankList : top5RankList}
+                nestedScrollEnabled={true}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item, index }) => renderListItem(item, index)}
+                showsVerticalScrollIndicator={false}
+                maxToRenderPerBatch={5}
+              />
+              {renderViewAll("top")}
+            </View>
+          </View>
+
+          <View>
+            <View style={styles.titleContainer}>
+              <View
+                style={[
+                  styles.titleIconContainer,
+                  { backgroundColor: "#FC827D" },
+                ]}
+              >
+                <View style={styles.topIconView}>
+                  <ArrowIcon
+                    name="long-arrow-down"
+                    color={"#E40603"}
+                    size={20}
+                  />
+                </View>
+              </View>
+              <Text style={{ marginLeft: 10, fontSize: 16, fontWeight: "400" }}>
+                Low 5 Ranks
+              </Text>
+            </View>
+
+            <View
+              style={[
+                styles.tableContainer,
+                { height: showBottom5View ? 480 : 280 },
+              ]}
+            >
+              {renderTableTopRow()}
+              <FlatList
+                data={showBottom5View ? reversebottomRankList : bottom5RankList}
+                nestedScrollEnabled={true}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item, index }) => renderListItem(item, index)}
+                showsVerticalScrollIndicator={false}
+                maxToRenderPerBatch={5}
+              />
+              {renderViewAll("bottom")}
+            </View>
+          </View>
+        </View>
+      </ScrollView>
+    );
 }
 
 const styles = StyleSheet.create({
-    rankIconBox: {
-        height: 50,
-        width: 50,
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.3,
-        shadowRadius: 1,
-        borderStyle: "solid",
-        borderWidth: 1,
-        borderColor: "#d2d2d2",
-        borderRadius: 7,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 5
+  titleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 10,
+    marginVertical: 10
+  },
+  titleIconContainer: {
+    transform: [{ rotate: "45deg" }],
+    width: 35,
+    height: 35,
+    borderRadius: 5,
+    backgroundColor: "#BCE0BE",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  topIconView:{ transform: [{ rotate: "315deg" }] },
+
+  // table
+  tableContainer: {
+    width: "95%",
+    borderWidth: 1,
+    borderColor: "#d2d2d2",
+    borderRadius: 7,
+    overflow: "hidden",
+    alignSelf: "center",
+    backgroundColor: Colors.WHITE,
+  },
+  tableTitleRow: {
+    flexDirection: "row",
+    width: "100%",
+    paddingVertical: 10,
+    borderBottomWidth: 0.5,
+    borderColor: Colors.BLACK,
+    backgroundColor: Colors.WHITE,
+  },
+  tableTitleText: {
+    fontWeight: "600",
+    flex: 1,
+    textAlign: "center",
+  },
+  tableSubRow: {
+    backgroundColor: Colors.WHITE,
+    padding: 10,
+    borderBottomWidth: 3,
+    borderColor: "#F2F2F2",
+    marginBottom: 3,
+  },
+  itemRow: { flexDirection: "row", width: "100%" },
+  itemRowText: { color: "black", textAlign: "center", flex: 1 },
+  viewAllContainer: { alignSelf: "flex-end" },
+  viewAllText: {
+    color: "red",
+    alignSelf: "flex-end",
+    margin: 12,
+    fontWeight: "600",
+  },
+
+  rankIconBox: {
+    height: 50,
+    width: 50,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
     },
-    rankHeadingText: {
-        fontSize: 17,
-        fontWeight: "500"
-    },
-    rankText: {
-        fontSize: 18,
-        fontWeight: "700"
-    },
-    rankBox: {
-        paddingTop: 5,
-        paddingBottom: 10
-    },
-    rankIcon: { width: 35, height: 35 },
-    dropdownContainer: {
-        backgroundColor: 'white',
-        padding: 16,
-        borderWidth: 1,
-        borderColor: '#000000',
-        width: '100%',
-        height: 50,
-        borderRadius: 5
-    },
-    dropdown: {
-        height: 50,
-        borderColor: 'gray',
-        borderWidth: 0.5,
-        borderRadius: 8,
-        paddingHorizontal: 8,
-    },
-    placeholderStyle: {
-        fontSize: 16,
-    },
-    selectedTextStyle: {
-        fontSize: 16,
-        color: '#000',
-        fontWeight: '400'
-    },
-    iconStyle: {
-        width: 20,
-        height: 20,
-    },
-    inputSearchStyle: {
-        height: 40,
-        fontSize: 16,
-    },
-    dropWrap: { position: 'relative', marginBottom: 20, width: '45%' },
+    shadowOpacity: 0.3,
+    shadowRadius: 1,
+    borderStyle: "solid",
+    borderWidth: 1,
+    borderColor: "#d2d2d2",
+    borderRadius: 7,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 5,
+  },
+  rankHeadingText: {
+    fontSize: 17,
+    fontWeight: "500",
+  },
+  rankText: {
+    fontSize: 18,
+    fontWeight: "700",
+  },
+  rankBox: {
+    paddingTop: 5,
+    paddingBottom: 10,
+  },
+  rankIcon: { width: 35, height: 35 },
+  dropdownContainer: {
+    backgroundColor: "white",
+    padding: 16,
+    borderWidth: 1,
+    borderColor: "#000000",
+    width: "100%",
+    height: 50,
+    borderRadius: 5,
+  },
+  dropdown: {
+    height: 50,
+    borderColor: "gray",
+    borderWidth: 0.5,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+  },
+  placeholderStyle: {
+    fontSize: 16,
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+    color: "#000",
+    fontWeight: "400",
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
+  },
+  dropWrap: { position: "relative", marginBottom: 20, width: "45%" },
 });
