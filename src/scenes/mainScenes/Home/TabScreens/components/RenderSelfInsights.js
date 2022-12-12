@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Pressable, Text, TouchableOpacity, View } from "react-native";
-import { IconButton, ProgressBar } from "react-native-paper";
-import { Colors } from "../../../../../styles";
-import moment from "moment/moment";
-import { achievementPercentage } from "../../../../../utils/helperFunctions";
 import { AppNavigator } from "../../../../../navigations";
+import {IconButton, ProgressBar} from "react-native-paper";
+import {Colors} from "../../../../../styles";
+import moment from "moment/moment";
 import TextTicker from "react-native-text-ticker";
+import { achievementPercentage } from "../../../../../utils/helperFunctions";
 
 export const RenderSelfInsights = (args) => {
   const color = [
@@ -30,7 +30,11 @@ export const RenderSelfInsights = (args) => {
     (new Date(monthLastDate).getTime() - new Date(currentDate).getTime()) /
     (1000 * 60 * 60 * 24);
   const { data, type, navigation } = args;
+
   const enq = data && data.find((x) => x && x.paramName === "Enquiry");
+  const ret = data && data.find((x) => x && x.paramName == "INVOICE");
+  const acc = data && data.find((x) => x && x.paramName == "Accessories");
+
   const navigableParams = [
     "Enquiry",
     "Booking",
@@ -147,12 +151,14 @@ export const RenderSelfInsights = (args) => {
                 >
                   {type === 0
                     ? item.achievment
-                    : achievementPercentage(
+                    : `${achievementPercentage(
                         item.achievment,
                         item.target,
                         item.paramName,
-                        enq.achievment
-                      )}
+                        enq,
+                        ret,
+                        acc
+                      )}%`}
                 </Text>
               </TextTicker>
             </View>
