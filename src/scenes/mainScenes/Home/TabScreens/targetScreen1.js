@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   Animated,
   Dimensions,
@@ -900,6 +900,16 @@ const TargetScreen = ({ route }) => {
                                 }}
                               >
                                 <Text
+                                  onPress={() => {
+                                    navigation.navigate(
+                                      AppNavigator.HomeStackIdentifiers
+                                        .location,
+                                      {
+                                        empId: item.empId,
+                                        orgId: item.orgId,
+                                      }
+                                    );
+                                  }}
                                   style={{
                                     fontSize: 12,
                                     fontWeight: "600",
@@ -974,6 +984,7 @@ const TargetScreen = ({ route }) => {
                                           localData
                                         );
                                       }}
+                                      navigation={navigation}
                                     />
                                     {renderData(item, "#C62159")}
                                   </View>
@@ -1028,6 +1039,19 @@ const TargetScreen = ({ route }) => {
                                                   }}
                                                 >
                                                   <Text
+                                                    onPress={() => {
+                                                      navigation.navigate(
+                                                        AppNavigator
+                                                          .HomeStackIdentifiers
+                                                          .location,
+                                                        {
+                                                          empId:
+                                                            innerItem1.empId,
+                                                          orgId:
+                                                            innerItem1.orgId,
+                                                        }
+                                                      );
+                                                    }}
                                                     style={{
                                                       fontSize: 10,
                                                       fontWeight: "500",
@@ -1084,6 +1108,7 @@ const TargetScreen = ({ route }) => {
                                                         localParameter
                                                       );
                                                     }}
+                                                    navigation={navigation}
                                                   />
                                                   {renderData(
                                                     innerItem1,
@@ -1138,6 +1163,19 @@ const TargetScreen = ({ route }) => {
                                                           }}
                                                         >
                                                           <Text
+                                                            onPress={() => {
+                                                              navigation.navigate(
+                                                                AppNavigator
+                                                                  .HomeStackIdentifiers
+                                                                  .location,
+                                                                {
+                                                                  empId:
+                                                                    innerItem2.empId,
+                                                                  orgId:
+                                                                    innerItem2.orgId,
+                                                                }
+                                                              );
+                                                            }}
                                                             style={{
                                                               fontSize: 10,
                                                               fontWeight: "500",
@@ -1199,6 +1237,9 @@ const TargetScreen = ({ route }) => {
                                                                 localParameter
                                                               );
                                                             }}
+                                                            navigation={
+                                                              navigation
+                                                            }
                                                           />
                                                           {renderData(
                                                             innerItem2,
@@ -1251,6 +1292,19 @@ const TargetScreen = ({ route }) => {
                                                                     }}
                                                                   >
                                                                     <Text
+                                                                      onPress={() => {
+                                                                        navigation.navigate(
+                                                                          AppNavigator
+                                                                            .HomeStackIdentifiers
+                                                                            .location,
+                                                                          {
+                                                                            empId:
+                                                                              innerItem3.empId,
+                                                                            orgId:
+                                                                              innerItem3.orgId,
+                                                                          }
+                                                                        );
+                                                                      }}
                                                                       style={{
                                                                         fontSize: 10,
                                                                         fontWeight:
@@ -1325,6 +1379,9 @@ const TargetScreen = ({ route }) => {
                                                                           localParameter
                                                                         );
                                                                       }}
+                                                                      navigation={
+                                                                        navigation
+                                                                      }
                                                                     />
 
                                                                     {renderData(
@@ -1407,6 +1464,9 @@ const TargetScreen = ({ route }) => {
                                                                                     localParameter
                                                                                   );
                                                                                 }}
+                                                                                navigation={
+                                                                                  navigation
+                                                                                }
                                                                               />
                                                                               {renderData(
                                                                                 innerItem4,
@@ -1491,6 +1551,9 @@ const TargetScreen = ({ route }) => {
                                                                                               localParameter
                                                                                             );
                                                                                           }}
+                                                                                          navigation={
+                                                                                            navigation
+                                                                                          }
                                                                                         />
                                                                                         {renderData(
                                                                                           innerItem5,
@@ -1578,6 +1641,9 @@ const TargetScreen = ({ route }) => {
                                                                                                         localParameter
                                                                                                       );
                                                                                                     }}
+                                                                                                    navigation={
+                                                                                                      navigation
+                                                                                                    }
                                                                                                   />
                                                                                                   {renderData(
                                                                                                     innerItem6,
@@ -2297,6 +2363,7 @@ export const RenderLevel1NameView = ({
   branchName = "",
   color,
   titleClick,
+  navigation,
   disable = false,
 }) => {
   return (
@@ -2336,7 +2403,15 @@ export const RenderLevel1NameView = ({
           </Text>
         </TouchableOpacity>
         {level === 0 && !!branchName && (
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate(AppNavigator.HomeStackIdentifiers.location, {
+                empId: item.empId,
+                orgId: item.orgId,
+              });
+            }}
+            style={{ flexDirection: "row", alignItems: "center" }}
+          >
             <IconButton
               icon="map-marker"
               style={{ padding: 0, margin: 0 }}
@@ -2346,7 +2421,7 @@ export const RenderLevel1NameView = ({
             <Text style={{ fontSize: 8 }} numberOfLines={2}>
               {branchName}
             </Text>
-          </View>
+          </TouchableOpacity>
         )}
       </View>
       <View

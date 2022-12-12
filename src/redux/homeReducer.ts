@@ -662,6 +662,7 @@ export const homeSlice = createSlice({
     designationList: [],
     deptList: [],
     sourceModelData: [],
+    isModalVisible: false,
     bannerList: [],
   },
   reducers: {
@@ -1010,10 +1011,12 @@ export const homeSlice = createSlice({
           state.self_target_parameters_data = empData;
         }
         state.isLoading = false;
+        state.isModalVisible = true;
       })
       .addCase(getTargetParametersEmpData.rejected, (state, action) => {
         //state.self_target_parameters_data = [];
         state.isLoading = false;
+        state.isModalVisible = false;
       })
       .addCase(getTargetParametersEmpDataInsights.pending, (state, action) => {
         //state.self_target_parameters_data = [];
@@ -1027,11 +1030,13 @@ export const homeSlice = createSlice({
             AsyncStore.storeData("TARGET_EMP", JSON.stringify(action.payload));
           }
           state.isLoading = false;
+          state.isModalVisible = true;
         }
       )
       .addCase(getTargetParametersEmpDataInsights.rejected, (state, action) => {
         //state.self_target_parameters_data = [];
         state.isLoading = false;
+        state.isModalVisible = false;
       })
 
       .addCase(getNewTargetParametersAllData.pending, (state, action) => {
@@ -1078,6 +1083,7 @@ export const homeSlice = createSlice({
       .addCase(getEmployeesList.pending, (state, action) => {
         // state.employee_list = [];
         state.isLoading = true;
+        state.isModalVisible = false;
       })
       .addCase(getEmployeesList.fulfilled, (state, action) => {
         if (action.payload) {

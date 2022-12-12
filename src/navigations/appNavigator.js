@@ -81,6 +81,8 @@ import SourceModel from "../scenes/mainScenes/Home/TabScreens/components/Employe
 import LiveLeadsScreen from "../scenes/mainScenes/LiveLeads";
 import { EMSTopTabNavigatorTwo } from "./emsTopTabNavigator";
 import { AppNavigator } from ".";
+import MapScreen from "../scenes/mainScenes/Map";
+import AttendanceScreen from "../scenes/mainScenes/Attendance";
 import AddNewEnquiryScreen from "../scenes/mainScenes/EMS/addNewEnquiry";
 
 const drawerWidth = 300;
@@ -96,7 +98,7 @@ const screeOptionStyle = {
     headerBackTitleVisible: false,
 };
 
-const MenuIcon = ({ navigation }) => {
+export const MenuIcon = ({ navigation }) => {
 
     return (
         <IconButton
@@ -230,6 +232,7 @@ export const DrawerStackIdentifiers = {
     evtbrlReport: "EVTBRL_REPORT",
     dropAnalysis:'DROP_ANALYSIS',
     liveLeads: 'LIVE_LEADS',
+    attendance: 'Attendance'
 };
 
 export const TabStackIdentifiers = {
@@ -241,14 +244,14 @@ export const TabStackIdentifiers = {
 };
 
 export const HomeStackIdentifiers = {
-    filter: "FILTER",
-    select_branch: "SELECT_BRANCH",
-    test: "TEST",
-    leaderboard: "LEADERBOARD",
-    branchRanking: "BRANCH_RANKING",
-    sourceModel: "SOURCE_MODEL",
-    home: "HOME_SCREEN",
-
+  filter: "FILTER",
+  select_branch: "SELECT_BRANCH",
+  test: "TEST",
+  leaderboard: "LEADERBOARD",
+  branchRanking: "BRANCH_RANKING",
+  sourceModel: "SOURCE_MODEL",
+  home: "HOME_SCREEN",
+  location: "MAP_TRACKER",
 };
 
 export const EmsStackIdentifiers = {
@@ -305,70 +308,76 @@ const HomeStack = createStackNavigator();
 
 const HomeStackNavigator = ({ navigation }) => {
     return (
-        <HomeStack.Navigator
-            initialRouteName={"Home"}
-            screenOptions={screeOptionStyle}
-        >
-            <HomeStack.Screen
-                name="Home"
-                component={HomeScreen}
-                initialParams={{ branchName: "" }}
-                options={{
-                    title: "Dashboard",
-                    headerShown: false,
-                    headerLeft: () => <MenuIcon navigation={navigation} />,
-                    headerRight: () => {
-                        return (
-                            <View style={{ flexDirection: "row" }}>
-
-                                {/* <NotficationIcon
+      <HomeStack.Navigator
+        initialRouteName={"Home"}
+        screenOptions={screeOptionStyle}
+      >
+        <HomeStack.Screen
+          name="Home"
+          component={HomeScreen}
+          initialParams={{ branchName: "" }}
+          options={{
+            title: "Dashboard",
+            headerShown: false,
+            headerLeft: () => <MenuIcon navigation={navigation} />,
+            headerRight: () => {
+              return (
+                <View style={{ flexDirection: "row" }}>
+                  {/* <NotficationIcon
                   navigation={navigation}
                   identifier={"NOTIF_1"}
                 /> */}
-                            </View>
-                        );
-                    },
-                }}
-            />
+                </View>
+              );
+            },
+          }}
+        />
 
-            <HomeStack.Screen
-                name={"NOTIF_1"}
-                component={NotificationScreen}
-                options={{ title: "Notifications" }}
-            />
-            <HomeStack.Screen
-                name={HomeStackIdentifiers.filter}
-                component={FilterScreen}
-                options={{ title: "Filters" }}
-            />
-            <HomeStack.Screen
-                name={HomeStackIdentifiers.select_branch}
-                component={SelectBranchComp}
-                options={{ title: "Select Branch" }}
-            />
-            <HomeStack.Screen
-                name={HomeStackIdentifiers.test}
-                component={TestScreen}
-                options={{ title: "Test Screen" }}
-            />
-            <HomeStack.Screen
-                name={HomeStackIdentifiers.leaderboard}
-                component={leaderBoardScreen}
-                options={{ title: "LeaderBoard" }}
-            />
-            <HomeStack.Screen
-                name={HomeStackIdentifiers.branchRanking}
-                component={branchRankingScreen}
-                options={{ title: "Branch ranking" }}
-            />
-            <HomeStack.Screen
-                name={HomeStackIdentifiers.sourceModel}
-                component={SourceModel}
-                options={{
-                    title: "Source/Model"
-                }}
-            />
-        </HomeStack.Navigator>
+        <HomeStack.Screen
+          name={"NOTIF_1"}
+          component={NotificationScreen}
+          options={{ title: "Notifications" }}
+        />
+        <HomeStack.Screen
+          name={HomeStackIdentifiers.filter}
+          component={FilterScreen}
+          options={{ title: "Filters" }}
+        />
+        <HomeStack.Screen
+          name={HomeStackIdentifiers.select_branch}
+          component={SelectBranchComp}
+          options={{ title: "Select Branch" }}
+        />
+        <HomeStack.Screen
+          name={HomeStackIdentifiers.test}
+          component={TestScreen}
+          options={{ title: "Test Screen" }}
+        />
+        <HomeStack.Screen
+          name={HomeStackIdentifiers.leaderboard}
+          component={leaderBoardScreen}
+          options={{ title: "LeaderBoard" }}
+        />
+        <HomeStack.Screen
+          name={HomeStackIdentifiers.branchRanking}
+          component={branchRankingScreen}
+          options={{ title: "Branch ranking" }}
+        />
+        <HomeStack.Screen
+          name={HomeStackIdentifiers.sourceModel}
+          component={SourceModel}
+          options={{
+            title: "Source/Model",
+          }}
+        />
+        <MainDrawerNavigator.Screen
+          name={HomeStackIdentifiers.location}
+          component={MapScreen}
+          options={{
+            title: "Map",
+          }}
+        />
+      </HomeStack.Navigator>
     );
 };
 

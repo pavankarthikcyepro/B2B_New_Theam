@@ -28,6 +28,7 @@ import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 import Entypo from "react-native-vector-icons/FontAwesome";
 import { client } from "../../networking/client";
 import URL, { profileImageUpdate } from "../../networking/endpoints";
+import BackgroundService from "react-native-background-actions";
 
 // import { EVENT_MANAGEMENT, CUSTOMER_RELATIONSHIP, DOCUMENT_WALLET, HOME_LINE, BOOKING_TRACKER } from "../assets/svg";
 
@@ -270,6 +271,9 @@ const SideMenuScreen = ({ navigation }) => {
       case 114:
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.liveLeads);
         break;
+      case 116:
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.attendance);
+        break;
       case 112:
         signOutClicked();
         break;
@@ -279,7 +283,7 @@ const SideMenuScreen = ({ navigation }) => {
     }
   };
 
-  const signOutClicked = () => {
+  const signOutClicked = async () => {
     AsyncStore.storeData(AsyncStore.Keys.USER_NAME, "");
     AsyncStore.storeData(AsyncStore.Keys.USER_TOKEN, "");
     AsyncStore.storeData(AsyncStore.Keys.EMP_ID, "");
@@ -289,6 +293,10 @@ const SideMenuScreen = ({ navigation }) => {
     AsyncStore.storeData(AsyncStore.Keys.EXTENSION_ID, "");
     AsyncStore.storeData(AsyncStore.Keys.EXTENSSION_PWD, "");
     AsyncStore.storeData(AsyncStore.Keys.IS_LOGIN, "false");
+    AsyncStore.storeJsonData(AsyncStore.Keys.TODAYSDATE, new Date().getDate());
+    AsyncStore.storeJsonData(AsyncStore.Keys.COORDINATES, []);
+    await BackgroundService.stop();
+
     navigation.closeDrawer();
     //realm.close();
     dispatch(clearState());
