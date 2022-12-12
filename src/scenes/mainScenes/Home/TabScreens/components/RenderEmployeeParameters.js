@@ -86,7 +86,7 @@ export const RenderEmployeeParameters = (parameter) => {
               )[0]
             : item.targetAchievements.filter((x) => x.paramName === param)[0]
           : item.targetAchievements.filter((x) => x.paramName === param)[0];
-        const enquiryParameter = item?.isOpenInner
+        const enq = item?.isOpenInner
           ? item?.tempTargetAchievements
             ? item?.tempTargetAchievements?.filter(
                 (item) => item.paramName === "Enquiry"
@@ -96,6 +96,28 @@ export const RenderEmployeeParameters = (parameter) => {
               )[0]
           : item.targetAchievements.filter(
               (item) => item.paramName === "Enquiry"
+            )[0];
+        const ret = item?.isOpenInner
+          ? item?.tempTargetAchievements
+            ? item?.tempTargetAchievements?.filter(
+                (item) => item.paramName === "INVOICE"
+              )[0]
+            : item.targetAchievements.filter(
+                (item) => item.paramName === "INVOICE"
+              )[0]
+          : item.targetAchievements.filter(
+              (item) => item.paramName === "INVOICE"
+            )[0];
+        const acc = item?.isOpenInner
+          ? item?.tempTargetAchievements
+            ? item?.tempTargetAchievements?.filter(
+                (item) => item.paramName === "Accessories"
+              )[0]
+            : item.targetAchievements.filter(
+                (item) => item.paramName === "Accessories"
+              )[0]
+          : item.targetAchievements.filter(
+              (item) => item.paramName === "Accessories"
             )[0];
         // const elementColor = getColor(Number(selectedParameter.achievment), Number(selectedParameter.target));
         return (
@@ -131,13 +153,15 @@ export const RenderEmployeeParameters = (parameter) => {
                       ? displayType === 0
                         ? selectedParameter?.achievment
                         : selectedParameter?.target > 0
-                        ? achievementPercentage(
+                        ? `${achievementPercentage(
                             selectedParameter?.achievment,
                             selectedParameter?.target,
                             param,
-                            enquiryParameter?.achievment
-                          )
-                        : selectedParameter?.achievment
+                            enq,
+                            ret,
+                            acc
+                          )}%`
+                        : `${selectedParameter?.achievment}%`
                       : 0}
                   </Text>
                 </View>
@@ -195,7 +219,9 @@ export const RenderEmployeeParameters = (parameter) => {
                             selectedParameter?.achievment,
                             selectedParameter?.target,
                             param,
-                            enquiryParameter?.achievment
+                            enq,
+                            ret,
+                            acc
                           )
                         : selectedParameter?.achievment
                       : 0}
