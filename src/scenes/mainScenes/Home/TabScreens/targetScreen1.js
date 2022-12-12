@@ -472,6 +472,14 @@ const TargetScreen = ({ route }) => {
     );
   }, [selector.reporting_manager_list]);
 
+  useEffect(() => {
+    allParameters[0] = {
+      ...allParameters[0],
+      targetAchievements: selector.totalParameters,
+    };
+    setAllParameters(allParameters);
+  }, [selector.totalParameters]);
+
   useEffect(async () => {
     setIsLoading(true);
     try {
