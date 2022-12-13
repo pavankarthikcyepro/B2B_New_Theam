@@ -321,7 +321,7 @@ const PreEnquiryScreen = ({ route, navigation }) => {
                 "empId": jsonObj.empId,
                 "status": "",
                 "offset": 0,
-                "limit": 500,
+                "limit": 50000,
                 "leadStage": leadStage ? leadStage : defualtLeadStage,
                 "leadStatus": leadStatus ? leadStatus : defualtLeadStatus
             };
@@ -348,7 +348,7 @@ const PreEnquiryScreen = ({ route, navigation }) => {
             "empId": empId,
             "status": "PREENQUIRY",
             "offset": offSet,
-            "limit": 500,
+            "limit": 50000,
         }
         return payload;
     }
