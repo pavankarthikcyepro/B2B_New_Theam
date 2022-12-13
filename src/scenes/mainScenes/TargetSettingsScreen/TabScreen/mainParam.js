@@ -61,7 +61,48 @@ const color = [
   "#1f93ab",
   "#ec3466",
 ];
-
+const newArray = [
+  {
+    paramName: "Retail",
+    target: "17",
+  },
+  {
+    paramName: "Enquiry",
+    target: "170",
+  },
+  {
+    paramName: "Test Drive",
+    target: "119",
+  },
+  {
+    paramName: "Visit",
+    target: "119",
+  },
+  {
+    paramName: "Booking",
+    target: "43",
+  },
+  {
+    paramName: "Exchange",
+    target: "3",
+  },
+  {
+    paramName: "Finance",
+    target: "10",
+  },
+  {
+    paramName: "Insurance",
+    target: "14",
+  },
+  {
+    paramName: "Exwarranty",
+    target: "9",
+  },
+  {
+    paramName: "Accessories",
+    target: "561000",
+  },
+];
 const MainParamScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.targetSettingsReducer);
   const homeSelector = useSelector((state) => state.homeReducer);
@@ -107,8 +148,7 @@ const MainParamScreen = ({ route, navigation }) => {
   const [showChild, setShowChild] = useState(false);
   const [slideRight, setSlideRight] = useState();
   const [isLoading, setIsLoading] = useState(false);
-  const [allParameters, setAllParameters] = useState([
-  ]);
+  const [allParameters, setAllParameters] = useState([]);
   const [branches, setBranches] = useState([]);
   const [togglePercentage, setTogglePercentage] = useState(0);
   const [toggleParamsMetaData, setToggleParamsMetaData] = useState([]);
@@ -588,7 +628,6 @@ const MainParamScreen = ({ route, navigation }) => {
     } catch (error) {
       console.error(error);
     }
-    
   }, []);
 
   useEffect(async () => {
@@ -608,22 +647,32 @@ const MainParamScreen = ({ route, navigation }) => {
           ];
 
           console.log(myParams[0]);
-         let payload = getPayloadTotal(employeeData);
-         const response = await client.post(
-           URL.GET_TARGET_PLANNING_COUNT(),
-           payload
-         );
-         const json = await response.json();
-         
-         console.log(json);
+          let payload = getPayloadTotal(employeeData);
+          const response = await client.post(
+            URL.GET_TARGET_PLANNING_COUNT(),
+            payload
+          );
+          const json = await response.json();
+
+          let payload1 = getEmployeePayloadTotal(employeeData, jsonObj.empId, [
+            jsonObj.branchId,
+          ]);
+          const response1 = await client.post(
+            URL.GET_ALL_TARGET_MAPPING_SEARCH(),
+            payload1
+          );
+          const json1 = await response1.json();
+          console.log("response", json1);
           myParams[0] = {
             ...myParams[0],
             isOpenInner: false,
             employeeTargetAchievements: [],
-            targetAchievements: homeSelector.totalParameters,
-            tempTargetAchievements: myParams[0]?.targetAchievements,
+            // targetAchievements: homeSelector.totalParameters,
+            targetAchievements: newArray,
+            tempTargetAchievements: newArray,
+            // tempTargetAchievements: myParams[0]?.targetAchievements,
           };
-        console.log("sssss", myParams[0]);
+          // console.log("sssss", myParams[0]);
 
           // let payload = getEmployeePayloadTotal();
           // const response = await client.post(
@@ -632,7 +681,7 @@ const MainParamScreen = ({ route, navigation }) => {
           // );
           // const json = await response.json();
           // console.log("PARAMRRR", json);
-          // setAllParameters(myParams);
+          setAllParameters(myParams);
         }
       }
       setIsLoading(false);
@@ -642,49 +691,49 @@ const MainParamScreen = ({ route, navigation }) => {
     }
   }, [homeSelector.all_emp_parameters_data]);
 
-   const getEmployeePayloadTotal = (employeeData, item) => {
-     const jsonObj = JSON.parse(employeeData);
-     const dateFormat = "YYYY-MM-DD";
-     const currentDate = moment().format(dateFormat);
-     const monthFirstDate = moment(currentDate, dateFormat)
-       .subtract(0, "months")
-       .startOf("month")
-       .format(dateFormat);
-     const monthLastDate = moment(currentDate, dateFormat)
-       .subtract(0, "months")
-       .endOf("month")
-       .format(dateFormat);
-     return {
-       loggedInEmpId: jsonObj.empId,
-       childEmpId: [942, 943],
-       pageNo: 1,
-       size: 500,
-       startDate: monthFirstDate,
-       endDate: monthLastDate,
-       branchNumber: [286, 287],
-     };
-   };
-
-    const getPayloadTotal = (employeeData, item) => {
-      const jsonObj = JSON.parse(employeeData);
-      const dateFormat = "YYYY-MM-DD";
-      const currentDate = moment().format(dateFormat);
-      const monthFirstDate = moment(currentDate, dateFormat)
-        .subtract(0, "months")
-        .startOf("month")
-        .format(dateFormat);
-      const monthLastDate = moment(currentDate, dateFormat)
-        .subtract(0, "months")
-        .endOf("month")
-        .format(dateFormat);
-      return {
-        startDate: monthFirstDate,
-        endDate: monthLastDate,
-        loggedInEmpId: jsonObj.empId.toString(),
-        childEmpId: [jsonObj.empId],
-        branchNumber: [jsonObj.branchId],
-      };
+  const getEmployeePayloadTotal = (employeeData, item, branch) => {
+    const jsonObj = JSON.parse(employeeData);
+    const dateFormat = "YYYY-MM-DD";
+    const currentDate = moment().format(dateFormat);
+    const monthFirstDate = moment(currentDate, dateFormat)
+      .subtract(0, "months")
+      .startOf("month")
+      .format(dateFormat);
+    const monthLastDate = moment(currentDate, dateFormat)
+      .subtract(0, "months")
+      .endOf("month")
+      .format(dateFormat);
+    return {
+      loggedInEmpId: jsonObj.empId,
+      childEmpId: [item],
+      pageNo: 1,
+      size: 500,
+      startDate: monthFirstDate,
+      endDate: monthLastDate,
+      branchNumber: branch,
     };
+  };
+
+  const getPayloadTotal = (employeeData, item) => {
+    const jsonObj = JSON.parse(employeeData);
+    const dateFormat = "YYYY-MM-DD";
+    const currentDate = moment().format(dateFormat);
+    const monthFirstDate = moment(currentDate, dateFormat)
+      .subtract(0, "months")
+      .startOf("month")
+      .format(dateFormat);
+    const monthLastDate = moment(currentDate, dateFormat)
+      .subtract(0, "months")
+      .endOf("month")
+      .format(dateFormat);
+    return {
+      startDate: monthFirstDate,
+      endDate: monthLastDate,
+      loggedInEmpId: jsonObj.empId.toString(),
+      childEmpId: [jsonObj.empId],
+      branchNumber: [jsonObj.branchId],
+    };
+  };
 
   const addTargetData = async () => {
     if (selectedBranch === null) {
@@ -1000,6 +1049,7 @@ const MainParamScreen = ({ route, navigation }) => {
           AsyncStore.Keys.LOGIN_EMPLOYEE
         );
         if (employeeData) {
+          const jsonObj = JSON.parse(employeeData);
           const payload = getEmployeePayload(employeeData, item);
           Promise.all([dispatch(getUserWiseTargetParameters(payload))]).then(
             async (res) => {
@@ -1024,6 +1074,27 @@ const MainParamScreen = ({ route, navigation }) => {
                     lastParameter[index].employeeTargetAchievements =
                       tempRawData;
                     let newIds = tempRawData.map((emp) => emp.empId);
+                    console.log("NEWIDS", newIds);
+
+                    let payload = getPayloadTotal(employeeData);
+                    // const response = await client.post(
+                    //   URL.GET_TARGET_PLANNING_COUNT(),
+                    //   payload
+                    // );
+                    // const json = await response.json();
+
+                    let payload1 = getEmployeePayloadTotal(
+                      employeeData,
+                      jsonObj.empId,
+                      newIds
+                    );
+                    const response1 = await client.post(
+                      URL.GET_ALL_TARGET_MAPPING_SEARCH(),
+                      payload1
+                    );
+                    const json1 = await response1.json();
+                    console.log("CHILD", json1);
+
                     if (newIds.length >= 2) {
                       for (let i = 0; i < newIds.length; i++) {
                         const element = newIds[i].toString();
