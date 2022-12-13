@@ -2406,9 +2406,10 @@ export const ProformaComp = ({
               <TextAndAmountComp title={"LESSOR"} text={
               selector.proforma_orgName
               } />
-              <TextAndAmountComp title={"GSTN"} text={
+              {selector.proforma_gstnNumber && <TextAndAmountComp title={"GSTN"} text={
                 selector.proforma_gstnNumber
-              } />
+              } />}
+            
               {/* <TextAndAmountComp title={"Name"} text={modelDetails?.model} /> */}
               <TextAndAmountComp
                 title={"Date"}
