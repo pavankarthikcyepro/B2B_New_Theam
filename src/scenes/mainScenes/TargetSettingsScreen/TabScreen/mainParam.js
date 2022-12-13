@@ -108,252 +108,6 @@ const MainParamScreen = ({ route, navigation }) => {
   const [slideRight, setSlideRight] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [allParameters, setAllParameters] = useState([
-    {
-      empName: "Chandrashekar S",
-      empId: 941,
-      orgId: "18",
-      branchId: "286",
-      targetAchievements: [
-        {
-          paramName: "Enquiry",
-          paramShortName: "Enq",
-          target: "859",
-          achievment: "491",
-          achivementPerc: "57%",
-          shortfall: "368",
-          shortFallPerc: "43%",
-          data: null,
-        },
-        {
-          paramName: "DROPPED",
-          paramShortName: "Lost",
-          target: "0",
-          achievment: "33",
-          achivementPerc: "0",
-          shortfall: "0",
-          shortFallPerc: "0",
-          data: null,
-        },
-        {
-          paramName: "Test Drive",
-          paramShortName: "Tdr",
-          target: "562",
-          achievment: "30",
-          achivementPerc: "5%",
-          shortfall: "532",
-          shortFallPerc: "95%",
-          data: null,
-        },
-        {
-          paramName: "Finance",
-          paramShortName: "Fin",
-          target: "55",
-          achievment: "17",
-          achivementPerc: "31%",
-          shortfall: "38",
-          shortFallPerc: "69%",
-          data: null,
-        },
-        {
-          paramName: "Insurance",
-          paramShortName: "Ins",
-          target: "73",
-          achievment: "35",
-          achivementPerc: "48%",
-          shortfall: "38",
-          shortFallPerc: "52%",
-          data: null,
-        },
-        {
-          paramName: "Accessories",
-          paramShortName: "Acc",
-          target: "2630100",
-          achievment: "288222",
-          achivementPerc: "11%",
-          shortfall: "2341878",
-          shortFallPerc: "89%",
-          data: null,
-        },
-        {
-          paramName: "Booking",
-          paramShortName: "Bkg",
-          target: "209",
-          achievment: "157",
-          achivementPerc: "75%",
-          shortfall: "52",
-          shortFallPerc: "25%",
-          data: null,
-        },
-        {
-          paramName: "Home Visit",
-          paramShortName: "Hvt",
-          target: "561",
-          achievment: "14",
-          achivementPerc: "2%",
-          shortfall: "547",
-          shortFallPerc: "98%",
-          data: [],
-        },
-        {
-          paramName: "Exchange",
-          paramShortName: "Exg",
-          target: "18",
-          achievment: "14",
-          achivementPerc: "78%",
-          shortfall: "4",
-          shortFallPerc: "22%",
-          data: null,
-        },
-        {
-          paramName: "INVOICE",
-          paramShortName: "Ret",
-          target: "86",
-          achievment: "101",
-          achivementPerc: "117%",
-          shortfall: "-15",
-          shortFallPerc: "-17%",
-          data: null,
-        },
-        {
-          paramName: "EXTENDEDWARRANTY",
-          paramShortName: "ExW",
-          target: "44",
-          achievment: "31",
-          achivementPerc: "230%",
-          shortfall: "-57",
-          shortFallPerc: "-130%",
-          data: null,
-        },
-      ],
-      targetAchievementsMap: {
-        "Video Conference": 0,
-        Exchange: 0,
-        Enquiry: 0,
-        Accessories: 0,
-        Events: 0,
-        Finance: 0,
-        Insurance: 0,
-        Booking: 0,
-        "Home Visit": 0,
-        INVOICE: 0,
-        "Test Drive": 0,
-        EXTENDEDWARRANTY: 0,
-      },
-      isOpenInner: false,
-      employeeTargetAchievements: [],
-      tempTargetAchievements: [
-        {
-          paramName: "Enquiry",
-          paramShortName: "Enq",
-          target: "0",
-          achievment: "0",
-          achivementPerc: "0%",
-          shortfall: "0",
-          shortFallPerc: "0%",
-          data: null,
-        },
-        {
-          paramName: "DROPPED",
-          paramShortName: "Lost",
-          target: "0",
-          achievment: "0",
-          achivementPerc: "0",
-          shortfall: "0",
-          shortFallPerc: "0",
-          data: null,
-        },
-        {
-          paramName: "Test Drive",
-          paramShortName: "Tdr",
-          target: "0",
-          achievment: "0",
-          achivementPerc: "0%",
-          shortfall: "0",
-          shortFallPerc: "0%",
-          data: null,
-        },
-        {
-          paramName: "Finance",
-          paramShortName: "Fin",
-          target: "0",
-          achievment: "0",
-          achivementPerc: "0%",
-          shortfall: "0",
-          shortFallPerc: "0%",
-          data: null,
-        },
-        {
-          paramName: "Insurance",
-          paramShortName: "Ins",
-          target: "0",
-          achievment: "0",
-          achivementPerc: "0%",
-          shortfall: "0",
-          shortFallPerc: "0%",
-          data: null,
-        },
-        {
-          paramName: "Accessories",
-          paramShortName: "Acc",
-          target: "0",
-          achievment: "0",
-          achivementPerc: "0%",
-          shortfall: "0",
-          shortFallPerc: "0%",
-          data: null,
-        },
-        {
-          paramName: "Booking",
-          paramShortName: "Bkg",
-          target: "0",
-          achievment: "0",
-          achivementPerc: "0%",
-          shortfall: "0",
-          shortFallPerc: "0%",
-          data: null,
-        },
-        {
-          paramName: "Home Visit",
-          paramShortName: "Hvt",
-          target: "0",
-          achievment: "0",
-          achivementPerc: "0%",
-          shortfall: "0",
-          shortFallPerc: "0%",
-          data: [],
-        },
-        {
-          paramName: "Exchange",
-          paramShortName: "Exg",
-          target: "0",
-          achievment: "0",
-          achivementPerc: "0%",
-          shortfall: "0",
-          shortFallPerc: "0%",
-          data: null,
-        },
-        {
-          paramName: "INVOICE",
-          paramShortName: "Ret",
-          target: "0",
-          achievment: "0",
-          achivementPerc: "0%",
-          shortfall: "0",
-          shortFallPerc: "0%",
-          data: null,
-        },
-        {
-          paramName: "EXTENDEDWARRANTY",
-          paramShortName: "ExW",
-          target: "0",
-          achievment: "0",
-          achivementPerc: "0%",
-          shortfall: "0",
-          shortFallPerc: "0%",
-          data: null,
-        },
-      ],
-    },
   ]);
   const [branches, setBranches] = useState([]);
   const [togglePercentage, setTogglePercentage] = useState(0);
@@ -839,6 +593,7 @@ const MainParamScreen = ({ route, navigation }) => {
 
   useEffect(async () => {
     setIsLoading(true);
+
     try {
       let employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -851,6 +606,16 @@ const MainParamScreen = ({ route, navigation }) => {
               (item) => item.empId === jsonObj.empId
             ),
           ];
+
+          console.log(myParams[0]);
+         let payload = getPayloadTotal(employeeData);
+         const response = await client.post(
+           URL.GET_TARGET_PLANNING_COUNT(),
+           payload
+         );
+         const json = await response.json();
+         
+         console.log(json);
           myParams[0] = {
             ...myParams[0],
             isOpenInner: false,
@@ -858,6 +623,8 @@ const MainParamScreen = ({ route, navigation }) => {
             targetAchievements: homeSelector.totalParameters,
             tempTargetAchievements: myParams[0]?.targetAchievements,
           };
+        console.log("sssss", myParams[0]);
+
           // let payload = getEmployeePayloadTotal();
           // const response = await client.post(
           //   URL.GET_ALL_TARGET_MAPPING_SEARCH(),
@@ -897,6 +664,27 @@ const MainParamScreen = ({ route, navigation }) => {
        branchNumber: [286, 287],
      };
    };
+
+    const getPayloadTotal = (employeeData, item) => {
+      const jsonObj = JSON.parse(employeeData);
+      const dateFormat = "YYYY-MM-DD";
+      const currentDate = moment().format(dateFormat);
+      const monthFirstDate = moment(currentDate, dateFormat)
+        .subtract(0, "months")
+        .startOf("month")
+        .format(dateFormat);
+      const monthLastDate = moment(currentDate, dateFormat)
+        .subtract(0, "months")
+        .endOf("month")
+        .format(dateFormat);
+      return {
+        startDate: monthFirstDate,
+        endDate: monthLastDate,
+        loggedInEmpId: jsonObj.empId.toString(),
+        childEmpId: [jsonObj.empId],
+        branchNumber: [jsonObj.branchId],
+      };
+    };
 
   const addTargetData = async () => {
     if (selectedBranch === null) {
