@@ -18,7 +18,6 @@ export const RenderSourceModelParameters = (parameter) => {
     "Insurance",
     "EXTENDEDWARRANTY",
     "Accessories",
-    "DROPPED",
   ];
 
   const getColor = (ach, tar) => {

@@ -1834,7 +1834,7 @@ const TargetScreen = ({ route }) => {
                         <Text
                           style={{
                             color:
-                              Math.floor(
+                              Math.round(
                                 (parseInt(bookingData?.achievment) /
                                   parseInt(enqData?.achievment)) *
                                   100
@@ -1882,7 +1882,7 @@ const TargetScreen = ({ route }) => {
                         <Text
                           style={{
                             color:
-                              Math.floor(
+                              Math.round(
                                 (parseInt(visitData?.achievment) /
                                   parseInt(enqData?.achievment)) *
                                   100
@@ -1930,7 +1930,7 @@ const TargetScreen = ({ route }) => {
                         <Text
                           style={{
                             color:
-                              Math.floor(
+                              Math.round(
                                 (parseInt(finData?.achievment) /
                                   parseInt(retailData?.achievment)) *
                                   100
@@ -1980,7 +1980,7 @@ const TargetScreen = ({ route }) => {
                         <Text
                           style={{
                             color:
-                              Math.floor(
+                              Math.round(
                                 (parseInt(retailData?.achievment) /
                                   parseInt(bookingData?.achievment)) *
                                   100
@@ -2033,7 +2033,7 @@ const TargetScreen = ({ route }) => {
                           {parseInt(TDData?.achievment) === 0 ||
                           parseInt(enqData?.achievment) === 0
                             ? 0
-                            : Math.floor(
+                            : Math.round(
                                 (parseInt(TDData?.achievment) /
                                   parseInt(enqData?.achievment)) *
                                   100
@@ -2072,7 +2072,7 @@ const TargetScreen = ({ route }) => {
                           {parseInt(insData?.achievment) === 0 ||
                           parseInt(retailData?.achievment) === 0
                             ? 0
-                            : Math.floor(
+                            : Math.round(
                                 (parseInt(insData?.achievment) /
                                   parseInt(retailData?.achievment)) *
                                   100
@@ -2099,7 +2099,7 @@ const TargetScreen = ({ route }) => {
                         <Text
                           style={{
                             color:
-                              Math.floor(
+                              Math.round(
                                 (parseInt(retailData?.achievment) /
                                   parseInt(enqData?.achievment)) *
                                   100
@@ -2152,7 +2152,7 @@ const TargetScreen = ({ route }) => {
                           {parseInt(exgData?.achievment) === 0 ||
                           parseInt(retailData?.achievment) === 0
                             ? 0
-                            : Math.floor(
+                            : Math.round(
                                 (parseInt(exgData?.achievment) /
                                   parseInt(retailData?.achievment)) *
                                   100
@@ -2177,7 +2177,7 @@ const TargetScreen = ({ route }) => {
                         <Text
                           style={{
                             color:
-                              Math.floor(
+                              Math.round(
                                 (parseInt(exwData?.achievment) /
                                   parseInt(retailData?.achievment)) *
                                   100
@@ -2241,7 +2241,7 @@ const TargetScreen = ({ route }) => {
                         {parseInt(accData?.achievment) === 0 ||
                         parseInt(retailData?.achievment) === 0
                           ? 0
-                          : Math.floor(
+                          : Math.round(
                               parseInt(accData?.achievment) /
                                 parseInt(retailData?.achievment)
                             )}
