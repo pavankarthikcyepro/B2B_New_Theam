@@ -1132,20 +1132,27 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       return;
     }
 
-    if (
-      selector.p_pincode.length == 0 ||
-      selector.p_urban_or_rural.length == 0 ||
-      selector.p_houseNum.length == 0 ||
-      selector.p_streetName.length == 0 ||
-      selector.p_village.length == 0 ||
-      selector.p_mandal.length == 0 ||
-      selector.p_city.length == 0 ||
-      selector.p_district.length == 0 ||
-      selector.p_state.length == 0
-    ) {
+    // if (
+    //   selector.p_pincode.length == 0 
+    //   ||
+    //   selector.p_urban_or_rural.length == 0 ||
+    //   selector.p_houseNum.length == 0 ||
+    //   selector.p_streetName.length == 0 ||
+    //   selector.p_village.length == 0 ||
+    //   selector.p_mandal.length == 0 ||
+    //   selector.p_city.length == 0 ||
+    //   selector.p_district.length == 0 ||
+    //   selector.p_state.length == 0
+    // ) {
+    //   scrollToPos(14);
+    //   setOpenAccordian("3");
+    //   showToast("Please fill permanent address ");
+    //   return;
+    // }
+  if (selector.pincode.length == 0) {
       scrollToPos(14);
       setOpenAccordian("3");
-      showToast("Please fill permanent address ");
+      showToast("Please fill Communication pincode");
       return;
     }
 
@@ -1156,12 +1163,12 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       return;
     }
 
-    if (selector.p_urban_or_rural.length == 0) {
-      scrollToPos(14);
-      setOpenAccordian("3");
-      showToast("Please fill Permanent Urban or Rural");
-      return;
-    }
+    // if (selector.p_urban_or_rural.length == 0) {
+    //   scrollToPos(14);
+    //   setOpenAccordian("3");
+    //   showToast("Please fill Permanent Urban or Rural");
+    //   return;
+    // }
 
     if (carModelsList[0].model === undefined) {
       scrollToPos(4);
@@ -1193,36 +1200,36 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       showToast("Please fill required fields in Finance Details");
       return;
     }
-    if (selector.retail_finance === "In House") {
-      if (selector.finance_category.length == 0) {
-        showToast("Please fill finance category");
-        return;
-      }
-      if (selector.loan_of_tenure.length == 0) {
-        showToast("Please fill loan of tenure");
-        return;
-      }
-      if (selector.emi.length == 0) {
-        showToast("Please fill emi");
-        return;
-      }
-      if (selector.approx_annual_income.length == 0) {
-        showToast("Please fill approx annual income");
-        return;
-      }
-      if (selector.bank_or_finance.length == 0) {
-        showToast("Please fill bank/Finance");
-        return;
-      }
-    }
+    // if (selector.retail_finance === "In House") {
+    //   if (selector.finance_category.length == 0) {
+    //     showToast("Please fill finance category");
+    //     return;
+    //   }
+    //   if (selector.loan_of_tenure.length == 0) {
+    //     showToast("Please fill loan of tenure");
+    //     return;
+    //   }
+    //   if (selector.emi.length == 0) {
+    //     showToast("Please fill emi");
+    //     return;
+    //   }
+    //   if (selector.approx_annual_income.length == 0) {
+    //     showToast("Please fill approx annual income");
+    //     return;
+    //   }
+    //   if (selector.bank_or_finance.length == 0) {
+    //     showToast("Please fill bank/Finance");
+    //     return;
+    //   }
+    // }
 
     // Leashing
-    if (selector.retail_finance == "Leasing") {
-      if (selector.leashing_name.length == 0) {
-        showToast("Please fill required fields in leasing name");
-        return;
-      }
-    }
+    // if (selector.retail_finance == "Leasing") {
+    //   if (selector.leashing_name.length == 0) {
+    //     showToast("Please fill required fields in leasing name");
+    //     return;
+    //   }
+    // }
 
     //Customer Customer need Analysis
     // if (selector.c_voice_of_customer_remarks == 0) {

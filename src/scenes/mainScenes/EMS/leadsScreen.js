@@ -786,14 +786,13 @@ const LeadsScreen = ({ route, navigation }) => {
         from = lastMonthFirstDate;
       } else {
       }
-
       let newPayload = {
         startdate: from ? from : selectedFromDate,
         enddate: to ? to : selectedToDate,
         model: modelData ? model : [],
         categoryType: categoryFilters ? categoryType : [],
         sourceOfEnquiry: sourceData ? sourceOfEnquiry : [],
-        empId: employeeDetail
+        empId: route?.params?.employeeDetail?.empId
           ? route?.params?.employeeDetail?.empId
           : jsonObj.empId,
         status: "",
