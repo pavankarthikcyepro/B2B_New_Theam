@@ -64,7 +64,6 @@ const AttendanceScreen = ({ route }) => {
   }, []);
   
   const getCurrentLocation = async () => {
-    console.log("oooo");
     try {
       // if (Platform.OS === "ios") {
       //   Geolocation.requestAuthorization();

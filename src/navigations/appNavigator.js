@@ -1114,6 +1114,19 @@ const MainStackDrawerNavigator = () => {
           name={"Target Settings"}
           component={TargetSettingsScreen}
         />
+        <MainDrawerNavigator.Screen
+          name={DrawerStackIdentifiers.attendance}
+          component={AttendanceScreen}
+          options={{
+            title: "Attendance",
+            // headerLeft: () => <MenuIcon navigation={navigation} />,
+            headerShown: true,
+            headerStyle: screeOptionStyle.headerStyle,
+            headerTitleStyle: screeOptionStyle.headerTitleStyle,
+            headerTintColor: screeOptionStyle.headerTintColor,
+            headerBackTitleVisible: screeOptionStyle.headerBackTitleVisible,
+          }}
+        />
       </MainDrawerNavigator.Navigator>
     );
 };

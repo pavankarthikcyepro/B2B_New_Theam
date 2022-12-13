@@ -128,6 +128,12 @@ const dataForManager = [
     icon: CUSTOMER_RELATIONSHIP_STR,
     screen: 106,
   },
+  {
+    title: "My Attendance",
+    icon: ATTENDANCE,
+    screen: 116,
+    pngIcon: require("../assets/images/Target_Planning-01.png"),
+  },
   // {
   //   title: "Task Management",
   //   icon: CUSTOMER_RELATIONSHIP_STR,
