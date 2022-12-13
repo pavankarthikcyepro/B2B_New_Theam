@@ -1812,54 +1812,56 @@ const TargetScreen = ({ route }) => {
           ) : (
             // IF Self or insights
             <>
-              {!selector.isLoading && selfInsightsData.length > 0 &&
-              <View style={{ flexDirection: "row", marginVertical: 8 }}>
-                <View
-                  style={{
-                    width: "62%",
-                    justifyContent: "flex-start",
-                    alignItems: "center",
-                    height: 15,
-                    flexDirection: "row",
-                    paddingRight: 16,
-                  }}
-                >
+              {!selector.isLoading && selfInsightsData.length > 0 && (
+                <View style={{ flexDirection: "row", marginVertical: 8 }}>
                   <View
-                    style={[
-                      styles.percentageToggleView,
-                      { marginVertical: -8 },
-                    ]}
+                    style={{
+                      width: "62%",
+                      justifyContent: "flex-start",
+                      alignItems: "center",
+                      height: 15,
+                      flexDirection: "row",
+                      paddingRight: 16,
+                    }}
                   >
-                    <PercentageToggleControl
-                      toggleChange={(x) => setTogglePercentage(x)}
+                    <View
+                      style={[
+                        styles.percentageToggleView,
+                        { marginVertical: -8 },
+                      ]}
+                    >
+                      <PercentageToggleControl
+                        toggleChange={(x) => setTogglePercentage(x)}
+                      />
+                    </View>
+
+                    <SourceModelView
+                      onClick={() => {
+                        navigation.navigate(
+                          AppNavigator.HomeStackIdentifiers.sourceModel,
+                          {
+                            empId: selector.login_employee_details.empId,
+                            headerTitle: "Source/Model",
+                            loggedInEmpId:
+                              selector.login_employee_details.empId,
+                            type: selector.isDSE ? "SELF" : "INSIGHTS",
+                            moduleType: "home",
+                          }
+                        );
+                      }}
                     />
                   </View>
-
-                  <SourceModelView
-                    onClick={() => {
-                      navigation.navigate(
-                        AppNavigator.HomeStackIdentifiers.sourceModel,
-                        {
-                          empId: selector.login_employee_details.empId,
-                          headerTitle: "Source/Model",
-                          loggedInEmpId: selector.login_employee_details.empId,
-                          type: selector.isDSE ? "SELF" : "INSIGHTS",
-                          moduleType: "home",
-                        }
-                      );
-                    }}
-                  />
+                  <View style={{ width: "30%", flexDirection: "row" }}>
+                    <Text style={{ fontSize: 14, fontWeight: "600" }}>
+                      Balance
+                    </Text>
+                    <View style={{ marginRight: 15 }}></View>
+                    <Text style={{ fontSize: 14, fontWeight: "600" }}>
+                      AR/Day
+                    </Text>
+                  </View>
                 </View>
-                <View style={{ width: "30%", flexDirection: "row" }}>
-                  <Text style={{ fontSize: 14, fontWeight: "600" }}>
-                    Balance
-                  </Text>
-                  <View style={{ marginRight: 15 }}></View>
-                  <Text style={{ fontSize: 14, fontWeight: "600" }}>
-                    AR/Day
-                  </Text>
-                </View>
-              </View>}
+              )}
               {/* Header view end */}
               {!selector.isLoading && selfInsightsData.length > 0 && (
                 <ScrollView showsVerticalScrollIndicator={false}>
@@ -1911,7 +1913,7 @@ const TargetScreen = ({ route }) => {
                           <Text
                             style={{
                               color:
-                                Math.floor(
+                                Math.round(
                                   (parseInt(bookingData?.achievment) /
                                     parseInt(enqData?.achievment)) *
                                     100
@@ -2007,7 +2009,7 @@ const TargetScreen = ({ route }) => {
                           <Text
                             style={{
                               color:
-                                Math.floor(
+                                Math.round(
                                   (parseInt(finData?.achievment) /
                                     parseInt(retailData?.achievment)) *
                                     100
@@ -2057,7 +2059,7 @@ const TargetScreen = ({ route }) => {
                           <Text
                             style={{
                               color:
-                                Math.floor(
+                                Math.round(
                                   (parseInt(retailData?.achievment) /
                                     parseInt(bookingData?.achievment)) *
                                     100
@@ -2110,7 +2112,7 @@ const TargetScreen = ({ route }) => {
                             {parseInt(TDData?.achievment) === 0 ||
                             parseInt(enqData?.achievment) === 0
                               ? 0
-                              : Math.floor(
+                              : Math.round(
                                   (parseInt(TDData?.achievment) /
                                     parseInt(enqData?.achievment)) *
                                     100
@@ -2149,7 +2151,7 @@ const TargetScreen = ({ route }) => {
                             {parseInt(insData?.achievment) === 0 ||
                             parseInt(retailData?.achievment) === 0
                               ? 0
-                              : Math.floor(
+                              : Math.round(
                                   (parseInt(insData?.achievment) /
                                     parseInt(retailData?.achievment)) *
                                     100
@@ -2176,7 +2178,7 @@ const TargetScreen = ({ route }) => {
                           <Text
                             style={{
                               color:
-                                Math.floor(
+                                Math.round(
                                   (parseInt(retailData?.achievment) /
                                     parseInt(enqData?.achievment)) *
                                     100
@@ -2229,7 +2231,7 @@ const TargetScreen = ({ route }) => {
                             {parseInt(exgData?.achievment) === 0 ||
                             parseInt(retailData?.achievment) === 0
                               ? 0
-                              : Math.floor(
+                              : Math.round(
                                   (parseInt(exgData?.achievment) /
                                     parseInt(retailData?.achievment)) *
                                     100
@@ -2254,7 +2256,7 @@ const TargetScreen = ({ route }) => {
                           <Text
                             style={{
                               color:
-                                Math.floor(
+                                Math.round(
                                   (parseInt(exwData?.achievment) /
                                     parseInt(retailData?.achievment)) *
                                     100
