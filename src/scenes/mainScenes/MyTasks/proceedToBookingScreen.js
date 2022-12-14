@@ -18,7 +18,7 @@ import { Button, IconButton } from "react-native-paper";
 import * as AsyncStore from "../../../asyncStore";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  clearState,
+  clearBookingState,
   getEnquiryDetailsApi,
   updateEnquiryDetailsApi,
   dropEnquiryApi,
@@ -115,7 +115,7 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
 
   const goParentScreen = () => {
     navigation.popToTop();
-    dispatch(clearState());
+    dispatch(clearBookingState());
   };
 
   useEffect(() => {
@@ -304,7 +304,7 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
     await navigation.popToTop();
     await navigation.navigate('EMS_TAB');
     await navigation.navigate(EmsTopTabNavigatorIdentifiers.leads);
-    dispatch(clearState());
+    dispatch(clearBookingState());
   }
 
   // Handle Update Current Task Response
@@ -459,7 +459,7 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
     } else {
       navigation.popToTop();
     }
-    dispatch(clearState());
+    dispatch(clearBookingState());
   };
 
   const showDropDownMethod = (key, title) => {
