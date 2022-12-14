@@ -451,6 +451,10 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       showToastRedAlert("Please select source of lead");
       return;
     }
+    if (!fromEdit && subSourceData.length > 0 && !selector.subSourceOfEnquiry) {
+      showToastRedAlert("Please select sub source of lead");
+      return;
+    }
     // if (selector.sourceOfEnquiry.length > 0 && selector.subSourceOfEnquiry.length == 0) {
     //     showToastRedAlert("Please select sub source of lead");
     //     return;
@@ -1288,7 +1292,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             ></Text>
             {subSourceData.length > 0 || selector.subSourceOfEnquiry ? (
               <DropDownSelectionItem
-                label={"Sub Source of Lead"}
+                label={"Sub Source of Lead*"}
                 value={selector.subSourceOfEnquiry}
                 disabled={fromEdit}
                 onPress={() =>
@@ -1299,7 +1303,17 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                 }
               />
             ) : null}
-            <Text style={[GlobalStyle.underline]}></Text>
+            <Text
+              style={[
+                GlobalStyle.underline,
+                {
+                  backgroundColor:
+                    isSubmitPress && selector.subSourceOfEnquiry === ""
+                      ? "red"
+                      : "rgba(208, 212, 214, 0.7)",
+                },
+              ]}
+            ></Text>
             {/* <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.subSourceOfEnquiry === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text> */}
             {selector.sourceOfEnquiry === "Other" ? (
               <View>

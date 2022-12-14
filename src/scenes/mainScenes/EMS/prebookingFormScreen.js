@@ -74,6 +74,14 @@ import {
   updateAddressByPincode2
 } from "../../../redux/preBookingFormReducer";
 import {
+  clearBookingState,
+  getEnquiryDetailsApi,
+  updateEnquiryDetailsApi,
+  getTaskDetailsApi,
+  updateTaskApi,
+  changeEnquiryStatusApi,
+} from "../../../redux/proceedToBookingReducer";
+import {
   RadioTextItem,
   CustomerAccordianHeaderItem,
   ImageSelectItem,
@@ -139,6 +147,7 @@ import {
   EnquiryTypes22
 } from "../../../jsonData/preEnquiryScreenJsonData";
 import { EmsTopTabNavigatorIdentifiers } from "../../../navigations/emsTopTabNavigator";
+import Geolocation from "@react-native-community/geolocation";
 
 const rupeeSymbol = "\u20B9";
 
@@ -250,10 +259,14 @@ const PaidAccessoriesTextAndAmountComp = ({
   );
 };
 
+let isProceedToBookingClicked = false;
+
 const PrebookingFormScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.preBookingFormReducer);
-  let scrollRef = useRef(null)
+  const selectorBooking = useSelector((state) => state.proceedToBookingReducer);
+
+  let scrollRef = useRef(null);
   const { universalId, accessoriesList, leadStatus, leadStage } = route.params;
   const [openAccordian, setOpenAccordian] = useState(0);
   const [componentAppear, setComponentAppear] = useState(false);
@@ -265,7 +278,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     isManager: false,
     editEnable: false,
     isPreBookingApprover: false,
-    isSelfManager: ""
+    isSelfManager: "",
   });
   const [showDropDownModel, setShowDropDownModel] = useState(false);
   const [showMultipleDropDownData, setShowMultipleDropDownData] =
@@ -281,7 +294,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [carModelsList, setCarModelsList] = useState([]);
   const [updateModelList, setUpdateModelList] = useState(false);
   const [isPrimaryCureentIndex, setIsPrimaryCurrentIndex] = useState(0);
-
 
   const [carColorsData, setCarColorsData] = useState([]);
   const [selectedModelId, setSelectedModelId] = useState(0);
@@ -314,10 +326,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [typeOfActionDispatched, setTypeOfActionDispatched] = useState("");
   const [selectedPaidAccessoriesList, setSelectedPaidAccessoriesList] =
     useState([]);
-  const [paidAccessoriesListNew, setPaidAccessoriesListNew] =
-    useState([]);
-  const [selectedFOCAccessoriesList, setSelectedFOCAccessoriesList] =
-    useState([]);
+  const [paidAccessoriesListNew, setPaidAccessoriesListNew] = useState([]);
+  const [selectedFOCAccessoriesList, setSelectedFOCAccessoriesList] = useState(
+    []
+  );
   const [selectedInsurenceAddons, setSelectedInsurenceAddons] = useState([]);
   const [showApproveRejectBtn, setShowApproveRejectBtn] = useState(false);
   const [showPrebookingPaymentSection, setShowPrebookingPaymentSection] =
@@ -349,10 +361,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [focPrice, setFocPrice] = useState(0);
   const [mrpPrice, setMrpPrice] = useState(0);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
-  const [taxPercent, setTaxPercent] = useState('');
-  const [insuranceDiscount, setInsuranceDiscount] = useState('');
-  const [accDiscount, setAccDiscount] = useState('');
-  const [imagePath, setImagePath] = useState('');
+  const [taxPercent, setTaxPercent] = useState("");
+  const [insuranceDiscount, setInsuranceDiscount] = useState("");
+  const [accDiscount, setAccDiscount] = useState("");
+  const [imagePath, setImagePath] = useState("");
   const [initialTotalAmt, setInitialTotalAmt] = useState(0);
   const [addressData, setAddressData] = useState([]);
   const [addressData2, setAddressData2] = useState([]);
@@ -363,14 +375,20 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
   const [isEditButtonShow, setIsEditButtonShow] = useState(false);
   const [isAddModelButtonShow, setIsAddModelButtonShow] = useState(false);
-  const [isSubmitCancelButtonShow, setIsSubmitCancelButtonShow] = useState(false);
+  const [isSubmitCancelButtonShow, setIsSubmitCancelButtonShow] =
+    useState(false);
 
   const [registrationChargesType, setRegistrationChargesType] = useState([]);
-  const [selectedRegistrationCharges, setSelectedRegistrationCharges] = useState({});
-  const [isLoading, setIsLoading] = useState(false)
+  const [selectedRegistrationCharges, setSelectedRegistrationCharges] =
+    useState({});
+  const [isLoading, setIsLoading] = useState(false);
   const [addNewInput, setAddNewInput] = useState([]);
-  const [otherPriceErrorNameIndex, setOtherPriceErrorNameIndex] = useState(null);
-  const [otherPriceErrorAmountIndexInput, setOtherPriceErrorAmountIndex] = useState(null);
+  const [otherPriceErrorNameIndex, setOtherPriceErrorNameIndex] =
+    useState(null);
+  const [otherPriceErrorAmountIndexInput, setOtherPriceErrorAmountIndex] =
+    useState(null);
+  const [currentLocation, setCurrentLocation] = useState(null);
+  const [authToken, setAuthToken] = useState("");
 
   // Edit buttons shows
   useEffect(() => {
@@ -438,7 +456,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     }
 
     return isCreatedBy;
-  }
+  };
 
   // Submit buttons shows
   const isSubmitShow = () => {
@@ -451,8 +469,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         selector.pre_booking_details_response &&
         selector.pre_booking_details_response.dmsLeadDto
       ) {
-        const { leadStatus } =
-          selector.pre_booking_details_response.dmsLeadDto;
+        const { leadStatus } = selector.pre_booking_details_response.dmsLeadDto;
 
         if (
           selector.booking_amount !== "" &&
@@ -486,7 +503,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     }
 
     return isInputEditFlag;
-  }
+  };
 
   const isRejectRemarkEnable = () => {
     let isRejectFlag = false;
@@ -501,7 +518,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     }
 
     return isRejectFlag;
-  }
+  };
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -546,7 +563,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     getBranchId();
     getCustomerType();
 
-
     BackHandler.addEventListener("hardwareBackPress", handleBackButtonClick);
     // return () => {
     //     BackHandler.removeEventListener(
@@ -557,9 +573,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   }, [navigation]);
 
   useEffect(() => {
-    navigation.addListener('blur', () => {
-      BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
-    })
+    navigation.addListener("blur", () => {
+      BackHandler.removeEventListener(
+        "hardwareBackPress",
+        handleBackButtonClick
+      );
+    });
   }, [navigation]);
 
   // useEffect(() => {
@@ -581,11 +600,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   // }, [navigation]);
 
   const clearLocalData = () => {
-    setShowPrebookingPaymentSection(false)
-    setShowApproveRejectBtn(false)
-    setShowSubmitDropBtn(false)
-    setIsEdit(false)
-    setIsReciptDocUpload(false)
+    setShowPrebookingPaymentSection(false);
+    setShowApproveRejectBtn(false);
+    setShowSubmitDropBtn(false);
+    setIsEdit(false);
+    setIsReciptDocUpload(false);
     setOpenAccordian(0);
     setComponentAppear(false);
     setUserData({
@@ -595,7 +614,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       isManager: false,
       editEnable: false,
       isPreBookingApprover: false,
-      isSelfManager: ""
+      isSelfManager: "",
     });
     setShowDropDownModel(false);
     setShowMultipleDropDownData(false);
@@ -643,12 +662,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     setTcsAmount(0);
     setFocPrice(0);
     setMrpPrice(0);
-    setTaxPercent('');
-    setInsuranceDiscount('');
-    setAccDiscount('');
+    setTaxPercent("");
+    setInsuranceDiscount("");
+    setAccDiscount("");
     setInitialTotalAmt(0);
-    setIsEdit(false)
-  }
+    setIsEdit(false);
+  };
 
   const getCustomerType = async () => {
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
@@ -656,7 +675,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       const jsonObj = JSON.parse(employeeData);
       dispatch(getCustomerTypesApi(jsonObj.orgId));
     }
-  }
+  };
 
   useEffect(() => {
     if (route.params?.accessoriesList) {
@@ -666,13 +685,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
   const handleBackButtonClick = () => {
     goParentScreen();
-    setPaidAccessoriesListNew([])
+    setPaidAccessoriesListNew([]);
     return true;
   };
 
   const scrollToPos = (itemIndex) => {
-    scrollRef.current.scrollTo({ y: itemIndex * 70 })
-  }
+    scrollRef.current.scrollTo({ y: itemIndex * 70 });
+  };
 
   useEffect(() => {
     calculateOnRoadPrice(handlingChargSlctd, essentialKitSlctd, fastTagSlctd);
@@ -684,7 +703,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     selectedPaidAccessoriesPrice,
     selector.vechicle_registration,
     taxPercent,
-    selectedRegistrationCharges
+    selectedRegistrationCharges,
   ]);
 
   useEffect(() => {
@@ -695,12 +714,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           text: selector.pan_number,
         })
       );
-      setDropDownData({ key: 'FORM_60_PAN', value: 'PAN', id: '' })
-      setIsDataLoaded(true)
+      setDropDownData({ key: "FORM_60_PAN", value: "PAN", id: "" });
+      setIsDataLoaded(true);
     }
-  }, [
-    selector.isDataLoaded, selector.pan_number
-  ]);
+  }, [selector.isDataLoaded, selector.pan_number]);
 
   useEffect(() => {
     // setTotalOnRoadPriceAfterDiscount(totalOnRoadPriceAfterDiscount - focPrice)
@@ -709,7 +726,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         key: "FOR_ACCESSORIES",
         text: focPrice.toString(),
       })
-    )
+    );
   }, [focPrice]);
 
   useEffect(() => {
@@ -720,22 +737,21 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       PincodeDetailsNew(selector.pincode).then(
         (res) => {
           // dispatch an action to update address
-          let tempAddr = []
+          let tempAddr = [];
           if (res?.length > 0) {
             for (let i = 0; i < res.length; i++) {
               if (res[i].Block === selector.village) {
-                setDefaultAddress(res[i])
+                setDefaultAddress(res[i]);
               }
-              tempAddr.push({ label: res[i].Name, value: res[i] })
+              tempAddr.push({ label: res[i].Name, value: res[i] });
               if (i === res.length - 1) {
-                setAddressData([...tempAddr])
+                setAddressData([...tempAddr]);
               }
             }
           }
           // dispatch(updateAddressByPincode(resolve));
         },
-        (rejected) => {
-        }
+        (rejected) => {}
       );
     }
   }, [selector.pincode]);
@@ -764,14 +780,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     selector.additional_offer_1,
     selector.additional_offer_2,
     totalOnRoadPrice,
-    selector.registrationCharges
+    selector.registrationCharges,
   ]);
 
   const getBranchId = () => {
     AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_ID).then((branchId) => {
       setSelectedBranchId(branchId);
     });
-  }
+  };
 
   const deleteModalFromServer = async ({ token, value }) => {
     //alert(value.id)
@@ -816,7 +832,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         if (
           value?.model &&
           selector?.pre_booking_details_response?.dmsLeadDto?.leadStatus !=
-          "ENQUIRYCOMPLETED" &&
+            "ENQUIRYCOMPLETED" &&
           modelData.model != value.model
         ) {
           dispatch(updateOfferPriceData());
@@ -826,7 +842,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         if (
           value?.model &&
           selector?.pre_booking_details_response?.dmsLeadDto?.leadStatus !=
-          "ENQUIRYCOMPLETED" &&
+            "ENQUIRYCOMPLETED" &&
           modelData.model == value.model
         ) {
           if (modelData.variant == value.variant) {
@@ -903,40 +919,40 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const isPrimaryOnclick = async (isPrimaryEnabled, index, item) => {
     try {
       if (isPrimaryEnabled === "Y") {
-        await setIsPrimaryCurrentIndex(index)
+        await setIsPrimaryCurrentIndex(index);
         updateVariantModelsData(item.model, true, item.variant);
       }
       if (carModelsList && carModelsList.length > 0) {
-        let arr = await [...carModelsList]
-        var data = arr[isPrimaryCureentIndex]
+        let arr = await [...carModelsList];
+        var data = arr[isPrimaryCureentIndex];
         const cardata = await {
-          "color": data.color,
-          "fuel": data.fuel,
-          "id": data.id,
-          "model": data.model,
-          "transimmisionType": data.transimmisionType,
-          "variant": data.variant,
-          "isPrimary": "N"
-        }
+          color: data.color,
+          fuel: data.fuel,
+          id: data.id,
+          model: data.model,
+          transimmisionType: data.transimmisionType,
+          variant: data.variant,
+          isPrimary: "N",
+        };
         const selecteditem = await {
-          "color": item.color,
-          "fuel": item.fuel,
-          "id": item.id,
-          "model": item.model,
-          "transimmisionType": item.transimmisionType,
-          "variant": item.variant,
-          "isPrimary": "Y"
-        }
-        await setCarModelsList([])
+          color: item.color,
+          fuel: item.fuel,
+          id: item.id,
+          model: item.model,
+          transimmisionType: item.transimmisionType,
+          variant: item.variant,
+          isPrimary: "Y",
+        };
+        await setCarModelsList([]);
         arr[isPrimaryCureentIndex] = cardata;
-        arr[index] = selecteditem
-        await setCarModelsList([...arr])
-        await setIsPrimaryCurrentIndex(index)
+        arr[index] = selecteditem;
+        await setCarModelsList([...arr]);
+        await setIsPrimaryCurrentIndex(index);
       }
     } catch (error) {
       // alert(error)
     }
-  }
+  };
   const getAsyncstoreData = async () => {
     const employeeData = await AsyncStore.getData(
       AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -965,7 +981,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         isManager: isManager,
         editEnable: editEnable,
         isPreBookingApprover: isPreBookingApprover,
-        isSelfManager: jsonObj.isSelfManager
+        isSelfManager: jsonObj.isSelfManager,
       });
 
       const payload = {
@@ -978,43 +994,54 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       Promise.all([
         dispatch(getDropDataApi(payload)),
         getCarModelListFromServer(jsonObj.orgId),
-      ]).then(() => {
-      });
+      ]).then(() => {});
 
       // Get Token
       AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
         setUserToken(token);
+        setAuthToken(token);
         getBanksListFromServer(jsonObj.orgId, token);
-        GetPreBookingDropReasons(jsonObj.orgId, token)
+        GetPreBookingDropReasons(jsonObj.orgId, token);
       });
     }
   };
 
   const GetPreBookingDropReasons = (orgId, token) => {
-
-    GetDropList(orgId, token, "Pre%20Booking").then(resolve => {
-      setDropData(resolve);
-    }, reject => {
-      console.error("Getting drop list faild")
-    })
-  }
+    GetDropList(orgId, token, "Pre%20Booking").then(
+      (resolve) => {
+        setDropData(resolve);
+      },
+      (reject) => {
+        console.error("Getting drop list faild");
+      }
+    );
+  };
 
   const getCarModelListFromServer = (orgId) => {
     // Call Api
-    GetCarModelList(orgId).then((resolve) => {
-      let modelList = [];
-      if (resolve.length > 0) {
-        resolve.forEach((item) => {
-          modelList.push({ id: item.vehicleId, name: item.model, isChecked: false, ...item });
-        });
-      }
-      setCarModelsData([...modelList]);
-    }, (rejected) => {
-    }).finally(() => {
-      // Get PreBooking Details
-      getPreBookingDetailsFromServer();
-    })
-  }
+    GetCarModelList(orgId)
+      .then(
+        (resolve) => {
+          let modelList = [];
+          if (resolve.length > 0) {
+            resolve.forEach((item) => {
+              modelList.push({
+                id: item.vehicleId,
+                name: item.model,
+                isChecked: false,
+                ...item,
+              });
+            });
+          }
+          setCarModelsData([...modelList]);
+        },
+        (rejected) => {}
+      )
+      .finally(() => {
+        // Get PreBooking Details
+        getPreBookingDetailsFromServer();
+      });
+  };
 
   const getPreBookingDetailsFromServer = () => {
     if (universalId) {
@@ -1039,11 +1066,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   // Handle Pre-Booking Details Response
   useEffect(() => {
     if (selector.pre_booking_details_response) {
-      setShowPrebookingPaymentSection(false)
-      setShowApproveRejectBtn(false)
-      setShowSubmitDropBtn(false)
-      setIsEdit(false)
-      setIsReciptDocUpload(false)
+      setShowPrebookingPaymentSection(false);
+      setShowApproveRejectBtn(false);
+      setShowSubmitDropBtn(false);
+      setIsEdit(false);
+      setIsReciptDocUpload(false);
       let dmsContactOrAccountDto;
       if (
         selector.pre_booking_details_response.hasOwnProperty("dmsAccountDto")
@@ -1060,7 +1087,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       dispatch(getOnRoadPriceDtoListApi(dmsLeadDto.id));
       //if (dmsLeadDto.leadStatus === "ENQUIRYCOMPLETED" || dmsLeadDto.leadStatus === "SENTFORAPPROVAL" || dmsLeadDto.leadStatus === "REJECTED") {
 
-      if (dmsLeadDto.leadStatus === "ENQUIRYCOMPLETED" || dmsLeadDto.leadStatus === "REJECTED") {
+      if (
+        dmsLeadDto.leadStatus === "ENQUIRYCOMPLETED" ||
+        dmsLeadDto.leadStatus === "REJECTED"
+      ) {
         setShowSubmitDropBtn(true);
       }
 
@@ -1075,7 +1105,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         setShowApproveRejectBtn(false);
       }
       if (dmsLeadDto.leadStatus === "REJECTED") {
-        setIsRejectSelected(true)
+        setIsRejectSelected(true);
       }
       // Update dmsContactOrAccountDto
       dispatch(updateDmsContactOrAccountDtoData(dmsContactOrAccountDto));
@@ -1096,7 +1126,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       // Update Paid Accesories
       if (dmsLeadDto.dmsAccessories.length > 0) {
         let initialValue = 0;
-        let totalPrice = 0, totalFOCPrice = 0
+        let totalPrice = 0,
+          totalFOCPrice = 0;
         // const totalPrice = dmsLeadDto.dmsAccessories.reduce(
         //     (preValue, currentValue) => preValue + currentValue.amount,
         //     initialValue
@@ -1104,19 +1135,21 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         for (let i = 0; i < dmsLeadDto.dmsAccessories.length; i++) {
           if (dmsLeadDto.dmsAccessories[i].dmsAccessoriesType !== "FOC") {
             totalPrice += dmsLeadDto.dmsAccessories[i].amount;
-          }
-          else {
+          } else {
             totalFOCPrice += dmsLeadDto.dmsAccessories[i].amount;
           }
           if (i === dmsLeadDto.dmsAccessories.length - 1) {
             setSelectedPaidAccessoriesPrice(totalPrice);
-            setSelectedFOCAccessoriesPrice(totalFOCPrice)
+            setSelectedFOCAccessoriesPrice(totalFOCPrice);
           }
         }
-
       }
       setSelectedPaidAccessoriesList([...dmsLeadDto.dmsAccessories]);
-      setPaidAccessoriesListNew([...dmsLeadDto.dmsAccessories.filter((item) => item.dmsAccessoriesType !== "FOC")]);
+      setPaidAccessoriesListNew([
+        ...dmsLeadDto.dmsAccessories.filter(
+          (item) => item.dmsAccessoriesType !== "FOC"
+        ),
+      ]);
       // setSelectedFOCAccessoriesList([...dmsLeadDto.dmsAccessories.filter((item) => item.dmsAccessoriesType === "FOC")]);
     }
   }, [selector.pre_booking_details_response]);
@@ -1148,7 +1181,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const getPreBookingListFromServer = async () => {
     if (userData.employeeId) {
       let endUrl =
-        "?limit=10&offset=" + "0" + "&status=PREBOOKING&empId=" + userData.employeeId;
+        "?limit=10&offset=" +
+        "0" +
+        "&status=PREBOOKING&empId=" +
+        userData.employeeId;
       dispatch(getPreBookingData(endUrl));
     }
   };
@@ -1160,8 +1196,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
   const setPriceConfirmationData = () => {
     if (selector.on_road_price_dto_list_response.length > 0) {
-      const dmsOnRoadPriceDtoObj =
-        selector.on_road_price_dto_list_response[0];
+      const dmsOnRoadPriceDtoObj = selector.on_road_price_dto_list_response[0];
       // setSelectedInsurencePrice(dmsOnRoadPriceDtoObj.)
       setSelectedWarrentyPrice(dmsOnRoadPriceDtoObj.warrantyAmount);
       let handlingChargeSlctdLocal = handlingChargSlctd;
@@ -1182,10 +1217,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         setEssentialKitSlctd(true);
         essentialKitSlctdLocal = true;
       }
-      if (
-        dmsOnRoadPriceDtoObj.fast_tag &&
-        dmsOnRoadPriceDtoObj.fast_tag > 0
-      ) {
+      if (dmsOnRoadPriceDtoObj.fast_tag && dmsOnRoadPriceDtoObj.fast_tag > 0) {
         setFastTagSlctd(true);
         fastTagSlctdLocal = true;
       }
@@ -1217,9 +1249,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         );
       }
       if (dmsOnRoadPriceDtoObj.insuranceDiscount) {
-        setInsuranceDiscount(
-          dmsOnRoadPriceDtoObj.insuranceDiscount.toString()
-        );
+        setInsuranceDiscount(dmsOnRoadPriceDtoObj.insuranceDiscount.toString());
       }
       if (dmsOnRoadPriceDtoObj.accessoriesDiscount) {
         setAccDiscount(dmsOnRoadPriceDtoObj.accessoriesDiscount.toString());
@@ -1256,11 +1286,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   }, [addNewInput]);
 
   useEffect(() => {
-    calculateOnRoadPriceAfterDiscount()
+    calculateOnRoadPriceAfterDiscount();
   }, [insuranceDiscount, accDiscount]);
 
   useEffect(() => {
-    setSelectedAddOnsPrice(selector.addOnPrice)
+    setSelectedAddOnsPrice(selector.addOnPrice);
   }, [selector.addOnPrice]);
 
   useEffect(() => {
@@ -1417,23 +1447,24 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       case "CUSTOMER_TYPE":
         // setDataForDropDown([...selector.customer_types_data]);
 
-        let customerTypes = []
-        customerTypes = CustomerTypesObj21[selector.enquiry_segment.toLowerCase()]
+        let customerTypes = [];
+        customerTypes =
+          CustomerTypesObj21[selector.enquiry_segment.toLowerCase()];
         if (orgId === 21) {
-          customerTypes = CustomerTypesObj21[selector.enquiry_segment.toLowerCase()];
+          customerTypes =
+            CustomerTypesObj21[selector.enquiry_segment.toLowerCase()];
           selector.customerType = "";
-        }
-        else if (orgId === 22) {
-          customerTypes = CustomerTypesObj22[selector.enquiry_segment.toLowerCase()];
+        } else if (orgId === 22) {
+          customerTypes =
+            CustomerTypesObj22[selector.enquiry_segment.toLowerCase()];
           selector.customerType = "";
-        }
-        else {
-          customerTypes = CustomerTypesObj[selector.enquiry_segment.toLowerCase()];
+        } else {
+          customerTypes =
+            CustomerTypesObj[selector.enquiry_segment.toLowerCase()];
           selector.customerType = "";
         }
         setDataForDropDown([...customerTypes]);
         break;
-
 
       case "GENDER":
         setDataForDropDown([...Gender_Types]);
@@ -1445,9 +1476,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         setDataForDropDown([...carModelsData]);
         break;
       case "VARIENT":
-        setDataForDropDown([
-          ...selectedCarVarientsData.varientListForDropDown,
-        ]);
+        setDataForDropDown([...selectedCarVarientsData.varientListForDropDown]);
         break;
       case "COLOR":
         setDataForDropDown([...carColorsData]);
@@ -1606,13 +1635,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     let totalPrice = 0;
     totalPrice += priceInfomationData.ex_showroom_price;
     // const lifeTax = getLifeTax();
-    let lifeTax = taxPercent !== '' ? getLifeTaxNew(Number(taxPercent)) : 0;
+    let lifeTax = taxPercent !== "" ? getLifeTaxNew(Number(taxPercent)) : 0;
     setLifeTaxAmount(lifeTax);
     totalPrice += lifeTax;
     totalPrice += priceInfomationData.registration_charges;
     totalPrice += selectedRegistrationCharges?.cost || 0;
     totalPrice += selectedInsurencePrice;
-    if (selector.insurance_type !== '') {
+    if (selector.insurance_type !== "") {
       totalPrice += selectedAddOnsPrice;
     }
     totalPrice += selectedWarrentyPrice;
@@ -1632,7 +1661,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     // setTotalOnRoadPriceAfterDiscount(totalPrice - selectedFOCAccessoriesPrice);
     totalPrice += selectedPaidAccessoriesPrice;
     setTotalOnRoadPrice(totalPrice);
-    setInitialTotalAmt(totalPrice)
+    setInitialTotalAmt(totalPrice);
     // setTotalOnRoadPriceAfterDiscount(totalPrice);
   };
 
@@ -1964,7 +1993,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       }
     }
 
-    if (selector.enquiry_segment.toLowerCase() === "personal" && isCheckPanOrAadhaar("aadhaar", selector.adhaar_number)) {
+    if (
+      selector.enquiry_segment.toLowerCase() === "personal" &&
+      isCheckPanOrAadhaar("aadhaar", selector.adhaar_number)
+    ) {
       scrollToPos(4);
       setOpenAccordian("4");
       showToast("Please enter proper Aadhaar number");
@@ -2034,7 +2066,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     if (!selector.pre_booking_details_response.dmsLeadDto) {
       return;
     }
-    setIsLoading(true)
+    setIsLoading(true);
     let postOnRoadPriceTable = {};
     postOnRoadPriceTable.additionalOffer1 = selector.additional_offer_1;
     postOnRoadPriceTable.additionalOffer2 = selector.additional_offer_2;
@@ -2057,7 +2089,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     postOnRoadPriceTable.fast_tag = fastTagSlctd
       ? priceInfomationData.fast_tag
       : 0;
-    postOnRoadPriceTable.id = selector.on_road_price_dto_list_response.length ? selector.on_road_price_dto_list_response[0].id
+    postOnRoadPriceTable.id = selector.on_road_price_dto_list_response.length
+      ? selector.on_road_price_dto_list_response[0].id
       : 0;
     postOnRoadPriceTable.insuranceAddonData = selectedInsurenceAddons;
     postOnRoadPriceTable.insuranceAmount = selectedInsurencePrice;
@@ -2072,8 +2105,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     postOnRoadPriceTable.promotionalOffers = selector.promotional_offer;
     // postOnRoadPriceTable.registrationCharges =
     //   priceInfomationData.registration_charges;
-    postOnRoadPriceTable.registrationCharges = selectedRegistrationCharges?.cost ? selectedRegistrationCharges?.cost : 0;
-    postOnRoadPriceTable.registrationType = selectedRegistrationCharges?.name ? selectedRegistrationCharges?.name : "";
+    postOnRoadPriceTable.registrationCharges = selectedRegistrationCharges?.cost
+      ? selectedRegistrationCharges?.cost
+      : 0;
+    postOnRoadPriceTable.registrationType = selectedRegistrationCharges?.name
+      ? selectedRegistrationCharges?.name
+      : "";
     postOnRoadPriceTable.specialScheme = selector.consumer_offer;
     postOnRoadPriceTable.exchangeOffers = selector.exchange_offer;
     postOnRoadPriceTable.tcs = tcsAmount;
@@ -2084,19 +2121,25 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     postOnRoadPriceTable.form_or_pan = selector.form_or_pan;
 
     if (isEdit) {
-      setIsLoading(true)
-      Promise.all([dispatch(sendEditedOnRoadPriceDetails(postOnRoadPriceTable))]).then(() => {
-        setIsLoading(false)
-      }).catch(() => {
-        setIsLoading(false)
-      })
+      setIsLoading(true);
+      Promise.all([
+        dispatch(sendEditedOnRoadPriceDetails(postOnRoadPriceTable)),
+      ])
+        .then(() => {
+          setIsLoading(false);
+        })
+        .catch(() => {
+          setIsLoading(false);
+        });
     } else {
-      setIsLoading(true)
-      Promise.all([dispatch(sendOnRoadPriceDetails(postOnRoadPriceTable))]).then(() => {
-        setIsLoading(false)
-      }).catch((err) => {
-        setIsLoading(false)
-      })
+      setIsLoading(true);
+      Promise.all([dispatch(sendOnRoadPriceDetails(postOnRoadPriceTable))])
+        .then(() => {
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          setIsLoading(false);
+        });
     }
     // Promise.all([
     //     dispatch(sendOnRoadPriceDetails(postOnRoadPriceTable))
@@ -2256,7 +2299,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
         // if pan number
         if (!panArr.length && selector.pan_number) {
-        let  newObj = {
+          let newObj = {
             ...dmsAttachmentsObj,
             documentNumber: selector.pan_number,
             documentType: "pan",
@@ -2350,16 +2393,16 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   // Handle Update Pre-Booking Details Response
   useEffect(() => {
     if (selector.update_pre_booking_details_response === "success") {
-      dispatch(updateResponseStatus(''))
+      dispatch(updateResponseStatus(""));
       if (typeOfActionDispatched === "DROP_ENQUIRY") {
         // showToastSucess("Successfully Pre-Booking Dropped");
         // getPreBookingListFromServer();
       } else if (typeOfActionDispatched === "UPDATE_PRE_BOOKING") {
-        setIsLoading(false)
+        setIsLoading(false);
         showToastSucess("Successfully Sent for Manager Approval");
         goToLeadScreen();
       } else if (typeOfActionDispatched === "APPROVE") {
-        setIsLoading(false)
+        setIsLoading(false);
         showToastSucess("Booking Approval Approved");
         goToLeadScreen();
       } else if (typeOfActionDispatched === "REJECT") {
@@ -2371,20 +2414,18 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   useEffect(() => {
     try {
       if (selector.dmsLeadProducts && selector.dmsLeadProducts.length > 0) {
-        addingIsPrimary()
+        addingIsPrimary();
       }
     } catch (error) {
       // alert("useeffect"+error)
-
     }
-
-  }, [selector.dmsLeadProducts])
+  }, [selector.dmsLeadProducts]);
 
   const addingIsPrimary = async () => {
     try {
-      let array = await [...selector.dmsLeadProducts]
+      let array = await [...selector.dmsLeadProducts];
       for (let i = 0; i < selector.dmsLeadProducts.length; i++) {
-        var item = await array[i]
+        var item = await array[i];
         // if (i == 0) {
         //     item = await {
         //         "color": item.color,
@@ -2408,37 +2449,42 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         //         "isPrimary": false
         //     }
         // }
-        var isPrimary = "N"
+        var isPrimary = "N";
         if (item.isPrimary && item.isPrimary != null)
-          isPrimary = item.isPrimary
+          isPrimary = item.isPrimary;
         item = await {
-          "color": item.color,
-          "fuel": item.fuel,
-          "id": item.id,
-          "model": item.model,
-          "transimmisionType": item.transimmisionType,
-          "variant": item.variant,
-          "isPrimary": isPrimary
-        }
-        array[i] = await item
-        if (item.isPrimary && item.isPrimary != null && item.isPrimary === 'Y') {
-
-          await setIsPrimaryCurrentIndex(i)
+          color: item.color,
+          fuel: item.fuel,
+          id: item.id,
+          model: item.model,
+          transimmisionType: item.transimmisionType,
+          variant: item.variant,
+          isPrimary: isPrimary,
+        };
+        array[i] = await item;
+        if (
+          item.isPrimary &&
+          item.isPrimary != null &&
+          item.isPrimary === "Y"
+        ) {
+          await setIsPrimaryCurrentIndex(i);
           updateVariantModelsData(item.model, true, item.variant);
         }
 
         if (i === selector.dmsLeadProducts.length - 1) {
-          let index = array.findIndex((item) => item.model === selector.pre_booking_details_response?.dmsLeadDto?.model);
+          let index = array.findIndex(
+            (item) =>
+              item.model ===
+              selector.pre_booking_details_response?.dmsLeadDto?.model
+          );
           if (index !== -1) {
             // array[index].isPrimary = "Y"
           }
         }
       }
-      await setCarModelsList(array)
-    } catch (error) {
-    }
-
-  }
+      await setCarModelsList(array);
+    } catch (error) {}
+  };
   const mapContactOrAccountDto = (prevData) => {
     let dataObj = { ...prevData };
     dataObj.salutation = selector.salutation;
@@ -2484,7 +2530,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     dataObj.dmsfinancedetails = mapDmsFinanceDetails(dataObj.dmsfinancedetails);
     dataObj.dmsBooking = mapDmsBookingDetails(dataObj.dmsBooking, dataObj.id);
     dataObj.dmsAttachments = mapDmsAttachments(dataObj.dmsAttachments);
-    dataObj.dmsAccessories = [...selectedPaidAccessoriesList, ...selectedFOCAccessoriesList];
+    dataObj.dmsAccessories = [
+      ...selectedPaidAccessoriesList,
+      ...selectedFOCAccessoriesList,
+    ];
     return dataObj;
   };
 
@@ -2534,12 +2583,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     // dataObj.fuel = selector.fuel_type;
     // dataObj.transimmisionType = selector.transmission_type;
     // dmsLeadProducts[0] = dataObj;
-    let selectedModel = [], tempCarModels = [...carModelsList], index = -1;
-    selectedModel = carModelsList.filter((item) => item.isPrimary === "Y")
-    index = carModelsList.findIndex((item) => item.isPrimary === "Y")
+    let selectedModel = [],
+      tempCarModels = [...carModelsList],
+      index = -1;
+    selectedModel = carModelsList.filter((item) => item.isPrimary === "Y");
+    index = carModelsList.findIndex((item) => item.isPrimary === "Y");
     tempCarModels.splice(index, 1);
-    tempCarModels.unshift(selectedModel[0])
-    dmsLeadProducts = tempCarModels
+    tempCarModels.unshift(selectedModel[0]);
+    dmsLeadProducts = tempCarModels;
     return dmsLeadProducts;
   };
 
@@ -2657,11 +2708,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   };
 
   const proceedToCancelPreBooking = () => {
-
     if (dropRemarks.length === 0 || dropReason.length === 0) {
       showToastRedAlert("Please enter details for drop");
-      scrollToPos(10)
-      setOpenAccordian('10')
+      scrollToPos(10);
+      setOpenAccordian("10");
       return;
     }
     if (!selector.pre_booking_details_response) {
@@ -2725,7 +2775,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     );
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
-      if (selector.pre_booking_details_response.dmsLeadDto.salesConsultant == jsonObj.empName) {
+      if (
+        selector.pre_booking_details_response.dmsLeadDto.salesConsultant ==
+        jsonObj.empName
+      ) {
         let leadId = selector.pre_booking_details_response.dmsLeadDto.id;
         if (!leadId) {
           showToast("lead id not found");
@@ -2739,9 +2792,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           return;
         }
 
-        if (!uploadedImagesDataObj.hasOwnProperty('receipt')) {
-          scrollToPos(12)
-          setOpenAccordian('12')
+        if (!uploadedImagesDataObj.hasOwnProperty("receipt")) {
+          scrollToPos(12);
+          setOpenAccordian("12");
           showToast("Please upload receipt doc");
           return;
         }
@@ -2780,9 +2833,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         payload.typeUpi = selector.type_of_upi;
         payload.utrNo = selector.utr_no;
         dispatch(preBookingPaymentApi(payload));
-      }
-      else {
-        alert('Permission Denied')
+      } else {
+        alert("Permission Denied");
         // Alert.alert(
         //     'Permission Denied',
         //     [
@@ -2863,27 +2915,186 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         const taskData = filteredAry[0];
         const taskId = taskData.taskId;
         const taskStatus = taskData.taskStatus;
-        dispatch(clearState());
-        clearLocalData()
-        navigation.navigate(
-          AppNavigator.EmsStackIdentifiers.proceedToBooking,
-          {
-            identifier: "PROCEED_TO_BOOKING",
-            taskId,
-            universalId,
-            taskStatus,
-            taskData: taskData,
-          }
-        );
-
+        dispatch(getTaskDetailsApi(taskId));
+        // dispatch(clearState());
+        // clearLocalData();
+        // navigation.navigate(AppNavigator.EmsStackIdentifiers.proceedToBooking, {
+        //   identifier: "PROCEED_TO_BOOKING",
+        //   taskId,
+        //   universalId,
+        //   taskStatus,
+        //   taskData: taskData,
+        // });
       }
     } else if (selector.assigned_tasks_list_status === "failed") {
       showToastRedAlert("Something went wrong");
     }
   }, [selector.assigned_tasks_list_status]);
 
+  // ================ PROCEED TO BOOKING ====================== //
+  useEffect(() => {
+    getCurrentLocation();
+    if (universalId) {
+      dispatch(getEnquiryDetailsApi(universalId));
+    }
+    return () => {
+      dispatch(clearBookingState());
+    };
+  }, []);
+
+  const getCurrentLocation = () => {
+    Geolocation.getCurrentPosition((info) => {
+      setCurrentLocation({
+        lat: info.coords.latitude,
+        long: info.coords.longitude,
+      });
+    });
+  };
+
+  useEffect(() => {
+    if (selectorBooking.task_details_response) {
+      setTypeOfActionDispatched("PROCEED_TO_PREBOOKING");
+      let taskId = "";
+      if (selector.assigned_tasks_list.length > 0) {
+        const filteredAry = selector.assigned_tasks_list.filter(
+          (item) => item.taskName === "Proceed to Booking"
+        );
+        if (filteredAry.length == 0) {
+          return;
+        }
+        const taskData = filteredAry[0];
+        taskId = taskData.taskId;
+      }
+
+      if (selectorBooking.task_details_response?.taskId !== taskId) {
+        return;
+      }
+
+      if (isProceedToBookingClicked) {
+        isProceedToBookingClicked = false;
+        proceedToPreBookingClicked();
+      }
+    }
+  }, [selectorBooking.task_details_response]);
+  
+  
+  const proceedToPreBookingClicked = async () => {
+    const newTaskObj = { ...selectorBooking.task_details_response };
+    newTaskObj.taskStatus = "CLOSED";
+    newTaskObj.lat = currentLocation ? currentLocation.lat.toString() : null;
+    newTaskObj.lon = currentLocation ? currentLocation.long.toString() : null;
+    dispatch(updateTaskApi(newTaskObj));
+  };
+
+  useEffect(() => {
+    if (selectorBooking.update_task_response_status === "success") {
+      const endUrl = `${universalId}` + "?" + "stage=BOOKING";
+      dispatch(changeEnquiryStatusApi(endUrl));
+    } else if (selectorBooking.update_task_response_status === "failed") {
+      showToastRedAlert("something went wrong");
+    }
+  }, [selectorBooking.update_task_response_status]);
+
+  useEffect(() => {
+    if (selectorBooking.change_enquiry_status === "success") {
+      callCustomerLeadReferenceApi();
+    } else if (selectorBooking.change_enquiry_status === "failed") {
+      showToastRedAlert("something went wrong");
+    }
+  }, [selectorBooking.change_enquiry_status]);
+
+  const callCustomerLeadReferenceApi = async () => {
+    const payload = {
+      branchid: userData.branchId,
+      leadstage: "BOOKING",
+      orgid: userData.orgId,
+      universalId: universalId,
+    };
+    const url = URL.CUSTOMER_LEAD_REFERENCE();
+
+    await fetch(url, {
+      headers: {
+        "Content-Type": "application/json",
+        "auth-token": authToken,
+      },
+      method: "POST",
+      body: JSON.stringify(payload),
+    })
+      .then((res) => res.json())
+      .then((jsonRes) => {
+        if (jsonRes.success === true) {
+          if (jsonRes.dmsEntity?.leadCustomerReference) {
+            const refNumber =
+              jsonRes.dmsEntity?.leadCustomerReference.referencenumber;
+            updateEnuiquiryDetails(refNumber);
+          }
+        }
+      })
+      .catch((err) => console.error(err));
+  };
+
+  const updateEnuiquiryDetails = (refNumber) => {
+    if (!selectorBooking.enquiry_details_response) {
+      return;
+    }
+
+    let enquiryDetailsObj = { ...selectorBooking.enquiry_details_response };
+    let dmsLeadDto = { ...enquiryDetailsObj.dmsLeadDto };
+    dmsLeadDto.leadStage = "BOOKING";
+    dmsLeadDto.referencenumber = refNumber;
+    enquiryDetailsObj.dmsLeadDto = dmsLeadDto;
+    dispatch(updateEnquiryDetailsApi(enquiryDetailsObj));
+  };
+
+  useEffect(() => {
+    if (
+      selectorBooking.update_enquiry_details_response_status === "success" &&
+      selectorBooking.update_enquiry_details_response
+    ) {
+      displayCreateEnquiryAlert();
+    } else if (selectorBooking.update_enquiry_details_response_status === "failed") {
+      showToastRedAlert("something went wrong");
+    }
+  }, [
+    selectorBooking.update_enquiry_details_response_status,
+    selectorBooking.update_enquiry_details_response,
+  ]);
+
+   displayCreateEnquiryAlert = () => {
+     Alert.alert(
+       "Booking Successfully Created",
+       "",
+       [
+         {
+           text: "OK",
+           onPress: () => goToParentScreen(),
+         },
+       ],
+       {
+         cancelable: false,
+       }
+     );
+   };
+
+   const goToParentScreen = () => {
+     navigation.popToTop();
+     navigation.navigate("EMS_TAB");
+     navigation.navigate(EmsTopTabNavigatorIdentifiers.leads, {
+       fromScreen: "booking",
+     });
+     dispatch(clearState());
+     clearLocalData();
+     dispatch(clearBookingState());
+   };
+
+  // ========================== //
+  // ========================== //
+  // ========================== //
+
   const updatePaidAccessroies = (tableData) => {
-    let totalPrice = 0, totFoc = 0, totMrp = 0;
+    let totalPrice = 0,
+      totFoc = 0,
+      totMrp = 0;
     let newFormatSelectedAccessories = [];
     let newFormatSelectedFOCAccessories = [];
     let tempPaidAcc = [];
@@ -2910,8 +3121,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     tableData.forEach((item) => {
       if (item.selected) {
         totalPrice += item.cost;
-        if (item.item === 'FOC') {
-          totFoc += item.cost
+        if (item.item === "FOC") {
+          totFoc += item.cost;
           // totMrp += item.cost
           newFormatSelectedAccessories.push({
             id: item.id,
@@ -2920,11 +3131,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             accessoriesName: item.partName,
             leadId: selector?.pre_booking_details_response?.dmsLeadDto?.id,
             allotmentStatus: null,
-            dmsAccessoriesType: item.item
+            dmsAccessoriesType: item.item,
           });
         }
-        if (item.item !== 'FOC') {
-          totMrp += item.cost
+        if (item.item !== "FOC") {
+          totMrp += item.cost;
           newFormatSelectedAccessories.push({
             id: item.id,
             amount: item.cost,
@@ -2932,7 +3143,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             accessoriesName: item.partName,
             leadId: selector?.pre_booking_details_response?.dmsLeadDto?.id,
             allotmentStatus: null,
-            dmsAccessoriesType: item.item
+            dmsAccessoriesType: item.item,
           });
           tempPaidAcc.push({
             id: item.id,
@@ -2941,7 +3152,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             accessoriesName: item.partName,
             leadId: selector?.pre_booking_details_response?.dmsLeadDto?.id,
             allotmentStatus: null,
-            dmsAccessoriesType: item.item
+            dmsAccessoriesType: item.item,
           });
         }
       }
@@ -2949,20 +3160,19 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     setSelectedPaidAccessoriesPrice(totMrp);
     // setSelectedFOCAccessoriesPrice(totFoc);
     if (totFoc > 0) {
-      setFocPrice(totFoc)
-    }
-    else {
+      setFocPrice(totFoc);
+    } else {
       dispatch(
         setOfferPriceDetails({
           key: "FOR_ACCESSORIES",
-          text: '',
+          text: "",
         })
-      )
+      );
     }
     // if (totMrp > 0){
     //     setMrpPrice(totMrp)
     // }
-    setMrpPrice(totMrp)
+    setMrpPrice(totMrp);
     setSelectedPaidAccessoriesList([...newFormatSelectedAccessories]);
     setPaidAccessoriesListNew([...tempPaidAcc]);
     // setSelectedFOCAccessoriesList([...newFormatSelectedFOCAccessories]);
@@ -2982,7 +3192,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   };
 
   const getLifeTaxNew = (val) => {
-    return priceInfomationData.ex_showroom_price * (val / 100)
+    return priceInfomationData.ex_showroom_price * (val / 100);
   };
 
   const getTcsAmount = () => {
@@ -3079,7 +3289,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         break;
     }
 
-
     await fetch(URL.UPLOAD_DOCUMENT(), {
       method: "POST",
       headers: {
@@ -3093,7 +3302,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           const dataObj = { ...uploadedImagesDataObj };
           dataObj[response.documentType] = response;
           setUploadedImagesDataObj({ ...dataObj });
-          setIsReciptDocUpload(true)
+          setIsReciptDocUpload(true);
         }
       })
       .catch((error) => {
@@ -3178,21 +3387,20 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     PincodeDetailsNew(pincode).then(
       (res) => {
         // dispatch an action to update address
-        let tempAddr = []
+        let tempAddr = [];
         if (res) {
           if (res.length > 0) {
             for (let i = 0; i < res.length; i++) {
-              tempAddr.push({ label: res[i].Name, value: res[i] })
+              tempAddr.push({ label: res[i].Name, value: res[i] });
               if (i === res.length - 1) {
-                setAddressData([...tempAddr])
+                setAddressData([...tempAddr]);
               }
             }
           }
         }
         // dispatch(updateAddressByPincode(resolve));
       },
-      (rejected) => {
-      }
+      (rejected) => {}
     );
   };
 
@@ -3204,21 +3412,20 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     PincodeDetailsNew(pincode).then(
       (res) => {
         // dispatch an action to update address
-        let tempAddr = []
+        let tempAddr = [];
         if (res) {
           if (res.length > 0) {
             for (let i = 0; i < res.length; i++) {
-              tempAddr.push({ label: res[i].Name, value: res[i] })
+              tempAddr.push({ label: res[i].Name, value: res[i] });
               if (i === res.length - 1) {
-                setAddressData2([...tempAddr])
+                setAddressData2([...tempAddr]);
               }
             }
           }
         }
         // dispatch(updateAddressByPincode(resolve));
       },
-      (rejected) => {
-      }
+      (rejected) => {}
     );
   };
 
@@ -3264,7 +3471,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   };
 
   const deleteHandler = (index) => {
-    let newArr = Object.assign([],addNewInput);
+    let newArr = Object.assign([], addNewInput);
     if (newArr[index]?.amount) {
       var amt = newArr[index].amount;
       setOtherPrices(otherPrices - Number(amt));
@@ -3278,7 +3485,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     newArr[index].name = value;
     setAddNewInput(Object.assign([], newArr));
   };
-  
+
   const inputHandlerPrice = (value, index) => {
     let newArr = Object.assign([], addNewInput);
     newArr[index].amount = value;
@@ -3289,7 +3496,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     let amount = Number(totalOnRoadPrice) + Number(otherPrices);
     return amount;
   };
-  
+
   const getActualPriceAfterDiscount = () => {
     let amount = Number(totalOnRoadPriceAfterDiscount) + Number(otherPrices);
     return amount;
@@ -3305,7 +3512,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         isError = true;
       }
     } else {
-      if (otherPriceErrorNameIndex != null && otherPriceErrorNameIndex == index) {
+      if (
+        otherPriceErrorNameIndex != null &&
+        otherPriceErrorNameIndex == index
+      ) {
         isError = true;
       }
     }
@@ -6908,7 +7118,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         //         : true
                         // }
                         labelStyle={{ textTransform: "none" }}
-                        onPress={proceedToBookingClicked}
+                        onPress={() => {
+                          isProceedToBookingClicked = true;
+                          proceedToBookingClicked();
+                        }}
                       >
                         Proceed To Booking View
                       </Button>
