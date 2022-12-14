@@ -245,6 +245,8 @@ export const targetSettingsSlice = createSlice({
             .addCase(getAllTargetMapping.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.targetMapping = []
+                console.log(JSON.stringify(action.payload.data));
+                
                 state.targetMapping = action.payload.data ? action.payload.data : [];
                 state.isDataLoaded = true
             })
