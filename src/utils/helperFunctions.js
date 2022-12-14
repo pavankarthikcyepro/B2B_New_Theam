@@ -524,10 +524,6 @@ export const achievementPercentage = (achievement, tgt, paramName, enq = {}, ret
     }
   }
 
-  console.log("paramName -> ", paramName);
-  console.log("achievement -> ", achievement);
-  console.log("target -> ", target);
-
   return target > 0 ? Math.round((achievement / target) * 100) : achievement;
 };
 
