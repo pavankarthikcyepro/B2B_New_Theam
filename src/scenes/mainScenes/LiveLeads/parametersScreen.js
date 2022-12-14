@@ -139,9 +139,9 @@ const ParametersScreen = ({ route }) => {
   };
 
   useEffect(() => {
-     navigation.addListener("focus", () => {
-    setSelfInsightsData([]);
-     });
+    navigation.addListener("focus", () => {
+      setSelfInsightsData([]);
+    });
   }, [navigation]);
 
   useEffect(() => {
@@ -513,6 +513,7 @@ const ParametersScreen = ({ route }) => {
         navigation.navigate("LEADS", {
           param: paramName === "INVOICE" ? "Retail" : paramName,
           moduleType: "live-leads",
+          employeeDetail: "",
         });
       }, 1000);
     } else if (isContact) {
@@ -520,6 +521,7 @@ const ParametersScreen = ({ route }) => {
       setTimeout(() => {
         navigation.navigate(EmsTopTabNavigatorIdentifiers.preEnquiry, {
           moduleType: "live-leads",
+          employeeDetail: "",
         });
       }, 100);
     }
@@ -528,6 +530,11 @@ const ParametersScreen = ({ route }) => {
   const renderSelfInsightsView = (item, index) => {
     return (
       <Card
+        onPress={() =>
+          item?.achievment && item?.achievment > 0
+            ? navigateToEmsScreen(item)
+            : null
+        }
         style={[
           styles.paramCard,
           {
@@ -549,11 +556,6 @@ const ParametersScreen = ({ route }) => {
                     : "none",
               },
             ]}
-            onPress={() =>
-              item?.achievment && item?.achievment > 0
-                ? navigateToEmsScreen(item)
-                : null
-            }
           >
             {item?.achievment && item?.achievment > 0 ? item?.achievment : 0}
           </Text>

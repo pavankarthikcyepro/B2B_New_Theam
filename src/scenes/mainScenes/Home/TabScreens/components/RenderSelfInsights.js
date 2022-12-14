@@ -1,11 +1,11 @@
-import React from "react";
-import {Text, View} from "react-native";
+import React, { useEffect } from "react";
+import { Pressable, Text, TouchableOpacity, View } from "react-native";
+import { AppNavigator } from "../../../../../navigations";
 import {IconButton, ProgressBar} from "react-native-paper";
 import {Colors} from "../../../../../styles";
 import moment from "moment/moment";
-import {achievementPercentage} from "../../../../../utils/helperFunctions";
-import {AppNavigator} from "../../../../../navigations";
 import TextTicker from "react-native-text-ticker";
+import { achievementPercentage } from "../../../../../utils/helperFunctions";
 
 export const RenderSelfInsights = (args) => {
   const color = [
@@ -30,7 +30,11 @@ export const RenderSelfInsights = (args) => {
     (new Date(monthLastDate).getTime() - new Date(currentDate).getTime()) /
     (1000 * 60 * 60 * 24);
   const { data, type, navigation } = args;
+
   const enq = data && data.find((x) => x && x.paramName === "Enquiry");
+  const ret = data && data.find((x) => x && x.paramName == "INVOICE");
+  const acc = data && data.find((x) => x && x.paramName == "Accessories");
+
   const navigableParams = [
     "Enquiry",
     "Booking",
@@ -62,154 +66,158 @@ export const RenderSelfInsights = (args) => {
           style={{ flexDirection: "row", marginLeft: 8 }}
           key={`${item?.paramShortName}_${index}`}
         >
-          {/* row title */}
-          <View
-            style={{
-              width: "10%",
-              justifyContent: "center",
-              marginTop: 5,
+          <TouchableOpacity
+            style={{ flexDirection: "row", width: "55%" }}
+            onPress={() => {
+              let param = item.paramName;
+              if (
+                param === "Enquiry" ||
+                param === "Booking" ||
+                param === "INVOICE"
+              ) {
+                navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
+                setTimeout(() => {
+                  navigation.navigate("LEADS", {
+                    param: param === "INVOICE" ? "Retail" : param,
+                    moduleType: "home",
+                    employeeDetail: "",
+                  });
+                }, 1000);
+              } else if (param == "Home Visit" || param == "Test Drive") {
+                navigation.jumpTo(AppNavigator.TabStackIdentifiers.myTask, {
+                  screen: "CLOSED",
+                });
+                setTimeout(() => {
+                  navigation.navigate("CLOSED");
+                }, 500);
+              } else if (param === "DROPPED") {
+                navigation.navigate(
+                  AppNavigator.DrawerStackIdentifiers.dropAnalysis
+                );
+              } else if (param === "Test Drive" || param === "Home Visit") {
+                navigation.navigate(AppNavigator.TabStackIdentifiers.myTask);
+                setTimeout(() => {
+                  navigation.navigate("CLOSED");
+                }, 750);
+              }
             }}
           >
-            <Text>
-              {item.paramName === "DROPPED" ? "Lost" : item?.paramShortName}
-            </Text>
-          </View>
-
-          {/* Progress bar Left */}
-          <View
-            style={{
-              flex: 1,
-              height: 20,
-              width: "15%",
-              marginTop: 10,
-              paddingLeft: 5,
-              position: "relative",
-              borderTopLeftRadius: 3,
-              justifyContent: "center",
-              borderBottomLeftRadius: 3,
-              backgroundColor: color[index % color.length],
-            }}
-          >
-            <TextTicker
-              duration={10000}
-              loop={true}
-              // shouldAnimateTreshold={50}
-              bounce={false}
-              repeatSpacer={50}
-              marqueeDelay={0}
+            {/* row title */}
+            <View
               style={{
-                marginBottom: 0,
+                width: "20%",
+                justifyContent: "center",
+                marginTop: 5,
               }}
             >
-              <Text
-                onPress={() => {
-                  let param = item.paramName;
-                  if (
-                    param === "Enquiry" ||
-                    param === "Booking" ||
-                    param === "INVOICE"
-                  ) {
-                    navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
-                    setTimeout(() => {
-                      navigation.navigate("LEADS", {
-                        param: param === "INVOICE" ? "Retail" : param,
-                        moduleType: "home",
-                      });
-                    }, 1000);
-                  } else if (param == "Home Visit" || param == "Test Drive") {
-                    navigation.jumpTo(AppNavigator.TabStackIdentifiers.myTask, {
-                      screen: "CLOSED",
-                    });
-                    setTimeout(() => {
-                      navigation.navigate("CLOSED");
-                    }, 500);
-                  } else if (param === "DROPPED") {
-                    navigation.navigate(
-                      AppNavigator.DrawerStackIdentifiers.dropAnalysis
-                    );
-                  } else if (param === "Test Drive" || param === "Home Visit") {
-                    navigation.navigate(
-                      AppNavigator.TabStackIdentifiers.myTask
-                    );
-                    setTimeout(() => {
-                      navigation.navigate("CLOSED");
-                    }, 750);
-                  }
-                }}
+              <Text>
+                {item.paramName === "DROPPED" ? "Lost" : item?.paramShortName}
+              </Text>
+            </View>
+
+            {/* Progress bar Left */}
+            <View
+              style={{
+                flex: 1,
+                height: 20,
+                width: "20%",
+                marginTop: 10,
+                paddingLeft: 5,
+                position: "relative",
+                borderTopLeftRadius: 3,
+                justifyContent: "center",
+                borderBottomLeftRadius: 3,
+                backgroundColor: color[index % color.length],
+              }}
+            >
+              <TextTicker
+                duration={10000}
+                loop={true}
+                // shouldAnimateTreshold={50}
+                bounce={false}
+                repeatSpacer={50}
+                marqueeDelay={0}
                 style={{
-                  color: "#fff",
-                  textDecorationLine: navigableParams.includes(item.paramName)
-                    ? "underline"
-                    : "none",
+                  marginBottom: 0,
                 }}
               >
-                {type === 0
-                  ? item.achievment
-                  : achievementPercentage(
-                      item.achievment,
-                      item.target,
-                      item.paramName,
-                      enq.achievment
-                    )}
-              </Text>
-            </TextTicker>
-          </View>
-
-          {/* Progress bar right */}
-          <View
-            style={{
-              width: "35%",
-              marginTop: 10,
-              position: "relative",
-            }}
-          >
-            <ProgressBar
-              progress={
-                item.achivementPerc.includes("%")
-                  ? parseInt(
-                      item.achivementPerc.substring(
-                        0,
-                        item.achivementPerc.indexOf("%")
-                      )
-                    ) === 0
-                    ? 0
-                    : parseInt(
-                        item.achivementPerc.substring(
-                          0,
-                          item.achivementPerc.indexOf("%")
-                        )
-                      ) / 100
-                  : parseFloat(item.achivementPerc) / 100
-              }
-              color={color[index % color.length]}
-              style={{
-                height: 20,
-                borderTopRightRadius: 3,
-                borderBottomRightRadius: 3,
-                backgroundColor: "#eeeeee",
-              }}
-            />
-            {item.paramName !== "DROPPED" && (
-              <View style={{ position: "absolute", top: 1, right: 5 }}>
                 <Text
                   style={{
-                    color:
-                      parseInt(
+                    color: "#fff",
+                    textDecorationLine: navigableParams.includes(item.paramName)
+                      ? "underline"
+                      : "none",
+                  }}
+                >
+                  {type === 0
+                    ? item.achievment
+                    : `${achievementPercentage(
+                        item.achievment,
+                        item.target,
+                        item.paramName,
+                        enq,
+                        ret,
+                        acc
+                      )}%`}
+                </Text>
+              </TextTicker>
+            </View>
+
+            {/* Progress bar right */}
+            <View
+              style={{
+                width: "35%",
+                marginTop: 10,
+                position: "relative",
+              }}
+            >
+              <ProgressBar
+                progress={
+                  item.achivementPerc.includes("%")
+                    ? parseInt(
                         item.achivementPerc.substring(
                           0,
                           item.achivementPerc.indexOf("%")
                         )
-                      ) >= 90
-                        ? Colors.WHITE
-                        : Colors.BLACK,
-                  }}
-                >
-                  {item.target}
-                </Text>
-              </View>
-            )}
-          </View>
-
+                      ) === 0
+                      ? 0
+                      : parseInt(
+                          item.achivementPerc.substring(
+                            0,
+                            item.achivementPerc.indexOf("%")
+                          )
+                        ) / 100
+                    : parseFloat(item.achivementPerc) / 100
+                }
+                color={color[index % color.length]}
+                style={{
+                  height: 20,
+                  borderTopRightRadius: 3,
+                  borderBottomRightRadius: 3,
+                  backgroundColor: "#eeeeee",
+                }}
+              />
+              {item.paramName !== "DROPPED" && (
+                <View style={{ position: "absolute", top: 1, right: 5 }}>
+                  <Text
+                    style={{
+                      color:
+                        parseInt(
+                          item.achivementPerc.substring(
+                            0,
+                            item.achivementPerc.indexOf("%")
+                          )
+                        ) >= 90
+                          ? Colors.WHITE
+                          : Colors.BLACK,
+                    }}
+                  >
+                    {item.target}
+                  </Text>
+                </View>
+              )}
+            </View>
+          </TouchableOpacity>
           {/* Balance and AR/Day */}
           {item.paramName !== "DROPPED" ? (
             <View

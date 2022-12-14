@@ -205,7 +205,7 @@ const HomeScreen = ({ route, navigation }) => {
     getMenuListFromServer();
     getCustomerType();
     checkLoginUserAndEnableReportButton();
-    getLoginEmployeeDetailsFromAsyn();
+    // getLoginEmployeeDetailsFromAsyn();
     // }
 
     const unsubscribe = navigation.addListener("focus", () => {
