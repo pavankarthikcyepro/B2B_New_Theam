@@ -155,7 +155,8 @@ export const RenderEmployeeParameters = (parameter) => {
                     {selectedParameter
                       ? displayType === 0
                         ? selectedParameter?.achievment
-                        : selectedParameter?.target > 0
+                        : selectedParameter.paramName == "DROPPED" ||
+                          selectedParameter?.target > 0
                         ? `${achievementPercentage(
                             selectedParameter?.achievment,
                             selectedParameter?.target,

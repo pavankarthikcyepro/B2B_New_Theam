@@ -23,12 +23,6 @@ export const RenderGrandTotal = (parameter) => {
           (item) => item.paramName === "Accessories"
         )[0];
 
-        console.log("param -> ", param);
-        console.log("selectedParameter -> ", selectedParameter);
-        console.log("enq -> ", enq);
-        console.log("ret -> ", ret);
-        console.log("acc -> ", acc);
-
         return (
           <View
             key={param}
