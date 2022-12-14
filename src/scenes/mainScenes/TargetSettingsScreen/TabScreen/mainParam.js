@@ -654,7 +654,7 @@ const MainParamScreen = ({ route, navigation }) => {
           );
           const json = await response.json();
 
-          let payload1 = getEmployeePayloadTotal(employeeData, jsonObj.empId, [
+          let payload1 = getEmployeePayloadTotal(employeeData, [jsonObj.empId], [
             jsonObj.branchId,
           ]);
           const response1 = await client.post(
@@ -691,7 +691,7 @@ const MainParamScreen = ({ route, navigation }) => {
     }
   }, [homeSelector.all_emp_parameters_data]);
 
-  const getEmployeePayloadTotal = (employeeData, item, branch) => {
+  const getEmployeePayloadTotal = (employeeData, item, newIds, branch) => {
     const jsonObj = JSON.parse(employeeData);
     const dateFormat = "YYYY-MM-DD";
     const currentDate = moment().format(dateFormat);
@@ -705,7 +705,7 @@ const MainParamScreen = ({ route, navigation }) => {
       .format(dateFormat);
     return {
       loggedInEmpId: jsonObj.empId,
-      childEmpId: [item],
+      childEmpId: newIds,
       pageNo: 1,
       size: 500,
       startDate: monthFirstDate,
@@ -1060,6 +1060,7 @@ const MainParamScreen = ({ route, navigation }) => {
               let newIds = res[0]?.payload?.employeeTargetAchievements.map(
                 (emp) => emp.empId
               );
+              console.log(tempRawData);
               if (tempRawData.length > 0) {
                 for (let i = 0; i < tempRawData.length; i++) {
                   // tempRawData[i].empName = tempRawData[i].empName,
@@ -1074,7 +1075,8 @@ const MainParamScreen = ({ route, navigation }) => {
                     lastParameter[index].employeeTargetAchievements =
                       tempRawData;
                     let newIds = tempRawData.map((emp) => emp.empId);
-                    console.log("NEWIDS", newIds);
+                    let branch = tempRawData.map((emp) => emp.branchId);
+                    // console.log("NEWIDS", branch);
 
                     let payload = getPayloadTotal(employeeData);
                     // const response = await client.post(
@@ -1086,14 +1088,16 @@ const MainParamScreen = ({ route, navigation }) => {
                     let payload1 = getEmployeePayloadTotal(
                       employeeData,
                       jsonObj.empId,
-                      newIds
+                      newIds,
+                      removeDuplicates(branch)
                     );
+                    // console.log("PAYLOAD", payload1);
                     const response1 = await client.post(
                       URL.GET_ALL_TARGET_MAPPING_SEARCH(),
                       payload1
                     );
                     const json1 = await response1.json();
-                    console.log("CHILD", json1);
+                    // console.log("CHILD", json1);
 
                     if (newIds.length >= 2) {
                       for (let i = 0; i < newIds.length; i++) {
@@ -1126,6 +1130,10 @@ const MainParamScreen = ({ route, navigation }) => {
       }
     } catch (error) {}
   };
+
+   function removeDuplicates(arr) {
+     return arr.filter((item, index) => arr.indexOf(item) === index);
+   }
 
   const RenderTeamsTargetData = (item, type, index) => {
     const curIndex = updateTeamsParamsData.findIndex(
