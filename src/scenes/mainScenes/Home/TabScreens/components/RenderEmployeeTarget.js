@@ -27,8 +27,15 @@ export const RenderEmployeeTarget = (parameter) => {
     }
   };
 
-  const { params, item, color, displayType, navigation, moduleType } =
-    parameter;
+  const {
+    params,
+    item,
+    color,
+    displayType,
+    navigation,
+    moduleType,
+    editParameters,
+  } = parameter;
   const paramsData = params.map(({ paramName }) => paramName);
   const navigableParams = [
     "PreEnquiry",
@@ -131,6 +138,7 @@ export const RenderEmployeeTarget = (parameter) => {
                               ? 63
                               : 53,
                           paddingTop: 4,
+                          textDecorationLine: editParameters ?'underline':'none'
                         },
                       ]}
                     >

@@ -654,21 +654,24 @@ const MainParamScreen = ({ route, navigation }) => {
           );
           const json = await response.json();
 
-          let payload1 = getEmployeePayloadTotal(employeeData, [jsonObj.empId], [
-            jsonObj.branchId,
-          ]);
+          let payload1 = getEmployeePayloadTotal(
+            employeeData,
+            [jsonObj.empId],
+            [jsonObj.branchId]
+          );
           const response1 = await client.post(
             URL.GET_ALL_TARGET_MAPPING_SEARCH(),
             payload1
           );
           const json1 = await response1.json();
-          console.log("response", json1);
+          console.log("response", json1.data[0]);
+          let format = getDataFormat(json1.data[0]);
           myParams[0] = {
             ...myParams[0],
             isOpenInner: false,
             employeeTargetAchievements: [],
             // targetAchievements: homeSelector.totalParameters,
-            targetAchievements: newArray,
+            targetAchievements: format,
             tempTargetAchievements: newArray,
             // tempTargetAchievements: myParams[0]?.targetAchievements,
           };
@@ -691,7 +694,7 @@ const MainParamScreen = ({ route, navigation }) => {
     }
   }, [homeSelector.all_emp_parameters_data]);
 
-  const getEmployeePayloadTotal = (employeeData, item, newIds, branch) => {
+  const getEmployeePayloadTotal = (employeeData, newIds, branch) => {
     const jsonObj = JSON.parse(employeeData);
     const dateFormat = "YYYY-MM-DD";
     const currentDate = moment().format(dateFormat);
@@ -708,8 +711,8 @@ const MainParamScreen = ({ route, navigation }) => {
       childEmpId: newIds,
       pageNo: 1,
       size: 500,
-      startDate: monthFirstDate,
-      endDate: monthLastDate,
+      startDate: selector.startDate,
+      endDate: selector.endDate,
       branchNumber: branch,
     };
   };
@@ -727,14 +730,59 @@ const MainParamScreen = ({ route, navigation }) => {
       .endOf("month")
       .format(dateFormat);
     return {
-      startDate: monthFirstDate,
-      endDate: monthLastDate,
+      startDate: selector.startDate,
+      endDate: selector.endDate,
       loggedInEmpId: jsonObj.empId.toString(),
       childEmpId: [jsonObj.empId],
       branchNumber: [jsonObj.branchId],
     };
   };
 
+  const getDataFormat= (item)=>{
+    let formatedData = [
+      {
+        paramName: "Retail",
+        target: item.retailTarget || "0",
+      },
+      {
+        paramName: "Enquiry",
+        target: item.enquiry || "0",
+      },
+      {
+        paramName: "Test Drive",
+        target: item.testDrive || "0",
+      },
+      {
+        paramName: "Visit",
+        target: item.homeVisit || "0",
+      },
+      {
+        paramName: "Booking",
+        target: item.booking || "0",
+      },
+      {
+        paramName: "Exchange",
+        target: item.exchange || "0",
+      },
+      {
+        paramName: "Finance",
+        target: item.finance || "0",
+      },
+      {
+        paramName: "Insurance",
+        target: item.insurance || "0",
+      },
+      {
+        paramName: "Exwarranty",
+        target: item.exWarranty || "0",
+      },
+      {
+        paramName: "Accessories",
+        target: item.accessories || "0",
+      },
+    ];
+    return formatedData
+  }
   const addTargetData = async () => {
     if (selectedBranch === null) {
       showToast("Please select branch");
@@ -1060,7 +1108,6 @@ const MainParamScreen = ({ route, navigation }) => {
               let newIds = res[0]?.payload?.employeeTargetAchievements.map(
                 (emp) => emp.empId
               );
-              console.log(tempRawData);
               if (tempRawData.length > 0) {
                 for (let i = 0; i < tempRawData.length; i++) {
                   // tempRawData[i].empName = tempRawData[i].empName,
@@ -1076,45 +1123,29 @@ const MainParamScreen = ({ route, navigation }) => {
                       tempRawData;
                     let newIds = tempRawData.map((emp) => emp.empId);
                     let branch = tempRawData.map((emp) => emp.branchId);
-                    // console.log("NEWIDS", branch);
-
-                    let payload = getPayloadTotal(employeeData);
-                    // const response = await client.post(
-                    //   URL.GET_TARGET_PLANNING_COUNT(),
-                    //   payload
-                    // );
-                    // const json = await response.json();
-
                     let payload1 = getEmployeePayloadTotal(
                       employeeData,
-                      jsonObj.empId,
                       newIds,
                       removeDuplicates(branch)
                     );
-                    // console.log("PAYLOAD", payload1);
                     const response1 = await client.post(
                       URL.GET_ALL_TARGET_MAPPING_SEARCH(),
                       payload1
                     );
                     const json1 = await response1.json();
-                    // console.log("CHILD", json1);
-
                     if (newIds.length >= 2) {
                       for (let i = 0; i < newIds.length; i++) {
                         const element = newIds[i].toString();
-                        let tempPayload = getTotalPayload(
-                          employeeData,
-                          element
+                        let newArr = json1.data.filter(
+                          (e) => e.employeeId === element
                         );
-                        const response = await client.post(
-                          URL.GET_TOTAL_TARGET_PARAMS(),
-                          tempPayload
-                        );
-                        const json = await response.json();
-                        if (Array.isArray(json)) {
+                        if (Array.isArray(newArr)) {
+                          // lastParameter[index].employeeTargetAchievements[
+                          //   i
+                          // ].targetAchievements = newArray[0].target;
                           lastParameter[index].employeeTargetAchievements[
                             i
-                          ].targetAchievements = json;
+                          ].targetAchievements = newArray;
                         }
                       }
                     }
@@ -1131,9 +1162,9 @@ const MainParamScreen = ({ route, navigation }) => {
     } catch (error) {}
   };
 
-   function removeDuplicates(arr) {
-     return arr.filter((item, index) => arr.indexOf(item) === index);
-   }
+  function removeDuplicates(arr) {
+    return arr.filter((item, index) => arr.indexOf(item) === index);
+  }
 
   const RenderTeamsTargetData = (item, type, index) => {
     const curIndex = updateTeamsParamsData.findIndex(
@@ -1176,6 +1207,7 @@ const MainParamScreen = ({ route, navigation }) => {
           params={toggleParamsMetaData}
           navigation={navigation}
           moduleType={"home"}
+          editParameters={editParameters}
         />
       </View>
     );
