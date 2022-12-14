@@ -1124,7 +1124,18 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       showToast("Please select customer type");
       return;
     }
-
+    if (selector.source_of_enquiry.length == 0) {
+      scrollToPos(2);
+      setOpenAccordian("1");
+      showToast("Please fill Source Of Enquiry");
+      return;
+    }
+    if (selector.sub_source_of_enquiry.length == 0) {
+      scrollToPos(2);
+      setOpenAccordian("1");
+      showToast("Please fill Sub Source Of Enquiry");
+      return;
+    }
     if (selector.buyer_type.length == 0) {
       scrollToPos(2);
       setOpenAccordian("1");
@@ -1133,7 +1144,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     }
 
     // if (
-    //   selector.p_pincode.length == 0 
+    //   selector.p_pincode.length == 0
     //   ||
     //   selector.p_urban_or_rural.length == 0 ||
     //   selector.p_houseNum.length == 0 ||
@@ -1149,7 +1160,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     //   showToast("Please fill permanent address ");
     //   return;
     // }
-  if (selector.pincode.length == 0) {
+    if (selector.pincode.length == 0) {
       scrollToPos(14);
       setOpenAccordian("3");
       showToast("Please fill Communication pincode");
@@ -1238,24 +1249,24 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     // }
 
     if (selector.buyer_type === "Additional Buyer") {
-      if (
-        selector.a_make == 0 ||
-        selector.a_model == 0 ||
-        selector.a_varient == 0 ||
-        selector.a_color == 0 ||
-        selector.a_reg_no == 0
-      ) {
-        scrollToPos(8);
-        setOpenAccordian("8");
-        showToast("Please fill required fields in Addtional buyer ");
-        return;
-      }
-      if (!isValidateAlphabetics(selector.a_varient)) {
-        scrollToPos(8);
-        setOpenAccordian("8");
-        showToast("Please enter alphabetics only in varient ");
-        return;
-      }
+      // if (
+      //   selector.a_make == 0 ||
+      //   selector.a_model == 0 ||
+      //   selector.a_varient == 0 ||
+      //   selector.a_color == 0 ||
+      //   selector.a_reg_no == 0
+      // ) {
+      //   scrollToPos(8);
+      //   setOpenAccordian("8");
+      //   showToast("Please fill required fields in Addtional buyer ");
+      //   return;
+      // }
+      // if (!isValidateAlphabetics(selector.a_varient)) {
+      //   scrollToPos(8);
+      //   setOpenAccordian("8");
+      //   showToast("Please enter alphabetics only in varient ");
+      //   return;
+      // }
       if (!isValidateAlphabetics(selector.a_color)) {
         scrollToPos(8);
         setOpenAccordian("8");
@@ -1325,13 +1336,13 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       }
     }
 
-    if (
-      selector.leashing_name.length > 0 &&
-      !isValidateAlphabetics(selector.leashing_name)
-    ) {
-      showToast("Please enter proper leasing name");
-      return;
-    }
+    // if (
+    //   selector.leashing_name.length > 0 &&
+    //   !isValidateAlphabetics(selector.leashing_name)
+    // ) {
+    //   showToast("Please enter proper leasing name");
+    //   return;
+    // }
 
     if (isCheckPanOrAadhaar("pan", selector.pan_number)) {
       scrollToPos(6);
@@ -3743,7 +3754,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                 ) : null}
                 <View>
                   <DropDownSelectionItem
-                    label={"Source Of Enquiry"}
+                    label={"Source Of Enquiry*"}
                     value={selector.source_of_enquiry}
                     onPress={() =>
                       showDropDownModelMethod(
@@ -3752,6 +3763,17 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                       )
                     }
                   />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.source_of_enquiry === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
                 </View>
                 {/* <TextinputComp
                   style={styles.textInputStyle}
@@ -3783,7 +3805,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     .replace(/ /g, "") === "socialnetwork") && ( */}
                 <View>
                   <DropDownSelectionItem
-                    label={"Sub Source Of Enquiry"}
+                    label={"Sub Source Of Enquiry*"}
                     disabled={employeesData.length > 0 ? false : true}
                     value={selector.sub_source_of_enquiry}
                     onPress={() =>
@@ -3793,6 +3815,17 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                       )
                     }
                   />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.sub_source_of_enquiry === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
                 </View>
                 {/* )} */}
 
