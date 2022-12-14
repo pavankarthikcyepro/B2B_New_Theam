@@ -2850,8 +2850,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       name: `${fileName}-.${fileType}`,
       type: `image/${fileType}`,
       uri: Platform.OS === "ios" ? photoUri.replace("file://", "") : photoUri,
+      // randomNumber: userData.employeeId, //logedd in employeeID
     });
-    // formData.append("universalId", universalId);
+    formData.append("randomNumber", userData.employeeId);
 
     switch (keyId) {
       case "UPLOAD_PAN":
@@ -2891,7 +2892,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
         formData.append("documentType", "default");
         break;
     }
-    await fetch(URL.UPLOAD_DOCUMENT(), {
+    await fetch(URL.UPLOAD_RANDOM_DOCUMENT(), {
       method: "POST",
       headers: {
         "Content-Type": "multipart/form-data",
