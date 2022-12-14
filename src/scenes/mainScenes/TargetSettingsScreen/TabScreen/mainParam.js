@@ -646,7 +646,7 @@ const MainParamScreen = ({ route, navigation }) => {
             ),
           ];
 
-          console.log(myParams[0]);
+          // console.log(myParams[0]);
           let payload = getPayloadTotal(employeeData);
           const response = await client.post(
             URL.GET_TARGET_PLANNING_COUNT(),
@@ -707,7 +707,7 @@ const MainParamScreen = ({ route, navigation }) => {
       .endOf("month")
       .format(dateFormat);
     return {
-      loggedInEmpId: jsonObj.empId,
+      loggedInEmpId: jsonObj.empId.toString(),
       childEmpId: newIds,
       pageNo: 1,
       size: 500,
