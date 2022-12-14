@@ -742,43 +742,43 @@ const MainParamScreen = ({ route, navigation }) => {
     let formatedData = [
       {
         paramName: "Retail",
-        target: item.retailTarget || "0",
+        target: item?.retailTarget || "0",
       },
       {
         paramName: "Enquiry",
-        target: item.enquiry || "0",
+        target: item?.enquiry || "0",
       },
       {
         paramName: "Test Drive",
-        target: item.testDrive || "0",
+        target: item?.testDrive || "0",
       },
       {
         paramName: "Visit",
-        target: item.homeVisit || "0",
+        target: item?.homeVisit || "0",
       },
       {
         paramName: "Booking",
-        target: item.booking || "0",
+        target: item?.booking || "0",
       },
       {
         paramName: "Exchange",
-        target: item.exchange || "0",
+        target: item?.exchange || "0",
       },
       {
         paramName: "Finance",
-        target: item.finance || "0",
+        target: item?.finance || "0",
       },
       {
         paramName: "Insurance",
-        target: item.insurance || "0",
+        target: item?.insurance || "0",
       },
       {
         paramName: "Exwarranty",
-        target: item.exWarranty || "0",
+        target: item?.exWarranty || "0",
       },
       {
         paramName: "Accessories",
-        target: item.accessories || "0",
+        target: item?.accessories || "0",
       },
     ];
     return formatedData
@@ -1139,13 +1139,14 @@ const MainParamScreen = ({ route, navigation }) => {
                         let newArr = json1.data.filter(
                           (e) => e.employeeId === element
                         );
+                        console.log(newArr);
                         if (Array.isArray(newArr)) {
                           // lastParameter[index].employeeTargetAchievements[
                           //   i
                           // ].targetAchievements = newArray[0].target;
                           lastParameter[index].employeeTargetAchievements[
                             i
-                          ].targetAchievements = newArray;
+                          ].targetAchievements = getDataFormat(newArr[0]);
                         }
                       }
                     }
