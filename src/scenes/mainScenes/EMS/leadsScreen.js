@@ -786,14 +786,13 @@ const LeadsScreen = ({ route, navigation }) => {
         from = lastMonthFirstDate;
       } else {
       }
-
       let newPayload = {
         startdate: from ? from : selectedFromDate,
         enddate: to ? to : selectedToDate,
         model: modelData ? model : [],
         categoryType: categoryFilters ? categoryType : [],
         sourceOfEnquiry: sourceData ? sourceOfEnquiry : [],
-        empId: employeeDetail
+        empId: route?.params?.employeeDetail?.empId
           ? route?.params?.employeeDetail?.empId
           : jsonObj.empId,
         status: "",
@@ -1242,11 +1241,11 @@ const LeadsScreen = ({ route, navigation }) => {
           GlobalStyle.shadow,
           styles.floatingBtn,
           {
-            bottom: 85,
+            bottom: 70,
           },
         ]}
       >
-        <Entypo size={30} name="refresh" color={Colors.WHITE} />
+        <Entypo size={25} name="refresh" color={Colors.WHITE} />
       </TouchableOpacity>
       <TouchableOpacity
         onPress={() => {
@@ -1254,7 +1253,7 @@ const LeadsScreen = ({ route, navigation }) => {
         }}
         style={[GlobalStyle.shadow, styles.floatingBtn]}
       >
-        <Entypo size={35} name="plus" color={Colors.WHITE} />
+        <Entypo size={25} name="plus" color={Colors.WHITE} />
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -1339,11 +1338,11 @@ const styles = StyleSheet.create({
   floatingBtn: {
     alignItems: "center",
     justifyContent: "center",
-    width: 65,
+    width: 50,
     position: "absolute",
     bottom: 10,
     right: 10,
-    height: 65,
+    height: 50,
     backgroundColor: "rgba(255,21,107,6)",
     borderRadius: 100,
   },

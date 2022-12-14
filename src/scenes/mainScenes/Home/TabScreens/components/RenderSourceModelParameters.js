@@ -38,13 +38,12 @@ export const RenderSourceModelParameters = (parameter) => {
 
   const { params, item, color, displayType, moduleType, sourceModelTotals } =
     parameter;
+
   // const paramsData = params.map(({paramName}) => paramName);
   if (moduleType !== "live-leads") {
     paramsData.splice(6, 0, "DROPPED");
   }
-
-  console.log("sourceModelTotals -> ", sourceModelTotals);
-
+  
   return (
     <>
       {paramsData.map((param, i) => {
@@ -78,7 +77,8 @@ export const RenderSourceModelParameters = (parameter) => {
                     {selectedParameter
                       ? displayType === 0
                         ? selectedParameter.achievment
-                        : selectedParameter.target > 0
+                        : selectedParameter.paramName == "DROPPED" ||
+                          selectedParameter.target > 0
                         ? `${sourceModelPercentage(
                             selectedParameter.achievment,
                             sourceModelTotals[selectedParameter.paramName]
@@ -112,7 +112,8 @@ export const RenderSourceModelParameters = (parameter) => {
                   {selectedParameter
                     ? displayType === 0
                       ? selectedParameter.achievment
-                      : selectedParameter.target > 0
+                      : selectedParameter.paramName == "DROPPED" ||
+                        selectedParameter.target > 0
                       ? `${sourceModelPercentage(
                           selectedParameter.achievment,
                           sourceModelTotals[selectedParameter.paramName]
