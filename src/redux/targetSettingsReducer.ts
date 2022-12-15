@@ -105,6 +105,13 @@ export const saveTeamTargetParams = createAsyncThunk("TARGET_SETTINGS/saveTeamTa
     return json;
 })
 
+export const saveFilterPayload = createAsyncThunk(
+  "TARGET_SETTINGS/saveFilterPayload",
+   async (payload: any) => {
+    return payload;
+  }
+);
+
 export const targetSettingsSlice = createSlice({
     name: "TARGET_SETTINGS",
     initialState: {
@@ -183,7 +190,8 @@ export const targetSettingsSlice = createSlice({
         isDataLoaded: false,
         specialOcation: [],
         selectedSpecial: null,
-        team_target_data_saved: false
+        team_target_data_saved: false,
+        filterPayload: {}
     },
     reducers: {
         updateStartDate: (state, action) => {
@@ -208,149 +216,149 @@ export const targetSettingsSlice = createSlice({
     extraReducers: (builder) => {
 
         builder
-            .addCase(getEmployeesActiveBranch.pending, (state, action) => {
-                state.activeBranches = [];
-                state.isLoading = true;
-            })
-            .addCase(getEmployeesActiveBranch.fulfilled, (state, action) => {
-                state.isLoading = false;
+          .addCase(getEmployeesActiveBranch.pending, (state, action) => {
+            state.activeBranches = [];
+            state.isLoading = true;
+          })
+          .addCase(getEmployeesActiveBranch.fulfilled, (state, action) => {
+            state.isLoading = false;
 
-                state.activeBranches = action.payload;
-            })
-            .addCase(getEmployeesActiveBranch.rejected, (state, action) => {
-                state.isLoading = false;
+            state.activeBranches = action.payload;
+          })
+          .addCase(getEmployeesActiveBranch.rejected, (state, action) => {
+            state.isLoading = false;
 
-                state.activeBranches = [];
-            })
-            .addCase(getEmployeesRolls.pending, (state, action) => {
-                state.isLoading = true;
+            state.activeBranches = [];
+          })
+          .addCase(getEmployeesRolls.pending, (state, action) => {
+            state.isLoading = true;
 
-                state.roles = [];
-            })
-            .addCase(getEmployeesRolls.fulfilled, (state, action) => {
-                state.isLoading = false;
+            state.roles = [];
+          })
+          .addCase(getEmployeesRolls.fulfilled, (state, action) => {
+            state.isLoading = false;
 
-                state.roles = action.payload;
-            })
-            .addCase(getEmployeesRolls.rejected, (state, action) => {
-                state.isLoading = false;
+            state.roles = action.payload;
+          })
+          .addCase(getEmployeesRolls.rejected, (state, action) => {
+            state.isLoading = false;
 
-                state.roles = [];
-            })
-            .addCase(getAllTargetMapping.pending, (state, action) => {
-                state.isLoading = true;
-                state.isDataLoaded = false
-                state.targetMapping = [];
-            })
-            .addCase(getAllTargetMapping.fulfilled, (state, action) => {
-                state.isLoading = false;
-                state.targetMapping = []
-                console.log(JSON.stringify(action.payload.data));
-                
-                state.targetMapping = action.payload.data ? action.payload.data : [];
-                state.isDataLoaded = true
-            })
-            .addCase(getAllTargetMapping.rejected, (state, action) => {
-                state.isLoading = false;
-                state.targetMapping = [];
-                state.isDataLoaded = true
-            })
-            .addCase(addTargetMapping.pending, (state, action) => {
-                state.isLoading = true;
+            state.roles = [];
+          })
+          .addCase(getAllTargetMapping.pending, (state, action) => {
+            state.isLoading = true;
+            state.isDataLoaded = false;
+            state.targetMapping = [];
+          })
+          .addCase(getAllTargetMapping.fulfilled, (state, action) => {
+            state.isLoading = false;
+            state.targetMapping = [];
+            console.log(JSON.stringify(action.payload.data));
 
+            state.targetMapping = action.payload.data
+              ? action.payload.data
+              : [];
+            state.isDataLoaded = true;
+          })
+          .addCase(getAllTargetMapping.rejected, (state, action) => {
+            state.isLoading = false;
+            state.targetMapping = [];
+            state.isDataLoaded = true;
+          })
+          .addCase(addTargetMapping.pending, (state, action) => {
+            state.isLoading = true;
+          })
+          .addCase(addTargetMapping.fulfilled, (state, action) => {
+            state.isLoading = false;
 
-            })
-            .addCase(addTargetMapping.fulfilled, (state, action) => {
-                state.isLoading = false;
+            if (action.payload?.message) {
+              showToast(action.payload.message);
+            }
+          })
+          .addCase(addTargetMapping.rejected, (state, action) => {
+            state.isLoading = false;
+          })
+          .addCase(editTargetMapping.pending, (state, action) => {
+            state.isLoading = true;
+          })
+          .addCase(editTargetMapping.fulfilled, (state, action) => {
+            // state.isLoading = false;
+            if (action.payload?.message) {
+              showToast(action.payload.message);
+            }
+          })
+          .addCase(editTargetMapping.rejected, (state, action) => {
+            state.isLoading = false;
+          })
+          .addCase(getEmployeesDropDownData.pending, (state, action) => {
+            state.isLoading = true;
 
-                if (action.payload?.message){
-                    showToast(action.payload.message)
+            state.employees_drop_down_data = {};
+          })
+          .addCase(getEmployeesDropDownData.fulfilled, (state, action) => {
+            state.isLoading = false;
+
+            if (action.payload) {
+              state.employees_drop_down_data = action.payload;
+            }
+          })
+          .addCase(getEmployeesDropDownData.rejected, (state, action) => {
+            state.isLoading = false;
+
+            state.employees_drop_down_data = {};
+          })
+          .addCase(getSpecialDropValue.pending, (state, action) => {
+            state.isLoading = true;
+
+            // state.employees_drop_down_data = {};
+          })
+          .addCase(getSpecialDropValue.fulfilled, (state, action) => {
+            state.isLoading = false;
+
+            if (action.payload.length > 0) {
+              let temp = [];
+              for (let i = 0; i < action.payload.length; i++) {
+                temp.push({
+                  ...action.payload[i],
+                  id: action.payload[i].id,
+                  name: action.payload[i].value,
+                  isChecked: false,
+                });
+                if (i === action.payload.length - 1) {
+                  state.specialOcation = temp;
                 }
-            })
-            .addCase(addTargetMapping.rejected, (state, action) => {
-                state.isLoading = false;
+              }
+            }
+          })
+          .addCase(getSpecialDropValue.rejected, (state, action) => {
+            state.isLoading = false;
 
-            })
-            .addCase(editTargetMapping.pending, (state, action) => {
-                state.isLoading = true;
-                
-            })
-            .addCase(editTargetMapping.fulfilled, (state, action) => {
-                // state.isLoading = false;
-                if (action.payload?.message) {
-                    showToast(action.payload.message)
-                }
-            })
-            .addCase(editTargetMapping.rejected, (state, action) => {
-                state.isLoading = false;
-
-            })
-            .addCase(getEmployeesDropDownData.pending, (state, action) => {
-                state.isLoading = true;
-
-                state.employees_drop_down_data = {};
-            })
-            .addCase(getEmployeesDropDownData.fulfilled, (state, action) => {
-                state.isLoading = false;
-
-                if (action.payload) {
-                    state.employees_drop_down_data = action.payload;
-                }
-            })
-            .addCase(getEmployeesDropDownData.rejected, (state, action) => {
-                state.isLoading = false;
-
-                state.employees_drop_down_data = {};
-            })
-            .addCase(getSpecialDropValue.pending, (state, action) => {
-                state.isLoading = true;
-
-                // state.employees_drop_down_data = {};
-            })
-            .addCase(getSpecialDropValue.fulfilled, (state, action) => {
-                state.isLoading = false;
-
-                if (action.payload.length > 0) {
-                    let temp = [];
-                    for (let i = 0; i < action.payload.length; i++){
-                        temp.push({
-                            ...action.payload[i],
-                            id: action.payload[i].id,
-                            name: action.payload[i].value,
-                            isChecked: false,
-                        })
-                        if (i === action.payload.length - 1){
-                            state.specialOcation = temp;
-                        }
-                    }
-                }
-            })
-            .addCase(getSpecialDropValue.rejected, (state, action) => {
-                state.isLoading = false;
-
-                // state.employees_drop_down_data = {};
-            })
-            .addCase(saveSelfTargetParams.pending, (state, action) => {
-                state.isLoading = true;
-            })
-            .addCase(saveSelfTargetParams.fulfilled, (state, action) => {
-                state.isLoading = false;
-            })
-            .addCase(saveSelfTargetParams.rejected, (state, action) => {
-                state.isLoading = false;
-            })
-            .addCase(saveTeamTargetParams.pending, (state, action) => {
-                state.isLoading = true;
-                state.team_target_data_saved = false;
-            })
-            .addCase(saveTeamTargetParams.fulfilled, (state, action) => {
-                state.isLoading = false;
-                state.team_target_data_saved = true;
-            })
-            .addCase(saveTeamTargetParams.rejected, (state, action) => {
-                state.isLoading = false;
-                state.team_target_data_saved = false;
-            })
+            // state.employees_drop_down_data = {};
+          })
+          .addCase(saveSelfTargetParams.pending, (state, action) => {
+            state.isLoading = true;
+          })
+          .addCase(saveSelfTargetParams.fulfilled, (state, action) => {
+            state.isLoading = false;
+          })
+          .addCase(saveSelfTargetParams.rejected, (state, action) => {
+            state.isLoading = false;
+          })
+          .addCase(saveTeamTargetParams.pending, (state, action) => {
+            state.isLoading = true;
+            state.team_target_data_saved = false;
+          })
+          .addCase(saveTeamTargetParams.fulfilled, (state, action) => {
+            state.isLoading = false;
+            state.team_target_data_saved = true;
+          })
+          .addCase(saveTeamTargetParams.rejected, (state, action) => {
+            state.isLoading = false;
+            state.team_target_data_saved = false;
+          })
+          .addCase(saveFilterPayload.fulfilled, (state, action) => {
+            state.filterPayload = action.payload;
+          })
     }
 });
 

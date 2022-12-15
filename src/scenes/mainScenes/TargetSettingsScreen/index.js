@@ -52,6 +52,7 @@ import {
   updateTargetType,
   getSpecialDropValue,
   updateSpecial,
+  saveFilterPayload,
 } from "../../../redux/targetSettingsReducer";
 
 import { updateIsTeamPresent } from "../../../redux/homeReducer";
@@ -133,7 +134,7 @@ const TargetSettingsScreen = ({ route, navigation }) => {
   const [datePickerId, setDatePickerId] = useState("");
 
   useEffect(()=>{
-    console.log("SELECTED FILER",route.params);
+    dispatch(saveFilterPayload(route.params));
   },[route.params])
 
   useEffect(() => {
