@@ -1407,6 +1407,8 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                 insuranceCompanyName: selector.r_insurence_company_name,
                 insuranceDocumentKey: selector.insuranceDocumentKey,
                 regDocumentKey: selector.regDocumentKey,
+                insuranceDocumentPath: selector.insuranceDocumentPath,
+                regDocumentPath: selector.regDocumentPath,
                 insuranceExpiryDate: selector.r_insurence_to_date
                   ? moment(selector.r_insurence_to_date, "DD/MM/YYYY")
                   : "",
