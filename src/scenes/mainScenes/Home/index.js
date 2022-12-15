@@ -87,7 +87,6 @@ const HomeScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
   const [salesDataAry, setSalesDataAry] = useState([]);
-  const [selectedBranchName, setSelectedBranchName] = useState("");
 
   const [dropDownKey, setDropDownKey] = useState("");
   const [dropDownTitle, setDropDownTitle] = useState("Select Data");
@@ -201,7 +200,6 @@ const HomeScreen = ({ route, navigation }) => {
 
   useEffect(async () => {
     // if (await AsyncStore.getData(AsyncStore.Keys.IS_LOGIN) === 'true'){
-    updateBranchNameInHeader();
     getMenuListFromServer();
     getCustomerType();
     checkLoginUserAndEnableReportButton();
@@ -209,7 +207,6 @@ const HomeScreen = ({ route, navigation }) => {
     // }
 
     const unsubscribe = navigation.addListener("focus", () => {
-      updateBranchNameInHeader(); //Commented to resolved filter issue for Home Screen
       getLoginEmployeeDetailsFromAsyn(); //Commented to resolved filter issue for Home Screen
     });
 
@@ -222,16 +219,6 @@ const HomeScreen = ({ route, navigation }) => {
       const jsonObj = JSON.parse(employeeData);
       dispatch(getCustomerTypeList(jsonObj.orgId));
     }
-  };
-
-  const updateBranchNameInHeader = async () => {
-    await AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_NAME).then(
-      (branchName) => {
-        if (branchName) {
-          setSelectedBranchName(branchName);
-        }
-      }
-    );
   };
 
   const moveToSelectBranch = () => {
@@ -952,7 +939,7 @@ const HomeScreen = ({ route, navigation }) => {
       />
       <HeaderComp
         title={headerText}
-        branchName={selectedBranchName}
+        branchName={true}
         menuClicked={() => navigation.openDrawer()}
         branchClicked={() => moveToSelectBranch()}
         filterClicked={() => moveToFilter()}
