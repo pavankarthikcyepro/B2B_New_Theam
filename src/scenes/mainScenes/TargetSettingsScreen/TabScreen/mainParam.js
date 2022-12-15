@@ -672,7 +672,7 @@ const MainParamScreen = ({ route, navigation }) => {
             employeeTargetAchievements: [],
             // targetAchievements: homeSelector.totalParameters,
             targetAchievements: format,
-            tempTargetAchievements: newArray,
+            tempTargetAchievements: json[0].target,
             // tempTargetAchievements: myParams[0]?.targetAchievements,
           };
           // console.log("sssss", myParams[0]);

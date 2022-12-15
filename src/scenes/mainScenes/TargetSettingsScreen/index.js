@@ -132,6 +132,10 @@ const TargetSettingsScreen = ({ route, navigation }) => {
   const [toDate, setToDate] = useState("");
   const [datePickerId, setDatePickerId] = useState("");
 
+  useEffect(()=>{
+    console.log("SELECTED FILER",route.params);
+  },[route.params])
+
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
       initialTask();

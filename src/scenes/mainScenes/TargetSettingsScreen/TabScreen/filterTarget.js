@@ -17,7 +17,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { getTargetParametersEmpDataInsights } from "../../../../redux/homeReducer";
 import * as AsyncStore from "../../../../asyncStore";
 import { DatePickerComponent, DropDownComponant } from "../../../../components";
-import { DateSelectItem, DropDownSelectionItem } from "../../../../pureComponents";
+import {
+  DateSelectItem,
+  DropDownSelectionItem,
+} from "../../../../pureComponents";
 import moment from "moment";
 import { Button } from "react-native-paper";
 import {
@@ -124,11 +127,11 @@ const FilterTargetScreen = ({ route, navigation }) => {
     setToDate(monthLastDate);
   }, [selector.filter_drop_down_data]);
 
-//   useEffect(() => {
-//     if (nameKeyList.length > 0) {
-//       dropDownItemClicked(4, true);
-//     }
-//   }, [nameKeyList, userData]);
+  //   useEffect(() => {
+  //     if (nameKeyList.length > 0) {
+  //       dropDownItemClicked(4, true);
+  //     }
+  //   }, [nameKeyList, userData]);
 
   const dropDownItemClicked = async (index, initalCall = false) => {
     const topRowSelectedIds = [];
@@ -185,7 +188,7 @@ const FilterTargetScreen = ({ route, navigation }) => {
       } else {
         updateSelectedItemsForEmployeeDropDown(newData, index);
       }
-    //   submitBtnClicked(null)
+      //   submitBtnClicked(null)
     } else {
       setDropDownData([...data]);
     }
@@ -240,7 +243,6 @@ const FilterTargetScreen = ({ route, navigation }) => {
             if (selectedParendIds.includes(Number(obj.id))) {
               obj.selected = true;
               selectedNewParentIds.push(Number(obj.parentId));
-
             } else if (unselectedParentIds.includes(Number(obj.id))) {
               if (obj.selected == undefined) {
                 obj.selected = false;
@@ -403,11 +405,11 @@ const FilterTargetScreen = ({ route, navigation }) => {
     if (selector.employees_drop_down_data) {
       let names = [];
       let newDataObj = {};
-    //   console.log("EMPLOYEEEEE", selector.employees_drop_down_data);
-      for (let key in selector.employees_drop_down_data) {  
+      //   console.log("EMPLOYEEEEE", selector.employees_drop_down_data);
+      for (let key in selector.employees_drop_down_data) {
         const arrayData = selector.employees_drop_down_data[key];
-        if (arrayData.length !=0) {
-         names.push(key);
+        if (arrayData.length != 0) {
+          names.push(key);
         }
         const newArray = [];
         if (arrayData.length > 0) {
@@ -461,22 +463,38 @@ const FilterTargetScreen = ({ route, navigation }) => {
     let selectedIds = [];
     for (let key in employeeDropDownDataLocal) {
       const arrayData = employeeDropDownDataLocal[key];
-        if (arrayData.length !=0) {
+      // if (arrayData.length !=0) {
 
-        }
+      // }
       arrayData.forEach((element) => {
         if (element.selected === true) {
           selectedIds.push(element.code);
         }
       });
     }
-    let x = employeeDropDownDataLocal;
+    let x =
+      employeeDropDownDataLocal[
+        Object.keys(employeeDropDownDataLocal)[
+          Object.keys(employeeDropDownDataLocal).length - 2
+        ]
+      ];
+    let selectedID = x.filter((e) => e.selected == true);
+    console.log(selectedID);
+    navigation.navigate("MONTHLY_TARGET_SCREEN", {
+      params: {
+        from: "Filter",
+        selectedID: selectedID[0],
+        fromDate: fromDate,
+        toDate: toDate,
+      },
+    });
     // let selectedID = x[x-1];
-    if (selectedIds.length > 0) {
-      getDashboadTableDataFromServer(selectedIds, "EMPLOYEE");
-    } else {
-      showToast("Please select any value");
-    }
+    // return;
+    // if (selectedIds.length > 0) {
+    //   getDashboadTableDataFromServer(selectedIds, "EMPLOYEE");
+    // } else {
+    //   showToast("Please select any value");
+    // }
   };
 
   const updateSelectedDate = (date, key) => {
