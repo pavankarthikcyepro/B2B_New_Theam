@@ -53,6 +53,7 @@ import { clearState } from "../../redux/homeReducer";
 import { clearEnqState } from "../../redux/enquiryReducer";
 import { clearLeadDropState } from "../../redux/leaddropReducer";
 import ReactNativeModal from "react-native-modal";
+import { setBranchId, setBranchName } from "../../utils/helperFunctions";
 
 const screenWidth = Dimensions.get("window").width;
 const profileWidth = screenWidth / 6;
@@ -284,13 +285,14 @@ const SideMenuScreen = ({ navigation }) => {
     AsyncStore.storeData(AsyncStore.Keys.USER_TOKEN, "");
     AsyncStore.storeData(AsyncStore.Keys.EMP_ID, "");
     AsyncStore.storeData(AsyncStore.Keys.LOGIN_EMPLOYEE, "");
-    AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_ID, "");
-    AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_NAME, "");
     AsyncStore.storeData(AsyncStore.Keys.EXTENSION_ID, "");
     AsyncStore.storeData(AsyncStore.Keys.EXTENSSION_PWD, "");
     AsyncStore.storeData(AsyncStore.Keys.IS_LOGIN, "false");
     navigation.closeDrawer();
     //realm.close();
+    setBranchId("");
+    setBranchName("");
+    dispatch(clearState());
     dispatch(clearState());
     dispatch(clearEnqState());
     dispatch(clearLeadDropState());
