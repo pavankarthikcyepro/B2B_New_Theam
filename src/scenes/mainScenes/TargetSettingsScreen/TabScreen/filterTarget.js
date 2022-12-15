@@ -124,11 +124,11 @@ const FilterTargetScreen = ({ route, navigation }) => {
     setToDate(monthLastDate);
   }, [selector.filter_drop_down_data]);
 
-  useEffect(() => {
-    if (nameKeyList.length > 0) {
-      dropDownItemClicked(4, true);
-    }
-  }, [nameKeyList, userData]);
+//   useEffect(() => {
+//     if (nameKeyList.length > 0) {
+//       dropDownItemClicked(4, true);
+//     }
+//   }, [nameKeyList, userData]);
 
   const dropDownItemClicked = async (index, initalCall = false) => {
     const topRowSelectedIds = [];
@@ -185,6 +185,7 @@ const FilterTargetScreen = ({ route, navigation }) => {
       } else {
         updateSelectedItemsForEmployeeDropDown(newData, index);
       }
+    //   submitBtnClicked(null)
     } else {
       setDropDownData([...data]);
     }
@@ -203,7 +204,6 @@ const FilterTargetScreen = ({ route, navigation }) => {
     //         }
     //     })
     // }
-
     const data = employeeDropDownDataLocal[employeeTitleNameList[index]];
     setDropDownData([...data]);
     setSelectedItemIndex(index);
@@ -240,6 +240,7 @@ const FilterTargetScreen = ({ route, navigation }) => {
             if (selectedParendIds.includes(Number(obj.id))) {
               obj.selected = true;
               selectedNewParentIds.push(Number(obj.parentId));
+
             } else if (unselectedParentIds.includes(Number(obj.id))) {
               if (obj.selected == undefined) {
                 obj.selected = false;
@@ -281,7 +282,7 @@ const FilterTargetScreen = ({ route, navigation }) => {
     };
     totalDataObjLocal[key] = newOBJ;
     setTotalDataObj({ ...totalDataObjLocal });
-    initalCall && submitBtnClicked(totalDataObjLocal);
+    index == 4 && submitBtnClicked(totalDataObjLocal);
   };
 
   const updateSelectedItemsForEmployeeDropDown = (data, index) => {
@@ -362,24 +363,24 @@ const FilterTargetScreen = ({ route, navigation }) => {
 
     Promise.all([dispatch(getEmployeesDropDownData(payload1))])
       .then(() => {
-        Promise.all([
-          dispatch(getLeadSourceTableList(payload)),
-          dispatch(getVehicleModelTableList(payload)),
-          dispatch(getEventTableList(payload)),
-          dispatch(getLostDropChartData(payload)),
-          dispatch(updateFilterDropDownData(totalDataObj)),
-          // // Table Data
-          dispatch(getTaskTableList(payload2)),
-          dispatch(getSalesData(payload2)),
-          dispatch(getSalesComparisonData(payload2)),
-          // // Target Params Data
-          dispatch(getTargetParametersData(payload2)),
-          dispatch(getTargetParametersEmpDataInsights(payload2)), // Added to filter an Home Screen's INSIGHT
-        ])
-          .then(() => {})
-          .catch(() => {
-            setIsLoading(false);
-          });
+        // Promise.all([
+        // //   dispatch(getLeadSourceTableList(payload)),
+        // //   dispatch(getVehicleModelTableList(payload)),
+        // //   dispatch(getEventTableList(payload)),
+        // //   dispatch(getLostDropChartData(payload)),
+        // //   dispatch(updateFilterDropDownData(totalDataObj)),
+        //   // // Table Data
+        // //   dispatch(getTaskTableList(payload2)),
+        // //   dispatch(getSalesData(payload2)),
+        // //   dispatch(getSalesComparisonData(payload2)),
+        //   // // Target Params Data
+        // //   dispatch(getTargetParametersData(payload2)),
+        // //   dispatch(getTargetParametersEmpDataInsights(payload2)), // Added to filter an Home Screen's INSIGHT
+        // ])
+        //   .then(() => {})
+        //   .catch(() => {
+        //     setIsLoading(false);
+        //   });
       })
       .catch(() => {
         setIsLoading(false);
@@ -402,10 +403,12 @@ const FilterTargetScreen = ({ route, navigation }) => {
     if (selector.employees_drop_down_data) {
       let names = [];
       let newDataObj = {};
-      console.log("EMPLOYEEEEE", selector.employees_drop_down_data);
-      for (let key in selector.employees_drop_down_data) {
-        names.push(key);
+    //   console.log("EMPLOYEEEEE", selector.employees_drop_down_data);
+      for (let key in selector.employees_drop_down_data) {  
         const arrayData = selector.employees_drop_down_data[key];
+        if (arrayData.length !=0) {
+         names.push(key);
+        }
         const newArray = [];
         if (arrayData.length > 0) {
           arrayData.forEach((element) => {
@@ -458,12 +461,17 @@ const FilterTargetScreen = ({ route, navigation }) => {
     let selectedIds = [];
     for (let key in employeeDropDownDataLocal) {
       const arrayData = employeeDropDownDataLocal[key];
+        if (arrayData.length !=0) {
+
+        }
       arrayData.forEach((element) => {
         if (element.selected === true) {
           selectedIds.push(element.code);
         }
       });
     }
+    let x = employeeDropDownDataLocal;
+    // let selectedID = x[x-1];
     if (selectedIds.length > 0) {
       getDashboadTableDataFromServer(selectedIds, "EMPLOYEE");
     } else {
@@ -604,7 +612,7 @@ const FilterTargetScreen = ({ route, navigation }) => {
                       }}
                     />
                   </View>
-                  {!isLoading ? (
+                  {/* {!isLoading ? (
                     <View style={styles.submitBtnBckVw}>
                       <Button
                         labelStyle={{
@@ -625,14 +633,14 @@ const FilterTargetScreen = ({ route, navigation }) => {
                         style={{ width: buttonWidth }}
                         contentStyle={{ backgroundColor: Colors.BLACK }}
                         mode="contained"
-                        onPress={submitBtnClicked}
+                        onPress={()=>submitBtnClicked(null)}
                       >
                         Submit
                       </Button>
                     </View>
                   ) : (
                     <AcitivityLoader />
-                  )}
+                  )} */}
                 </View>
               );
             } else if (index === 2) {

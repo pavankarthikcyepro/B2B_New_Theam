@@ -389,7 +389,6 @@ const FilterScreen = ({ route, navigation }) => {
     if (selector.employees_drop_down_data) {
       let names = [];
       let newDataObj = {};
-      console.log("EMPLOYEEEEE",selector.employees_drop_down_data);
       for (let key in selector.employees_drop_down_data) {
         names.push(key);
         const arrayData = selector.employees_drop_down_data[key];

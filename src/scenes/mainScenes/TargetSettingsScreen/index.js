@@ -286,9 +286,9 @@ const TargetSettingsScreen = ({ route, navigation }) => {
   };
 
   const moveToFilter = () => {
-    navigation.navigate(AppNavigator.HomeStackIdentifiers.filter, {
+    navigation.navigate("FILTER_TARGET_SCREEN", {
       isFromLogin: false,
-      fromScreen: "TARGET_PLANNING" 
+      fromScreen: "TARGET_PLANNING",
     });
   };
 

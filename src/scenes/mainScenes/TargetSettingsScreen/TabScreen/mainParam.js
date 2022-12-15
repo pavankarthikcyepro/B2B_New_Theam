@@ -714,6 +714,7 @@ const MainParamScreen = ({ route, navigation }) => {
       startDate: selector.startDate,
       endDate: selector.endDate,
       branchNumber: branch,
+      targetType: "MONTHLY",
     };
   };
 
@@ -735,6 +736,7 @@ const MainParamScreen = ({ route, navigation }) => {
       loggedInEmpId: jsonObj.empId.toString(),
       childEmpId: [jsonObj.empId],
       branchNumber: [jsonObj.branchId],
+      targetType: "MONTHLY",  
     };
   };
 
