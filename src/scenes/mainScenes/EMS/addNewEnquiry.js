@@ -430,9 +430,13 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
         newData.push(obj);
       });
       setEmployeesData([...newData]);
+      setSelectedEmployee("");
       // if (selector.source_of_enquiry) {
       //   setEmployeeSelectModel(true);
       // }
+    }else{
+      setEmployeesData([]);
+      setSelectedEmployee("");
     }
   }, [employeeSelector.employees_list, employeeSelector.employees_list_status]);
 
@@ -905,7 +909,6 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
   const submitClicked = async () => {
     //Personal Intro
-    console.log(new Date().getTime());
     setIsSubmitPress(true);
 
     // if (selector.enquiry_segment.toLowerCase() == "personal") {
@@ -3651,10 +3654,11 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     .toLowerCase()
                     .trim()
                     .replace(/ /g, "") === "socialnetwork") && ( */}
+              {selector.source_of_enquiry.length !==0 &&
                 <View>
                   <DropDownSelectionItem
                     label={"Sub Source Of Enquiry*"}
-                    disabled={employeesData.length > 0 ? false : true}
+                    disabled={false}
                     value={selector.sub_source_of_enquiry}
                     onPress={() =>
                       showDropDownModelMethod(
@@ -3674,7 +3678,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                       },
                     ]}
                   ></Text>
-                </View>
+                </View>}
                 {/* )} */}
 
                 {selector.source_of_enquiry.toLowerCase() === "reference" && (
@@ -6331,7 +6335,6 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                   Allocate
                 </Button>
               )}
-              {selectedEmployee !== "" && (
                 <Button
                   mode="contained"
                   style={{ width: 120 }}
@@ -6341,7 +6344,6 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                 >
                   Submit
                 </Button>
-              )}
             </View>
           )}
           {showPreBookingBtn && !isDropSelected && (
