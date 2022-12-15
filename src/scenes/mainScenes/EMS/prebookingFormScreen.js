@@ -1394,6 +1394,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const clearPriceConfirmationData = () => {
     setAddNewInput([]);
     setOtherPrices(0);
+    setSelectedPaidAccessoriesList([]);
+    setSelectedFOCAccessoriesList([]);
     setSelectedRegistrationCharges({});
     setRegistrationChargesType([]);
     setInsurenceAddOnTypes([]);
