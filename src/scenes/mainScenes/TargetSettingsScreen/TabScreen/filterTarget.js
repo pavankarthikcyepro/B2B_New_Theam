@@ -1,43 +1,60 @@
-
-import React, { useState, useEffect, useCallback } from 'react';
-import { SafeAreaView, View, Text, StyleSheet, FlatList, Dimensions, Image, Pressable, ScrollView, ActivityIndicator } from 'react-native';
-import { Colors } from '../../../styles';
-import { IconButton } from 'react-native-paper';
-import { useDispatch, useSelector } from 'react-redux';
-import { getTargetParametersEmpDataInsights } from '../../../redux/homeReducer';
-import * as AsyncStore from '../../../asyncStore';
-import { DatePickerComponent, DropDownComponant } from '../../../components';
-import { DateSelectItem, DropDownSelectionItem } from '../../../pureComponents';
-import moment from 'moment';
+import React, { useState, useEffect, useCallback } from "react";
+import {
+  SafeAreaView,
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  Dimensions,
+  Image,
+  Pressable,
+  ScrollView,
+  ActivityIndicator,
+} from "react-native";
+import { Colors } from "../../../../styles";
+import { IconButton } from "react-native-paper";
+import { useDispatch, useSelector } from "react-redux";
+import { getTargetParametersEmpDataInsights } from "../../../../redux/homeReducer";
+import * as AsyncStore from "../../../../asyncStore";
+import { DatePickerComponent, DropDownComponant } from "../../../../components";
+import { DateSelectItem, DropDownSelectionItem } from "../../../../pureComponents";
+import moment from "moment";
 import { Button } from "react-native-paper";
 import {
-    updateFilterDropDownData,
-    getLeadSourceTableList,
-    getVehicleModelTableList,
-    getEventTableList,
-    getTaskTableList,
-    getLostDropChartData,
-    getTargetParametersData,
-    getEmployeesDropDownData,
-    getSalesData,
-    getSalesComparisonData
-} from '../../../redux/homeReducer';
-import { showAlertMessage, showToast } from '../../../utils/toast';
-import { AppNavigator } from '../../../navigations';
+  updateFilterDropDownData,
+  getLeadSourceTableList,
+  getVehicleModelTableList,
+  getEventTableList,
+  getTaskTableList,
+  getLostDropChartData,
+  getTargetParametersData,
+  getEmployeesDropDownData,
+  getSalesData,
+  getSalesComparisonData,
+} from "../../../../redux/homeReducer";
+import { showAlertMessage, showToast } from "../../../../utils/toast";
+import { AppNavigator } from "../../../../navigations";
 
 const screenWidth = Dimensions.get("window").width;
 const buttonWidth = (screenWidth - 100) / 2;
 const dateFormat = "YYYY-MM-DD";
 
 const AcitivityLoader = () => {
-    return (
-        <View style={{ width: "100%", height: 50, justifyContent: "center", alignItems: "center" }}>
-            <ActivityIndicator size={"small"} color={Colors.GRAY} />
-        </View>
-    )
-}
+  return (
+    <View
+      style={{
+        width: "100%",
+        height: 50,
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <ActivityIndicator size={"small"} color={Colors.GRAY} />
+    </View>
+  );
+};
 
-const FilterScreen = ({ route, navigation }) => {
+const FilterTargetScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
 
@@ -368,17 +385,13 @@ const FilterScreen = ({ route, navigation }) => {
         setIsLoading(false);
       });
     if (from == "EMPLOYEE") {
-        if (true) {
-            navigation.navigate(
-              AppNavigator.DrawerStackIdentifiers.monthlyTarget,
-              {
-                params: { from: "Filter" },
-              }
-            );
-        } else {
-                  navigation.goBack();
-
-        }
+      if (true) {
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.monthlyTarget, {
+          params: { from: "Filter" },
+        });
+      } else {
+        navigation.goBack();
+      }
       // navigation.navigate(AppNavigator.TabStackIdentifiers.home, { screen: "Home", params: { from: 'Filter' }, })
     } else {
       // navigation.goBack(); // NEED TO COMMENT FOR ASSOCIATE FILTER
@@ -389,7 +402,7 @@ const FilterScreen = ({ route, navigation }) => {
     if (selector.employees_drop_down_data) {
       let names = [];
       let newDataObj = {};
-      console.log("EMPLOYEEEEE",selector.employees_drop_down_data);
+      console.log("EMPLOYEEEEE", selector.employees_drop_down_data);
       for (let key in selector.employees_drop_down_data) {
         names.push(key);
         const arrayData = selector.employees_drop_down_data[key];
@@ -709,27 +722,27 @@ const FilterScreen = ({ route, navigation }) => {
   );
 };
 
-export default FilterScreen;
+export default FilterTargetScreen;
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        flexDirection: "column",
-        backgroundColor: Colors.LIGHT_GRAY,
-    },
-    view3: {
-        width: "100%",
-        position: "absolute",
-        bottom: 20,
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-evenly",
-    },
-    submitBtnBckVw: {
-        width: "100%",
-        height: 70,
-        flexDirection: "row",
-        justifyContent: "space-evenly",
-        alignItems: "center",
-    }
+  container: {
+    flex: 1,
+    flexDirection: "column",
+    backgroundColor: Colors.LIGHT_GRAY,
+  },
+  view3: {
+    width: "100%",
+    position: "absolute",
+    bottom: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-evenly",
+  },
+  submitBtnBckVw: {
+    width: "100%",
+    height: 70,
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    alignItems: "center",
+  },
 });

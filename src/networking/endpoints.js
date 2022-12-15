@@ -166,6 +166,7 @@ const URL = {
   },
   DROP_ENQUIRY: () => sales_url + "/lead-drop",
   UPLOAD_DOCUMENT: () => sales_url + "/documents",
+  UPLOAD_RANDOM_DOCUMENT: () => sales_url + "/documents/random-document",
   GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS: (varientId, vehicleId) => {
     return (
       vehicleInfoService_url +

@@ -498,21 +498,66 @@ export const GetDropList = async (orgId, token, type) => {
   });
 };
 
-export const achievementPercentage = (achievement, tgt, paramName, enquiryAchievement) => {
-  const paramsToCalculateDirectTotal = ['Enquiry', 'Accessories', 'PreEnquiry'];
+export const achievementPercentage = (achievement, tgt, paramName, enq = {}, ret = {}, acc = {}) => {
+  const enqCal = ["Enquiry", "PreEnquiry"];
+  const retCal = ["Exchange", "Finance", "Insurance", "EXTENDEDWARRANTY"];
+  const accCal = ["Accessories"];
+
   let target = tgt;
-  if (paramName && !paramsToCalculateDirectTotal.includes(paramName)) {
-    target = enquiryAchievement;
-  }
   if (achievement) {
     achievement = Number(achievement);
   } else {
     achievement = 0;
   }
+
+  if (paramName && retCal.includes(paramName)) {
+    target = ret.achievment;
+  } else if (paramName && accCal.includes(paramName)) {
+    target = acc.target;
+  } else if (paramName && !enqCal.includes(paramName)) {
+    target = enq.achievment;
+  } else {
+    if (target) {
+      target = Number(target);
+    } else {
+      target = 0;
+    }
+  }
+
+  return target > 0 ? Math.round((achievement / target) * 100) : achievement;
+};
+
+export const sourceModelPercentage = (achievement, target) => {
+  if (achievement) {
+    achievement = Number(achievement);
+  } else {
+    achievement = 0;
+  }
+  
   if (target) {
     target = Number(target);
   } else {
     target = 0;
   }
-  return target > 0 ? Math.round((achievement / target) * 100) : achievement; // if denominator is > 0, display percentage, else no change, display achievement
-}
+
+  return target > 0 ? Math.round((achievement / target) * 100) : achievement;
+};
+
+// export const achievementPercentage = (achievement, tgt, paramName, enquiryAchievement) => {
+//   const paramsToCalculateDirectTotal = ['Enquiry', 'Accessories', 'PreEnquiry'];
+//   let target = tgt;
+//   if (paramName && !paramsToCalculateDirectTotal.includes(paramName)) {
+//     target = enquiryAchievement;
+//   }
+//   if (achievement) {
+//     achievement = Number(achievement);
+//   } else {
+//     achievement = 0;
+//   }
+//   if (target) {
+//     target = Number(target);
+//   } else {
+//     target = 0;
+//   }
+//   return target > 0 ? Math.round((achievement / target) * 100) : achievement; // if denominator is > 0, display percentage, else no change, display achievement
+// }
