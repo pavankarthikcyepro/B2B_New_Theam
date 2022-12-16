@@ -267,15 +267,15 @@ const MainParamScreen = ({ route, navigation }) => {
               const json1 = await response1.json();
               // let format = getDataFormat(json1?.data[0]);
               let newArr = json1?.data;
-               newArr[0] = {
-                 ...newArr[0],
-                 isOpenInner: false,
-                 employeeTargetAchievements: [],
-                 targetAchievements: newArray,
-                 //  targetAchievements: json1?.data[0]?.target,
-                 //  tempTargetAchievements: format,
-               };
-               setFilterParameters(newArr);
+              newArr[0] = {
+                ...newArr[0],
+                isOpenInner: false,
+                employeeTargetAchievements: [],
+                targetAchievements: newArray,
+                //  targetAchievements: json1?.data[0]?.target,
+                //  tempTargetAchievements: format,
+              };
+              setFilterParameters(newArr);
             })
             .catch();
         }
@@ -1274,6 +1274,9 @@ const MainParamScreen = ({ route, navigation }) => {
           navigation={navigation}
           moduleType={"home"}
           editParameters={editParameters}
+          onChangeTeamParamValue={(x) =>
+            onChangeTeamParamValue(curIndex, x, item.id, type)
+          }
         />
       </View>
     );

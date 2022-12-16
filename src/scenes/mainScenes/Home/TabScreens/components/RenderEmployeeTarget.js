@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import { Dimensions, StyleSheet, Text, View } from "react-native";
+import { Dimensions, StyleSheet, Text, TextInput, View } from "react-native";
 import { achievementPercentage } from "../../../../../utils/helperFunctions";
 import { Colors } from "../../../../../styles";
 import { AppNavigator } from "../../../../../navigations";
@@ -35,6 +35,7 @@ export const RenderEmployeeTarget = (parameter) => {
     navigation,
     moduleType,
     editParameters,
+    onChangeTeamParamValue,
   } = parameter;
   const paramsData = params.map(({ paramName }) => paramName);
   const navigableParams = [
@@ -126,7 +127,17 @@ export const RenderEmployeeTarget = (parameter) => {
                     height: 23,
                   }}
                 >
-                  {
+                  {editParameters ? (
+                    <TextInput
+                      key={index}
+                      editable={editParameters}
+                      style={styles.textBox}
+                      value={selectedParameter?.target}
+                      onChangeText={(x) =>
+                        onChangeTeamParamValue(1, x, item.id, param)
+                      }
+                    />
+                  ) : (
                     <Text
                       style={[
                         styles.totalText,
@@ -138,7 +149,9 @@ export const RenderEmployeeTarget = (parameter) => {
                               ? 63
                               : 53,
                           paddingTop: 4,
-                          textDecorationLine: editParameters ?'underline':'none'
+                          textDecorationLine: editParameters
+                            ? "underline"
+                            : "none",
                         },
                       ]}
                     >
@@ -146,7 +159,7 @@ export const RenderEmployeeTarget = (parameter) => {
                         ? Number(selectedParameter?.target)
                         : 0}
                     </Text>
-                  }
+                  )}
                 </View>
               </View>
             ) : (
@@ -200,12 +213,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  totalText: { textAlign: "center", fontSize: 12,  },
+  totalText: { textAlign: "center", fontSize: 12 },
   totalText1: {
     color: "black",
     fontSize: 14,
     width: "98%",
     textAlign: "center",
     backgroundColor: "rgba(223,228,231,0.67)",
+  },
+  textBox: {
+    width: 80,
+    height: 40,
+    // borderWidth: 1,
+    borderRadius: 5,
+    // borderColor: "blue",
+    marginRight: 5,
+    justifyContent: "center",
+    alignItems: "center",
+    textAlign: "center",
   },
 });

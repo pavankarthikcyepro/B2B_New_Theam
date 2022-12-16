@@ -301,7 +301,6 @@ const FilterTargetScreen = ({ route, navigation }) => {
   };
 
   const updateSelectedItemsForEmployeeDropDown = (data, index) => {
-    console.log("KKKK", employeeTitleNameList);
     let key = employeeTitleNameList[index];
     const newTotalDataObjLocal = { ...employeeDropDownDataLocal };
     let objIndex = newTotalDataObjLocal[key].findIndex(
