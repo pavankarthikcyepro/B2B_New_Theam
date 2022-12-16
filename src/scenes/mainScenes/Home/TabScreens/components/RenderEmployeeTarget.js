@@ -134,7 +134,7 @@ export const RenderEmployeeTarget = (parameter) => {
                       style={styles.textBox}
                       value={selectedParameter?.target}
                       onChangeText={(x) =>
-                        onChangeTeamParamValue(1, x, item.id, param)
+                        onChangeTeamParamValue(index, x, item.id, param)
                       }
                     />
                   ) : (

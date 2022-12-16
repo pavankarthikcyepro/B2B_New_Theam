@@ -1274,8 +1274,11 @@ const MainParamScreen = ({ route, navigation }) => {
           navigation={navigation}
           moduleType={"home"}
           editParameters={editParameters}
-          onChangeTeamParamValue={(x) =>
-            onChangeTeamParamValue(curIndex, x, item.id, type)
+          onChangeTeamParamValue={(index, x, id, param) =>{
+            console.log(index, x, item.empId, param);
+            return
+            onChangeTeamParamValue(curIndex, x, id, param)
+          }
           }
         />
       </View>
