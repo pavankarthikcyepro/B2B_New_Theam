@@ -39,6 +39,7 @@
     "react-native-confirmation-code-field": "^7.1.0",
     "react-native-dropdown-picker": "^5.4.2",
     "react-native-element-dropdown": "^1.8.10",
+    "react-native-event-listeners": "^1.0.7",
     "react-native-flipper": "^0.146.1",
     "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "^2.2.0",

@@ -197,6 +197,7 @@ export const loginSlice = createSlice({
       .addCase(postUserData.fulfilled, (state, action) => {
         const dataObj = action.payload;
         if (dataObj.status == "200") {
+          
           state.status = "sucess";
           state.isLoading = false;
           state.authToken = dataObj.idToken;
@@ -206,6 +207,9 @@ export const loginSlice = createSlice({
           // state.password = "";
           AsyncStore.storeData(AsyncStore.Keys.USER_TOKEN, dataObj.idToken);
           AsyncStore.storeData(AsyncStore.Keys.IS_LOGIN, 'true');
+          AsyncStore.storeData(AsyncStore.Keys.ACCESS_TOKEN, dataObj.accessToken);
+          AsyncStore.storeData(AsyncStore.Keys.REFRESH_TOKEN, dataObj.refreshToken);
+        
         } else if (dataObj.reason) {
           showAlertMessage("Failed", "Incorrect Password");
           state.isLoading = false;

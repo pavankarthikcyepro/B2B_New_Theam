@@ -1,5 +1,5 @@
 import * as AsyncStore from '../asyncStore';
-
+import { EventRegister } from 'react-native-event-listeners'
 export const client = async (authToken, url, methodType, body, customConfig) => {
 
     const headers = {
@@ -25,6 +25,18 @@ export const client = async (authToken, url, methodType, body, customConfig) => 
 
     try {
         const response = await window.fetch(url, config)
+       
+        if(response.status == "401"){
+            // let Refresh_token = await AsyncStore.getData(AsyncStore.Keys.REFRESH_TOKEN);
+            // call refresh Token API
+             
+
+            // handle  force logout in cash of refresh token expired 
+            // EventRegister.emit("ForceLogout", true)
+        
+        }
+       
+      
         return response;
     } catch (err) {
         console.error('err: ', err, url);
