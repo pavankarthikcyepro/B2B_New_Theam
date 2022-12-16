@@ -91,7 +91,8 @@ const TestDriveScreen = ({ route, navigation }) => {
         orgId: "",
         employeeId: "",
         employeeName: "",
-        isSelfManager: ""
+        isSelfManager: "",
+        isOtp:""
     });
     const [selectedBranchId, setSelectedBranchId] = useState("");
     const [showDatePickerModel, setShowDatePickerModel] = useState(false);
@@ -193,7 +194,8 @@ const TestDriveScreen = ({ route, navigation }) => {
                     orgId: jsonObj.orgId,
                     employeeId: jsonObj.empId,
                     employeeName: jsonObj.empName,
-                    isSelfManager: jsonObj.isSelfManager
+                    isSelfManager: jsonObj.isSelfManager,
+                    isOtp: jsonObj.isOtp
                 });
 
                 // Get Branch Id
@@ -827,7 +829,11 @@ const TestDriveScreen = ({ route, navigation }) => {
                 return;
             }
         }
-        generateOtpToCloseTask();
+        if (userData.isOtp == "Y") {
+          generateOtpToCloseTask();
+        } else {
+          submitClicked("CLOSED", "Test Drive")
+        }
         setIsCloseSelected(true)
     };
 
