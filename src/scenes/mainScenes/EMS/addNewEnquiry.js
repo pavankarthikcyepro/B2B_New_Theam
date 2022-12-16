@@ -124,6 +124,7 @@ import * as AsyncStore from "../../../asyncStore";
 import {
   convertDateStringToMilliseconds,
   convertDateStringToMillisecondsUsingMoment,
+  convertTimeStampToDateString,
   emiCalculator,
   GetCarModelList,
   GetDropList,
@@ -794,20 +795,20 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
   }, [selector.model_drop_down_data_update_statu]);
 
   const getEnquiryDetailsFromServer = () => {
-    if (universalId) {
+    if (false) {
       // if (selector.isOpened) {
       // dispatch(getAutoSaveEnquiryDetailsApi(universalId));
       if (leadStatus === "ENQUIRYCOMPLETED" && leadStage === "ENQUIRY") {
-        dispatch(getEnquiryDetailsApi({ universalId, leadStage, leadStatus }));
+        // dispatch(getEnquiryDetailsApi({ universalId, leadStage, leadStatus }));
       } else {
         Promise.all([
           dispatch(
-            getEnquiryDetailsApiAuto({ universalId, leadStage, leadStatus })
+            // getEnquiryDetailsApiAuto({ universalId, leadStage, leadStatus })
           ),
         ])
           .then(() => {
             dispatch(
-              getEnquiryDetailsApi({ universalId, leadStage, leadStatus })
+              // getEnquiryDetailsApi({ universalId, leadStage, leadStatus })
             );
           })
           .catch(() => {
@@ -878,162 +879,6 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     } catch (error) {}
   };
 
-  const updateEnquiry = async () => {
-    let dmsContactOrAccountDto = {};
-    let dmsLeadDto = {};
-    let formData;
-
-    const dmsEntity = selector.enquiry_details_response;
-
-    if (dmsEntity.hasOwnProperty("dmsContactDto"))
-      dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsContactDto);
-    else if (dmsEntity.hasOwnProperty("dmsAccountDto"))
-      dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsAccountDto);
-
-    if (dmsEntity.hasOwnProperty("dmsLeadDto")) {
-      dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
-      dmsLeadDto.firstName = selector.firstName;
-      dmsLeadDto.lastName = selector.lastName;
-      dmsLeadDto.phone = selector.mobile;
-      if (
-        enqDetails.leadStage === "ENQUIRY" &&
-        enqDetails.leadStatus === null
-      ) {
-        dmsLeadDto.leadStage = "ENQUIRY";
-        dmsLeadDto.leadStatus = null;
-      }
-      const employeeData = await AsyncStore.getData(
-        AsyncStore.Keys.LOGIN_EMPLOYEE
-      );
-      if (employeeData) {
-        const jsonObj = JSON.parse(employeeData);
-        let tempAttachments = [];
-
-        // pan number
-        if (selector.pan_number) {
-          let newArr = dmsLeadDto.dmsAttachments.filter((item) => {
-            return item.documentType === "pan";
-          });
-          if (newArr.length) {
-            tempAttachments.push({
-              ...newArr[0],
-              documentNumber: selector.pan_number,
-              createdBy: convertDateStringToMilliseconds(new Date()),
-            });
-          }
-        }
-
-        // aadhar number
-        if (selector.adhaar_number) {
-          let newArr = dmsLeadDto.dmsAttachments.filter((item) => {
-            return item.documentType === "aadhar";
-          });
-          if (newArr.length) {
-            tempAttachments.push({
-              ...newArr[0],
-              documentNumber: selector.adhaar_number,
-              createdBy: convertDateStringToMilliseconds(new Date()),
-            });
-          }
-        }
-
-        // employee id number
-        if (selector.employee_id) {
-          let newArr = dmsLeadDto.dmsAttachments.filter((item) => {
-            return item.documentType === "employeeId";
-          });
-          if (newArr.length) {
-            tempAttachments.push({
-              ...newArr[0],
-              documentNumber: selector.employee_id,
-              createdBy: convertDateStringToMilliseconds(new Date()),
-            });
-          }
-        }
-
-        // if (Object.keys(uploadedImagesDataObj).length > 0) {
-        //   let tempImages = Object.entries(uploadedImagesDataObj).map((e) => ({
-        //     name: e[0],
-        //     value: e[1],
-        //   }));
-        //   for (let i = 0; i < tempImages.length; i++) {
-        //     if (
-        //       tempImages[i].name != "pan" &&
-        //       tempImages[i].name != "aadhar" &&
-        //       tempImages[i].name != "employeeId"
-        //     ) {
-        //       tempAttachments.push({
-        //         branchId: jsonObj.branchs[0]?.branchId,
-        //         contentSize: 0,
-        //         createdBy: convertDateStringToMilliseconds(new Date()),
-        //         description: "",
-        //         documentNumber: "",
-        //         documentPath: tempImages[i].value.documentPath,
-        //         documentType: tempImages[i].name,
-        //         documentVersion: 0,
-        //         fileName: tempImages[i].value.fileName,
-        //         gstNumber: "",
-        //         id: 0,
-        //         isActive: 0,
-        //         isPrivate: 0,
-        //         keyName: tempImages[i].value.keyName,
-        //         modifiedBy: jsonObj.empName,
-        //         orgId: jsonObj.orgId,
-        //         ownerId: "",
-        //         ownerName: jsonObj.empName,
-        //         parentId: "",
-        //         tinNumber: "",
-        //       });
-        //     }
-
-        //     if (i === tempImages.length - 1) {
-        //       dmsLeadDto.dmsAttachments = tempAttachments;
-        //     }
-        //   }
-        // } else {
-        //   dmsLeadDto.dmsAttachments = tempAttachments;
-        // }
-
-        dmsLeadDto.dmsAttachments = tempAttachments;
-      }
-
-      var tempDmsLeadProducts = selector.dmsLeadProducts;
-      var tempArr = [...carModelsList, ...tempDmsLeadProducts.filter((a) => a)];
-
-      dmsLeadDto.dmsLeadProducts = tempArr.filter((value, index) => {
-        const _value = JSON.stringify(value);
-        return (
-          index ===
-          tempArr.findIndex((obj) => {
-            return JSON.stringify(obj) === _value;
-          })
-        );
-      });
-    }
-
-    if (selector.enquiry_details_response.hasOwnProperty("dmsContactDto")) {
-      formData = {
-        dmsContactDto: dmsContactOrAccountDto,
-        dmsLeadDto: dmsLeadDto,
-      };
-    } else {
-      formData = {
-        dmsAccountDto: dmsContactOrAccountDto,
-        dmsLeadDto: dmsLeadDto,
-      };
-    }
-
-    // setTypeOfActionDispatched("UPDATE_ENQUIRY");
-    // dispatch(autoSaveEnquiryDetailsApi(formData))
-    let payload = {
-      data: formData,
-      status: "Active",
-      universalId: universalId,
-    };
-    AsyncStore.storeJsonData(AsyncStore.Keys.ENQ_PAYLOAD, payload);
-    dispatch(updateEnquiryDetailsApiAutoSave(payload));
-  };
-
   const checkModelSelection = () => {
     let error = false;
     for (let i = 0; i < carModelsList.length; i++) {
@@ -1060,6 +905,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
   const submitClicked = async () => {
     //Personal Intro
+    console.log(new Date().getTime());
     setIsSubmitPress(true);
 
     // if (selector.enquiry_segment.toLowerCase() == "personal") {
@@ -1457,6 +1303,8 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
             firstName: selector.firstName,
             lastName: selector.lastName,
             leadStage: "PREENQUIRY",
+            // modifieddatetime: moment(new Date()).valueOf(),
+            // createddatetime: moment(new Date()).valueOf(),
             model: primaryModel[0].model,
             organizationId: jsonObj.orgId,
             phone: selector.mobile,
@@ -1776,7 +1624,6 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     //     branchid: jsonObj.branchs[0]?.branchId,
     //     leadstage: "ENQUIRY",
     //     orgid: jsonObj.orgId,
-    //     universalId: universalId,
     //   };
     //   return;
     //   Promise.all([
@@ -2209,7 +2056,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       if (enableProceedToPrebooking) {
         const dataObj = probookingTaskObj;
         const taskId = dataObj.taskId;
-        const universalId = dataObj.universalId;
+        // const universalId = dataObj.universalId;
         const taskStatus = dataObj.taskStatus;
 
         if (taskNames === "") {
@@ -2218,7 +2065,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
             {
               identifier: "PROCEED_TO_PRE_BOOKING",
               taskId,
-              universalId,
+              // universalId,
               taskStatus,
             }
           );
@@ -2289,8 +2136,8 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
   useEffect(() => {
     if (typeOfActionDispatched === "PROCEED_TO_PREBOOKING") {
       if (proceedToPreSelector.update_task_response_status === "success") {
-        const endUrl = `${universalId}` + "?" + "stage=PREBOOKING";
-        dispatch(changeEnquiryStatusApi(endUrl));
+        // const endUrl = `${universalId}` + "?" + "stage=PREBOOKING";
+        // dispatch(changeEnquiryStatusApi(endUrl));
       } else if (
         proceedToPreSelector.update_task_response_status === "failed"
       ) {
@@ -2315,7 +2162,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       branchid: userData.branchId,
       leadstage: "PREBOOKING",
       orgid: userData.orgId,
-      universalId: universalId,
+      // universalId: universalId,
     };
     const url = URL.CUSTOMER_LEAD_REFERENCE();
     await fetch(url, {
@@ -2340,7 +2187,8 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
   };
 
   const updateEnuiquiryDetails = async (refNumber) => {
-    let response = await dispatch(proceedGetEnquiryDetailsApi(universalId));
+    return
+    // let response = await dispatch(proceedGetEnquiryDetailsApi(universalId));
 
     if (response?.payload?.dmsEntity) {
       let enquiryDetailsObj = { ...response.payload.dmsEntity };
@@ -2460,8 +2308,8 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
         }
         if (
           element.taskName === "Proceed to Pre Booking" &&
-          element.assignee.empId === userData.employeeId &&
-          element.universalId === universalId
+          element.assignee.empId === userData.employeeId 
+          // element.universalId === universalId
         ) {
           pendingTaskNames.push("Proceed to Pre Booking");
           proBookingTaskObj = element;
@@ -2486,10 +2334,10 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
         selector.enquiry_details_response.dmsLeadDto.createdBy ==
           jsonObj.empName
       ) {
-        if (universalId) {
-          const endUrl = universalId + "?" + "stage=Enquiry";
-          dispatch(getPendingTasksApi(endUrl));
-        }
+        // if (universalId) {
+        //   const endUrl = universalId + "?" + "stage=Enquiry";
+        //   dispatch(getPendingTasksApi(endUrl));
+        // }
       } else {
         alert("Permission Denied");
         // Alert.alert(
@@ -2566,7 +2414,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
         location: dropLocation,
         model: dropModel,
         leadId: leadId,
-        crmUniversalId: universalId,
+        // crmUniversalId: universalId,
         lostReason: dropReason,
         lostSubReason: dropSubReason,
         organizationId: userData.orgId,
@@ -2850,8 +2698,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       name: `${fileName}-.${fileType}`,
       type: `image/${fileType}`,
       uri: Platform.OS === "ios" ? photoUri.replace("file://", "") : photoUri,
+      // randomNumber: userData.employeeId, //logedd in employeeID
     });
-    // formData.append("universalId", universalId);
+    formData.append("randomNumber", userData.employeeId);
 
     switch (keyId) {
       case "UPLOAD_PAN":
@@ -2891,7 +2740,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
         formData.append("documentType", "default");
         break;
     }
-    await fetch(URL.UPLOAD_DOCUMENT(), {
+    await fetch(URL.UPLOAD_RANDOM_DOCUMENT(), {
       method: "POST",
       headers: {
         "Content-Type": "multipart/form-data",
@@ -2928,7 +2777,6 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
               })
             );
           } else {
-            console.log("response,response", response);
             const dataObj = { ...uploadedImagesDataObj };
             dataObj[response.documentType] = response;
             setUploadedImagesDataObj({ ...dataObj });
@@ -3028,7 +2876,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     navigation.navigate(AppNavigator.EmsStackIdentifiers.ProformaScreen, {
       modelDetails: selector.dmsLeadProducts[0],
       branchId: selectedBranchId,
-      universalId: universalId,
+      // universalId: universalId,
     });
   };
   const updateAddressDetails = (pincode) => {

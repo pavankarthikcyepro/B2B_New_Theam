@@ -1071,6 +1071,9 @@ const TargetScreen = ({ route }) => {
                                                     level={1}
                                                     item={innerItem1}
                                                     color={Colors.CORAL}
+                                                    branchName={getBranchName(
+                                                      innerItem1.branchId
+                                                    )}
                                                     titleClick={async () => {
                                                       const localData = [
                                                         ...allParameters,
@@ -1182,6 +1185,9 @@ const TargetScreen = ({ route }) => {
                                                             level={2}
                                                             item={innerItem2}
                                                             color={"#2C97DE"}
+                                                            branchName={getBranchName(
+                                                              innerItem2.branchId
+                                                            )}
                                                             titleClick={async () => {
                                                               const localData =
                                                                 [
@@ -1303,6 +1309,9 @@ const TargetScreen = ({ route }) => {
                                                                       color={
                                                                         "#EC3466"
                                                                       }
+                                                                      branchName={getBranchName(
+                                                                        innerItem3.branchId
+                                                                      )}
                                                                       titleClick={async () => {
                                                                         const localData =
                                                                           [
@@ -1382,6 +1391,9 @@ const TargetScreen = ({ route }) => {
                                                                                 color={
                                                                                   "#1C95A6"
                                                                                 }
+                                                                                branchName={getBranchName(
+                                                                                  innerItem4.branchId
+                                                                                )}
                                                                                 titleClick={async () => {
                                                                                   const localData =
                                                                                     [
@@ -1463,6 +1475,9 @@ const TargetScreen = ({ route }) => {
                                                                                           color={
                                                                                             "#C62159"
                                                                                           }
+                                                                                          branchName={getBranchName(
+                                                                                            innerItem5.branchId
+                                                                                          )}
                                                                                           titleClick={async () => {
                                                                                             const localData =
                                                                                               [
@@ -1547,6 +1562,9 @@ const TargetScreen = ({ route }) => {
                                                                                                     color={
                                                                                                       "#C62159"
                                                                                                     }
+                                                                                                    branchName={getBranchName(
+                                                                                                      innerItem6.branchId
+                                                                                                    )}
                                                                                                     titleClick={async () => {
                                                                                                       const localData =
                                                                                                         [
@@ -2334,7 +2352,7 @@ export const RenderLevel1NameView = ({
             {item.empName.charAt(0)}
           </Text>
         </TouchableOpacity>
-        {level === 0 && !!branchName && (
+        {/* {level === 0 && !!branchName && ( */}
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <IconButton
               icon="map-marker"
@@ -2346,7 +2364,7 @@ export const RenderLevel1NameView = ({
               {branchName}
             </Text>
           </View>
-        )}
+        {/* )} */}
       </View>
       <View
         style={{

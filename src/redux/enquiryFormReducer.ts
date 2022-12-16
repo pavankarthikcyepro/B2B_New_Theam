@@ -925,11 +925,12 @@ const enquiryDetailsOverViewSlice = createSlice({
         case "ANNIVERSARY_DATE":
           if (state.dateOfBirth) {
             let dobArr = state.dateOfBirth.split("/");
-            state.minDate = new Date(
-              Number(dobArr[2]) + 1,
-              Number(dobArr[1]),
-              Number(dobArr[0])
-            );
+            state.minDate = null;
+            // state.minDate = new Date(
+            //   Number(dobArr[2]) + 1,
+            //   Number(dobArr[1]),
+            //   Number(dobArr[0])
+            // );
           } else {
             state.minDate = null;
           }

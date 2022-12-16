@@ -151,7 +151,7 @@ const slice = createSlice({
     drop_sub_reasons_list: [],
   },
   reducers: {
-    clearState: (state, action) => {
+    clearBookingState: (state, action) => {
       state.task_details_response = null;
       state.update_task_response_status = null;
       state.change_enquiry_status = null;
@@ -308,5 +308,5 @@ const slice = createSlice({
   },
 });
 
-export const { clearState, setDataDetails } = slice.actions;
+export const { clearBookingState, setDataDetails } = slice.actions;
 export default slice.reducer;
