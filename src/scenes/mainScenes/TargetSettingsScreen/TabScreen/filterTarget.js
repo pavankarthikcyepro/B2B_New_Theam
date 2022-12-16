@@ -37,6 +37,7 @@ import {
 } from "../../../../redux/homeReducer";
 import { showAlertMessage, showToast } from "../../../../utils/toast";
 import { AppNavigator } from "../../../../navigations";
+import { DropDown } from "./dropDown";
 
 const screenWidth = Dimensions.get("window").width;
 const buttonWidth = (screenWidth - 100) / 2;
@@ -186,7 +187,7 @@ const FilterTargetScreen = ({ route, navigation }) => {
         updatedMultipleData[0] = obj;
         updateSelectedItems(updatedMultipleData, index, true);
       } else {
-        updateSelectedItemsForEmployeeDropDown(newData, index);
+        // updateSelectedItemsForEmployeeDropDown(newData, index);
       }
       //   submitBtnClicked(null)
     } else {
@@ -216,17 +217,17 @@ const FilterTargetScreen = ({ route, navigation }) => {
 
   const updateSelectedItems = (data, index, initalCall = false) => {
     const totalDataObjLocal = { ...totalDataObj };
-
     if (index > 0) {
       let selectedParendIds = [];
       let unselectedParentIds = [];
-      data.forEach((item) => {
-        if (item.selected != undefined && item.selected == true) {
-          selectedParendIds.push(Number(item.parentId));
-        } else {
-          unselectedParentIds.push(Number(item.parentId));
-        }
-      });
+      selectedParendIds.push(Number(data.parentId));
+      // data.forEach((item) => {
+      //   if (item.selected != undefined && item.selected == true) {
+      //     selectedParendIds.push(Number(item.parentId));
+      //   } else {
+      //     unselectedParentIds.push(Number(item.parentId));
+      //   }
+      // });
 
       let localIndex = index - 1;
 
@@ -279,8 +280,20 @@ const FilterTargetScreen = ({ route, navigation }) => {
     }
 
     let key = nameKeyList[index];
+    var newArr = totalDataObjLocal[key].sublevels;
+    const result = newArr.map((file) => {
+      return { ...file, selected: false };
+    });
+    let objIndex = result.findIndex((obj) => obj.id == data.id);
+    for (let i = 0; i < result.length; i++) {
+      if (objIndex === i) {
+        result[i].selected = true;
+      } else {
+        result[i].selected = false;
+      }
+    }
     const newOBJ = {
-      sublevels: data,
+      sublevels: result,
     };
     totalDataObjLocal[key] = newOBJ;
     setTotalDataObj({ ...totalDataObjLocal });
@@ -288,9 +301,19 @@ const FilterTargetScreen = ({ route, navigation }) => {
   };
 
   const updateSelectedItemsForEmployeeDropDown = (data, index) => {
+    console.log("KKKK", employeeTitleNameList);
     let key = employeeTitleNameList[index];
     const newTotalDataObjLocal = { ...employeeDropDownDataLocal };
-    newTotalDataObjLocal[key] = data;
+    let objIndex = newTotalDataObjLocal[key].findIndex(
+      (obj) => obj.id == data.id
+    );
+    for (let i = 0; i < newTotalDataObjLocal[key].length; i++) {
+      if (objIndex === i) {
+        newTotalDataObjLocal[key][i].selected = true;
+      } else {
+        newTotalDataObjLocal[key][i].selected = false;
+      }
+    }
     setEmployeeDropDownDataLocal({ ...newTotalDataObjLocal });
   };
 
@@ -405,7 +428,6 @@ const FilterTargetScreen = ({ route, navigation }) => {
     if (selector.employees_drop_down_data) {
       let names = [];
       let newDataObj = {};
-      //   console.log("EMPLOYEEEEE", selector.employees_drop_down_data);
       for (let key in selector.employees_drop_down_data) {
         const arrayData = selector.employees_drop_down_data[key];
         if (arrayData.length != 0) {
@@ -479,7 +501,6 @@ const FilterTargetScreen = ({ route, navigation }) => {
         ]
       ];
     let selectedID = x.filter((e) => e.selected == true);
-    console.log(selectedID);
     navigation.navigate("MONTHLY_TARGET_SCREEN", {
       params: {
         from: "Filter",
@@ -516,9 +537,9 @@ const FilterTargetScreen = ({ route, navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <DropDownComponant
+      <DropDown
         visible={showDropDownModel}
-        multiple={true}
+        multiple={false}
         headerTitle={"Select"}
         data={dropDownData}
         onRequestClose={() => setShowDropDownModel(false)}
