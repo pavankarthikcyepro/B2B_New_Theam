@@ -127,11 +127,25 @@ export const RenderEmployeeTarget = (parameter) => {
                     height: 23,
                   }}
                 >
-                  {editParameters ? (
+                  {editParameters && item?.isOpenInner === true ? (
                     <TextInput
                       key={index}
                       editable={editParameters}
-                      style={styles.textBox}
+                      style={[
+                        styles.totalText,
+                        {
+                          width:
+                            moduleType === "live-leads"
+                              ? 66
+                              : param === "Accessories"
+                              ? 63
+                              : 53,
+                          paddingTop: 4,
+                          textDecorationLine: editParameters
+                            ? "underline"
+                            : "none",
+                        },
+                      ]}
                       value={selectedParameter?.target}
                       onChangeText={(x) =>
                         onChangeTeamParamValue(index, x, item.id, param)
@@ -149,9 +163,7 @@ export const RenderEmployeeTarget = (parameter) => {
                               ? 63
                               : 53,
                           paddingTop: 4,
-                          textDecorationLine: editParameters
-                            ? "underline"
-                            : "none",
+                          textDecorationLine: "none",
                         },
                       ]}
                     >

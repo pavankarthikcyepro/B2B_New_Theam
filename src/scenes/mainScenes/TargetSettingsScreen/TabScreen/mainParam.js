@@ -258,24 +258,30 @@ const MainParamScreen = ({ route, navigation }) => {
               let payload1 = getEmployeePayloadTotal(
                 employeeData,
                 [filterData?.selectedID?.id],
-                [input.branchId]
+                [input.branchId],
+                filterData?.fromDate,
+                filterData?.toDate
               );
               const response1 = await client.post(
                 URL.GET_ALL_TARGET_MAPPING_SEARCH(),
                 payload1
               );
               const json1 = await response1.json();
+              if (json1) {
+                let newArr = json1?.data;
+                newArr[0] = {
+                  ...newArr[0],
+                  isOpenInner: true,
+                  employeeTargetAchievements: [],
+                  // targetAchievements: newArray,
+                  department: json1?.data[0]?.department,
+                  designation: json1?.data[0]?.designation,
+                  targetAchievements: getDataFormat(json1?.data[0]),
+                  tempTargetAchievements: getDataFormat(json1?.data[0]),
+                };
+                setFilterParameters(newArr);
+              }
               // let format = getDataFormat(json1?.data[0]);
-              let newArr = json1?.data;
-              newArr[0] = {
-                ...newArr[0],
-                isOpenInner: false,
-                employeeTargetAchievements: [],
-                targetAchievements: newArray,
-                //  targetAchievements: json1?.data[0]?.target,
-                //  tempTargetAchievements: format,
-              };
-              setFilterParameters(newArr);
             })
             .catch();
         }
@@ -724,12 +730,14 @@ const MainParamScreen = ({ route, navigation }) => {
                     ...myParams[0],
                     isOpenInner: false,
                     employeeTargetAchievements: [],
-                    // targetAchievements: json[0]?.target,
-                    // tempTargetAchievements: format,
-                    targetAchievements: newArray,
-                    tempTargetAchievements: newArray,
+                    department: json1?.data[0]?.department,
+                    designation: json1?.data[0]?.designation,
+                    targetAchievements: json[0]?.target,
+                    tempTargetAchievements: format,
+                    // targetAchievements: newArray,
+                    // tempTargetAchievements: newArray,
                   };
-                  console.log(JSON.stringify(json[0]));
+                  console.log(JSON.stringify(json1?.data));
                   setAllParameters(myParams);
                 }
               }
@@ -744,7 +752,7 @@ const MainParamScreen = ({ route, navigation }) => {
     }
   }, [selector.endDate]);
 
-  const getEmployeePayloadTotal = (employeeData, newIds, branch) => {
+  const getEmployeePayloadTotal = (employeeData, newIds, branch, from, to) => {
     const jsonObj = JSON.parse(employeeData);
     const dateFormat = "YYYY-MM-DD";
     const currentDate = moment().format(dateFormat);
@@ -761,8 +769,8 @@ const MainParamScreen = ({ route, navigation }) => {
       childEmpId: newIds,
       pageNo: 1,
       size: 500,
-      startDate: selector.startDate,
-      endDate: selector.endDate,
+      startDate: from ? from : selector.startDate,
+      endDate: to ? to : selector.endDate,
       branchNumber: branch,
       targetType: "MONTHLY",
     };
@@ -1035,6 +1043,105 @@ const MainParamScreen = ({ route, navigation }) => {
     }
   }
 
+  const getPayloadDataFormat = (item) => {
+    console.log("ITEM",item);
+    console.log(
+      "selector.targetMapping",
+      selector.targetMapping.filter(
+        (y) => y.employeeId.toString() === item.empId.toString()
+      )
+    );
+    let formatedData = {
+      employeeId: item.empId || item.employeeId,
+      branch: item.branchId || item.branch,
+      department: item.department || "0",
+      designation: item.designation || "0",
+      targets: [
+        {
+          unit: "percentage",
+          target:
+            item.tempTargetAchievements?.filter(
+              (e) => e.paramName === "Enquiry"
+            )[0].target || "0",
+          parameter: "enquiry",
+        },
+        {
+          unit: "percentage",
+          target:
+            item.tempTargetAchievements.filter(
+              (e) => e.paramName === "Retail"
+            )[0].target || "0",
+          parameter: "retail",
+        },
+        {
+          unit: "percentage",
+          target:
+            item.tempTargetAchievements.filter(
+              (e) => e.paramName === "Test Drive"
+            )[0].target || "0",
+          parameter: "testDrive",
+        },
+        {
+          unit: "percentage",
+          target:
+            item.tempTargetAchievements.filter(
+              (e) => e.paramName === "Visit"
+            )[0].target || "0",
+          parameter: "homeVisit",
+        },
+        {
+          unit: "percentage",
+          target:
+            item.tempTargetAchievements.filter(
+              (e) => e.paramName === "Booking"
+            )[0].target || "0",
+          parameter: "booking",
+        },
+        {
+          unit: "percentage",
+          target:
+            item.tempTargetAchievements.filter(
+              (e) => e.paramName === "Exchange"
+            )[0].target || "0",
+          parameter: "exchange",
+        },
+        {
+          unit: "percentage",
+          target:
+            item.tempTargetAchievements.filter(
+              (e) => e.paramName === "Finance"
+            )[0].target || "0",
+          parameter: "finance",
+        },
+        {
+          unit: "percentage",
+          target:
+            item.tempTargetAchievements.filter(
+              (e) => e.paramName === "Insurance"
+            )[0].target || "0",
+          parameter: "insurance",
+        },
+        {
+          unit: "percentage",
+          target:
+            item.tempTargetAchievements.filter(
+              (e) => e.paramName === "Exwarranty"
+            )[0].target || "0",
+          parameter: "exWarranty",
+        },
+        {
+          unit: "number",
+          target:
+            item.tempTargetAchievements.filter(
+              (e) => e.paramName === "Accessories"
+            )[0].target || "0",
+          parameter: "accessories",
+        },
+      ],
+    };
+    return formatedData;
+  };
+
   function saveTeamData() {
     // if (!updatedSelfParameters || Object.keys(updatedSelfParameters).length <=0 ) {
     //     return;
@@ -1043,16 +1150,99 @@ const MainParamScreen = ({ route, navigation }) => {
     // }
     setEditParameters(false);
     const data = { ...updateTeamsParamsData };
+    const newData = [...allParameters];
+    let tempArr = [];
+    // console.log(JSON.stringify(newData));
+
+    if (selector.filterPayload?.params?.from === "Filter") {
+      let format1 = getPayloadDataFormat(filterParameters[0]);
+      tempArr.push(format1);
+    } else {
+      if (newData.length > 0) {
+        let format = getPayloadDataFormat(newData[0]);
+        tempArr.push(format);
+        if (
+          newData[0].isOpenInner ||
+          newData[0]?.employeeTargetAchievements.length > 0
+        ) {
+          let x = newData[0]?.employeeTargetAchievements;
+          for (let i = 0; i < x.length; i++) {
+            const element = x[i];
+            let format1 = getPayloadDataFormat(element);
+            tempArr.push(format1);
+            if (
+              element.isOpenInner ||
+              element.employeeTargetAchievements.length > 0
+            ) {
+              for (
+                let j = 0;
+                j < element.employeeTargetAchievements.length;
+                j++
+              ) {
+                const element1 = element.employeeTargetAchievements[j];
+                let format2 = getPayloadDataFormat(element1);
+                tempArr.push(format2);
+                if (
+                  element1.isOpenInner ||
+                  element1.employeeTargetAchievements.length > 0
+                ) {
+                  for (
+                    let k = 0;
+                    k < element1.employeeTargetAchievements.length;
+                    k++
+                  ) {
+                    const element2 = element1.employeeTargetAchievements[k];
+                    let format3 = getPayloadDataFormat(element2);
+                    tempArr.push(format3);
+                    if (
+                      element2.isOpenInner ||
+                      element2.employeeTargetAchievements.length > 0
+                    ) {
+                      for (
+                        let l = 0;
+                        l < element2.employeeTargetAchievements.length;
+                        l++
+                      ) {
+                        const element3 = element2.employeeTargetAchievements[l];
+                        let format4 = getPayloadDataFormat(element3);
+                        tempArr.push(format4);
+                        if (
+                          element3.isOpenInner ||
+                          element3.employeeTargetAchievements.length > 0
+                        ) {
+                          for (
+                            let c = 0;
+                            c < element3.employeeTargetAchievements.length;
+                            c++
+                          ) {
+                            const element4 =
+                              element3.employeeTargetAchievements[c];
+                            let format5 = getPayloadDataFormat(element4);
+                            tempArr.push(format5);
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
     setMasterTeamsParamsData({ ...data });
     if (loggedInEmpDetails) {
       const { orgId, empId, branchId } = loggedInEmpDetails;
       const payload = {
         orgId: `${orgId}`,
         employeeId: `${empId}`,
-        targets: formTeamParamsTargetPayloadData(),
-
+        // targets: formTeamParamsTargetPayloadData(),
+        targets: tempArr,
         start_date: selector.startDate,
         end_date: selector.endDate,
+        targetType: "MONTHLY",
       };
       Promise.all([dispatch(saveTeamTargetParams(payload))])
         .then((x) => {
@@ -1196,9 +1386,12 @@ const MainParamScreen = ({ route, navigation }) => {
                       payload
                     );
                     const json = await response.json();
-                    if (newIds.length >= 2 && json && json1) {
+                    console.log("newArr", json1);
+                    if (newIds.length > 0 && json && json1) {
                       for (let i = 0; i < newIds.length; i++) {
                         const element = newIds[i].toString();
+                                                
+
                         let newArr = json1.data.filter(
                           (e) => e.employeeId === element
                         );
@@ -1262,6 +1455,41 @@ const MainParamScreen = ({ route, navigation }) => {
     );
   };
 
+  function onChangeTeamParamValue2(curIndex, x, ID, type) {
+    let y = filterParameters[0];
+    if (filterParameters.length === 1) {
+      if (filterParameters[0].empId === ID) {
+        const index = filterParameters[0].tempTargetAchievements.findIndex(
+          (item) => item.paramName === type
+        );
+        filterParameters[0].tempTargetAchievements[index].target = x;
+        const updatedParams = [...filterParameters];
+        setFilterParameters(updatedParams);
+      }
+    }
+  }
+
+  const renderFilterData = (item, color) => {
+    return (
+      <View
+        style={{ flexDirection: "row", backgroundColor: Colors.BORDER_COLOR }}
+      >
+        <RenderEmployeeTarget
+          item={item}
+          displayType={togglePercentage}
+          params={toggleParamsMetaData}
+          navigation={navigation}
+          moduleType={"home"}
+          editParameters={editParameters}
+          onChangeTeamParamValue={(index, x, id, param) => {
+            console.log(index, x, item.empId, param);
+            onChangeTeamParamValue2(index, x, item.empId, param);
+          }}
+        />
+      </View>
+    );
+  };
+
   const renderData = (item, color) => {
     return (
       <View
@@ -1274,16 +1502,141 @@ const MainParamScreen = ({ route, navigation }) => {
           navigation={navigation}
           moduleType={"home"}
           editParameters={editParameters}
-          onChangeTeamParamValue={(index, x, id, param) =>{
+          onChangeTeamParamValue={(index, x, id, param) => {
             console.log(index, x, item.empId, param);
-            return
-            onChangeTeamParamValue(curIndex, x, id, param)
-          }
-          }
+            // return
+            onChangeTeamParamValue1(index, x, item.empId, param);
+          }}
         />
       </View>
     );
   };
+
+  function onChangeTeamParamValue1(curIndex, x, ID, type) {
+    let y = allParameters[0].employeeTargetAchievements;
+    if (allParameters.length === 1) {
+      if (
+        allParameters[0].isOpenInner === true &&
+        allParameters[0].empId === ID
+      ) {
+        const index = allParameters[0].tempTargetAchievements.findIndex(
+          (item) => item.paramName === type
+        );
+        allParameters[0].tempTargetAchievements[index].target = x;
+        const updatedParams = [...allParameters];
+        setAllParameters(updatedParams);
+      } else {
+        const index = y.findIndex((item) => item.empId === ID);
+        if (index !== -1) {
+          if (y[index].isOpenInner === true && y[index].empId == ID) {
+            const childIndex = y[index].tempTargetAchievements.findIndex(
+              (item) => item.paramName === type
+            );
+            y[index].tempTargetAchievements[childIndex].target = x;
+            const updatedParams = [...allParameters];
+            setAllParameters(updatedParams);
+          }
+        } else {
+          const index1 = y.findIndex((item) => item.isOpenInner === true);
+          let y1 = y[index1]?.employeeTargetAchievements;
+          if (y1.length > 0) {
+            const innerIndex1 = y1.findIndex((item) => item.empId === ID);
+            if (innerIndex1 !== -1) {
+              if (
+                y1[innerIndex1].isOpenInner === true &&
+                y1[innerIndex1].empId == ID
+              ) {
+                const childIndex1 = y1[
+                  innerIndex1
+                ].tempTargetAchievements.findIndex(
+                  (item) => item.paramName === type
+                );
+                y1[innerIndex1].tempTargetAchievements[childIndex1].target = x;
+                const updatedParams = [...allParameters];
+                setAllParameters(updatedParams);
+              }
+            } else {
+              const index2 = y1.findIndex((item) => item.isOpenInner === true);
+              let y2 = y1[index2]?.employeeTargetAchievements;
+              if (y2.length > 0) {
+                const innerIndex2 = y2.findIndex((item) => item.empId === ID);
+                if (innerIndex2 !== -1) {
+                  if (
+                    y2[innerIndex2].isOpenInner === true &&
+                    y2[innerIndex2].empId == ID
+                  ) {
+                    const childIndex2 = y2[
+                      innerIndex2
+                    ].tempTargetAchievements.findIndex(
+                      (item) => item.paramName === type
+                    );
+                    y2[innerIndex2].tempTargetAchievements[childIndex2].target =
+                      x;
+                    const updatedParams = [...allParameters];
+                    setAllParameters(updatedParams);
+                  }
+                } else {
+                  const index3 = y2.findIndex(
+                    (item) => item.isOpenInner === true
+                  );
+                  let y3 = y2[index3]?.employeeTargetAchievements;
+                  if (y3.length > 0) {
+                    const innerIndex3 = y3.findIndex(
+                      (item) => item.empId === ID
+                    );
+                    if (innerIndex3 !== -1) {
+                      if (
+                        y3[innerIndex3].isOpenInner === true &&
+                        y3[innerIndex3].empId == ID
+                      ) {
+                        const childIndex3 = y3[
+                          innerIndex3
+                        ].tempTargetAchievements.findIndex(
+                          (item) => item.paramName === type
+                        );
+                        y3[innerIndex3].tempTargetAchievements[
+                          childIndex3
+                        ].target = x;
+                        const updatedParams = [...allParameters];
+                        setAllParameters(updatedParams);
+                      }
+                    } else {
+                      const index4 = y3.findIndex(
+                        (item) => item.isOpenInner === true
+                      );
+                      let y4 = y3[index4]?.employeeTargetAchievements;
+                      if (y4.length > 0) {
+                        const innerIndex4 = y4.findIndex(
+                          (item) => item.empId === ID
+                        );
+                        if (innerIndex4 !== -1) {
+                          if (
+                            y4[innerIndex4].isOpenInner === true &&
+                            y4[innerIndex4].empId == ID
+                          ) {
+                            const childIndex4 = y3[
+                              innerIndex4
+                            ].tempTargetAchievements.findIndex(
+                              (item) => item.paramName === type
+                            );
+                            y3[innerIndex4].tempTargetAchievements[
+                              childIndex4
+                            ].target = x;
+                            const updatedParams = [...allParameters];
+                            setAllParameters(updatedParams);
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 
   return (
     <>
@@ -1442,7 +1795,70 @@ const MainParamScreen = ({ route, navigation }) => {
                   style={{ height: Dimensions.get("screen").height / 2.2 }}
                   // style={{ height: selector.isMD ? "81%" : "80%" }}
                 >
+                  {filterParameters.length > 0 &&
+                    filterParameters.map((item, index) => {
+                      return (
+                        <View>
+                          <View
+                            style={{
+                              paddingHorizontal: 8,
+                              display: "flex",
+                              flexDirection: "row",
+                              justifyContent: "space-between",
+                              marginTop: 12,
+                              width: Dimensions.get("screen").width - 28,
+                            }}
+                          >
+                            <Text
+                              style={{
+                                fontSize: 12,
+                                fontWeight: "600",
+                                textTransform: "capitalize",
+                              }}
+                            >
+                              {item?.empName}
+                            </Text>
+                          </View>
+                          {/*Source/Model View END */}
+                          <View style={[{ flexDirection: "row" }]}>
+                            {/*RIGHT SIDE VIEW*/}
+                            <View
+                              style={[
+                                {
+                                  width: "100%",
+                                  minHeight: 40,
+                                  flexDirection: "column",
+                                  paddingHorizontal: 2,
+                                },
+                              ]}
+                            >
+                              <View
+                                style={{
+                                  width: "100%",
+                                  minHeight: 40,
+                                  flexDirection: "row",
+                                }}
+                              >
+                                <RenderLevel1NameView
+                                  level={0}
+                                  item={item}
+                                  branchName={getBranchName(item?.branchId)}
+                                  color={"#C62159"}
+                                  titleClick={async () => {
+                                    return;
+                                  }}
+                                />
+                                {renderFilterData(item, "#C62159")}
+                              </View>
+                              {/* GET EMPLOYEE TOTAL MAIN ITEM */}
+                            </View>
+                          </View>
+                        </View>
+                      );
+                    })}
+
                   {allParameters.length > 0 &&
+                    filterParameters.length == 0 &&
                     allParameters.map((item, index) => {
                       return (
                         <View
@@ -2065,6 +2481,7 @@ const MainParamScreen = ({ route, navigation }) => {
                     })}
                 </ScrollView>
               </View>
+
               {/* Grand Total Section */}
               {totalParameters?.length > 0 && (
                 <View style={{ width: Dimensions.get("screen").width - 35 }}>
@@ -2959,10 +3376,10 @@ export const RenderLevel1NameView = ({
               color: "#fff",
             }}
           >
-            {item.empName.charAt(0)}
+            {item?.empName?.charAt(0)}
           </Text>
         </TouchableOpacity>
-        {level === 0 && !!branchName && (
+        {/* {level === 0 && !!branchName && (
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <IconButton
               icon="map-marker"
@@ -2974,7 +3391,7 @@ export const RenderLevel1NameView = ({
               {branchName}
             </Text>
           </View>
-        )}
+        )} */}
       </View>
       <View
         style={{
