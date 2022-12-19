@@ -831,8 +831,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
         if (
           value?.model &&
-          selector?.pre_booking_details_response?.dmsLeadDto?.leadStatus !=
-            "ENQUIRYCOMPLETED" &&
+          // selector?.pre_booking_details_response?.dmsLeadDto?.leadStatus !=
+          //   "ENQUIRYCOMPLETED" &&
           modelData.model != value.model
         ) {
           dispatch(updateOfferPriceData());
@@ -1392,6 +1392,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   };
 
   const clearPriceConfirmationData = () => {
+    setAddNewInput([]);
+    setOtherPrices(0);
+    setSelectedPaidAccessoriesList([]);
+    setSelectedFOCAccessoriesList([]);
     setSelectedRegistrationCharges({});
     setRegistrationChargesType([]);
     setInsurenceAddOnTypes([]);

@@ -351,6 +351,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
     newTaskObj.taskActualEndTime = convertDateStringToMillisecondsUsingMoment(
       selector.actual_end_time != '' ? selector.actual_start_time : defaultDate
     );
+    newTaskObj.taskUpdatedById = empId;
     switch (type) {
       case "CLOSE":
         newTaskObj.taskStatus = "CLOSED";
