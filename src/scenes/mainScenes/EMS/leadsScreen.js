@@ -389,7 +389,9 @@ const LeadsScreen = ({ route, navigation }) => {
           formatDate,
           selectedToDate,
           tempLeadStage,
-          tempLeadStatus
+          tempLeadStatus,
+          false,
+          isDateChange = true,
         );
         break;
       case "TO_DATE":
@@ -404,7 +406,9 @@ const LeadsScreen = ({ route, navigation }) => {
           selectedFromDate,
           formatDate,
           tempLeadStage,
-          tempLeadStatus
+          tempLeadStatus,
+          false,
+          isDateChange = true,
         );
         break;
     }
@@ -677,11 +681,11 @@ const LeadsScreen = ({ route, navigation }) => {
     to,
     defLeadStage,
     defLeadStatus,
-    isRefresh = false
+    isRefresh = false,
+    isDateChange = false
   ) => {
     setSearchedData([]);
     setLeadsList([]);
-    setSelectedToDate(moment().add(0, "day").endOf("month").format(dateFormat));
     setLoader(true);
     const employeeData = await AsyncStore.getData(
       AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -774,6 +778,11 @@ const LeadsScreen = ({ route, navigation }) => {
         }
       }
 
+      const monthLastDate = moment()
+        .add(0, "day")
+        .endOf("month")
+        .format(dateFormat);
+
       let isLive = false;
       if (
         route?.params?.param &&
@@ -782,9 +791,19 @@ const LeadsScreen = ({ route, navigation }) => {
       ) {
         isLive = true;
         from = "2021-01-01";
-      } else if (route?.params?.param && route?.params?.moduleType == "home") {
+        setSelectedToDate(monthLastDate);
+      } else if (
+        route?.params?.param &&
+        route?.params?.moduleType == "home" &&
+        !isDateChange
+      ) {
         from = lastMonthFirstDate;
-      } else {
+        setSelectedToDate(monthLastDate);
+      } else if (isRefresh){
+        from = lastMonthFirstDate;
+        setSelectedFromDate(lastMonthFirstDate);
+        to = monthLastDate;
+        setSelectedToDate(monthLastDate);
       }
       let newPayload = {
         startdate: from ? from : selectedFromDate,
