@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { SafeAreaView, View, Text, StyleSheet, FlatList, Dimensions, Image, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 import { WebView } from 'react-native-webview';
+import { Colors } from '../../../styles';
 
 const screenWidth = Dimensions.get("window").width;
 const buttonWidth = (screenWidth - 100) / 2;
@@ -45,7 +46,8 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         flexDirection: "column",
-        backgroundColor: '#FFF',
+        backgroundColor: Colors.LIGHT_GRAY,
+        marginHorizontal:'2%'
     },
     view3: {
         width: "100%",

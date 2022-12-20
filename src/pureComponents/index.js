@@ -12,6 +12,7 @@ import { ComplaintsItem } from "./complaintsItem";
 import { EventManagementItem } from "./eventmanagementItem";
 import { ChartNameList } from "./chartNameList";
 import { TargetDropdown } from "./targetDropdown";
+import { DropDownSelectionItemV2 } from "./dropDownSelectionItemV2";
 
 export {
     RadioTextItem,
@@ -26,5 +27,6 @@ export {
     EventManagementItem,
     ChartNameList,
     TargetDropdown,
-    DateSelectItemForTargetSettings
+    DateSelectItemForTargetSettings,
+    DropDownSelectionItemV2
 };
