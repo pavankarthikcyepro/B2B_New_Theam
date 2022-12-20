@@ -265,8 +265,16 @@ const testDriveSlice = createSlice({
         let varientObj = {};
         vehicles.forEach(element => {
           const vehicleInfo = element.vehicleInfo;
-          const vehicleInfoForModel = { ...vehicleInfo, name: vehicleInfo.model, id: vehicleInfo.vehicleId };
-          const vehicleInfoForVarient = { ...vehicleInfo, name: vehicleInfo.varientName, id: vehicleInfo.vehicleId };
+          const vehicleInfoForModel = {
+            ...vehicleInfo,
+            name: vehicleInfo.model,
+            id: element.id,
+          };
+          const vehicleInfoForVarient = {
+            ...vehicleInfo,
+            name: vehicleInfo.varientName,
+            id: element.id,
+          };
 
           if (vehicleNames.includes(vehicleInfo.vehicleId)) {
             const oldData = varientObj[vehicleInfo.model];

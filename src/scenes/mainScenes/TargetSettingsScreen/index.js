@@ -542,8 +542,8 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                   >
                     <View style={{ width: "45%" }}>
                       <DateSelectItemForTargetSettings
-                        // disabled={selector.targetType === "MONTHLY"}
-                        disabled={false}
+                        disabled={selector.targetType === "MONTHLY"}
+                        // disabled={false}
                         label={"Start Date"}
                         placeholder={"Set Target"}
                         value={fromDate}
@@ -553,8 +553,8 @@ const TargetSettingsScreen = ({ route, navigation }) => {
 
                     <View style={{ width: "45%" }}>
                       <DateSelectItemForTargetSettings
-                        disabled={false}
-                        // disabled={selector.targetType === "MONTHLY"}
+                        // disabled={false}
+                        disabled={selector.targetType === "MONTHLY"}
                         label={"End Date"}
                         placeholder={"Set Target"}
                         value={toDate}

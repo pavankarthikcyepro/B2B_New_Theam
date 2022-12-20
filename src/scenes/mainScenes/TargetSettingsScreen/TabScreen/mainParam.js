@@ -239,7 +239,6 @@ const MainParamScreen = ({ route, navigation }) => {
   ];
 
   useEffect(async () => {
-    console.log("SELECTED ssssssFILER", selector.filterPayload);
     try {
       if (selector.filterPayload) {
         let filterData = selector.filterPayload.params;
@@ -716,7 +715,8 @@ const MainParamScreen = ({ route, navigation }) => {
                 let payload1 = getEmployeePayloadTotal(
                   employeeData,
                   [jsonObj.empId],
-                  [jsonObj.branchId]
+                  []
+                  // [jsonObj.branchId]
                 );
                 const response1 = await client.post(
                   URL.GET_ALL_TARGET_MAPPING_SEARCH(),
@@ -737,7 +737,6 @@ const MainParamScreen = ({ route, navigation }) => {
                     // targetAchievements: newArray,
                     // tempTargetAchievements: newArray,
                   };
-                  console.log(JSON.stringify(json1?.data));
                   setAllParameters(myParams);
                 }
               }
@@ -772,6 +771,7 @@ const MainParamScreen = ({ route, navigation }) => {
       startDate: from ? from : selector.startDate,
       endDate: to ? to : selector.endDate,
       branchNumber: branch,
+      // branchNumber: [],
       targetType: "MONTHLY",
     };
   };
@@ -793,7 +793,8 @@ const MainParamScreen = ({ route, navigation }) => {
       endDate: selector.endDate,
       loggedInEmpId: jsonObj.empId.toString(),
       childEmpId: newIds,
-      branchNumber: branch,
+      // branchNumber: branch,
+      barnchNumber: [],
       targetType: "MONTHLY",
     };
   };
@@ -1044,18 +1045,11 @@ const MainParamScreen = ({ route, navigation }) => {
   }
 
   const getPayloadDataFormat = (item) => {
-    console.log("ITEM",item);
-    console.log(
-      "selector.targetMapping",
-      selector.targetMapping.filter(
-        (y) => y.employeeId.toString() === item.empId.toString()
-      )
-    );
     let formatedData = {
       employeeId: item.empId || item.employeeId,
       branch: item.branchId || item.branch,
-      department: item.department || "0",
-      designation: item.designation || "0",
+      department: item?.department || "0",
+      designation: item?.designation || "0",
       targets: [
         {
           unit: "percentage",
@@ -1152,7 +1146,6 @@ const MainParamScreen = ({ route, navigation }) => {
     const data = { ...updateTeamsParamsData };
     const newData = [...allParameters];
     let tempArr = [];
-    // console.log(JSON.stringify(newData));
 
     if (selector.filterPayload?.params?.from === "Filter") {
       let format1 = getPayloadDataFormat(filterParameters[0]);
@@ -1160,7 +1153,7 @@ const MainParamScreen = ({ route, navigation }) => {
     } else {
       if (newData.length > 0) {
         let format = getPayloadDataFormat(newData[0]);
-        tempArr.push(format);
+        // tempArr.push(format);
         if (
           newData[0].isOpenInner ||
           newData[0]?.employeeTargetAchievements.length > 0
@@ -1379,19 +1372,17 @@ const MainParamScreen = ({ route, navigation }) => {
                     let payload = getPayloadTotal(
                       employeeData,
                       newIds,
-                      removeDuplicates(branch)
+                      []
+                      // removeDuplicates(branch)
                     );
                     const response = await client.post(
                       URL.GET_TARGET_PLANNING_COUNT(),
                       payload
                     );
                     const json = await response.json();
-                    console.log("newArr", json1);
                     if (newIds.length > 0 && json && json1) {
                       for (let i = 0; i < newIds.length; i++) {
                         const element = newIds[i].toString();
-                                                
-
                         let newArr = json1.data.filter(
                           (e) => e.employeeId === element
                         );
@@ -1401,10 +1392,16 @@ const MainParamScreen = ({ route, navigation }) => {
                         if (Array.isArray(newArr)) {
                           lastParameter[index].employeeTargetAchievements[
                             i
-                          ].tempTargetAchievements = getDataFormat(newArr[0]);
+                          ].department = newArr[0].department;
+                          lastParameter[index].employeeTargetAchievements[
+                            i
+                          ].designation = newArr[0].designation;
                           lastParameter[index].employeeTargetAchievements[
                             i
                           ].targetAchievements = getDataFormat(newArr2[0]);
+                          lastParameter[index].employeeTargetAchievements[
+                            i
+                          ].tempTargetAchievements = getDataFormat(newArr[0]);
                         }
                       }
                     }
@@ -1482,7 +1479,6 @@ const MainParamScreen = ({ route, navigation }) => {
           moduleType={"home"}
           editParameters={editParameters}
           onChangeTeamParamValue={(index, x, id, param) => {
-            console.log(index, x, item.empId, param);
             onChangeTeamParamValue2(index, x, item.empId, param);
           }}
         />
@@ -1503,8 +1499,6 @@ const MainParamScreen = ({ route, navigation }) => {
           moduleType={"home"}
           editParameters={editParameters}
           onChangeTeamParamValue={(index, x, id, param) => {
-            console.log(index, x, item.empId, param);
-            // return
             onChangeTeamParamValue1(index, x, item.empId, param);
           }}
         />
@@ -1638,87 +1632,120 @@ const MainParamScreen = ({ route, navigation }) => {
     }
   }
 
+  function isCurrentMonth() {
+    let start = moment(selector?.startDate);
+    let end = moment(selector?.endDate);
+    let newDate = new Date().getMonth();
+    if (
+      start.month() == end.month() &&
+      start.month() == newDate &&
+      end.month() == newDate
+    ) {
+      if (selector?.filterPayload?.params?.fromDate) {
+        let from = moment(selector?.filterPayload?.params?.fromDate);
+        let to = moment(selector?.filterPayload?.params?.toDate);
+        if (
+          from.month() == to.month() &&
+          from.month() == newDate &&
+          to.month() == newDate
+        ) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return true;
+      }
+    } else {
+      return false;
+    }
+  }
+
   return (
     <>
-      <View>
-        {!editParameters && (
+      {isCurrentMonth() && (
+        <>
           <View>
-            <Pressable
-              style={[styles.editParamsButton, { borderColor: Colors.RED }]}
-              onPress={() => {
-                setEditParameters(true);
-              }}
-            >
-              <View style={styles.editParamsBtnView}>
-                <IconButton icon="pencil" size={16} color={Colors.RED} />
-                <Text>Edit Parameters</Text>
+            {!editParameters && (
+              <View>
+                <Pressable
+                  style={[styles.editParamsButton, { borderColor: Colors.RED }]}
+                  onPress={() => {
+                    setEditParameters(true);
+                  }}
+                >
+                  <View style={styles.editParamsBtnView}>
+                    <IconButton icon="pencil" size={16} color={Colors.RED} />
+                    <Text>Edit Parameters</Text>
+                  </View>
+                </Pressable>
               </View>
-            </Pressable>
+            )}
+            {editParameters && (
+              <View
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignSelf: "flex-end",
+                }}
+              >
+                <Pressable
+                  style={[styles.editParamsButton, { borderColor: "green" }]}
+                  onPress={() => {
+                    if (homeSelector.isTeamPresent && selector.isTeam) {
+                      saveTeamData();
+                    } else {
+                      saveSelfData();
+                    }
+                  }}
+                >
+                  <View style={styles.editParamsBtnView}>
+                    <IconButton icon="content-save" size={16} color={"green"} />
+                    <Text>Save</Text>
+                  </View>
+                </Pressable>
+                <Pressable
+                  style={[styles.editParamsButton, { borderColor: "red" }]}
+                  onPress={() => {
+                    setEditParameters(false);
+                    if (homeSelector.isTeamPresent) {
+                      if (selector.isTeam) {
+                        // const data = [...masterTeamsParamsData];
+                        // setMasterTeamsParamsData(data);
+                        const payload2 = {
+                          empId: loggedInEmpDetails.empId,
+                          pageNo: 1,
+                          size: 500,
+                          targetType: selector.targetType,
+                        };
+                        Promise.all([dispatch(getAllTargetMapping(payload2))])
+                          .then((x) => {})
+                          .catch((y) => {});
+                      } else {
+                        const data = { ...masterSelfParameters };
+                        setUpdatedSelfParameters(data);
+                      }
+                    } else {
+                      const data = { ...masterSelfParameters };
+                      setUpdatedSelfParameters(data);
+                    }
+                  }}
+                >
+                  <View style={styles.editParamsBtnView}>
+                    <IconButton
+                      icon="cancel"
+                      size={16}
+                      color={"red"}
+                      style={{ padding: 0 }}
+                    />
+                    <Text>Cancel</Text>
+                  </View>
+                </Pressable>
+              </View>
+            )}
           </View>
-        )}
-        {editParameters && (
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              alignSelf: "flex-end",
-            }}
-          >
-            <Pressable
-              style={[styles.editParamsButton, { borderColor: "green" }]}
-              onPress={() => {
-                if (homeSelector.isTeamPresent && selector.isTeam) {
-                  saveTeamData();
-                } else {
-                  saveSelfData();
-                }
-              }}
-            >
-              <View style={styles.editParamsBtnView}>
-                <IconButton icon="content-save" size={16} color={"green"} />
-                <Text>Save</Text>
-              </View>
-            </Pressable>
-            <Pressable
-              style={[styles.editParamsButton, { borderColor: "red" }]}
-              onPress={() => {
-                setEditParameters(false);
-                if (homeSelector.isTeamPresent) {
-                  if (selector.isTeam) {
-                    // const data = [...masterTeamsParamsData];
-                    // setMasterTeamsParamsData(data);
-                    const payload2 = {
-                      empId: loggedInEmpDetails.empId,
-                      pageNo: 1,
-                      size: 500,
-                      targetType: selector.targetType,
-                    };
-                    Promise.all([dispatch(getAllTargetMapping(payload2))])
-                      .then((x) => {})
-                      .catch((y) => {});
-                  } else {
-                    const data = { ...masterSelfParameters };
-                    setUpdatedSelfParameters(data);
-                  }
-                } else {
-                  const data = { ...masterSelfParameters };
-                  setUpdatedSelfParameters(data);
-                }
-              }}
-            >
-              <View style={styles.editParamsBtnView}>
-                <IconButton
-                  icon="cancel"
-                  size={16}
-                  color={"red"}
-                  style={{ padding: 0 }}
-                />
-                <Text>Cancel</Text>
-              </View>
-            </Pressable>
-          </View>
-        )}
-      </View>
+        </>
+      )}
       {/*Teams Data Section*/}
       {loggedInEmpDetails !== null &&
         homeSelector.isTeamPresent &&

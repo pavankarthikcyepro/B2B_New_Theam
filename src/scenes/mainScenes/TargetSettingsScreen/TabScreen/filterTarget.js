@@ -209,7 +209,20 @@ const FilterTargetScreen = ({ route, navigation }) => {
     //     })
     // }
     const data = employeeDropDownDataLocal[employeeTitleNameList[index]];
-    setDropDownData([...data]);
+    let newIndex = index == 0 ? 0 : index - 1;
+    let newItem = Object.keys(employeeDropDownDataLocal)[newIndex];
+    const tempData = employeeDropDownDataLocal[newItem];
+    const isSelected = tempData.filter((e) => e.selected == true);
+    let newArr = [];
+    if (isSelected[0]?.id && index !== 0) {
+      console.log(data);
+      const newList = data.filter((e) => e.parentId == isSelected[0]?.id);
+      newArr = [...newList];
+      console.log(newList);
+    }
+    let tempArr = index == 0 ? data : newArr;
+
+    setDropDownData([...tempArr]);
     setSelectedItemIndex(index);
     setShowDropDownModel(true);
     setDropDownFrom("EMPLOYEE_TABLE");
@@ -484,22 +497,22 @@ const FilterTargetScreen = ({ route, navigation }) => {
     let selectedIds = [];
     for (let key in employeeDropDownDataLocal) {
       const arrayData = employeeDropDownDataLocal[key];
-      // if (arrayData.length !=0) {
-
-      // }
-      arrayData.forEach((element) => {
-        if (element.selected === true) {
-          selectedIds.push(element.code);
-        }
-      });
+      if (arrayData.length != 0) {
+        arrayData.forEach((element) => {
+          if (element.selected === true) {
+            selectedIds.push(element.code);
+          }
+        });
+      }
     }
     let x =
       employeeDropDownDataLocal[
         Object.keys(employeeDropDownDataLocal)[
-          Object.keys(employeeDropDownDataLocal).length - 2
+          Object.keys(employeeDropDownDataLocal).length - 1
         ]
       ];
     let selectedID = x.filter((e) => e.selected == true);
+    // return
     navigation.navigate("MONTHLY_TARGET_SCREEN", {
       params: {
         from: "Filter",
