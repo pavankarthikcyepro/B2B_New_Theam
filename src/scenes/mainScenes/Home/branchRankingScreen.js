@@ -11,10 +11,14 @@ export default function branchRankingScreen() {
     const selector = useSelector((state) => state.homeReducer);
     const dispatch = useDispatch();
     const [branchList, setBranchList] = useState([]);
+    const [loggedInEmpId, setLoggedInEmpId] = useState(0);
 
     const getBranchRankListFromServer = async () => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
         const jsonObj = await JSON.parse(employeeData);
+         if (jsonObj && jsonObj.empId) {
+           setLoggedInEmpId(jsonObj.empId);
+         }
         const branchId = await AsyncStore.getData(
             AsyncStore.Keys.SELECTED_BRANCH_ID
         );
@@ -65,16 +69,17 @@ export default function branchRankingScreen() {
     };
 
     const renderItemLeaderTopList = (item, index) => {
+      let isActive = item.empId == loggedInEmpId && !selector.isRankHide;
       return (
-        <View style={styles.tableSubRow}>
+        <View style={isActive ? styles.activeSubRow :styles.tableSubRow}>
           <View style={styles.itemRow}>
-            <Text style={styles.itemRowText}>{item.rank}</Text>
-            <Text style={styles.itemRowText}>{getEmpName(item.empName)}</Text>
-            <Text style={styles.itemRowText}>
+            <Text style={isActive ? styles.activeItemRowText : styles.itemRowText}>{item.rank}</Text>
+            <Text style={isActive ? styles.activeItemRowText : styles.itemRowText}>{getEmpName(item.empName)}</Text>
+            <Text style={isActive ? styles.activeItemRowText : styles.itemRowText}>
               {getBranchName(item.branchCode)}
             </Text>
-            <Text style={styles.itemRowText}>{item.achivementPerc}</Text>
-            <Text style={styles.itemRowText}>{item.targetAchivements}</Text>
+            <Text style={isActive ? styles.activeItemRowText : styles.itemRowText}>{item.achivementPerc}</Text>
+            <Text style={isActive ? styles.activeItemRowText : styles.itemRowText}>{item.targetAchivements}</Text>
           </View>
         </View>
       );
@@ -148,9 +153,23 @@ const styles = StyleSheet.create({
     borderColor: "#F2F2F2",
     marginBottom: 3,
   },
+  activeSubRow: {
+    padding: 10,
+    borderRadius: 4,
+    marginBottom: 3,
+    borderWidth: 1,
+    borderBottomWidth: 2,
+    borderColor: Colors.PINK,
+    backgroundColor: Colors.WHITE,
+  },
   itemRow: { flexDirection: "row", width: "100%" },
   itemRowText: { color: "black", textAlign: "center", flex: 1 },
-
+  activeItemRowText: {
+    color: Colors.BLACK,
+    textAlign: "center",
+    flex: 1,
+    fontWeight: "bold",
+  },
   listView: {
     height: "95%",
     width: "95%",
