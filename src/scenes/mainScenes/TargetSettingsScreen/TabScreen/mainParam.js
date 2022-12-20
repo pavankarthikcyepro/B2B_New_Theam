@@ -556,10 +556,10 @@ const MainParamScreen = ({ route, navigation }) => {
         }
         return (
             <>
-                {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
+                {
                     <View key={index}>
                         <TextInput key={index} editable={editParameters} style={editParameters ? styles.textBox : styles.textBoxDisabled}
-                            value={param} onChangeText={(x) => onChangeTeamParamValue(curIndex, x, item.id, type)} />
+                            value={param || "0"} onChangeText={(x) => onChangeTeamParamValue(curIndex, x, item.id, type)} />
                     </View>
                 }
             </>
@@ -634,7 +634,7 @@ const MainParamScreen = ({ route, navigation }) => {
                 <View>
                     <ScrollView contentContainerStyle={{ paddingRight: 20, flexDirection: 'column' }} horizontal={true} directionalLockEnabled={true}>
                         <View style={{ flexDirection: 'row' }}>
-                            <View style={{ width: 100, height: 40 }}>
+                            <View style={{ width: 150, height: 40 ,}}>
 
                             </View>
                             <View style={{ height: 40, flexDirection: 'row' }}>
@@ -679,11 +679,11 @@ const MainParamScreen = ({ route, navigation }) => {
                         {selector.targetMapping.length > 0 && selector.targetMapping.map((item, index) => {
                             return (
                                 <>
-                                    {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate && <View style={{ flexDirection: 'row', marginTop: 5 }}>
+                                    { <View style={{ flexDirection: 'row', marginTop: 5 }}>
                                         <View style={{ minHeight: 40, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', }}>
                                             {/*// left side name section */}
-                                            <View style={{ width: 100, marginTop: 5 }}>
-                                                {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
+                                            <View style={{ width: 150, marginTop: 5 }}>
+                                                {
                                                     <View style={styles.nameBox}>
                                                         <Text style={styles.text} numberOfLines={1}>{item?.empName}</Text>
                                                     </View>
@@ -691,7 +691,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                             </View>
 
                                             <View style={{ width: 88, alignItems: "center" }}>
-                                                {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
+                                                {
                                                     <TouchableOpacity onPress={() => {
                                                         setSelectedDropdownData([{ label: item?.branchName, value: item?.branch }])
                                                         if (item?.retailTarget !== null && selector?.endDate === item?.endDate && selector?.startDate === item?.startDate) {
@@ -716,7 +716,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                                     </TouchableOpacity>}
                                             </View>
 
-                                            {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
+                                            {
                                                 ["enquiry", "testDrive", "homeVisit", "booking", "exchange", "finance", "insurance", "exWarranty", "accessories"].map((subItem) => (
                                                     <View key={index} style={{ width: 88, alignItems: "center" }}>
                                                         {RenderTeamsTargetData(item, subItem, index)}
@@ -738,7 +738,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                 <View style={{ flexDirection: 'row' }}>
                                     <View style={{ minHeight: 40, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
                                         {/*// left side name section */}
-                                        <View style={{ width: 100, marginTop: 5 }}>
+                                        <View style={{ width: 150, marginTop: 5 }}>
                                             <View style={styles.nameBox}>
                                                 <Text style={styles.text} numberOfLines={1}>{'Team Total'}</Text>
                                             </View>
@@ -1164,7 +1164,7 @@ const styles = StyleSheet.create({
     },
     text: { fontSize: 14, fontWeight: '500' },
     nameWrap: { width: '100%', flexDirection: 'row', marginBottom: 10, marginLeft: 10, marginTop: 10 },
-    nameBox: { width: 80, justifyContent: 'center', alignItems: 'center', marginRight: 5 },
+    nameBox: { width: 140, justifyContent: 'center', alignItems: 'center', marginRight: 5, marginLeft:5 },
     textBox: { width: 80, height: 40, borderWidth: 1, borderRadius: 5, borderColor: 'blue', marginRight: 5, justifyContent: 'center', alignItems: 'center', textAlign: 'center' },
     textBoxDisabled: { width: 80, height: 40, borderWidth: 1, borderRadius: 5, borderColor: '#d1d1d1', marginRight: 5, justifyContent: 'center', alignItems: 'center', textAlign: 'center' },
     textInput: {

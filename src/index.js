@@ -33,6 +33,9 @@ import {
 import PushNotificationIOS from "@react-native-community/push-notification-ios";
 import { Platform, AppState } from "react-native";
 import PushNotification from "react-native-push-notification";
+import { enableScreens } from "react-native-screens";
+
+enableScreens();
 
 const officeLocation = {
   latitude: 37.33233141,

@@ -13,9 +13,16 @@ export const RenderGrandTotal = (parameter) => {
         const selectedParameter = totalParams.filter(
           (item) => item.paramName === param
         )[0];
-        const enquiryParameter = totalParams.filter(
+        const enq = totalParams.filter(
           (item) => item.paramName === "Enquiry"
         )[0];
+        const ret = totalParams.filter(
+          (item) => item.paramName === "INVOICE"
+        )[0];
+        const acc = totalParams.filter(
+          (item) => item.paramName === "Accessories"
+        )[0];
+
         return (
           <View
             key={param}
@@ -40,12 +47,14 @@ export const RenderGrandTotal = (parameter) => {
             >
               {displayType === 0
                 ? Number(selectedParameter.achievment)
-                : achievementPercentage(
+                : `${achievementPercentage(
                     selectedParameter.achievment,
                     selectedParameter.target,
                     param,
-                    enquiryParameter?.achievment
-                  )}
+                    enq,
+                    ret,
+                    acc
+                  )}%`}
             </Text>
             {moduleType !== "live-leads" && (
               <Text

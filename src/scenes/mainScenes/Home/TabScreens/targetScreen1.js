@@ -1073,6 +1073,9 @@ const TargetScreen = ({ route }) => {
                                                     item={innerItem1}
                                                     color={Colors.CORAL}
                                                     navigation={navigation}
+                                                    branchName={getBranchName(
+                                                      innerItem1.branchId
+                                                    )}
                                                     titleClick={async () => {
                                                       const localData = [
                                                         ...allParameters,
@@ -1187,6 +1190,9 @@ const TargetScreen = ({ route }) => {
                                                             navigation={
                                                               navigation
                                                             }
+                                                            branchName={getBranchName(
+                                                              innerItem2.branchId
+                                                            )}
                                                             titleClick={async () => {
                                                               const localData =
                                                                 [
@@ -1311,6 +1317,9 @@ const TargetScreen = ({ route }) => {
                                                                       navigation={
                                                                         navigation
                                                                       }
+                                                                      branchName={getBranchName(
+                                                                        innerItem3.branchId
+                                                                      )}
                                                                       titleClick={async () => {
                                                                         const localData =
                                                                           [
@@ -1393,6 +1402,9 @@ const TargetScreen = ({ route }) => {
                                                                                 navigation={
                                                                                   navigation
                                                                                 }
+                                                                                branchName={getBranchName(
+                                                                                  innerItem4.branchId
+                                                                                )}
                                                                                 titleClick={async () => {
                                                                                   const localData =
                                                                                     [
@@ -1477,6 +1489,9 @@ const TargetScreen = ({ route }) => {
                                                                                           navigation={
                                                                                             navigation
                                                                                           }
+                                                                                          branchName={getBranchName(
+                                                                                            innerItem5.branchId
+                                                                                          )}
                                                                                           titleClick={async () => {
                                                                                             const localData =
                                                                                               [
@@ -1564,6 +1579,9 @@ const TargetScreen = ({ route }) => {
                                                                                                     navigation={
                                                                                                       navigation
                                                                                                     }
+                                                                                                    branchName={getBranchName(
+                                                                                                      innerItem6.branchId
+                                                                                                    )}
                                                                                                     titleClick={async () => {
                                                                                                       const localData =
                                                                                                         [
@@ -1753,8 +1771,9 @@ const TargetScreen = ({ route }) => {
             </View>
           ) : (
             // IF Self or insights
-            <>
-              {!selector.isLoading && selfInsightsData.length > 0 && (
+            !selector.isLoading &&
+            selfInsightsData.length > 0 && (
+              <>
                 <View style={{ flexDirection: "row", marginVertical: 8 }}>
                   <View
                     style={{
@@ -1803,9 +1822,7 @@ const TargetScreen = ({ route }) => {
                     </Text>
                   </View>
                 </View>
-              )}
-              {/* Header view end */}
-              {!selector.isLoading && selfInsightsData.length > 0 && (
+                {/* Header view end */}
                 <ScrollView showsVerticalScrollIndicator={false}>
                   <>
                     <View style={{ paddingRight: 10 }}>
@@ -1855,7 +1872,7 @@ const TargetScreen = ({ route }) => {
                           <Text
                             style={{
                               color:
-                                Math.floor(
+                                Math.round(
                                   (parseInt(bookingData?.achievment) /
                                     parseInt(enqData?.achievment)) *
                                     100
@@ -1903,7 +1920,7 @@ const TargetScreen = ({ route }) => {
                           <Text
                             style={{
                               color:
-                                Math.floor(
+                                Math.round(
                                   (parseInt(visitData?.achievment) /
                                     parseInt(enqData?.achievment)) *
                                     100
@@ -1951,7 +1968,7 @@ const TargetScreen = ({ route }) => {
                           <Text
                             style={{
                               color:
-                                Math.floor(
+                                Math.round(
                                   (parseInt(finData?.achievment) /
                                     parseInt(retailData?.achievment)) *
                                     100
@@ -2001,7 +2018,7 @@ const TargetScreen = ({ route }) => {
                           <Text
                             style={{
                               color:
-                                Math.floor(
+                                Math.round(
                                   (parseInt(retailData?.achievment) /
                                     parseInt(bookingData?.achievment)) *
                                     100
@@ -2054,7 +2071,7 @@ const TargetScreen = ({ route }) => {
                             {parseInt(TDData?.achievment) === 0 ||
                             parseInt(enqData?.achievment) === 0
                               ? 0
-                              : Math.floor(
+                              : Math.round(
                                   (parseInt(TDData?.achievment) /
                                     parseInt(enqData?.achievment)) *
                                     100
@@ -2093,7 +2110,7 @@ const TargetScreen = ({ route }) => {
                             {parseInt(insData?.achievment) === 0 ||
                             parseInt(retailData?.achievment) === 0
                               ? 0
-                              : Math.floor(
+                              : Math.round(
                                   (parseInt(insData?.achievment) /
                                     parseInt(retailData?.achievment)) *
                                     100
@@ -2120,7 +2137,7 @@ const TargetScreen = ({ route }) => {
                           <Text
                             style={{
                               color:
-                                Math.floor(
+                                Math.round(
                                   (parseInt(retailData?.achievment) /
                                     parseInt(enqData?.achievment)) *
                                     100
@@ -2173,7 +2190,7 @@ const TargetScreen = ({ route }) => {
                             {parseInt(exgData?.achievment) === 0 ||
                             parseInt(retailData?.achievment) === 0
                               ? 0
-                              : Math.floor(
+                              : Math.round(
                                   (parseInt(exgData?.achievment) /
                                     parseInt(retailData?.achievment)) *
                                     100
@@ -2198,7 +2215,7 @@ const TargetScreen = ({ route }) => {
                           <Text
                             style={{
                               color:
-                                Math.floor(
+                                Math.round(
                                   (parseInt(exwData?.achievment) /
                                     parseInt(retailData?.achievment)) *
                                     100
@@ -2262,7 +2279,7 @@ const TargetScreen = ({ route }) => {
                           {parseInt(accData?.achievment) === 0 ||
                           parseInt(retailData?.achievment) === 0
                             ? 0
-                            : Math.floor(
+                            : Math.round(
                                 parseInt(accData?.achievment) /
                                   parseInt(retailData?.achievment)
                               )}
@@ -2272,8 +2289,8 @@ const TargetScreen = ({ route }) => {
                   </View>
                   <View style={{ height: 20 }}></View>
                 </ScrollView>
-              )}
-            </>
+              </>
+            )
           )}
         </View>
       ) : (
@@ -2353,16 +2370,8 @@ export const RenderLevel1NameView = ({
             {item.empName.charAt(0)}
           </Text>
         </TouchableOpacity>
-        {level === 0 && !!branchName && (
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate(AppNavigator.HomeStackIdentifiers.location, {
-                empId: item.empId,
-                orgId: item.orgId,
-              });
-            }}
-            style={{ flexDirection: "row", alignItems: "center" }}
-          >
+        {/* {level === 0 && !!branchName && ( */}
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
             <IconButton
               icon="map-marker"
               style={{ padding: 0, margin: 0 }}
@@ -2372,8 +2381,8 @@ export const RenderLevel1NameView = ({
             <Text style={{ fontSize: 8 }} numberOfLines={2}>
               {branchName}
             </Text>
-          </TouchableOpacity>
-        )}
+          </View>
+        {/* )} */}
       </View>
       <View
         style={{

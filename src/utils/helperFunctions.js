@@ -3,6 +3,9 @@ import { Linking, Alert, Platform, PermissionsAndroid } from "react-native";
 import moment from "moment";
 import URL from "../networking/endpoints";
 import { showToastRedAlert } from '../utils/toast';
+import store from "../redux/reduxStore";
+import * as AsyncStore from "../asyncStore";
+import { updateSelectedBranchId, updateSelectedBranchName } from "../redux/targetSettingsReducer";
 
 export const isMobileNumber = (mobile) => {
   // var regex = /^[1-9]{1}[0-9]{9}$/; // /^\d{10}$/
@@ -498,21 +501,77 @@ export const GetDropList = async (orgId, token, type) => {
   });
 };
 
-export const achievementPercentage = (achievement, tgt, paramName, enquiryAchievement) => {
-  const paramsToCalculateDirectTotal = ['Enquiry', 'Accessories', 'PreEnquiry'];
+export const achievementPercentage = (achievement, tgt, paramName, enq = {}, ret = {}, acc = {}) => {
+  const enqCal = ["Enquiry", "PreEnquiry"];
+  const retCal = ["Exchange", "Finance", "Insurance", "EXTENDEDWARRANTY"];
+  const accCal = ["Accessories"];
+
   let target = tgt;
-  if (paramName && !paramsToCalculateDirectTotal.includes(paramName)) {
-    target = enquiryAchievement;
-  }
   if (achievement) {
     achievement = Number(achievement);
   } else {
     achievement = 0;
   }
+
+  if (paramName && retCal.includes(paramName)) {
+    target = ret.achievment;
+  } else if (paramName && accCal.includes(paramName)) {
+    target = acc.target;
+  } else if (paramName && !enqCal.includes(paramName)) {
+    target = enq.achievment;
+  } else {
+    if (target) {
+      target = Number(target);
+    } else {
+      target = 0;
+    }
+  }
+
+  return target > 0 ? Math.round((achievement / target) * 100) : achievement;
+};
+
+export const sourceModelPercentage = (achievement, target) => {
+  if (achievement) {
+    achievement = Number(achievement);
+  } else {
+    achievement = 0;
+  }
+  
   if (target) {
     target = Number(target);
   } else {
     target = 0;
   }
-  return target > 0 ? Math.round((achievement / target) * 100) : achievement; // if denominator is > 0, display percentage, else no change, display achievement
-}
+
+  return target > 0 ? Math.round((achievement / target) * 100) : achievement;
+};
+
+// export const achievementPercentage = (achievement, tgt, paramName, enquiryAchievement) => {
+//   const paramsToCalculateDirectTotal = ['Enquiry', 'Accessories', 'PreEnquiry'];
+//   let target = tgt;
+//   if (paramName && !paramsToCalculateDirectTotal.includes(paramName)) {
+//     target = enquiryAchievement;
+//   }
+//   if (achievement) {
+//     achievement = Number(achievement);
+//   } else {
+//     achievement = 0;
+//   }
+//   if (target) {
+//     target = Number(target);
+//   } else {
+//     target = 0;
+//   }
+//   return target > 0 ? Math.round((achievement / target) * 100) : achievement; // if denominator is > 0, display percentage, else no change, display achievement
+// }
+
+export const setBranchId = async (value) => {
+  let data = value.toString();
+  store.dispatch(updateSelectedBranchId(data));
+  await AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_ID, data);
+};
+
+export const setBranchName = async (value) => {
+  store.dispatch(updateSelectedBranchName(value));
+  await AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_NAME, value);
+};

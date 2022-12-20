@@ -49,6 +49,8 @@ import {
   saveLocation,
 } from "../../networking/endpoints";
 import { client } from "../../networking/client";
+import { setBranchId, setBranchName } from "../../utils/helperFunctions";
+
 // import { TextInput } from 'react-native-paper';
 const officeLocation = {
   latitude: 37.33233141,
@@ -173,6 +175,8 @@ const LoginScreen = ({ navigation }) => {
           branchId.toString()
         );
         AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_NAME, branchName);
+        setBranchId(branchId);
+        setBranchName(branchName);
         signIn(selector.authToken);
         dispatch(clearState());
       } else {
