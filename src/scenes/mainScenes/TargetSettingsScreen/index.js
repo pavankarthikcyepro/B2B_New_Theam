@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Keyboard,
+  RefreshControl,
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { IconButton, Card, Button } from "react-native-paper";
@@ -297,6 +298,10 @@ const TargetSettingsScreen = ({ route, navigation }) => {
     });
   };
 
+  const onRefresh =()=>{
+    dispatch(saveFilterPayload({}));
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <DropDownComponant
@@ -380,6 +385,12 @@ const TargetSettingsScreen = ({ route, navigation }) => {
           data={[1, 2, 3]}
           listKey={"TOP_FLAT_LIST"}
           keyExtractor={(item, index) => "TOP" + index.toString()}
+          refreshControl={
+            <RefreshControl
+              refreshing={selector.isLoading}
+              onRefresh={onRefresh}
+            />
+          }
           showsVerticalScrollIndicator={false}
           renderItem={({ item, index }) => {
             if (index === 0) {

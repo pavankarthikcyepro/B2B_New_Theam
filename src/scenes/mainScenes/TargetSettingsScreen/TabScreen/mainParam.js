@@ -149,6 +149,7 @@ const MainParamScreen = ({ route, navigation }) => {
   const [slideRight, setSlideRight] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [allParameters, setAllParameters] = useState([]);
+  const [tempParameters, setTempParameters] = useState([]);
   const [totalParameters, setTotalParameters] = useState([]);
   const [filterParameters, setFilterParameters] = useState([]);
   const [branches, setBranches] = useState([]);
@@ -238,9 +239,12 @@ const MainParamScreen = ({ route, navigation }) => {
     },
   ];
 
+function isEmpty(obj) {
+    return Object.keys(obj).length === 0;
+  }
   useEffect(async () => {
     try {
-      if (selector.filterPayload) {
+      if (!isEmpty(selector.filterPayload)) {
         let filterData = selector.filterPayload.params;
         let employeeData = await AsyncStore.getData(
           AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -272,20 +276,23 @@ const MainParamScreen = ({ route, navigation }) => {
                   ...newArr[0],
                   isOpenInner: true,
                   employeeTargetAchievements: [],
-                  // targetAchievements: newArray,
                   department: json1?.data[0]?.department,
                   designation: json1?.data[0]?.designation,
                   targetAchievements: getDataFormat(json1?.data[0]),
                   tempTargetAchievements: getDataFormat(json1?.data[0]),
+                  branchName: json1?.data[0]?.branchName,
+                  branch: json1?.data[0]?.branch,
+                  recordId: json1?.data[0]?.id,
                 };
                 setFilterParameters(newArr);
               }
-              // let format = getDataFormat(json1?.data[0]);
             })
             .catch();
         }
+      }else{
+        getInitialParameters();
       }
-    } catch (error) {}
+    } catch (error) { }
   }, [selector.filterPayload]);
 
   useEffect(() => {
@@ -683,6 +690,10 @@ const MainParamScreen = ({ route, navigation }) => {
   }, []);
 
   useEffect(async () => {
+    getInitialParameters();
+  }, [selector.endDate]);
+
+  const getInitialParameters = async () => {
     setIsLoading(true);
     if (selector.endDate.length !== 0) {
       try {
@@ -734,10 +745,14 @@ const MainParamScreen = ({ route, navigation }) => {
                     designation: json1?.data[0]?.designation,
                     targetAchievements: json[0]?.target,
                     tempTargetAchievements: format,
+                    branchName: json1?.data[0]?.branchName,
+                    branch: json1?.data[0]?.branch,
+                    recordId: json1?.data[0]?.id,
                     // targetAchievements: newArray,
                     // tempTargetAchievements: newArray,
                   };
                   setAllParameters(myParams);
+                  setFilterParameters([]);
                 }
               }
             })
@@ -749,7 +764,7 @@ const MainParamScreen = ({ route, navigation }) => {
         setIsLoading(false);
       }
     }
-  }, [selector.endDate]);
+  }
 
   const getEmployeePayloadTotal = (employeeData, newIds, branch, from, to) => {
     const jsonObj = JSON.parse(employeeData);
@@ -794,7 +809,7 @@ const MainParamScreen = ({ route, navigation }) => {
       loggedInEmpId: jsonObj.empId.toString(),
       childEmpId: newIds,
       // branchNumber: branch,
-      barnchNumber: [],
+      branchNumber: [],
       targetType: "MONTHLY",
     };
   };
@@ -860,7 +875,7 @@ const MainParamScreen = ({ route, navigation }) => {
         let payload = {
           branch: selectedBranch.value,
           // "branchmangerId": otherDropDownSelectedValue.filter((item) => item.key === 'Managers').length > 0 ? otherDropDownSelectedValue.filter((item) => item.key === 'Managers')[0].value.value : '',
-          employeeId: selectedUser?.employeeId,
+          employeeId: selectedUser?.employeeId || selectedUser?.empId,
           endDate: selector.endDate,
           // "managerId": otherDropDownSelectedValue.filter((item) => item.key === 'Managers').length > 0 ? otherDropDownSelectedValue.filter((item) => item.key === 'Managers')[0].value.value : '',
           retailTarget: retail,
@@ -870,6 +885,7 @@ const MainParamScreen = ({ route, navigation }) => {
           // "targetName": selector.targetType === 'MONTHLY' ? selector.selectedMonth.value : selector.selectedSpecial.keyId
           targetName: targetName !== "" ? targetName : "DEFAULT",
         };
+
         Promise.all([dispatch(addTargetMapping(payload))]).then(() => {
           setSelectedUser(null);
           setRetail("");
@@ -882,7 +898,8 @@ const MainParamScreen = ({ route, navigation }) => {
             size: 500,
             targetType: selector.targetType,
           };
-          dispatch(getAllTargetMapping(payload2));
+          getInitialParameters();
+          // dispatch(getAllTargetMapping(payload2));
         });
       }
     }
@@ -903,7 +920,7 @@ const MainParamScreen = ({ route, navigation }) => {
         let payload = {
           branch: selectedBranch.value,
           // "branchmangerId": otherDropDownSelectedValue.filter((item) => item.key === 'Managers').length > 0 ? otherDropDownSelectedValue.filter((item) => item.key === 'Managers')[0].value.value : '',
-          employeeId: selectedUser?.employeeId,
+          employeeId: selectedUser?.employeeId || selectedUser?.empId,
           endDate: selector.endDate,
           // "managerId": otherDropDownSelectedValue.filter((item) => item.key === 'Managers').length > 0 ? otherDropDownSelectedValue.filter((item) => item.key === 'Managers')[0].value.value : '',
           retailTarget: retail,
@@ -912,6 +929,8 @@ const MainParamScreen = ({ route, navigation }) => {
           targetType: "MONTHLY",
           // "targetName": selector.targetType === 'MONTHLY' ? selector.selectedMonth.value : selector.selectedSpecial.keyId
           targetName: targetName !== "" ? targetName : "DEFAULT",
+          loggedInEmpId: jsonObj.empId,
+          recordId: selectedUser?.recordId
         };
 
         Promise.all([dispatch(editTargetMapping(payload))])
@@ -927,9 +946,10 @@ const MainParamScreen = ({ route, navigation }) => {
               size: 500,
               targetType: selector.targetType,
             };
-            dispatch(getAllTargetMapping(payload2));
+            getInitialParameters();
+            // dispatch(getAllTargetMapping(payload2));
           })
-          .catch((error) => {});
+          .catch((error) => { });
       }
     }
   };
@@ -1039,8 +1059,35 @@ const MainParamScreen = ({ route, navigation }) => {
         end_date: selector.endDate,
       };
       Promise.all([dispatch(saveSelfTargetParams(payload))])
-        .then((x) => {})
-        .catch((y) => {});
+        .then((x) => { })
+        .catch((y) => { });
+    }
+  }
+
+  function isEmptyData(param, matchWith) {
+    let data = param.filter(
+      (e) => e.paramName === matchWith
+    )[0].target || "0"
+    if (data == "0") {
+      return true
+    } else {
+      return false
+    }
+  }
+
+  function pathCondition(path) {
+    if (isEmptyData(path, 'Enquiry') &&
+      isEmptyData(path, 'Retail') &&
+      isEmptyData(path, 'Test Drive') &&
+      isEmptyData(path, 'Visit') &&
+      isEmptyData(path, 'Exchange') &&
+      isEmptyData(path, 'Finance') &&
+      isEmptyData(path, 'Insurance') &&
+      isEmptyData(path, 'Exwarranty') &&
+      isEmptyData(path, 'Accessories')) {
+      return false;
+    } else {
+      return true;
     }
   }
 
@@ -1161,8 +1208,11 @@ const MainParamScreen = ({ route, navigation }) => {
           let x = newData[0]?.employeeTargetAchievements;
           for (let i = 0; i < x.length; i++) {
             const element = x[i];
-            let format1 = getPayloadDataFormat(element);
-            tempArr.push(format1);
+            let path = element.tempTargetAchievements;
+            if (pathCondition(path)) {
+              let format1 = getPayloadDataFormat(element);
+              tempArr.push(format1);
+            }
             if (
               element.isOpenInner ||
               element.employeeTargetAchievements.length > 0
@@ -1173,8 +1223,11 @@ const MainParamScreen = ({ route, navigation }) => {
                 j++
               ) {
                 const element1 = element.employeeTargetAchievements[j];
-                let format2 = getPayloadDataFormat(element1);
-                tempArr.push(format2);
+                let path1 = element1.tempTargetAchievements;
+                if (pathCondition(path1)) {
+                  let format2 = getPayloadDataFormat(element1);
+                  tempArr.push(format2);
+                }
                 if (
                   element1.isOpenInner ||
                   element1.employeeTargetAchievements.length > 0
@@ -1185,8 +1238,11 @@ const MainParamScreen = ({ route, navigation }) => {
                     k++
                   ) {
                     const element2 = element1.employeeTargetAchievements[k];
-                    let format3 = getPayloadDataFormat(element2);
-                    tempArr.push(format3);
+                    let path2 = element2.tempTargetAchievements;
+                    if (pathCondition(path2)) {
+                      let format3 = getPayloadDataFormat(element2);
+                      tempArr.push(format3);
+                    }
                     if (
                       element2.isOpenInner ||
                       element2.employeeTargetAchievements.length > 0
@@ -1197,8 +1253,11 @@ const MainParamScreen = ({ route, navigation }) => {
                         l++
                       ) {
                         const element3 = element2.employeeTargetAchievements[l];
-                        let format4 = getPayloadDataFormat(element3);
-                        tempArr.push(format4);
+                        let path3 = element3.tempTargetAchievements;
+                        if (pathCondition(path3)) {
+                          let format4 = getPayloadDataFormat(element3);
+                          tempArr.push(format4);
+                        }
                         if (
                           element3.isOpenInner ||
                           element3.employeeTargetAchievements.length > 0
@@ -1210,8 +1269,11 @@ const MainParamScreen = ({ route, navigation }) => {
                           ) {
                             const element4 =
                               element3.employeeTargetAchievements[c];
-                            let format5 = getPayloadDataFormat(element4);
-                            tempArr.push(format5);
+                            let path4 = element4.tempTargetAchievements;
+                            if (pathCondition(path4)) {
+                              let format5 = getPayloadDataFormat(element4);
+                              tempArr.push(format5);
+                            }
                           }
                         }
                       }
@@ -1243,18 +1305,23 @@ const MainParamScreen = ({ route, navigation }) => {
             Array.isArray(x) &&
             x[0].payload.message.toLowerCase() === "not updated"
           ) {
-            const payload2 = {
-              empId: loggedInEmpDetails.empId,
-              pageNo: 1,
-              size: 500,
-              targetType: selector.targetType,
-            };
-            Promise.all([dispatch(getAllTargetMapping(payload2))])
-              .then((x) => {})
-              .catch((y) => {});
+            // const payload2 = {
+            //   empId: loggedInEmpDetails.empId,
+            //   pageNo: 1,
+            //   size: 500,
+            //   targetType: selector.targetType,
+            // };
+            // Promise.all([dispatch(getAllTargetMapping(payload2))])
+            //   .then((x) => { })
+            //   .catch((y) => { });
+            // getInitialParameters();
+            setAllParameters(tempParameters);
           }
+          getInitialParameters();
         })
-        .catch((y) => {});
+        .catch((y) => {
+          getInitialParameters();
+        });
     }
   }
 
@@ -1402,6 +1469,15 @@ const MainParamScreen = ({ route, navigation }) => {
                           lastParameter[index].employeeTargetAchievements[
                             i
                           ].tempTargetAchievements = getDataFormat(newArr[0]);
+                          lastParameter[index].employeeTargetAchievements[
+                            i
+                          ].branchName = newArr[0].branchName;
+                          lastParameter[index].employeeTargetAchievements[
+                            i
+                          ].branch = newArr[0].branch;
+                          lastParameter[index].employeeTargetAchievements[
+                            i
+                          ].recordId = newArr[0]?.id;
                         }
                       }
                     }
@@ -1415,7 +1491,7 @@ const MainParamScreen = ({ route, navigation }) => {
       } else {
         setAllParameters([...localData]);
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   function removeDuplicates(arr) {
@@ -1478,6 +1554,36 @@ const MainParamScreen = ({ route, navigation }) => {
           navigation={navigation}
           moduleType={"home"}
           editParameters={editParameters}
+          editAndUpdate={(x) => {
+            setSelectedDropdownData([
+              {
+                label: item?.branchName,
+                value: item?.branch,
+              },
+            ]);
+            if (
+              item?.retailTarget !== null &&
+              selector?.endDate === item?.endDate &&
+              selector?.startDate === item?.startDate
+            ) {
+              setSelectedBranch({
+                label: item?.branchName,
+                value: item?.branch,
+              });
+              setDefaultBranch(item?.branch);
+              setAddOrEdit("E");
+            } else {
+              setDefaultBranch(null);
+              setAddOrEdit("A");
+            }
+            if (item?.targetName) {
+              setTargetName(item?.targetName);
+            }
+            setIsNoTargetAvailable(false);
+            setRetail(x);
+            setSelectedUser(item);
+            setOpenRetail(true);
+          }}
           onChangeTeamParamValue={(index, x, id, param) => {
             onChangeTeamParamValue2(index, x, item.empId, param);
           }}
@@ -1498,6 +1604,37 @@ const MainParamScreen = ({ route, navigation }) => {
           navigation={navigation}
           moduleType={"home"}
           editParameters={editParameters}
+          editAndUpdate={(x) => {
+            setSelectedDropdownData([
+              {
+                label: item?.branchName,
+                value: item?.branch,
+              },
+            ]);
+            if (
+              item?.retailTarget !== null &&
+              selector?.endDate === item?.endDate &&
+              selector?.startDate ===
+              item?.startDate
+            ) {
+              setSelectedBranch({
+                label: item?.branchName,
+                value: item?.branch,
+              });
+              setDefaultBranch(item?.branch);
+              setAddOrEdit("E");
+            } else {
+              setDefaultBranch(null);
+              setAddOrEdit("A");
+            }
+            if (item?.targetName) {
+              setTargetName(item?.targetName);
+            }
+            setIsNoTargetAvailable(false);
+            setRetail(x);
+            setSelectedUser(item);
+            setOpenRetail(true);
+          }}
           onChangeTeamParamValue={(index, x, id, param) => {
             onChangeTeamParamValue1(index, x, item.empId, param);
           }}
@@ -1671,6 +1808,7 @@ const MainParamScreen = ({ route, navigation }) => {
                 <Pressable
                   style={[styles.editParamsButton, { borderColor: Colors.RED }]}
                   onPress={() => {
+                    setTempParameters(allParameters);
                     setEditParameters(true);
                   }}
                 >
@@ -1719,8 +1857,8 @@ const MainParamScreen = ({ route, navigation }) => {
                           targetType: selector.targetType,
                         };
                         Promise.all([dispatch(getAllTargetMapping(payload2))])
-                          .then((x) => {})
-                          .catch((y) => {});
+                          .then((x) => { })
+                          .catch((y) => { });
                       } else {
                         const data = { ...masterSelfParameters };
                         setUpdatedSelfParameters(data);
@@ -1780,6 +1918,7 @@ const MainParamScreen = ({ route, navigation }) => {
                     paddingBottom: 4,
                     // borderBottomColor: Colors.GRAY,
                     marginLeft: 0,
+                    marginBottom: 10
                   }}
                 >
                   <View
@@ -1820,7 +1959,7 @@ const MainParamScreen = ({ route, navigation }) => {
                 {/* Employee params section */}
                 <ScrollView
                   style={{ height: Dimensions.get("screen").height / 2.2 }}
-                  // style={{ height: selector.isMD ? "81%" : "80%" }}
+                // style={{ height: selector.isMD ? "81%" : "80%" }}
                 >
                   {filterParameters.length > 0 &&
                     filterParameters.map((item, index) => {
@@ -1869,7 +2008,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                 <RenderLevel1NameView
                                   level={0}
                                   item={item}
-                                  branchName={getBranchName(item?.branchId)}
+                                  branchName={getBranchName(item?.branch)}
                                   color={"#C62159"}
                                   titleClick={async () => {
                                     return;
@@ -1888,9 +2027,7 @@ const MainParamScreen = ({ route, navigation }) => {
                     filterParameters.length == 0 &&
                     allParameters.map((item, index) => {
                       return (
-                        <View
-                        // key={`${item?.empId} ${index}`}
-                        >
+                        <View>
                           <View
                             style={{
                               paddingHorizontal: 8,
@@ -1965,7 +2102,6 @@ const MainParamScreen = ({ route, navigation }) => {
                                   (innerItem1, innerIndex1) => {
                                     return (
                                       <View
-                                        // key={innerIndex1}
                                         style={[
                                           {
                                             width: "100%",
@@ -2025,6 +2161,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                                 level={1}
                                                 item={innerItem1}
                                                 color={Colors.CORAL}
+                                                branchName={getBranchName(innerItem1?.branchId)}
                                                 titleClick={async () => {
                                                   const localData = [
                                                     ...allParameters,
@@ -2053,7 +2190,6 @@ const MainParamScreen = ({ route, navigation }) => {
                                               (innerItem2, innerIndex2) => {
                                                 return (
                                                   <View
-                                                    // key={innerIndex2}
                                                     style={[
                                                       {
                                                         width: "100%",
@@ -2106,6 +2242,9 @@ const MainParamScreen = ({ route, navigation }) => {
                                                         level={2}
                                                         item={innerItem2}
                                                         color={"#2C97DE"}
+                                                        branchName={getBranchName(
+                                                          innerItem2?.branchId
+                                                        )}
                                                         titleClick={async () => {
                                                           const localData = [
                                                             ...allParameters,
@@ -2139,7 +2278,6 @@ const MainParamScreen = ({ route, navigation }) => {
                                                         ) => {
                                                           return (
                                                             <View
-                                                              // key={innerIndex3}
                                                               style={[
                                                                 {
                                                                   width: "98%",
@@ -2196,6 +2334,9 @@ const MainParamScreen = ({ route, navigation }) => {
                                                                   color={
                                                                     "#EC3466"
                                                                   }
+                                                                  branchName={getBranchName(
+                                                                    innerItem3?.branchId
+                                                                  )}
                                                                   titleClick={async () => {
                                                                     const localData =
                                                                       [
@@ -2236,9 +2377,6 @@ const MainParamScreen = ({ route, navigation }) => {
                                                                   ) => {
                                                                     return (
                                                                       <View
-                                                                        // key={
-                                                                        //   innerIndex4
-                                                                        // }
                                                                         style={[
                                                                           {
                                                                             width:
@@ -2260,6 +2398,30 @@ const MainParamScreen = ({ route, navigation }) => {
                                                                       >
                                                                         <View
                                                                           style={{
+                                                                            paddingHorizontal: 4,
+                                                                            display:
+                                                                              "flex",
+                                                                            flexDirection:
+                                                                              "row",
+                                                                            justifyContent:
+                                                                              "space-between",
+                                                                            paddingVertical: 4,
+                                                                          }}
+                                                                        >
+                                                                          <Text
+                                                                            style={{
+                                                                              fontSize: 10,
+                                                                              fontWeight:
+                                                                                "500",
+                                                                            }}
+                                                                          >
+                                                                            {
+                                                                              innerItem4.empName
+                                                                            }
+                                                                          </Text>
+                                                                        </View>
+                                                                        <View
+                                                                          style={{
                                                                             flexDirection:
                                                                               "row",
                                                                           }}
@@ -2274,6 +2436,9 @@ const MainParamScreen = ({ route, navigation }) => {
                                                                             color={
                                                                               "#1C95A6"
                                                                             }
+                                                                            branchName={getBranchName(
+                                                                              innerItem4?.branchId
+                                                                            )}
                                                                             titleClick={async () => {
                                                                               const localData =
                                                                                 [
@@ -2309,7 +2474,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                                                           innerItem4
                                                                             .employeeTargetAchievements
                                                                             .length >
-                                                                            0 &&
+                                                                          0 &&
                                                                           innerItem4.employeeTargetAchievements.map(
                                                                             (
                                                                               innerItem5,
@@ -2317,9 +2482,6 @@ const MainParamScreen = ({ route, navigation }) => {
                                                                             ) => {
                                                                               return (
                                                                                 <View
-                                                                                  // key={
-                                                                                  //   innerIndex5
-                                                                                  // }
                                                                                   style={[
                                                                                     {
                                                                                       width:
@@ -2341,6 +2503,30 @@ const MainParamScreen = ({ route, navigation }) => {
                                                                                 >
                                                                                   <View
                                                                                     style={{
+                                                                                      paddingHorizontal: 4,
+                                                                                      display:
+                                                                                        "flex",
+                                                                                      flexDirection:
+                                                                                        "row",
+                                                                                      justifyContent:
+                                                                                        "space-between",
+                                                                                      paddingVertical: 4,
+                                                                                    }}
+                                                                                  >
+                                                                                    <Text
+                                                                                      style={{
+                                                                                        fontSize: 10,
+                                                                                        fontWeight:
+                                                                                          "500",
+                                                                                      }}
+                                                                                    >
+                                                                                      {
+                                                                                        innerItem5.empName
+                                                                                      }
+                                                                                    </Text>
+                                                                                  </View>
+                                                                                  <View
+                                                                                    style={{
                                                                                       flexDirection:
                                                                                         "row",
                                                                                     }}
@@ -2355,6 +2541,9 @@ const MainParamScreen = ({ route, navigation }) => {
                                                                                       color={
                                                                                         "#C62159"
                                                                                       }
+                                                                                      branchName={getBranchName(
+                                                                                        innerItem5?.branchId
+                                                                                      )}
                                                                                       titleClick={async () => {
                                                                                         const localData =
                                                                                           [
@@ -2393,7 +2582,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                                                                     innerItem5
                                                                                       .employeeTargetAchievements
                                                                                       .length >
-                                                                                      0 &&
+                                                                                    0 &&
                                                                                     innerItem5.employeeTargetAchievements.map(
                                                                                       (
                                                                                         innerItem6,
@@ -2401,9 +2590,6 @@ const MainParamScreen = ({ route, navigation }) => {
                                                                                       ) => {
                                                                                         return (
                                                                                           <View
-                                                                                            // key={
-                                                                                            //   innerIndex6
-                                                                                            // }
                                                                                             style={[
                                                                                               {
                                                                                                 width:
@@ -2425,6 +2611,30 @@ const MainParamScreen = ({ route, navigation }) => {
                                                                                           >
                                                                                             <View
                                                                                               style={{
+                                                                                                paddingHorizontal: 4,
+                                                                                                display:
+                                                                                                  "flex",
+                                                                                                flexDirection:
+                                                                                                  "row",
+                                                                                                justifyContent:
+                                                                                                  "space-between",
+                                                                                                paddingVertical: 4,
+                                                                                              }}
+                                                                                            >
+                                                                                              <Text
+                                                                                                style={{
+                                                                                                  fontSize: 10,
+                                                                                                  fontWeight:
+                                                                                                    "500",
+                                                                                                }}
+                                                                                              >
+                                                                                                {
+                                                                                                  innerItem6.empName
+                                                                                                }
+                                                                                              </Text>
+                                                                                            </View>
+                                                                                            <View
+                                                                                              style={{
                                                                                                 flexDirection:
                                                                                                   "row",
                                                                                               }}
@@ -2439,6 +2649,9 @@ const MainParamScreen = ({ route, navigation }) => {
                                                                                                 color={
                                                                                                   "#C62159"
                                                                                                 }
+                                                                                                branchName={getBranchName(
+                                                                                                  innerItem6?.branchId
+                                                                                                )}
                                                                                                 titleClick={async () => {
                                                                                                   const localData =
                                                                                                     [
@@ -2510,7 +2723,7 @@ const MainParamScreen = ({ route, navigation }) => {
               </View>
 
               {/* Grand Total Section */}
-              {totalParameters?.length > 0 && (
+              {totalParameters?.length > 0 && filterParameters.length == 0 &&(
                 <View style={{ width: Dimensions.get("screen").width - 35 }}>
                   <View
                     style={{
@@ -2597,272 +2810,6 @@ const MainParamScreen = ({ route, navigation }) => {
               )}
             </ScrollView>
           </View>
-          // <View>
-          //   <ScrollView
-          //     contentContainerStyle={{
-          //       paddingRight: 20,
-          //       flexDirection: "column",
-          //     }}
-          //     horizontal={true}
-          //     directionalLockEnabled={true}
-          //   >
-          //     <View style={{ flexDirection: "row" }}>
-          //       <View style={{ width: 100, height: 40 }}></View>
-          //       <View style={{ height: 40, flexDirection: "row" }}>
-          //         <View style={styles.itemBox}>
-          //           <Text style={{ color: "#FA03B9" }}>Retail</Text>
-          //         </View>
-          //         <View style={styles.itemBox}>
-          //           <Text style={{ color: "#FA03B9" }}>Enquiry</Text>
-          //         </View>
-          //         <View style={styles.itemBox}>
-          //           <Text style={{ color: "#9E31BE" }}>Test Drive</Text>
-          //         </View>
-          //         <View style={styles.itemBox}>
-          //           <Text style={{ color: "#1C95A6" }}>Visit</Text>
-          //         </View>
-          //         <View style={styles.itemBox}>
-          //           <Text style={{ color: "#C62159" }}>Booking</Text>
-          //         </View>
-          //         {/* <View style={styles.itemBox}>
-          //                           <Text style={{ color: '#9E31BE' }}>Retail</Text>
-          //                       </View> */}
-          //         <View style={styles.itemBox}>
-          //           <Text style={{ color: "#EC3466" }}>Exchange</Text>
-          //         </View>
-          //         <View style={styles.itemBox}>
-          //           <Text style={{ color: "#1C95A6" }}>Finance</Text>
-          //         </View>
-          //         <View style={styles.itemBox}>
-          //           <Text style={{ color: "#1C95A6" }}>Insurance</Text>
-          //         </View>
-          //         <View style={styles.itemBox}>
-          //           <Text style={{ color: "#C62159" }}>Exwarranty</Text>
-          //         </View>
-          //         {/*<View style={styles.itemBox}>*/}
-          //         {/*  <Text style={{ color: '#EC3466' }}>Total</Text>*/}
-          //         {/*</View>*/}
-          //         <View style={styles.itemBox}>
-          //           <Text style={{ color: "#0c0c0c" }}>Accessories</Text>
-          //         </View>
-          //       </View>
-          //     </View>
-          //     {selector.targetMapping.length > 0 &&
-          //       selector.targetMapping.map((item, index) => {
-          //         return (
-          //           <>
-          //             {Number(item.employeeId) !==
-          //               Number(loggedInEmpDetails?.empId) &&
-          //               selector.endDate === item.endDate &&
-          //               selector.startDate === item.startDate && (
-          //                 <View style={{ flexDirection: "row", marginTop: 5 }}>
-          //                   <View
-          //                     style={{
-          //                       minHeight: 40,
-          //                       justifyContent: "center",
-          //                       alignItems: "center",
-          //                       flexDirection: "row",
-          //                     }}
-          //                   >
-          //                     {/*// left side name section */}
-          //                     <View style={{ width: 100, marginTop: 5 }}>
-          //                       {Number(item.employeeId) !==
-          //                         Number(loggedInEmpDetails?.empId) &&
-          //                         selector.endDate === item.endDate &&
-          //                         selector.startDate === item.startDate && (
-          //                           <View style={styles.nameBox}>
-          //                             <Text
-          //                               style={styles.text}
-          //                               numberOfLines={1}
-          //                             >
-          //                               {item?.empName}
-          //                             </Text>
-          //                           </View>
-          //                         )}
-          //                     </View>
-
-          //                     <View style={{ width: 88, alignItems: "center" }}>
-          //                       {Number(item.employeeId) !==
-          //                         Number(loggedInEmpDetails?.empId) &&
-          //                         selector.endDate === item.endDate &&
-          //                         selector.startDate === item.startDate && (
-          //                           <TouchableOpacity
-          //                             onPress={() => {
-          //                               setSelectedDropdownData([
-          //                                 {
-          //                                   label: item?.branchName,
-          //                                   value: item?.branch,
-          //                                 },
-          //                               ]);
-          //                               if (
-          //                                 item?.retailTarget !== null &&
-          //                                 selector?.endDate === item?.endDate &&
-          //                                 selector?.startDate ===
-          //                                   item?.startDate
-          //                               ) {
-          //                                 setSelectedBranch({
-          //                                   label: item?.branchName,
-          //                                   value: item?.branch,
-          //                                 });
-          //                                 setDefaultBranch(item?.branch);
-          //                                 setAddOrEdit("E");
-          //                               } else {
-          //                                 setDefaultBranch(null);
-          //                                 setAddOrEdit("A");
-          //                               }
-          //                               if (item?.targetName) {
-          //                                 setTargetName(item?.targetName);
-          //                               }
-          //                               setIsNoTargetAvailable(false);
-          //                               setRetail(
-          //                                 item.retailTarget !== null &&
-          //                                   selector.endDate === item.endDate &&
-          //                                   selector.startDate ===
-          //                                     item.startDate
-          //                                   ? item.retailTarget
-          //                                   : 0
-          //                               );
-          //                               setSelectedUser(item);
-
-          //                               setOpenRetail(true);
-          //                             }}
-          //                             style={{
-          //                               width: 80,
-          //                               height: 40,
-          //                               borderWidth: 1,
-          //                               borderRadius: 5,
-          //                               borderColor: "blue",
-          //                               justifyContent: "center",
-          //                               alignItems: "center",
-          //                               textAlign: "center",
-          //                             }}
-          //                           >
-          //                             <Text style={styles.textInput}>
-          //                               {item?.retailTarget
-          //                                 ? item?.retailTarget
-          //                                 : 0}
-          //                             </Text>
-          //                           </TouchableOpacity>
-          //                         )}
-          //                     </View>
-
-          //                     {Number(item.employeeId) !==
-          //                       Number(loggedInEmpDetails?.empId) &&
-          //                       selector.endDate === item.endDate &&
-          //                       selector.startDate === item.startDate &&
-          //                       [
-          //                         "enquiry",
-          //                         "testDrive",
-          //                         "homeVisit",
-          //                         "booking",
-          //                         "exchange",
-          //                         "finance",
-          //                         "insurance",
-          //                         "exWarranty",
-          //                         "accessories",
-          //                       ].map((subItem) => (
-          //                         <View
-          //                           key={index}
-          //                           style={{
-          //                             width: 88,
-          //                             alignItems: "center",
-          //                           }}
-          //                         >
-          //                           {RenderTeamsTargetData(
-          //                             item,
-          //                             subItem,
-          //                             index
-          //                           )}
-          //                         </View>
-          //                       ))}
-          //                     {/* <TouchableOpacity style={{ width: 30, height: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#C62159', borderRadius: 20, marginTop: 5, marginBottom: 5 }}>
-
-          //                       </TouchableOpacity> */}
-          //                   </View>
-          //                 </View>
-          //               )}
-          //           </>
-          //         );
-          //       })}
-          //     <View style={{ flexDirection: "row", marginTop: 5 }}>
-          //       <View
-          //         style={{
-          //           minHeight: 40,
-          //           justifyContent: "center",
-          //           alignItems: "center",
-          //           flexDirection: "row",
-          //         }}
-          //       >
-          //         {/*// left side name section */}
-          //         <View style={{ flexDirection: "row" }}>
-          //           <View
-          //             style={{
-          //               minHeight: 40,
-          //               flexDirection: "row",
-          //               justifyContent: "center",
-          //               alignItems: "center",
-          //             }}
-          //           >
-          //             {/*// left side name section */}
-          //             <View style={{ width: 100, marginTop: 5 }}>
-          //               <View style={styles.nameBox}>
-          //                 <Text style={styles.text} numberOfLines={1}>
-          //                   {"Team Total"}
-          //                 </Text>
-          //               </View>
-          //             </View>
-
-          //             <View style={{ width: 88, alignItems: "center" }}>
-          //               <TouchableOpacity
-          //                 style={{
-          //                   width: 80,
-          //                   height: 40,
-          //                   borderWidth: 1,
-          //                   borderRadius: 5,
-          //                   borderColor: "blue",
-          //                   justifyContent: "center",
-          //                   alignItems: "center",
-          //                   textAlign: "center",
-          //                 }}
-          //               >
-          //                 <Text style={styles.textInput}>
-          //                   {getTotal("retailTarget")}
-          //                 </Text>
-          //               </TouchableOpacity>
-          //             </View>
-
-          //             {[
-          //               "enquiry",
-          //               "testDrive",
-          //               "homeVisit",
-          //               "booking",
-          //               "exchange",
-          //               "finance",
-          //               "insurance",
-          //               "exWarranty",
-          //               "accessories",
-          //             ].map((item) => (
-          //               <View style={{ width: 88, alignItems: "center" }}>
-          //                 <TouchableOpacity style={styles.textBoxDisabled}>
-          //                   <Text style={styles.textInput}>
-          //                     {getTotal(item)}
-          //                   </Text>
-          //                 </TouchableOpacity>
-          //               </View>
-          //             ))}
-          //             {/* <TouchableOpacity style={{ width: 30, height: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#C62159', borderRadius: 20, marginTop: 5, marginBottom: 5 }}>
-
-          //                       </TouchableOpacity> */}
-          //           </View>
-          //         </View>
-
-          //         {/* <TouchableOpacity style={{ width: 30, height: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#C62159', borderRadius: 20, marginTop: 5, marginBottom: 5 }}>
-
-          //                       </TouchableOpacity> */}
-          //       </View>
-          //     </View>
-          //   </ScrollView>
-          // </View>
         )}
       {/*Serlf Data Section*/}
       {ownData !== null &&
@@ -2948,8 +2895,8 @@ const MainParamScreen = ({ route, navigation }) => {
                         setAddOrEdit("A");
                       }
                       ownData.retailTarget !== null &&
-                      selector.endDate === ownData.endDate &&
-                      selector.startDate === ownData.startDate
+                        selector.endDate === ownData.endDate &&
+                        selector.startDate === ownData.startDate
                         ? setRetail(ownData.retailTarget.toString())
                         : setRetail("");
                       setOpenRetail(true);
@@ -2958,8 +2905,8 @@ const MainParamScreen = ({ route, navigation }) => {
                 >
                   <Text style={styles.textInput}>
                     {ownData.retailTarget !== null &&
-                    selector.endDate === ownData.endDate &&
-                    selector.startDate === ownData.startDate
+                      selector.endDate === ownData.endDate &&
+                      selector.startDate === ownData.startDate
                       ? ownData.retailTarget
                       : 0}
                   </Text>
@@ -3089,8 +3036,8 @@ const MainParamScreen = ({ route, navigation }) => {
                       }
                       setSelectedUser({ ...loggedInEmpDetails });
                       ownData.retailTarget !== null &&
-                      selector.endDate === ownData.endDate &&
-                      selector.startDate === ownData.startDate
+                        selector.endDate === ownData.endDate &&
+                        selector.startDate === ownData.startDate
                         ? setRetail(ownData.retailTarget.toString())
                         : setRetail("");
 
@@ -3100,8 +3047,8 @@ const MainParamScreen = ({ route, navigation }) => {
                 >
                   <Text style={styles.textInput}>
                     {ownData.retailTarget !== null &&
-                    selector.endDate === ownData.endDate &&
-                    selector.startDate === ownData.startDate
+                      selector.endDate === ownData.endDate &&
+                      selector.startDate === ownData.startDate
                       ? ownData.retailTarget
                       : 0}
                   </Text>
@@ -3215,7 +3162,7 @@ const MainParamScreen = ({ route, navigation }) => {
                       };
                       Promise.all([
                         dispatch(getEmployeesDropDownData(payload)),
-                      ]).then(() => {});
+                      ]).then(() => { });
                     }
                   }
                 }}
@@ -3351,7 +3298,7 @@ const MainParamScreen = ({ route, navigation }) => {
           {!selector.isLoading ? null : (
             <LoaderComponent
               visible={selector.isLoading}
-              onRequestClose={() => {}}
+              onRequestClose={() => { }}
             />
           )}
         </View>
@@ -3406,7 +3353,6 @@ export const RenderLevel1NameView = ({
             {item?.empName?.charAt(0)}
           </Text>
         </TouchableOpacity>
-        {/* {level === 0 && !!branchName && (
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <IconButton
               icon="map-marker"
@@ -3418,7 +3364,6 @@ export const RenderLevel1NameView = ({
               {branchName}
             </Text>
           </View>
-        )} */}
       </View>
       <View
         style={{

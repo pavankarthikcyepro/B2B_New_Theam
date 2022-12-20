@@ -215,10 +215,8 @@ const FilterTargetScreen = ({ route, navigation }) => {
     const isSelected = tempData.filter((e) => e.selected == true);
     let newArr = [];
     if (isSelected[0]?.id && index !== 0) {
-      console.log(data);
       const newList = data.filter((e) => e.parentId == isSelected[0]?.id);
       newArr = [...newList];
-      console.log(newList);
     }
     let tempArr = index == 0 ? data : newArr;
 

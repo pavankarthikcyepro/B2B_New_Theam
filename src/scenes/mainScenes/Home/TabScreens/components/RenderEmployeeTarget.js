@@ -36,6 +36,7 @@ export const RenderEmployeeTarget = (parameter) => {
     moduleType,
     editParameters,
     onChangeTeamParamValue,
+    editAndUpdate,
   } = parameter;
   const paramsData = params.map(({ paramName }) => paramName);
   const navigableParams = [
@@ -128,29 +129,56 @@ export const RenderEmployeeTarget = (parameter) => {
                   }}
                 >
                   {editParameters && item?.isOpenInner === true ? (
-                    <TextInput
-                      key={index}
-                      editable={editParameters}
-                      style={[
-                        styles.totalText,
-                        {
-                          width:
-                            moduleType === "live-leads"
-                              ? 66
-                              : param === "Accessories"
-                              ? 63
-                              : 53,
-                          paddingTop: 4,
-                          textDecorationLine: editParameters
-                            ? "underline"
-                            : "none",
-                        },
-                      ]}
-                      value={selectedParameter?.target}
-                      onChangeText={(x) =>
-                        onChangeTeamParamValue(index, x, item.id, param)
-                      }
-                    />
+                    param === "Retail" ? (
+                      <Text
+                        onPress={()=>{
+                          editAndUpdate(selectedParameter?.target);
+                        }}
+                        style={[
+                          styles.totalText,
+                          {
+                            width:
+                              moduleType === "live-leads"
+                                ? 66
+                                : param === "Accessories"
+                                ? 63
+                                : 53,
+                            paddingTop: 4,
+                            textDecorationLine: editParameters
+                              ? "underline"
+                              : "none",
+                          },
+                        ]}
+                      >
+                        {selectedParameter && selectedParameter?.target
+                          ? Number(selectedParameter?.target)
+                          : 0}
+                      </Text>
+                    ) : (
+                      <TextInput
+                        key={index}
+                        editable={editParameters}
+                        style={[
+                          styles.totalText,
+                          {
+                            width:
+                              moduleType === "live-leads"
+                                ? 66
+                                : param === "Accessories"
+                                ? 63
+                                : 53,
+                            paddingTop: 4,
+                            textDecorationLine: editParameters
+                              ? "underline"
+                              : "none",
+                          },
+                        ]}
+                        value={selectedParameter?.target}
+                        onChangeText={(x) => {
+                            onChangeTeamParamValue(index, x, item.id, param);
+                        }}
+                      />
+                    )
                   ) : (
                     <Text
                       style={[

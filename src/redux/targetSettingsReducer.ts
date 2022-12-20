@@ -320,7 +320,7 @@ export const targetSettingsSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(editTargetMapping.pending, (state, action) => {
-        state.isLoading = true;
+        // state.isLoading = true;
       })
       .addCase(editTargetMapping.fulfilled, (state, action) => {
         // state.isLoading = false;
