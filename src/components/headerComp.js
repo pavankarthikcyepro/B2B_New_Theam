@@ -1,48 +1,91 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Button, IconButton } from 'react-native-paper';
+import { useDispatch, useSelector } from 'react-redux';
 import { Colors } from '../styles';
+import * as AsyncStore from "../asyncStore";
+import { setBranchId, setBranchName } from '../utils/helperFunctions';
 
+const HeaderComp = ({
+  title,
+  branchName = false,
+  height = 56,
+  menuClicked,
+  branchClicked,
+  filterClicked,
+}) => {
+  const dispatch = useDispatch();
+  const selector = useSelector((state) => state.targetSettingsReducer);
 
-const HeaderComp = ({ title, branchName = "", height = 56, menuClicked, branchClicked, filterClicked }) => {
-    return (
-        <View style={[style.container, { height: height }]}>
-            <View style={style.subContainer}>
-                <IconButton
-                    icon="menu"
-                    color={Colors.WHITE}
-                    size={30}
-                    onPress={menuClicked}
-                />
-                <View style={{width: '48%',}}><Text numberOfLines={2} style={style.title}>{title}</Text></View>
+  const [branch, setBranch] = useState("");
+
+  useEffect(async () => {
+    if (selector.selectedBranchName) {
+      setBranch(selector.selectedBranchName);
+    } else {
+      await AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_NAME).then(
+        (res) => {
+          if (res) {
+            setBranch(res);
+            setBranchName(res);
+          }
+        }
+      );
+      await AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_ID).then(
+        (res) => {
+          if (res) {
+            setBranchId(res);
+          }
+        }
+      );
+    }
+  }, [selector.selectedBranchName]);
+  
+
+  return (
+    <View style={[style.container, { height: height }]}>
+      <View style={style.subContainer}>
+        <IconButton
+          icon="menu"
+          color={Colors.WHITE}
+          size={30}
+          onPress={menuClicked}
+        />
+        <View style={{ width: "48%" }}>
+          <Text numberOfLines={2} style={style.title}>
+            {title}
+          </Text>
+        </View>
+      </View>
+      <View>
+        {branchName && branch ? (
+          <TouchableOpacity onPress={branchClicked}>
+            <View style={style.branchContainer}>
+              <Text style={style.branchName} numberOfLines={1}>
+                {branch}
+              </Text>
+              <IconButton
+                icon="menu-down"
+                style={{ padding: 0, margin: 0 }}
+                color={Colors.WHITE}
+                size={15}
+              />
             </View>
-            <View>
-                {branchName.length > 0 ? (
-                    <TouchableOpacity onPress={branchClicked}>
-                        <View style={style.branchContainer}>
-                            <Text style={style.branchName} numberOfLines={1} >{branchName}</Text>
-                            <IconButton
-                                icon="menu-down"
-                                style={{ padding: 0, margin: 0 }}
-                                color={Colors.WHITE}
-                                size={15}
-                            />
-                        </View>
-                    </TouchableOpacity>
-                ) : null}
-            </View>
-            <View>
-                {/* <View style={style.filterContainer}>
+          </TouchableOpacity>
+        ) : null}
+      </View>
+      <View>
+        {/* <View style={style.filterContainer}>
                     <IconButton icon="filter-outline"
                         style={{ padding: 0, margin: 0 }}
                         color={Colors.WHITE}
                         size={30}
                     onPress={filterClicked}/>
                 </View> */}
-            </View>
-        </View>
-    )
-}
+      </View>
+    </View>
+  );
+};
 
 export { HeaderComp };
 
