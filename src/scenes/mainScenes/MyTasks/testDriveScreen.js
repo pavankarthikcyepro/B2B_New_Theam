@@ -91,7 +91,8 @@ const TestDriveScreen = ({ route, navigation }) => {
         orgId: "",
         employeeId: "",
         employeeName: "",
-        isSelfManager: ""
+        isSelfManager: "",
+        isOtp:""
     });
     const [selectedBranchId, setSelectedBranchId] = useState("");
     const [showDatePickerModel, setShowDatePickerModel] = useState(false);
@@ -149,6 +150,7 @@ const TestDriveScreen = ({ route, navigation }) => {
         setValue: setOtpValue,
     });
     const [isSubmitPress, setIsSubmitPress] = useState(false);
+    const [vehicleDetails, setVehicleDetails] =useState({});
     let date = new Date();
     date.setDate(date.getDate() + 9);
 
@@ -193,7 +195,8 @@ const TestDriveScreen = ({ route, navigation }) => {
                     orgId: jsonObj.orgId,
                     employeeId: jsonObj.empId,
                     employeeName: jsonObj.empName,
-                    isSelfManager: jsonObj.isSelfManager
+                    isSelfManager: jsonObj.isSelfManager,
+                    isOtp: jsonObj.isOtp
                 });
 
                 // Get Branch Id
@@ -316,7 +319,6 @@ const TestDriveScreen = ({ route, navigation }) => {
           ].filter((item) => {
             return item.varientName == selectedVehicleDetails.varient;
           });
-
           if (findVarient.length > 0) {
             tempObj.varientId = findVarient[0].varientId;
 
@@ -336,7 +338,6 @@ const TestDriveScreen = ({ route, navigation }) => {
           tempObj.fuelType = "";
           tempObj.transType = "";
         }
-
         setSelectedVehicleDetails(tempObj);
       }
     }, [selector.test_drive_vehicle_list_for_drop_down]);
@@ -378,6 +379,7 @@ const TestDriveScreen = ({ route, navigation }) => {
           varientId =
             selector.test_drive_appointment_details_response.vehicleInfo
               .varientId;
+              setVehicleDetails(selector.test_drive_appointment_details_response.vehicleInfo);
         }
 
         const selectedModel = selector.test_drive_vehicle_list.filter(
@@ -385,7 +387,8 @@ const TestDriveScreen = ({ route, navigation }) => {
             return item.varientId === varientId && item.vehicleId === vehicleId;
           }
         );
-
+          vehicleId =
+          selector.test_drive_appointment_details_response.vehicleId;
         if (selectedModel.length > 0) {
           const {
             fuelType,
@@ -393,7 +396,6 @@ const TestDriveScreen = ({ route, navigation }) => {
             transmission_type,
             varientName,
             varientId,
-            vehicleId,
           } = selectedModel[0].vehicleInfo;
 
           setTimeout(() => {
@@ -750,6 +752,7 @@ const TestDriveScreen = ({ route, navigation }) => {
           driverId: selectedDriverDetails.id.toString(),
           dlBackUrl: "",
           dlFrontUrl: "",
+          vehicleInfo:vehicleDetails
         };
 
         if (customerHavingDrivingLicense === 1) {
@@ -760,7 +763,6 @@ const TestDriveScreen = ({ route, navigation }) => {
         const payload = {
             appointment: appointmentObj,
         };
-
         dispatch(bookTestDriveAppointmentApi(payload));
         // navigation.goBack()
     };
@@ -827,7 +829,11 @@ const TestDriveScreen = ({ route, navigation }) => {
                 return;
             }
         }
-        generateOtpToCloseTask();
+        if (userData.isOtp == "Y") {
+          generateOtpToCloseTask();
+        } else {
+          submitClicked("CLOSED", "Test Drive")
+        }
         setIsCloseSelected(true)
     };
 
@@ -971,7 +977,8 @@ const TestDriveScreen = ({ route, navigation }) => {
             transType: fromVarient ? vehicleInfo.transmission_type : "",
             // fuelType: vehicleInfo.fuelType || "",
             // transType: vehicleInfo.transmission_type || "",
-            vehicleId: vehicleInfo.vehicleId,
+            // vehicleId: vehicleInfo.vehicleId,
+            vehicleId: vehicleInfo.id,
             varientId: fromVarient ? vehicleInfo.varientId : '',
         });
     };

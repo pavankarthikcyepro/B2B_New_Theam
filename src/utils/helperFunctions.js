@@ -3,6 +3,9 @@ import { Linking, Alert, Platform, PermissionsAndroid } from "react-native";
 import moment from "moment";
 import URL from "../networking/endpoints";
 import { showToastRedAlert } from '../utils/toast';
+import store from "../redux/reduxStore";
+import * as AsyncStore from "../asyncStore";
+import { updateSelectedBranchId, updateSelectedBranchName } from "../redux/targetSettingsReducer";
 
 export const isMobileNumber = (mobile) => {
   // var regex = /^[1-9]{1}[0-9]{9}$/; // /^\d{10}$/
@@ -561,3 +564,14 @@ export const sourceModelPercentage = (achievement, target) => {
 //   }
 //   return target > 0 ? Math.round((achievement / target) * 100) : achievement; // if denominator is > 0, display percentage, else no change, display achievement
 // }
+
+export const setBranchId = async (value) => {
+  let data = value.toString();
+  store.dispatch(updateSelectedBranchId(data));
+  await AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_ID, data);
+};
+
+export const setBranchName = async (value) => {
+  store.dispatch(updateSelectedBranchName(value));
+  await AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_NAME, value);
+};
