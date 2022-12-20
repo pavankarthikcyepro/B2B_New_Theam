@@ -451,7 +451,6 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     } */}
 
     const UpdateRecord007 = async (enquiryDetailsObj) => {
-        console.log("sssss",JSON.stringify(enquiryDetailsObj));
         setIsLoading(true);
         await fetch(URL.UPDATE_ENQUIRY_DETAILS(), {
             method: "POST",
