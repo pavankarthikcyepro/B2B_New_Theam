@@ -84,6 +84,7 @@ import { AppNavigator } from ".";
 import MapScreen from "../scenes/mainScenes/Map";
 import AttendanceScreen from "../scenes/mainScenes/Attendance";
 import AddNewEnquiryScreen from "../scenes/mainScenes/EMS/addNewEnquiry";
+import FilterTargetScreen from "../scenes/mainScenes/TargetSettingsScreen/TabScreen/filterTarget";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -828,17 +829,25 @@ const MonthlyTargetStack = createStackNavigator();
 
 const MonthlyTargetStackNavigator = ({ navigation }) => {
     return (
-        <MonthlyTargetStack.Navigator screenOptions={screeOptionStyle}>
-            <MonthlyTargetStack.Screen
-                name={"MONTHLY_TARGET_SCREEN"}
-                component={TargetSettingsScreen}
-                options={{
-                    title: "Monthly Target planning",
-                    headerShown: false,
-                    headerLeft: () => <MenuIcon navigation={navigation} />,
-                }}
-            />
-        </MonthlyTargetStack.Navigator>
+      <MonthlyTargetStack.Navigator screenOptions={screeOptionStyle}>
+        <MonthlyTargetStack.Screen
+          name={"MONTHLY_TARGET_SCREEN"}
+          component={TargetSettingsScreen}
+          options={{
+            title: "Monthly Target planning",
+            headerShown: false,
+            headerLeft: () => <MenuIcon navigation={navigation} />,
+          }}
+        />
+        <MonthlyTargetStack.Screen
+          name={"FILTER_TARGET_SCREEN"}
+          component={FilterTargetScreen}
+          options={{
+            title: "Filter",
+            headerShown: true,
+          }}
+        />
+      </MonthlyTargetStack.Navigator>
     );
 };
 

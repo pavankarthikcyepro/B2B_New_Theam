@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Colors } from '../../../../styles';
 import { convertTimeStampToDateString, callNumber, navigatetoCallWebView } from '../../../../utils/helperFunctions';
@@ -52,9 +52,19 @@ const IconComp = ({ iconName, onPress,bgColor }) => {
 
 
 
-export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId, uniqueId, enqCat, leadStage, name, status, created, dmsLead, lostReason, isManager = false, dropStatus = '' }) => {
-    const [isItemSelected, setisItemSelected ]= useState('unchecked')
-
+export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId, uniqueId, enqCat, leadStage, name, status, created, dmsLead, lostReason, isManager = false, dropStatus = '', mobileNo, isCheckboxVisible, isRefresh =false}) => {
+  const [isItemSelected, setisItemSelected] = useState("unchecked")
+ 
+   
+  useEffect(() => {
+  
+    if(isRefresh){
+      setisItemSelected('unchecked')
+    }  
+  
+  }, [isRefresh])
+  
+  
     const checkboxSelected = async () => {
         try
         {
@@ -102,7 +112,7 @@ export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId
     }
 
     return (
-      <TouchableOpacity style={styles.section}>
+      <TouchableOpacity  style={styles.section} >
         <View
           style={{
             flexDirection: "row",
@@ -112,15 +122,15 @@ export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId
           }}
         >
           <View style={{ width: "70%" }}>
-            {/*{isManager && */}
-            {/*    <Checkbox*/}
-            {/*        onPress={() => {*/}
-            {/*            checkboxSelected()*/}
-            {/*        }}*/}
-            {/*        status={isItemSelected}*/}
-            {/*        color={Colors.YELLOW}*/}
-            {/*        uncheckedColor={Colors.YELLOW} />*/}
-            {/*}                    */}
+            {isManager && isCheckboxVisible &&
+               <Checkbox
+                 onPress={() => {
+                     checkboxSelected()
+                }}
+                   status={isItemSelected}
+                  color={Colors.YELLOW}
+                  uncheckedColor={Colors.YELLOW} />}
+                              
             <View style={{ flexDirection: "row", marginLeft: 10 }}>
               <View style={{ maxWidth: "73%" }}>
                 <Text style={styles.text1}>{name}</Text>
@@ -128,6 +138,7 @@ export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId
               <Text style={styles.catText}>{enqCat}</Text>
             </View>
             <Text style={styles.text2}>{lostReason + " - " + dmsLead}</Text>
+            <Text style={styles.text2}>{mobileNo}</Text>
             <Text style={styles.text3}>{date}</Text>
             {/* {needStatus === "YES" &&
                         <View style={{ height: 15, width: 15, borderRadius: 10, backgroundColor: leadStatus === 'PREENQUIRYCOMPLETED' || (leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY') || (leadStatus === 'PREBOOKINGCOMPLETED' && leadStage === 'PREBOOKING') || leadStatus === 'BOOKINGCOMPLETED' ? '#18a835' : '#f29a22', position: 'absolute', top: 0, right: 0 }}></View>
@@ -138,7 +149,7 @@ export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId
               <Text style={styles.text4}>{checkForStageName(leadStage)}</Text>
             </View>
             {/* <View style={{ height: 8 }}></View> */}
-            {isManager && dropStatus === "DROPPED" && (
+            {/* {isManager && dropStatus === "DROPPED" && (
               <View
                 style={{
                   flexDirection: "row",
@@ -171,41 +182,14 @@ export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId
                   </Text>
                 </View>
               </View>
-            )}
-            {isManager && dropStatus === "APPROVED" && (
-              <View
-                style={{
-                  flexDirection: "row",
-                  width: "100%",
-                  justifyContent: "space-evenly",
-                }}
-              >
-                {/* <View style={{ flexDirection: 'column' }}>
-                                <IconComp
-                                    iconName={'window-close'}
-                                    onPress={() => onItemSelected(uniqueId, leadDropId, 'single', 'reject')}
-                                    bgColor='#FF0000'
-                                />
-                                <Text style={{ color: Colors.BLUE, fontSize: 12, margin: 2 }}>Deny</Text>
-                            </View> */}
-                <View style={{ flexDirection: "column" }}>
-                  {/*<IconComp*/}
-                  {/*    iconName={'check'}*/}
-                  {/*    onPress={() => onItemSelected(uniqueId, leadDropId, 'single', 'revoke')}*/}
-                  {/*    bgColor='#008000'*/}
-                  {/*/>*/}
-                  <Text style={{ color: Colors.BLUE, fontSize: 16, margin: 2 }}>
-                    {dropStatus}
-                  </Text>
-                </View>
-              </View>
-            )}
+            )} */}
+            
             {/*{(!isManager || (isManager && dropStatus === 'REJECTED')) &&*/}
             {/*    <View style={{ flexDirection: "row", width: "100%", justifyContent: "space-evenly" }}>*/}
             {/*    <Text style={{ color: dropStatus === 'DROPPED' ? '#18a835' : '#f29a22', fontSize: 16, fontWeight: 'bold'}}>{dropStatus}</Text>*/}
             {/*    </View>*/}
             {/*}*/}
-            {!isManager && (
+            {/* {!isManager && ( */}
               <View
                 style={{
                   flexDirection: "row",
@@ -215,7 +199,7 @@ export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId
               >
                 <Text
                   style={{
-                    color: dropStatus === "DROPPED" ? "#18a835" : Colors.BLUE,
+                  color: dropStatus === "DROPPED" ? "#18a835" : Colors.YELLOW,
                     fontSize: 14,
                     fontWeight: "bold",
                   }}
@@ -223,7 +207,7 @@ export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId
                   {dropStatus}
                 </Text>
               </View>
-            )}
+            {/* )} */}
           </View>
         </View>
       </TouchableOpacity>

@@ -137,6 +137,13 @@ export const saveTeamTargetParams = createAsyncThunk(
   }
 );
 
+export const saveFilterPayload = createAsyncThunk(
+  "TARGET_SETTINGS/saveFilterPayload",
+   async (payload: any) => {
+    return payload;
+  }
+);
+
 export const targetSettingsSlice = createSlice({
   name: "TARGET_SETTINGS",
   initialState: {
@@ -218,6 +225,7 @@ export const targetSettingsSlice = createSlice({
     specialOcation: [],
     selectedSpecial: null,
     team_target_data_saved: false,
+    filterPayload: {},
   },
   reducers: {
     updateStartDate: (state, action) => {
@@ -288,6 +296,8 @@ export const targetSettingsSlice = createSlice({
       .addCase(getAllTargetMapping.fulfilled, (state, action) => {
         state.isLoading = false;
         state.targetMapping = [];
+        console.log(JSON.stringify(action.payload.data));
+
         state.targetMapping = action.payload.data ? action.payload.data : [];
         state.isDataLoaded = true;
       })
@@ -310,7 +320,7 @@ export const targetSettingsSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(editTargetMapping.pending, (state, action) => {
-        state.isLoading = true;
+        // state.isLoading = true;
       })
       .addCase(editTargetMapping.fulfilled, (state, action) => {
         // state.isLoading = false;
@@ -386,6 +396,9 @@ export const targetSettingsSlice = createSlice({
       .addCase(saveTeamTargetParams.rejected, (state, action) => {
         state.isLoading = false;
         state.team_target_data_saved = false;
+      })
+      .addCase(saveFilterPayload.fulfilled, (state, action) => {
+        state.filterPayload = action.payload;
       });
   },
 });
