@@ -1165,7 +1165,7 @@ export const homeSlice = createSlice({
         const dataObj = action.payload;
         state.deptList = dataObj ? dataObj : [];
       }
-      // state.isLoading = false;
+      state.isLoading = false; 
     });
     builder.addCase(getDeptDropdown.rejected, (state, action) => {
       state.isLoading = false;
@@ -1180,7 +1180,7 @@ export const homeSlice = createSlice({
         const dataObj = action.payload;
         state.designationList = dataObj ? dataObj : [];
       }
-      // state.isLoading = false;
+      state.isLoading = false;
     });
     builder.addCase(getDesignationDropdown.rejected, (state, action) => {
       state.isLoading = false;

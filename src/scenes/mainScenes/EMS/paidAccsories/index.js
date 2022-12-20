@@ -57,13 +57,13 @@ const TopTabNavigator = ({ titles, data }) => {
 };
 
 const PaidAccessoriesScreen = ({ route, navigation }) => {
-  const { accessorylist, selectedAccessoryList, selectedFOCAccessoryList } =
+  const { accessorylist, selectedAccessoryList, selectedFOCAccessoryList ,fromScreen} =
     route.params;
   const [accessoriesData, setAccessoriesData] = useState({
     names: [],
     data: {},
   });
-
+ 
   useEffect(() => {
     const titleNames = [];
     const dataObj = {};
@@ -149,12 +149,21 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
         allData = allData.concat(JSON.parse(selectedData));
       }
     });
-
-    navigation.navigate({
-      name: AppNavigator.EmsStackIdentifiers.preBookingForm,
-      params: { accessoriesList: allData, lists: accessoriesData },
-      merge: true,
-    });
+    console.log("allData==========>: ", JSON.stringify(allData));
+    if (fromScreen ==="PROFORMA"){
+      navigation.navigate({
+        name: AppNavigator.EmsStackIdentifiers.ProformaScreen,
+        params: { accessoriesList: allData, lists: accessoriesData },
+        merge: true,
+      });
+    }else{
+      navigation.navigate({
+        name: AppNavigator.EmsStackIdentifiers.preBookingForm,
+        params: { accessoriesList: allData, lists: accessoriesData },
+        merge: true,
+      });
+    }
+    
   };
 
   return (

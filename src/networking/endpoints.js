@@ -157,6 +157,16 @@ const URL = {
     );
   },
 
+  PROFORMA_LISTING_DETAILS: (crmUniversalId) => {
+    return (
+      sales_url + "/enquiry/performa/id/" +crmUniversalId);
+  },
+
+  PROFORMA_TERMS_N_CONDITIONS: (orgId) => {
+    return (
+      sales_url + "/org/config/" + orgId +"/PROFORMA_TANDC");
+  },
+
   ENQUIRY_DETAILS_BY_AUTOSAVE: (universalId) => {
     return downloadFile + "/autosave-get-uid/" + `${universalId}`;
   },

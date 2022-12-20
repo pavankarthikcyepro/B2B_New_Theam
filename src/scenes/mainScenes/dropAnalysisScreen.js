@@ -1,25 +1,26 @@
 import React, { useEffect, useState } from "react";
 import { SafeAreaView, StyleSheet, View, TouchableOpacity, FlatList, ActivityIndicator, Text, RefreshControl, Pressable } from "react-native";
 import { PageControlItem } from "../../../pureComponents/pageControlItem";
-import { IconButton } from "react-native-paper";
+import { Button, IconButton } from "react-native-paper";
 import {  EmptyListView } from "../../pureComponents";
-import { DateRangeComp, DatePickerComponent, SortAndFilterComp } from "../../components";
+import { DateRangeComp, DatePickerComponent, SortAndFilterComp, ButtonComp } from "../../components";
 import { useDispatch, useSelector } from "react-redux";
 import { Colors, GlobalStyle } from "../../styles";
 import { AppNavigator } from '../../navigations';
 import * as AsyncStore from '../../asyncStore';
-import { getLeadDropList, getMoreLeadDropList, updateSingleApproval, updateBulkApproval, revokeDrop, leadStatusDropped } from "../../redux/leaddropReducer";
+import { getLeadDropList, getMoreLeadDropList, updateSingleApproval, updateBulkApproval, revokeDrop, leadStatusDropped, clearLeadDropState } from "../../redux/leaddropReducer";
 import { callNumber } from "../../utils/helperFunctions";
 import moment from "moment";
 import { Category_Type_List_For_Filter } from '../../jsonData/enquiryFormScreenJsonData';
 import { DropAnalysisItem } from './MyTasks/components/DropAnalysisItem';
 import { updateTAB, updateIsSearch, updateSearchKey } from '../../redux/appReducer';
 import { showToast } from "../../utils/toast";
+import SegmentedControl from "@react-native-segmented-control/segmented-control";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().add(0, "day").format(dateFormat)
 const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
-
+// let tempArr = ['DROPPED ' + `${(10)}` , 'APPROVED ' + `${(12)}`, 'REJECTED ' + `${(22)}`]
 const DropAnalysisScreen = ({ navigation }) => {
 
     const selector = useSelector((state) => state.leaddropReducer);
@@ -43,13 +44,18 @@ const DropAnalysisScreen = ({ navigation }) => {
     const [selectedItemIds, setSelectedItemIds] = useState([]);
     const [isApprovalUIVisible, setisApprovalUIVisible] = useState(false);
     const [isManager, setIsManager] = useState(false);
-
+    const [droppedData,setDroppedData] = useState([]);
+    const [approvedData, setApprovedData] = useState([]);
+    const [rejectedData, setRejectedData] = useState([]);
 
     const orgIdStateRef = React.useRef(orgId);
     const empIdStateRef = React.useRef(employeeId);
     const fromDateRef = React.useRef(selectedFromDate);
     const toDateRef = React.useRef(selectedToDate);
 
+    const [toggleParamsIndex, setToggleParamsIndex] = useState(0);
+    const [toggelparamdata, setToggelparamdata] = useState([]);
+    const [ isRefresh,setIsResfresh] = useState(false)
     // const setMyState = data => {
     //     empIdStateRef.current = data.empId;
     //     orgIdStateRef.current = data.orgId;
@@ -69,48 +75,107 @@ const DropAnalysisScreen = ({ navigation }) => {
 
     useEffect(() => {
         if (selector.leadDropList.length > 0) {
-            let data = [...selector.leadDropList];
-            data = data.filter(x => x.status.toLowerCase() !== 'rejected');
-            setSearchedData(data)
+            // let data = [...selector.leadDropList];
+            // data = data.filter(x => x.status.toLowerCase() !== 'rejected');
+            // setSearchedData(data)
+           
+            // let dropDatatemp = [...selector.leadDropList].filter(item => item.status.toUpperCase() === "DROPPED");
+            // setDroppedData(dropDatatemp);
+
+            // let ApproveDatatemp = [...selector.leadDropList].filter(item => item.status.toUpperCase() === "APPROVED");
+            // setApprovedData(ApproveDatatemp);
+
+            // let rejectedDatatemp = [...selector.leadDropList].filter(item => item.status.toUpperCase() === "REJECTED");
+            // setRejectedData(rejectedDatatemp);
+            // // getCountValues();
+            // let tempArr = ['DROPPED ' + `${(10)}`, 'APPROVED ' + `${(12)}`, 'REJECTED ' + `${(22)}`]
+            // // let temp = ['DROPPED ' + `${(dropDatatemp.length)}`, 'APPROVED ' + `${(ApproveDatatemp.length)}`, 'REJECTED ' + `${(rejectedDatatemp.length)}`]
+            // setToggelparamdata(tempArr)
+            // setSelectedItemIds([]);
+            // setIsResfresh(false);
+            filterData();
+            
         }
         else {
             setSearchedData([])
         }
     }, [selector.leadDropList])
 
+    const filterData = () => {
+
+        let data = [...selector.leadDropList];
+        data = data.filter(x => x.status.toLowerCase() !== 'rejected');
+        setSearchedData(data)
+
+        let dropDatatemp = [...selector.leadDropList].filter(item => item.status.toUpperCase() === "DROPPED");
+        setDroppedData(dropDatatemp);
+
+        let ApproveDatatemp = [...selector.leadDropList].filter(item => item.status.toUpperCase() === "APPROVED");
+        setApprovedData(ApproveDatatemp);
+
+        let rejectedDatatemp = [...selector.leadDropList].filter(item => item.status.toUpperCase() === "REJECTED");
+        setRejectedData(rejectedDatatemp);
+        // getCountValues();
+        let tempArr = ['DROPPED ' + `${(10)}`, 'APPROVED ' + `${(12)}`, 'REJECTED ' + `${(22)}`]
+        // let temp = ['DROPPED ' + `${(dropDatatemp.length)}`, 'APPROVED ' + `${(ApproveDatatemp.length)}`, 'REJECTED ' + `${(rejectedDatatemp.length)}`]
+        setToggelparamdata(tempArr)
+        setSelectedItemIds([]);
+        setIsResfresh(false);
+    }
+    
     useEffect(() => {
+       
         if (selector.approvalStatus === "sucess") {
            selector.approvalStatus = ""
-           setSelectedItemIds([])
+           
+           
            setisApprovalUIVisible(false)
-            getDropListFromServer(employeeId, employeeName, branchId, orgId, selectedFromDate, selectedToDate)
+            getDropListFromServerV2(employeeId, employeeName, branchId, orgId, selectedFromDate, selectedToDate)
+            setIsResfresh(true);
+            dispatch(clearLeadDropState())
+            
         }
         else {
-            selector.approvalStatus = ""
-            setSelectedItemIds([])
-            setisApprovalUIVisible(false)
-            getDropListFromServer(employeeId, employeeName, branchId, orgId, selectedFromDate, selectedToDate)
+       
+            // selector.approvalStatus = ""
+            // setSelectedItemIds([])
+            // dispatch(clearLeadDropState())
+            // setisApprovalUIVisible(true)
+            // getDropListFromServerV2(employeeId, employeeName, branchId, orgId, selectedFromDate, selectedToDate)
         }
     }, [selector.approvalStatus])
 
     useEffect(() => {
         if (appSelector.isSearch) {
+            
             dispatch(updateIsSearch(false))
             if (appSelector.searchKey !== '') {
                 let tempData = []
                 let data = [...selector.leadDropList];
-                data = data.filter(x => x.status.toLowerCase() !== 'rejected');
+                // data = data.filter(x => x.status.toLowerCase() !== 'rejected');
                 tempData = data.filter((item) => {
                     return item.firstName.toLowerCase().includes(appSelector.searchKey.toLowerCase()) ||
                         item.lastName.toLowerCase().includes(appSelector.searchKey.toLowerCase())
                 })
                 setSearchedData([]);
+                
                 setSearchedData(tempData);
+                if (toggleParamsIndex === 0){
+                    let dropDatatemp = tempData.filter(item => item.status.toUpperCase() === "DROPPED");
+                    setDroppedData(dropDatatemp)
+                }else if (toggleParamsIndex === 1){
+                    let ApproveDatatemp = tempData.filter(item => item.status.toUpperCase() === "APPROVED");
+                    setApprovedData(ApproveDatatemp);
+                }else if(toggleParamsIndex===2) {
+                    let rejectedDatatemp = tempData.filter(item => item.status.toUpperCase() === "REJECTED");
+                    setRejectedData(rejectedDatatemp);
+                }
                 dispatch(updateSearchKey(''))
             }
             else {
                 setSearchedData([]);
                 setSearchedData(selector.leadDropList);
+                filterData();
             }
         }
     }, [appSelector.isSearch])
@@ -145,13 +210,24 @@ const DropAnalysisScreen = ({ navigation }) => {
     // Navigation Listner to Auto Referesh
     useEffect(() => {
         navigation.addListener('focus', () => {
-            getDataFromDB()
+            // getDataFromDB()
         });
 
         // return () => {
         //     unsubscribe;
         // };
     }, [navigation]);
+
+    useEffect(() => {
+      getDataFromDB();
+        
+      return () => {
+          dispatch(clearLeadDropState())
+      }
+    }, [])
+    
+   
+    
 
     const getDataFromDB = async () => {
         const employeeData = await AsyncStore.getData(
@@ -179,15 +255,24 @@ const DropAnalysisScreen = ({ navigation }) => {
 
             // await setEmployeeName(jsonObj.empName)
             // await setEmployeeId(jsonObj.empId)
-            getDropListFromServer(jsonObj.empId, jsonObj.empName, branchId, jsonObj.orgId, lastMonthFirstDate, currentDate);
+            // getDropListFromServer(jsonObj.empId, jsonObj.empName, branchId, jsonObj.orgId, lastMonthFirstDate, currentDate);
+            setisApprovalUIVisible(false)
+            const payload = getPayloadData(jsonObj.empId, jsonObj.empName, branchId, jsonObj.orgId, lastMonthFirstDate, currentDate,0)
+            dispatch(getLeadDropList(payload)); 
         }
     }
 
 
     const getDropListFromServer = (empId,empName, branchId,orgId, startDate, endDate) => {
+        // setisApprovalUIVisible(false)
+        // const payload = getPayloadData(empId,empName, branchId,orgId, startDate, endDate, 0)
+        // dispatch(getLeadDropList(payload));
+    }
+    const getDropListFromServerV2 = (empId, empName, branchId, orgId, startDate, endDate) => {
         setisApprovalUIVisible(false)
         const payload = getPayloadData(empId,empName, branchId,orgId, startDate, endDate, 0)
         dispatch(getLeadDropList(payload));
+        setIsResfresh(true)
     }
 
     const getPayloadData = (empId,empName, branchId,orgId, startDate, endDate, offSet, modelFilters = [], categoryFilters = [], sourceFilters = []) => {
@@ -203,7 +288,7 @@ const DropAnalysisScreen = ({ navigation }) => {
             "status": "ENQUIRY",
             "offset": offSet,
             "orgId":orgId,
-            "limit": 10,
+            "limit": 100,
         }
         return payload;
     }
@@ -282,7 +367,7 @@ const DropAnalysisScreen = ({ navigation }) => {
 
         // Make Server call
         const payload2 = getPayloadData(employeeId, selectedFromDate, selectedToDate, 0, modelFilters, categoryFilters, sourceFilters)
-        dispatch(getLeadDropList(payload2));
+        // dispatch(getLeadDropList(payload2));
     }
     const updateBulkStatus = async (status)=>{
         if(status === 'reject'){
@@ -297,12 +382,14 @@ const DropAnalysisScreen = ({ navigation }) => {
                 return { dmsLeadDropInfo }
 
                 })
+                
             await dispatch(updateBulkApproval(arr));
         } else dispatch(updateBulkApproval(selectedItemIds));
 
     }
     const onItemSelected = async (uniqueId, leadDropId, type, operation) => {
       try {
+       
         if (type === "multi") {
           if (operation === "add") {
             const data = {
@@ -348,7 +435,7 @@ const DropAnalysisScreen = ({ navigation }) => {
               Promise.all([dispatch(leadStatusDropped(payload))]).then(
                 () => {}
               );
-              getDataFromDB();
+            //   getDataFromDB();
             });
           } else if (operation === "reject") {
             //reject api
@@ -361,7 +448,7 @@ const DropAnalysisScreen = ({ navigation }) => {
             };
             Promise.all([dispatch(updateSingleApproval(data))]).then(() => {
               showToast("Successfully rejected");
-              getDataFromDB();
+            //   getDataFromDB();
             });
           } else {
             //reject api
@@ -370,7 +457,7 @@ const DropAnalysisScreen = ({ navigation }) => {
             };
             Promise.all([dispatch(revokeDrop(data))]).then(() => {
               showToast("Successfully revoked");
-              getDataFromDB();
+            //   getDataFromDB();
             });
           }
         }
@@ -434,11 +521,32 @@ const DropAnalysisScreen = ({ navigation }) => {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
+    const toggleParamsView = (event) => {
+       
+     
+        setToggleParamsIndex(event.nativeEvent.selectedSegmentIndex)
+        // const index = event.nativeEvent.selectedSegmentIndex;
+        // let data = [...paramsMetadata];
+        // if (index !== 2) {
+        //     data = data.filter((x) => x.toggleIndex === index);
+        // } else {
+        //     data = [...paramsMetadata];
+        // }
+        // setToggleParamsMetaData([...data]);
+        // setToggleParamsIndex(index);
+    };
+
+    const getCountValues = ()=>{
+    //    let tempArr = ['DROPPED ' + `${(10)}` , 'APPROVED ' + `${(12)}`, 'REJECTED ' + `${(22)}`]
+        let temp = ['DROPPED ' + `${(droppedData.length)}`, 'APPROVED ' + `${(approvedData.length)}`, 'REJECTED ' + `${(rejectedData.length)}`]
+        setToggelparamdata(temp)
+    }
+
     return (
 
             <SafeAreaView style={styles.container}>
 
-                <DatePickerComponent
+                {/* <DatePickerComponent
                     visible={showDatePicker}
                     mode={"date"}
                     value={new Date(Date.now())}
@@ -453,7 +561,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                         }
                     }}
                     onRequestClose={() => setShowDatePicker(false)}
-                />
+                /> */}
 
                 {/* <SortAndFilterComp
                     visible={sortAndFilterVisible}
@@ -469,7 +577,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                     }}
                 /> */}
 
-                <View style={styles.view1}>
+                {/* <View style={styles.view1}>
                     <View style={{ width: "100%" }}>
                         <DateRangeComp
                             fromDate={selectedFromDate}
@@ -478,9 +586,231 @@ const DropAnalysisScreen = ({ navigation }) => {
                             toDateClicked={() => showDatePickerMethod("TO_DATE")}
                         />
                     </View>
-                </View>
+                </View> */}
 
-                {searchedData.length === 0 ? <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} /> :
+
+            <SegmentedControl
+                style={{
+                    marginHorizontal: 4,
+                    justifyContent: "center",
+                    alignSelf: "flex-end",
+                    height: 34,
+                    marginTop: 8,
+                    width: "100%",
+                    backgroundColor: "rgb(211,211,211,0.65)",
+                }}
+                // values={["ETVBRL", "Allied", "View All"]}
+                values={['DROPPED ' + `${(droppedData.length)}`, 'APPROVED ' + `${(approvedData.length)}`, 'REJECTED ' + `${(rejectedData.length)}`]}
+                selectedIndex={toggleParamsIndex}
+                tintColor={Colors.RED}
+                fontStyle={{ color: Colors.BLACK, fontSize: 10 }}
+                activeFontStyle={{ color: Colors.WHITE, fontSize: 10 }}
+                onChange={(event) => toggleParamsView(event)}
+            />
+            {toggleParamsIndex === 0 && <>
+                {droppedData.length === 0 ? <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} /> :
+                    <View style={[{ backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10, marginTop: 10 }]}>
+                        {isManager &&
+                        <View style={{ flexDirection: "row", alignSelf: "flex-end", marginTop: '2%' }}>
+
+                           <View style={styles.modal}>
+                                <TouchableOpacity style={styles.tochable}
+                                    disabled={selectedItemIds.length > 0 ? false : true}
+                                    onPress={() => updateBulkStatus('approve')}>
+                                    <Text style={styles.text4}>{"APPROVE"}</Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity style={styles.tochable}
+                                    disabled={selectedItemIds.length > 0 ? false : true}
+                                    onPress={() => updateBulkStatus('reject')}>
+                                    <Text style={styles.text4}>{"REJECT"}</Text>
+                                </TouchableOpacity>
+                            </View>
+                            
+                           
+                        </View>}
+                    
+                        <FlatList
+                            data={droppedData}
+                            extraData={droppedData}
+                            keyExtractor={(item, index) => index.toString()}
+                            refreshControl={(
+                                <RefreshControl
+                                    refreshing={selector.isLoading}
+                                    onRefresh={() => getDropListFromServerV2(employeeId, employeeName, branchId, orgId, selectedFromDate, selectedToDate)}
+                                    progressViewOffset={200}
+                                />
+                            )}
+                            showsVerticalScrollIndicator={false}
+                            onEndReachedThreshold={0}
+                            onEndReached={() => {
+                                if (appSelector.searchKey === '') {
+                                    // getMoreEnquiryListFromServer()
+                                }
+                            }}
+                            ListFooterComponent={renderFooter}
+                            renderItem={({ item, index }) => {
+
+                                let color = Colors.WHITE;
+                                if (index % 2 != 0) {
+                                    color = Colors.LIGHT_GRAY;
+                                }
+                            
+
+                                return (
+                                    <>
+
+                                        <View>
+                                            <DropAnalysisItem
+                                                onItemSelected={onItemSelected}
+                                                from='PRE_ENQUIRY'
+                                                name={getFirstLetterUpperCase(item.firstName) + " " + getFirstLetterUpperCase(item.lastName)}
+                                                enqCat={item.enquiryCategory}
+                                                uniqueId={item.leadId}
+                                                leadDropId={item.leadDropId}
+                                                created={item.droppedDate}
+                                                dmsLead={item.droppedby}
+                                                source={item.enquirySource}
+                                                lostReason={item.lostReason}
+                                                leadStatus={item.status}
+                                                leadStage={item.stage}
+                                                isManager={isManager}
+                                                dropStatus={item.status}
+                                                mobileNo={item.mobileNumber}
+                                                isCheckboxVisible={true}
+                                                isRefresh={isRefresh}
+                                            />
+                                        </View>
+                                    </>
+                                );
+                            }}
+                        />
+                        {renderFooter()}
+                        {/* {isManager && renderApprovalUi()} */}
+                    </View>}
+            </> }
+            {toggleParamsIndex === 1 && <>
+                {approvedData.length === 0 ? <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} /> :
+                    <View style={[{ backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10, marginTop: 10 }]}>
+                        <FlatList
+                            data={approvedData}
+                            extraData={approvedData}
+                            keyExtractor={(item, index) => index.toString()}
+                            refreshControl={(
+                                <RefreshControl
+                                    refreshing={selector.isLoading}
+                                    onRefresh={() => getDropListFromServerV2(employeeId, employeeName, branchId, orgId, selectedFromDate, selectedToDate)}
+                                    progressViewOffset={200}
+                                />
+                            )}
+                            showsVerticalScrollIndicator={false}
+                            onEndReachedThreshold={0}
+                            onEndReached={() => {
+                                if (appSelector.searchKey === '') {
+                                    // getMoreEnquiryListFromServer()
+                                }
+                            }}
+                            ListFooterComponent={renderFooter}
+                            renderItem={({ item, index }) => {
+
+                                let color = Colors.WHITE;
+                                if (index % 2 != 0) {
+                                    color = Colors.LIGHT_GRAY;
+                                }
+
+                                return (
+                                    <>
+
+                                        <View>
+                                            <DropAnalysisItem
+                                                onItemSelected={onItemSelected}
+                                                from='PRE_ENQUIRY'
+                                                name={getFirstLetterUpperCase(item.firstName) + " " + getFirstLetterUpperCase(item.lastName)}
+                                                enqCat={item.enquiryCategory}
+                                                uniqueId={item.leadId}
+                                                leadDropId={item.leadDropId}
+                                                created={item.droppedDate}
+                                                dmsLead={item.droppedby}
+                                                source={item.enquirySource}
+                                                lostReason={item.lostReason}
+                                                leadStatus={item.status}
+                                                leadStage={item.stage}
+                                                isManager={isManager}
+                                                dropStatus={item.status}
+                                                mobileNo={item.mobileNumber}
+                                                isCheckboxVisible = {false}
+                                            />
+                                        </View>
+                                    </>
+                                );
+                            }}
+                        />
+                        {renderFooter()}
+                        {/* {isManager && renderApprovalUi()} */}
+                    </View>}
+            </>}
+            {toggleParamsIndex === 2 && <>
+                {rejectedData.length === 0 ? <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} /> :
+                    <View style={[{ backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10,marginTop:10 }]}>
+                        <FlatList
+                            data={rejectedData}
+                            extraData={rejectedData}
+                            keyExtractor={(item, index) => index.toString()}
+                            refreshControl={(
+                                <RefreshControl
+                                    refreshing={selector.isLoading}
+                                    onRefresh={() => getDropListFromServerV2(employeeId, employeeName, branchId, orgId, selectedFromDate, selectedToDate)}
+                                    progressViewOffset={200}
+                                />
+                            )}
+                            showsVerticalScrollIndicator={false}
+                            onEndReachedThreshold={0}
+                            onEndReached={() => {
+                                if (appSelector.searchKey === '') {
+                                    // getMoreEnquiryListFromServer()
+                                }
+                            }}
+                            ListFooterComponent={renderFooter}
+                            renderItem={({ item, index }) => {
+
+                                let color = Colors.WHITE;
+                                if (index % 2 != 0) {
+                                    color = Colors.LIGHT_GRAY;
+                                }
+
+                                return (
+                                    <>
+
+                                        <View>
+                                            <DropAnalysisItem
+                                                onItemSelected={onItemSelected}
+                                                from='PRE_ENQUIRY'
+                                                name={getFirstLetterUpperCase(item.firstName) + " " + getFirstLetterUpperCase(item.lastName)}
+                                                enqCat={item.enquiryCategory}
+                                                uniqueId={item.leadId}
+                                                leadDropId={item.leadDropId}
+                                                created={item.droppedDate}
+                                                dmsLead={item.droppedby}
+                                                source={item.enquirySource}
+                                                lostReason={item.lostReason}
+                                                leadStatus={item.status}
+                                                leadStage={item.stage}
+                                                isManager={isManager}
+                                                dropStatus={item.status}
+                                                mobileNo={item.mobileNumber}
+                                                isCheckboxVisible={false}
+                                            />
+                                        </View>
+                                    </>
+                                );
+                            }}
+                        />
+                        {renderFooter()}
+                        {/* {isManager && renderApprovalUi()} */}
+                    </View>}
+            </>}
+
+                {/* {searchedData.length === 0 ? <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} /> :
                     <View style={[{ backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10 }]}>
                         <FlatList
                             data={searchedData}
@@ -510,6 +840,7 @@ const DropAnalysisScreen = ({ navigation }) => {
 
                                 return (
                                     <>
+                                    
                                         <View>
                                             <DropAnalysisItem
                                             onItemSelected={onItemSelected}
@@ -534,7 +865,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                         />
                         {renderFooter()}
                         {isManager && renderApprovalUi()}
-                    </View>}
+                    </View>} */}
             </SafeAreaView>
 
     );
@@ -575,4 +906,32 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginBottom: 5
     },
+    modal: {
+        width:"100%",
+        height: 40,
+        justifyContent: "space-evenly",
+        alignItems: "center",
+        marginBottom: 5,
+        flexDirection:'row',
+        
+    },
+    text4: {
+        color: Colors.WHITE,
+        fontSize: 10,
+        fontWeight: "bold",
+       textAlign:'center'
+        // textAlign: "center",
+        // paddingHorizontal: 5
+    },
+    tochable:{
+        backgroundColor: Colors.RED,
+        height: 28,
+        borderRadius: 8,
+        width: "35%",
+        alignContent:'center',
+        
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding:5
+    }
 });
