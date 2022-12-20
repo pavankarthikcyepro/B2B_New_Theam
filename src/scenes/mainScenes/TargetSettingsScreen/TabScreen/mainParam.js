@@ -161,6 +161,13 @@ const MainParamScreen = ({ route, navigation }) => {
   const paramsMetadata = [
     // 'Enquiry', 'Test Drive', 'Home Visit', 'Booking', 'INVOICE', 'Finance', 'Insurance', 'Exchange', 'EXTENDEDWARRANTY', 'Accessories'
     {
+      color: "#C62159",
+      paramName: "Retail",
+      shortName: "Retail",
+      initial: "R",
+      toggleIndex: 0,
+    },
+    {
       color: "#FA03B9",
       paramName: "Enquiry",
       shortName: "Enq",
@@ -186,13 +193,6 @@ const MainParamScreen = ({ route, navigation }) => {
       paramName: "Booking",
       shortName: "Bkg",
       initial: "B",
-      toggleIndex: 0,
-    },
-    {
-      color: "#C62159",
-      paramName: "Retail",
-      shortName: "Retail",
-      initial: "R",
       toggleIndex: 0,
     },
     // {
@@ -239,7 +239,7 @@ const MainParamScreen = ({ route, navigation }) => {
     },
   ];
 
-function isEmpty(obj) {
+  function isEmpty(obj) {
     return Object.keys(obj).length === 0;
   }
   useEffect(async () => {
@@ -289,7 +289,7 @@ function isEmpty(obj) {
             })
             .catch();
         }
-      }else{
+      } else {
         getInitialParameters();
       }
     } catch (error) { }
@@ -2723,7 +2723,7 @@ function isEmpty(obj) {
               </View>
 
               {/* Grand Total Section */}
-              {totalParameters?.length > 0 && filterParameters.length == 0 &&(
+              {totalParameters?.length > 0 && filterParameters.length == 0 && (
                 <View style={{ width: Dimensions.get("screen").width - 35 }}>
                   <View
                     style={{
@@ -3353,17 +3353,17 @@ export const RenderLevel1NameView = ({
             {item?.empName?.charAt(0)}
           </Text>
         </TouchableOpacity>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <IconButton
-              icon="map-marker"
-              style={{ padding: 0, margin: 0 }}
-              color={Colors.RED}
-              size={8}
-            />
-            <Text style={{ fontSize: 8 }} numberOfLines={2}>
-              {branchName}
-            </Text>
-          </View>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <IconButton
+            icon="map-marker"
+            style={{ padding: 0, margin: 0 }}
+            color={Colors.RED}
+            size={8}
+          />
+          <Text style={{ fontSize: 8 }} numberOfLines={2}>
+            {branchName}
+          </Text>
+        </View>
       </View>
       <View
         style={{

@@ -131,7 +131,7 @@ export const RenderEmployeeTarget = (parameter) => {
                   {editParameters && item?.isOpenInner === true ? (
                     param === "Retail" ? (
                       <Text
-                        onPress={()=>{
+                        onPress={() => {
                           editAndUpdate(selectedParameter?.target);
                         }}
                         style={[
@@ -175,10 +175,33 @@ export const RenderEmployeeTarget = (parameter) => {
                         ]}
                         value={selectedParameter?.target}
                         onChangeText={(x) => {
-                            onChangeTeamParamValue(index, x, item.id, param);
+                          onChangeTeamParamValue(index, x, item.id, param);
                         }}
                       />
                     )
+                  ) : param === "Retail" && item?.isOpenInner === true ? (
+                    <Text
+                      onPress={() => {
+                        editAndUpdate(selectedParameter?.target);
+                      }}
+                      style={[
+                        styles.totalText,
+                        {
+                          width:
+                            moduleType === "live-leads"
+                              ? 66
+                              : param === "Accessories"
+                              ? 63
+                              : 53,
+                          paddingTop: 4,
+                          textDecorationLine: "underline",
+                        },
+                      ]}
+                    >
+                      {selectedParameter && selectedParameter?.target
+                        ? Number(selectedParameter?.target)
+                        : 0}
+                    </Text>
                   ) : (
                     <Text
                       style={[
