@@ -248,8 +248,6 @@ export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk(
 export const updateEnquiryDetailsApi = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/updateEnquiryDetailsApi",
   async (payload, { rejectWithValue }) => {
-    console.log("newpayloadddd",JSON.stringify(payload));
-    
     const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
     const json = await response.json();
 

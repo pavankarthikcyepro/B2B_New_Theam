@@ -1565,7 +1565,6 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
         }
 
         payloadx.dmsLeadDto.dmsAttachments = Object.assign([], tempAttachments);
-        console.log(JSON.stringify(payloadx));
         let payloady = {
           dmsContactDto: payloadx.dmsAccountDto,
           dmsLeadDto: payloadx.dmsLeadDto,
@@ -1620,7 +1619,6 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     //   };
     // }
 
-    // console.log("formData", formData);
     // setTypeOfActionDispatched("UPDATE_ENQUIRY");
     // let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     // if (employeeData) {
@@ -2988,9 +2986,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
   };
 
   updateSubSourceData = (item) => {
-    console.log("item: ", JSON.stringify(item));
     if (item.subsource && item.subsource.length > 0) {
-      console.log("INSIDE IF");
       const updatedData = [];
       item.subsource.forEach((subItem, index) => {
         const newItem = { ...subItem };
@@ -2999,10 +2995,8 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
           updatedData.push(newItem);
         }
       });
-      console.log("DATA: ", JSON.stringify(updatedData));
       setSubSourceData(updatedData);
     } else {
-      console.log("INSIDE ELSE");
       setSubSourceData([]);
     }
   };

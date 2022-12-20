@@ -1234,7 +1234,6 @@ const LeadsScreen = ({ route, navigation }) => {
                               AppNavigator.EmsStackIdentifiers.preBookingForm;
                             break;
                         }
-                        console.log(route);
                         navigation.navigate(route, {
                           universalId: item.universalId,
                           enqDetails: item,
