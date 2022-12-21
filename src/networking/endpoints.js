@@ -171,6 +171,11 @@ const URL = {
     return downloadFile + "/autosave-get-uid/" + `${universalId}`;
   },
   UPDATE_ENQUIRY_DETAILS: () => sales_url + "/enquiry/lead",
+  GET_RULES_CONFIG: (modal, variant, fuel, orgid) => { 
+    return sales_url +
+      "/allotment/rulesConfiguration" +
+      `?model=${modal}&variant=${variant}&fuel=${fuel}&orgId=${orgid}`
+   },
   GET_CUSTOMER_TYPES: (orgId) => {
     return sales_url + `/master-data/customertype/${orgId}`;
   },

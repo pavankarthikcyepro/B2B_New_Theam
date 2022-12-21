@@ -54,6 +54,21 @@ export const getPrebookingDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/
   }
 })
 
+export const getRulesConfiguration = createAsyncThunk("PREBOONING_FORMS_SLICE/getRulesConfiguration", async (payload, { rejectWithValue }) => {
+  const response = await client.get(URL.GET_RULES_CONFIG(payload["model"], payload["variant"], payload["fuel"], payload["orgId"]));
+  try {
+    const json = await response.json();
+  
+    if (response.status != 200) {
+      return rejectWithValue(json);
+    }
+    return json;
+  } catch (error) {
+    console.error("getRulesConfiguration JSON parse error: ", error + " : " + JSON.stringify(response));
+    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
+  }
+})
+
 export const updatePrebookingDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/updatePrebookingDetailsApi", async (payload, { rejectWithValue }) => {
   const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
   try {
@@ -1835,6 +1850,21 @@ const prebookingFormSlice = createSlice({
     builder.addCase(updateRef.pending, (state, action) => {});
     builder.addCase(updateRef.fulfilled, (state, action) => {});
     builder.addCase(updateRef.rejected, (state, action) => {});
+
+    //Get Assingned Tasks api
+    builder.addCase(getRulesConfiguration.pending, (state, action) => {
+     
+      state.isLoading = true;
+    });
+    builder.addCase(getRulesConfiguration.fulfilled, (state, action) => {
+     
+      state.isLoading = false;
+      
+    });
+    builder.addCase(getRulesConfiguration.rejected, (state, action) => {
+     
+      state.isLoading = false;
+    });
   },
 });
 
