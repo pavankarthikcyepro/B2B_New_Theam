@@ -900,6 +900,16 @@ const TargetScreen = ({ route }) => {
                                 }}
                               >
                                 <Text
+                                  onPress={() => {
+                                    navigation.navigate(
+                                      AppNavigator.HomeStackIdentifiers
+                                        .location,
+                                      {
+                                        empId: item.empId,
+                                        orgId: item.orgId,
+                                      }
+                                    );
+                                  }}
                                   style={{
                                     fontSize: 12,
                                     fontWeight: "600",
@@ -1029,6 +1039,19 @@ const TargetScreen = ({ route }) => {
                                                   }}
                                                 >
                                                   <Text
+                                                    onPress={() => {
+                                                      navigation.navigate(
+                                                        AppNavigator
+                                                          .HomeStackIdentifiers
+                                                          .location,
+                                                        {
+                                                          empId:
+                                                            innerItem1.empId,
+                                                          orgId:
+                                                            innerItem1.orgId,
+                                                        }
+                                                      );
+                                                    }}
                                                     style={{
                                                       fontSize: 10,
                                                       fontWeight: "500",
@@ -1143,6 +1166,19 @@ const TargetScreen = ({ route }) => {
                                                           }}
                                                         >
                                                           <Text
+                                                            onPress={() => {
+                                                              navigation.navigate(
+                                                                AppNavigator
+                                                                  .HomeStackIdentifiers
+                                                                  .location,
+                                                                {
+                                                                  empId:
+                                                                    innerItem2.empId,
+                                                                  orgId:
+                                                                    innerItem2.orgId,
+                                                                }
+                                                              );
+                                                            }}
                                                             style={{
                                                               fontSize: 10,
                                                               fontWeight: "500",
@@ -1262,6 +1298,19 @@ const TargetScreen = ({ route }) => {
                                                                     }}
                                                                   >
                                                                     <Text
+                                                                      onPress={() => {
+                                                                        navigation.navigate(
+                                                                          AppNavigator
+                                                                            .HomeStackIdentifiers
+                                                                            .location,
+                                                                          {
+                                                                            empId:
+                                                                              innerItem3.empId,
+                                                                            orgId:
+                                                                              innerItem3.orgId,
+                                                                          }
+                                                                        );
+                                                                      }}
                                                                       style={{
                                                                         fontSize: 10,
                                                                         fontWeight:
@@ -1385,6 +1434,43 @@ const TargetScreen = ({ route }) => {
                                                                           >
                                                                             <View
                                                                               style={{
+                                                                                paddingHorizontal: 4,
+                                                                                display:
+                                                                                  "flex",
+                                                                                flexDirection:
+                                                                                  "row",
+                                                                                justifyContent:
+                                                                                  "space-between",
+                                                                                paddingVertical: 4,
+                                                                              }}
+                                                                            >
+                                                                              <Text
+                                                                                onPress={() => {
+                                                                                  navigation.navigate(
+                                                                                    AppNavigator
+                                                                                      .HomeStackIdentifiers
+                                                                                      .location,
+                                                                                    {
+                                                                                      empId:
+                                                                                        innerItem4.empId,
+                                                                                      orgId:
+                                                                                        innerItem4.orgId,
+                                                                                    }
+                                                                                  );
+                                                                                }}
+                                                                                style={{
+                                                                                  fontSize: 10,
+                                                                                  fontWeight:
+                                                                                    "500",
+                                                                                }}
+                                                                              >
+                                                                                {
+                                                                                  innerItem4.empName
+                                                                                }
+                                                                              </Text>
+                                                                            </View>
+                                                                            <View
+                                                                              style={{
                                                                                 flexDirection:
                                                                                   "row",
                                                                               }}
@@ -1470,6 +1556,43 @@ const TargetScreen = ({ route }) => {
                                                                                         },
                                                                                       ]}
                                                                                     >
+                                                                                      <View
+                                                                                        style={{
+                                                                                          paddingHorizontal: 4,
+                                                                                          display:
+                                                                                            "flex",
+                                                                                          flexDirection:
+                                                                                            "row",
+                                                                                          justifyContent:
+                                                                                            "space-between",
+                                                                                          paddingVertical: 4,
+                                                                                        }}
+                                                                                      >
+                                                                                        <Text
+                                                                                          onPress={() => {
+                                                                                            navigation.navigate(
+                                                                                              AppNavigator
+                                                                                                .HomeStackIdentifiers
+                                                                                                .location,
+                                                                                              {
+                                                                                                empId:
+                                                                                                  innerItem5.empId,
+                                                                                                orgId:
+                                                                                                  innerItem5.orgId,
+                                                                                              }
+                                                                                            );
+                                                                                          }}
+                                                                                          style={{
+                                                                                            fontSize: 10,
+                                                                                            fontWeight:
+                                                                                              "500",
+                                                                                          }}
+                                                                                        >
+                                                                                          {
+                                                                                            innerItem5.empName
+                                                                                          }
+                                                                                        </Text>
+                                                                                      </View>
                                                                                       <View
                                                                                         style={{
                                                                                           flexDirection:
@@ -1560,6 +1683,43 @@ const TargetScreen = ({ route }) => {
                                                                                                   },
                                                                                                 ]}
                                                                                               >
+                                                                                                <View
+                                                                                                  style={{
+                                                                                                    paddingHorizontal: 4,
+                                                                                                    display:
+                                                                                                      "flex",
+                                                                                                    flexDirection:
+                                                                                                      "row",
+                                                                                                    justifyContent:
+                                                                                                      "space-between",
+                                                                                                    paddingVertical: 4,
+                                                                                                  }}
+                                                                                                >
+                                                                                                  <Text
+                                                                                                    onPress={() => {
+                                                                                                      navigation.navigate(
+                                                                                                        AppNavigator
+                                                                                                          .HomeStackIdentifiers
+                                                                                                          .location,
+                                                                                                        {
+                                                                                                          empId:
+                                                                                                            innerItem6.empId,
+                                                                                                          orgId:
+                                                                                                            innerItem6.orgId,
+                                                                                                        }
+                                                                                                      );
+                                                                                                    }}
+                                                                                                    style={{
+                                                                                                      fontSize: 10,
+                                                                                                      fontWeight:
+                                                                                                        "500",
+                                                                                                    }}
+                                                                                                  >
+                                                                                                    {
+                                                                                                      innerItem6.empName
+                                                                                                    }
+                                                                                                  </Text>
+                                                                                                </View>
                                                                                                 <View
                                                                                                   style={{
                                                                                                     flexDirection:
