@@ -1,43 +1,64 @@
-
-import React, { useState, useEffect, useCallback } from 'react';
-import { SafeAreaView, View, Text, StyleSheet, FlatList, Dimensions, Image, Pressable, ScrollView, ActivityIndicator } from 'react-native';
-import { Colors } from '../../../styles';
-import { IconButton } from 'react-native-paper';
-import { useDispatch, useSelector } from 'react-redux';
-import { getTargetParametersEmpDataInsights } from '../../../redux/homeReducer';
-import * as AsyncStore from '../../../asyncStore';
-import { DatePickerComponent, DropDownComponant } from '../../../components';
-import { DateSelectItem, DropDownSelectionItem } from '../../../pureComponents';
-import moment from 'moment';
+import React, { useState, useEffect, useCallback } from "react";
+import {
+  SafeAreaView,
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  Dimensions,
+  Image,
+  Pressable,
+  ScrollView,
+  ActivityIndicator,
+} from "react-native";
+import { Colors } from "../../../../styles";
+import { IconButton } from "react-native-paper";
+import { useDispatch, useSelector } from "react-redux";
+import { getTargetParametersEmpDataInsights } from "../../../../redux/homeReducer";
+import * as AsyncStore from "../../../../asyncStore";
+import { DatePickerComponent, DropDownComponant } from "../../../../components";
+import {
+  DateSelectItem,
+  DropDownSelectionItem,
+} from "../../../../pureComponents";
+import moment from "moment";
 import { Button } from "react-native-paper";
 import {
-    updateFilterDropDownData,
-    getLeadSourceTableList,
-    getVehicleModelTableList,
-    getEventTableList,
-    getTaskTableList,
-    getLostDropChartData,
-    getTargetParametersData,
-    getEmployeesDropDownData,
-    getSalesData,
-    getSalesComparisonData
-} from '../../../redux/homeReducer';
-import { showAlertMessage, showToast } from '../../../utils/toast';
-import { AppNavigator } from '../../../navigations';
+  updateFilterDropDownData,
+  getLeadSourceTableList,
+  getVehicleModelTableList,
+  getEventTableList,
+  getTaskTableList,
+  getLostDropChartData,
+  getTargetParametersData,
+  getEmployeesDropDownData,
+  getSalesData,
+  getSalesComparisonData,
+} from "../../../../redux/homeReducer";
+import { showAlertMessage, showToast } from "../../../../utils/toast";
+import { AppNavigator } from "../../../../navigations";
+import { DropDown } from "./dropDown";
 
 const screenWidth = Dimensions.get("window").width;
 const buttonWidth = (screenWidth - 100) / 2;
 const dateFormat = "YYYY-MM-DD";
 
 const AcitivityLoader = () => {
-    return (
-        <View style={{ width: "100%", height: 50, justifyContent: "center", alignItems: "center" }}>
-            <ActivityIndicator size={"small"} color={Colors.GRAY} />
-        </View>
-    )
-}
+  return (
+    <View
+      style={{
+        width: "100%",
+        height: 50,
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <ActivityIndicator size={"small"} color={Colors.GRAY} />
+    </View>
+  );
+};
 
-const FilterScreen = ({ route, navigation }) => {
+const FilterTargetScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
 
@@ -107,11 +128,11 @@ const FilterScreen = ({ route, navigation }) => {
     setToDate(monthLastDate);
   }, [selector.filter_drop_down_data]);
 
-  useEffect(() => {
-    if (nameKeyList.length > 0) {
-      dropDownItemClicked(4, true);
-    }
-  }, [nameKeyList, userData]);
+  //   useEffect(() => {
+  //     if (nameKeyList.length > 0) {
+  //       dropDownItemClicked(4, true);
+  //     }
+  //   }, [nameKeyList, userData]);
 
   const dropDownItemClicked = async (index, initalCall = false) => {
     const topRowSelectedIds = [];
@@ -166,8 +187,9 @@ const FilterScreen = ({ route, navigation }) => {
         updatedMultipleData[0] = obj;
         updateSelectedItems(updatedMultipleData, index, true);
       } else {
-        updateSelectedItemsForEmployeeDropDown(newData, index);
+        // updateSelectedItemsForEmployeeDropDown(newData, index);
       }
+      //   submitBtnClicked(null)
     } else {
       setDropDownData([...data]);
     }
@@ -186,9 +208,19 @@ const FilterScreen = ({ route, navigation }) => {
     //         }
     //     })
     // }
-
     const data = employeeDropDownDataLocal[employeeTitleNameList[index]];
-    setDropDownData([...data]);
+    let newIndex = index == 0 ? 0 : index - 1;
+    let newItem = Object.keys(employeeDropDownDataLocal)[newIndex];
+    const tempData = employeeDropDownDataLocal[newItem];
+    const isSelected = tempData.filter((e) => e.selected == true);
+    let newArr = [];
+    if (isSelected[0]?.id && index !== 0) {
+      const newList = data.filter((e) => e.parentId == isSelected[0]?.id);
+      newArr = [...newList];
+    }
+    let tempArr = index == 0 ? data : newArr;
+
+    setDropDownData([...tempArr]);
     setSelectedItemIndex(index);
     setShowDropDownModel(true);
     setDropDownFrom("EMPLOYEE_TABLE");
@@ -196,17 +228,17 @@ const FilterScreen = ({ route, navigation }) => {
 
   const updateSelectedItems = (data, index, initalCall = false) => {
     const totalDataObjLocal = { ...totalDataObj };
-
     if (index > 0) {
       let selectedParendIds = [];
       let unselectedParentIds = [];
-      data.forEach((item) => {
-        if (item.selected != undefined && item.selected == true) {
-          selectedParendIds.push(Number(item.parentId));
-        } else {
-          unselectedParentIds.push(Number(item.parentId));
-        }
-      });
+      selectedParendIds.push(Number(data.parentId));
+      // data.forEach((item) => {
+      //   if (item.selected != undefined && item.selected == true) {
+      //     selectedParendIds.push(Number(item.parentId));
+      //   } else {
+      //     unselectedParentIds.push(Number(item.parentId));
+      //   }
+      // });
 
       let localIndex = index - 1;
 
@@ -259,18 +291,39 @@ const FilterScreen = ({ route, navigation }) => {
     }
 
     let key = nameKeyList[index];
+    var newArr = totalDataObjLocal[key].sublevels;
+    const result = newArr.map((file) => {
+      return { ...file, selected: false };
+    });
+    let objIndex = result.findIndex((obj) => obj.id == data.id);
+    for (let i = 0; i < result.length; i++) {
+      if (objIndex === i) {
+        result[i].selected = true;
+      } else {
+        result[i].selected = false;
+      }
+    }
     const newOBJ = {
-      sublevels: data,
+      sublevels: result,
     };
     totalDataObjLocal[key] = newOBJ;
     setTotalDataObj({ ...totalDataObjLocal });
-    initalCall && submitBtnClicked(totalDataObjLocal);
+    index == 4 && submitBtnClicked(totalDataObjLocal);
   };
 
   const updateSelectedItemsForEmployeeDropDown = (data, index) => {
     let key = employeeTitleNameList[index];
     const newTotalDataObjLocal = { ...employeeDropDownDataLocal };
-    newTotalDataObjLocal[key] = data;
+    let objIndex = newTotalDataObjLocal[key].findIndex(
+      (obj) => obj.id == data.id
+    );
+    for (let i = 0; i < newTotalDataObjLocal[key].length; i++) {
+      if (objIndex === i) {
+        newTotalDataObjLocal[key][i].selected = true;
+      } else {
+        newTotalDataObjLocal[key][i].selected = false;
+      }
+    }
     setEmployeeDropDownDataLocal({ ...newTotalDataObjLocal });
   };
 
@@ -345,40 +398,36 @@ const FilterScreen = ({ route, navigation }) => {
 
     Promise.all([dispatch(getEmployeesDropDownData(payload1))])
       .then(() => {
-        Promise.all([
-          dispatch(getLeadSourceTableList(payload)),
-          dispatch(getVehicleModelTableList(payload)),
-          dispatch(getEventTableList(payload)),
-          dispatch(getLostDropChartData(payload)),
-          dispatch(updateFilterDropDownData(totalDataObj)),
-          // // Table Data
-          dispatch(getTaskTableList(payload2)),
-          dispatch(getSalesData(payload2)),
-          dispatch(getSalesComparisonData(payload2)),
-          // // Target Params Data
-          dispatch(getTargetParametersData(payload2)),
-          dispatch(getTargetParametersEmpDataInsights(payload2)), // Added to filter an Home Screen's INSIGHT
-        ])
-          .then(() => {})
-          .catch(() => {
-            setIsLoading(false);
-          });
+        // Promise.all([
+        // //   dispatch(getLeadSourceTableList(payload)),
+        // //   dispatch(getVehicleModelTableList(payload)),
+        // //   dispatch(getEventTableList(payload)),
+        // //   dispatch(getLostDropChartData(payload)),
+        // //   dispatch(updateFilterDropDownData(totalDataObj)),
+        //   // // Table Data
+        // //   dispatch(getTaskTableList(payload2)),
+        // //   dispatch(getSalesData(payload2)),
+        // //   dispatch(getSalesComparisonData(payload2)),
+        //   // // Target Params Data
+        // //   dispatch(getTargetParametersData(payload2)),
+        // //   dispatch(getTargetParametersEmpDataInsights(payload2)), // Added to filter an Home Screen's INSIGHT
+        // ])
+        //   .then(() => {})
+        //   .catch(() => {
+        //     setIsLoading(false);
+        //   });
       })
       .catch(() => {
         setIsLoading(false);
       });
     if (from == "EMPLOYEE") {
-        if (true) {
-            navigation.navigate(
-              AppNavigator.DrawerStackIdentifiers.monthlyTarget,
-              {
-                params: { from: "Filter" },
-              }
-            );
-        } else {
-                  navigation.goBack();
-
-        }
+      if (true) {
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.monthlyTarget, {
+          params: { from: "Filter" },
+        });
+      } else {
+        navigation.goBack();
+      }
       // navigation.navigate(AppNavigator.TabStackIdentifiers.home, { screen: "Home", params: { from: 'Filter' }, })
     } else {
       // navigation.goBack(); // NEED TO COMMENT FOR ASSOCIATE FILTER
@@ -390,8 +439,10 @@ const FilterScreen = ({ route, navigation }) => {
       let names = [];
       let newDataObj = {};
       for (let key in selector.employees_drop_down_data) {
-        names.push(key);
         const arrayData = selector.employees_drop_down_data[key];
+        if (arrayData.length != 0) {
+          names.push(key);
+        }
         const newArray = [];
         if (arrayData.length > 0) {
           arrayData.forEach((element) => {
@@ -444,17 +495,37 @@ const FilterScreen = ({ route, navigation }) => {
     let selectedIds = [];
     for (let key in employeeDropDownDataLocal) {
       const arrayData = employeeDropDownDataLocal[key];
-      arrayData.forEach((element) => {
-        if (element.selected === true) {
-          selectedIds.push(element.code);
-        }
-      });
+      if (arrayData.length != 0) {
+        arrayData.forEach((element) => {
+          if (element.selected === true) {
+            selectedIds.push(element.code);
+          }
+        });
+      }
     }
-    if (selectedIds.length > 0) {
-      getDashboadTableDataFromServer(selectedIds, "EMPLOYEE");
-    } else {
-      showToast("Please select any value");
-    }
+    let x =
+      employeeDropDownDataLocal[
+        Object.keys(employeeDropDownDataLocal)[
+          Object.keys(employeeDropDownDataLocal).length - 1
+        ]
+      ];
+    let selectedID = x.filter((e) => e.selected == true);
+    // return
+    navigation.navigate("MONTHLY_TARGET_SCREEN", {
+      params: {
+        from: "Filter",
+        selectedID: selectedID[0],
+        fromDate: fromDate,
+        toDate: toDate,
+      },
+    });
+    // let selectedID = x[x-1];
+    // return;
+    // if (selectedIds.length > 0) {
+    //   getDashboadTableDataFromServer(selectedIds, "EMPLOYEE");
+    // } else {
+    //   showToast("Please select any value");
+    // }
   };
 
   const updateSelectedDate = (date, key) => {
@@ -476,9 +547,9 @@ const FilterScreen = ({ route, navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <DropDownComponant
+      <DropDown
         visible={showDropDownModel}
-        multiple={true}
+        multiple={false}
         headerTitle={"Select"}
         data={dropDownData}
         onRequestClose={() => setShowDropDownModel(false)}
@@ -590,7 +661,7 @@ const FilterScreen = ({ route, navigation }) => {
                       }}
                     />
                   </View>
-                  {!isLoading ? (
+                  {/* {!isLoading ? (
                     <View style={styles.submitBtnBckVw}>
                       <Button
                         labelStyle={{
@@ -611,14 +682,14 @@ const FilterScreen = ({ route, navigation }) => {
                         style={{ width: buttonWidth }}
                         contentStyle={{ backgroundColor: Colors.BLACK }}
                         mode="contained"
-                        onPress={submitBtnClicked}
+                        onPress={()=>submitBtnClicked(null)}
                       >
                         Submit
                       </Button>
                     </View>
                   ) : (
                     <AcitivityLoader />
-                  )}
+                  )} */}
                 </View>
               );
             } else if (index === 2) {
@@ -708,27 +779,27 @@ const FilterScreen = ({ route, navigation }) => {
   );
 };
 
-export default FilterScreen;
+export default FilterTargetScreen;
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        flexDirection: "column",
-        backgroundColor: Colors.LIGHT_GRAY,
-    },
-    view3: {
-        width: "100%",
-        position: "absolute",
-        bottom: 20,
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-evenly",
-    },
-    submitBtnBckVw: {
-        width: "100%",
-        height: 70,
-        flexDirection: "row",
-        justifyContent: "space-evenly",
-        alignItems: "center",
-    }
+  container: {
+    flex: 1,
+    flexDirection: "column",
+    backgroundColor: Colors.LIGHT_GRAY,
+  },
+  view3: {
+    width: "100%",
+    position: "absolute",
+    bottom: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-evenly",
+  },
+  submitBtnBckVw: {
+    width: "100%",
+    height: 70,
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    alignItems: "center",
+  },
 });

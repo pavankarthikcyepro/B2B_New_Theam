@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Button, IconButton } from 'react-native-paper';
-import { useDispatch, useSelector } from 'react-redux';
-import { Colors } from '../styles';
+import React, { useEffect, useState } from "react";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { Button, IconButton } from "react-native-paper";
+import { useDispatch, useSelector } from "react-redux";
+import { Colors } from "../styles";
 import * as AsyncStore from "../asyncStore";
-import { setBranchId, setBranchName } from '../utils/helperFunctions';
+import { setBranchId, setBranchName } from "../utils/helperFunctions";
 
 const HeaderComp = ({
   title,
@@ -40,7 +40,6 @@ const HeaderComp = ({
       );
     }
   }, [selector.selectedBranchName]);
-  
 
   return (
     <View style={[style.container, { height: height }]}>
@@ -75,13 +74,15 @@ const HeaderComp = ({
         ) : null}
       </View>
       <View>
-        {/* <View style={style.filterContainer}>
-                    <IconButton icon="filter-outline"
-                        style={{ padding: 0, margin: 0 }}
-                        color={Colors.WHITE}
-                        size={30}
-                    onPress={filterClicked}/>
-                </View> */}
+        <View style={style.filterContainer}>
+          <IconButton
+            icon="filter-outline"
+            style={{ padding: 0, margin: 0 }}
+            color={Colors.WHITE}
+            size={30}
+            onPress={filterClicked}
+          />
+        </View>
       </View>
     </View>
   );
@@ -90,40 +91,40 @@ const HeaderComp = ({
 export { HeaderComp };
 
 const style = StyleSheet.create({
-    container: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        backgroundColor: Colors.DARK_GRAY,
-        height: 56,
-        paddingRight: 5
-    },
-    subContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-        width: '73%'
-    },
-    title: {
-        color: Colors.WHITE,
-        fontSize: 12,
-        fontWeight: "100",
-    },
-    branchContainer: {
-        marginLeft:-50,
-        paddingLeft: 5,
-        paddingRight: 2,
-         paddingVertical: 2,
-        borderColor: Colors.WHITE,
-        borderWidth: 1,
-        borderRadius: 4,
-        flexDirection: "row",
-        justifyContent: "flex-start",
-        alignItems: "center"
-    },
-    branchName: {
-        fontSize: 12,
-        fontWeight: "600",
-        color: Colors.WHITE,
-        width: 60,
-    }
-})
+  container: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: Colors.DARK_GRAY,
+    height: 56,
+    paddingRight: 5,
+  },
+  subContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "73%",
+  },
+  title: {
+    color: Colors.WHITE,
+    fontSize: 12,
+    fontWeight: "100",
+  },
+  branchContainer: {
+    marginLeft: -50,
+    paddingLeft: 5,
+    paddingRight: 2,
+    paddingVertical: 2,
+    borderColor: Colors.WHITE,
+    borderWidth: 1,
+    borderRadius: 4,
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+  },
+  branchName: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: Colors.WHITE,
+    width: 60,
+  },
+});
