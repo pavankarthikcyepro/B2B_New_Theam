@@ -24,6 +24,7 @@ import { isRejected } from '@reduxjs/toolkit';
 import { DropComponent } from './components/dropComp';
 import URL from '../../../networking/endpoints';
 import Geolocation from '@react-native-community/geolocation';
+import moment from 'moment';
 
 const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
 
@@ -71,7 +72,6 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                 />
             ),
         });
-        console.log("DATA:", JSON.stringify(route.params.itemData));
     }, [navigation]);
 
     const goParentScreen = () => {
@@ -130,7 +130,6 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
 
 
     const DropPreEnquiryLead = async (payload, enquiryDetailsObj) => {
-        console.log("DROP PAY: ", URL.DROP_ENQUIRY(), payload);
         setIsLoading(true);
         await fetch(URL.DROP_ENQUIRY(), {
             method: "POST",
@@ -161,7 +160,6 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     const UpdateRecord = async (enquiryDetailsObj) => {
 
         setIsLoading(true);
-        console.log("UPDATE PAY: ", URL.UPDATE_ENQUIRY_DETAILS(), userToken, enquiryDetailsObj);
         await fetch(URL.UPDATE_ENQUIRY_DETAILS(), {
             method: "POST",
             headers: {
@@ -198,14 +196,30 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     }
 
     const getPreEnquiryListFromServer = async () => {
-        if (employeeId) {
-            let endUrl = "?limit=10&offset=" + "0" + "&status=PREENQUIRY&empId=" + employeeId;
-            dispatch(getPreEnquiryData(endUrl));
-        }
-    }
+      const dateFormat = "YYYY-MM-DD";
+      const currentDate = moment()
+        .add(0, "day")
+        .endOf("month")
+        .format(dateFormat);
+      const lastMonthFirstDate = moment(currentDate, dateFormat)
+        .subtract(0, "months")
+        .startOf("month")
+        .format(dateFormat);
+
+      if (employeeId) {
+        payload = {
+          startdate: lastMonthFirstDate,
+          enddate: currentDate,
+          empId: employeeId,
+          status: "PREENQUIRY",
+          offset: 0,
+          limit: 500,
+        };
+        dispatch(getPreEnquiryData(payload));
+      }
+    };
 
     useEffect(() => {
-
         getAsyncStorageData();
         getBranchId();
         getDropDownApi();
@@ -241,7 +255,6 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     const getBranchId = () => {
 
         AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_ID).then((branchId) => {
-            // console.log("branch id:", branchId)
             setBranchId(branchId);
         });
     }
@@ -250,7 +263,6 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
-            // console.log("json:", jsonObj);
             setOrganizationId(jsonObj.orgId);
             setEmployeeId(jsonObj.empId);
             setUserData({
@@ -273,14 +285,11 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
 
         GetDropList(orgId, token, "Pre%20Enquiry").then(resolve => {
             setDropData(resolve);
-        }, reject => {
-            console.log("Getting pre enquiry list faild")
-        })
+        }, reject => {})
     }
 
     const getCurrentLocation = () => {
         Geolocation.getCurrentPosition(info => {
-            console.log(info)
             setCurrentLocation({
                 lat: info.coords.latitude,
                 long: info.coords.longitude
@@ -328,7 +337,6 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                 filteredObj.taskStatus = "CLOSED";
                 filteredObj.lat = currentLocation ? currentLocation.lat.toString() : null;
                 filteredObj.lon = currentLocation ? currentLocation.long.toString() : null;
-                // console.log("filteredObj: ", filteredObj);
                 dispatch(assignTaskApi(filteredObj));
             }
         }
@@ -379,7 +387,6 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
           orgid: jsonObj.orgId,
           universalId: itemData.universalId,
         };
-        console.log("PAYLOAD LEAD REF:", payload);
         customerLeadReference(payload);
 
         if (
@@ -416,7 +423,6 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     };
 
     {/*  const PostPreEnquiryLead = async (enquiryDetailsObj) => {
-        console.log("DROP PAY: ", URL.DROP_ENQUIRY(), payload);
         setIsLoading(true);
         await fetch(URL.DROP_ENQUIRY(), {
             method: "POST",
@@ -445,9 +451,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     } */}
 
     const UpdateRecord007 = async (enquiryDetailsObj) => {
-
         setIsLoading(true);
-        console.log("<<<<<<<WE ARE DONE>>>>>>>>>>>: ", URL.UPDATE_ENQUIRY_DETAILS(), userToken, enquiryDetailsObj);
         await fetch(URL.UPDATE_ENQUIRY_DETAILS(), {
             method: "POST",
             headers: {
@@ -484,7 +488,6 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
 
 
     const handleBackButtonClick = () => {
-        console.log("back pressed")
         navigation.popToTop();
         return true;
     }
@@ -536,7 +539,6 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                 //         "orgid": jsonObj.orgId,
                 //         "universalId": itemData.universalId
                 //     }
-                //     console.log("PAYLOAD LEAD REF:", payload);
                 //     customerLeadReference(payload)
                 //    // dispatch(customerLeadRef(payload))
 
@@ -547,7 +549,6 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     const customerLeadReference = async (enquiryDetailsObj) => {
 
         setIsLoading(true);
-        console.log("<<<<<<<WE ARE DONE>>>>>>>>>>>: ", URL.UPDATE_ENQUIRY_DETAILS(), userToken, enquiryDetailsObj);
         await fetch(URL.CUSTOMER_LEAD_REFERENCE(), {
             method: "POST",
             headers: {
@@ -559,7 +560,6 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         })
             .then(json => json.json())
             .then(response => {
-                console.log("Customer Refernce=====", response)
                 if (response && response.dmsEntity && response.dmsEntity.leadCustomerReference) {
                     dispatch(() => updateEnquiryDetailsCreateEnquiry(response.dmsEntity.leadCustomerReference.referencenumber));
                 }
@@ -576,7 +576,6 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     }
 
     const updateEmployee = (employeeObj) => {
-        console.log("employee: ", employeeObj)
         let dmsLeadDto = { ...selector.pre_enquiry_details.dmsLeadDto };
         dmsLeadDto.salesConsultant = employeeObj.name;
         dispatch(updateEmployeeApi(dmsLeadDto));

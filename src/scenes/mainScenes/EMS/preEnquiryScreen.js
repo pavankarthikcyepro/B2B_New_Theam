@@ -106,10 +106,8 @@ const PreEnquiryScreen = ({ route, navigation }) => {
         //     let newIndex = contact[0].allLeadsSubstagesEntity;
         //     setDefualtLeadStage(newIndex[0].leadStage ? newIndex[0].leadStage : []);
         //     setdefualtLeadStatus(newIndex[0].leadStatus ? newIndex[0].leadStatus : []);
-        //     console.log('GDFDB: 1');
         //     getDataFromDB(newIndex[0].leadStage ? newIndex[0].leadStage : [], newIndex[0].leadStatus ? newIndex[0].leadStatus : []);
         // }).catch((err) => {
-        //     console.log(err);
         //     setLoader(false);
         // })
         // getAsyncData().then(data => {
@@ -123,37 +121,50 @@ const PreEnquiryScreen = ({ route, navigation }) => {
     }, [])
 
     const getDataFromDB = async (leadStage, leadStatus) => {
-        const employeeData = await AsyncStore.getData(
-            AsyncStore.Keys.LOGIN_EMPLOYEE
+      const employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      const dateFormat = "YYYY-MM-DD";
+      // const currentDate = moment().add(0, "day").format(dateFormat)
+      let currentDateLocal = currentDate;
+      let lastMonthFirstDateLocal = moment(currentDate, dateFormat)
+        .subtract(0, "months")
+        .startOf("month")
+        .format(dateFormat);
+      if (route && route.params && route.params.moduleType) {
+        lastMonthFirstDateLocal =
+          route?.params?.moduleType === "live-leads"
+            ? "2021-01-01"
+            : lastMonthFirstDateLocal;
+        currentDateLocal = currentDate;
+        // setFromDateState(lastMonthFirstDateLocal);
+        setSelectedFromDate("2021-01-01");
+        setToDateState(currentDateLocal);
+      } else {
+        setFromDateState(lastMonthFirstDate);
+        setToDateState(currentDate);
+      }
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        let employeeId = jsonObj.empId;
+        if (route && route.params && route.params.employeeDetail) {
+          const { empId } = route.params.employeeDetail;
+          employeeId = empId;
+        }
+        // setEmployeeId(jsonObj.empId);
+        // onTempFliter(jsonObj.empId, lastMonthFirstDate, currentDate, [], [], [], leadStage, leadStatus);
+        getPreEnquiryListFromServer(
+          employeeId,
+          lastMonthFirstDateLocal,
+          currentDateLocal
         );
-        const dateFormat = "YYYY-MM-DD";
-        // const currentDate = moment().add(0, "day").format(dateFormat)
-        let currentDateLocal = currentDate;
-        let lastMonthFirstDateLocal = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
-        if (route && route.params && route.params.moduleType) {
-            lastMonthFirstDateLocal = route?.params?.moduleType === 'live-leads' ? '2021-01-01' : lastMonthFirstDateLocal;
-            currentDateLocal = route?.params?.moduleType === 'live-leads' ? moment().format(dateFormat) : currentDate;
-            // setFromDateState(lastMonthFirstDateLocal);
-            setSelectedFromDate("2021-01-01");
-            setToDateState(currentDateLocal);
-        } else {
-            setFromDateState(lastMonthFirstDate);
-            setToDateState(currentDate);
-        }
-        if (employeeData) {
-            const jsonObj = JSON.parse(employeeData);
-            // setEmployeeId(jsonObj.empId);
-            // onTempFliter(jsonObj.empId, lastMonthFirstDate, currentDate, [], [], [], leadStage, leadStatus);
-            getPreEnquiryListFromServer(jsonObj.empId, lastMonthFirstDateLocal, currentDateLocal);
-        }
-    }
+      }
+    };
 
     useEffect(() => {
         setSearchQuery('');
-        console.log('selector.pre_enquiry_list----->', selector.pre_enquiry_list);
         if (selector.pre_enquiry_list.length > 0) {
             setSearchedData(selector.pre_enquiry_list)
-            // console.log("PreEnquiryAfterScreen:", selector.pre_enquiry_list[0])
         }
         else {
             setSearchedData([])
@@ -163,18 +174,16 @@ const PreEnquiryScreen = ({ route, navigation }) => {
     useEffect(() => {
         // navigation.addListener('focus', () => {
             // getAsyncData(lastMonthFirstDate, currentDate).then(data => {
-            //     console.log(data)
             // });
             if (route && route.params && route.params.moduleType) {
                 const liveLeadsStartDate = route?.params?.moduleType === 'live-leads' ? '2021-01-01' : lastMonthFirstDate;
-                const liveLeadsEndDate = route?.params?.moduleType === 'live-leads' ? moment().format(dateFormat) : currentDate;
+                const liveLeadsEndDate = currentDate;
                 setFromDateState(liveLeadsStartDate);
                 setToDateState(liveLeadsEndDate);
             } else {
                 setFromDateState(lastMonthFirstDate);
                 setToDateState(currentDate);
             }
-            console.log("DATE &&&&", fromDateRef.current, toDateRef.current, lastMonthFirstDate, currentDate)
             getDataFromDB()
           // });
 
@@ -190,21 +199,25 @@ const PreEnquiryScreen = ({ route, navigation }) => {
                 let tempData = []
                 tempData = selector.pre_enquiry_list.filter((item) => {
                     return (
-                        `${item.firstName} ${item.lastName}`
-                            .toLowerCase()
-                            .includes(appSelector.searchKey.toLowerCase()) ||
-                        item.phone
-                            .toLowerCase()
-                            .includes(appSelector.searchKey.toLowerCase()) ||
-                        item.enquirySource
-                            .toLowerCase()
-                            .includes(appSelector.searchKey.toLowerCase()) ||
-                        item.enquiryCategory
-                            ?.toLowerCase()
-                            .includes(appSelector.searchKey.toLowerCase()) ||
-                        item.model
-                            .toLowerCase()
-                            .includes(appSelector.searchKey.toLowerCase())
+                      `${item.firstName} ${item.lastName}`
+                        .toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase()) ||
+                      item.phone
+                        .toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase()) ||
+                      item.enquirySource
+                        .toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase()) ||
+                      item.enquiryCategory
+                        ?.toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase()) ||
+                      item?.leadId
+                        .toString()
+                        ?.toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase()) ||
+                      item?.model
+                        ?.toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase())
                     );
                 })
                 setSearchedData([]);
@@ -237,7 +250,6 @@ const PreEnquiryScreen = ({ route, navigation }) => {
 
     const getPreEnquiryListFromServer = (empId, startDate, endDate) => {
         const payload = getPayloadData(empId, startDate, endDate, 0);
-        console.log("payload called", payload)
         dispatch(getPreEnquiryData(payload));
     }
 
@@ -309,7 +321,7 @@ const PreEnquiryScreen = ({ route, navigation }) => {
                 "empId": jsonObj.empId,
                 "status": "",
                 "offset": 0,
-                "limit": 500,
+                "limit": 50000,
                 "leadStage": leadStage ? leadStage : defualtLeadStage,
                 "leadStatus": leadStatus ? leadStatus : defualtLeadStatus
             };
@@ -319,7 +331,6 @@ const PreEnquiryScreen = ({ route, navigation }) => {
                 setSearchedData(newData);
             })
                 .catch((error) => {
-                    console.log(error);
                     setLoader(false);
                 });
         }
@@ -337,7 +348,7 @@ const PreEnquiryScreen = ({ route, navigation }) => {
             "empId": empId,
             "status": "PREENQUIRY",
             "offset": offSet,
-            "limit": 500,
+            "limit": 50000,
         }
         return payload;
     }
@@ -418,7 +429,6 @@ const PreEnquiryScreen = ({ route, navigation }) => {
         dispatch(getPreEnquiryData(payload2));
     }
 
-    // console.log({vehicleModelList})
 
     const renderFooter = () => {
         if (!selector.isLoadingExtraData) { return null }
@@ -449,7 +459,6 @@ const PreEnquiryScreen = ({ route, navigation }) => {
           maximumDate={new Date(liveLeadsEndDate.toString())}
           value={new Date()}
           onChange={(event, selectedDate) => {
-            console.log("date: ", selectedDate);
             setShowDatePicker(false);
             if (Platform.OS === "android") {
               if (selectedDate) {
@@ -473,7 +482,6 @@ const PreEnquiryScreen = ({ route, navigation }) => {
           modelList={vehicleModelList}
           sourceList={sourceList}
           submitCallback={(payload) => {
-            // console.log("payload: ", payload);
             applySelectedFilters(payload);
             setSortAndFilterVisible(false);
           }}
@@ -584,14 +592,12 @@ const PreEnquiryScreen = ({ route, navigation }) => {
                           leadStatus={item.leadStatus}
                           needStatus={"YES"}
                           onItemPress={() => {
-                            console.log("ENQ: ", JSON.stringify(item));
                             navigation.navigate(
                               AppNavigator.EmsStackIdentifiers.task360,
                               { universalId: item.universalId, itemData: item }
                             );
                           }}
                           onDocPress={() => {
-                            console.log("ITEM:", JSON.stringify(item));
                             navigation.navigate(
                               AppNavigator.EmsStackIdentifiers.confirmedPreEnq,
                               { itemData: item, fromCreatePreEnquiry: false }

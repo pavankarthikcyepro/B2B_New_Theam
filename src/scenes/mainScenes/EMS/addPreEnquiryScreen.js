@@ -124,9 +124,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     getBranchId();
     getAuthToken();
     // getCustomerTypeListFromDB();
-    console.log("useEffect called");
     const UnSubscribe = navigation.addListener("focus", () => {
-      console.log("useEffect focus called");
       if (route.params?.fromEdit === false) {
         dispatch(clearState());
       }
@@ -185,11 +183,9 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     if (route.params?.fromEdit != null && route.params.fromEdit === true) {
       const preEnquiryDetails = route.params.preEnquiryDetails;
       const fromEdit = route.params.fromEdit;
-      console.log("OLD DATA:", route.params.preEnquiryDetails);
       // Promise.all([
       //     dispatch(getPreEnquiryDetails(preEnquiryDetails.universalId))
       // ]).then((res) => {
-      //     console.log("RES$$$$", JSON.stringify(res));
       // })
       setExistingPreEnquiryDetails(preEnquiryDetails);
       setFromEdit(fromEdit);
@@ -257,7 +253,6 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
   const checkPincode = (pincode) => {
     return new Promise((resolve, reject) => {
       PincodeDetailsNew(pincode).then((res) => {
-        console.log("PINCODE DETAILS 1", JSON.stringify(res));
         if (res) {
           if (res.length > 0) {
             if (res[0]?.Status === "Error") {
@@ -305,7 +300,6 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
           setDataForCarModels([...modalList]);
         },
         (rejected) => {
-          console.log("getCarModelListFromServer Failed");
         }
       )
       .finally(() => {
@@ -368,7 +362,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       organizationId: organizationId,
       phone: selector.mobile,
       sourceOfEnquiry: selector.sourceOfEnquiryId,
-      subSourceOfEnquiry: selector.subSourceOfEnquiryId,
+      subSourceOfEnquiry: selector.subSourceOfEnquiry,
       eventCode: "",
       email: selector.email,
       referencenumber: "",
@@ -457,6 +451,10 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       showToastRedAlert("Please select source of lead");
       return;
     }
+    if (!fromEdit && subSourceData.length > 0 && !selector.subSourceOfEnquiry) {
+      showToastRedAlert("Please select sub source of lead");
+      return;
+    }
     // if (selector.sourceOfEnquiry.length > 0 && selector.subSourceOfEnquiry.length == 0) {
     //     showToastRedAlert("Please select sub source of lead");
     //     return;
@@ -491,7 +489,6 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     }
 
     checkPincode(selector.pincode).then((status) => {
-      console.log("IS VALID: ", status);
       if (!status) {
         showToastRedAlert("Please enter valid pincode");
         return;
@@ -573,13 +570,11 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       PincodeDetails(pincode).then(
         (data) => {
           // update address
-          // console.log("PIN:", JSON.stringify(data));
           // setAddress({ block: data.Block || "", district: data.District || "", region: data.Region || "", state: data.State || "" })
           setAddress(data);
           resolve(data);
         },
         (rejected) => {
-          console.log("rejected...: ", rejected);
           reject();
         }
       );
@@ -593,8 +588,6 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       orgid: userData.orgId,
     };
 
-    // console.log("URL: ", URL.CUSTOMER_LEAD_REFERENCE())
-    // console.log("bodyObj: ", bodyObj)
 
     await fetch(URL.CUSTOMER_LEAD_REFERENCE(), {
       method: "POST",
@@ -655,7 +648,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       phone: selector.mobile,
       model: selector.carModel,
       sourceOfEnquiry: selector.sourceOfEnquiryId,
-      subSourceOfEnquiry: selector.subSourceOfEnquiryId,
+      subSource: selector.subSourceOfEnquiry,
       eventCode: selector.eventName,
       referencenumber: refNumber,
       pincode: selector.pincode,
@@ -797,7 +790,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
 
     dmsAccountOrContactDto.customerType = selector.customerType;
     dmsAccountOrContactDto.enquirySource = selector.sourceOfEnquiryId;
-    dmsAccountOrContactDto.subSource = selector.subSourceOfEnquiryId;
+    dmsAccountOrContactDto.subSource = selector.subSourceOfEnquiry;
     dmsAccountOrContactDto.pincode = selector.pincode;
 
     if (existingPreEnquiryDetails.hasOwnProperty("dmsLeadDto")) {
@@ -849,7 +842,6 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
 
   const showDropDownModelMethod = (key, headerText, oid) => {
     Keyboard.dismiss();
-    //console.log({oid})
     switch (key) {
       case "CAR_MODEL":
         setDataForDropDown([...dataForCarModels]);
@@ -862,7 +854,6 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         if (organizationId == 21) {
           setDataForDropDown([...selector.enquiry_type_list21]);
 
-          //console.log("SELECTOR====>", selector.customer_type_list);
         } else if (organizationId == 22) {
           setDataForDropDown([...selector.enquiry_type_list22]);
         }
@@ -875,7 +866,6 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         break;
 
       case "CUSTOMER_TYPE":
-        console.log("CUSTOMER_TYPE", selector.customer_type_list);
         if (selector.customer_type_list.length === 0) {
           showToast("No Customer Types found");
           return;
@@ -942,9 +932,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
   }, [selector.eventStartDate, selector.eventEndDate]);
 
   updateSubSourceData = (item) => {
-    console.log("item: ", JSON.stringify(item));
     if (item.subsource && item.subsource.length > 0) {
-      console.log("INSIDE IF");
       const updatedData = [];
       item.subsource.forEach((subItem, index) => {
         const newItem = { ...subItem };
@@ -953,10 +941,8 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
           updatedData.push(newItem);
         }
       });
-      console.log("DATA: ", JSON.stringify(updatedData));
       setSubSourceData(updatedData);
     } else {
-      console.log("INSIDE ELSE");
       setSubSourceData([]);
     }
   };
@@ -970,8 +956,6 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         data={dataForDropDown}
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
-          console.log("selected: ", item);
-
           if (dropDownKey === "SOURCE_OF_ENQUIRY") {
             if (item.name === "Event") {
               getEventListFromServer();
@@ -995,7 +979,6 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         mode={"date"}
         value={new Date(Date.now())}
         onChange={(event, selectedDate) => {
-          console.log("date: ", selectedDate);
           if (Platform.OS === "android") {
             if (selectedDate) {
               dispatch(
@@ -1026,7 +1009,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
           style={{ flex: 1 }}
         >
           <View style={styles.view1}>
-          <Text style={styles.text1}>{"Create New Contact"}</Text>
+            <Text style={styles.text1}>{"Create New Contact"}</Text>
             {/* <View style={{ flexDirection: "row", alignItems: "center" }}>
               <Checkbox.Android
                 status={
@@ -1179,6 +1162,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             <TextinputComp
               style={styles.textInputComp}
               value={selector.mobile}
+              disabled={fromEdit}
               label={"Mobile Number*"}
               keyboardType={"phone-pad"}
               maxLength={10}
@@ -1306,9 +1290,9 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                 },
               ]}
             ></Text>
-            {subSourceData.length > 0 && (
+            {subSourceData.length > 0 || selector.subSourceOfEnquiry ? (
               <DropDownSelectionItem
-                label={"Sub Source of Lead"}
+                label={"Sub Source of Lead*"}
                 value={selector.subSourceOfEnquiry}
                 disabled={fromEdit}
                 onPress={() =>
@@ -1318,8 +1302,18 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                   )
                 }
               />
-            )}
-            <Text style={[GlobalStyle.underline]}></Text>
+            ) : null}
+            <Text
+              style={[
+                GlobalStyle.underline,
+                {
+                  backgroundColor:
+                    isSubmitPress && selector.subSourceOfEnquiry === ""
+                      ? "red"
+                      : "rgba(208, 212, 214, 0.7)",
+                },
+              ]}
+            ></Text>
             {/* <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.subSourceOfEnquiry === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text> */}
             {selector.sourceOfEnquiry === "Other" ? (
               <View>

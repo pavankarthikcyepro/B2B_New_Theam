@@ -33,7 +33,7 @@ const SourceModel = ({ route, navigation }) => {
   const [toggleParamsIndex, setToggleParamsIndex] = useState(0);
   const [toggleParamsMetaData, setToggleParamsMetaData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-const scrollViewRef = useRef();
+  const scrollViewRef = useRef();
   useEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
@@ -74,14 +74,17 @@ const scrollViewRef = useRef();
 
     let payload = {
       // endDate: monthLastDate,
-      endDate: moduleType === "live-leads" ? currentDate : monthLastDate,
+      endDate: moduleType === "live-leads" ? monthLastDate : monthLastDate,
       loggedInEmpId: empId,
       empId: empId,
       // startDate: monthFirstDate,
       startDate: moduleType === "live-leads" ? "2021-01-01" : monthFirstDate,
       levelSelected: null,
-      page: 0,
+      pageNo: 0,
       size: 100,
+      orgId: orgId,
+      pageNo: 0,
+      selectedEmpId: empId,
     };
 
     const urlSelf = URL.MODEL_SOURCE_SELF();
@@ -334,6 +337,7 @@ const scrollViewRef = useRef();
                       item={{ targetAchievements: data[x] }}
                       displayType={displayType}
                       moduleType={moduleType}
+                      sourceModelTotals={sourceModelTotals}
                     />
                   )}
                 </View>

@@ -9,9 +9,7 @@ import AppScreen from "./src";
 import { name as appName } from "./app.json";
 
 if (__DEV__) {
-    import('./config/ReactotronConfig').then(() =>
-        console.log('Reactotron Configured')
-    );
+  import("./config/ReactotronConfig").then(() => {});
 }
 
 AppRegistry.registerComponent(appName, () => AppScreen);

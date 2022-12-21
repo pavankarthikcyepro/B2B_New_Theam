@@ -39,7 +39,6 @@ const dropDownData = [
 ];
 
 export const getPrebookingDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getPrebookingDetailsApi", async (universalId, { rejectWithValue }) => {
-  console.log("%$%$%$%$:", URL.ENQUIRY_DETAILS(universalId));
 
   const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
   try {
@@ -59,7 +58,6 @@ export const updatePrebookingDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLI
   const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
   try {
     const json = await response.json();
-    // console.log("DATA:", JSON.stringify(json));
 
     if (response.status != 200) {
       return rejectWithValue(json);
@@ -72,12 +70,10 @@ export const updatePrebookingDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLI
 })
 
 export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getOnRoadPriceAndInsurenceDetailsApi", async (payload, { rejectWithValue }) => {
-  console.log("PAYLOAD:", URL.GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS(payload["varientId"], payload["orgId"]), JSON.stringify(payload));
 
   const response = await client.get(URL.GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS(payload["varientId"], payload["orgId"]));
   try {
     const json = await response.json();
-    // console.log("INSURANCE:", JSON.stringify(json));
 
     if (response.status != 200) {
       return rejectWithValue(json);
@@ -92,12 +88,10 @@ export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk("PREBOONING
 
 export const dropPreBooingApi = createAsyncThunk("PREBOONING_FORMS_SLICE/dropPreBooingApi", async (payload, { rejectWithValue }) => {
 
-  console.log("DROP PAYLOAD: ", URL.DROP_ENQUIRY(), payload);
 
   const response = await client.post(URL.DROP_ENQUIRY(), payload);
   try {
     const json = await response.json();
-    console.log("DROP RES: ", JSON.stringify(json));
 
     if (response.status != 200) {
       return rejectWithValue(json);
@@ -113,7 +107,6 @@ export const sendEditedOnRoadPriceDetails = createAsyncThunk("PREBOONING_FORMS_S
   const response = await client.put(URL.SEND_ON_ROAD_PRICE_DETAILS(), payload);
   try {
     const json = await response.json();
-    console.log("DATA:", JSON.stringify(json));
 
     if (response.status != 200) {
       return rejectWithValue(json);
@@ -130,7 +123,6 @@ export const sendOnRoadPriceDetails = createAsyncThunk("PREBOONING_FORMS_SLICE/s
   const response = await client.post(URL.SEND_ON_ROAD_PRICE_DETAILS(), payload);
   try {
     const json = await response.json();
-    console.log("DATA:", JSON.stringify(json));
 
     if (response.status != 200) {
       return rejectWithValue(json);
@@ -162,7 +154,6 @@ export const getDropDataApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getDropDa
   const response = await client.post(URL.GET_DROP_DATA(), payload);
   try {
     const json = await response.json();
-    // console.log("DROP:", JSON.stringify(json));
 
     if (response.status != 200) {
       return rejectWithValue(json);
@@ -194,7 +185,6 @@ export const getOnRoadPriceDtoListApi = createAsyncThunk("PREBOONING_FORMS_SLICE
   const response = await client.get(URL.GET_ON_ROAD_PRICE_DTO_LIST(leadId));
   try {
     const json = await response.json();
-    console.log("DATA:", JSON.stringify(json));
     if (response.status != 200) {
       return rejectWithValue(json);
     }
@@ -207,12 +197,10 @@ export const getOnRoadPriceDtoListApi = createAsyncThunk("PREBOONING_FORMS_SLICE
 
 export const preBookingPaymentApi = createAsyncThunk("PREBOONING_FORMS_SLICE/preBookingPaymentApi", async (payload, { rejectWithValue }) => {
 
-  console.log("URL PPP", URL.PRE_BOOKING_PAYMENT(), JSON.stringify(payload));
 
   const response = await client.post(URL.PRE_BOOKING_PAYMENT(), payload);
   try {
     const json = await response.json();
-    console.log("RES:", JSON.stringify(json));
 
     if (response.status != 200) {
       return rejectWithValue(json);
@@ -229,7 +217,6 @@ export const postBookingAmountApi = createAsyncThunk("PREBOONING_FORMS_SLICE/pos
   const response = await client.post(URL.BOOKING_AMOUNT(), payload);
   try {
     const json = await response.json();
-    console.log("postBookingAmountApi", JSON.stringify(json));
 
     if (response.status != 200) {
       return rejectWithValue(json);
@@ -242,7 +229,6 @@ export const postBookingAmountApi = createAsyncThunk("PREBOONING_FORMS_SLICE/pos
 })
 
 export const getPaymentDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getPaymentDetailsApi", async (leadId, { rejectWithValue }) => {
-  console.log("LEAD ID:", leadId, URL.GET_PRE_BOOKING_PAYMENT_DETAILS(leadId));
   const response = await client.get(URL.GET_PRE_BOOKING_PAYMENT_DETAILS(leadId));
   try {
     const json = await response.json();
@@ -292,7 +278,6 @@ export const updateRef = createAsyncThunk("ENQUIRY_FORM_SLICE/updateRef",
     const response = await client.post(URL.UPDATE_REF(), payload);
     try {
       // const json = await response.json();
-      console.log("UPDATE REF", response);
 
       if (!response.ok) {
         return rejectWithValue(response);
@@ -472,7 +457,7 @@ const prebookingFormSlice = createSlice({
     accessories_discount: "",
     insurance_discount: "",
     isAddressSet: false,
-    registrationCharges: 0
+    registrationCharges: 0,
   },
   reducers: {
     clearState: (state, action) => {
@@ -612,7 +597,6 @@ const prebookingFormSlice = createSlice({
     updatedmsLeadProduct: (state, action) => {
       // alert(JSON.stringify(action.payload))
       const data = action.payload;
-      console.log("updatedmsLeadProduct: ", JSON.stringify(action.payload));
       state.dmsLeadProducts = data;
     },
     setDropDownData: (state, action: PayloadAction<DropDownModelNew>) => {
@@ -717,7 +701,6 @@ const prebookingFormSlice = createSlice({
       state.showImagePicker = !state.showImagePicker;
     },
     setDatePicker: (state, action) => {
-      console.log("ACTIONDATE===>", state);
       switch (action.payload) {
         case "DATE_OF_BIRTH":
           state.minDate = null;
@@ -742,7 +725,6 @@ const prebookingFormSlice = createSlice({
     updateSelectedDate: (state, action: PayloadAction<CustomerDetailModel>) => {
       const { key, text } = action.payload;
       const selectedDate = convertTimeStampToDateString(text, "DD/MM/YYYY");
-      console.log("REDUXDATESELECT------>>>", selectedDate);
       switch (state.datePickerKeyId) {
         case "DATE_OF_BIRTH":
           state.date_of_birth = selectedDate;
@@ -757,7 +739,6 @@ const prebookingFormSlice = createSlice({
           break;
         case "CUSTOMER_PREFERRED_DATE":
           state.customer_preferred_date = selectedDate;
-          console.log("selector===-=-==-=>", state.customer_preferred_date);
           break;
         case "TENTATIVE_DELIVERY_DATE":
           state.tentative_delivery_date = selectedDate;
@@ -773,7 +754,6 @@ const prebookingFormSlice = createSlice({
           state.dd_date = selectedDate;
           break;
         case "NONE":
-          console.log("NONE");
           break;
       }
       state.showDatepicker = !state.showDatepicker;
@@ -1091,7 +1071,6 @@ const prebookingFormSlice = createSlice({
       const total = Number(
         moment.duration(current.diff(given)).asYears()
       ).toFixed(0);
-      console.log("DOB:", given, total);
 
       if (Number(total) > 0) {
         state.age = total.toString();
@@ -1102,10 +1081,6 @@ const prebookingFormSlice = createSlice({
       ///state.buyer_type = dms_C_Or_A_Dto.buyerType? dms_C_Or_A_Dto.buyerType:"";
     },
     updateDmsLeadDtoData: (state, action) => {
-      console.log(
-        "updateDmsLeadDtoData=-=-=-=-==-=>: ",
-        JSON.stringify(action.payload)
-      );
 
       const dmsLeadDto = action.payload;
       state.enquiry_segment = dmsLeadDto.enquirySegment
@@ -1119,30 +1094,45 @@ const prebookingFormSlice = createSlice({
       // if(state.customer_types_response && state){
       //   state.customer_types_data = state.customer_types_response[state.buyer_type.toLowerCase()]
       // }
-      state.buyer_type = dmsLeadDto.buyerType
-        ? dmsLeadDto.buyerType
+      state.buyer_type = dmsLeadDto.buyerType ? dmsLeadDto.buyerType : "";
+      state.marital_status = dmsLeadDto.maritalStatus
+        ? dmsLeadDto.maritalStatus
         : "";
-      state.marital_status = dmsLeadDto.maritalStatus ? dmsLeadDto.maritalStatus : "";
-      state.vehicle_type = dmsLeadDto.otherVehicleType ? dmsLeadDto.otherVehicleType : "";
-      state.registration_number = dmsLeadDto.otherVehicleRcNo ? dmsLeadDto.otherVehicleRcNo : "";
+      state.vehicle_type = dmsLeadDto.otherVehicleType
+        ? dmsLeadDto.otherVehicleType
+        : "";
+      state.registration_number = dmsLeadDto.otherVehicleRcNo
+        ? dmsLeadDto.otherVehicleRcNo
+        : "";
 
       // Documents
       if (dmsLeadDto.documentType) {
         state.form_or_pan = dmsLeadDto.documentType;
       }
       if (dmsLeadDto.gstNumber && dmsLeadDto.gstNumber != "") {
-        state.gstin_number = dmsLeadDto.gstNumber
+        state.gstin_number = dmsLeadDto.gstNumber;
       }
-      state.customer_type_category = dmsLeadDto.customerCategoryType ? dmsLeadDto.customerCategoryType : "";
+      state.customer_type_category = dmsLeadDto.customerCategoryType
+        ? dmsLeadDto.customerCategoryType
+        : "";
 
       // Commitment
       state.occasion = dmsLeadDto.occasion ? dmsLeadDto.occasion : "";
-      const customerPreferredDate = dmsLeadDto.commitmentDeliveryPreferredDate ? dmsLeadDto.commitmentDeliveryPreferredDate : "";
+      const customerPreferredDate = dmsLeadDto.commitmentDeliveryPreferredDate
+        ? dmsLeadDto.commitmentDeliveryPreferredDate
+        : "";
 
-      state.customer_preferred_date = convertTimeStampToDateString(customerPreferredDate, "DD/MM/YYYY");
-      console.log("Select---------->>>>>>>>", customerPreferredDate);
-      const tentativeDeliveryDate = dmsLeadDto.commitmentDeliveryTentativeDate ? dmsLeadDto.commitmentDeliveryTentativeDate : ""
-      state.tentative_delivery_date = convertTimeStampToDateString(tentativeDeliveryDate, "DD/MM/YYYY");
+      state.customer_preferred_date = convertTimeStampToDateString(
+        customerPreferredDate,
+        "DD/MM/YYYY"
+      );
+      const tentativeDeliveryDate = dmsLeadDto.commitmentDeliveryTentativeDate
+        ? dmsLeadDto.commitmentDeliveryTentativeDate
+        : "";
+      state.tentative_delivery_date = convertTimeStampToDateString(
+        tentativeDeliveryDate,
+        "DD/MM/YYYY"
+      );
 
       // Reject Remarks
       state.reject_remarks = dmsLeadDto.remarks ? dmsLeadDto.remarks : "";
@@ -1224,7 +1214,6 @@ const prebookingFormSlice = createSlice({
             item.model === state.pre_booking_details_response?.dmsLeadDto?.model
         );
         dataObj = { ...modelData[0] };
-        console.log("$$$$$$$$$ MODEL $$$$$$$$$$", modelData[0]);
       }
       state.lead_product_id = dataObj.id ? dataObj.id : "";
       state.model = dataObj.model ? dataObj.model : "";
@@ -1293,7 +1282,6 @@ const prebookingFormSlice = createSlice({
         ? dataObj.bookingAmount.toString()
         : "";
       state.payment_at = dataObj.paymentAt ? dataObj.paymentAt : "";
-      console.log("BOOKING MODE: ", dataObj.modeOfPayment);
 
       state.booking_payment_mode = dataObj.modeOfPayment
         ? dataObj.modeOfPayment
@@ -1308,7 +1296,6 @@ const prebookingFormSlice = createSlice({
     updateDmsAttachments: (state, action) => {
       state.pan_number = "";
       state.adhaar_number = "";
-      console.log("DOCS:", JSON.stringify(action.payload));
 
       const dmsAttachments = action.payload;
       const attachments = [...dmsAttachments];
@@ -1329,13 +1316,12 @@ const prebookingFormSlice = createSlice({
             if (item.documentNumber) {
               state.employee_id = item.documentNumber;
             }
-          }
-          else if (item.documentType === "gstNumber") {
+          } else if (item.documentType === "gstNumber") {
             if (item.documentNumber && item.documentNumber != "") {
               state.gstin_number = item.documentNumber;
             }
           }
-        })
+        });
       }
     },
     updateAddressByPincode: (state, action) => {
@@ -1358,6 +1344,62 @@ const prebookingFormSlice = createSlice({
       state.p_district = action.payload.District || "";
       state.p_state = action.payload.State || "";
       // state.isAddressSet = true
+    },
+    updateOfferPriceData: (state, action) => {
+      let dataObj: any = "";
+      if (action?.payload?.length) {
+        dataObj = action.payload[0];
+      }
+      state.insurance_type = dataObj?.insuranceType
+        ? dataObj.insuranceType
+        : "";
+      state.warranty = dataObj?.warrantyName ? dataObj.warrantyName : "";
+
+      if (dataObj?.insuranceAddonData && dataObj?.insuranceAddonData.length > 0) {
+        let addOnNames = "";
+        dataObj.insuranceAddonData.forEach((element, index) => {
+          addOnNames +=
+            element.insuranceAddonName +
+            (index + 1 < dataObj.length ? ", " : "");
+        });
+        state.add_on_insurance = addOnNames;
+      } else {
+        state.add_on_insurance = "";
+      }
+      
+      state.consumer_offer = dataObj?.specialScheme
+        ? `${dataObj.specialScheme}`
+        : "";
+      state.exchange_offer = dataObj?.exchangeOffers
+        ? `${dataObj.exchangeOffers}`
+        : "";
+      state.corporate_offer = dataObj?.corporateOffer
+        ? `${dataObj.corporateOffer}`
+        : "";
+      state.promotional_offer = dataObj?.promotionalOffers
+        ? `${dataObj.promotionalOffers}`
+        : "";
+      state.cash_discount = dataObj?.cashDiscount
+        ? `${dataObj.cashDiscount}`
+        : "";
+      state.for_accessories = dataObj?.focAccessories
+        ? `${dataObj.focAccessories}`
+        : "";
+      state.additional_offer_1 = dataObj?.additionalOffer1
+        ? `${dataObj.additionalOffer1}`
+        : "";
+      state.additional_offer_2 = dataObj?.additionalOffer2
+        ? `${dataObj.additionalOffer2}`
+        : "";
+      state.insurance_discount = dataObj?.insuranceDiscount
+        ? `${dataObj.insuranceDiscount}`
+        : "";
+      state.accessories_discount = dataObj?.accessoriesDiscount
+        ? `${dataObj.accessoriesDiscount}`
+        : "";
+      state.registrationCharges = dataObj?.registrationCharges
+        ? dataObj.registrationCharges
+        : 0;
     },
   },
   extraReducers: (builder) => {
@@ -1406,10 +1448,6 @@ const prebookingFormSlice = createSlice({
       state.isLoading = false;
     });
     builder.addCase(updatePrebookingDetailsApi.rejected, (state, action) => {
-      console.log(
-        "F updatePrebookingDetailsApi: ",
-        JSON.stringify(action.payload)
-      );
       // if (action.payload["message"]) {
       //   showToastRedAlert(action.payload["message"]);
       // }
@@ -1433,10 +1471,6 @@ const prebookingFormSlice = createSlice({
           if (action.payload.insuranceAddOn.length > 0) {
             let addOnNames = "",
               price = 0;
-            console.log(
-              "ADD-ONS: ",
-              JSON.stringify(action.payload.insuranceAddOn)
-            );
 
             action.payload.insuranceAddOn.forEach((element, index) => {
               addOnNames +=
@@ -1520,16 +1554,17 @@ const prebookingFormSlice = createSlice({
     });
     builder.addCase(getOnRoadPriceDtoListApi.fulfilled, (state, action) => {
       if (action.payload.dmsEntity) {
-        const dmsOnRoadPriceDtoList = action.payload.dmsEntity.dmsOnRoadPriceDtoList;
-        
+        const dmsOnRoadPriceDtoList =
+          action.payload.dmsEntity.dmsOnRoadPriceDtoList;
+
         if (dmsOnRoadPriceDtoList.length > 0) {
-          let newArr: any = [
-            dmsOnRoadPriceDtoList[0],
-          ];
+          let newArr: any = [dmsOnRoadPriceDtoList[0]];
           state.on_road_price_dto_list_response = newArr;
-          
+
           const dataObj = dmsOnRoadPriceDtoList[0];
-          state.insurance_type = dataObj.insuranceType ? dataObj.insuranceType : "";
+          state.insurance_type = dataObj.insuranceType
+            ? dataObj.insuranceType
+            : "";
           state.warranty = dataObj.warrantyName ? dataObj.warrantyName : "";
 
           if (
@@ -1544,22 +1579,41 @@ const prebookingFormSlice = createSlice({
             });
             state.add_on_insurance = addOnNames;
           }
-          
-          state.consumer_offer = dataObj.specialScheme ? dataObj.specialScheme.toString() : "";
-          state.exchange_offer = dataObj.exchangeOffers ? dataObj.exchangeOffers.toString() : "";
-          state.corporate_offer = dataObj.corporateOffer ? dataObj.corporateOffer.toString() : "";
-          state.promotional_offer = dataObj.promotionalOffers ? dataObj.promotionalOffers.toString() : "";
-          state.cash_discount = dataObj.cashDiscount ? dataObj.cashDiscount.toString() : "";
-          state.for_accessories = dataObj.focAccessories ? dataObj.focAccessories.toString() : "";
-          state.additional_offer_1 = dataObj.additionalOffer1 ? dataObj.additionalOffer1.toString() : "";
-          state.additional_offer_2 = dataObj.additionalOffer2 ? dataObj.additionalOffer2.toString() : "";
-          state.insurance_discount = dataObj.insuranceDiscount ? dataObj.insuranceDiscount.toString() : "";
-          state.accessories_discount = dataObj.accessoriesDiscount ? dataObj.accessoriesDiscount.toString() : "";
-          state.registrationCharges = dataObj.registrationCharges ? dataObj.registrationCharges : 0;
-          // console.log('corporate_offercorporate_offer',dataObj.corporateOffer.toString());
-          
+
+          state.consumer_offer = dataObj.specialScheme
+            ? dataObj.specialScheme.toString()
+            : "";
+          state.exchange_offer = dataObj.exchangeOffers
+            ? dataObj.exchangeOffers.toString()
+            : "";
+          state.corporate_offer = dataObj.corporateOffer
+            ? dataObj.corporateOffer.toString()
+            : "";
+          state.promotional_offer = dataObj.promotionalOffers
+            ? dataObj.promotionalOffers.toString()
+            : "";
+          state.cash_discount = dataObj.cashDiscount
+            ? dataObj.cashDiscount.toString()
+            : "";
+          state.for_accessories = dataObj.focAccessories
+            ? dataObj.focAccessories.toString()
+            : "";
+          state.additional_offer_1 = dataObj.additionalOffer1
+            ? dataObj.additionalOffer1.toString()
+            : "";
+          state.additional_offer_2 = dataObj.additionalOffer2
+            ? dataObj.additionalOffer2.toString()
+            : "";
+          state.insurance_discount = dataObj.insuranceDiscount
+            ? dataObj.insuranceDiscount.toString()
+            : "";
+          state.accessories_discount = dataObj.accessoriesDiscount
+            ? dataObj.accessoriesDiscount.toString()
+            : "";
+          state.registrationCharges = dataObj.registrationCharges
+            ? dataObj.registrationCharges
+            : 0;
         }
-        
       }
       state.isLoading = false;
     });
@@ -1695,7 +1749,6 @@ const prebookingFormSlice = createSlice({
     });
     builder.addCase(getPaymentDetailsApi.fulfilled, (state, action) => {
       if (action.payload) {
-        console.log("PAYMENT DATA: ", JSON.stringify(action.payload));
 
         state.existing_payment_details_response = action.payload;
         state.type_of_upi = action.payload.typeUpi
@@ -1814,6 +1867,7 @@ export const {
   updateStatus,
   clearPermanentAddr,
   updateAddressByPincode2,
-  updatedmsLeadProduct
+  updatedmsLeadProduct,
+  updateOfferPriceData,
 } = prebookingFormSlice.actions;
 export default prebookingFormSlice.reducer;

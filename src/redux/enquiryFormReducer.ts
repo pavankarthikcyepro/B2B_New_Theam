@@ -26,21 +26,12 @@ export const getEnquiryDetailsApi = createAsyncThunk(
     // // try {
     //   const autoSaveResponse = await client.get(URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId));
     //   const autoSavejson = await autoSaveResponse.json();
-    //   console.log("URL$$$: ", URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId));
-    //   console.log("ENQ DETAILS: ", JSON.stringify(autoSavejson));
     // // } catch (error) {
 
     // // }
 
     const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
     const json = await response.json();
-
-    console.log(
-      "ENQ DETAILS @@@: ",
-      URL.ENQUIRY_DETAILS(universalId),
-      JSON.stringify(json)
-    );
-
     if (!response.ok) {
       return rejectWithValue(json);
     }
@@ -49,7 +40,6 @@ export const getEnquiryDetailsApi = createAsyncThunk(
     // if (leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY')
     // {
     //   // if (json.dmsEntity.hasOwnProperty("dmsLeadDto")) {
-    //   //   console.log("autoSavejson is true")
     //   // }
     //   if (!response.ok) {
     //     return rejectWithValue(json);
@@ -64,7 +54,6 @@ export const getEnquiryDetailsApi = createAsyncThunk(
     // }
     // else{
     //   // if (autoSavejson.hasOwnProperty("dmsLeadDto")) {
-    //   //   console.log("autoSavejson is true")
     //   // }
     //   if (autoSaveResponse){
     //     if (!autoSaveResponse.ok) {
@@ -81,18 +70,13 @@ export const getEnquiryDetailsApi = createAsyncThunk(
     //     json.dmsEntity
     //   }
     // }
-    // console.log("enquirey lead", json);
-    // console.log("autoSavejson", autoSavejson);
 
     // if (autoSavejson.hasOwnProperty("dmsLeadDto")) {
-    //   console.log("autoSavejson is true")
     // }
 
     // if (json.success) {
-    //   console.log("came here")
     //    autoSaveResponse = await client.get(URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId));
     //     autoSavejson = await autoSaveResponse.json();
-    //     // console.log("autoSavejson", autoSavejson);
     // }
 
     // if (!response.ok) {
@@ -116,8 +100,6 @@ export const getEnquiryDetailsApiAuto = createAsyncThunk(
       URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId)
     );
     const autoSavejson = await autoSaveResponse.json();
-    console.log("URL$$$: ", URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId));
-    console.log("ENQ DETAILS: ", JSON.stringify(autoSavejson));
     // } catch (error) {
 
     // }
@@ -125,15 +107,8 @@ export const getEnquiryDetailsApiAuto = createAsyncThunk(
     const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
     const json = await response.json();
 
-    console.log(
-      "ENQ DETAILS @@@: ",
-      URL.ENQUIRY_DETAILS(universalId),
-      JSON.stringify(json)
-    );
-
     if (leadStatus === "ENQUIRYCOMPLETED" && leadStage === "ENQUIRY") {
       // if (json.dmsEntity.hasOwnProperty("dmsLeadDto")) {
-      //   console.log("autoSavejson is true")
       // }
       if (!response.ok) {
         return rejectWithValue(json);
@@ -147,7 +122,6 @@ export const getEnquiryDetailsApiAuto = createAsyncThunk(
       return json.dmsEntity;
     } else {
       // if (autoSavejson.hasOwnProperty("dmsLeadDto")) {
-      //   console.log("autoSavejson is true")
       // }
       if (autoSaveResponse) {
         if (!autoSaveResponse.ok) {
@@ -163,18 +137,13 @@ export const getEnquiryDetailsApiAuto = createAsyncThunk(
         json.dmsEntity;
       }
     }
-    // console.log("enquirey lead", json);
-    // console.log("autoSavejson", autoSavejson);
 
     // if (autoSavejson.hasOwnProperty("dmsLeadDto")) {
-    //   console.log("autoSavejson is true")
     // }
 
     // if (json.success) {
-    //   console.log("came here")
     //    autoSaveResponse = await client.get(URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId));
     //     autoSavejson = await autoSaveResponse.json();
-    //     // console.log("autoSavejson", autoSavejson);
     // }
 
     // if (!response.ok) {
@@ -197,7 +166,6 @@ export const getAutoSaveEnquiryDetailsApi = createAsyncThunk(
       URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId)
     );
     const json = await response.json();
-    console.log("auto save details", json);
 
     if (!response.ok) {
       return rejectWithValue(json);
@@ -210,6 +178,20 @@ export const getLogoNameApi = createAsyncThunk(
   async (data, { rejectWithValue }) => {
     const response = await client.get(
       URL.PROFORMA_LOGO_NAME(data.orgId, data.branchId)
+    );
+    const json = await response.json();
+  
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+export const getProformaListingDetailsApi = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/getProformaListingDetailsApi",
+  async (crmUniversalId, { rejectWithValue }) => {
+    const response = await client.get(
+      URL.PROFORMA_LISTING_DETAILS(crmUniversalId)
     );
     const json = await response.json();
 
@@ -226,7 +208,6 @@ export const getProformaModelApi = createAsyncThunk(
       URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId)
     );
     const json = await response.json();
-    console.log("auto save details", json);
 
     if (!response.ok) {
       return rejectWithValue(json);
@@ -237,7 +218,6 @@ export const getProformaModelApi = createAsyncThunk(
 export const postProformaInvoiceDetails = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/postProformaInvoiceDetails",
   async (payload, { rejectWithValue }) => {
-    console.log("Proforma", JSON.stringify(payload));
     const response = await client.post(URL.SAVE_PROFORMA_DETAILS(), payload);
     const json = await response.json();
 
@@ -250,15 +230,6 @@ export const postProformaInvoiceDetails = createAsyncThunk(
 export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/getOnRoadPriceAndInsurenceDetailsApi",
   async (payload, { rejectWithValue }) => {
-    console.log(
-      "proforma:",
-      URL.GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS(
-        payload["varientId"],
-        payload["orgId"]
-      ),
-      JSON.stringify(payload)
-    );
-    //console.log("proforma", URL.PROFORMA_LOGO_NAME(data.orgId, data.branchId));
 
     const response = await client.get(
       URL.GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS(
@@ -268,7 +239,6 @@ export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk(
     );
     try {
       const json = await response.json();
-      // console.log("INSURANCE:", JSON.stringify(json));
 
       if (response.status != 200) {
         return rejectWithValue(json);
@@ -291,15 +261,8 @@ export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk(
 export const updateEnquiryDetailsApi = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/updateEnquiryDetailsApi",
   async (payload, { rejectWithValue }) => {
-    console.log(
-      "ENQ PAY:",
-      URL.UPDATE_ENQUIRY_DETAILS(),
-      JSON.stringify(payload)
-    );
-
     const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
     const json = await response.json();
-    console.log("UPDATE ENQ:", JSON.stringify(json));
 
     if (!response.ok) {
       return rejectWithValue(json);
@@ -311,11 +274,6 @@ export const updateEnquiryDetailsApi = createAsyncThunk(
 export const autoSaveEnquiryDetailsApi = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/autoSaveEnquiryDetailsApi",
   async (payload, { rejectWithValue }) => {
-    console.log(
-      "ENQ PAY:",
-      URL.UPDATE_ENQUIRY_DETAILS(),
-      JSON.stringify(payload)
-    );
 
     const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
     const json = await response.json();
@@ -343,10 +301,8 @@ export const customerLeadRef = createAsyncThunk(
 export const updateEnquiryDetailsApiAutoSave = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/updateEnquiryDetailsApiAutoSave",
   async (payload, { rejectWithValue }) => {
-    console.log("form payload", payload);
     const response = await client.post(URL.AUTO_SAVE(), payload);
     const json = await response.json();
-    console.log("SUCCESS:");
 
     if (!response.ok) {
       return rejectWithValue(json);
@@ -360,10 +316,8 @@ export const updateRef = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     const response = await client.post(URL.UPDATE_REF(), payload);
     try {
-      console.log("PPPP", payload, URL.UPDATE_REF());
 
       // const json = await response.json();
-      console.log("UPDATE REF:", response);
 
       if (!response.ok) {
         return rejectWithValue(response);
@@ -386,7 +340,6 @@ export const dropEnquiryApi = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     const response = await client.post(URL.DROP_ENQUIRY(), payload);
     const json = await response.json();
-    console.log("DROP RES: ", JSON.stringify(json));
 
     if (!response.ok) {
       return rejectWithValue(json);
@@ -411,12 +364,26 @@ export const getPendingTasksApi = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/getPendingTasksApi",
   async (endUrl, { rejectWithValue }) => {
     const url = URL.TASKS_PRE_ENQUIRY() + endUrl;
-    console.log("$$$URL: ", url);
 
     const response = await client.get(url);
     const json = await response.json();
-    console.log("RES:", JSON.stringify(json));
 
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+export const getTermsAndConditionsOrgwise = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/getTermsAndConditionsOrgwise",
+  async (endUrl, { rejectWithValue }) => {
+    const response = await client.get(URL.PROFORMA_TERMS_N_CONDITIONS(endUrl));
+    // const url = URL.PROFORMA_TERMS_N_CONDITIONS() + endUrl;
+
+    // const response = await client.get(url);
+    const json = await response.json();
+    
     if (!response.ok) {
       return rejectWithValue(json);
     }
@@ -455,6 +422,15 @@ const initialState = {
   maxDate: null,
 
   //Proforma Invoice
+  getTermsNConditions_res:"",
+  getTermsNConditions_res_status:"",
+  proforma_API_respData: "",
+  proforma_API_response: "",
+  proforma_listingdata : [],
+  proforma_houseNo : "",
+  proforma_address:"",
+  profprma_street:"",
+  proforma_gstnNumber:"",
   proforma_orgName: "",
   proforma_logo: "",
   proforma_city: "",
@@ -585,6 +561,10 @@ const initialState = {
   a_reg_no: "",
   // Replacement Buyer
   r_reg_no: "",
+  regDocumentKey: "",
+  regDocumentPath: "",
+  insuranceDocumentKey: "",
+  insuranceDocumentPath: "",
   r_varient: "",
   r_color: "",
   r_make: "",
@@ -616,6 +596,18 @@ const initialState = {
   isOpened: false,
   refNo: "",
   rmfgYear: null,
+  //offerprice
+  consumer_offer: "",
+  exchange_offer: "",
+  corporate_offer: "",
+  promotional_offer: "",
+  cash_discount: "",
+  for_accessories: "",
+  additional_offer_1: "",
+  additional_offer_2: "",
+  accessories_discount:"",
+  insurance_discount:"",
+  foc_accessoriesFromServer :"",
 };
 
 const enquiryDetailsOverViewSlice = createSlice({
@@ -649,6 +641,10 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.a_reg_no = "";
       // Replacement Buyer
       state.r_reg_no = "";
+      state.regDocumentKey= "",
+      state.regDocumentPath= "",
+      state.insuranceDocumentKey= "",
+      state.insuranceDocumentPath= "",
       state.r_varient = "";
       state.r_color = "";
       state.r_make = "";
@@ -674,6 +670,18 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.r_insurence_document_checked = false;
       state.dmsLeadProducts = [];
       state.refNo = "";
+      //offerprice
+      state.consumer_offer = "";
+      state.exchange_offer = "";
+      state.corporate_offer = "";
+      state.promotional_offer = "";
+      state.cash_discount = "";
+      state.for_accessories = "";
+      state.additional_offer_1 = "";
+      state.additional_offer_2 = "";
+      state.accessories_discount = "",
+      state.insurance_discount = "",
+        state.foc_accessoriesFromServer = ""
     },
     clearState2: (state, action) => {
       state.enableEdit = false;
@@ -701,6 +709,10 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.a_reg_no = "";
       // Replacement Buyer
       state.r_reg_no = "";
+      state.regDocumentKey= "",
+      state.regDocumentPath= "",
+      state.insuranceDocumentKey= "",
+      state.insuranceDocumentPath= "",
       state.r_varient = "";
       state.r_color = "";
       state.r_make = "";
@@ -726,9 +738,18 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.r_insurence_document_checked = false;
       state.dmsLeadProducts = [];
       state.refNo = "";
+      //offerprice
+      state.consumer_offer = "";
+      state.exchange_offer = "";
+      state.corporate_offer = "";
+      state.promotional_offer = "";
+      state.cash_discount = "";
+      state.for_accessories = "";
+      state.additional_offer_1 = "";
+      state.additional_offer_2 = "";
+      state.foc_accessoriesFromServer = "";
     },
     setEditable: (state, action) => {
-      console.log("pressed");
       state.enableEdit = !state.enableEdit;
     },
     setDropDownData: (state, action: PayloadAction<DropDownModelNew>) => {
@@ -890,7 +911,6 @@ const enquiryDetailsOverViewSlice = createSlice({
       }
     },
     setDatePicker: (state, action) => {
-      console.log("coming here");
       switch (action.payload) {
         case "EXPECTED_DELIVERY_DATE":
           state.minDate = new Date();
@@ -903,15 +923,12 @@ const enquiryDetailsOverViewSlice = createSlice({
         case "ANNIVERSARY_DATE":
           if (state.dateOfBirth) {
             let dobArr = state.dateOfBirth.split("/");
-            console.log(
-              new Date(state.dateOfBirth),
-              new Date(Number(dobArr[2]), Number(dobArr[1]), Number(dobArr[0]))
-            );
-            state.minDate = new Date(
-              Number(dobArr[2]) + 1,
-              Number(dobArr[1]),
-              Number(dobArr[0])
-            );
+            state.minDate = null;
+            // state.minDate = new Date(
+            //   Number(dobArr[2]) + 1,
+            //   Number(dobArr[1]),
+            //   Number(dobArr[0])
+            // );
           } else {
             state.minDate = null;
           }
@@ -952,7 +969,6 @@ const enquiryDetailsOverViewSlice = createSlice({
     updatedmsLeadProduct: (state, action) => {
       // alert(JSON.stringify(action.payload))
       const data = action.payload;
-      console.log("updatedmsLeadProduct: ", JSON.stringify(action.payload));
       state.dmsLeadProducts = data;
     },
     updateSelectedDate: (state, action: PayloadAction<PersonalIntroModel>) => {
@@ -1016,7 +1032,6 @@ const enquiryDetailsOverViewSlice = createSlice({
           state.r_insurence_to_date = selectedDate;
           break;
         case "NONE":
-          console.log("NONE");
           break;
       }
       state.showDatepicker = !state.showDatepicker;
@@ -1162,7 +1177,6 @@ const enquiryDetailsOverViewSlice = createSlice({
     },
     setCustomerProfile: (state, action: PayloadAction<PersonalIntroModel>) => {
       const { key, text } = action.payload;
-      console.log("arey======> key ", key, text);
       switch (key) {
         case "OCCUPATION":
           state.occupation = text;
@@ -1266,8 +1280,6 @@ const enquiryDetailsOverViewSlice = createSlice({
     },
     setUploadDocuments: (state, action: PayloadAction<PersonalIntroModel>) => {
       const { key, text } = action.payload;
-      console.log("ID:", key, text);
-
       switch (key) {
         case "PAN":
           state.pan_number = text;
@@ -1312,6 +1324,18 @@ const enquiryDetailsOverViewSlice = createSlice({
       switch (key) {
         case "R_REG_NO":
           state.r_reg_no = text;
+          break;
+        case "R_REG_DOC_KEY":
+          state.regDocumentKey = text;
+          break;
+        case "R_REG_DOC_PATH":
+          state.regDocumentPath = text;
+          break;
+        case "R_INS_DOC_KEY":
+          state.insuranceDocumentKey = text;
+          break;
+        case "R_INS_DOC_PATH":
+          state.insuranceDocumentPath = text;
           break;
         case "R_MAKE_OTHER_NAME":
           state.r_make_other_name = text;
@@ -1359,7 +1383,6 @@ const enquiryDetailsOverViewSlice = createSlice({
     },
     updateDmsContactOrAccountDtoData: (state, action) => {
       // dmsContactOrAccountDto
-      console.log("dmsContactOrAccountDto", JSON.stringify(action.payload));
 
       const dms_C_Or_A_Dto = action.payload;
 
@@ -1515,7 +1538,6 @@ const enquiryDetailsOverViewSlice = createSlice({
     },
     updateDmsLeadDtoData: (state, action) => {
       const dmsLeadDto = action.payload;
-      console.log("updateDmsLeadDtoData: ", JSON.stringify(action.payload));
 
       if (dmsLeadDto.buyerType && dmsLeadDto.buyerType != "") {
         state.buyer_type = dmsLeadDto.buyerType;
@@ -1668,7 +1690,6 @@ const enquiryDetailsOverViewSlice = createSlice({
     },
     updateModelSelectionData: (state, action) => {
       const dmsLeadProducts = action.payload;
-      console.log("updateModelSelectionData: ", JSON.stringify(action.payload));
 
       let dataObj: any = {};
       // if (dmsLeadProducts.length > 0) {
@@ -1681,7 +1702,6 @@ const enquiryDetailsOverViewSlice = createSlice({
       //   //   "variant": "Rxt 1.0L Ece Easy-R Ece My22" }]
       //   alert("hiii")
       //   state.dmsLeadProducts = dmsLeadProducts
-      //   console.log("dmm model products------------", state.dmsLeadProducts)
 
       //  // state.dmsLeadProducts[1] = dmsLeadProducts[0]
       // }
@@ -1846,7 +1866,6 @@ const enquiryDetailsOverViewSlice = createSlice({
       if (dmsExchagedetails.length > 0) {
         dataObj = dmsExchagedetails[0];
       }
-      console.log("BUYER TYPE: ", JSON.stringify(dataObj));
       if (dataObj.buyerType === "Additional Buyer") {
         state.a_make = dataObj.brand ? dataObj.brand : "";
         state.a_model = dataObj.model ? dataObj.model : "";
@@ -1858,6 +1877,10 @@ const enquiryDetailsOverViewSlice = createSlice({
         dataObj.buyerType === "Exchange Buyer"
       ) {
         state.r_reg_no = dataObj.regNo ? dataObj.regNo : "";
+        state.regDocumentKey = dataObj.regDocumentKey ? dataObj.regDocumentKey : "";
+        state.regDocumentPath = dataObj.regDocumentPath ? dataObj.regDocumentPath : "";
+        state.insuranceDocumentKey = dataObj.insuranceDocumentKey ? dataObj.insuranceDocumentKey : "";
+        state.insuranceDocumentPath = dataObj.insuranceDocumentPath ? dataObj.insuranceDocumentPath : "";
         state.r_make = dataObj.brand ? dataObj.brand : "";
         state.r_model = dataObj.model ? dataObj.model : "";
         state.r_varient = dataObj.varient ? dataObj.varient : "";
@@ -1866,7 +1889,6 @@ const enquiryDetailsOverViewSlice = createSlice({
         state.r_transmission_type = dataObj.transmission
           ? dataObj.transmission
           : "";
-        console.log("TRAN TYPE:", state.r_transmission_type);
 
         const yearOfManfac = dataObj.yearofManufacture
           ? dataObj.yearofManufacture
@@ -1881,7 +1903,6 @@ const enquiryDetailsOverViewSlice = createSlice({
           );
         }
 
-        console.log("DATE:", state.r_mfg_year, dataObj.yearofManufacture);
 
         state.r_kms_driven_or_odometer_reading = dataObj.kiloMeters
           ? dataObj.kiloMeters
@@ -1953,27 +1974,32 @@ const enquiryDetailsOverViewSlice = createSlice({
       // state.pan_number = "";
       // state.adhaar_number = "";
       if (dmsAttachments.length > 0) {
+        let newArr = [];
         dmsAttachments.forEach((item, index) => {
-          switch (item.documentType) {
-            case "pan":
-              if (item.documentNumber && item.documentNumber != "") {
-                state.pan_number = item.documentNumber;
-              }
-              break;
-            case "aadhar":
-              if (item.documentNumber && item.documentNumber != "") {
-                state.adhaar_number = item.documentNumber;
-              }
-              break;
-            case "employeeId":
-              if (item.documentNumber && item.documentNumber != "") {
-                state.employee_id = item.documentNumber;
-              }
-            case "gstNumber":
-              if (item.documentNumber && item.documentNumber != "") {
-                state.gstin_number = item.documentNumber;
-              }
-              break;
+          let isAvailableIndex = newArr.findIndex(element => element === item.documentType);
+          if (isAvailableIndex < 0) {
+            newArr.push(item.documentType);
+            switch (item.documentType) {
+              case "pan":
+                if (item.documentNumber && item.documentNumber != "") {
+                  state.pan_number = item.documentNumber;
+                }
+                break;
+              case "aadhar":
+                if (item.documentNumber && item.documentNumber != "") {
+                  state.adhaar_number = item.documentNumber;
+                }
+                break;
+              case "employeeId":
+                if (item.documentNumber && item.documentNumber != "") {
+                  state.employee_id = item.documentNumber;
+                }
+              case "gstNumber":
+                if (item.documentNumber && item.documentNumber != "") {
+                  state.gstin_number = item.documentNumber;
+                }
+                break;
+            }
           }
         });
       }
@@ -1987,7 +2013,6 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.get_pending_tasks_response_list = [];
     },
     updateAddressByPincode: (state, action) => {
-      console.log("pincode action", action);
 
       state.village = action.payload.Block || "";
 
@@ -2022,6 +2047,97 @@ const enquiryDetailsOverViewSlice = createSlice({
     updateRefNo: (state, action) => {
       state.refNo = action.payload;
     },
+    setOfferPriceDataForSelectedProforma: (state ,action) =>{
+     
+      let oth_performa_column = action.payload;
+      
+      if(action.payload){
+        state.consumer_offer = oth_performa_column.special_scheme 
+        ? oth_performa_column.special_scheme.toString(): "";
+
+        state.exchange_offer = oth_performa_column.exchange_offers 
+        ? oth_performa_column.exchange_offers.toString(): "";
+      
+        state.corporate_offer = oth_performa_column.corporate_offer
+          ? oth_performa_column.corporate_offer.toString() : "";
+        
+        state.promotional_offer = oth_performa_column.promotional_offers
+          ? oth_performa_column.promotional_offers.toString() : "";
+
+        state.cash_discount = oth_performa_column.cash_discount
+          ? oth_performa_column.cash_discount.toString() : "";
+
+        state.for_accessories = oth_performa_column.foc_accessories
+          ? oth_performa_column.foc_accessories.toString() : "";
+
+        state.foc_accessoriesFromServer = oth_performa_column.foc_accessories
+          ? oth_performa_column.foc_accessories.toString() : "";
+
+        state.additional_offer_1 = oth_performa_column.additional_offer1
+          ? oth_performa_column.additional_offer1.toString() : "";
+
+        state.additional_offer_2 = oth_performa_column.additional_offer2
+          ? oth_performa_column.additional_offer2.toString() : "";
+
+        state.accessories_discount = oth_performa_column.accessories_discount
+          ? oth_performa_column.accessories_discount.toString() : "";
+
+        state.insurance_discount = oth_performa_column.insurance_discount
+          ? oth_performa_column.insurance_discount.toString() : "";
+      }
+    },
+
+    clearOfferPriceData: (state,action)=>{
+      
+      state.consumer_offer = "";
+      state.exchange_offer = "";
+      state.corporate_offer = "";
+      state.promotional_offer = "";
+      state.cash_discount = "";
+      state.for_accessories = "";
+      state.additional_offer_1 = "";
+      state.additional_offer_2 = "";
+      state.accessories_discount = "",
+        state.insurance_discount = ""
+    },
+    setOfferPriceDetails: (
+      state,
+      action: PayloadAction<PersonalIntroModel>
+    ) => {
+      const { key, text } = action.payload;
+      switch (key) {
+        case "CONSUMER_OFFER":
+          state.consumer_offer = text;
+          break;
+        case "EXCHANGE_OFFER":
+          state.exchange_offer = text;
+          break;
+        case "CORPORATE_OFFER":
+          state.corporate_offer = text;
+          break;
+        case "PROMOTIONAL_OFFER":
+          state.promotional_offer = text;
+          break;
+        case "CASH_DISCOUNT":
+          state.cash_discount = text;
+          break;
+        case "FOR_ACCESSORIES":
+          state.for_accessories = text;
+          break;
+        case "ADDITIONAL_OFFER_1":
+          state.additional_offer_1 = text;
+          break;
+        case "ADDITIONAL_OFFER_2":
+          state.additional_offer_2 = text;
+          break;
+        case "ACCESSORIES_DISCOUNT":
+          state.accessories_discount = text;
+          break;
+        case "INSURANCE_DISCOUNT":
+          state.insurance_discount = text;
+          break;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(getEnquiryDetailsApi.pending, (state) => {
@@ -2031,9 +2147,9 @@ const enquiryDetailsOverViewSlice = createSlice({
     builder.addCase(getEnquiryDetailsApi.fulfilled, (state, action) => {
       // if (action.payload.dmsEntity) {
       //  state.enquiry_details_response = action.payload.dmsEntity;
-      console.log("action.payload", action.payload);
       state.enquiry_details_response = action.payload;
       state.isOpened = true;
+      
       // }
       state.isLoading = false;
     });
@@ -2041,7 +2157,6 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.isLoading = false;
     });
     builder.addCase(getLogoNameApi.pending, (state) => {
-      console.log("proforma pending");
       state.isLoading = true;
     });
     builder.addCase(getLogoNameApi.fulfilled, (state, action) => {
@@ -2049,18 +2164,44 @@ const enquiryDetailsOverViewSlice = createSlice({
       //  state.enquiry_details_response = action.payload.dmsEntity;
       const data = action.payload;
       if (data && data.orgName) {
+       
         state.proforma_orgName = data.orgName;
         state.proforma_logo = data.url;
         state.proforma_branch = data.branchName;
         state.proforma_city = data.city;
         state.proforma_state = data.state;
         state.proforma_pincode = data.pincode;
+        state.proforma_gstnNumber = data.gstnNumber;
+        state.proforma_houseNo = data.houseNo;
+        state.proforma_address = `${data.houseNo}  ${data.street}`;
+        state.profprma_street = data.street;
       }
       state.isLoading = false;
     });
     builder.addCase(getLogoNameApi.rejected, (state, action) => {
       state.isLoading = false;
     });
+
+
+    builder.addCase(getProformaListingDetailsApi.pending, (state) => {
+      state.isLoading = true;
+      state.proforma_listingdata = [];
+    });
+    builder.addCase(getProformaListingDetailsApi.fulfilled, (state, action) => {
+      
+      const data = action.payload;
+      if(data){
+        state.proforma_listingdata = data;
+      }
+      state.isLoading = false;
+    });
+    builder.addCase(getProformaListingDetailsApi.rejected, (state, action) => {
+      state.isLoading = false;
+      state.proforma_listingdata = [];
+    });
+
+
+    
     builder.addCase(
       getOnRoadPriceAndInsurenceDetailsApi.pending,
       (state, action) => {
@@ -2071,7 +2212,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     builder.addCase(
       getOnRoadPriceAndInsurenceDetailsApi.fulfilled,
       (state, action) => {
-        console.log("proforma action.payload", action.payload);
+        
 
         if (action.payload) {
           state.vehicle_on_road_price_insurence_details_response =
@@ -2079,10 +2220,6 @@ const enquiryDetailsOverViewSlice = createSlice({
           if (action.payload.insuranceAddOn.length > 0) {
             let addOnNames = "",
               price = 0;
-            console.log(
-              "ADD-ONS: ",
-              JSON.stringify(action.payload.insuranceAddOn)
-            );
 
             action.payload.insuranceAddOn.forEach((element, index) => {
               addOnNames +=
@@ -2107,20 +2244,57 @@ const enquiryDetailsOverViewSlice = createSlice({
       }
     );
     builder.addCase(postProformaInvoiceDetails.pending, (state) => {
-      console.log("proforma on road pending");
+      state.isLoading = true ;
+      state.proforma_API_response = "pending";
+      state.proforma_API_respData = "";
     });
     builder.addCase(postProformaInvoiceDetails.fulfilled, (state, action) => {
       // if (action.payload.dmsEntity) {
       //  state.enquiry_details_response = action.payload.dmsEntity;
-      console.log("action.payload auto", action.payload);
-      if (action.payload && action.payload.crmUniversalId)
-        showToast("Successfully updated");
+      if(action.payload){
+     
+        
+
+      if (action.payload && action.payload.crmUniversalId &&
+         action.payload.performa_status ==="ENQUIRYCOMPLETED"){
+
+        showToast("Proforma invoice saved successfully"); 
+        state.proforma_API_response = "ENQUIRYCOMPLETED";
+        state.proforma_API_respData = action.payload;
+
+      } else if (action.payload.performa_status === "SENTFORAPPROVAL"){
+
+        showToast("Proforma invoice sent for approval"); 
+        state.proforma_API_response = "SENTFORAPPROVAL";
+        state.proforma_API_respData = action.payload;
+
+      } else if (action.payload.performa_status === "APPROVED"){
+
+        state.proforma_API_response = "APPROVED";
+        showToast("Proforma invoice approved successfully"); 
+        state.proforma_API_respData = action.payload;
+
+      } else if (action.payload.performa_status === "REJECTED") {
+
+        showToast("Proforma invoice rejected successfully");
+        state.proforma_API_response = "REJECTED";
+        state.proforma_API_respData = action.payload;
+
+      }
+
+        state.isLoading = false;
+        // state.proforma_API_response = "fullfilled";
+    }
+        // showToast("Successfully updated");
+     
       // state.enquiry_details_response = action.payload;
       // state.isOpened = true
       // }
     });
     builder.addCase(postProformaInvoiceDetails.rejected, (state, action) => {
-      console.log("proforma rejected", action);
+      state.isLoading = false;
+      state.proforma_API_response = "rejected";
+      state.proforma_API_respData ="";
     });
     builder.addCase(getEnquiryDetailsApiAuto.pending, (state) => {
       state.isLoading = true;
@@ -2129,7 +2303,6 @@ const enquiryDetailsOverViewSlice = createSlice({
     builder.addCase(getEnquiryDetailsApiAuto.fulfilled, (state, action) => {
       // if (action.payload.dmsEntity) {
       //  state.enquiry_details_response = action.payload.dmsEntity;
-      console.log("action.payload auto", action.payload);
       state.enquiry_details_response = action.payload;
       state.isOpened = true;
       // }
@@ -2144,13 +2317,10 @@ const enquiryDetailsOverViewSlice = createSlice({
       // state.enquiry_details_response = null;
     });
     builder.addCase(getAutoSaveEnquiryDetailsApi.fulfilled, (state, action) => {
-      // console.log("form reducers data", action.payload)
       if (action.payload) {
-        // console.log("came here in enquiry form reducers", action.payload)
         // state.enquiry_details_response = action.payload;
       }
 
-      // console.log("state", state)
       state.isLoading = false;
     });
     builder.addCase(getAutoSaveEnquiryDetailsApi.rejected, (state, action) => {
@@ -2162,10 +2332,6 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.isLoading = true;
     });
     builder.addCase(updateEnquiryDetailsApi.fulfilled, (state, action) => {
-      // console.log(
-      //   "S updateEnquiryDetailsApi: ",
-      //   JSON.stringify(action.payload)
-      // );
       if (action.payload.success == true) {
         state.refNo = action.payload.dmsEntity.dmsLeadDto.referencenumber;
         state.update_enquiry_details_response = "success";
@@ -2173,10 +2339,6 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.isLoading = false;
     });
     builder.addCase(updateEnquiryDetailsApi.rejected, (state, action) => {
-      console.log(
-        "F updateEnquiryDetailsApi: ",
-        JSON.stringify(action.payload)
-      );
       if (action.payload["message"] != undefined) {
         showToastRedAlert(action.payload["message"]);
       }
@@ -2189,7 +2351,6 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.isLoading = true;
     });
     builder.addCase(dropEnquiryApi.fulfilled, (state, action) => {
-      console.log("STATUS TT: ", action.payload.status);
       if (action.payload.status === "SUCCESS") {
         state.enquiry_drop_response_status = "success";
       }
@@ -2223,7 +2384,6 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.isLoading = true;
     });
     builder.addCase(getCustomerTypesApi.fulfilled, (state, action) => {
-      //console.log("S getCustomerTypesApi: ", JSON.stringify(action.payload));
       if (action.payload) {
         const customerTypes = action.payload;
         let personalTypes = [];
@@ -2271,6 +2431,25 @@ const enquiryDetailsOverViewSlice = createSlice({
       updateEnquiryDetailsApiAutoSave.rejected,
       (state, action) => {}
     );
+
+    // Get terms and conditions org wise
+    builder.addCase(getTermsAndConditionsOrgwise.pending, (state, action) => {
+      state.getTermsNConditions_res_status = "pending";
+      state.getTermsNConditions_res = [];
+      state.isLoading = true;
+    });
+    builder.addCase(getTermsAndConditionsOrgwise.fulfilled, (state, action) => {
+      if (action.payload) {
+        state.getTermsNConditions_res_status = "success";
+        state.getTermsNConditions_res = action.payload;
+      }
+      state.isLoading = false;
+    });
+    builder.addCase(getTermsAndConditionsOrgwise.rejected, (state, action) => {
+      state.getTermsNConditions_res_status = "failed";
+      state.getTermsNConditions_res = [];
+      state.isLoading = false;
+    });
   },
 });
 
@@ -2307,5 +2486,8 @@ export const {
   clearPermanentAddr,
   updateAddressByPincode2,
   updatedmsLeadProduct,
+  setOfferPriceDetails,
+  setOfferPriceDataForSelectedProforma,
+  clearOfferPriceData, 
 } = enquiryDetailsOverViewSlice.actions;
 export default enquiryDetailsOverViewSlice.reducer;

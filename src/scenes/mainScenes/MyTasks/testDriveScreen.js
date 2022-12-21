@@ -91,7 +91,8 @@ const TestDriveScreen = ({ route, navigation }) => {
         orgId: "",
         employeeId: "",
         employeeName: "",
-        isSelfManager: ""
+        isSelfManager: "",
+        isOtp:""
     });
     const [selectedBranchId, setSelectedBranchId] = useState("");
     const [showDatePickerModel, setShowDatePickerModel] = useState(false);
@@ -149,6 +150,7 @@ const TestDriveScreen = ({ route, navigation }) => {
         setValue: setOtpValue,
     });
     const [isSubmitPress, setIsSubmitPress] = useState(false);
+    const [vehicleDetails, setVehicleDetails] =useState({});
     let date = new Date();
     date.setDate(date.getDate() + 9);
 
@@ -193,7 +195,8 @@ const TestDriveScreen = ({ route, navigation }) => {
                     orgId: jsonObj.orgId,
                     employeeId: jsonObj.empId,
                     employeeName: jsonObj.empName,
-                    isSelfManager: jsonObj.isSelfManager
+                    isSelfManager: jsonObj.isSelfManager,
+                    isOtp: jsonObj.isOtp
                 });
 
                 // Get Branch Id
@@ -211,7 +214,6 @@ const TestDriveScreen = ({ route, navigation }) => {
                             dispatch(getTestDriveDseEmployeeListApi(jsonObj.orgId)),
                             dispatch(getDriversListApi(jsonObj.orgId)),
                         ]).then(() => {
-                            console.log("all done");
                         });
                     }
                 );
@@ -247,7 +249,6 @@ const TestDriveScreen = ({ route, navigation }) => {
     const getRecordDetailsFromServer = async (token) => {
 
         const url = URL.ENQUIRY_DETAILS(universalId);
-        console.log("url: ", url);
         await fetch(url, {
             method: "GET",
             headers: {
@@ -257,7 +258,6 @@ const TestDriveScreen = ({ route, navigation }) => {
         })
             .then(json => json.json())
             .then(resp => {
-                console.log("$$$$resp: ", JSON.stringify(resp))
                 if (resp.dmsEntity?.dmsLeadDto) {
 
                     const leadDtoObj = resp.dmsEntity?.dmsLeadDto;
@@ -280,7 +280,6 @@ const TestDriveScreen = ({ route, navigation }) => {
                             primaryModel = dmsLeadProducts[0];
                         }
 
-
                         const {model, variant, fuel, transimmisionType} = primaryModel;
                         setSelectedVehicleDetails({
                             model,
@@ -300,23 +299,28 @@ const TestDriveScreen = ({ route, navigation }) => {
 
     // Handle Task Details Response
     useEffect(() => {
-        if (
-          selector.test_drive_vehicle_list_for_drop_down.length > 0 &&
-          selectedVehicleDetails?.varient !== ""
-        ) {
-          let tempObj = { ...selectedVehicleDetails };
-          let findModel = [];
-          findModel = selector.test_drive_vehicle_list_for_drop_down.filter(
-            (item) => {
-              return (
-                item.varientName === selectedVehicleDetails.varient ||
-                item.model === selectedVehicleDetails.model
-              );
-            }
-          );
-          if (findModel.length > 0) {
-            tempObj.vehicleId = findModel[0].vehicleId;
-            tempObj.varientId = findModel[0].varientId;
+      if (
+        selector.test_drive_vehicle_list_for_drop_down.length > 0 &&
+        selectedVehicleDetails?.varient !== ""
+      ) {
+        let tempObj = { ...selectedVehicleDetails };
+        let findModel = [];
+        findModel = selector.test_drive_vehicle_list_for_drop_down.filter(
+          (item) => {
+            return item.model == selectedVehicleDetails.model;
+          }
+        );
+        tempObj.vehicleId = findModel[0].vehicleId;
+
+        if (findModel.length > 0) {
+          let findVarient = [];
+          findVarient = selector.test_drive_varients_obj_for_drop_down[
+            findModel[0].model
+          ].filter((item) => {
+            return item.varientName == selectedVehicleDetails.varient;
+          });
+          if (findVarient.length > 0) {
+            tempObj.varientId = findVarient[0].varientId;
 
             if (
               selector.test_drive_varients_obj_for_drop_down[findModel[0].model]
@@ -328,12 +332,14 @@ const TestDriveScreen = ({ route, navigation }) => {
               setVarientListForDropDown(varientsData);
             }
           } else {
-            tempObj.fuelType = "";
-            tempObj.transType = "";
+            tempObj.varientId = findModel[0].varientId;
           }
-
-          setSelectedVehicleDetails(tempObj);
+        } else {
+          tempObj.fuelType = "";
+          tempObj.transType = "";
         }
+        setSelectedVehicleDetails(tempObj);
+      }
     }, [selector.test_drive_vehicle_list_for_drop_down]);
 
     useEffect(() => {
@@ -373,6 +379,7 @@ const TestDriveScreen = ({ route, navigation }) => {
           varientId =
             selector.test_drive_appointment_details_response.vehicleInfo
               .varientId;
+              setVehicleDetails(selector.test_drive_appointment_details_response.vehicleInfo);
         }
 
         const selectedModel = selector.test_drive_vehicle_list.filter(
@@ -380,7 +387,8 @@ const TestDriveScreen = ({ route, navigation }) => {
             return item.varientId === varientId && item.vehicleId === vehicleId;
           }
         );
-
+          vehicleId =
+          selector.test_drive_appointment_details_response.vehicleId;
         if (selectedModel.length > 0) {
           const {
             fuelType,
@@ -388,7 +396,6 @@ const TestDriveScreen = ({ route, navigation }) => {
             transmission_type,
             varientName,
             varientId,
-            vehicleId,
           } = selectedModel[0].vehicleInfo;
 
           setTimeout(() => {
@@ -412,17 +419,14 @@ const TestDriveScreen = ({ route, navigation }) => {
             const taskStatus =
                 selector.task_details_response.taskStatus;
             const taskName = selector.task_details_response.taskName;
-            console.log("TASK STATUS:", taskStatus, taskName);
             if (taskStatus === "SENT_FOR_APPROVAL" && taskName === "Test Drive") {
                 setHandleActionButtons(4);
             } else if (
                 taskStatus === "ASSIGNED" &&
                 taskName === "Test Drive Approval"
             ) {
-                console.log("INSIDE A");
                 setHandleActionButtons(3);
             } else if (taskStatus === "APPROVED" && taskName === "Test Drive") {
-                console.log("INSIDE B");
                 setHandleActionButtons(4);              //
             } else if (taskStatus === "CANCELLED") {    //
                 setHandleActionButtons(5);
@@ -453,7 +457,6 @@ const TestDriveScreen = ({ route, navigation }) => {
     }, [selector.drivers_list, selector.driverId]);
 
     const updateTaskDetails = (taskDetailsObj) => {
-        console.log("taskDetailsObj: ", taskDetailsObj);
         if (taskDetailsObj.vehicleInfo) {
             const vehicleInfo = taskDetailsObj.vehicleInfo;
 
@@ -533,7 +536,6 @@ const TestDriveScreen = ({ route, navigation }) => {
         })
             .then((response) => response.json())
             .then((response) => {
-                console.log("response", response);
                 if (response) {
                     const dataObj = { ...uploadedImagesDataObj };
                     dataObj[response.documentType] = response;
@@ -750,6 +752,7 @@ const TestDriveScreen = ({ route, navigation }) => {
           driverId: selectedDriverDetails.id.toString(),
           dlBackUrl: "",
           dlFrontUrl: "",
+          vehicleInfo:vehicleDetails
         };
 
         if (customerHavingDrivingLicense === 1) {
@@ -826,7 +829,11 @@ const TestDriveScreen = ({ route, navigation }) => {
                 return;
             }
         }
-        generateOtpToCloseTask();
+        if (userData.isOtp == "Y") {
+          generateOtpToCloseTask();
+        } else {
+          submitClicked("CLOSED", "Test Drive")
+        }
         setIsCloseSelected(true)
     };
 
@@ -863,7 +870,6 @@ const TestDriveScreen = ({ route, navigation }) => {
     }
     // Handle Update Test Drive Task response
     useEffect(() => {
-        console.log('repsonse: ', selector.test_drive_update_task_response, ', task status: ', taskStatusAndName)
         if (selector.test_drive_update_task_response === "success" && taskStatusAndName.status === 'SENT_FOR_APPROVAL') {
             autoApproveTestDrive();
                 // showAlertMsg(true);
@@ -959,7 +965,6 @@ const TestDriveScreen = ({ route, navigation }) => {
 
     const updateSelectedVehicleDetails = (vehicleInfo, fromVarient) => {
         //Update Varient List
-        console.log("VEHICLE INFO: ", JSON.stringify(vehicleInfo));
         if (selector.test_drive_varients_obj_for_drop_down[vehicleInfo.model]) {
             const varientsData =
                 selector.test_drive_varients_obj_for_drop_down[vehicleInfo.model];
@@ -972,7 +977,8 @@ const TestDriveScreen = ({ route, navigation }) => {
             transType: fromVarient ? vehicleInfo.transmission_type : "",
             // fuelType: vehicleInfo.fuelType || "",
             // transType: vehicleInfo.transmission_type || "",
-            vehicleId: vehicleInfo.vehicleId,
+            // vehicleId: vehicleInfo.vehicleId,
+            vehicleId: vehicleInfo.id,
             varientId: fromVarient ? vehicleInfo.varientId : '',
         });
     };
@@ -1066,7 +1072,6 @@ const TestDriveScreen = ({ route, navigation }) => {
           visible={showImagePicker}
           keyId={imagePickerKey}
           selectedImage={(data, keyId) => {
-            console.log("imageObj: ", data, keyId);
             uploadSelectedImage(data, keyId);
             setShowImagePicker(false);
           }}
@@ -1099,7 +1104,6 @@ const TestDriveScreen = ({ route, navigation }) => {
           maximumDate={date}
           value={new Date(Date.now())}
           onChange={(event, selectedDate) => {
-            console.log("date: ", selectedDate);
             setShowDatePickerModel(false);
 
             let formatDate = "";

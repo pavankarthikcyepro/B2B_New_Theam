@@ -4,11 +4,8 @@ import { client } from '../networking/client';
 
 export const getEnquiryList = createAsyncThunk("ENQUIRY/getEnquiryList", async (payload, { rejectWithValue }) => {
 
-  console.log("PAYLOAD EN: ", JSON.stringify(payload));
-
   const response = await client.post(URL.LEADS_LIST_API_FILTER(), payload);
   const json = await response.json()
-  console.log("ENQ LIST:", JSON.stringify(json));
 
   if (!response.ok) {
     return rejectWithValue(json);
@@ -36,7 +33,16 @@ const enquirySlice = createSlice({
     isLoadingExtraData: false,
     status: ""
   },
-  reducers: {},
+  reducers: {
+    clearEnqState: (state, action) => {
+      state.enquiry_list =  [],
+      state.pageNumber =  0,
+      state.totalPages =  1,
+      state.isLoading =  false,
+      state.isLoadingExtraData =  false,
+      state.status =  ""
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(getEnquiryList.pending, (state) => {
       state.totalPages = 1
@@ -45,7 +51,6 @@ const enquirySlice = createSlice({
       state.isLoading = true;
     })
     builder.addCase(getEnquiryList.fulfilled, (state, action) => {
-      console.log('res: ', action.payload);
       const dmsEntityObj = action.payload?.dmsEntity;
       state.totalPages = 1
       state.pageNumber = 0
@@ -71,7 +76,6 @@ const enquirySlice = createSlice({
       state.isLoadingExtraData = true;
     })
     builder.addCase(getMoreEnquiryList.fulfilled, (state, action) => {
-      // console.log('res: ', action.payload);
       const dmsEntityObj = action.payload?.dmsEntity;
       state.totalPages = 1
       state.pageNumber = 0
@@ -92,5 +96,5 @@ const enquirySlice = createSlice({
   }
 });
 
-export const { } = enquirySlice.actions;
+export const { clearEnqState } = enquirySlice.actions;
 export default enquirySlice.reducer;

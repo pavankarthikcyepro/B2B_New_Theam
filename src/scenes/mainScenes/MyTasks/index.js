@@ -144,7 +144,6 @@ const MyTasksScreen = ({ navigation }) => {
       //       "dataType": "todaysData"
       //     }))
       //   ]).then(() => {
-      //     console.log('I did everything!');
       //     setIsDataLoaded(true)
       //   });
       // }
@@ -171,7 +170,6 @@ const MyTasksScreen = ({ navigation }) => {
       //       "dataType": "todaysData"
       //     }))
       //   ]).then(() => {
-      //     console.log('I did everything!');
       //     setIsDataLoaded(true)
       //   });
       // }
@@ -200,7 +198,6 @@ const MyTasksScreen = ({ navigation }) => {
     })
       .then(json => json.json())
       .then(resp => {
-        console.log('resp: ', resp);
         setResponse(resp);
       })
       .catch(err => {

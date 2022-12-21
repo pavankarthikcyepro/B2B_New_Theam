@@ -19,7 +19,6 @@ interface CustomerDetailModel {
 export const getTaskDetailsApi = createAsyncThunk(
   "PROCEED_TO_BOOKING_SLICE/getTaskDetailsApi",
   async (taskId, { rejectWithValue }) => {
-    console.log("CALLED:", taskId);
     
     const response = await client.get(URL.GET_TASK_DETAILS(taskId));
     // const json = await response.json();
@@ -32,7 +31,6 @@ export const getTaskDetailsApi = createAsyncThunk(
 
     try {
       const json = await response.json();
-      console.log("TASK ID:", JSON.stringify(json));
       if (response.status != 200) {
         return rejectWithValue(json);
       }
@@ -47,14 +45,12 @@ export const getTaskDetailsApi = createAsyncThunk(
 export const updateTaskApi = createAsyncThunk(
   "PROCEED_TO_BOOKING_SLICE/updateTaskApi",
   async (body, { rejectWithValue }) => {
-    console.log("PPPPP", JSON.stringify(body), URL.ASSIGN_TASK());
     
     const response = await client.put(URL.ASSIGN_TASK(), body);
 
     // const response = await client.post(URL.DROP_ENQUIRY(), payload);
     try {
       const json = await response.json()
-      console.log("DATA $$$$$$$", JSON.stringify(json));
 
       if (!response.ok) {
         return rejectWithValue(json);
@@ -82,7 +78,6 @@ export const getEnquiryDetailsApi = createAsyncThunk(
 export const updateEnquiryDetailsApi = createAsyncThunk(
   "PROCEED_TO_BOOKING_SLICE/updateEnquiryDetailsApi",
   async (payload, { rejectWithValue }) => {
-    console.log("PROCEED TO BOOKING:", URL.UPDATE_ENQUIRY_DETAILS(), payload);
     const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
     const json = await response.json();
     if (!response.ok) {
@@ -156,7 +151,7 @@ const slice = createSlice({
     drop_sub_reasons_list: [],
   },
   reducers: {
-    clearState: (state, action) => {
+    clearBookingState: (state, action) => {
       state.task_details_response = null;
       state.update_task_response_status = null;
       state.change_enquiry_status = null;
@@ -313,5 +308,5 @@ const slice = createSlice({
   },
 });
 
-export const { clearState, setDataDetails } = slice.actions;
+export const { clearBookingState, setDataDetails } = slice.actions;
 export default slice.reducer;

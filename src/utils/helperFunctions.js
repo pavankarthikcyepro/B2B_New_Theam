@@ -3,6 +3,9 @@ import { Linking, Alert, Platform, PermissionsAndroid } from "react-native";
 import moment from "moment";
 import URL from "../networking/endpoints";
 import { showToastRedAlert } from '../utils/toast';
+import store from "../redux/reduxStore";
+import * as AsyncStore from "../asyncStore";
+import { updateSelectedBranchId, updateSelectedBranchName } from "../redux/targetSettingsReducer";
 
 export const isMobileNumber = (mobile) => {
   // var regex = /^[1-9]{1}[0-9]{9}$/; // /^\d{10}$/
@@ -133,7 +136,6 @@ export const navigatetoCallWebView = async () => {
 }
 
 export const callNumber = (phone) => {
-  console.log("callNumber ----> ", phone);
   let phoneNumber = phone;
   if (Platform.OS !== "android") {
     phoneNumber = `telprompt:${phone}`;
@@ -149,7 +151,7 @@ export const callNumber = (phone) => {
         return Linking.openURL(phoneNumber);
       }
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {});
 };
 
 sendWhatsApp = (phone) => {
@@ -161,7 +163,6 @@ sendWhatsApp = (phone) => {
     if (msg) {
       let url = 'whatsapp://send?text=' + msg + '&phone=' + mobile;
       Linking.openURL(url).then((data) => {
-        console.log('WhatsApp Opened');
       }).catch(() => {
         // alert('Make sure WhatsApp installed on your device');
         showToastRedAlert('Make sure WhatsApp is installed on your device');
@@ -228,7 +229,6 @@ export const convertTimeStringToDate = (timeStamp, format) => {
 };
 
 export const convertDateStringToMilliseconds = (dateString) => {
-  console.log("dateString:-=-=-=-=-> ", dateString);
   if (!dateString) {
     return null;
   }
@@ -296,7 +296,6 @@ export const emiCalculator = (principle, tenureInMonths, interestRate) => {
     const step1 = Math.pow(1 / (1 + interest), months);
     const emi = Math.round(((amount * interest) / (1 - step1)) * 100) / 100;
     const finalEmi = Math.round(emi).toString();
-    console.log("finalEmi: ", finalEmi);
     return finalEmi;
   }
   return "";
@@ -309,7 +308,6 @@ export const PincodeDetails = async (pincode) => {
     })
       .then((json) => json.json())
       .then((res) => {
-        // console.log("PINCODE:", JSON.stringify(res));
         if (res != undefined && res.length > 0) {
           if (res[0].PostOffice != null && res[0].PostOffice.length > 0) {
             resolve({ ...res[0].PostOffice[0] });
@@ -331,7 +329,6 @@ export const PincodeDetailsNew = async (pincode) => {
     })
       .then((json) => json.json())
       .then((res) => {
-        console.log("PINCODE:", JSON.stringify(res));
         if (res != undefined && res.length > 0) {
           resolve(res[0].PostOffice)
         } else {
@@ -345,7 +342,6 @@ export const PincodeDetailsNew = async (pincode) => {
 export const GetCarModelList = async (orgId, token = "") => {
   return await new Promise((resolve, reject) => {
     const url = URL.VEHICLE_MODELS(orgId);
-    // console.log("url: ", url);
     fetch(url, {
       method: "GET",
       headers: {
@@ -356,7 +352,6 @@ export const GetCarModelList = async (orgId, token = "") => {
     })
       .then((json) => json.json())
       .then((res) => {
-        // console.log("res: ", JSON.stringify(res))
         if (res != undefined && res.length > 0) {
           resolve(res);
         } else {
@@ -370,7 +365,6 @@ export const GetCarModelList = async (orgId, token = "") => {
 export const GetEnquiryCarModelList = async (orgId, token = "") => {
   return await new Promise((resolve, reject) => {
     const url = URL.ENQUIRY_VEHICLE_MODELS(orgId);
-    // console.log("url: ", url);
     fetch(url, {
       method: "GET",
       headers: {
@@ -381,7 +375,6 @@ export const GetEnquiryCarModelList = async (orgId, token = "") => {
     })
       .then((json) => json.json())
       .then((res) => {
-        // console.log("res: ", JSON.stringify(res))
         if (res != undefined && res.length > 0) {
           resolve(res);
         } else {
@@ -395,7 +388,6 @@ export const GetEnquiryCarModelList = async (orgId, token = "") => {
 export const GetFinanceBanksList = async (orgId, token) => {
   return await new Promise((resolve, reject) => {
     const url = URL.GET_BANK_DETAILS(orgId);
-    console.log("url: ", url);
     fetch(url, {
       method: "GET",
       headers: {
@@ -406,7 +398,6 @@ export const GetFinanceBanksList = async (orgId, token) => {
     })
       .then((json) => json.json())
       .then((res) => {
-        // console.log("res: ", JSON.stringify(res))
         if (res != undefined && res.length > 0) {
           resolve(res);
         } else {
@@ -479,7 +470,6 @@ export const GetPaidAccessoriesList2 = async (vehicleId, orgId, token) => {
 export const GetDropList = async (orgId, token, type) => {
   return await new Promise((resolve, reject) => {
     const url = URL.GET_DROP_LIST(orgId, type);
-    //console.log("url: ", url);
     fetch(url, {
       method: "GET",
       headers: {
@@ -490,7 +480,6 @@ export const GetDropList = async (orgId, token, type) => {
     })
       .then((json) => json.json())
       .then((res) => {
-        //console.log("res: ", JSON.stringify(res))
         if (res != undefined && res.length > 0) {
           const updatedData = [];
           res.forEach(obj => {
@@ -512,21 +501,77 @@ export const GetDropList = async (orgId, token, type) => {
   });
 };
 
-export const achievementPercentage = (achievement, tgt, paramName, enquiryAchievement) => {
-  const paramsToCalculateDirectTotal = ['Enquiry', 'Accessories', 'PreEnquiry'];
+export const achievementPercentage = (achievement, tgt, paramName, enq = {}, ret = {}, acc = {}) => {
+  const enqCal = ["Enquiry", "PreEnquiry"];
+  const retCal = ["Exchange", "Finance", "Insurance", "EXTENDEDWARRANTY"];
+  const accCal = ["Accessories"];
+
   let target = tgt;
-  if (paramName && !paramsToCalculateDirectTotal.includes(paramName)) {
-    target = enquiryAchievement;
-  }
   if (achievement) {
     achievement = Number(achievement);
   } else {
     achievement = 0;
   }
+
+  if (paramName && retCal.includes(paramName)) {
+    target = ret.achievment;
+  } else if (paramName && accCal.includes(paramName)) {
+    target = acc.target;
+  } else if (paramName && !enqCal.includes(paramName)) {
+    target = enq.achievment;
+  } else {
+    if (target) {
+      target = Number(target);
+    } else {
+      target = 0;
+    }
+  }
+
+  return target > 0 ? Math.round((achievement / target) * 100) : achievement;
+};
+
+export const sourceModelPercentage = (achievement, target) => {
+  if (achievement) {
+    achievement = Number(achievement);
+  } else {
+    achievement = 0;
+  }
+  
   if (target) {
     target = Number(target);
   } else {
     target = 0;
   }
-  return target > 0 ? Math.round((achievement / target) * 100) : achievement; // if denominator is > 0, display percentage, else no change, display achievement
-}
+
+  return target > 0 ? Math.round((achievement / target) * 100) : achievement;
+};
+
+// export const achievementPercentage = (achievement, tgt, paramName, enquiryAchievement) => {
+//   const paramsToCalculateDirectTotal = ['Enquiry', 'Accessories', 'PreEnquiry'];
+//   let target = tgt;
+//   if (paramName && !paramsToCalculateDirectTotal.includes(paramName)) {
+//     target = enquiryAchievement;
+//   }
+//   if (achievement) {
+//     achievement = Number(achievement);
+//   } else {
+//     achievement = 0;
+//   }
+//   if (target) {
+//     target = Number(target);
+//   } else {
+//     target = 0;
+//   }
+//   return target > 0 ? Math.round((achievement / target) * 100) : achievement; // if denominator is > 0, display percentage, else no change, display achievement
+// }
+
+export const setBranchId = async (value) => {
+  let data = value.toString();
+  store.dispatch(updateSelectedBranchId(data));
+  await AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_ID, data);
+};
+
+export const setBranchName = async (value) => {
+  store.dispatch(updateSelectedBranchName(value));
+  await AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_NAME, value);
+};

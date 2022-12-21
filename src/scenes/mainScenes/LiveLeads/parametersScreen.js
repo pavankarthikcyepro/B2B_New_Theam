@@ -50,6 +50,7 @@ const ParametersScreen = ({ route }) => {
   const [selfInsightsData, setSelfInsightsData] = useState([]);
 
   const [allParameters, setAllParameters] = useState([]);
+  const [myParameters, setMyParameters] = useState([]);
 
   const [employeeListDropdownItem, setEmployeeListDropdownItem] = useState(0);
   const [
@@ -136,6 +137,12 @@ const ParametersScreen = ({ route }) => {
     }
     dispatch(getReportingManagerList(user.orgId));
   };
+
+  useEffect(() => {
+    navigation.addListener("focus", () => {
+      setSelfInsightsData([]);
+    });
+  }, [navigation]);
 
   useEffect(() => {
     const dateFormat = "YYYY-MM-DD";
@@ -268,6 +275,14 @@ const ParametersScreen = ({ route }) => {
       setToggleParamsMetaData([...data]);
     }
   }, [selector.isTeam]);
+  
+  useEffect(() => {
+    allParameters[0] = {
+      ...allParameters[0],
+      targetAchievements: selector.totalParameters,
+    };
+    setAllParameters(allParameters);
+  }, [selector.totalParameters]);
 
   useEffect(async () => {
     try {
@@ -278,37 +293,52 @@ const ParametersScreen = ({ route }) => {
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
         if (selector.all_emp_parameters_data.length > 0) {
-          let tempParams = [
+          let myParams = [
             ...selector.all_emp_parameters_data.filter(
-              (item) => item.empId !== jsonObj.empId
+              (item) => item.empId === jsonObj.empId
             ),
           ];
-          for (let i = 0; i < tempParams.length; i++) {
-            tempParams[i] = {
-              ...tempParams[i],
-              isOpenInner: false,
-              employeeTargetAchievements: [],
-              tempTargetAchievements: tempParams[i]?.targetAchievements,
-            };
-            // tempParams[i]["isOpenInner"] = false;
-            // tempParams[i]["employeeTargetAchievements"] = [];
-            if (i === tempParams.length - 1) {
-              setAllParameters([...tempParams]);
-            }
-            let newIds = tempParams.map((emp) => emp.empId);
-            for (let k = 0; k < newIds.length; k++) {
-              const element = newIds[k].toString();
-              let tempPayload = getTotalPayload(employeeData, element);
-              const response = await client.post(
-                URL.GET_LIVE_LEADS_INSIGHTS(),
-                tempPayload
-              );
+          myParams[0] = {
+            ...myParams[0],
+            isOpenInner: false,
+            employeeTargetAchievements: [],
+            targetAchievements: selector.totalParameters,
+            tempTargetAchievements: myParams[0]?.targetAchievements,
+          };
+          setAllParameters(myParams);
+          // setMyParameters(myParams);
+          // let tempParams = [
+          //   ...selector.all_emp_parameters_data.filter(
+          //     (item) => item.empId !== jsonObj.empId
+          //   ),
+          // ];
 
-              const json = await response.json();
-              tempParams[k].targetAchievements = json;
-              setAllParameters([...tempParams]);
-            }
-          }
+          // for (let i = 0; i < tempParams.length; i++) {
+          //   tempParams[i] = {
+          //     ...tempParams[i],
+          //     isOpenInner: false,
+          //     employeeTargetAchievements: [],
+          //     tempTargetAchievements: tempParams[i]?.targetAchievements,
+          //   };
+          //   // tempParams[i]["isOpenInner"] = false;
+          //   // tempParams[i]["employeeTargetAchievements"] = [];
+          //   if (i === tempParams.length - 1) {
+          //     setAllParameters([...tempParams]);
+          //   }
+          //   let newIds = tempParams.map((emp) => emp.empId);
+          //   for (let k = 0; k < newIds.length; k++) {
+          //     const element = newIds[k].toString();
+          //     let tempPayload = getTotalPayload(employeeData, element);
+          //     const response = await client.post(
+          //       URL.GET_LIVE_LEADS_INSIGHTS(),
+          //       tempPayload
+          //     );
+
+          //     const json = await response.json();
+          //     tempParams[k].targetAchievements = json;
+          //     setAllParameters([...tempParams]);
+          //   }
+          // }
         }
       }
       setIsLoading(false);
@@ -375,7 +405,7 @@ const ParametersScreen = ({ route }) => {
       .format(dateFormat);
     return {
       empId: item,
-      endDate: currentDate,
+      endDate: monthLastDate,
       levelSelected: null,
       loggedInEmpId: item,
       orgId: jsonObj.orgId,
@@ -500,6 +530,7 @@ const ParametersScreen = ({ route }) => {
         navigation.navigate("LEADS", {
           param: paramName === "INVOICE" ? "Retail" : paramName,
           moduleType: "live-leads",
+          employeeDetail: "",
         });
       }, 1000);
     } else if (isContact) {
@@ -507,6 +538,7 @@ const ParametersScreen = ({ route }) => {
       setTimeout(() => {
         navigation.navigate(EmsTopTabNavigatorIdentifiers.preEnquiry, {
           moduleType: "live-leads",
+          employeeDetail: "",
         });
       }, 100);
     }
@@ -515,6 +547,11 @@ const ParametersScreen = ({ route }) => {
   const renderSelfInsightsView = (item, index) => {
     return (
       <Card
+        onPress={() =>
+          item?.achievment && item?.achievment > 0
+            ? navigateToEmsScreen(item)
+            : null
+        }
         style={[
           styles.paramCard,
           {
@@ -536,11 +573,6 @@ const ParametersScreen = ({ route }) => {
                     : "none",
               },
             ]}
-            onPress={() =>
-              item?.achievment && item?.achievment > 0
-                ? navigateToEmsScreen(item)
-                : null
-            }
           >
             {item?.achievment && item?.achievment > 0 ? item?.achievment : 0}
           </Text>
@@ -1149,7 +1181,8 @@ const ParametersScreen = ({ route }) => {
                                                               innerIndex1
                                                             ].employeeTargetAchievements[
                                                               innerIndex2
-                                                            ].isOpenInner = !current;
+                                                            ].isOpenInner =
+                                                              !current;
                                                           }
                                                         }
 
@@ -2734,6 +2767,7 @@ const ParametersScreen = ({ route }) => {
                       loggedInEmpId: selector.login_employee_details.empId,
                       type: selector.isDSE ? "SELF" : "INSIGHTS",
                       moduleType: "live-leads",
+                      orgId: selector.login_employee_details.orgId,
                     }
                   );
                 }}
@@ -2753,15 +2787,17 @@ const ParametersScreen = ({ route }) => {
 
             <View>
               {/*<RenderSelfInsights data={selfInsightsData} type={togglePercentage} navigation={navigation} moduleType={'live-leads'}/>*/}
-              {selfInsightsData && selfInsightsData.length > 0 && (
-                <FlatList
-                  data={selfInsightsData}
-                  keyExtractor={(item, index) => index.toString()}
-                  renderItem={({ item, index }) =>
-                    renderSelfInsightsView(item, index)
-                  }
-                />
-              )}
+              {selfInsightsData &&
+                selfInsightsData.length > 0 &&
+                !selector.isLoading && (
+                  <FlatList
+                    data={selfInsightsData}
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={({ item, index }) =>
+                      renderSelfInsightsView(item, index)
+                    }
+                  />
+                )}
             </View>
           </>
         )}
@@ -2784,6 +2820,7 @@ export const RenderLevel1NameView = ({
   branchName = "",
   color,
   titleClick,
+  disable = false,
 }) => {
   return (
     <View
@@ -2797,6 +2834,7 @@ export const RenderLevel1NameView = ({
     >
       <View style={{ justifyContent: "center", alignItems: "center" }}>
         <TouchableOpacity
+          disabled={disable}
           style={{
             width: 30,
             height: 30,
@@ -2815,7 +2853,7 @@ export const RenderLevel1NameView = ({
               color: "#fff",
             }}
           >
-            {item.empName.charAt(0)}
+            {item?.empName?.charAt(0)}
           </Text>
         </TouchableOpacity>
         {level === 0 && !!branchName && (
@@ -2826,13 +2864,13 @@ export const RenderLevel1NameView = ({
               color={Colors.RED}
               size={8}
             />
-            <Text style={{ fontSize: 8 }} numberOfLines={2}>
+            <Text style={{ fontSize: 8 , width:'70%'}} numberOfLines={1}>
               {branchName}
             </Text>
           </View>
         )}
       </View>
-      <View
+      {/* <View
         style={{
           width: "35%",
           justifyContent: "center",
@@ -2853,7 +2891,7 @@ export const RenderLevel1NameView = ({
         >
           CNT
         </Text>
-      </View>
+      </View> */}
     </View>
   );
 };

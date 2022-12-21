@@ -232,7 +232,6 @@ const TaskTranferScreen = () => {
           tempTaksList[index].taskList = [...allTasks];
         }
         if (i === selector.taskList.length - 1) {
-          console.log("MODIFIED TASK LIST: ", JSON.stringify(tempTaksList));
           setTaskList([...tempTaksList]);
         }
       }
@@ -381,7 +380,6 @@ const TaskTranferScreen = () => {
         // "deptId": 180,
         // "desigId": 56
       };
-      console.log("EMP PAYLOAD: ", payload);
       dispatch(getEmployeeDetails(payload));
     }
   };
@@ -478,12 +476,10 @@ const TaskTranferScreen = () => {
             uncheckedColor={Colors.DARK_GRAY}
             color={Colors.RED}
             onPress={() => {
-              console.log("ITEM $$$", item);
               if (checked.hasOwnProperty(index)) {
                 const temp = checked;
                 temp[index] = !temp[index];
                 if (temp[index]) {
-                  console.log("INSIDE IF");
                   let tempArr = [...selectedTaskList];
                   tempArr.push(item.taskId);
                   if (tempArr.length === childTaskList.length) {
@@ -495,11 +491,9 @@ const TaskTranferScreen = () => {
                 } else {
                   let tempArr = [...selectedTaskList];
                   let taskIndex = -1;
-                  console.log("Temp arr", tempArr);
                   taskIndex = tempArr.findIndex(
                     (taskId) => taskId === item.taskId
                   );
-                  console.log("INSIDE ELSE ", taskIndex);
                   if (taskIndex !== -1) {
                     tempArr.splice(taskIndex, 1);
                     if (tempArr.length === childTaskList.length) {
@@ -512,7 +506,6 @@ const TaskTranferScreen = () => {
                 }
                 setChecked({ ...temp, index: temp[index] });
               } else {
-                console.log("INSIDE ELSE out");
                 const temp = checked;
                 temp[index] = true;
                 let tempArr = [...selectedTaskList];
@@ -636,7 +629,6 @@ const TaskTranferScreen = () => {
                 />
               )}
               onChange={async (item) => {
-                console.log("£££", item);
                 setbranchDropDownItem(item.value);
                 getTargetDeptDropDownListFromServer(item);
               }}
@@ -667,7 +659,6 @@ const TaskTranferScreen = () => {
                 />
               )}
               onChange={async (item) => {
-                console.log("£££", item);
                 setDeptDropDownItem(item.value);
                 getTargetDesignationDropDownListFromServer(item);
               }}
@@ -698,7 +689,6 @@ const TaskTranferScreen = () => {
                 />
               )}
               onChange={async (item) => {
-                console.log("£££", item);
                 setTaskNameHeader("Task Name");
                 setDesignationDropDownItem(item.value);
                 getEmployeeDetailsFromServer(item);
@@ -722,7 +712,7 @@ const TaskTranferScreen = () => {
               valueField="value"
               placeholder={"Select Employee"}
               searchPlaceholder="Search..."
-              value={employeeDropDownItem}
+              // value={employeeDropDownItem}
               renderRightIcon={() => (
                 <Image
                   style={{ height: 5, width: 10 }}
@@ -730,9 +720,8 @@ const TaskTranferScreen = () => {
                 />
               )}
               onChange={async (item) => {
-                console.log("£££", item);
                 await clearDataOnChangeDropDown();
-                setEmployeeDropDownItem(item.value);
+                setEmployeeDropDownItem(item);
                 getTaskListFromServer(item.value);
                 setTasklistHeader(true);
               }}
@@ -755,12 +744,6 @@ const TaskTranferScreen = () => {
                     uncheckedColor={Colors.DARK_GRAY}
                     color={Colors.RED}
                     onPress={() => {
-                      console.log(
-                        "IS ALL",
-                        isAllSelect,
-                        checked,
-                        selectedTaskList
-                      );
                       let preveState = isAllSelect;
                       setIsAllSelect(!isAllSelect);
                       if (!preveState) {
@@ -881,7 +864,6 @@ const TaskTranferScreen = () => {
                     />
                   )}
                   onChange={async (item) => {
-                    console.log("£££", item);
                     setbranchTransferFromDropDownItem(item.value);
                     getTargetDeptDropDownListTransFromServer(item);
                   }}
@@ -911,7 +893,6 @@ const TaskTranferScreen = () => {
                     />
                   )}
                   onChange={async (item) => {
-                    console.log("£££", item);
                     setDeptTransferFromDropDownItem(item.value);
                     getTargetDesignationDropDownListTransFromServer(item);
                   }}
@@ -941,7 +922,6 @@ const TaskTranferScreen = () => {
                     />
                   )}
                   onChange={async (item) => {
-                    console.log("£££", item);
                     setDesignationTransferFromDropDownItem(item.value);
                     getEmployeeDetailsTransFromServer(item);
                   }}
@@ -971,7 +951,6 @@ const TaskTranferScreen = () => {
                     />
                   )}
                   onChange={async (item) => {
-                    console.log("£££", item);
                     setEmployeeTransferFromDropDownItem(item);
                     // getTaskListFromServer();
                   }}

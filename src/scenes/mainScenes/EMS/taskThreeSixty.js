@@ -35,7 +35,6 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
 
     useEffect(async () => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-        console.log("$$$$$ LOGIN EMP:", employeeData);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
             setUserRole(jsonObj.hrmsRole)
@@ -52,8 +51,6 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
         })
     }, [navigation])
 
-    // console.log({ dataForSectionList })
-    // console.log("dataForSectionList", dataForSectionList[1].data)
 
 
     // Handle enquiry Details response
@@ -114,7 +111,6 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
     }
 
     const itemClicked = (item) => {
-        console.log("ITEM: ", JSON.stringify(item));
         const taskName = item.taskName;
         const taskId = item.taskId;
         const universalId = item.universalId;
@@ -128,12 +124,10 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
         }
 
         const trimName = taskName.toLowerCase().trim();
-        console.log({trimName})
         const finalTaskName1 = trimName.replace(/ /g, "");
       const finalTaskName = finalTaskName1.replace(/-/g, "");
         let navigationId = ""
         let taskNameNew = ''
-        console.log("FINAL TASK NAME: ", finalTaskName);
         switch (finalTaskName) {
             case "testdrive":
                 navigationId = AppNavigator.EmsStackIdentifiers.testDrive;
@@ -180,10 +174,8 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                 taskNameNew = ''
                 break;
         }
-        console.log("NAVIGATION ID: ", navigationId);
         if (!navigationId) { return }
         if (navigationId === AppNavigator.EmsStackIdentifiers.confirmedPreEnq) {
-            console.log("ITEM DATA:", JSON.stringify(itemData));
             navigation.navigate(navigationId, { itemData: itemData, fromCreatePreEnquiry: false })
         }
         else {
@@ -253,84 +245,329 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                         function TaskNameView(taskName) {
                             const name = checkForTaskNames(taskName)
                             return (
-                                <Text style={{ fontSize: 16, fontWeight: "700", marginBottom: 5 }}>{name}</Text>
-                            )
+                              <Text
+                                style={{
+                                  fontSize: 16,
+                                  fontWeight: "700",
+                                  marginBottom: 5,
+                                }}
+                              >
+                                {name}
+                                {item?.taskUpdatedBy?.designationName ? (
+                                  <Text
+                                    style={styles.sideTitle}
+                                  >{` - ${item?.taskUpdatedBy?.designationName}`}</Text>
+                                ) : null}
+                              </Text>
+                            );
                         }
 
                         return (
-                            <>
-                                {item.taskName === 'Test Drive Approval' ?
-                                    (isApprovar ?
-                                        <View style={{ width: "100%", flexDirection: "row" }}>
-                                            <View style={{ width: "25%", justifyContent: "center" }}>
-                                                <View style={{ marginLeft: 8, flex: 1, width: 2, backgroundColor: topBcgColor }}></View>
-                                                <View style={{ marginLeft: 8, flex: 1, width: 2, backgroundColor: bottomBcgColor }}></View>
+                          <>
+                            {item.taskName === "Test Drive Approval" ? (
+                              isApprovar ? (
+                                <View
+                                  style={{
+                                    width: "100%",
+                                    flexDirection: "row",
+                                  }}
+                                >
+                                  <View
+                                    style={{
+                                      width: "25%",
+                                      justifyContent: "center",
+                                    }}
+                                  >
+                                    <View
+                                      style={{
+                                        marginLeft: 8,
+                                        flex: 1,
+                                        width: 2,
+                                        backgroundColor: topBcgColor,
+                                      }}
+                                    ></View>
+                                    <View
+                                      style={{
+                                        marginLeft: 8,
+                                        flex: 1,
+                                        width: 2,
+                                        backgroundColor: bottomBcgColor,
+                                      }}
+                                    ></View>
 
-                                                <View style={{ alignItems: "center", flexDirection: "row", position: "absolute" }}>
-                                                    <Text style={{ height: 20, width: 20, borderRadius: 10, backgroundColor: Colors.GRAY }}></Text>
-                                                    <View style={{ marginLeft: 5 }}>
-                                                        <Text style={{ fontSize: 12, fontWeight: "400" }}>{date[0] + " " + date[1]}</Text>
-                                                        <Text style={{ fontSize: 12, fontWeight: "400" }}>{date[2] + " " + date[3]}</Text>
-                                                    </View>
-                                                </View>
-                                            </View>
-                                            <View style={{ width: "75%", padding: 5, }}>
-                                                <View style={[{ backgroundColor: Colors.WHITE }, GlobalStyle.shadow]}>
-                                                    <TouchableOpacity onPress={() => itemClicked(item)}>
-                                                        <View style={[{ paddingVertical: 5, paddingLeft: 10, backgroundColor: Colors.WHITE },]}>
-                                                            <Text style={{ fontSize: 16, fontWeight: "700", marginBottom: 5 }}>{item.taskName}</Text>
-                                                            <Text style={{ fontSize: 14, fontWeight: "400" }}>{"Assignee: " + item.assignee?.empName}</Text>
-                                                            <Text style={{ fontSize: 14, fontWeight: "400", color: Colors.GRAY }}>{"Remarks: " + (item.employeeRemarks ? item.employeeRemarks : "")}</Text>
-                                                        </View>
-                                                    </TouchableOpacity>
-                                                    {item.lat && item.lon &&
-                                                        <TouchableOpacity style={{ position: 'absolute', top: 0, right: 0 }} onPress={() => openMap(item.lat, item.lon)}>
-                                                            <View style={{ width: 35, height: 35, justifyContent: "center", alignItems: "center", borderWidth: 1, borderColor: "#d1d1d1", borderRadius: 5 }}>
-                                                                <Image style={{ height: 25, width: 15 }} source={require('../../../assets/images/location-pin.png')} />
-                                                            </View>
-                                                        </TouchableOpacity>
-                                                    }
-                                                </View>
-                                            </View>
-                                        </View>
-                                        :
-                                        null)
-                                    :
-                                    <View style={{ width: "100%", flexDirection: "row" }}>
-                                        <View style={{ width: "25%", justifyContent: "center" }}>
-                                            <View style={{ marginLeft: 8, flex: 1, width: 2, backgroundColor: topBcgColor }}></View>
-                                            <View style={{ marginLeft: 8, flex: 1, width: 2, backgroundColor: bottomBcgColor }}></View>
-
-                                            <View style={{ alignItems: "center", flexDirection: "row", position: "absolute" }}>
-                                                <Text style={{ height: 20, width: 20, borderRadius: 10, backgroundColor: Colors.GRAY }}></Text>
-                                                <View style={{ marginLeft: 5 }}>
-                                                    <Text style={{ fontSize: 12, fontWeight: "400" }}>{date[0] + " " + date[1]}</Text>
-                                                    <Text style={{ fontSize: 12, fontWeight: "400" }}>{date[2] + " " + date[3]}</Text>
-                                                </View>
-                                            </View>
-                                        </View>
-                                        <View style={{ width: "75%", padding: 5, }}>
-                                            <View style={[{ backgroundColor: Colors.WHITE }, GlobalStyle.shadow]}>
-                                                <TouchableOpacity onPress={() => itemClicked(item)}>
-                                                    <View style={[{ paddingVertical: 5, paddingLeft: 10, backgroundColor: Colors.WHITE },]}>
-                                                        {TaskNameView(item.taskName)}
-                                                        <Text style={{ fontSize: 14, fontWeight: "400" }}>{"Assignee: " + item.assignee?.empName}</Text>
-                                                        <Text style={{ fontSize: 14, fontWeight: "400", color: Colors.GRAY }}>{"Remarks: " + (item.employeeRemarks ? item.employeeRemarks : "")}</Text>
-                                                    </View>
-                                                </TouchableOpacity>
-                                                {item.lat && item.lon &&
-                                                    <TouchableOpacity style={{ position: 'absolute', top: 0, right: 0 }} onPress={() => openMap(item.lat, item.lon)}>
-                                                        <View style={{ width: 35, height: 35, justifyContent: "center", alignItems: "center", borderWidth: 1, borderColor: "#d1d1d1", borderRadius: 5 }}>
-                                                            <Image style={{ height: 25, width: 15 }} source={require('../../../assets/images/location-pin.png')} />
-                                                        </View>
-                                                    </TouchableOpacity>
-                                                }
-                                            </View>
-                                        </View>
+                                    <View
+                                      style={{
+                                        alignItems: "center",
+                                        flexDirection: "row",
+                                        position: "absolute",
+                                      }}
+                                    >
+                                      <Text
+                                        style={{
+                                          height: 20,
+                                          width: 20,
+                                          borderRadius: 10,
+                                          backgroundColor: Colors.GRAY,
+                                        }}
+                                      ></Text>
+                                      <View style={{ marginLeft: 5 }}>
+                                        <Text
+                                          style={{
+                                            fontSize: 12,
+                                            fontWeight: "400",
+                                          }}
+                                        >
+                                          {date[0] + " " + date[1]}
+                                        </Text>
+                                        <Text
+                                          style={{
+                                            fontSize: 12,
+                                            fontWeight: "400",
+                                          }}
+                                        >
+                                          {date[2] + " " + date[3]}
+                                        </Text>
+                                      </View>
                                     </View>
-                                }
-                            </>
-                        )
+                                  </View>
+                                  <View style={{ width: "75%", padding: 5 }}>
+                                    <View
+                                      style={[
+                                        { backgroundColor: Colors.WHITE },
+                                        GlobalStyle.shadow,
+                                      ]}
+                                    >
+                                      <TouchableOpacity
+                                        onPress={() => itemClicked(item)}
+                                      >
+                                        <View
+                                          style={[
+                                            {
+                                              paddingVertical: 5,
+                                              paddingLeft: 10,
+                                              backgroundColor: Colors.WHITE,
+                                            },
+                                          ]}
+                                        >
+                                          <Text
+                                            style={{
+                                              fontSize: 16,
+                                              fontWeight: "700",
+                                              marginBottom: 5,
+                                            }}
+                                          >
+                                            {item.taskName}
+                                          </Text>
+                                          <Text
+                                            style={{
+                                              fontSize: 14,
+                                              fontWeight: "400",
+                                            }}
+                                          >
+                                            {"Assignee: " +
+                                              item.assignee?.empName}
+                                          </Text>
+                                          {item?.taskUpdatedBy?.empName ? (
+                                            <Text style={styles.followUpText}>
+                                              Follow-up by:{" "}
+                                              {item.taskUpdatedBy.empName}
+                                            </Text>
+                                          ) : null}
+                                          <Text
+                                            style={{
+                                              fontSize: 14,
+                                              fontWeight: "400",
+                                              color: Colors.GRAY,
+                                            }}
+                                          >
+                                            {"Remarks: " +
+                                              (item.employeeRemarks
+                                                ? item.employeeRemarks
+                                                : "")}
+                                          </Text>
+                                        </View>
+                                      </TouchableOpacity>
+                                      {item.lat && item.lon && (
+                                        <TouchableOpacity
+                                          style={{
+                                            position: "absolute",
+                                            top: 0,
+                                            right: 0,
+                                          }}
+                                          onPress={() =>
+                                            openMap(item.lat, item.lon)
+                                          }
+                                        >
+                                          <View
+                                            style={{
+                                              width: 35,
+                                              height: 35,
+                                              justifyContent: "center",
+                                              alignItems: "center",
+                                              borderWidth: 1,
+                                              borderColor: "#d1d1d1",
+                                              borderRadius: 5,
+                                            }}
+                                          >
+                                            <Image
+                                              style={{ height: 25, width: 15 }}
+                                              source={require("../../../assets/images/location-pin.png")}
+                                              tintColor={Colors.PINK}
+                                            />
+                                          </View>
+                                        </TouchableOpacity>
+                                      )}
+                                    </View>
+                                  </View>
+                                </View>
+                              ) : null
+                            ) : (
+                              <View
+                                style={{ width: "100%", flexDirection: "row" }}
+                              >
+                                <View
+                                  style={{
+                                    width: "25%",
+                                    justifyContent: "center",
+                                  }}
+                                >
+                                  <View
+                                    style={{
+                                      marginLeft: 8,
+                                      flex: 1,
+                                      width: 2,
+                                      backgroundColor: topBcgColor,
+                                    }}
+                                  ></View>
+                                  <View
+                                    style={{
+                                      marginLeft: 8,
+                                      flex: 1,
+                                      width: 2,
+                                      backgroundColor: bottomBcgColor,
+                                    }}
+                                  ></View>
+
+                                  <View
+                                    style={{
+                                      alignItems: "center",
+                                      flexDirection: "row",
+                                      position: "absolute",
+                                    }}
+                                  >
+                                    <Text
+                                      style={{
+                                        height: 20,
+                                        width: 20,
+                                        borderRadius: 10,
+                                        backgroundColor: Colors.GRAY,
+                                      }}
+                                    ></Text>
+                                    <View style={{ marginLeft: 5 }}>
+                                      <Text
+                                        style={{
+                                          fontSize: 12,
+                                          fontWeight: "400",
+                                        }}
+                                      >
+                                        {date[0] + " " + date[1]}
+                                      </Text>
+                                      <Text
+                                        style={{
+                                          fontSize: 12,
+                                          fontWeight: "400",
+                                        }}
+                                      >
+                                        {date[2] + " " + date[3]}
+                                      </Text>
+                                    </View>
+                                  </View>
+                                </View>
+                                <View style={{ width: "75%", padding: 5 }}>
+                                  <View
+                                    style={[
+                                      { backgroundColor: Colors.WHITE },
+                                      GlobalStyle.shadow,
+                                    ]}
+                                  >
+                                    <TouchableOpacity
+                                      onPress={() => itemClicked(item)}
+                                    >
+                                      <View
+                                        style={[
+                                          {
+                                            paddingVertical: 5,
+                                            paddingLeft: 10,
+                                            backgroundColor: Colors.WHITE,
+                                          },
+                                        ]}
+                                      >
+                                        {TaskNameView(item.taskName)}
+                                        <Text
+                                          style={{
+                                            fontSize: 14,
+                                            fontWeight: "400",
+                                          }}
+                                        >
+                                          {"Assignee: " +
+                                            item.assignee?.empName}
+                                        </Text>
+                                        {item?.taskUpdatedBy?.empName ? (
+                                          <Text style={styles.followUpText}>
+                                            Follow-up by:{" "}
+                                            {item.taskUpdatedBy.empName}
+                                          </Text>
+                                        ) : null}
+                                        <Text
+                                          style={{
+                                            fontSize: 14,
+                                            fontWeight: "400",
+                                            color: Colors.GRAY,
+                                          }}
+                                        >
+                                          {"Remarks: " +
+                                            (item.employeeRemarks
+                                              ? item.employeeRemarks
+                                              : "")}
+                                        </Text>
+                                      </View>
+                                    </TouchableOpacity>
+                                    {item.lat && item.lon && (
+                                      <TouchableOpacity
+                                        style={{
+                                          position: "absolute",
+                                          top: 0,
+                                          right: 0,
+                                        }}
+                                        onPress={() =>
+                                          openMap(item.lat, item.lon)
+                                        }
+                                      >
+                                        <View
+                                          style={{
+                                            width: 35,
+                                            height: 35,
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                            borderWidth: 1,
+                                            borderColor: "#d1d1d1",
+                                            borderRadius: 5,
+                                          }}
+                                        >
+                                          <Image
+                                            style={{ height: 25, width: 15 }}
+                                            source={require("../../../assets/images/location-pin.png")}
+                                            tintColor={Colors.PINK}
+                                          />
+                                        </View>
+                                      </TouchableOpacity>
+                                    )}
+                                  </View>
+                                </View>
+                              </View>
+                            )}
+                          </>
+                        );
                     }}
                     renderSectionHeader={({ section: { title } }) => (
                         <View style={{ height: 50, justifyContent: "center" }}>
@@ -346,10 +583,19 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
 export default TaskThreeSixtyScreen;
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        paddingBottom: 5,
-        paddingHorizontal: 10,
-        backgroundColor: Colors.LIGHT_GRAY
-    },
-})
+  container: {
+    flex: 1,
+    paddingBottom: 5,
+    paddingHorizontal: 10,
+    backgroundColor: Colors.LIGHT_GRAY,
+  },
+  sideTitle: {
+    fontSize: 14,
+    fontWeight: "400",
+  },
+  followUpText: {
+    fontSize: 14,
+    fontWeight: "400",
+    marginVertical:3
+  },
+});

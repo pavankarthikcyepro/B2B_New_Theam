@@ -54,7 +54,7 @@ const AcitivityLoader = () => {
   );
 };
 
-const FilterScreen = ({ navigation }) => {
+const FilterScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
 
@@ -126,18 +126,10 @@ const FilterScreen = ({ navigation }) => {
     setToDate(monthLastDate);
   }, [selector.filter_drop_down_data]);
 
-  useEffect(async () => {
-    try {
-      const employeeData = await AsyncStore.getData(
-        AsyncStore.Keys.LOGIN_EMPLOYEE
-      );
-      if (employeeData) {
-        const jsonObj = JSON.parse(employeeData);
-        if (nameKeyList.length > 0 && jsonObj.hrmsRole !== "Reception") {
-          dropDownItemClicked(4, true);
-        }
-      }
-    } catch (error) {}
+  useEffect(() => {
+    if (nameKeyList.length > 0) {
+      dropDownItemClicked(4, true);
+    }
   }, [nameKeyList, userData]);
 
   const dropDownItemClicked = async (index, initalCall = false) => {
@@ -222,8 +214,6 @@ const FilterScreen = ({ navigation }) => {
   };
 
   const updateSelectedItems = (data, index, initalCall = false) => {
-    // console.log("index: ", index)
-
     const totalDataObjLocal = { ...totalDataObj };
 
     if (index > 0) {
@@ -292,7 +282,6 @@ const FilterScreen = ({ navigation }) => {
       sublevels: data,
     };
     totalDataObjLocal[key] = newOBJ;
-    // console.log("totalDataObjLocal: ", JSON.stringify(totalDataObjLocal));
     setTotalDataObj({ ...totalDataObjLocal });
     initalCall && submitBtnClicked(totalDataObjLocal);
   };
@@ -326,8 +315,6 @@ const FilterScreen = ({ navigation }) => {
   };
 
   const submitBtnClicked = (initialData) => {
-    console.log(initialData);
-    // return
     let i = 0;
     const selectedIds = [];
     for (i; i < nameKeyList.length; i++) {
@@ -343,7 +330,6 @@ const FilterScreen = ({ navigation }) => {
         });
       }
     }
-    // console.log("selectedIds: ", selectedIds);
     if (selectedIds.length > 0) {
       setIsLoading(true);
       getDashboadTableDataFromServer(selectedIds, "LEVEL");
@@ -376,10 +362,8 @@ const FilterScreen = ({ navigation }) => {
       selectedIds: selectedIds,
     };
 
-    // console.log("PAYLOAD 1:", payload1);
     Promise.all([dispatch(getEmployeesDropDownData(payload1))])
       .then(() => {
-        console.log("CALLED");
         Promise.all([
           dispatch(getLeadSourceTableList(payload)),
           dispatch(getVehicleModelTableList(payload)),
@@ -394,9 +378,7 @@ const FilterScreen = ({ navigation }) => {
           dispatch(getTargetParametersData(payload2)),
           dispatch(getTargetParametersEmpDataInsights(payload2)), // Added to filter an Home Screen's INSIGHT
         ])
-          .then(() => {
-            console.log("SUCCESS");
-          })
+          .then(() => {})
           .catch(() => {
             setIsLoading(false);
           });
@@ -405,7 +387,17 @@ const FilterScreen = ({ navigation }) => {
         setIsLoading(false);
       });
     if (from == "EMPLOYEE") {
-      navigation.goBack();
+        if (true) {
+            navigation.navigate(
+              AppNavigator.DrawerStackIdentifiers.monthlyTarget,
+              {
+                params: { from: "Filter" },
+              }
+            );
+        } else {
+                  navigation.goBack();
+
+        }
       // navigation.navigate(AppNavigator.TabStackIdentifiers.home, { screen: "Home", params: { from: 'Filter' }, })
     } else {
       // navigation.goBack(); // NEED TO COMMENT FOR ASSOCIATE FILTER
@@ -477,7 +469,6 @@ const FilterScreen = ({ navigation }) => {
         }
       });
     }
-    // console.log("selectedIds: ", selectedIds);
     if (selectedIds.length > 0) {
       getDashboadTableDataFromServer(selectedIds, "EMPLOYEE");
     } else {
@@ -524,7 +515,6 @@ const FilterScreen = ({ navigation }) => {
         mode={"date"}
         value={new Date(Date.now())}
         onChange={(event, selectedDate) => {
-          // console.log("date: ", selectedDate);
           if (Platform.OS === "android") {
             if (selectedDate) {
               updateSelectedDate(selectedDate, datePickerId);
@@ -581,11 +571,7 @@ const FilterScreen = ({ navigation }) => {
               return (
                 <View>
                   <View
-                    style={{
-                      borderColor: Colors.BORDER_COLOR,
-                      borderWidth: 1,
-                      marginTop: userData.hrmsRole === "Reception" ? 20 : 0,
-                    }}
+                    style={{ borderColor: Colors.BORDER_COLOR, borderWidth: 1 }}
                   >
                     <FlatList
                       data={nameKeyList}
@@ -659,7 +645,7 @@ const FilterScreen = ({ navigation }) => {
                         style={{ width: buttonWidth }}
                         contentStyle={{ backgroundColor: Colors.BLACK }}
                         mode="contained"
-                        onPress={submitBtnClicked()}
+                        onPress={submitBtnClicked}
                       >
                         Submit
                       </Button>

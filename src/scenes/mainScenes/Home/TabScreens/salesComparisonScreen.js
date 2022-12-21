@@ -55,7 +55,6 @@ export const SalesComparisonScreen = () => {
                 chartValuesLocal.push(value);
                 tableDataLocal.push({ name: keyStr, value: value });
             })
-            // console.log("data: ", JSON.stringify(tableDataLocal))
             setNamesData(namesDataLocal);
             setChartNames(chartNamesLocal);
             setChartData([

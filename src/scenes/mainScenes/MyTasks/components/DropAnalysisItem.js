@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Colors } from '../../../../styles';
 import { convertTimeStampToDateString, callNumber, navigatetoCallWebView } from '../../../../utils/helperFunctions';
@@ -31,24 +31,40 @@ const statusBgColors = {
 
 const IconComp = ({ iconName, onPress,bgColor }) => {
     return (
-        <TouchableOpacity onPress={onPress}>
-            <View style={{ width: 35, height: 35, justifyContent: "center", alignItems: "center", borderWidth: 1, backgroundColor: bgColor, borderColor:bgColor,  borderRadius: 20 }}>
-                <IconButton
-                    icon={iconName}
-                    color={Colors.WHITE}
-                    size={20}
-                />
-            </View>
-        </TouchableOpacity>
-    )
+      <TouchableOpacity onPress={onPress}>
+        <View
+          style={{
+            width: 35,
+            height: 35,
+            justifyContent: "center",
+            alignItems: "center",
+            borderWidth: 1,
+            borderColor: bgColor,
+            borderRadius: 5,
+          }}
+        >
+          <IconButton icon={iconName} color={bgColor} size={20} />
+        </View>
+      </TouchableOpacity>
+    );
 }
 
 
 
 
-export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId, uniqueId, enqCat, leadStage, name, status, created, dmsLead, lostReason, isManager = false, dropStatus = '' }) => {
-    const [isItemSelected, setisItemSelected ]= useState('unchecked')
-
+export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId, uniqueId, enqCat, leadStage, name, status, created, dmsLead, lostReason, isManager = false, dropStatus = '', mobileNo, isCheckboxVisible, isRefresh =false}) => {
+  const [isItemSelected, setisItemSelected] = useState("unchecked")
+ 
+   
+  useEffect(() => {
+  
+    if(isRefresh){
+      setisItemSelected('unchecked')
+    }  
+  
+  }, [isRefresh])
+  
+  
     const checkboxSelected = async () => {
         try
         {
@@ -84,9 +100,9 @@ export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId
     }
 
     function checkForStageName(taskName) {
-        if (taskName.toLowerCase() === 'preenquiry') {
+        if (taskName?.toLowerCase() === 'preenquiry') {
             taskName = 'CONTACTS';
-        } else if (taskName.toLowerCase() === 'prebooking') {
+        } else if (taskName?.toLowerCase() === 'prebooking') {
             taskName = 'Booking Approval';
         }
         // else if (taskName.includes('Booking')) {
@@ -96,92 +112,106 @@ export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId
     }
 
     return (
-        <TouchableOpacity  style={styles.section}>
-            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", position: 'relative' }}>
-
-                <View style={{ width: "70%",}}>
-                    {/*{isManager && */}
-                    {/*    <Checkbox*/}
-                    {/*        onPress={() => {*/}
-                    {/*            checkboxSelected()*/}
-                    {/*        }}*/}
-                    {/*        status={isItemSelected}*/}
-                    {/*        color={Colors.YELLOW}*/}
-                    {/*        uncheckedColor={Colors.YELLOW} />*/}
-                    {/*}                    */}
-                    <View style={{ flexDirection: 'row', marginLeft:10 }}>
-                        <View style={{ maxWidth: '73%', }}>
-                            <Text style={styles.text1}>{name}</Text>
-                        </View>
-                        <Text style={styles.catText}>{enqCat}</Text>
-                    </View>
-                    <Text style={styles.text2}>{lostReason + " - " + dmsLead}</Text>
-                    <Text style={styles.text3}>{date}</Text>
-                    {/* {needStatus === "YES" &&
+      <TouchableOpacity  style={styles.section} >
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            position: "relative",
+          }}
+        >
+          <View style={{ width: "70%" }}>
+            {isManager && isCheckboxVisible &&
+               <Checkbox
+                 onPress={() => {
+                     checkboxSelected()
+                }}
+                   status={isItemSelected}
+                  color={Colors.YELLOW}
+                  uncheckedColor={Colors.YELLOW} />}
+                              
+            <View style={{ flexDirection: "row", marginLeft: 10 }}>
+              <View style={{ maxWidth: "73%" }}>
+                <Text style={styles.text1}>{name}</Text>
+              </View>
+              <Text style={styles.catText}>{enqCat}</Text>
+            </View>
+            <Text style={styles.text2}>{lostReason + " - " + dmsLead}</Text>
+            <Text style={styles.text2}>{mobileNo}</Text>
+            <Text style={styles.text3}>{date}</Text>
+            {/* {needStatus === "YES" &&
                         <View style={{ height: 15, width: 15, borderRadius: 10, backgroundColor: leadStatus === 'PREENQUIRYCOMPLETED' || (leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY') || (leadStatus === 'PREBOOKINGCOMPLETED' && leadStage === 'PREBOOKING') || leadStatus === 'BOOKINGCOMPLETED' ? '#18a835' : '#f29a22', position: 'absolute', top: 0, right: 0 }}></View>
                     } */}
-                </View>
-                <View style={{ width: "30%", alignItems: "center" }}>
-                    <View style={styles.modal}>
-                        <Text style={styles.text4}>{checkForStageName(leadStage)}</Text>
-                    </View>
-                    {/* <View style={{ height: 8 }}></View> */}
-                    {isManager && dropStatus === 'DROPPED' &&
-                        <View style={{ flexDirection: "row", width: "100%", justifyContent: "space-evenly" }}>
-                            <View style={{ flexDirection: 'column', alignItems: 'center'}}>
-                                <IconComp
-                                    iconName={'window-close'}
-                                    onPress={() => onItemSelected(uniqueId, leadDropId, 'single', 'reject')}
-                                    bgColor='#FF0000'
-                                />
-                                <Text style={{ color: Colors.BLUE, fontSize: 12, margin: 2 }}>Deny</Text>
-                            </View>
-                            <View style={{ flexDirection: 'column', alignItems: 'center' }}>
-                                <IconComp
-                                    iconName={'check'}
-                                    onPress={() => onItemSelected(uniqueId, leadDropId, 'single', 'approve')}
-                                    bgColor='#008000'
-                                />
-                                <Text style={{ color: Colors.BLUE, fontSize: 12, margin: 2 }}>Approve</Text>
-                            </View>
-
-                        </View>
-                    }
-                    {isManager && dropStatus === 'APPROVED' &&
-                        <View style={{ flexDirection: "row", width: "100%", justifyContent: "space-evenly" }}>
-                            {/* <View style={{ flexDirection: 'column' }}>
-                                <IconComp
-                                    iconName={'window-close'}
-                                    onPress={() => onItemSelected(uniqueId, leadDropId, 'single', 'reject')}
-                                    bgColor='#FF0000'
-                                />
-                                <Text style={{ color: Colors.BLUE, fontSize: 12, margin: 2 }}>Deny</Text>
-                            </View> */}
-                            <View style={{ flexDirection: 'column' }}>
-                                {/*<IconComp*/}
-                                {/*    iconName={'check'}*/}
-                                {/*    onPress={() => onItemSelected(uniqueId, leadDropId, 'single', 'revoke')}*/}
-                                {/*    bgColor='#008000'*/}
-                                {/*/>*/}
-                                <Text style={{ color: Colors.BLUE, fontSize: 16, margin: 2 }}>{dropStatus}</Text>
-                            </View>
-
-                        </View>
-                    }
-                    {/*{(!isManager || (isManager && dropStatus === 'REJECTED')) &&*/}
-                    {/*    <View style={{ flexDirection: "row", width: "100%", justifyContent: "space-evenly" }}>*/}
-                    {/*    <Text style={{ color: dropStatus === 'DROPPED' ? '#18a835' : '#f29a22', fontSize: 16, fontWeight: 'bold'}}>{dropStatus}</Text>*/}
-                    {/*    </View>*/}
-                    {/*}*/}
-                    {!isManager &&
-                        <View style={{ flexDirection: "row", width: "100%", justifyContent: "space-evenly" }}>
-                        <Text style={{ color: dropStatus === 'DROPPED' ? '#18a835' : Colors.BLUE, fontSize: 16, fontWeight: 'bold'}}>{dropStatus}</Text>
-                        </View>
-                    }
-                </View>
+          </View>
+          <View style={{ width: "30%", alignItems: "center" }}>
+            <View style={styles.modal}>
+              <Text style={styles.text4}>{checkForStageName(leadStage)}</Text>
             </View>
-        </TouchableOpacity>
-    )
+            {/* <View style={{ height: 8 }}></View> */}
+            {/* {isManager && dropStatus === "DROPPED" && (
+              <View
+                style={{
+                  flexDirection: "row",
+                  width: "100%",
+                  justifyContent: "center",
+                }}
+              >
+                <View style={{ flexDirection: "column", alignItems: "center" }}>
+                  <IconComp
+                    iconName={"window-close"}
+                    onPress={() =>
+                      onItemSelected(uniqueId, leadDropId, "single", "reject")
+                    }
+                    bgColor={Colors.RED}
+                  />
+                  <Text style={{ color: Colors.RED, fontSize: 11, margin: 2 }}>
+                    Deny
+                  </Text>
+                </View>
+                <View style={{ flexDirection: "column", alignItems: "center", marginLeft: 7 }}>
+                  <IconComp
+                    iconName={"check"}
+                    onPress={() =>
+                      onItemSelected(uniqueId, leadDropId, "single", "approve")
+                    }
+                    bgColor="#008000"
+                  />
+                  <Text style={{ color: "#008000", fontSize: 11, margin: 2 }}>
+                    Approve
+                  </Text>
+                </View>
+              </View>
+            )} */}
+            
+            {/*{(!isManager || (isManager && dropStatus === 'REJECTED')) &&*/}
+            {/*    <View style={{ flexDirection: "row", width: "100%", justifyContent: "space-evenly" }}>*/}
+            {/*    <Text style={{ color: dropStatus === 'DROPPED' ? '#18a835' : '#f29a22', fontSize: 16, fontWeight: 'bold'}}>{dropStatus}</Text>*/}
+            {/*    </View>*/}
+            {/*}*/}
+            {/* {!isManager && ( */}
+              <View
+                style={{
+                  flexDirection: "row",
+                  width: "100%",
+                  justifyContent: "space-evenly",
+                }}
+              >
+                <Text
+                  style={{
+                  color: dropStatus === "DROPPED" ? "#18a835" : Colors.YELLOW,
+                    fontSize: 14,
+                    fontWeight: "bold",
+                  }}
+                >
+                  {dropStatus}
+                </Text>
+              </View>
+            {/* )} */}
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
 }
 
 const styles = StyleSheet.create({

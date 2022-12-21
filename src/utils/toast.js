@@ -5,7 +5,7 @@ import { Platform, Linking, Alert } from 'react-native';
 import { Colors } from '../styles';
 
 export const showToast = (title) => {
-    let msg = title.charAt(0).toUpperCase() + title.slice(1)
+    let msg = title?.charAt(0)?.toUpperCase() + title?.slice(1)
     if (Platform.OS === 'ios') {
         Snackbar.show({
             text: msg,
@@ -65,7 +65,7 @@ export const showAlertMessage = (title = "", message = "") => {
         [
             {
                 text: "Ok",
-                onPress: () => console.log("ok Pressed"),
+                onPress: () => {},
                 style: "cancel"
             },
         ]

@@ -5,17 +5,20 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getBranchRanksList } from "../../../redux/homeReducer";
 import { LoaderComponent } from '../../../components';
 import moment from 'moment';
+import { Colors } from '../../../styles';
 
 export default function branchRankingScreen() {
     const selector = useSelector((state) => state.homeReducer);
     const dispatch = useDispatch();
-    const [branchName, setBranchName] = useState(null);
-    const [branchCode, setBranchCode] = useState(null);
     const [branchList, setBranchList] = useState([]);
+    const [loggedInEmpId, setLoggedInEmpId] = useState(0);
 
     const getBranchRankListFromServer = async () => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
         const jsonObj = await JSON.parse(employeeData);
+         if (jsonObj && jsonObj.empId) {
+           setLoggedInEmpId(jsonObj.empId);
+         }
         const branchId = await AsyncStore.getData(
             AsyncStore.Keys.SELECTED_BRANCH_ID
         );
@@ -38,99 +41,157 @@ export default function branchRankingScreen() {
     }
 
     useEffect(async () => {
-        LogBox.ignoreAllLogs();
-        let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-        if (employeeData) {
-            const jsonObj = JSON.parse(employeeData);
-            setBranchCode(jsonObj.branchs[0]?.branchName.substring(0, (jsonObj.branchs[0]?.branchName).indexOf('-')));
-            setBranchName(jsonObj.branchs[0]?.branchName.substring((jsonObj.branchs[0]?.branchName).indexOf("-") + 1));
-        }
-        getBranchRankListFromServer();
-        setTimeout(() => {
-            setBranchList(selector.branchrank_list);
-        }, 2000);
+      LogBox.ignoreAllLogs();
+      getBranchRankListFromServer();
+      setTimeout(() => {
+        setBranchList(selector.branchrank_list);
+      }, 2000);
     }, []);
-    useEffect(()=>{
-        if (selector.branchrank_list && selector.branchrank_list.length > 0){
-            setTimeout(() => {
-                setBranchList(selector.branchrank_list);
-            }, 2000);
-        }
 
-    }, [selector.branchrank_list])
+    useEffect(() => {
+      if (selector.branchrank_list && selector.branchrank_list.length > 0) {
+        setTimeout(() => {
+          setBranchList(selector.branchrank_list);
+        }, 2000);
+      }
+    }, [selector.branchrank_list]);
 
-    const renderItemLeaderTopList = (item, extraIndex) => {
-        return (
-            <View style={{ backgroundColor: "white", padding: 10, width: '100%' }}>
-                {extraIndex == 0 ? <View style={{ flexDirection: 'row', width: '100%', marginBottom: 5 }}>
-                    <Text style={{ color: '#F59D44', textAlign: 'center', flex: 1 }}>Rank</Text>
-                    <Text style={{ color: '#D81F9F', textAlign: 'center', flex: 1 }}>Employee Name</Text>
-                    <Text style={{ color: '#983AAA', textAlign: 'center', flex: 1 }}>Branch</Text>
-                    <Text style={{ color: '#328B91', textAlign: 'center', flex: 1 }}>Ret T/A%</Text>
-                    <Text style={{ color: '#E54875', textAlign: 'center', flex: 1 }}>Retails</Text>
-                </View> : null}
-                <View style={{ flexDirection: 'row', width: '100%' }}>
-                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{extraIndex + 1}</Text>
-                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.empName}</Text>
-                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.branchCode}</Text>
-                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.achivementPerc}</Text>
-                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.targetAchivements}</Text>
-                </View>
-            </View>
-        );
+    const getEmpName = (value) => {
+      let name = value;
+      name = name.split(" ");
+      return name[0];
+    };
+
+    const getBranchName = (value) => {
+      let branch = value;
+      branch = branch.split("-");
+      return branch[0].trim();
+    };
+
+    const renderItemLeaderTopList = (item, index) => {
+      let isActive = item.empId == loggedInEmpId && !selector.isRankHide;
+      return (
+        <View style={isActive ? styles.activeSubRow :styles.tableSubRow}>
+          <View style={styles.itemRow}>
+            <Text style={isActive ? styles.activeItemRowText : styles.itemRowText}>{item.rank}</Text>
+            <Text style={isActive ? styles.activeItemRowText : styles.itemRowText}>{getEmpName(item.empName)}</Text>
+            <Text style={isActive ? styles.activeItemRowText : styles.itemRowText}>
+              {getBranchName(item.branchCode)}
+            </Text>
+            <Text style={isActive ? styles.activeItemRowText : styles.itemRowText}>{item.achivementPerc}</Text>
+            <Text style={isActive ? styles.activeItemRowText : styles.itemRowText}>{item.targetAchivements}</Text>
+          </View>
+        </View>
+      );
+    };
+
+    const renderTableTopRow = () => {
+      return (
+        <View style={styles.tableTitleRow}>
+          <Text style={styles.tableTitleText}>Rank</Text>
+          <Text style={styles.tableTitleText}>Name</Text>
+          <Text style={styles.tableTitleText}>Branch</Text>
+          <Text style={styles.tableTitleText}>Ret T/A%</Text>
+          <Text style={styles.tableTitleText}>Retail</Text>
+        </View>
+      );
     };
 
     return (
-        <ScrollView showsVerticalScrollIndicator={false}>
-            <View style={styles.rankBox}>
-                <View style={styles.listView}>
-                    <View style={{
-                        width: '98%', height: '98%'
-                    }}>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={styles.rankBox}>
+          <View style={styles.listView}>
+            <View
+              style={{
+                width: "98%",
+                height: "98%",
+              }}
+            >
+              {branchList.length ? null : (
+                <LoaderComponent
+                  visible={selector.isLoading}
+                  onRequestClose={() => {}}
+                />
+              )}
 
-                        {branchList.length ? null : <LoaderComponent
-                            visible={selector.isLoading}
-                            onRequestClose={() => { }}
-                        />}
-
-                        <FlatList
-                            data={branchList}
-                            nestedScrollEnabled={true}
-                            keyExtractor={(item, index) => index.toString()}
-                            renderItem={({ item, index }) => renderItemLeaderTopList(item, index)}
-                            showsVerticalScrollIndicator={false}
-                            extraData={branchList}
-                        />
-                    </View>
-                </View>
+              {renderTableTopRow()}
+              <FlatList
+                data={branchList}
+                nestedScrollEnabled={true}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item, index }) =>
+                  renderItemLeaderTopList(item, index)
+                }
+                showsVerticalScrollIndicator={false}
+                extraData={branchList}
+              />
             </View>
-        </ScrollView>
-    )
+          </View>
+        </View>
+      </ScrollView>
+    );
 }
 
 const styles = StyleSheet.create({
-    listView: {
-        height: '95%',
-        width: '95%',
-        backgroundColor: 'white',
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.3,
-        shadowRadius: 1,
-        borderStyle: "solid",
-        borderWidth: 1,
-        borderColor: "#d2d2d2",
-        borderRadius: 7,
-        justifyContent: 'center',
-        alignItems: 'center',
-        margin: 5,
-        alignSelf: 'center'
+  tableTitleRow: {
+    flexDirection: "row",
+    width: "100%",
+    paddingVertical: 10,
+    borderBottomWidth: 0.5,
+    borderColor: Colors.BLACK,
+    backgroundColor: Colors.WHITE,
+  },
+  tableTitleText: {
+    flex: 1,
+    fontWeight: "600",
+    textAlign: "center",
+  },
+  tableSubRow: {
+    backgroundColor: Colors.WHITE,
+    padding: 10,
+    borderBottomWidth: 3,
+    borderColor: "#F2F2F2",
+    marginBottom: 3,
+  },
+  activeSubRow: {
+    padding: 10,
+    borderRadius: 4,
+    marginBottom: 3,
+    borderWidth: 1,
+    borderBottomWidth: 2,
+    borderColor: Colors.PINK,
+    backgroundColor: Colors.WHITE,
+  },
+  itemRow: { flexDirection: "row", width: "100%" },
+  itemRowText: { color: "black", textAlign: "center", flex: 1 },
+  activeItemRowText: {
+    color: Colors.BLACK,
+    textAlign: "center",
+    flex: 1,
+    fontWeight: "bold",
+  },
+  listView: {
+    height: "95%",
+    width: "95%",
+    backgroundColor: "white",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
     },
-    rankBox: {
-        paddingTop: 5,
-        paddingBottom: 10
-    },
+    shadowOpacity: 0.3,
+    shadowRadius: 1,
+    borderStyle: "solid",
+    borderWidth: 1,
+    borderColor: "#d2d2d2",
+    borderRadius: 7,
+    justifyContent: "center",
+    alignItems: "center",
+    margin: 5,
+    alignSelf: "center",
+  },
+  rankBox: {
+    paddingTop: 5,
+    paddingBottom: 10,
+  },
 });

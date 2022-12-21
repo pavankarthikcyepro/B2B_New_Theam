@@ -309,7 +309,6 @@ const SortAndFilterComp = ({ visible = false, categoryList = [], modelList = [],
                           data={localCategoryList.length < 1 ? localSourceOfEnquiryList : localModelList}
                           keyExtractor={(item, index) => index.toString()}
                           renderItem={({ item, index }) => {
-                            console.log("item", item)
                             return (
                               <TouchableOpacity
                                 onPress={() => itemSelected(item, index)}
