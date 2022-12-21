@@ -790,7 +790,6 @@ const SettingsStackNavigator = ({ navigation }) => {
                 component={ChangePasswordScreen}
                 options={{
                     title: "Change Password",
-                    headerLeft: () => <MenuIcon navigation={navigation} />,
                 }}
             />
         </SettingsStack.Navigator>
