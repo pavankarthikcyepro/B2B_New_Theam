@@ -18,6 +18,7 @@ import { LineGraphComp } from "./lineGraphComp";
 import { HeaderComp } from "./headerComp";
 import {LeadsFilterComp} from './LeadsFilterComp';
 import { SingleLeadSelectComp } from "./SingleLeadSelectComp";
+import { ProformaTextinputOffers } from "./proformaTextinputOffers";
 
 export {
     ButtonComp,
@@ -38,5 +39,6 @@ export {
     LineGraphComp,
     HeaderComp,
     LeadsFilterComp,
-    SingleLeadSelectComp
+    SingleLeadSelectComp,
+    ProformaTextinputOffers
 };

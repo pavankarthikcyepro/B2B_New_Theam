@@ -11,7 +11,7 @@ import moment from "moment";
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import Mailer from 'react-native-mail';
 var RNFS = require('react-native-fs');
-
+import { ProformaTextinputOffers } from "../../../../components";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import * as AsyncStore from "../../../../asyncStore";
 import {
@@ -26,7 +26,7 @@ import {
 import { PriceStackIdentifiers } from "../../../../navigations/appNavigator";
 import { AppNavigator } from "../../../../navigations";
 import { color } from "react-native-reanimated";
-
+import AntDesign from "react-native-vector-icons/AntDesign"
 
 const lostToCompetitor = "Lost to Competitor".replace(/\s/g, "").toLowerCase();
 const lostToUsedCarsFromCoDelear = "Lost to Used Cars from Co-Dealer".replace(/\s/g, "").toLowerCase();
@@ -82,9 +82,10 @@ const TextAndAmountComp = ({
   text,
   titleStyle = {},
   amoutStyle = {},
+  componentStyle = {}
 }) => {
   return (
-    <View style={styles.textAndAmountView}>
+    <View style={[styles.textAndAmountView,  componentStyle ]}>
       <Text style={[styles.leftLabel, titleStyle]}>{title}</Text>
 
       {text && text != '' ? <Text style={[{ fontSize: 16, fontWeight: "400", width: '50%' }, amoutStyle]}>
@@ -769,6 +770,7 @@ export const ProformaComp = ({
     setProformaNo("");
     setSelectedDate(moment().format("DD-MMM-YYYY"));
     setisDownLoadVisible(false);
+    setSelectedPaidAccessoriesList([])
 
   }
   const selectPerformaClick = () => {
@@ -1274,7 +1276,7 @@ export const ProformaComp = ({
   // };
   const saveProformaDetails = async (from) => {
     var proformaStatus = "";
-
+    console.log("manthan---fff ",from)
     if (from === "save") {
       proformaStatus = "ENQUIRYCOMPLETED";
       const data1 = {
@@ -1776,9 +1778,10 @@ export const ProformaComp = ({
       if (mArray.length > 0) {
         newSelectedProforma = mArray.filter((item) => item.id === id);
         // todo
-
+        console.log("manthan---> ", newSelectedProforma[0])
         if (newSelectedProforma[0].performa_status === "PENDING_APPROVAL" ||
           newSelectedProforma[0].performa_status === "SENTFORAPPROVAL") {
+          console.log("manthn---dd ", newSelectedProforma[0].performa_status)
           setShowApproveRejectBtn(true);
           setshowSendForApprovBtn(false);
           setshowSaveBtn(false);
@@ -2053,6 +2056,9 @@ export const ProformaComp = ({
     dispatch(
       setDropDownData({ key: "WARRANTY", value: "", id: "" })
     );
+    dispatch(
+      setDropDownData({ key: "INSURENCE_ADD_ONS", value: "", id: "" })
+    );
 
   };
 
@@ -2163,6 +2169,9 @@ export const ProformaComp = ({
     let amount = Number(totalOnRoadPriceAfterDiscount) + Number(otherPrices);
     return amount;
   };
+
+
+
 
   return (
     <View style={{}}>
@@ -2277,17 +2286,18 @@ export const ProformaComp = ({
 
         <View style={{}}>
           {selectedProfroma == "" && !isnewProformaClicked ?
-            <><Text style={{
-              color: Colors.BLACK,
-              fontSize: 16,
-              fontWeight: "700"
+            <>
+              {proformaDataForDropdown.length > 0 ? <Text style={{
+                color: Colors.BLACK,
+                fontSize: 16,
+                fontWeight: "700"
 
-            }}>Select Invoice</Text>
+              }}>Select Invoice</Text>: <></> }
               <FlatList
                 key={"PROFORMA_LIST"}
                 data={proformaDataForDropdown}
                 ListEmptyComponent={() => {
-                  return (<View style={{ alignItems: 'center' }}><Text>{"Data Not Available"}</Text></View>)
+                  return (<View style={{ alignItems: 'center',marginVertical:20 }}><Text>{"Data Not Available"}</Text></View>)
                 }}
                 keyExtractor={(item, index) => index.toString()}
                 style={{
@@ -2633,7 +2643,7 @@ export const ProformaComp = ({
                 justifyContent: "space-between",
                 paddingHorizontal: 12,
                 minHeight: 40,
-                paddingVertical: 5,
+                paddingVertical: 0,
                 alignItems: "flex-start",
                 backgroundColor: Colors.WHITE,
               }]}>
@@ -2656,7 +2666,7 @@ export const ProformaComp = ({
                       borderBottomColor: "#d1d1d1",
                       width: '50%',
                       backgroundColor: Colors.WHITE,
-                      paddingHorizontal: 0
+                      paddingHorizontal: 0,paddingVertical:0
                     }]}
                     keyboardType={"number-pad"}
                     onChangeText={(text) => {
@@ -2687,7 +2697,7 @@ export const ProformaComp = ({
               {/* <Text style={GlobalStyle.underline}></Text> */}
 
               <View style={styles.symbolview}>
-                <View style={{ width: "70%",marginVertical:10 }}>
+                <View style={{ width: "70%",paddingVertical:0 }}>
                   <DropDownSelectionItemV2
                     disabled={!isInputsEditable()}
                     label={"Registration Charges:"}
@@ -2870,26 +2880,32 @@ export const ProformaComp = ({
                 <Text style={styles.otherPriceTextStyle}>
                   Add Other Prices
                 </Text>
+              
 
                 <TouchableOpacity
                   style={[
                     styles.addIcon,
                     {
-                      backgroundColor: isInputsEditable()
-                        ? Colors.RED
-                        : Colors.GRAY,
+                      // backgroundColor: isInputsEditable()
+                      //   ? Colors.RED
+                      //   : Colors.GRAY,
+                      alignItems:"center",
+                      alignSelf:"flex-end"
+
                     },
                   ]}
                   disabled={!isInputsEditable()}
                   onPress={() => addHandler()}
                 >
+                  <AntDesign name="pluscircleo" size={12} color={Colors.RED} />
                   <Text
                     style={{
-                      color: Colors.WHITE,
-                      fontSize: 13,
+                      color: Colors.RED,
+                      fontSize: 14,
+                      marginStart:4
                     }}
                   >
-                    +
+                    Add
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -2917,9 +2933,43 @@ export const ProformaComp = ({
                           justifyContent: "space-between",
                           alignItems: "center",
                           paddingHorizontal: 10,
+                          backgroundColor:Colors.WHITE,
+                          width:'100%',
+                          marginVertical:4
                         }}
                       >
-                        <TextInput
+                        <View style={{
+                          backgroundColor:Colors.LIGHT_GRAY,width:'90%',
+                          flexDirection:'row',
+                          justifyContent:"space-between",
+                          padding:10
+                          }}>
+                          <TextInput
+                            style={[{
+                              fontSize: 14,
+                              fontWeight: "400",
+                              borderBottomWidth: 1,
+                              borderBottomColor: "#d1d1d1",
+                              width: '44%',
+                              backgroundColor: Colors.LIGHT_GRAY,
+                              paddingHorizontal: 0,
+                              height: 40,
+                              paddingVertical: 0
+                            }]}
+                            keyboardType={"default"}
+
+                            placeholder={"Name"}
+                            onChangeText={(name) =>
+                              inputHandlerName(name, index)
+                            }
+                            value={item.name}
+                            selectionColor={Colors.BLACK}
+                            underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
+                            underlineColor={Colors.LIGHT_GRAY}
+                            outlineColor={Colors.BLACK}
+                            theme={{ colors: { primary: Colors.BLACK, underlineColor: 'transparent' } }}
+                          />
+                          {/* <TextInput
                           editable={isInputsEditable()}
                           style={[
                             styles.otherPriceInput,
@@ -2927,6 +2977,8 @@ export const ProformaComp = ({
                               borderColor: checkIsError("name", index)
                                 ? Colors.RED
                                 : null,
+                              borderBottomWidth: 1,
+                              borderBottomColor: "#d1d1d1",
                             },
                           ]}
                           placeholder={"Name"}
@@ -2934,34 +2986,67 @@ export const ProformaComp = ({
                             inputHandlerName(name, index)
                           }
                           value={item.name}
-                        />
-                        <TextInput
-                          editable={isInputsEditable()}
-                          style={[
-                            styles.otherPriceInput,
-                            {
-                              marginLeft: 20,
-                              borderColor: checkIsError("amount", index)
-                                ? Colors.RED
-                                : null,
-                            },
-                          ]}
-                          placeholder={"Amount"}
-                          keyboardType={"decimal-pad"}
-                          onChangeText={(value) =>
-                            inputHandlerPrice(value, index)
-                          }
-                          value={`${item.amount}`}
-                        />
+                          selectionColor={Colors.BLACK}
+                          underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
+                          underlineColor={Colors.LIGHT_GRAY}
+                          outlineColor={Colors.BLACK}
+                        /> */}
+
+
+                          {/* <TextInput
+                            editable={isInputsEditable()}
+                            style={[
+                              styles.otherPriceInput,
+                              {
+                                marginLeft: 20,
+                                borderColor: checkIsError("amount", index)
+                                  ? Colors.RED
+                                  : null,
+                              },
+                            ]}
+                            placeholder={"Amount"}
+                            keyboardType={"decimal-pad"}
+                            onChangeText={(value) =>
+                              inputHandlerPrice(value, index)
+                            }
+                            value={`${item.amount}`}
+                          /> */}
+
+                          <TextInput
+                            style={[{
+                              fontSize: 14,
+                              fontWeight: "400",
+                              borderBottomWidth: 1,
+                              borderBottomColor: "#d1d1d1",
+                              width: '44%',
+                              backgroundColor: Colors.LIGHT_GRAY,
+                              paddingHorizontal: 0,
+                              height: 40,
+                              paddingVertical: 0
+                            }]}
+                            placeholder={"Amount"}
+                            keyboardType={"decimal-pad"}
+                            onChangeText={(value) =>
+                              inputHandlerPrice(value, index)
+                            }
+                            value={`${item.amount}`}
+                            selectionColor={Colors.BLACK}
+                            underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
+                            underlineColor={Colors.LIGHT_GRAY}
+                            outlineColor={Colors.BLACK}
+                            theme={{ colors: { primary: Colors.BLACK, underlineColor: 'transparent' } }}
+                          />
+                        </View>
+                        
                         <TouchableOpacity
                           disabled={!isInputsEditable()}
                           onPress={() => deleteHandler(index)}
-                          style={{ marginLeft: 10 }}
+                          style={{ width:'10%' }}
                         >
                           <IconButton
                             icon="trash-can-outline"
                             color={Colors.PINK}
-                            size={25}
+                            size={20}
                             disabled={!isInputsEditable()}
                           />
                         </TouchableOpacity>
@@ -2971,13 +3056,7 @@ export const ProformaComp = ({
                 />
               </View>
 
-              <TextAndAmountComp
-                title={"On Road Price:"}
-                // amount={totalOnRoadPrice.toFixed(2)}
-                amount={getActualPrice().toFixed(2)}
-                titleStyle={{ fontSize: 18, fontWeight: "800" }}
-                amoutStyle={{ fontSize: 18, fontWeight: "800" }}
-              />
+              
               {/* <Text style={GlobalStyle.underline}></Text> */}
 
 
@@ -3007,7 +3086,39 @@ export const ProformaComp = ({
                   styles.accordianBorder,
                 ]}
               > */}
-              <TextinputComp
+
+              <ProformaTextinputOffers
+                containerStyle={{
+                  flexDirection:"row",
+                  backgroundColor:Colors.WHITE,
+                  alignItems:"center",
+                  paddingHorizontal: 10,
+                  justifyContent:"space-between",
+                 
+                }}
+                placeholder={"Amount"}
+                underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
+                underlineColor={Colors.LIGHT_GRAY}
+                TitleText={"Consumer Offer:"}
+                disabled={!isInputsEditable()}
+                style={styles.offerPriceTextInput}
+                // label={"Consumer Offer:"}
+                value={selector.consumer_offer}
+                showLeftAffixText={true}
+                leftAffixText={rupeeSymbol}
+                showRightIcon={true}
+                keyboardType="number-pad"
+                onChangeText={(text) =>
+                  dispatch(
+                    setOfferPriceDetails({
+                      key: "CONSUMER_OFFER",
+                      text: text,
+                    })
+                  )
+                }
+              />
+             
+              {/* <TextinputComp
                 disabled={!isInputsEditable()}
                 style={styles.offerPriceTextInput}
                 label={"Consumer Offer:"}
@@ -3023,9 +3134,9 @@ export const ProformaComp = ({
                     })
                   )
                 }
-              />
-              <Text style={GlobalStyle.underline}></Text>
-              <TextinputComp
+              /> */}
+              {/* <Text style={GlobalStyle.underline}></Text> */}
+              {/* <TextinputComp
                 disabled={!isInputsEditable()}
                 style={styles.offerPriceTextInput}
                 label={"Exchange Offer:"}
@@ -3041,9 +3152,41 @@ export const ProformaComp = ({
                     })
                   )
                 }
+              /> */}
+
+              <ProformaTextinputOffers
+                containerStyle={{
+                  flexDirection: "row",
+                  backgroundColor: Colors.WHITE,
+                  alignItems: "center",
+                  paddingHorizontal: 10,
+                  justifyContent: "space-between"
+                }}
+                placeholder={"Amount"}
+                underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
+                underlineColor={Colors.LIGHT_GRAY}
+                
+                disabled={!isInputsEditable()}
+                style={styles.offerPriceTextInput}
+                // label={"Consumer Offer:"}
+             
+                showLeftAffixText={true}
+                leftAffixText={rupeeSymbol}
+                showRightIcon={true}
+                keyboardType="number-pad"
+                value={selector.exchange_offer}
+                TitleText={"Exchange Offer:"}
+                onChangeText={(text) =>
+                  dispatch(
+                    setOfferPriceDetails({
+                      key: "EXCHANGE_OFFER",
+                      text: text,
+                    })
+                  )
+                }
               />
-              <Text style={GlobalStyle.underline}></Text>
-              <TextinputComp
+              {/* <Text style={GlobalStyle.underline}></Text> */}
+              {/* <TextinputComp
                 disabled={!isInputsEditable()}
                 style={styles.offerPriceTextInput}
                 label={"Corporate Offer:"}
@@ -3059,9 +3202,41 @@ export const ProformaComp = ({
                     })
                   )
                 }
+              /> */}
+
+              <ProformaTextinputOffers
+                containerStyle={{
+                  flexDirection: "row",
+                  backgroundColor: Colors.WHITE,
+                  alignItems: "center",
+                  paddingHorizontal: 10,
+                  justifyContent: "space-between"
+                }}
+                placeholder={"Amount"}
+                underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
+                underlineColor={Colors.LIGHT_GRAY}
+
+                disabled={!isInputsEditable()}
+                style={styles.offerPriceTextInput}
+                // label={"Consumer Offer:"}
+
+                showLeftAffixText={true}
+                leftAffixText={rupeeSymbol}
+                showRightIcon={true}
+                keyboardType="number-pad"
+                value={selector.corporate_offer}
+                TitleText={"Corporate Offer:"}
+                onChangeText={(text) =>
+                  dispatch(
+                    setOfferPriceDetails({
+                      key: "CORPORATE_OFFER",
+                      text: text,
+                    })
+                  )
+                }
               />
-              <Text style={GlobalStyle.underline}></Text>
-              <TextinputComp
+              {/* <Text style={GlobalStyle.underline}></Text> */}
+              {/* <TextinputComp
                 disabled={!isInputsEditable()}
                 style={styles.offerPriceTextInput}
                 label={"Promotional Offer:"}
@@ -3077,9 +3252,42 @@ export const ProformaComp = ({
                     })
                   )
                 }
+              /> */}
+
+              <ProformaTextinputOffers
+                containerStyle={{
+                  flexDirection: "row",
+                  backgroundColor: Colors.WHITE,
+                  alignItems: "center",
+                  paddingHorizontal: 10,
+                  justifyContent: "space-between"
+                }}
+                placeholder={"Amount"}
+                underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
+                underlineColor={Colors.LIGHT_GRAY}
+
+                disabled={!isInputsEditable()}
+                style={styles.offerPriceTextInput}
+                // label={"Consumer Offer:"}
+
+                showLeftAffixText={true}
+                leftAffixText={rupeeSymbol}
+                showRightIcon={true}
+                keyboardType="number-pad"
+                value={selector.promotional_offer}
+                TitleText={"Promotional Offer:"}
+                onChangeText={(text) =>
+                  dispatch(
+                    setOfferPriceDetails({
+                      key: "PROMOTIONAL_OFFER",
+                      text: text,
+                    })
+                  )
+                }
               />
-              <Text style={GlobalStyle.underline}></Text>
-              <TextinputComp
+              {/* <Text style={GlobalStyle.underline}></Text> */}
+
+              {/* <TextinputComp
                 disabled={!isInputsEditable()}
                 style={styles.offerPriceTextInput}
                 label={"Cash Discount:"}
@@ -3095,9 +3303,42 @@ export const ProformaComp = ({
                     })
                   )
                 }
+              /> */}
+
+              <ProformaTextinputOffers
+                containerStyle={{
+                  flexDirection: "row",
+                  backgroundColor: Colors.WHITE,
+                  alignItems: "center",
+                  paddingHorizontal: 10,
+                  justifyContent: "space-between"
+                }}
+                placeholder={"Amount"}
+                underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
+                underlineColor={Colors.LIGHT_GRAY}
+
+                disabled={!isInputsEditable()}
+                style={styles.offerPriceTextInput}
+                // label={"Consumer Offer:"}
+
+                showLeftAffixText={true}
+                leftAffixText={rupeeSymbol}
+                showRightIcon={true}
+                keyboardType="number-pad"
+                value={selector.cash_discount}
+                TitleText={"Cash Discount:"}
+                onChangeText={(text) =>
+                  dispatch(
+                    setOfferPriceDetails({
+                      key: "CASH_DISCOUNT",
+                      text: text,
+                    })
+                  )
+                }
               />
-              <Text style={GlobalStyle.underline}></Text>
-              <TextinputComp
+
+              {/* <Text style={GlobalStyle.underline}></Text> */}
+              {/* <TextinputComp
                 disabled={!isInputsEditable()}
                 style={styles.offerPriceTextInput}
                 label={"Foc Accessories:"}
@@ -3113,9 +3354,42 @@ export const ProformaComp = ({
                     })
                   )
                 }
+              /> */}
+
+              <ProformaTextinputOffers
+                containerStyle={{
+                  flexDirection: "row",
+                  backgroundColor: Colors.WHITE,
+                  alignItems: "center",
+                  paddingHorizontal: 10,
+                  justifyContent: "space-between"
+                }}
+                placeholder={"Amount"}
+                underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
+                underlineColor={Colors.LIGHT_GRAY}
+
+                disabled={!isInputsEditable()}
+                style={styles.offerPriceTextInput}
+                // label={"Consumer Offer:"}
+
+                showLeftAffixText={true}
+                leftAffixText={rupeeSymbol}
+                showRightIcon={true}
+                keyboardType="number-pad"
+                value={selector.for_accessories}
+                TitleText={"Foc Accessories:"}
+                onChangeText={(text) =>
+                  dispatch(
+                    setOfferPriceDetails({
+                      key: "FOR_ACCESSORIES",
+                      text: text,
+                    })
+                  )
+                }
               />
-              <Text style={GlobalStyle.underline}></Text>
-              <TextinputComp
+              {/* <Text style={GlobalStyle.underline}></Text> */}
+
+              {/* <TextinputComp
                 disabled={!isInputsEditable()}
                 style={styles.offerPriceTextInput}
                 label={"Insurance Discount:"}
@@ -3131,9 +3405,40 @@ export const ProformaComp = ({
                     })
                   )
                 }
+              /> */}
+              <ProformaTextinputOffers
+                containerStyle={{
+                  flexDirection: "row",
+                  backgroundColor: Colors.WHITE,
+                  alignItems: "center",
+                  paddingHorizontal: 10,
+                  justifyContent: "space-between"
+                }}
+                placeholder={"Amount"}
+                underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
+                underlineColor={Colors.LIGHT_GRAY}
+
+                disabled={!isInputsEditable()}
+                style={styles.offerPriceTextInput}
+                // label={"Consumer Offer:"}
+
+                showLeftAffixText={true}
+                leftAffixText={rupeeSymbol}
+                showRightIcon={true}
+                keyboardType="number-pad"
+                value={selector.insurance_discount}
+                TitleText={"Insurance Discount:"}
+                onChangeText={(text) =>
+                  dispatch(
+                    setOfferPriceDetails({
+                      key: "INSURANCE_DISCOUNT",
+                      text: text,
+                    })
+                  )
+                }
               />
-              <Text style={GlobalStyle.underline}></Text>
-              <TextinputComp
+              {/* <Text style={GlobalStyle.underline}></Text> */}
+              {/* <TextinputComp
                 disabled={!isInputsEditable()}
                 style={styles.offerPriceTextInput}
                 label={"Accessories Discount:"}
@@ -3149,8 +3454,40 @@ export const ProformaComp = ({
                     })
                   )
                 }
+              /> */}
+
+              <ProformaTextinputOffers
+                containerStyle={{
+                  flexDirection: "row",
+                  backgroundColor: Colors.WHITE,
+                  alignItems: "center",
+                  paddingHorizontal: 10,
+                  justifyContent: "space-between"
+                }}
+                placeholder={"Amount"}
+                underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
+                underlineColor={Colors.LIGHT_GRAY}
+
+                disabled={!isInputsEditable()}
+                style={styles.offerPriceTextInput}
+                // label={"Consumer Offer:"}
+
+                showLeftAffixText={true}
+                leftAffixText={rupeeSymbol}
+                showRightIcon={true}
+                keyboardType="number-pad"
+                value={selector.accessories_discount}
+                TitleText={"Accessories Discount:"}
+                onChangeText={(text) =>
+                  dispatch(
+                    setOfferPriceDetails({
+                      key: "ACCESSORIES_DISCOUNT",
+                      text: text,
+                    })
+                  )
+                }
               />
-              <Text style={GlobalStyle.underline}></Text>
+              {/* <Text style={GlobalStyle.underline}></Text> */}
 
               {/* <View style={styles.textAndAmountView}>
                                     <Text style={{ fontSize: 16, fontWeight: '400', color: Colors.GRAY }}>{"Insurance Discount:"}</Text>
@@ -3178,7 +3515,7 @@ export const ProformaComp = ({
                                         />
                                     </View>
                                 </View> */}
-              <TextinputComp
+              {/* <TextinputComp
                 disabled={!isInputsEditable()}
                 style={styles.offerPriceTextInput}
                 label={"Additional Offer 1:"}
@@ -3194,9 +3531,41 @@ export const ProformaComp = ({
                     })
                   )
                 }
+              /> */}
+
+              <ProformaTextinputOffers
+                containerStyle={{
+                  flexDirection: "row",
+                  backgroundColor: Colors.WHITE,
+                  alignItems: "center",
+                  paddingHorizontal: 10,
+                  justifyContent: "space-between"
+                }}
+                placeholder={"Amount"}
+                underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
+                underlineColor={Colors.LIGHT_GRAY}
+
+                disabled={!isInputsEditable()}
+                style={styles.offerPriceTextInput}
+                // label={"Consumer Offer:"}
+
+                showLeftAffixText={true}
+                leftAffixText={rupeeSymbol}
+                showRightIcon={true}
+                keyboardType="number-pad"
+                value={selector.additional_offer_1}
+                TitleText={"Additional Offer 1:"}
+                onChangeText={(text) =>
+                  dispatch(
+                    setOfferPriceDetails({
+                      key: "ADDITIONAL_OFFER_1",
+                      text: text,
+                    })
+                  )
+                }
               />
-              <Text style={GlobalStyle.underline}></Text>
-              <TextinputComp
+              {/* <Text style={GlobalStyle.underline}></Text> */}
+              {/* <TextinputComp
                 disabled={!isInputsEditable()}
                 style={styles.offerPriceTextInput}
                 label={"Additional Offer 2:"}
@@ -3212,16 +3581,59 @@ export const ProformaComp = ({
                     })
                   )
                 }
-              />
-              <Text style={GlobalStyle.underline}></Text>
+              /> */}
 
+              <ProformaTextinputOffers
+                containerStyle={{
+                  flexDirection: "row",
+                  backgroundColor: Colors.WHITE,
+                  alignItems: "center",
+                  paddingHorizontal: 10,
+                  justifyContent: "space-between",
+                }}
+                placeholder={"Amount"}
+                underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
+                underlineColor={Colors.LIGHT_GRAY}
+
+                disabled={!isInputsEditable()}
+                style={styles.offerPriceTextInput}
+                // label={"Consumer Offer:"}
+
+                showLeftAffixText={true}
+                leftAffixText={rupeeSymbol}
+                showRightIcon={true}
+                keyboardType="number-pad"
+                value={selector.additional_offer_2}
+                TitleText={"Additional Offer 2:"}
+                onChangeText={(text) =>
+                  dispatch(
+                    setOfferPriceDetails({
+                      key: "ADDITIONAL_OFFER_2",
+                      text: text,
+                    })
+                  )
+                }
+              />
+
+              {/* <Text style={GlobalStyle.underline}></Text> */}
+              <View style={{backgroundColor:Colors.WHITE, padding:10 }}>
+              <TextAndAmountComp
+                title={"On Road Price:"}
+                // amount={totalOnRoadPrice.toFixed(2)}
+                amount={getActualPrice().toFixed(2)}
+                titleStyle={{ fontSize: 18, fontWeight: "800" }}
+                amoutStyle={{ fontSize: 18, fontWeight: "800" }}
+                componentStyle={{backgroundColor:Colors.LIGHT_GRAY}}
+              />
               <TextAndAmountComp
                 title={"On Road Price After Discount:"}
                 // amount={totalOnRoadPriceAfterDiscount.toFixed(2)}
                 amount={getActualPriceAfterDiscount().toFixed(2)}
                 titleStyle={{ fontSize: 18, fontWeight: "800" }}
                 amoutStyle={{ fontSize: 18, fontWeight: "800" }}
+                  componentStyle={{ backgroundColor: Colors.LIGHT_GRAY }}
               />
+              </View>
               {/* <Text style={GlobalStyle.underline}></Text> */}
               {/* </List.Accordion> */}
             </View>
@@ -3231,21 +3643,33 @@ export const ProformaComp = ({
                 flexDirection: "row", alignSelf: "flex-end"
 
               }}>
+              {showSaveBtn && !showSendForApprovBtn && <Button
+                mode="contained"
+                style={{ flex: 1, marginRight: 10 }}
+                // style={{ width: '30%', marginRight: 10 }}
+                color={Colors.GRAY}
+                labelStyle={{ textTransform: "none", color: Colors.WHITE }}
+                onPress={() => newProformaClick()}>
+                Cancel
+              </Button>}
               {showSaveBtn &&
-                <Button
-                  mode="contained"
-                  style={{ flex: 1, marginRight: showSendForApprovBtn ? 10 : 0 }}
-                  color={Colors.PINK}
-                  labelStyle={{ textTransform: "none" }}
-                  onPress={() => saveProformaDetails("save")}>
-                  Save
-                </Button>
+              
+                  <Button
+                    mode="contained"
+                    style={{ flex: 1, }}
+                    // style={{ width: '30%', }}
+                    color={Colors.PINK}
+                    labelStyle={{ textTransform: "none" }}
+                    onPress={() => saveProformaDetails("save")}>
+                    Save
+                  </Button>
+              
               }
 
               {showSendForApprovBtn &&
                 <Button
                   mode="contained"
-                  style={{ flex: 1 }}
+                  style={{ flex: 1, marginStart:10 }}
                   color={Colors.PINK}
                   labelStyle={{ textTransform: "none" }}
                   onPress={() => saveProformaDetails("SENTFORAPPROVAL")}>
@@ -3260,8 +3684,35 @@ export const ProformaComp = ({
               // !isLeadCreatedBySelf() &&
               userData.isPreBookingApprover &&
               (
+                // <View style={styles.actionBtnView}>
+                //   {!isRejectSelected && (
+                //     <Button
+                //       mode="contained"
+                //       style={{ flex: 1, marginRight: 10 }}
+                //       color={Colors.GREEN}
+                //       labelStyle={{ textTransform: "none" }}
+                //       onPress={() => saveProformaDetails("APPROVED")}
+                //     >
+                //       Approve
+                //     </Button>
+                //   )}
+                //   {!isRejectSelected && <Button
+                //     mode="contained"
+                //     style={{ flex: 1, }}
+                //     color={Colors.RED}
+                //     labelStyle={{ textTransform: "none" }}
+                //     onPress={() =>
+                //       isRejectSelected
+                //         ? saveProformaDetails("REJECTED")
+                //         : setIsRejectSelected(true)
+                //     }
+                //   >
+                //     {isRejectSelected ? "Submit" : "Reject"}
+                //   </Button>}
+                // </View>
+
                 <View style={styles.actionBtnView}>
-                  {!isRejectSelected && (
+                
                     <Button
                       mode="contained"
                       style={{ flex: 1, marginRight: 10 }}
@@ -3271,20 +3722,20 @@ export const ProformaComp = ({
                     >
                       Approve
                     </Button>
-                  )}
-                  {!isRejectSelected && <Button
+                 
+                  <Button
                     mode="contained"
                     style={{ flex: 1, }}
                     color={Colors.RED}
                     labelStyle={{ textTransform: "none" }}
                     onPress={() =>
-                      isRejectSelected
-                        ? saveProformaDetails("REJECTED")
-                        : setIsRejectSelected(true)
+                     saveProformaDetails("REJECTED")
+                        
                     }
                   >
-                    {isRejectSelected ? "Submit" : "Reject"}
-                  </Button>}
+                  Reject
+                  </Button>
+              
                 </View>
               )}
             {isDownLoadVisible &&
@@ -3361,8 +3812,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.WHITE,
   },
   offerPriceTextInput: {
-    height: 55,
-    width: "100%",
+    height: 35,
+    width: "40%",
   },
   actionBtnView: {
     paddingTop: 10,
@@ -3417,11 +3868,12 @@ const styles = StyleSheet.create({
     paddingTop: 7
   },
   addIcon: {
-    backgroundColor: Colors.RED,
+    // backgroundColor: Colors.RED,
     paddingVertical: 4,
     paddingHorizontal: 12,
     borderRadius: 5,
-    marginRight: 20,
+    // marginRight: 20,
+    flexDirection:"row"
   },
   otherPriceTextStyle: {
     fontSize: 14,
