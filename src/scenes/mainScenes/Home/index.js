@@ -157,6 +157,7 @@ const HomeScreen = ({ route, navigation }) => {
       console.log("ERROR", error);
     }
   };
+
   useEffect(() => {
     if (selector.isModalVisible && !isEmpty(initialPosition)) {
       getDetails();
@@ -170,7 +171,7 @@ const HomeScreen = ({ route, navigation }) => {
   const getDetails = async () => {
     try {
       var startDate = createDateTime("8:30");
-      var startBetween = createDateTime("9:30");
+      var startBetween = createDateTime("11:30");
       var endBetween = createDateTime("20:30");
       var endDate = createDateTime("21:30");
       var now = new Date();
@@ -205,7 +206,7 @@ const HomeScreen = ({ route, navigation }) => {
                 setAttendance(false);
               }
             } else {
-              if (endBetween <= now && now <= endDate) {
+              if (endBetween <= now && now <= endDate && json.isLogOut == 0) {
                 setAttendance(true);
               } else {
                 setAttendance(false);

@@ -43,6 +43,8 @@ const LocalButtonComp = ({ title, onPress, disabled }) => {
 var startDate = createDateTime("8:30");
 var midDate =createDateTime("12:00")
 var endDate = createDateTime("16:00");
+var endBetween = createDateTime("20:30");
+var endDate2 = createDateTime("21:30");
 var now = new Date();
 var isBetween = startDate <= now && now <= midDate;
 var isAfterNoon = midDate <= now && now <= endDate;
@@ -158,6 +160,7 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
           isAbsent: present ? 0 : 1,
           status: "Active",
           comments: comment.trim(),
+          isLogOut: present && endBetween <= now && now <= endDate2 ? 1 : 0,
           reason: reason?.value ? reason?.value : "",
         };
         const response = await client.get(
@@ -211,6 +214,7 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
         status: "Active",
         comments: comment.trim(),
         reason: reason?.value ? reason?.value : "",
+        isLogOut: present && endBetween <= now && now <= endDate2 ? 1 : 0,
       };
       const updateData = await client.put(
         URL.UPDATE_EMPLOYEE_ATTENDANCE(json[json.length - 1].id),

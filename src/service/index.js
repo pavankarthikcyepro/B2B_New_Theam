@@ -108,9 +108,9 @@ export const veryIntensiveTask = async (taskDataArguments) => {
 };
 
 export const options = {
-  taskName: "Cypro",
-  taskTitle: "Cypro",
-  taskDesc: "Cypro is tracking",
+  taskName: "Cyepro",
+  taskTitle: "Cyepro",
+  taskDesc: "Cyepro is tracking",
   taskIcon: {
     name: "@mipmap/cy",
     type: "mipmap",
