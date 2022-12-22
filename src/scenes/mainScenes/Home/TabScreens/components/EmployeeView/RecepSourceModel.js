@@ -13,7 +13,11 @@ import { RenderSourceModelParameters } from "../RenderSourceModelParameters";
 import PercentageToggleControl from "./PercentageToggleControl";
 import URL from "../../../../../../networking/endpoints";
 import { useDispatch, useSelector } from "react-redux";
-import { getSourceModelDataForSelf } from "../../../../../../redux/homeReducer";
+import {
+  getReceptionistModel,
+  getReceptionistSource,
+  getSourceModelDataForSelf,
+} from "../../../../../../redux/homeReducer";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
 import { ActivityIndicator, IconButton } from "react-native-paper";
 import { AppNavigator } from "../../../../../../navigations";
@@ -120,12 +124,18 @@ const RecepSourceModel = ({ route, navigation }) => {
     };
     let key = moduleType !== "live-leads" ? "" : "LIVE-LEADS";
     dispatch(getSourceModelDataForSelf({ type, payload, key }));
+    let newPayload = {
+      orgId: orgId,
+      loggedInEmpId: loggedInEmpId,
+    };
+    dispatch(getReceptionistSource(newPayload));
+    dispatch(getReceptionistModel(newPayload));
   }, [empId, navigation]);
 
   useEffect(() => {
     setToggleParamsIndex(0);
     let data = [...paramsMetadata];
-    data = data.filter((x) => x.toggleIndex === 0);
+    // data = data.filter((x) => x.toggleIndex === 0);
     setToggleParamsMetaData([...data]);
   }, [isSourceIndex]);
 
@@ -182,7 +192,7 @@ const RecepSourceModel = ({ route, navigation }) => {
       setLeadSourceKeys([...sourceUnique]);
       setVehicleModelKeys([...modelUnique]);
       const groupedSources = getData([...newSourceData], 0);
-      console.log(groupedSources);
+      // console.log(groupedSources);
 
       setLeadSource(groupedSources);
       const groupedModels = getData([...newModelData], 1);
@@ -200,33 +210,21 @@ const RecepSourceModel = ({ route, navigation }) => {
 
   const getTotal = (type) => {
     const keys = type === 0 ? leadSourceKeys : vehicleModelKeys;
-    let data = type === 0 ? leadSource : vehicleModel;
-    let newData = paramsMetadata;
-    if (toggleParamsIndex !== 2) {
-      newData = newData.filter((x) => x.toggleIndex === toggleParamsIndex);
-    }
-
-    let totals = {};
-    for (let i = 0; i < newData.length; i++) {
-      totals[newData[i].paramName] = 0;
-    }
-
-    keys.map((x) => {
-      data[x].forEach((d) => {
-        totals[d.paramName] = +totals[d.paramName] + +d.achievment;
+    let data =
+      type === 0 ? selector.receptionistSource : selector.receptionistModel;
+    const result = data.reduce((accum, current) => {
+      Object.entries(current).forEach(([key, value]) => {
+        accum[key] = accum[key] + value || value;
       });
-    });
-    setSourceModelTotals({ ...totals });
+      return {
+        ...accum,
+      };
+    }, {});
+
+    setSourceModelTotals({ ...result });
   };
 
   const paramsMetadata = [
-    {
-      color: "#FA03B9",
-      paramName: "PreEnquiry",
-      shortName: "Con",
-      initial: "C",
-      toggleIndex: 0,
-    },
     {
       color: "#FA03B9",
       paramName: "Enquiry",
@@ -264,50 +262,12 @@ const RecepSourceModel = ({ route, navigation }) => {
     },
     {
       color: "#9E31BE",
-      paramName: "Exchange",
-      shortName: "Exg",
-      initial: "Ex",
-      toggleIndex: 1,
-    },
-    {
-      color: "#EC3466",
-      paramName: "Finance",
-      shortName: "Fin",
-      initial: "F",
-      toggleIndex: 1,
-    },
-    {
-      color: "#1C95A6",
-      paramName: "Insurance",
-      shortName: "Ins",
-      initial: "I",
-      toggleIndex: 1,
-    },
-    {
-      color: "#1C95A6",
-      paramName: "EXTENDEDWARRANTY",
-      shortName: "ExW",
-      initial: "ExW",
-      toggleIndex: 1,
-    },
-    {
-      color: "#C62159",
-      paramName: "Accessories",
-      shortName: "Acc",
-      initial: "A",
-      toggleIndex: 1,
+      paramName: "Lost",
+      shortName: "Lost",
+      initial: "L",
+      toggleIndex: 0,
     },
   ];
-
-  if (moduleType !== "live-leads") {
-    paramsMetadata.splice(6, 0, {
-      color: "#C62159",
-      paramName: "DROPPED",
-      shortName: "Lost",
-      initial: "DRP",
-      toggleIndex: 0,
-    });
-  }
 
   const getData = (data, type) => {
     return (
@@ -324,51 +284,48 @@ const RecepSourceModel = ({ route, navigation }) => {
   const renderDataView = () => {
     const keys = isSourceIndex === 0 ? leadSourceKeys : vehicleModelKeys;
     const data = isSourceIndex === 0 ? leadSource : vehicleModel;
+    const newData =
+      isSourceIndex === 0
+        ? selector.receptionistSource
+        : selector.receptionistModel;
     return (
       <>
         {keys &&
           keys.length > 0 &&
-          keys.map((x, index) => {
+          newData.map((x, index) => {
             return (
               <>
-                <View style={{ flexDirection: "row" }}>
-                  <Text>{keys[index]}</Text>
+                <View style={{ flexDirection: "row", marginTop: 10 }}>
+                  <Text
+                    style={{
+                      color: "darkblue",
+                      fontSize: 16,
+                      fontWeight: "500",
+                    }}
+                  >
+                    {x?.source || x?.model}
+                  </Text>
                 </View>
                 <View
                   style={{
                     flexDirection: "row",
-                    backgroundColor: "#CECECE",
-                    paddingVertical: 5,
+                    backgroundColor: "#D7EAF9",
+                    paddingVertical: 6,
                   }}
                 >
                   <View style={{ width: 100 }} />
                   {toggleParamsMetaData.map((param, i) => {
-                    if (param.paramName !== "PreEnquiry") {
-                      const selectedParameter = data[x].filter(
-                        (x) => x.paramName === param.paramName
-                      )[0];
-                      const enquiryParameter = data[x].filter(
-                        (item) => item.paramName === "Enquiry"
-                      )[0];
-                      return (
-                        <View
-                          style={{
-                            width: 100,
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                        >
-                          <Text>
-                            {selectedParameter
-                              ? displayType === 0
-                                ? selectedParameter?.achievment
-                                : selectedParameter?.achivementPerc
-                              : 0}
-                            {/* {selectedParameter?.paramName} */}
-                          </Text>
-                        </View>
-                      );
-                    }
+                    return (
+                      <View
+                        style={{
+                          width: 50,
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Text>{x[param?.initial?.toLowerCase()]}</Text>
+                      </View>
+                    );
                   })}
                 </View>
               </>
@@ -376,53 +333,11 @@ const RecepSourceModel = ({ route, navigation }) => {
           })}
       </>
     );
-    // return (
-    //   <>
-    //     {keys &&
-    //       keys.length > 0 &&
-    //       keys.map((x, index) => {
-    //         return (
-    //           <View key={`${index}`}>
-    //             <View style={styles.flexRow}>
-    //               {data[x] && (
-    //                 <RenderSourceModelParameters
-    //                   item={{ targetAchievements: data[x] }}
-    //                   displayType={displayType}
-    //                   moduleType={moduleType}
-    //                 />
-    //               )}
-    //             </View>
-    //           </View>
-    //         );
-    //       })}
-    //   </>
-    // );
   };
 
-  function renderTitleColumn() {
-    const keys = isSourceIndex === 0 ? leadSourceKeys : vehicleModelKeys;
-    return (
-      <>
-        {keys &&
-          keys.length > 0 &&
-          keys.map((x, index) => {
-            return (
-              <View key={`${index}`} style={styles.titleColumnView}>
-                <Text style={styles.titleColumnText} numberOfLines={2}>
-                  {x}
-                </Text>
-              </View>
-            );
-          })}
-      </>
-    );
-  }
-  function isEmpty(obj) {
-    return Object.keys(obj).length === 0;
-  }
   return (
     <>
-      <View>
+      <ScrollView nestedScrollEnabled showsVerticalScrollIndicator={false}>
         <View>
           <View
             style={[
@@ -494,7 +409,12 @@ const RecepSourceModel = ({ route, navigation }) => {
         <View style={styles.percentageToggleView}>
           <PercentageToggleControl toggleChange={(x) => setDisplayType(x)} />
         </View>
-        <ScrollView horizontal>
+        <ScrollView
+          style={{ marginLeft: 10 }}
+          showsHorizontalScrollIndicator={false}
+          nestedScrollEnabled
+          horizontal
+        >
           <View style={{ flexDirection: "column" }}>
             <View
               style={{
@@ -503,6 +423,7 @@ const RecepSourceModel = ({ route, navigation }) => {
                 borderColor: "#CECECE",
                 borderWidth: 2,
                 paddingVertical: 1,
+                marginTop: 10,
               }}
             >
               <View style={{ width: 100 }} />
@@ -511,12 +432,21 @@ const RecepSourceModel = ({ route, navigation }) => {
                   return (
                     <View
                       style={{
-                        width: 100,
+                        width: 50,
                         alignItems: "center",
                         justifyContent: "center",
+                        paddingVertical: 5,
                       }}
                     >
-                      <Text>{item.initial}</Text>
+                      <Text
+                        style={{
+                          color: "darkblue",
+                          fontSize: 16,
+                          fontWeight: "500",
+                        }}
+                      >
+                        {item.initial}
+                      </Text>
                     </View>
                   );
                 }
@@ -524,311 +454,51 @@ const RecepSourceModel = ({ route, navigation }) => {
             </View>
             {renderDataView()}
             <>
-              <View style={{ flexDirection: "row", marginTop: 10 }}>
-                <Text>{"Total"}</Text>
-              </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  backgroundColor: "#CECECE",
-                  paddingVertical: 5,
-                }}
-              >
-                <View style={{ width: 100 }} />
-                {Object.keys(sourceModelTotals).map((x, index) => {
-                  if (x !== "PreEnquiry") {
+              <View style={{ flexDirection: "row", marginTop: 15, marginBottom:40 }}>
+                <Text
+                  style={{
+                    color: "darkblue",
+                    fontSize: 16,
+                    fontWeight: "500",
+                  }}
+                >
+                  {"Total"}
+                </Text>
+                <View
+                  style={{
+                    flexDirection: "row",
+                  }}
+                >
+                  <View style={{ width: 65 }} />
+                  {toggleParamsMetaData.map((param, i) => {
                     return (
                       <View
                         style={{
-                          width: 100,
+                          width: 50,
                           alignItems: "center",
                           justifyContent: "center",
                         }}
                       >
-                        <Text>
-                          {sourceModelTotals[x]}
-                          {/* {selectedParameter?.achievment} */}
-                          {/* {selectedParameter?.paramName} */}
+                        <Text
+                          style={{
+                            color: "darkblue",
+                            fontSize: 16,
+                            fontWeight: "500",
+                            textDecorationLine:'underline'
+                          }}
+                        >
+                          {sourceModelTotals[param?.initial?.toLowerCase()]}
                         </Text>
                       </View>
-                      //   <View
-                      //     key={`${index}`}
-                      //     style={[styles.justifyAlignCenter, { width: 60 }]}
-                      //   >
-                      //     <Text style={{ color: Colors.WHITE }}>
-                      //       {sourceModelTotals[x]}
-                      //     </Text>
-                      //   </View>
                     );
-                  }
-                })}
+                  })}
+                </View>
               </View>
             </>
           </View>
         </ScrollView>
-      </View>
+      </ScrollView>
     </>
-    // <>
-    //   <View>
-    //     <View
-    //       style={[
-    //         styles.flexRow,
-    //         styles.justifyAlignCenter,
-    //         { marginBottom: 8 },
-    //       ]}
-    //     >
-    //       <View style={[styles.flexRow, styles.toggleButtonView]}>
-    //         <TouchableOpacity
-    //           onPress={() => {
-    //             if (isSourceIndex !== 0) {
-    //               setIsSourceIndex(0);
-    //               getTotal(0);
-    //               setToggleParamsIndex(0);
-    //             }
-    //           }}
-    //           style={[
-    //             styles.toggleViewButtons,
-    //             styles.justifyAlignCenter,
-    //             {
-    //               backgroundColor:
-    //                 isSourceIndex === 1 ? Colors.WHITE : Colors.RED,
-    //             },
-    //           ]}
-    //         >
-    //           <Text
-    //             style={[
-    //               styles.toggleButtonText,
-    //               { color: isSourceIndex === 1 ? Colors.BLACK : Colors.WHITE },
-    //             ]}
-    //           >
-    //             Lead Source
-    //           </Text>
-    //         </TouchableOpacity>
-    //         <TouchableOpacity
-    //           onPress={() => {
-    //             if (isSourceIndex === 0) {
-    //               setIsSourceIndex(1);
-    //               getTotal(1);
-    //               setToggleParamsIndex(0);
-    //             }
-    //           }}
-    //           style={[
-    //             styles.toggleViewButtons,
-    //             styles.justifyAlignCenter,
-    //             {
-    //               backgroundColor:
-    //                 isSourceIndex === 1 ? Colors.RED : Colors.WHITE,
-    //             },
-    //           ]}
-    //         >
-    //           <Text
-    //             style={[
-    //               styles.toggleButtonText,
-    //               { color: isSourceIndex === 1 ? Colors.WHITE : Colors.BLACK },
-    //             ]}
-    //           >
-    //             Vehicle Model
-    //           </Text>
-    //         </TouchableOpacity>
-    //       </View>
-    //     </View>
-    //     <View style={styles.sourceModelContainer}>
-    //       <View
-    //         style={{
-    //           display: "flex",
-    //           flexDirection: "row",
-    //           borderBottomWidth: 2,
-    //           borderBottomColor: Colors.RED,
-    //           paddingBottom: 8,
-    //         }}
-    //       >
-    //         {moduleType !== "live-leads" && (
-    //           <>
-    //             <SegmentedControl
-    //               style={{
-    //                 marginHorizontal: 4,
-    //                 justifyContent: "center",
-    //                 alignSelf: "flex-end",
-    //                 height: 24,
-    //                 marginTop: 8,
-    //                 width: "75%",
-    //               }}
-    //               values={["ETVBRL", "Allied", "View All"]}
-    //               selectedIndex={toggleParamsIndex}
-    //               tintColor={Colors.RED}
-    //               fontStyle={{ color: Colors.BLACK, fontSize: 10 }}
-    //               activeFontStyle={{ color: Colors.WHITE, fontSize: 10 }}
-    //               onChange={(event) => {
-    //                 const index = event.nativeEvent.selectedSegmentIndex;
-    //                 let data = [...paramsMetadata];
-    //                 if (index !== 2) {
-    //                   data = data.filter((x) => x.toggleIndex === index);
-    //                 } else {
-    //                   data = [...paramsMetadata];
-    //                 }
-    //                 setToggleParamsMetaData([...data]);
-    //                 setToggleParamsIndex(index);
-    //               }}
-    //             />
-    //             <View
-    //               style={{
-    //                 height: 24,
-    //                 marginTop: 5,
-    //                 width: "20%",
-    //                 marginLeft: 4,
-    //               }}
-    //             >
-    //               <View style={styles.percentageToggleView}>
-    //                 <PercentageToggleControl
-    //                   toggleChange={(x) => setDisplayType(x)}
-    //                 />
-    //               </View>
-    //             </View>
-    //           </>
-    //         )}
-    //       </View>
-    //       <View style={{ height: "85%" }}>
-    //         {isLoading || isEmpty(leadSource) ? (
-    //           <ActivityIndicator color={Colors.RED} size={"large"} />
-    //         ) : (
-    //           <ScrollView>
-    //             <View style={[styles.flexRow, { paddingHorizontal: 6 }]}>
-    //               <View>
-    //                 <View style={{ height: 20 }}></View>
-    //                 {renderTitleColumn()}
-    //                 <View style={[styles.flexRow, styles.totalTextView]}>
-    //                   <Text style={styles.totalTitleText}>Total</Text>
-    //                 </View>
-    //               </View>
-    //               <ScrollView
-    //                 ref={scrollViewRef}
-    //                 onContentSizeChange={(contentWidth, contentHeight) => {
-    //                   scrollViewRef?.current?.scrollTo({
-    //                     y: 0,
-    //                     animated: true,
-    //                   });
-    //                 }}
-    //                 horizontal
-    //               >
-    //                 <View>
-    //                   {/* TOP Header view */}
-    //                   <View key={"headers"} style={[styles.flexRow]}>
-    //                     <View style={[styles.flexRow, { height: 20 }]}>
-    //                       {toggleParamsMetaData.map((param, i) => {
-    //                         if (moduleType === "live-leads") {
-    //                           if (
-    //                             param.paramName === "INVOICE" ||
-    //                             param.paramName === "Enquiry" ||
-    //                             param.paramName === "Booking" ||
-    //                             param.paramName === "PreEnquiry"
-    //                           ) {
-    //                             return (
-    //                               <View
-    //                                 key={`${param.paramName}__${i}`}
-    //                                 style={[
-    //                                   styles.flexRow,
-    //                                   styles.justifyAlignCenter,
-    //                                   {
-    //                                     width:
-    //                                       param.paramName === "Accessories"
-    //                                         ? 80
-    //                                         : 60,
-    //                                   },
-    //                                 ]}
-    //                               >
-    //                                 <Text style={{ color: param.color }}>
-    //                                   {param.shortName}
-    //                                 </Text>
-    //                               </View>
-    //                             );
-    //                           }
-    //                         } else {
-    //                           if (param.paramName !== "PreEnquiry") {
-    //                             return (
-    //                               <View
-    //                                 key={`${param.paramName}__${i}`}
-    //                                 style={[
-    //                                   styles.flexRow,
-    //                                   styles.justifyAlignCenter,
-    //                                   {
-    //                                     width:
-    //                                       param.paramName === "Accessories"
-    //                                         ? 80
-    //                                         : 60,
-    //                                   },
-    //                                 ]}
-    //                               >
-    //                                 <Text style={{ color: param.color }}>
-    //                                   {param.shortName}
-    //                                 </Text>
-    //                               </View>
-    //                             );
-    //                           }
-    //                         }
-    //                       })}
-    //                     </View>
-    //                   </View>
-    //                   <View>{renderDataView()}</View>
-    //                   {/* Total section */}
-    //                   <View>
-    //                     <View style={styles.paramsTotalContainerView}>
-    //                       <View style={styles.paramsTotalContainerSubView}>
-    //                         <View style={styles.paramsTotalContainer}>
-    //                           {Object.keys(sourceModelTotals).map(
-    //                             (x, index) => {
-    //                               if (moduleType === "live-leads") {
-    //                                 if (
-    //                                   x === "INVOICE" ||
-    //                                   x === "Enquiry" ||
-    //                                   x === "Booking" ||
-    //                                   x === "PreEnquiry"
-    //                                 ) {
-    //                                   return (
-    //                                     <View
-    //                                       key={`${index}`}
-    //                                       style={[
-    //                                         styles.justifyAlignCenter,
-    //                                         { width: 60 },
-    //                                       ]}
-    //                                     >
-    //                                       <Text style={{ color: Colors.WHITE }}>
-    //                                         {sourceModelTotals[x]}
-    //                                       </Text>
-    //                                     </View>
-    //                                   );
-    //                                 }
-    //                               } else {
-    //                                 if (x !== "PreEnquiry") {
-    //                                   return (
-    //                                     <View
-    //                                       key={`${index}`}
-    //                                       style={[
-    //                                         styles.justifyAlignCenter,
-    //                                         { width: 60 },
-    //                                       ]}
-    //                                     >
-    //                                       <Text style={{ color: Colors.WHITE }}>
-    //                                         {sourceModelTotals[x]}
-    //                                       </Text>
-    //                                     </View>
-    //                                   );
-    //                                 }
-    //                               }
-    //                             }
-    //                           )}
-    //                         </View>
-    //                       </View>
-    //                     </View>
-    //                   </View>
-    //                 </View>
-    //               </ScrollView>
-    //             </View>
-    //           </ScrollView>
-    //         )}
-    //       </View>
-    //     </View>
-    //   </View>
-    // </>
   );
 };
 

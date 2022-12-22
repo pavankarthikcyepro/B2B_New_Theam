@@ -94,6 +94,7 @@ import RecepSourceModel from "../scenes/mainScenes/Home/TabScreens/components/Em
 import DropLostCancelScreen from "../scenes/mainScenes/DropLostCancel/DropLostCancel";
 import AddNewEnquiryScreen from "../scenes/mainScenes/EMS/addNewEnquiry";
 import FilterTargetScreen from "../scenes/mainScenes/TargetSettingsScreen/TabScreen/filterTarget";
+import ReceptionistFilterScreen from "../scenes/mainScenes/Home/receptionistFilter";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -339,6 +340,7 @@ export const HomeStackIdentifiers = {
   branchRanking: "BRANCH_RANKING",
   sourceModel: "SOURCE_MODEL",
   home: "HOME_SCREEN",
+  receptionistFilter : "REECEPTION_FILTER"
 };
 
 export const EmsStackIdentifiers = {
@@ -462,6 +464,11 @@ const HomeStackNavigator = ({ navigation }) => {
         options={{
           title: "Source/Model",
         }}
+      />
+      <HomeStack.Screen
+        name={HomeStackIdentifiers.receptionistFilter}
+        component={ReceptionistFilterScreen}
+        options={{ title: "Filters" }}
       />
     </HomeStack.Navigator>
   );
