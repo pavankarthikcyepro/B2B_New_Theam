@@ -1053,16 +1053,17 @@ const MainStackDrawerNavigator = () => {
           initialParams={{ screen: DrawerStackIdentifiers.home }}
         />
         <MainDrawerNavigator.Screen
-          name={DrawerStackIdentifiers.upcomingDeliveries}
-          component={UpcomingDeliveriestStackNavigator}
+          name={DrawerStackIdentifiers.liveLeads}
+          component={LiveLeadsStackNavigator}
         />
         <MainDrawerNavigator.Screen
-          name={DrawerStackIdentifiers.complaint}
-          component={ComplaintStackNavigator}
+          name={DrawerStackIdentifiers.monthlyTarget}
+          component={MonthlyTargetStackNavigator}
+          initialParams={{ screen: DrawerStackIdentifiers.monthlyTarget }}
         />
         <MainDrawerNavigator.Screen
-          name={DrawerStackIdentifiers.settings}
-          component={SettingsStackNavigator}
+          name={DrawerStackIdentifiers.taskTransfer}
+          component={TaskTransferStackNavigator}
         />
         <MainDrawerNavigator.Screen
           name={DrawerStackIdentifiers.digitalPayment}
@@ -1073,25 +1074,25 @@ const MainStackDrawerNavigator = () => {
           component={HelpDeskStackNavigator}
         />
         <MainDrawerNavigator.Screen
-          name={DrawerStackIdentifiers.monthlyTarget}
-          component={MonthlyTargetStackNavigator}
-          initialParams={{ screen: DrawerStackIdentifiers.monthlyTarget }}
-        />
-        <MainDrawerNavigator.Screen
-          name={DrawerStackIdentifiers.taskManagement}
-          component={TaskManagementStackNavigator}
+          name={DrawerStackIdentifiers.settings}
+          component={SettingsStackNavigator}
         />
         <MainDrawerNavigator.Screen
           name={DrawerStackIdentifiers.dropAnalysis}
           component={DropAnalysisStackNavigator}
         />
+
         <MainDrawerNavigator.Screen
-          name={DrawerStackIdentifiers.liveLeads}
-          component={LiveLeadsStackNavigator}
+          name={DrawerStackIdentifiers.upcomingDeliveries}
+          component={UpcomingDeliveriestStackNavigator}
         />
         <MainDrawerNavigator.Screen
-          name={DrawerStackIdentifiers.taskTransfer}
-          component={TaskTransferStackNavigator}
+          name={DrawerStackIdentifiers.complaint}
+          component={ComplaintStackNavigator}
+        />
+        <MainDrawerNavigator.Screen
+          name={DrawerStackIdentifiers.taskManagement}
+          component={TaskManagementStackNavigator}
         />
 
         <MainDrawerNavigator.Screen

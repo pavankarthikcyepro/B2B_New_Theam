@@ -23,7 +23,7 @@ import { AuthContext } from "../../utils/authContext";
 import realm from "../../database/realm";
 import * as AsyncStore from "../../asyncStore";
 // import { useNavigation } from '@react-navigation/native';
-import { useIsFocused } from "@react-navigation/native";
+import { useIsFocused, useRoute } from "@react-navigation/native";
 import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 import Entypo from "react-native-vector-icons/FontAwesome";
 import { client } from "../../networking/client";
@@ -126,6 +126,7 @@ const SideMenuScreen = ({ navigation }) => {
   const [initialData, setInitialData] = useState({});
   const [showModal, setShowModal] = useState(false);
   const [imagePath, setImagePath] = useState("");
+  const route = useRoute();
 
   useEffect(() => {
     getLoginEmployeeData();
@@ -611,6 +612,8 @@ const SideMenuScreen = ({ navigation }) => {
         data={newTableData}
         keyExtractor={(item, index) => index}
         renderItem={({ item, index }) => {
+          const isActive = route?.state?.index == index;
+          const textColor = isActive ? Colors.PINK : "gray"; 
           return (
             <>
               {item.title === "Task Transfer" ? (
@@ -633,7 +636,10 @@ const SideMenuScreen = ({ navigation }) => {
                         }}
                       >
                         <Image
-                          style={{ height: 20, width: 20 }}
+                          style={{
+                            height: 20,
+                            width: 20,
+                          }}
                           source={item.pngIcon}
                         />
                         <Text
@@ -641,7 +647,7 @@ const SideMenuScreen = ({ navigation }) => {
                             fontSize: 15,
                             fontWeight: "bold",
                             marginLeft: 25,
-                            color: "gray",
+                            color: textColor,
                           }}
                         >
                           {item.title}
@@ -657,6 +663,8 @@ const SideMenuScreen = ({ navigation }) => {
                       paddingLeft: 10,
                       height: 55,
                       justifyContent: "center",
+                      backgroundColor: isActive ? Colors.PINK + 15 : Colors.WHITE,
+                      borderRadius: 10
                     }}
                   >
                     {/* <List.Item
@@ -691,7 +699,7 @@ const SideMenuScreen = ({ navigation }) => {
                           fontSize: 15,
                           fontWeight: "bold",
                           marginLeft: 25,
-                          color: "gray",
+                          color: textColor,
                         }}
                       >
                         {item.title}
