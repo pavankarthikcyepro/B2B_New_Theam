@@ -392,6 +392,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [authToken, setAuthToken] = useState("");
 
   const [isMinimumAmtModalVisible, setIsMinimumAmtModalVisible] = useState(false);
+  const [configureRuleData, setConfigureRuleData] = useState("")
+  const [isMiniAmountCheck, setisMiniAmountCheck] = useState(true)
 
   // Edit buttons shows
   useEffect(() => {
@@ -878,6 +880,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
               );
             }
           }
+          let findPrimaryData = [...arr].filter(item => item.isPrimary === "Y")
+          
+          
+          getConfigureRulesDetails(findPrimaryData[0].model, findPrimaryData[0].variant, findPrimaryData[0].fuel, userData.orgId)
           await setCarModelsList([...arr]);
         }
       } else {
@@ -885,6 +891,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           let arr = await [...carModelsList];
           arr.splice(index, 1);
           deleteModalFromServer({ value });
+          let findPrimaryData = [...arr].filter(item => item.isPrimary === "Y")
+          
+          getConfigureRulesDetails(findPrimaryData[0].model, findPrimaryData[0].variant, findPrimaryData[0].fuel, userData.orgId)
           await setCarModelsList([...arr]);
         }
       }
@@ -894,14 +903,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   };
 
   useEffect(() => {
-    dispatch(getRulesConfiguration({
-      model: "JEEP MERIDIAN",
-      variant: "LIMITED (O) 6MT 2.0D",
-      fuel: "Diesel",
-      orgId:18
-    }))
-  }, [])
-  
+    if (selector.configureRulesResponse_status == "fulfilled") {
+     
+      setConfigureRuleData(selector.configureRulesResponse);
+    } else {
+      setConfigureRuleData("")
+    }
+  }, [selector.configureRulesResponse])
+
 
   const setPaidAccessoriesData = () => {
     const dmsLeadDto = selector.pre_booking_details_response.dmsLeadDto;
@@ -959,6 +968,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         await setCarModelsList([]);
         arr[isPrimaryCureentIndex] = cardata;
         arr[index] = selecteditem;
+       
+        setisMiniAmountCheck(true)
+        let findPrimaryData = [...arr].filter(item => item.isPrimary === "Y")
+        
+        getConfigureRulesDetails(findPrimaryData[0].model, findPrimaryData[0].variant, findPrimaryData[0].fuel, userData.orgId)
         await setCarModelsList([...arr]);
         await setIsPrimaryCurrentIndex(index);
       }
@@ -1029,6 +1043,22 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       }
     );
   };
+
+  const getConfigureRulesDetails = async (modalNAme, variantName, fuel, orgid) => {
+    //todo
+    setisMiniAmountCheck(true)
+    let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      dispatch(getRulesConfiguration({
+        model: modalNAme,
+        variant: variantName,
+        fuel: fuel,
+        orgId: jsonObj.orgId
+      }))
+    }
+
+  }
 
   const getCarModelListFromServer = (orgId) => {
     // Call Api
@@ -1956,6 +1986,19 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       setOpenAccordian("3");
       return;
     }
+    //todo
+    if (isMiniAmountCheck) {
+      if (configureRuleData != "") {
+        if (parseInt(configureRuleData.bookingAmount) > parseInt(selector.booking_amount)) {
+          setIsMinimumAmtModalVisible(true)
+          return;
+        } else {
+          setIsMinimumAmtModalVisible(false)
+        }
+      }
+    }
+
+
 
     let primaryTempCars = [];
     primaryTempCars = carModelsList.filter((item) => {
@@ -2065,13 +2108,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       return;
     }
 
-    const bookingAmount = parseInt(selector.booking_amount);
-    if (bookingAmount < 5000) {
-      scrollToPos(8);
-      setOpenAccordian("8");
-      showToast("please enter booking amount minimum 5000");
-      return;
-    }
+    // const bookingAmount = parseInt(selector.booking_amount);
+    // if (bookingAmount < 5000) {
+    //   scrollToPos(8);
+    //   setOpenAccordian("8");
+    //   showToast("please enter booking amount minimum 5000");
+    //   return;
+    // }
 
     if (selector.booking_payment_mode.length === 0) {
       scrollToPos(8);
@@ -2499,6 +2542,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           }
         }
       }
+
+      let findPrimaryData = array.filter(item => item.isPrimary === "Y")
+    
+      getConfigureRulesDetails(findPrimaryData[0].model, findPrimaryData[0].variant, findPrimaryData[0].fuel, userData.orgId)
       await setCarModelsList(array);
     } catch (error) { }
   };
@@ -3063,7 +3110,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     dispatch(updateEnquiryDetailsApi(enquiryDetailsObj));
   };
 
-  
+
   useEffect(() => {
     if (
       selectorBooking.update_enquiry_details_response_status === "success" &&
@@ -3541,7 +3588,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   };
 
 
-  
+
 
   const renderMinimumAmountModal = () => {
     //todo
@@ -3559,39 +3606,40 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
           justifyContent: "center",
           alignItems: "center",
-          backgroundColor: "transparent",
+          backgroundColor:  "rgba(0,0,0,0.7)",
           flex: 1,
-          paddingHorizontal:10
+          paddingHorizontal: 10
         }}
       >
         <View style={{
           width: '100%',
           height: '20%',
-          backgroundColor: '#ff551c',
+          backgroundColor: Colors.WHITE,
           paddingHorizontal: 10,
-          borderRadius:10,
-          justifyContent:"flex-start"
+          borderRadius: 10,
+          justifyContent: "flex-start"
         }}>
           <View style={{
-          flexDirection: "row",
-          alignItems:"center",
+            flexDirection: "row",
+            alignItems: "center",
 
-        }}>
-            <MaterialIcons name="cancel" size={60} color={Colors.WHITE} />
+          }}>
+            <MaterialIcons name="cancel" size={60} color={Colors.BLACK} />
 
             <View style={{ flexDirection: "column" }}>
-              <View style={{flexDirection:"row",marginVertical:10,}}>
-                <Text style={{ color: Colors.WHITE, fontSize:16,fontWeight:'700',marginEnd:10,marginBottom:1 }} >Minimum Booking Amount Alert</Text>
+              <View style={{ flexDirection: "row", marginVertical: 10, }}>
+                <Text style={{ color: Colors.BLACK, fontSize: 16, fontWeight: '700', marginEnd: 10, marginBottom: 1 }} >Minimum Booking Amount Alert</Text>
                 <TouchableOpacity
-                
-                 onPress={()=>{
-                  setIsMinimumAmtModalVisible(false)
-                 }}>
-                  <Entypo name="cross" size={20} color={Colors.WHITE} />
+
+                  onPress={() => {
+                    setIsMinimumAmtModalVisible(false)
+                    setisMiniAmountCheck(false)
+                  }}>
+                  <Entypo name="cross" size={20} color={Colors.BLACK} />
                 </TouchableOpacity>
-              
+
               </View>
-              <Text style={{ color: Colors.WHITE, fontSize: 14,width:'30%',fontWeight:'700'}} >For the selected vehicle Minimum booking amount ”X” Rs/-,but entered booking amount not equal to minimum booking amount slab</Text>
+              <Text style={{ color: Colors.BLACK, fontSize: 14, width: '30%', fontWeight: '700' }} >For the selected vehicle Minimum booking amount {configureRuleData.bookingAmount} Rs/-, but entered booking amount not equal to minimum booking amount slab</Text>
             </View>
           </View>
 
@@ -3607,7 +3655,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
       <LoaderComponent visible={isLoading} />
-      { renderMinimumAmountModal()}
+      {renderMinimumAmountModal()}
       <ImagePickerComponent
         visible={selector.showImagePicker}
         keyId={selector.imagePickerKeyId}
@@ -6658,7 +6706,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   keyboardType={"number-pad"}
                   maxLength={9}
                   onChangeText={(text) =>
-                      dispatch(
+                    dispatch(
                       setBookingPaymentDetails({
                         key: "BOOKING_AMOUNT",
                         text: text,
@@ -7227,7 +7275,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-     
+
       <Modal
         animationType="fade"
         visible={imagePath !== ""}

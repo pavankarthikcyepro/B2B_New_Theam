@@ -473,6 +473,8 @@ const prebookingFormSlice = createSlice({
     insurance_discount: "",
     isAddressSet: false,
     registrationCharges: 0,
+    configureRulesResponse: "",
+    configureRulesResponse_status:"",
   },
   reducers: {
     clearState: (state, action) => {
@@ -604,6 +606,8 @@ const prebookingFormSlice = createSlice({
       state.accessories_discount = "";
       state.insurance_discount = "";
       state.isAddressSet = false;
+      state.configureRulesResponse = "";
+      state.configureRulesResponse_status = "";
     },
     updateStatus: (state, action) => {
       state.pre_booking_payment_response_status = "";
@@ -1851,18 +1855,25 @@ const prebookingFormSlice = createSlice({
     builder.addCase(updateRef.fulfilled, (state, action) => {});
     builder.addCase(updateRef.rejected, (state, action) => {});
 
-    //Get Assingned Tasks api
+    //Get configured rulles api
     builder.addCase(getRulesConfiguration.pending, (state, action) => {
-     
+      state.configureRulesResponse = "";
+      state.configureRulesResponse_status = "pending";
       state.isLoading = true;
     });
     builder.addCase(getRulesConfiguration.fulfilled, (state, action) => {
-     
+    
       state.isLoading = false;
+      
+      if(action.payload){
+        state.configureRulesResponse = action.payload;
+        state.configureRulesResponse_status = "fulfilled";
+      }
       
     });
     builder.addCase(getRulesConfiguration.rejected, (state, action) => {
-     
+      state.configureRulesResponse = "";
+      state.configureRulesResponse_status = "rejected";
       state.isLoading = false;
     });
   },
