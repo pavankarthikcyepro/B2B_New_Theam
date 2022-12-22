@@ -9,6 +9,9 @@ import {
   KeyboardAvoidingView,
   Alert,
   Keyboard,
+  Modal,
+  TouchableOpacity,
+  FlatList,
 } from "react-native";
 import { ButtonComp } from "../../../components";
 import { Checkbox, Button, IconButton } from "react-native-paper";
@@ -62,9 +65,54 @@ import {
 } from "../../../utils/helperFunctions";
 import moment from "moment";
 import { EmsTopTabNavigatorIdentifiers } from "../../../navigations/emsTopTabNavigator";
+import Fontisto from "react-native-vector-icons/Fontisto"
 
 const screenWidth = Dimensions.get("window").width;
+let EventListData = [
+  {
+    eventName: "omega thon",
+    eventLocation: "Ahmedabad",
+    Startdate: "10/12/2022",
+    Enddate: "10/12/2022",
+    isSelected:false,
+    id:0
 
+  },
+  {
+    eventName: "omega thon22",
+    eventLocation: "Ahmedabad",
+    Startdate: "10/12/2022",
+    Enddate: "10/12/2022",
+    isSelected: false,
+    id: 1
+  },
+  {
+    eventName: "omega thon22",
+    eventLocation: "Ahmedabad",
+    Startdate: "10/12/2022",
+    Enddate: "10/12/2022",
+    isSelected: false
+    ,
+    id: 2
+  },
+  {
+    eventName: "omega thon22",
+    eventLocation: "Ahmedabad",
+    Startdate: "10/12/2022",
+    Enddate: "10/12/2022",
+    isSelected: false,
+    id: 3
+  },
+  {
+    eventName: "omega thon22",
+    eventLocation: "Ahmedabad",
+    Startdate: "10/12/2022",
+    Enddate: "10/12/2022",
+    isSelected: false,
+    id: 4
+  },
+  
+]
 const AddPreEnquiryScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.addPreEnquiryReducer);
   const homeSelector = useSelector((state) => state.homeReducer);
@@ -117,7 +165,8 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     Pincode: "",
   });
   const [isSubmitPress, setIsSubmitPress] = useState(false);
-
+  const [isEventListModalVisible, setisEventListModalVisible] = useState(false);
+  const [eventListdata,seteventListData] = useState(EventListData)
   useEffect(() => {
     getAsyncstoreData();
     setExistingData();
@@ -531,10 +580,10 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       return;
     }
 
-        if (selector.email.length > 0 && !isEmail(selector.email)) {
-            showToast("Please enter valid email");
-            return;
-        }
+    if (selector.email.length > 0 && !isEmail(selector.email)) {
+      showToast("Please enter valid email");
+      return;
+    }
 
     if (!fromEdit) {
       if (selector.pincode.length > 0 && !isPincode(selector.pincode)) {
@@ -615,26 +664,26 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       });
   };
 
-    const makeCreatePreEnquiry = (refNumber, addressObj) => {
-        const dmsContactDtoObj = {
-          branchId: Number(branchId),
-          createdBy: employeeName,
-          customerType: selector.customerType,
-          firstName: selector.firstName,
-          lastName: selector.lastName,
-          modifiedBy: employeeName,
-          orgId: organizationId,
-          phone: selector.mobile,
-          company: selector.companyName ? selector.companyName : selector.other,
-          otherCustomerType: selector.other,
-          email: selector.email,
-          enquirySource: selector.sourceOfEnquiryId,
-          subSource: selector.subSourceOfEnquiryId,
-          ownerName: employeeName,
-          secondaryPhone: selector.alterMobile,
-          status: "PREENQUIRY",
-          pincode: selector.pincode,
-        };
+  const makeCreatePreEnquiry = (refNumber, addressObj) => {
+    const dmsContactDtoObj = {
+      branchId: Number(branchId),
+      createdBy: employeeName,
+      customerType: selector.customerType,
+      firstName: selector.firstName,
+      lastName: selector.lastName,
+      modifiedBy: employeeName,
+      orgId: organizationId,
+      phone: selector.mobile,
+      company: selector.companyName ? selector.companyName : selector.other,
+      otherCustomerType: selector.other,
+      email: selector.email,
+      enquirySource: selector.sourceOfEnquiryId,
+      subSource: selector.subSourceOfEnquiryId,
+      ownerName: employeeName,
+      secondaryPhone: selector.alterMobile,
+      status: "PREENQUIRY",
+      pincode: selector.pincode,
+    };
 
     const dmsLeadDtoObj = {
       branchId: Number(branchId),
@@ -684,7 +733,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       ],
     };
 
-        // http://ec2-3-7-117-218.ap-south-1.compute.amazonaws.com:8081
+    // http://ec2-3-7-117-218.ap-south-1.compute.amazonaws.com:8081
 
     let url = sales_url;
     let formData = {};
@@ -879,8 +928,8 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
           showToast("No data found");
           return;
         }
-                else{
-                }
+        else {
+        }
         setDataForDropDown([...homeSelector.source_of_enquiry_list]);
         break;
       case "SUB_SOURCE_OF_ENQUIRY":
@@ -947,6 +996,163 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     }
   };
 
+  const addSelectedEvent = () => {
+    // todo add api call 
+  }
+
+  const eventListTableRow = (txt1, txt2, txt3, txt4, isDisplayRadio, isRadioSelected, isClickable,itemMain,index) => {
+
+    return (
+      <>
+
+        <TouchableOpacity style={{
+          flexDirection: "row",
+          // justifyContent: "space-around",
+          alignItems: "center",
+          // height: '15%',
+          alignContent: "center",
+          width: '100%',
+          marginTop: 5
+
+
+        }}
+          disabled={isClickable}
+          onPress={()=>{
+           
+            // let temp = [...EventListData].filter(item => item.id === itemMain.id).map(i => i.isSelected = true)
+            let temp = [...EventListData].map(i => 
+             ( i.id ===itemMain.id ? {...i, isSelected : true}: i)
+            )
+           
+            seteventListData([...temp])
+          }}
+        >
+          {/* todo */}
+          {isDisplayRadio ?
+            <Fontisto name={itemMain.isSelected ? "radio-btn-active" : "radio-btn-passive"}
+              size={12} color={Colors.RED}
+              style={{ marginEnd: 10 }}
+            /> :
+            <View style={{ marginEnd: 10, width: 12, }}  >{ }</View>}
+
+          <Text numberOfLines={1} style={{ fontSize: 12, color: Colors.BLACK, textAlign: "left", marginEnd: 10, width: 100, }}  >{txt1}</Text>
+          <Text numberOfLines={1} style={{ fontSize: 12, color: Colors.BLACK, textAlign: "left", marginEnd: 10, width: 100 }}>{txt2}</Text>
+          <Text numberOfLines={1} style={{ fontSize: 12, color: Colors.BLACK, textAlign: "left", marginEnd: 10, width: 100 }}>{txt3}</Text>
+          <Text numberOfLines={1} style={{ fontSize: 12, color: Colors.BLACK, textAlign: "left", marginEnd: 10, width: 100 }}>{txt4}</Text>
+
+        </TouchableOpacity>
+
+      </>)
+  }
+
+  const addEventListModal = () => {
+
+    return (
+      <Modal
+        animationType="fade"
+        visible={isEventListModalVisible}
+        onRequestClose={() => {
+
+        }}
+        transparent={true}
+      >
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgba(0,0,0,0.7)",
+
+
+          }}
+        >
+          <View style={{
+            width: '90%',
+            backgroundColor: Colors.WHITE,
+            padding: 10,
+            borderWidth: 2,
+            borderColor: Colors.BLACK,
+            flexDirection: "column",
+            height: '40%',
+          }}
+
+          >
+            <Text style={{ color: Colors.BLACK, fontSize: 16, fontWeight: "700", textAlign: "left", margin: 5 }}>Select Event</Text>
+            <ScrollView style={{
+              width: '100%',
+
+            }}
+              horizontal={true}
+            >
+              <View style={{ flexDirection: "column" }}>
+
+                <Text style={GlobalStyle.underline} />
+                <View style={{
+                  height: 30, borderBottomColor: 'rgba(208, 212, 214, 0.7)',
+                  borderBottomWidth: 2,
+
+                }}>
+                  {eventListTableRow("Event Name", "Event location", "Start Date", "End Date", false, false, true,0,0)}
+                  {/* <Text style={GlobalStyle.underline} /> */}
+                </View>
+                <View>
+                  <FlatList
+                    key={"EVENT_LIST"}
+                    data={eventListdata}
+                    style={{ height: '80%' }}
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={({ item, index }) => {
+                      return (
+                        <>
+                          <View style={{
+                            height: 35, borderBottomColor: 'rgba(208, 212, 214, 0.7)',
+                            borderBottomWidth: 4, marginTop: 5
+                          }}>
+                            {eventListTableRow(item.eventName, item.eventLocation, item.Startdate, item.Enddate, true, false, false,item,index)}
+
+                          </View>
+
+                        </>
+                      );
+                    }}
+                  />
+
+                </View>
+
+                {/* {eventListTableRow("Event Namedsadasd", "Event location", "10/12/2022", "10/12/2022", true, true,true)}
+                {eventListTableRow("Event Namesadasdsad", "Event locationasdad", "10/12/2022", "10/12/2022", true, false,true)}
+                {eventListTableRow("Event Name", "Event location", "10/12/2022", "10/12/2022", true, false,true)} */}
+              </View>
+
+            </ScrollView>
+            <View style={{ flexDirection: "row", alignSelf: "flex-end", marginTop: 10 }}>
+              <Button
+                mode="contained"
+
+                style={{ flex: 1, marginRight: 10 }}
+                color={Colors.GRAY}
+                labelStyle={{ textTransform: "none" }}
+                onPress={() => setisEventListModalVisible(false)}>
+                Cancel
+              </Button>
+              <Button
+                mode="contained"
+
+                style={{ flex: 1 }}
+                color={Colors.PINK}
+                labelStyle={{ textTransform: "none" }}
+                onPress={() => addSelectedEvent()}>
+                Add
+              </Button>
+            </View>
+
+          </View>
+
+        </View>
+      </Modal>
+    )
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       {/* // select modal */}
@@ -956,7 +1162,11 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         data={dataForDropDown}
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
+          
           if (dropDownKey === "SOURCE_OF_ENQUIRY") {
+            if (item.name === "Events") {
+              setisEventListModalVisible(true);
+            }
             if (item.name === "Event") {
               getEventListFromServer();
             }
@@ -973,6 +1183,8 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
           );
         }}
       />
+
+      {addEventListModal()}
 
       <DatePickerComponent
         visible={showDatePicker}
@@ -1082,14 +1294,14 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               label={"First Name*"}
               editable={
                 selector.enquiryType.length > 0 &&
-                selector.customerType.length > 0
+                  selector.customerType.length > 0
                   ? true
                   : false
               }
               maxLength={30}
               disabled={
                 selector.enquiryType.length > 0 &&
-                selector.customerType.length > 0
+                  selector.customerType.length > 0
                   ? false
                   : true
               }
@@ -1124,14 +1336,14 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               label={"Last Name*"}
               editable={
                 selector.enquiryType.length > 0 &&
-                selector.customerType.length > 0
+                  selector.customerType.length > 0
                   ? true
                   : false
               }
               maxLength={30}
               disabled={
                 selector.enquiryType.length > 0 &&
-                selector.customerType.length > 0
+                  selector.customerType.length > 0
                   ? false
                   : true
               }
@@ -1227,10 +1439,10 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               ]}
             ></Text>
             {selector.customerType === "Corporate" ||
-            selector.customerType === "Government" ||
-            selector.customerType === "Retired" ||
-            selector.customerType === "Fleet" ||
-            selector.customerType === "Institution" ? (
+              selector.customerType === "Government" ||
+              selector.customerType === "Retired" ||
+              selector.customerType === "Fleet" ||
+              selector.customerType === "Institution" ? (
               <View>
                 <TextinputComp
                   style={styles.textInputComp}

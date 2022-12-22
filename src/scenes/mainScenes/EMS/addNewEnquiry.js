@@ -172,7 +172,7 @@ import {
 } from "../../../jsonData/preEnquiryScreenJsonData";
 import { getEmployeesListApi } from "../../../redux/confirmedPreEnquiryReducer";
 import { client } from "../../../networking/client";
-
+import Fontisto from "react-native-vector-icons/Fontisto"
 const theme = {
   ...DefaultTheme,
   // Specify custom property
@@ -183,7 +183,51 @@ const theme = {
     background: Colors.WHITE,
   },
 };
+let EventListData = [
+  {
+    eventName: "omega thon",
+    eventLocation: "Ahmedabad",
+    Startdate: "10/12/2022",
+    Enddate: "10/12/2022",
+    isSelected: false,
+    id: 0
 
+  },
+  {
+    eventName: "omega thon22",
+    eventLocation: "Ahmedabad",
+    Startdate: "10/12/2022",
+    Enddate: "10/12/2022",
+    isSelected: false,
+    id: 1
+  },
+  {
+    eventName: "omega thon22",
+    eventLocation: "Ahmedabad",
+    Startdate: "10/12/2022",
+    Enddate: "10/12/2022",
+    isSelected: false
+    ,
+    id: 2
+  },
+  {
+    eventName: "omega thon22",
+    eventLocation: "Ahmedabad",
+    Startdate: "10/12/2022",
+    Enddate: "10/12/2022",
+    isSelected: false,
+    id: 3
+  },
+  {
+    eventName: "omega thon22",
+    eventLocation: "Ahmedabad",
+    Startdate: "10/12/2022",
+    Enddate: "10/12/2022",
+    isSelected: false,
+    id: 4
+  },
+
+]
 const dmsAttachmentsObj = {
   branchId: null,
   contentSize: 0,
@@ -286,7 +330,8 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
   const [employeesData, setEmployeesData] = useState([]);
   const [disabled, setDisabled] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState("");
-
+  const [isEventListModalVisible, setisEventListModalVisible] = useState(false);
+  const [eventListdata, seteventListData] = useState(EventListData)
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
@@ -3030,8 +3075,166 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       { cancelable: false }
     );
   };
+
+  const addSelectedEvent = () => {
+    // todo add api call 
+  }
+
+  const eventListTableRow = (txt1, txt2, txt3, txt4, isDisplayRadio, isRadioSelected, isClickable, itemMain, index) => {
+
+    return (
+      <>
+
+        <TouchableOpacity style={{
+          flexDirection: "row",
+          // justifyContent: "space-around",
+          alignItems: "center",
+          // height: '15%',
+          alignContent: "center",
+          width: '100%',
+          marginTop: 5
+
+
+        }}
+          disabled={isClickable}
+          onPress={() => {
+          
+            // let temp = [...EventListData].filter(item => item.id === itemMain.id).map(i => i.isSelected = true)
+            let temp = [...EventListData].map(i =>
+              (i.id === itemMain.id ? { ...i, isSelected: true } : i)
+            )
+           
+            seteventListData([...temp])
+          }}
+        >
+          {/* todo */}
+          {isDisplayRadio ?
+            <Fontisto name={itemMain.isSelected ? "radio-btn-active" : "radio-btn-passive"}
+              size={12} color={Colors.RED}
+              style={{ marginEnd: 10 }}
+            /> :
+            <View style={{ marginEnd: 10, width: 12, }}  >{ }</View>}
+
+          <Text numberOfLines={1} style={{ fontSize: 12, color: Colors.BLACK, textAlign: "left", marginEnd: 10, width: 100, }}  >{txt1}</Text>
+          <Text numberOfLines={1} style={{ fontSize: 12, color: Colors.BLACK, textAlign: "left", marginEnd: 10, width: 100 }}>{txt2}</Text>
+          <Text numberOfLines={1} style={{ fontSize: 12, color: Colors.BLACK, textAlign: "left", marginEnd: 10, width: 100 }}>{txt3}</Text>
+          <Text numberOfLines={1} style={{ fontSize: 12, color: Colors.BLACK, textAlign: "left", marginEnd: 10, width: 100 }}>{txt4}</Text>
+
+        </TouchableOpacity>
+
+      </>)
+  }
+
+  const addEventListModal = () => {
+
+    return (
+      <Modal
+        animationType="fade"
+        visible={isEventListModalVisible}
+        onRequestClose={() => {
+
+        }}
+        transparent={true}
+      >
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgba(0,0,0,0.7)",
+
+
+          }}
+        >
+          <View style={{
+            width: '90%',
+            backgroundColor: Colors.WHITE,
+            padding: 10,
+            borderWidth: 2,
+            borderColor: Colors.BLACK,
+            flexDirection: "column",
+            height: '40%',
+          }}
+
+          >
+            <Text style={{ color: Colors.BLACK, fontSize: 16, fontWeight: "700", textAlign: "left", margin: 5 }}>Select Event</Text>
+            <ScrollView style={{
+              width: '100%',
+
+            }}
+              horizontal={true}
+            >
+              <View style={{ flexDirection: "column" }}>
+
+                <Text style={GlobalStyle.underline} />
+                <View style={{
+                  height: 30, borderBottomColor: 'rgba(208, 212, 214, 0.7)',
+                  borderBottomWidth: 2,
+
+                }}>
+                  {eventListTableRow("Event Name", "Event location", "Start Date", "End Date", false, false, true, 0, 0)}
+                  {/* <Text style={GlobalStyle.underline} /> */}
+                </View>
+                <View>
+                  <FlatList
+                    key={"CATEGORY_LIST"}
+                    data={eventListdata}
+                    style={{ height: '80%' }}
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={({ item, index }) => {
+                      return (
+                        <>
+                          <View style={{
+                            height: 35, borderBottomColor: 'rgba(208, 212, 214, 0.7)',
+                            borderBottomWidth: 4, marginTop: 5
+                          }}>
+                            {eventListTableRow(item.eventName, item.eventLocation, item.Startdate, item.Enddate, true, false, false, item, index)}
+
+                          </View>
+
+                        </>
+                      );
+                    }}
+                  />
+
+                </View>
+
+                {/* {eventListTableRow("Event Namedsadasd", "Event location", "10/12/2022", "10/12/2022", true, true,true)}
+                {eventListTableRow("Event Namesadasdsad", "Event locationasdad", "10/12/2022", "10/12/2022", true, false,true)}
+                {eventListTableRow("Event Name", "Event location", "10/12/2022", "10/12/2022", true, false,true)} */}
+              </View>
+
+            </ScrollView>
+            <View style={{ flexDirection: "row", alignSelf: "flex-end", marginTop: 10 }}>
+              <Button
+                mode="contained"
+
+                style={{ flex: 1, marginRight: 10 }}
+                color={Colors.GRAY}
+                labelStyle={{ textTransform: "none" }}
+                onPress={() => setisEventListModalVisible(false)}>
+                Cancel
+              </Button>
+              <Button
+                mode="contained"
+
+                style={{ flex: 1 }}
+                color={Colors.PINK}
+                labelStyle={{ textTransform: "none" }}
+                onPress={() => addSelectedEvent()}>
+                Add
+              </Button>
+            </View>
+
+          </View>
+
+        </View>
+      </Modal>
+    )
+  }
+
   return (
-    <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
+    <SafeAreaView style={[styles.container, { flexDirection: "column", }]}>
       <SelectEmployeeComponant
         visible={showEmployeeSelectModel}
         headerTitle={"Select Employee"}
@@ -3085,6 +3288,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
             );
           }
           if (dropDownKey === "SOURCE_OF_ENQUIRY") {
+            if (item.name === "Events") {
+              setisEventListModalVisible(true);
+            }
             if (item.name === "Event") {
               getEventListFromServer();
             }
@@ -3106,6 +3312,8 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
           );
         }}
       />
+
+      {addEventListModal()}
 
       {/* {selector.showDatepicker && (
         <DatePickerComponent
