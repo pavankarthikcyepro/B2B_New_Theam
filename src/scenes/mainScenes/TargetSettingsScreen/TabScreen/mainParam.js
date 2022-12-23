@@ -1860,8 +1860,8 @@ const MainParamScreen = ({ route, navigation }) => {
                           targetType: selector.targetType,
                         };
                         Promise.all([dispatch(getAllTargetMapping(payload2))])
-                          .then((x) => { })
-                          .catch((y) => { });
+                          .then((x) => {})
+                          .catch((y) => {});
                       } else {
                         const data = { ...masterSelfParameters };
                         setUpdatedSelfParameters(data);
@@ -1899,6 +1899,7 @@ const MainParamScreen = ({ route, navigation }) => {
               }}
               horizontal={true}
               // directionalLockEnabled={true}
+              nestedScrollEnabled={true}
               showsHorizontalScrollIndicator={false}
               // ref={scrollViewRef}
               // onContentSizeChange={(contentWidth, contentHeight) => {
@@ -1921,7 +1922,7 @@ const MainParamScreen = ({ route, navigation }) => {
                     paddingBottom: 4,
                     // borderBottomColor: Colors.GRAY,
                     marginLeft: 0,
-                    marginBottom: 10
+                    marginBottom: 10,
                   }}
                 >
                   <View
@@ -1962,7 +1963,8 @@ const MainParamScreen = ({ route, navigation }) => {
                 {/* Employee params section */}
                 <ScrollView
                   style={{ height: Dimensions.get("screen").height / 2.2 }}
-                // style={{ height: selector.isMD ? "81%" : "80%" }}
+                  // style={{ height: selector.isMD ? "81%" : "80%" }}
+                  nestedScrollEnabled={true}
                 >
                   {filterParameters.length > 0 &&
                     filterParameters.map((item, index) => {
@@ -3000,8 +3002,8 @@ const MainParamScreen = ({ route, navigation }) => {
                         setAddOrEdit("A");
                       }
                       ownData.retailTarget !== null &&
-                        selector.endDate === ownData.endDate &&
-                        selector.startDate === ownData.startDate
+                      selector.endDate === ownData.endDate &&
+                      selector.startDate === ownData.startDate
                         ? setRetail(ownData.retailTarget.toString())
                         : setRetail("");
                       setOpenRetail(true);
@@ -3010,8 +3012,8 @@ const MainParamScreen = ({ route, navigation }) => {
                 >
                   <Text style={styles.textInput}>
                     {ownData.retailTarget !== null &&
-                      selector.endDate === ownData.endDate &&
-                      selector.startDate === ownData.startDate
+                    selector.endDate === ownData.endDate &&
+                    selector.startDate === ownData.startDate
                       ? ownData.retailTarget
                       : 0}
                   </Text>
@@ -3141,8 +3143,8 @@ const MainParamScreen = ({ route, navigation }) => {
                       }
                       setSelectedUser({ ...loggedInEmpDetails });
                       ownData.retailTarget !== null &&
-                        selector.endDate === ownData.endDate &&
-                        selector.startDate === ownData.startDate
+                      selector.endDate === ownData.endDate &&
+                      selector.startDate === ownData.startDate
                         ? setRetail(ownData.retailTarget.toString())
                         : setRetail("");
 
@@ -3152,8 +3154,8 @@ const MainParamScreen = ({ route, navigation }) => {
                 >
                   <Text style={styles.textInput}>
                     {ownData.retailTarget !== null &&
-                      selector.endDate === ownData.endDate &&
-                      selector.startDate === ownData.startDate
+                    selector.endDate === ownData.endDate &&
+                    selector.startDate === ownData.startDate
                       ? ownData.retailTarget
                       : 0}
                   </Text>
@@ -3267,7 +3269,7 @@ const MainParamScreen = ({ route, navigation }) => {
                       };
                       Promise.all([
                         dispatch(getEmployeesDropDownData(payload)),
-                      ]).then(() => { });
+                      ]).then(() => {});
                     }
                   }
                 }}
@@ -3403,7 +3405,7 @@ const MainParamScreen = ({ route, navigation }) => {
           {!selector.isLoading ? null : (
             <LoaderComponent
               visible={selector.isLoading}
-              onRequestClose={() => { }}
+              onRequestClose={() => {}}
             />
           )}
         </View>
