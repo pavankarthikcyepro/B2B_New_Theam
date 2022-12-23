@@ -1241,6 +1241,7 @@ const LeadsScreen = ({ route, navigation }) => {
                       needStatus={"YES"}
                       enqCat={item.enquiryCategory}
                       stageAccess={stageAccess}
+                      onlylead={true}
                       onItemPress={() => {
                         if (stageAccess[0].viewStage.includes(item.leadStage)) {
                           navigation.navigate(
