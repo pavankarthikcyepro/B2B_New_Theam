@@ -108,6 +108,7 @@ export const MyTaskNewItem = ({
   onItemPress,
   onDocPress,
   stageAccess,
+  onlylead = false,
 }) => {
   let date = "";
   if (from == "MY_TASKS") {
@@ -254,12 +255,18 @@ export const MyTaskNewItem = ({
               disabled={true}
               opacity={cannotEditLead() ? 0.5 : 1}
               onPress={() => {
-                if (stageAccess[0].viewStage.includes(leadStage)) {
+                if (onlylead) {
+                  if (stageAccess[0].viewStage.includes(leadStage)) {
+                    cannotEditLead()
+                      ? showToastRedAlert("You don't have Permission")
+                      : onDocPress();
+                  } else {
+                    alert("No Access");
+                  }
+                } else {
                   cannotEditLead()
                     ? showToastRedAlert("You don't have Permission")
                     : onDocPress();
-                } else {
-                  alert("No Access");
                 }
               }}
             />
@@ -267,15 +274,24 @@ export const MyTaskNewItem = ({
             <IconComp
               iconName={"phone-outline"}
               onPress={() => {
-                if (stageAccess[0].viewStage.includes(leadStage)) {
+                if (onlylead) {
+                  if (stageAccess[0].viewStage.includes(leadStage)) {
+                    callWebViewRecord({
+                      navigator,
+                      phone,
+                      uniqueId,
+                      type,
+                    });
+                  } else {
+                    alert("No Access");
+                  }
+                } else {
                   callWebViewRecord({
                     navigator,
                     phone,
                     uniqueId,
                     type,
                   });
-                } else {
-                  alert("No Access");
                 }
                 // cannotEditLead() ?
                 //     showToastRedAlert("You don't have Permission") :
@@ -286,10 +302,14 @@ export const MyTaskNewItem = ({
               iconName={"whatsapp"}
               onPress={
                 () => {
-                  if (stageAccess[0].viewStage.includes(leadStage)) {
-                    sendWhatsApp(phone);
+                  if (onlylead) {
+                    if (stageAccess[0].viewStage.includes(leadStage)) {
+                      sendWhatsApp(phone);
+                    } else {
+                      alert("No Access");
+                    }
                   } else {
-                    alert("No Access");
+                    sendWhatsApp(phone);
                   }
                 }
 
