@@ -13,6 +13,7 @@ import {
   TextInput,
   Modal,
   Animated,
+  ScrollView,
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../../styles";
 import { IconButton, Card, Button } from "react-native-paper";
@@ -25,7 +26,7 @@ import * as AsyncStore from "../../../../asyncStore";
 import { TargetDropdown } from "../../../../pureComponents";
 import { Dropdown } from "react-native-element-dropdown";
 import { LoaderComponent } from "../../../../components";
-import { ScrollView } from "react-native-gesture-handler";
+// import { ScrollView } from "react-native-gesture-handler";
 
 import {
   getEmployeesDropDownData,
@@ -103,6 +104,7 @@ const newArray = [
     target: "561000",
   },
 ];
+const boxHeight = 35;
 const MainParamScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.targetSettingsReducer);
   const homeSelector = useSelector((state) => state.homeReducer);
@@ -911,6 +913,7 @@ const MainParamScreen = ({ route, navigation }) => {
     } else if (retail === "") {
       showToast("Please enter retail value");
     } else {
+      console.log("selectedUser", ownData);
       setOpenRetail(false);
       let employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -930,7 +933,7 @@ const MainParamScreen = ({ route, navigation }) => {
           // "targetName": selector.targetType === 'MONTHLY' ? selector.selectedMonth.value : selector.selectedSpecial.keyId
           targetName: targetName !== "" ? targetName : "DEFAULT",
           loggedInEmpId: jsonObj.empId,
-          recordId: selectedUser?.recordId
+          recordId: selectedUser?.recordId || ownData?.id,
         };
 
         Promise.all([dispatch(editTargetMapping(payload))])
@@ -947,7 +950,7 @@ const MainParamScreen = ({ route, navigation }) => {
               targetType: selector.targetType,
             };
             getInitialParameters();
-            // dispatch(getAllTargetMapping(payload2));
+            dispatch(getAllTargetMapping(payload2));
           })
           .catch((error) => { });
       }
@@ -1857,8 +1860,8 @@ const MainParamScreen = ({ route, navigation }) => {
                           targetType: selector.targetType,
                         };
                         Promise.all([dispatch(getAllTargetMapping(payload2))])
-                          .then((x) => { })
-                          .catch((y) => { });
+                          .then((x) => {})
+                          .catch((y) => {});
                       } else {
                         const data = { ...masterSelfParameters };
                         setUpdatedSelfParameters(data);
@@ -1895,16 +1898,17 @@ const MainParamScreen = ({ route, navigation }) => {
                 flexDirection: "column",
               }}
               horizontal={true}
-              directionalLockEnabled={true}
+              // directionalLockEnabled={true}
+              nestedScrollEnabled={true}
               showsHorizontalScrollIndicator={false}
-              ref={scrollViewRef}
-              onContentSizeChange={(contentWidth, contentHeight) => {
-                scrollViewRef?.current?.scrollTo({ y: 0, animated: true });
-              }}
-              onScroll={(e) => {
-                setSlideRight(e.nativeEvent.contentOffset.x);
-                // handleScroll(e)
-              }}
+              // ref={scrollViewRef}
+              // onContentSizeChange={(contentWidth, contentHeight) => {
+              //   scrollViewRef?.current?.scrollTo({ y: 0, animated: true });
+              // }}
+              // onScroll={(e) => {
+              //   setSlideRight(e.nativeEvent.contentOffset.x);
+              //   // handleScroll(e)
+              // }}
               bounces={false}
               scrollEventThrottle={16}
             >
@@ -1918,7 +1922,7 @@ const MainParamScreen = ({ route, navigation }) => {
                     paddingBottom: 4,
                     // borderBottomColor: Colors.GRAY,
                     marginLeft: 0,
-                    marginBottom: 10
+                    marginBottom: 10,
                   }}
                 >
                   <View
@@ -1959,7 +1963,8 @@ const MainParamScreen = ({ route, navigation }) => {
                 {/* Employee params section */}
                 <ScrollView
                   style={{ height: Dimensions.get("screen").height / 2.2 }}
-                // style={{ height: selector.isMD ? "81%" : "80%" }}
+                  // style={{ height: selector.isMD ? "81%" : "80%" }}
+                  nestedScrollEnabled={true}
                 >
                   {filterParameters.length > 0 &&
                     filterParameters.map((item, index) => {
@@ -2014,7 +2019,17 @@ const MainParamScreen = ({ route, navigation }) => {
                                     return;
                                   }}
                                 />
-                                {renderFilterData(item, "#C62159")}
+                                <View
+                                  style={{
+                                    width: "100%",
+                                    height: boxHeight,
+                                    flexDirection: "row",
+                                    alignSelf: "center",
+                                    backgroundColor: "red",
+                                  }}
+                                >
+                                  {renderFilterData(item, "#C62159")}
+                                </View>
                               </View>
                               {/* GET EMPLOYEE TOTAL MAIN ITEM */}
                             </View>
@@ -2093,7 +2108,17 @@ const MainParamScreen = ({ route, navigation }) => {
                                     );
                                   }}
                                 />
-                                {renderData(item, "#C62159")}
+                                <View
+                                  style={{
+                                    width: "100%",
+                                    height: boxHeight,
+                                    flexDirection: "row",
+                                    alignSelf: "center",
+                                    backgroundColor: "red",
+                                  }}
+                                >
+                                  {renderData(item, "#C62159")}
+                                </View>
                               </View>
                               {/* GET EMPLOYEE TOTAL MAIN ITEM */}
                               {item.isOpenInner &&
@@ -2161,7 +2186,9 @@ const MainParamScreen = ({ route, navigation }) => {
                                                 level={1}
                                                 item={innerItem1}
                                                 color={Colors.CORAL}
-                                                branchName={getBranchName(innerItem1?.branchId)}
+                                                branchName={getBranchName(
+                                                  innerItem1?.branchId
+                                                )}
                                                 titleClick={async () => {
                                                   const localData = [
                                                     ...allParameters,
@@ -2176,10 +2203,20 @@ const MainParamScreen = ({ route, navigation }) => {
                                                   );
                                                 }}
                                               />
-                                              {renderData(
-                                                innerItem1,
-                                                "#F59D00"
-                                              )}
+                                              <View
+                                                style={{
+                                                  width: "100%",
+                                                  height: boxHeight,
+                                                  flexDirection: "row",
+                                                  alignSelf: "center",
+                                                  backgroundColor: "red",
+                                                }}
+                                              >
+                                                {renderData(
+                                                  innerItem1,
+                                                  "#F59D00"
+                                                )}
+                                              </View>
                                             </View>
                                           </View>
                                           {innerItem1.isOpenInner &&
@@ -2262,10 +2299,21 @@ const MainParamScreen = ({ route, navigation }) => {
                                                           );
                                                         }}
                                                       />
-                                                      {renderData(
-                                                        innerItem2,
-                                                        "#2C97DE"
-                                                      )}
+                                                      <View
+                                                        style={{
+                                                          width: "100%",
+                                                          height: boxHeight,
+                                                          flexDirection: "row",
+                                                          alignSelf: "center",
+                                                          backgroundColor:
+                                                            "red",
+                                                        }}
+                                                      >
+                                                        {renderData(
+                                                          innerItem2,
+                                                          "#2C97DE"
+                                                        )}
+                                                      </View>
                                                     </View>
                                                     {innerItem2.isOpenInner &&
                                                       innerItem2
@@ -2360,11 +2408,25 @@ const MainParamScreen = ({ route, navigation }) => {
                                                                     );
                                                                   }}
                                                                 />
-
-                                                                {renderData(
-                                                                  innerItem3,
-                                                                  "#EC3466"
-                                                                )}
+                                                                <View
+                                                                  style={{
+                                                                    width:
+                                                                      "100%",
+                                                                    height:
+                                                                      boxHeight,
+                                                                    flexDirection:
+                                                                      "row",
+                                                                    alignSelf:
+                                                                      "center",
+                                                                    backgroundColor:
+                                                                      "red",
+                                                                  }}
+                                                                >
+                                                                  {renderData(
+                                                                    innerItem3,
+                                                                    "#EC3466"
+                                                                  )}
+                                                                </View>
                                                               </View>
                                                               {innerItem3.isOpenInner &&
                                                                 innerItem3
@@ -2465,16 +2527,31 @@ const MainParamScreen = ({ route, navigation }) => {
                                                                               );
                                                                             }}
                                                                           />
-                                                                          {renderData(
-                                                                            innerItem4,
-                                                                            "#1C95A6"
-                                                                          )}
+                                                                          <View
+                                                                            style={{
+                                                                              width:
+                                                                                "100%",
+                                                                              height:
+                                                                                boxHeight,
+                                                                              flexDirection:
+                                                                                "row",
+                                                                              alignSelf:
+                                                                                "center",
+                                                                              backgroundColor:
+                                                                                "red",
+                                                                            }}
+                                                                          >
+                                                                            {renderData(
+                                                                              innerItem4,
+                                                                              "#1C95A6"
+                                                                            )}
+                                                                          </View>
                                                                         </View>
                                                                         {innerItem4.isOpenInner &&
                                                                           innerItem4
                                                                             .employeeTargetAchievements
                                                                             .length >
-                                                                          0 &&
+                                                                            0 &&
                                                                           innerItem4.employeeTargetAchievements.map(
                                                                             (
                                                                               innerItem5,
@@ -2573,16 +2650,31 @@ const MainParamScreen = ({ route, navigation }) => {
                                                                                         );
                                                                                       }}
                                                                                     />
-                                                                                    {renderData(
-                                                                                      innerItem5,
-                                                                                      "#C62159"
-                                                                                    )}
+                                                                                    <View
+                                                                                      style={{
+                                                                                        width:
+                                                                                          "100%",
+                                                                                        height:
+                                                                                          boxHeight,
+                                                                                        flexDirection:
+                                                                                          "row",
+                                                                                        alignSelf:
+                                                                                          "center",
+                                                                                        backgroundColor:
+                                                                                          "red",
+                                                                                      }}
+                                                                                    >
+                                                                                      {renderData(
+                                                                                        innerItem5,
+                                                                                        "#C62159"
+                                                                                      )}
+                                                                                    </View>
                                                                                   </View>
                                                                                   {innerItem5.isOpenInner &&
                                                                                     innerItem5
                                                                                       .employeeTargetAchievements
                                                                                       .length >
-                                                                                    0 &&
+                                                                                      0 &&
                                                                                     innerItem5.employeeTargetAchievements.map(
                                                                                       (
                                                                                         innerItem6,
@@ -2684,10 +2776,25 @@ const MainParamScreen = ({ route, navigation }) => {
                                                                                                   );
                                                                                                 }}
                                                                                               />
-                                                                                              {renderData(
-                                                                                                innerItem6,
-                                                                                                "#C62159"
-                                                                                              )}
+                                                                                              <View
+                                                                                                style={{
+                                                                                                  width:
+                                                                                                    "100%",
+                                                                                                  height:
+                                                                                                    boxHeight,
+                                                                                                  flexDirection:
+                                                                                                    "row",
+                                                                                                  alignSelf:
+                                                                                                    "center",
+                                                                                                  backgroundColor:
+                                                                                                    "red",
+                                                                                                }}
+                                                                                              >
+                                                                                                {renderData(
+                                                                                                  innerItem6,
+                                                                                                  "#C62159"
+                                                                                                )}
+                                                                                              </View>
                                                                                             </View>
                                                                                           </View>
                                                                                         );
@@ -2895,8 +3002,8 @@ const MainParamScreen = ({ route, navigation }) => {
                         setAddOrEdit("A");
                       }
                       ownData.retailTarget !== null &&
-                        selector.endDate === ownData.endDate &&
-                        selector.startDate === ownData.startDate
+                      selector.endDate === ownData.endDate &&
+                      selector.startDate === ownData.startDate
                         ? setRetail(ownData.retailTarget.toString())
                         : setRetail("");
                       setOpenRetail(true);
@@ -2905,8 +3012,8 @@ const MainParamScreen = ({ route, navigation }) => {
                 >
                   <Text style={styles.textInput}>
                     {ownData.retailTarget !== null &&
-                      selector.endDate === ownData.endDate &&
-                      selector.startDate === ownData.startDate
+                    selector.endDate === ownData.endDate &&
+                    selector.startDate === ownData.startDate
                       ? ownData.retailTarget
                       : 0}
                   </Text>
@@ -3036,8 +3143,8 @@ const MainParamScreen = ({ route, navigation }) => {
                       }
                       setSelectedUser({ ...loggedInEmpDetails });
                       ownData.retailTarget !== null &&
-                        selector.endDate === ownData.endDate &&
-                        selector.startDate === ownData.startDate
+                      selector.endDate === ownData.endDate &&
+                      selector.startDate === ownData.startDate
                         ? setRetail(ownData.retailTarget.toString())
                         : setRetail("");
 
@@ -3047,8 +3154,8 @@ const MainParamScreen = ({ route, navigation }) => {
                 >
                   <Text style={styles.textInput}>
                     {ownData.retailTarget !== null &&
-                      selector.endDate === ownData.endDate &&
-                      selector.startDate === ownData.startDate
+                    selector.endDate === ownData.endDate &&
+                    selector.startDate === ownData.startDate
                       ? ownData.retailTarget
                       : 0}
                   </Text>
@@ -3162,7 +3269,7 @@ const MainParamScreen = ({ route, navigation }) => {
                       };
                       Promise.all([
                         dispatch(getEmployeesDropDownData(payload)),
-                      ]).then(() => { });
+                      ]).then(() => {});
                     }
                   }
                 }}
@@ -3298,7 +3405,7 @@ const MainParamScreen = ({ route, navigation }) => {
           {!selector.isLoading ? null : (
             <LoaderComponent
               visible={selector.isLoading}
-              onRequestClose={() => { }}
+              onRequestClose={() => {}}
             />
           )}
         </View>
