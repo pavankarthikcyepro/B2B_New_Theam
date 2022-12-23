@@ -109,6 +109,8 @@ export const MyTaskNewItem = ({
   onDocPress,
   stageAccess,
   onlylead = false,
+  EmployeesRoles,
+  userData,
 }) => {
   let date = "";
   if (from == "MY_TASKS") {
@@ -256,12 +258,19 @@ export const MyTaskNewItem = ({
               opacity={cannotEditLead() ? 0.5 : 1}
               onPress={() => {
                 if (onlylead) {
-                  if (stageAccess[0].viewStage.includes(leadStage)) {
+                  let user = userData.toLowerCase();
+                  if (EmployeesRoles.includes(user)) {
+                    if (stageAccess[0]?.viewStage?.includes(leadStage)) {
+                      cannotEditLead()
+                        ? showToastRedAlert("You don't have Permission")
+                        : onDocPress();
+                    } else {
+                      alert("No Access");
+                    }
+                  } else {
                     cannotEditLead()
                       ? showToastRedAlert("You don't have Permission")
                       : onDocPress();
-                  } else {
-                    alert("No Access");
                   }
                 } else {
                   cannotEditLead()
@@ -275,15 +284,25 @@ export const MyTaskNewItem = ({
               iconName={"phone-outline"}
               onPress={() => {
                 if (onlylead) {
-                  if (stageAccess[0].viewStage.includes(leadStage)) {
+                  let user = userData.toLowerCase();
+                  if (EmployeesRoles.includes(user)) {
+                    if (stageAccess[0]?.viewStage?.includes(leadStage)) {
+                      callWebViewRecord({
+                        navigator,
+                        phone,
+                        uniqueId,
+                        type,
+                      });
+                    } else {
+                      alert("No Access");
+                    }
+                  } else {
                     callWebViewRecord({
                       navigator,
                       phone,
                       uniqueId,
                       type,
                     });
-                  } else {
-                    alert("No Access");
                   }
                 } else {
                   callWebViewRecord({
@@ -303,10 +322,15 @@ export const MyTaskNewItem = ({
               onPress={
                 () => {
                   if (onlylead) {
-                    if (stageAccess[0].viewStage.includes(leadStage)) {
-                      sendWhatsApp(phone);
+                    let user = userData.toLowerCase();
+                    if (EmployeesRoles.includes(user)) {
+                      if (stageAccess[0]?.viewStage?.includes(leadStage)) {
+                        sendWhatsApp(phone);
+                      } else {
+                        alert("No Access");
+                      }
                     } else {
-                      alert("No Access");
+                      sendWhatsApp(phone);
                     }
                   } else {
                     sendWhatsApp(phone);
