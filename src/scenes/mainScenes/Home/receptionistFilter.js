@@ -54,7 +54,7 @@ const AcitivityLoader = () => {
   );
 };
 
-const FilterScreen = ({ route, navigation }) => {
+const ReceptionistFilterScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
 
@@ -128,7 +128,7 @@ const FilterScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     if (nameKeyList.length > 0) {
-      dropDownItemClicked(4, true);
+    //   dropDownItemClicked(4, true);
     }
   }, [nameKeyList, userData]);
 
@@ -362,42 +362,38 @@ const FilterScreen = ({ route, navigation }) => {
       selectedIds: selectedIds,
     };
 
-    Promise.all([dispatch(getEmployeesDropDownData(payload1))])
-      .then(() => {
-        Promise.all([
-          dispatch(getLeadSourceTableList(payload)),
-          dispatch(getVehicleModelTableList(payload)),
-          dispatch(getEventTableList(payload)),
-          dispatch(getLostDropChartData(payload)),
-          dispatch(updateFilterDropDownData(totalDataObj)),
-          // // Table Data
-          dispatch(getTaskTableList(payload2)),
-          dispatch(getSalesData(payload2)),
-          dispatch(getSalesComparisonData(payload2)),
-          // // Target Params Data
-          dispatch(getTargetParametersData(payload2)),
-          dispatch(getTargetParametersEmpDataInsights(payload2)), // Added to filter an Home Screen's INSIGHT
-        ])
-          .then(() => {})
-          .catch(() => {
-            setIsLoading(false);
-          });
-      })
-      .catch(() => {
-        setIsLoading(false);
-      });
+    // Promise.all([dispatch(getEmployeesDropDownData(payload1))])
+    //   .then(() => {
+    //     Promise.all([
+    //     //   dispatch(getLeadSourceTableList(payload)),
+    //     //   dispatch(getVehicleModelTableList(payload)),
+    //     //   dispatch(getEventTableList(payload)),
+    //     //   dispatch(getLostDropChartData(payload)),
+    //     //   dispatch(updateFilterDropDownData(totalDataObj)),
+    //     //   // // Table Data
+    //     //   dispatch(getTaskTableList(payload2)),
+    //     //   dispatch(getSalesData(payload2)),
+    //     //   dispatch(getSalesComparisonData(payload2)),
+    //     //   // // Target Params Data
+    //     //   dispatch(getTargetParametersData(payload2)),
+    //     //   dispatch(getTargetParametersEmpDataInsights(payload2)), // Added to filter an Home Screen's INSIGHT
+    //     ])
+    //       .then(() => {})
+    //       .catch(() => {
+    //         setIsLoading(false);
+    //       });
+    //   })
+    //   .catch(() => {
+    //     setIsLoading(false);
+    //   });
     if (from == "EMPLOYEE") {
-        if (true) {
-            navigation.navigate(
-              AppNavigator.DrawerStackIdentifiers.monthlyTarget,
-              {
-                params: { from: "Filter" },
-              }
-            );
-        } else {
-                  navigation.goBack();
-
-        }
+      if (true) {
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.monthlyTarget, {
+          params: { from: "Filter" },
+        });
+      } else {
+        navigation.goBack();
+      }
       // navigation.navigate(AppNavigator.TabStackIdentifiers.home, { screen: "Home", params: { from: 'Filter' }, })
     } else {
       // navigation.goBack(); // NEED TO COMMENT FOR ASSOCIATE FILTER
@@ -742,7 +738,7 @@ const FilterScreen = ({ route, navigation }) => {
   );
 };
 
-export default FilterScreen;
+export default ReceptionistFilterScreen;
 
 const styles = StyleSheet.create({
   container: {
