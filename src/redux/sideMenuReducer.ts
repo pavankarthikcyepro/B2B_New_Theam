@@ -11,6 +11,7 @@ export const DIGITAL_PAYMENT_STR = "DIGITAL_PAYMENT";
 export const QR_CODE_STR = "QR_CODE";
 export const GROUP_STR = "GROUP";
 export const TRANSFER_STR = "TRANSFER";
+export const DROP_LOST_CANCEL = "DROP_LOST_CANCEL";
 
 const data = [
   {
@@ -30,6 +31,12 @@ const data = [
     icon: CUSTOMER_RELATIONSHIP_STR,
     screen: 106,
     pngIcon: require("../assets/images/Target_Planning-01.png"),
+  },
+  {
+    title: "Drop/Lost/Cancel",
+    icon: DROP_LOST_CANCEL,
+    screen: 115,
+    pngIcon: require("../assets/images/Settings-01.png"),
   },
   // {
   //   title: "Task Management",
@@ -53,7 +60,7 @@ const data = [
     title: "Task Transfer",
     icon: TRANSFER_STR,
     screen: 109,
-    pngIcon: require('../assets/images/Task_Trasnfer-01.png')
+    pngIcon: require("../assets/images/Task_Trasnfer-01.png"),
   },
   // {
   //   title: "Team Shuffle",

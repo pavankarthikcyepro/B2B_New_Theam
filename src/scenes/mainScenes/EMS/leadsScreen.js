@@ -43,6 +43,8 @@ import {
 } from "../../../redux/leaddropReducer";
 import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 import Entypo from "react-native-vector-icons/FontAwesome";
+import { client } from "../../../networking/client";
+import URL from "../../../networking/endpoints";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().add(0, "day").endOf("month").format(dateFormat);
@@ -98,6 +100,13 @@ const LeadsScreen = ({ route, navigation }) => {
   const [defualtLeadStage, setDefualtLeadStage] = useState([]);
   const [defualtLeadStatus, setdefualtLeadStatus] = useState([]);
   const [refreshed, setRefreshed] = useState(false);
+  const [userData, setUserData] = useState({
+    empId: 0,
+    empName: "",
+    hrmsRole: "",
+    orgId: 0,
+  });
+  const [stageAccess, setStageAccess] = useState([]);
 
   const orgIdStateRef = React.useRef(orgId);
   const empIdStateRef = React.useRef(employeeId);
@@ -165,8 +174,29 @@ const LeadsScreen = ({ route, navigation }) => {
       const jsonObj = JSON.parse(employeeData);
       setEmployeeId(jsonObj.empId);
       setOrgId(jsonObj.orgId);
+      setUserData({
+        empId: jsonObj.empId,
+        empName: jsonObj.empName,
+        hrmsRole: jsonObj.hrmsRole,
+        orgId: jsonObj.orgId,
+      });
     }
   }, []);
+
+  useEffect(async () => {
+    try {
+      if (true) {
+        const response = await client.get(
+          URL.ROLE_STAGE_ACCESS(userData.hrmsRole)
+        );
+        const json = await response.json();
+        setStageAccess(json);
+      }
+    } catch (error) {
+
+    }
+
+  }, [userData])
 
   const managerFilter = useCallback(
     (newArr) => {
@@ -611,18 +641,18 @@ const LeadsScreen = ({ route, navigation }) => {
           // setTempFilterPayload(newArr);
           // onTempFliter(newArr, employeeDetail,);
           // setSubMenu(newArr);
-        //   setLeadsSubMenuFilterDropDownText("ALL");
+          //   setLeadsSubMenuFilterDropDownText("ALL");
           const x =
             item === "Delivery"
               ? path.map((object) => {
-                   return { ...object, checked: true };
-                })
+                return { ...object, checked: true };
+              })
               : path.map((object) => {
-                  if (object.subMenu === condition) {
-                    return { ...object, checked: true };
-                  }
-                  return object;
-                });
+                if (object.subMenu === condition) {
+                  return { ...object, checked: true };
+                }
+                return object;
+              });
           setSubMenu([...x]);
           setTempFilterPayload(x);
           onTempFliter(
@@ -662,7 +692,7 @@ const LeadsScreen = ({ route, navigation }) => {
           NewSubMenu(path);
         }
       })
-      .catch((error) => {});
+      .catch((error) => { });
   };
 
   const NewSubMenu = (item) => {
@@ -763,8 +793,8 @@ const LeadsScreen = ({ route, navigation }) => {
       const leadStages = defLeadStage
         ? defLeadStage
         : leadStage.length === 0
-        ? defualtLeadStage
-        : leadStage;
+          ? defualtLeadStage
+          : leadStage;
       if (
         leadStages &&
         leadStages.length > 0 &&
@@ -799,7 +829,7 @@ const LeadsScreen = ({ route, navigation }) => {
       ) {
         from = lastMonthFirstDate;
         setSelectedToDate(monthLastDate);
-      } else if (isRefresh){
+      } else if (isRefresh) {
         from = lastMonthFirstDate;
         setSelectedFromDate(lastMonthFirstDate);
         to = monthLastDate;
@@ -821,8 +851,8 @@ const LeadsScreen = ({ route, navigation }) => {
         leadStatus: defLeadStatus
           ? defLeadStatus
           : leadStatus.length === 0
-          ? defualtLeadStatus
-          : leadStatus,
+            ? defualtLeadStatus
+            : leadStatus,
       };
       let data = {
         newPayload,
@@ -988,7 +1018,7 @@ const LeadsScreen = ({ route, navigation }) => {
           cancelClicked={() => {
             setLeadsSubMenuFilterVisible(false);
           }}
-          onChange={(x) => {}}
+          onChange={(x) => { }}
         />
       </View>
 
@@ -1210,36 +1240,45 @@ const LeadsScreen = ({ route, navigation }) => {
                       leadStage={item.leadStage}
                       needStatus={"YES"}
                       enqCat={item.enquiryCategory}
+                      stageAccess={stageAccess}
                       onItemPress={() => {
-                        navigation.navigate(
-                          AppNavigator.EmsStackIdentifiers.task360,
-                          {
-                            universalId: item.universalId,
-                            mobileNo: item.phone,
-                            leadStatus: item.leadStatus,
-                          }
-                        );
+                        if (stageAccess[0].viewStage.includes(item.leadStage)) {
+                          navigation.navigate(
+                            AppNavigator.EmsStackIdentifiers.task360,
+                            {
+                              universalId: item.universalId,
+                              mobileNo: item.phone,
+                              leadStatus: item.leadStatus,
+                            }
+                          );
+                        } else {
+                          alert("No Access");
+                        }
                       }}
                       onDocPress={() => {
-                        let route =
-                          AppNavigator.EmsStackIdentifiers.detailsOverview;
-                        switch (item.leadStage) {
-                          case "BOOKING":
-                            route =
-                              AppNavigator.EmsStackIdentifiers.bookingForm;
-                            break;
-                          case "PRE_BOOKING":
-                          case "PREBOOKING":
-                            route =
-                              AppNavigator.EmsStackIdentifiers.preBookingForm;
-                            break;
+                        if (stageAccess[0].viewStage.includes(item.leadStage)) {
+                          let route =
+                            AppNavigator.EmsStackIdentifiers.detailsOverview;
+                          switch (item.leadStage) {
+                            case "BOOKING":
+                              route =
+                                AppNavigator.EmsStackIdentifiers.bookingForm;
+                              break;
+                            case "PRE_BOOKING":
+                            case "PREBOOKING":
+                              route =
+                                AppNavigator.EmsStackIdentifiers.preBookingForm;
+                              break;
+                          }
+                          navigation.navigate(route, {
+                            universalId: item.universalId,
+                            enqDetails: item,
+                            leadStatus: item.leadStatus,
+                            leadStage: item.leadStage,
+                          });
+                        } else {
+                          alert("No Access");
                         }
-                        navigation.navigate(route, {
-                          universalId: item.universalId,
-                          enqDetails: item,
-                          leadStatus: item.leadStatus,
-                          leadStage: item.leadStage,
-                        });
                       }}
                     />
                   </View>

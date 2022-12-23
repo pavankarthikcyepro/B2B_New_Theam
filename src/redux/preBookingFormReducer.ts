@@ -54,6 +54,21 @@ export const getPrebookingDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/
   }
 })
 
+export const getRulesConfiguration = createAsyncThunk("PREBOONING_FORMS_SLICE/getRulesConfiguration", async (payload, { rejectWithValue }) => {
+  const response = await client.get(URL.GET_RULES_CONFIG(payload["model"], payload["variant"], payload["fuel"], payload["orgId"]));
+  try {
+    const json = await response.json();
+  
+    if (response.status != 200) {
+      return rejectWithValue(json);
+    }
+    return json;
+  } catch (error) {
+    console.error("getRulesConfiguration JSON parse error: ", error + " : " + JSON.stringify(response));
+    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
+  }
+})
+
 export const updatePrebookingDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/updatePrebookingDetailsApi", async (payload, { rejectWithValue }) => {
   const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
   try {
@@ -458,6 +473,8 @@ const prebookingFormSlice = createSlice({
     insurance_discount: "",
     isAddressSet: false,
     registrationCharges: 0,
+    configureRulesResponse: "",
+    configureRulesResponse_status:"",
   },
   reducers: {
     clearState: (state, action) => {
@@ -589,6 +606,8 @@ const prebookingFormSlice = createSlice({
       state.accessories_discount = "";
       state.insurance_discount = "";
       state.isAddressSet = false;
+      state.configureRulesResponse = "";
+      state.configureRulesResponse_status = "";
     },
     updateStatus: (state, action) => {
       state.pre_booking_payment_response_status = "";
@@ -1835,6 +1854,28 @@ const prebookingFormSlice = createSlice({
     builder.addCase(updateRef.pending, (state, action) => {});
     builder.addCase(updateRef.fulfilled, (state, action) => {});
     builder.addCase(updateRef.rejected, (state, action) => {});
+
+    //Get configured rulles api
+    builder.addCase(getRulesConfiguration.pending, (state, action) => {
+      state.configureRulesResponse = "";
+      state.configureRulesResponse_status = "pending";
+      state.isLoading = true;
+    });
+    builder.addCase(getRulesConfiguration.fulfilled, (state, action) => {
+    
+      state.isLoading = false;
+      
+      if(action.payload){
+        state.configureRulesResponse = action.payload;
+        state.configureRulesResponse_status = "fulfilled";
+      }
+      
+    });
+    builder.addCase(getRulesConfiguration.rejected, (state, action) => {
+      state.configureRulesResponse = "";
+      state.configureRulesResponse_status = "rejected";
+      state.isLoading = false;
+    });
   },
 });
 
