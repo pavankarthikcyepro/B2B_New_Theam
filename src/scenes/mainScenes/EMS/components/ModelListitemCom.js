@@ -94,7 +94,8 @@ export const ModelListitemCom = ({
     orgId: "",
     employeeId: "",
     employeeName: "",
-    isSelfManager: ""
+    isSelfManager: "",
+    isTracker: "",
   });
   const [selectedCarVarientsData, setSelectedCarVarientsData] = useState({
     varientList: [],
@@ -167,7 +168,8 @@ export const ModelListitemCom = ({
           orgId: jsonObj.orgId,
           employeeId: jsonObj.employeeId,
           employeeName: jsonObj.empName,
-          isSelfManager: jsonObj.isSelfManager
+          isSelfManager: jsonObj.isSelfManager,
+          isTracker: jsonObj.isTracker,
         });
         getCarModelListFromServer(jsonObj.orgId);
         updateVariantModelsData(item.model, false);
@@ -628,7 +630,7 @@ export const ModelListitemCom = ({
               color={isOnlyOne ? Colors.DARK_GRAY : Colors.PINK}
               size={25}
               disabled={isOnlyOne}
-            //  onPress={alert("delete")}
+              //  onPress={alert("delete")}
             />
           </TouchableOpacity>
         </View>
@@ -691,7 +693,13 @@ export const ModelListitemCom = ({
 
         <TextinputComp
           style={{ height: 65, width: "100%" }}
-          label={userData.isSelfManager == "Y" ? "Battery Type*" : "Transmission Type*"}
+          label={
+            userData.isSelfManager == "Y"
+              ? "Battery Type*"
+              : userData.isTracker == "Y"
+              ? "Clutch Type*"
+              : "Transmission Type*"
+          }
           editable={false}
           value={carTransmissionType}
         />
