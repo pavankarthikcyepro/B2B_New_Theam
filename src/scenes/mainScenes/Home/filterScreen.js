@@ -295,7 +295,7 @@ const FilterScreen = ({ route, navigation }) => {
     setTotalDataObj({ ...totalDataObjLocal });
   };
 
-  const submitBtnClicked = (initialData) => {
+  const submitBtnClicked = (initialData = null) => {
     let i = 0;
     const selectedIds = [];
     for (i; i < nameKeyList.length; i++) {

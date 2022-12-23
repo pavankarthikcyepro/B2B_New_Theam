@@ -83,6 +83,7 @@ import { EMSTopTabNavigatorTwo } from "./emsTopTabNavigator";
 import { AppNavigator } from ".";
 import AddNewEnquiryScreen from "../scenes/mainScenes/EMS/addNewEnquiry";
 import FilterTargetScreen from "../scenes/mainScenes/TargetSettingsScreen/TabScreen/filterTarget";
+import MyTaskFilterScreen from "../scenes/mainScenes/MyTasks/myTaskFilterScreen";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -107,6 +108,20 @@ const MenuIcon = ({ navigation }) => {
             onPress={() => navigation.openDrawer()}
         />
     );
+};
+
+const MyTaskFilter = ({ navigation }) => {
+  return (
+    <IconButton
+      icon="filter-outline"
+      style={{ paddingHorizontal: 0, marginHorizontal: 0 }}
+      color={Colors.WHITE}
+      size={25}
+      onPress={() =>
+        navigation.navigate(MyTasksStackIdentifiers.myTaskFilterScreen)
+      }
+    />
+  );
 };
 
 const SearchIcon = () => {
@@ -199,10 +214,7 @@ const MapIcon = ({ navigation }) => {
     );
 };
 
-
 const NotficationIcon = ({ navigation, identifier }) => {
-
-
     return (
         <IconButton
             icon="bell"
@@ -296,6 +308,7 @@ export const MyTasksStackIdentifiers = {
   proceedToBooking: "PROCEED_TO_BOOKING",
   createEnquiry: "CREATE_ENQUIRY",
   tasksListScreen: "TASKS_LIST_SCREEN",
+  myTaskFilterScreen: "MYTASK_FILTER",
 };
 
 export const PriceStackIdentifiers = {
@@ -539,6 +552,7 @@ const MyTaskStackNavigator = ({ navigation }) => {
               return (
                 <View style={{ flexDirection: "row" }}>
                   {/* <SearchIcon /> */}
+                  <MyTaskFilter navigation={navigation} />
                   <NotficationIcon
                     navigation={navigation}
                     identifier={"NOTIF_3"}
@@ -547,6 +561,12 @@ const MyTaskStackNavigator = ({ navigation }) => {
               );
             },
           }}
+        />
+
+        <MyTaskStack.Screen
+          name={MyTasksStackIdentifiers.myTaskFilterScreen}
+          component={MyTaskFilterScreen}
+          options={{ title: "Filters" }}
         />
 
         <MyTaskStack.Screen

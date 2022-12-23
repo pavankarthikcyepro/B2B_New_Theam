@@ -9,6 +9,8 @@ import { Colors } from "../../../styles";
 const dateFormat = "YYYY-MM-DD";
 
 const MyTaskFilterScreen = ({ navigation }) => {
+  const selector = useSelector((state) => state.homeReducer);
+
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);

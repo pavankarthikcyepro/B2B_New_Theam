@@ -78,6 +78,10 @@ const MyTasksScreen = ({ navigation }) => {
   const selector = useSelector((state) => state.mytaskReducer);
   const homeSelector = useSelector((state) => state.homeReducer);
 
+  useEffect(() => {
+    // dispatch(getOrganizationHierarchyList());
+  }, [])
+  
 
   useEffect(() => {
     navigation.addListener('focus', () => {
