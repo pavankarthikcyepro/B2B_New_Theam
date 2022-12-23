@@ -157,7 +157,9 @@ export const RenderEmployeeTarget = (parameter) => {
                     ) : (
                       <TextInput
                         key={index}
+                        numberOfLines={1}
                         editable={editParameters}
+                        keyboardType={"number-pad"}
                         style={[
                           styles.totalText,
                           {
@@ -167,7 +169,8 @@ export const RenderEmployeeTarget = (parameter) => {
                                 : param === "Accessories"
                                 ? 63
                                 : 53,
-                            paddingTop: 4,
+                            paddingVertical: 0,
+                            // height:30,
                             textDecorationLine: editParameters
                               ? "underline"
                               : "none",

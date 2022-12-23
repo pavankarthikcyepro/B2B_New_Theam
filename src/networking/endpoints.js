@@ -158,19 +158,22 @@ const URL = {
   },
 
   PROFORMA_LISTING_DETAILS: (crmUniversalId) => {
-    return (
-      sales_url + "/enquiry/performa/id/" +crmUniversalId);
+    return sales_url + "/enquiry/performa/id/" + crmUniversalId;
   },
 
   PROFORMA_TERMS_N_CONDITIONS: (orgId) => {
-    return (
-      sales_url + "/org/config/" + orgId +"/PROFORMA_TANDC");
+    return sales_url + "/org/config/" + orgId + "/PROFORMA_TANDC";
   },
 
   ENQUIRY_DETAILS_BY_AUTOSAVE: (universalId) => {
     return downloadFile + "/autosave-get-uid/" + `${universalId}`;
   },
   UPDATE_ENQUIRY_DETAILS: () => sales_url + "/enquiry/lead",
+  GET_RULES_CONFIG: (modal, variant, fuel, orgid) => { 
+    return sales_url +
+      "/allotment/rulesConfiguration" +
+      `?model=${modal}&variant=${variant}&fuel=${fuel}&orgId=${orgid}`
+   },
   GET_CUSTOMER_TYPES: (orgId) => {
     return sales_url + `/master-data/customertype/${orgId}`;
   },
@@ -361,8 +364,9 @@ const URL = {
   ADD_TARGET_MAPPING: () => salesGap + `/add_targetmapping_role`,
   EDIT_TARGET_MAPPING: () => salesGap + `/edit_targetmapping_role`,
   GET_ALL_TARGET_MAPPING: () => salesGap + `/get_all_targetmapping_role`,
-  GET_ALL_TARGET_MAPPING_SEARCH: () => salesGap + `/get_all_target_mapping_search`,
-  GET_TARGET_PLANNING_COUNT:()=>salesGap+`/get_target_planning_count`,
+  GET_ALL_TARGET_MAPPING_SEARCH: () =>
+    salesGap + `/get_all_target_mapping_search`,
+  GET_TARGET_PLANNING_COUNT: () => salesGap + `/get_target_planning_count`,
   GET_TARGET_PARAMS: () => dashboard + "/v2/get_target_params",
   GET_TARGET_PARAMS_ALL: () => dashboard + "/v2/get_target_params_for_all_emps",
   GET_TARGET_PARAMS_EMP: () => dashboard + "/v2/get_target_params_for_emp",
@@ -520,6 +524,18 @@ const URL = {
   },
   ENQUIRY_CONTACT: () => {
     return sales_url + `/contact/enquiryContact?allocateDse=false`;
+  },
+  RECEPTIONIST_DASHBOARD: () => {
+    return dashboard + "/receptionist";
+  },
+  RECEPTIONIST_SOURCE: () => {
+    return dashboard + "/receptionist/source";
+  },
+  RECEPTIONIST_MODEL: () => {
+    return dashboard + "/receptionist/model";
+  },
+  ROLE_STAGE_ACCESS: (role)=>{
+    return sales_url + "/lead/roleStageAccess/"+role;
   },
 };
 

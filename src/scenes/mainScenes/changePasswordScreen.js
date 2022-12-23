@@ -163,7 +163,7 @@ const ChangePasswordScreen = () => {
 
     return (
         <View>
-            <Text style={styles.header}>Change Password</Text>
+            {/* <Text style={styles.header}>Change Password</Text> */}
             <View style={styles.form}>
                 <TextinputComp
                     // value={"Old Password"}
