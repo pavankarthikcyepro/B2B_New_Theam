@@ -1,41 +1,58 @@
-
-import React, { useState, useEffect, useCallback } from 'react';
-import { SafeAreaView, View, Text, StyleSheet, FlatList, Dimensions, Image, Pressable, ScrollView, ActivityIndicator } from 'react-native';
-import { Colors } from '../../../styles';
-import { IconButton } from 'react-native-paper';
-import { useDispatch, useSelector } from 'react-redux';
-import { getTargetParametersEmpDataInsights } from '../../../redux/homeReducer';
-import * as AsyncStore from '../../../asyncStore';
-import { DatePickerComponent, DropDownComponant } from '../../../components';
-import { DateSelectItem, DropDownSelectionItem } from '../../../pureComponents';
-import moment from 'moment';
+import React, { useState, useEffect, useCallback } from "react";
+import {
+  SafeAreaView,
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  Dimensions,
+  Image,
+  Pressable,
+  ScrollView,
+  ActivityIndicator,
+} from "react-native";
+import { Colors } from "../../../styles";
+import { IconButton } from "react-native-paper";
+import { useDispatch, useSelector } from "react-redux";
+import { getTargetParametersEmpDataInsights } from "../../../redux/homeReducer";
+import * as AsyncStore from "../../../asyncStore";
+import { DatePickerComponent, DropDownComponant } from "../../../components";
+import { DateSelectItem, DropDownSelectionItem } from "../../../pureComponents";
+import moment from "moment";
 import { Button } from "react-native-paper";
 import {
-    updateFilterDropDownData,
-    getLeadSourceTableList,
-    getVehicleModelTableList,
-    getEventTableList,
-    getTaskTableList,
-    getLostDropChartData,
-    getTargetParametersData,
-    getEmployeesDropDownData,
-    getSalesData,
-    getSalesComparisonData
-} from '../../../redux/homeReducer';
-import { showAlertMessage, showToast } from '../../../utils/toast';
-import { AppNavigator } from '../../../navigations';
+  updateFilterDropDownData,
+  getLeadSourceTableList,
+  getVehicleModelTableList,
+  getEventTableList,
+  getTaskTableList,
+  getLostDropChartData,
+  getTargetParametersData,
+  getEmployeesDropDownData,
+  getSalesData,
+  getSalesComparisonData,
+} from "../../../redux/homeReducer";
+import { showAlertMessage, showToast } from "../../../utils/toast";
+import { AppNavigator } from "../../../navigations";
 
 const screenWidth = Dimensions.get("window").width;
 const buttonWidth = (screenWidth - 100) / 2;
 const dateFormat = "YYYY-MM-DD";
 
 const AcitivityLoader = () => {
-    return (
-        <View style={{ width: "100%", height: 50, justifyContent: "center", alignItems: "center" }}>
-            <ActivityIndicator size={"small"} color={Colors.GRAY} />
-        </View>
-    )
-}
+  return (
+    <View
+      style={{
+        width: "100%",
+        height: 50,
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <ActivityIndicator size={"small"} color={Colors.GRAY} />
+    </View>
+  );
+};
 
 const FilterScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
@@ -56,6 +73,7 @@ const FilterScreen = ({ route, navigation }) => {
     employeeId: "",
     employeeName: "",
     primaryDesignation: "",
+    hrmsRole: "",
   });
   const [employeeTitleNameList, setEmloyeeTitleNameList] = useState([]);
   const [employeeDropDownDataLocal, setEmployeeDropDownDataLocal] = useState(
@@ -80,6 +98,7 @@ const FilterScreen = ({ route, navigation }) => {
         employeeId: jsonObj.empId,
         employeeName: jsonObj.empName,
         primaryDesignation: jsonObj.primaryDesignation,
+        hrmsRole: jsonObj.hrmsRole,
       });
     }
   };
@@ -577,16 +596,31 @@ const FilterScreen = ({ route, navigation }) => {
                             selectedNames.length - 1
                           );
                         }
-                        return (
-                          <View>
-                            <DropDownSelectionItem
-                              label={item}
-                              value={selectedNames}
-                              onPress={() => dropDownItemClicked(index)}
-                              takeMinHeight={true}
-                            />
-                          </View>
-                        );
+                        if (userData.hrmsRole === "Reception") {
+                          if (item === "Dealer Code") {
+                            return (
+                              <View>
+                                <DropDownSelectionItem
+                                  label={item}
+                                  value={selectedNames}
+                                  onPress={() => dropDownItemClicked(index)}
+                                  takeMinHeight={true}
+                                />
+                              </View>
+                            );
+                          }
+                        } else {
+                          return (
+                            <View>
+                              <DropDownSelectionItem
+                                label={item}
+                                value={selectedNames}
+                                onPress={() => dropDownItemClicked(index)}
+                                takeMinHeight={true}
+                              />
+                            </View>
+                          );
+                        }
                       }}
                     />
                   </View>
@@ -711,24 +745,24 @@ const FilterScreen = ({ route, navigation }) => {
 export default FilterScreen;
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        flexDirection: "column",
-        backgroundColor: Colors.LIGHT_GRAY,
-    },
-    view3: {
-        width: "100%",
-        position: "absolute",
-        bottom: 20,
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-evenly",
-    },
-    submitBtnBckVw: {
-        width: "100%",
-        height: 70,
-        flexDirection: "row",
-        justifyContent: "space-evenly",
-        alignItems: "center",
-    }
+  container: {
+    flex: 1,
+    flexDirection: "column",
+    backgroundColor: Colors.LIGHT_GRAY,
+  },
+  view3: {
+    width: "100%",
+    position: "absolute",
+    bottom: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-evenly",
+  },
+  submitBtnBckVw: {
+    width: "100%",
+    height: 70,
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    alignItems: "center",
+  },
 });
