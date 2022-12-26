@@ -281,6 +281,10 @@ const RecepSourceModel = ({ route, navigation }) => {
     );
   };
 
+  function getPercentage(target, total) {
+    return target > 0 ? Math.round((target / total) * 100) : 0;
+  }
+
   const renderDataView = () => {
     const keys = isSourceIndex === 0 ? leadSourceKeys : vehicleModelKeys;
     const data = isSourceIndex === 0 ? leadSource : vehicleModel;
@@ -323,7 +327,15 @@ const RecepSourceModel = ({ route, navigation }) => {
                           justifyContent: "center",
                         }}
                       >
-                        <Text>{x[param?.initial?.toLowerCase()]}</Text>
+                        <Text>
+                          {displayType == 0
+                            ? x[param?.initial?.toLowerCase()]
+                            : `${getPercentage(
+                                x[param?.initial?.toLowerCase()],
+                                sourceModelTotals[param?.initial?.toLowerCase()]
+                              )}%`
+                            }
+                        </Text>
                       </View>
                     );
                   })}
