@@ -65,11 +65,11 @@ const receptionMenu = [
   "Settings",
   "Drop/Lost/Cancel",
   "Digital Payment",
-  "Target Planning",
+  // "Target Planning",
   "Helpdesk",
   // "Task Management",
   "Drop Analysis",
-  "Task Transfer",
+  // "Task Transfer",
   "Sign Out",
 ];
 const teleCollerMenu = [
