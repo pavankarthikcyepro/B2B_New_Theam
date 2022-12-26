@@ -93,8 +93,6 @@ import {
 } from "../../../service";
 import ReactNativeModal from "react-native-modal";
 import Carousel, { Pagination } from "react-native-snap-carousel";
-import URL from "../../../networking/endpoints";
-import { client } from "../../../networking/client";
 
 const officeLocation = {
   latitude: 37.33233141,
@@ -234,7 +232,7 @@ const HomeScreen = ({ route, navigation }) => {
       console.error(error);
     }
   };
-  
+
   useEffect(async () => {
     if (userData.hrmsRole === "Reception") {
       let payload = {

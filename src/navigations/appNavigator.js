@@ -97,6 +97,7 @@ import DropLostCancelScreen from "../scenes/mainScenes/DropLostCancel/DropLostCa
 import AddNewEnquiryScreen from "../scenes/mainScenes/EMS/addNewEnquiry";
 import FilterTargetScreen from "../scenes/mainScenes/TargetSettingsScreen/TabScreen/filterTarget";
 import ReceptionistFilterScreen from "../scenes/mainScenes/Home/receptionistFilter";
+import { AttendanceTopTabNavigatorTwo } from "./attendanceTopTabNavigator";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -111,7 +112,7 @@ const screeOptionStyle = {
   headerBackTitleVisible: false,
 };
 
-const MenuIcon = ({ navigation }) => {
+export const MenuIcon = ({ navigation }) => {
   return (
     <IconButton
       icon="menu"
@@ -1172,6 +1173,19 @@ const MainStackDrawerNavigator = () => {
           initialParams={{ screen: DrawerStackIdentifiers.monthlyTarget }}
         />
         <MainDrawerNavigator.Screen
+          name={DrawerStackIdentifiers.attendance}
+          component={AttendanceTopTabNavigatorTwo}
+          options={{
+            title: "Attendance",
+            // headerLeft: () => <MenuIcon navigation={navigation} />,
+            headerShown: true,
+            headerStyle: screeOptionStyle.headerStyle,
+            headerTitleStyle: screeOptionStyle.headerTitleStyle,
+            headerTintColor: screeOptionStyle.headerTintColor,
+            headerBackTitleVisible: screeOptionStyle.headerBackTitleVisible,
+          }}
+        />
+        <MainDrawerNavigator.Screen
           name={DrawerStackIdentifiers.dropLostCancel}
           component={DropLostCancelNavigator}
         />
@@ -1227,19 +1241,6 @@ const MainStackDrawerNavigator = () => {
         <MainDrawerNavigator.Screen
           name={"Target Settings"}
           component={TargetSettingsScreen}
-        />
-        <MainDrawerNavigator.Screen
-          name={DrawerStackIdentifiers.attendance}
-          component={AttendanceScreen}
-          options={{
-            title: "Attendance",
-            // headerLeft: () => <MenuIcon navigation={navigation} />,
-            headerShown: true,
-            headerStyle: screeOptionStyle.headerStyle,
-            headerTitleStyle: screeOptionStyle.headerTitleStyle,
-            headerTintColor: screeOptionStyle.headerTintColor,
-            headerBackTitleVisible: screeOptionStyle.headerBackTitleVisible,
-          }}
         />
       </MainDrawerNavigator.Navigator>
     );

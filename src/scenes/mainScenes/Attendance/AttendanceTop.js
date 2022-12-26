@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Dimensions,
   Platform,
+  TouchableHighlight,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -25,6 +26,7 @@ import { MenuIcon } from "../../../navigations/appNavigator";
 import WeeklyCalendar from "react-native-weekly-calendar";
 import Geolocation from "@react-native-community/geolocation";
 import { getDistanceBetweenTwoPoints, officeRadius } from "../../../service";
+import Swipeable from "react-native-swipeable";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
@@ -33,7 +35,7 @@ const officeLocation = {
   longitude: -122.0312186,
 };
 
-const AttendanceScreen = ({ route, navigation }) => {
+const AttendanceTopTabScreen = ({ route, navigation }) => {
   // const navigation = useNavigation();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
@@ -176,6 +178,14 @@ const AttendanceScreen = ({ route, navigation }) => {
     }
   };
 
+  //   const leftContent = <Text>Pull to activate</Text>;
+
+  const rightButtons = [
+    <TouchableHighlight>
+      <Text>Punch In/OUT</Text>
+    </TouchableHighlight>,
+  ];
+
   return (
     <SafeAreaView style={styles.container}>
       <AttendanceForm
@@ -186,75 +196,6 @@ const AttendanceScreen = ({ route, navigation }) => {
           setAttendance(false);
         }}
       />
-      <View
-        style={{
-          flexDirection: "row",
-          marginBottom: 2,
-          justifyContent: "center",
-          alignItems: "center",
-          marginTop: 25,
-        }}
-      >
-        <View
-          style={{
-            flexDirection: "row",
-            borderColor: Colors.RED,
-            borderWidth: 1,
-            borderRadius: 5,
-            height: 35,
-            marginTop: 2,
-            justifyContent: "center",
-            width: "80%",
-          }}
-        >
-          <TouchableOpacity
-            onPress={() => {
-              setIsWeek(true);
-            }}
-            style={{
-              width: "50%",
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: !isWeek ? Colors.WHITE : Colors.RED,
-              borderTopLeftRadius: 5,
-              borderBottomLeftRadius: 5,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 16,
-                color: !isWeek ? Colors.BLACK : Colors.WHITE,
-                fontWeight: "600",
-              }}
-            >
-              Week
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              setIsWeek(false);
-            }}
-            style={{
-              width: "50%",
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: !isWeek ? Colors.RED : Colors.WHITE,
-              borderTopRightRadius: 5,
-              borderBottomRightRadius: 5,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 16,
-                color: !isWeek ? Colors.WHITE : Colors.BLACK,
-                fontWeight: "600",
-              }}
-            >
-              Month
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
       {!isWeek && (
         <View>
           <Calendar
@@ -289,54 +230,25 @@ const AttendanceScreen = ({ route, navigation }) => {
           />
         </View>
       )}
-
-      {isWeek && (
-        <View style={{ flex: 1, marginTop: 10 }}>
-          <WeeklyCalendar
-            events={weeklyRecord}
-            titleFormat={"MMM yyyy"}
-            titleStyle={{
-              color: Colors.RED,
-              fontSize: 15,
-              fontWeight: "500",
-              marginVertical: 10,
-            }}
-            themeColor={Colors.RED}
-            dayLabelStyle={{
-              color: Colors.RED,
-            }}
-            onDayPress={(day) => {
-              console.log("selected dayssss", day);
-              isCurrentDateForWeekView(day);
-            }}
-            renderEvent={(event, j) => {
-              return (
-                <View
-                  style={{ ...styles.eventNote, backgroundColor: event.color }}
-                >
-                  <Text style={styles.eventText}>{event.status}</Text>
-                  {event.note?.length > 0 && (
-                    <Text style={styles.eventText}>
-                      {"Comment: " + event.note}
-                    </Text>
-                  )}
-                  {event.reason?.length > 0 && (
-                    <Text style={styles.eventText}>
-                      {"Reason: " + event.reason}
-                    </Text>
-                  )}
-                </View>
-              );
-            }}
-          />
+      <Swipeable style={{widht:100}} rightButtons={rightButtons}>
+        <View style={{ flexDirection: "row" }}>
+          <View style={{ backgroundColor: "red" }}>
+            <Text>sss</Text>
+          </View>
+          <View style={{ backgroundColor: "green" }}>
+            <Text>sss</Text>
+          </View>
+          <View style={{ backgroundColor: "yellow" }}>
+            <Text>sss</Text>
+          </View>
         </View>
-      )}
+      </Swipeable>
       <LoaderComponent visible={loading} />
     </SafeAreaView>
   );
 };
 
-export default AttendanceScreen;
+export default AttendanceTopTabScreen;
 
 const styles = StyleSheet.create({
   container: {

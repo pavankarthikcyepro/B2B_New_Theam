@@ -65,6 +65,7 @@
     "react-native-snap-carousel": "^3.9.1",
     "react-native-svg": "^12.1.1",
     "react-native-svg-transformer": "^1.0.0",
+    "react-native-swipeable": "^0.6.0",
     "react-native-switch": "^1.5.1",
     "react-native-switch-audio-output": "^1.1.2",
     "react-native-tab-view": "^2.16.0",

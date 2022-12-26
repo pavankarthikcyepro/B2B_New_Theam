@@ -278,10 +278,11 @@ const SideMenuScreen = ({ navigation }) => {
       case 114:
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.liveLeads);
         break;
-      case 116:
-        navigation.navigate(AppNavigator.DrawerStackIdentifiers.attendance);
       case 115:
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropLostCancel);
+        break;
+      case 116:
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.attendance);
         break;
       case 112:
         signOutClicked();
