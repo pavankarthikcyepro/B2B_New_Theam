@@ -1174,7 +1174,7 @@ const MainStackDrawerNavigator = () => {
         />
         <MainDrawerNavigator.Screen
           name={DrawerStackIdentifiers.attendance}
-          component={AttendanceTopTabNavigatorTwo}
+          component={AttendanceScreen}
           options={{
             title: "Attendance",
             // headerLeft: () => <MenuIcon navigation={navigation} />,
