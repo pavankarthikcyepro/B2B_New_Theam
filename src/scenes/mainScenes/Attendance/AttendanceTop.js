@@ -13,7 +13,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 
 import { LoaderComponent } from "../../../components";
-import { Colors } from "../../../styles";
+import { Colors, GlobalStyle } from "../../../styles";
 import { client } from "../../../networking/client";
 import URL from "../../../networking/endpoints";
 import { useNavigation } from "@react-navigation/native";
@@ -181,8 +181,17 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
   //   const leftContent = <Text>Pull to activate</Text>;
 
   const rightButtons = [
-    <TouchableHighlight>
-      <Text>Punch In/OUT</Text>
+    <TouchableHighlight
+      style={{
+        backgroundColor: "#646446",
+        height: 65,
+        width: "18%",
+        alignItems: "center",
+        justifyContent: "center",
+        borderRadius:10
+      }}
+    >
+      <Text style={{ color: "#fff" }}>Punch In</Text>
     </TouchableHighlight>,
   ];
 
@@ -230,19 +239,101 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
           />
         </View>
       )}
-      <Swipeable style={{widht:100}} rightButtons={rightButtons}>
-        <View style={{ flexDirection: "row" }}>
-          <View style={{ backgroundColor: "red" }}>
-            <Text>sss</Text>
-          </View>
-          <View style={{ backgroundColor: "green" }}>
-            <Text>sss</Text>
-          </View>
-          <View style={{ backgroundColor: "yellow" }}>
-            <Text>sss</Text>
-          </View>
-        </View>
-      </Swipeable>
+      {[0, 0, 0, 0, 0].map(() => {
+        return (
+          <Swipeable
+            style={{ width: "98%", marginVertical: 5, marginHorizontal: "2%" }}
+            rightButtons={rightButtons}
+          >
+            <View
+              style={{
+                ...GlobalStyle.shadow,
+                flexDirection: "row",
+                width: "95%",
+                height: 65,
+                alignSelf: "center",
+                padding: 7,
+                backgroundColor: "#fff",
+              }}
+            >
+              <View
+                style={{
+                  width: "15%",
+                  justifyContent: "center",
+                }}
+              >
+                <View
+                  style={{
+                    width: "85%",
+                    backgroundColor: "lightgrey",
+                    alignSelf: "center",
+                    alignItems: "center",
+                    borderRadius: 6,
+                    justifyContent: "space-evenly",
+                    height: 40,
+                  }}
+                >
+                  <Text>01</Text>
+                  <Text>MON</Text>
+                </View>
+              </View>
+              <View
+                style={{
+                  backgroundColor: "transparent",
+                  width: "15%",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <View style={{ backgroundColor: "red" }}>
+                  <Text
+                    style={{ color: "#fff", padding: 2.5, fontWeight: "600" }}
+                  >
+                    {"EL"}
+                  </Text>
+                </View>
+              </View>
+              <View
+                style={{
+                  backgroundColor: "transparent",
+                  width: "70%",
+                  flexDirection: "row",
+                  justifyContent: "space-around",
+                  alignItems: "center",
+                }}
+              >
+                <View
+                  style={{
+                    justifyContent: "space-around",
+                    alignItems: "center",
+                    height: 50,
+                  }}
+                >
+                  <Text>{"Punch In"}</Text>
+                  <Text>{"10:30 AM"}</Text>
+                </View>
+                <View
+                  style={{
+                    height: 40,
+                    borderWidth: 0.5,
+                  }}
+                />
+                <View
+                  style={{
+                    justifyContent: "space-around",
+                    alignItems: "center",
+                    height: 50,
+                  }}
+                >
+                  <Text>{"Punch Out"}</Text>
+                  <Text>{"10:30 PM"}</Text>
+                </View>
+              </View>
+            </View>
+          </Swipeable>
+        );
+      })}
+
       <LoaderComponent visible={loading} />
     </SafeAreaView>
   );
