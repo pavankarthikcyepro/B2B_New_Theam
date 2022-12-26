@@ -245,6 +245,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     employeeId: "",
     employeeName: "",
     isSelfManager: "",
+    isTracker: "",
   });
   const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
   const [modelsList, setModelsList] = useState([]);
@@ -346,6 +347,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       employeeId: "",
       employeeName: "",
       isSelfManager: "",
+      isTracker: "",
     });
     setUploadedImagesDataObj({});
     setTypeOfActionDispatched("");
@@ -495,6 +497,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
         employeeId: jsonObj.empId,
         employeeName: jsonObj.empName,
         isSelfManager: jsonObj.isSelfManager,
+        isTracker: jsonObj.isTracker,
       });
       getCarMakeListFromServer(jsonObj.orgId);
       getCarModelListFromServer(jsonObj.orgId);
@@ -3650,31 +3653,33 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     .toLowerCase()
                     .trim()
                     .replace(/ /g, "") === "socialnetwork") && ( */}
-              {selector.source_of_enquiry.length !==0 &&
-                <View>
-                  <DropDownSelectionItem
-                    label={"Sub Source Of Enquiry*"}
-                    disabled={false}
-                    value={selector.sub_source_of_enquiry}
-                    onPress={() =>
-                      showDropDownModelMethod(
-                        "SUB_SOURCE_OF_ENQUIRY",
-                        "Sub Source Of Enquiry"
-                      )
-                    }
-                  />
-                  <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress && selector.sub_source_of_enquiry === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
-                </View>}
+                {selector.source_of_enquiry.length !== 0 && (
+                  <View>
+                    <DropDownSelectionItem
+                      label={"Sub Source Of Enquiry*"}
+                      disabled={false}
+                      value={selector.sub_source_of_enquiry}
+                      onPress={() =>
+                        showDropDownModelMethod(
+                          "SUB_SOURCE_OF_ENQUIRY",
+                          "Sub Source Of Enquiry"
+                        )
+                      }
+                    />
+                    <Text
+                      style={[
+                        GlobalStyle.underline,
+                        {
+                          backgroundColor:
+                            isSubmitPress &&
+                            selector.sub_source_of_enquiry === ""
+                              ? "red"
+                              : "rgba(208, 212, 214, 0.7)",
+                        },
+                      ]}
+                    ></Text>
+                  </View>
+                )}
                 {/* )} */}
 
                 {selector.source_of_enquiry.toLowerCase() === "reference" && (
@@ -5529,6 +5534,8 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                       label={
                         userData.isSelfManager == "Y"
                           ? "Battery Type"
+                          : userData.isTracker == "Y"
+                          ? "Clutch Type"
                           : "Transmission Type"
                       }
                       value={selector.c_transmission_type}
@@ -5957,6 +5964,8 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     label={
                       userData.isSelfManager == "Y"
                         ? "Battery Type"
+                        : userData.isTracker == "Y"
+                        ? "Clutch Type"
                         : "Transmission Type"
                     }
                     value={selector.r_transmission_type}
@@ -6331,15 +6340,15 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                   Allocate
                 </Button>
               )}
-                <Button
-                  mode="contained"
-                  style={{ width: 120 }}
-                  color={Colors.PINK}
-                  labelStyle={{ textTransform: "none" }}
-                  onPress={submitClicked}
-                >
-                  Submit
-                </Button>
+              <Button
+                mode="contained"
+                style={{ width: 120 }}
+                color={Colors.PINK}
+                labelStyle={{ textTransform: "none" }}
+                onPress={submitClicked}
+              >
+                Submit
+              </Button>
             </View>
           )}
           {showPreBookingBtn && !isDropSelected && (
