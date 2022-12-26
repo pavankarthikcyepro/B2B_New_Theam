@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   SafeAreaView,
   ScrollView,
@@ -167,6 +167,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
   const [isSubmitPress, setIsSubmitPress] = useState(false);
   const [isEventListModalVisible, setisEventListModalVisible] = useState(false);
   const [eventListdata,seteventListData] = useState(EventListData)
+  const [selectedEventData, setSelectedEventData] = useState([])
   useEffect(() => {
     getAsyncstoreData();
     setExistingData();
@@ -998,9 +999,17 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
 
   const addSelectedEvent = () => {
     // todo add api call 
+ 
+    let findSelected = eventListdata.filter(item => {
+      if (item.isSelected === true) {
+        return item;
+      }
+    })
+
+
   }
 
-  const eventListTableRow = (txt1, txt2, txt3, txt4, isDisplayRadio, isRadioSelected, isClickable,itemMain,index) => {
+  const eventListTableRow = useCallback ((txt1, txt2, txt3, txt4, isDisplayRadio, isRadioSelected, isClickable,itemMain,index) => {
 
     return (
       <>
@@ -1017,14 +1026,17 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
 
         }}
           disabled={isClickable}
-          onPress={()=>{
+          onPress={  ()=>{
            
-            // let temp = [...EventListData].filter(item => item.id === itemMain.id).map(i => i.isSelected = true)
-            let temp = [...EventListData].map(i => 
-             ( i.id ===itemMain.id ? {...i, isSelected : true}: i)
+            // let temp = [...eventListdata].filter(item => item.id === itemMain.id).map(i => i.isSelected = true)
+            let temp = EventListData.map(i => 
+              i.id === itemMain.id ? { ...i, isSelected: true } : { ...i, isSelected: false }
             )
+            
+             seteventListData(temp);
+            
+            
            
-            seteventListData([...temp])
           }}
         >
           {/* todo */}
@@ -1043,7 +1055,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         </TouchableOpacity>
 
       </>)
-  }
+  })
 
   const addEventListModal = () => {
 
@@ -1132,7 +1144,10 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                 style={{ flex: 1, marginRight: 10 }}
                 color={Colors.GRAY}
                 labelStyle={{ textTransform: "none" }}
-                onPress={() => setisEventListModalVisible(false)}>
+                onPress={() =>{ 
+                  setisEventListModalVisible(false)
+                  seteventListData(EventListData);
+                  }}>
                 Cancel
               </Button>
               <Button
