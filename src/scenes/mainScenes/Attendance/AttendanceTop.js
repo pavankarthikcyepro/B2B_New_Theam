@@ -9,6 +9,7 @@ import {
   Dimensions,
   Platform,
   TouchableHighlight,
+  FlatList,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -27,6 +28,7 @@ import WeeklyCalendar from "react-native-weekly-calendar";
 import Geolocation from "@react-native-community/geolocation";
 import { getDistanceBetweenTwoPoints, officeRadius } from "../../../service";
 import Swipeable from "react-native-swipeable";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
@@ -45,6 +47,7 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
   const [weeklyRecord, setWeeklyRecord] = useState([]);
   const [reason, setReason] = useState(false);
   const [initialPosition, setInitialPosition] = useState({});
+  const [currentMonth, setCurrentMonth] = useState(new Date());
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -64,6 +67,29 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
     setLoading(true);
     getAttendance();
   }, []);
+
+  function selectedMonth(params) {
+    let d = moment(params);
+    d.month(); // 1
+    console.log(d.month(), params,new Date());
+    return d.format("MMM YYYY");
+  }
+
+  function nextMonth(params) {
+    let current = params;
+    current.setMonth(current.getMonth() + 1);
+    let d = moment(current);
+    d.month(); 
+    return d.format("MMM");
+  }
+
+  function previousMonth(params) {
+    let current = params;
+    current.setMonth(current.getMonth() - 1);
+    let d = moment(current);
+    d.month();
+    return d.format("MMM");
+  }
 
   const getCurrentLocation = async () => {
     try {
@@ -180,6 +206,99 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
 
   //   const leftContent = <Text>Pull to activate</Text>;
 
+  const renderItem = ({ item }) => {
+    return (
+      <Swipeable
+        style={{ width: "98%", marginVertical: 5, marginHorizontal: "2%" }}
+        rightButtons={rightButtons}
+      >
+        <View
+          style={{
+            ...GlobalStyle.shadow,
+            flexDirection: "row",
+            width: "95%",
+            height: 65,
+            alignSelf: "center",
+            padding: 7,
+            backgroundColor: "#fff",
+            borderRadius: 10,
+          }}
+        >
+          <View
+            style={{
+              width: "15%",
+              justifyContent: "center",
+            }}
+          >
+            <View
+              style={{
+                width: "85%",
+                backgroundColor: "lightgrey",
+                alignSelf: "center",
+                alignItems: "center",
+                borderRadius: 6,
+                justifyContent: "space-evenly",
+                height: 40,
+              }}
+            >
+              <Text>{"01"}</Text>
+              <Text>{"MON"}</Text>
+            </View>
+          </View>
+          <View
+            style={{
+              backgroundColor: "transparent",
+              width: "15%",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <View style={{ backgroundColor: "red" }}>
+              <Text style={{ color: "#fff", padding: 2.5, fontWeight: "600" }}>
+                {"EL"}
+              </Text>
+            </View>
+          </View>
+          <View
+            style={{
+              backgroundColor: "transparent",
+              width: "70%",
+              flexDirection: "row",
+              justifyContent: "space-around",
+              alignItems: "center",
+            }}
+          >
+            <View
+              style={{
+                justifyContent: "space-around",
+                alignItems: "center",
+                height: 50,
+              }}
+            >
+              <Text>{"Punch In"}</Text>
+              <Text>{"10:30 AM"}</Text>
+            </View>
+            <View
+              style={{
+                height: 40,
+                borderWidth: 0.5,
+              }}
+            />
+            <View
+              style={{
+                justifyContent: "space-around",
+                alignItems: "center",
+                height: 50,
+              }}
+            >
+              <Text>{"Punch Out"}</Text>
+              <Text>{"10:30 PM"}</Text>
+            </View>
+          </View>
+        </View>
+      </Swipeable>
+    );
+  };
   const rightButtons = [
     <TouchableHighlight
       style={{
@@ -188,7 +307,7 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
         width: "18%",
         alignItems: "center",
         justifyContent: "center",
-        borderRadius:10
+        borderRadius: 10,
       }}
     >
       <Text style={{ color: "#fff" }}>Punch In</Text>
@@ -205,7 +324,7 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
           setAttendance(false);
         }}
       />
-      {!isWeek && (
+      {/* {!isWeek && (
         <View>
           <Calendar
             onDayPress={(day) => {
@@ -234,106 +353,40 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
               selectedDayBackgroundColor: Colors.GRAY,
               textDayFontWeight: "500",
             }}
+            style={{ padding: 0 }}
             markingType={"custom"}
             markedDates={marker}
           />
         </View>
-      )}
-      {[0, 0, 0, 0, 0].map(() => {
-        return (
-          <Swipeable
-            style={{ width: "98%", marginVertical: 5, marginHorizontal: "2%" }}
-            rightButtons={rightButtons}
-          >
-            <View
-              style={{
-                ...GlobalStyle.shadow,
-                flexDirection: "row",
-                width: "95%",
-                height: 65,
-                alignSelf: "center",
-                padding: 7,
-                backgroundColor: "#fff",
-              }}
-            >
-              <View
-                style={{
-                  width: "15%",
-                  justifyContent: "center",
-                }}
-              >
-                <View
-                  style={{
-                    width: "85%",
-                    backgroundColor: "lightgrey",
-                    alignSelf: "center",
-                    alignItems: "center",
-                    borderRadius: 6,
-                    justifyContent: "space-evenly",
-                    height: 40,
-                  }}
-                >
-                  <Text>01</Text>
-                  <Text>MON</Text>
-                </View>
-              </View>
-              <View
-                style={{
-                  backgroundColor: "transparent",
-                  width: "15%",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <View style={{ backgroundColor: "red" }}>
-                  <Text
-                    style={{ color: "#fff", padding: 2.5, fontWeight: "600" }}
-                  >
-                    {"EL"}
-                  </Text>
-                </View>
-              </View>
-              <View
-                style={{
-                  backgroundColor: "transparent",
-                  width: "70%",
-                  flexDirection: "row",
-                  justifyContent: "space-around",
-                  alignItems: "center",
-                }}
-              >
-                <View
-                  style={{
-                    justifyContent: "space-around",
-                    alignItems: "center",
-                    height: 50,
-                  }}
-                >
-                  <Text>{"Punch In"}</Text>
-                  <Text>{"10:30 AM"}</Text>
-                </View>
-                <View
-                  style={{
-                    height: 40,
-                    borderWidth: 0.5,
-                  }}
-                />
-                <View
-                  style={{
-                    justifyContent: "space-around",
-                    alignItems: "center",
-                    height: 50,
-                  }}
-                >
-                  <Text>{"Punch Out"}</Text>
-                  <Text>{"10:30 PM"}</Text>
-                </View>
-              </View>
-            </View>
-          </Swipeable>
-        );
-      })}
-
+      )} */}
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          width: "90%",
+          alignSelf: "center",
+          paddingVertical: 15,
+        }}
+      >
+        <TouchableOpacity style={{ flexDirection: "row" }}>
+          <MaterialIcons name="arrow-back-ios" size={20} color={Colors.BLACK} />
+          <Text>{previousMonth(currentMonth)}</Text>
+        </TouchableOpacity>
+        <Text>{selectedMonth(currentMonth)}</Text>
+        <TouchableOpacity style={{ flexDirection: "row" }}>
+          <Text>{nextMonth(currentMonth)}</Text>
+          <MaterialIcons
+            name="arrow-forward-ios"
+            size={20}
+            color={Colors.BLACK}
+          />
+        </TouchableOpacity>
+      </View>
+      <FlatList
+        data={[0, 0, 0, 0, 0, 0]}
+        renderItem={renderItem}
+        keyExtractor={(item, index) => index}
+      />
       <LoaderComponent visible={loading} />
     </SafeAreaView>
   );
