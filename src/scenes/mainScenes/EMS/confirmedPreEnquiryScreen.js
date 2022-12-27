@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { SafeAreaView, ScrollView, View, Text, StyleSheet, Keyboard, Alert, Dimensions, KeyboardAvoidingView, BackHandler } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+
+import { SafeAreaView, ScrollView, View, Text, StyleSheet, Keyboard, Alert, Dimensions, KeyboardAvoidingView, BackHandler, Modal ,TouchableOpacity,FlatList} from 'react-native';
 import { ButtonComp } from "../../../components/buttonComp";
 import { Checkbox, Button, IconButton, Divider, List } from 'react-native-paper';
 import { Colors, GlobalStyle } from '../../../styles';
@@ -25,7 +26,52 @@ import { DropComponent } from './components/dropComp';
 import URL from '../../../networking/endpoints';
 import Geolocation from '@react-native-community/geolocation';
 import moment from 'moment';
+import Fontisto from "react-native-vector-icons/Fontisto"
+let EventListData = [
+    {
+        eventName: "omega thon",
+        eventLocation: "Ahmedabad",
+        Startdate: "10/12/2022",
+        Enddate: "10/12/2022",
+        isSelected: false,
+        id: 0
 
+    },
+    {
+        eventName: "omega thon22",
+        eventLocation: "Ahmedabad",
+        Startdate: "10/12/2022",
+        Enddate: "10/12/2022",
+        isSelected: false,
+        id: 1
+    },
+    {
+        eventName: "omega thon22",
+        eventLocation: "Ahmedabad",
+        Startdate: "10/12/2022",
+        Enddate: "10/12/2022",
+        isSelected: false
+        ,
+        id: 2
+    },
+    {
+        eventName: "omega thon22",
+        eventLocation: "Ahmedabad",
+        Startdate: "10/12/2022",
+        Enddate: "10/12/2022",
+        isSelected: false,
+        id: 3
+    },
+    {
+        eventName: "omega thon22",
+        eventLocation: "Ahmedabad",
+        Startdate: "10/12/2022",
+        Enddate: "10/12/2022",
+        isSelected: false,
+        id: 4
+    },
+
+]
 const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
 
     const selector = useSelector(state => state.confirmedPreEnquiryReducer);
@@ -60,6 +106,11 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     const [dropRemarks, setDropRemarks] = useState("");
     const [currentLocation, setCurrentLocation] = useState(null);
     const [leadRefIdForEnq, setleadRefIdForEnq] = useState(null);
+
+    const [isEventListModalVisible, setisEventListModalVisible] = useState(false);
+    const [eventListdata, seteventListData] = useState(EventListData)
+    const [selectedEventData, setSelectedEventData] = useState([])
+    const [eventConfigRes, setEventConfigRes] = useState([])
 
     React.useLayoutEffect(() => {
         navigation.setOptions({
@@ -223,7 +274,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         getAsyncStorageData();
         getBranchId();
         getDropDownApi();
-
+        
         // api calls
         dispatch(getPreEnquiryDetails(itemData.universalId));
 
@@ -590,6 +641,170 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         return name;
     }
 
+    const onEventInfoPress = ()=>{
+        setisEventListModalVisible(true)
+    }
+
+
+    const eventListTableRow = useCallback((txt1, txt2, txt3, txt4, isDisplayRadio, isRadioSelected, isClickable, itemMain, index) => {
+
+        return (
+            <>
+
+                <TouchableOpacity style={{
+                    flexDirection: "row",
+                    // justifyContent: "space-around",
+                    alignItems: "center",
+                    // height: '15%',
+                    alignContent: "center",
+                    width: '100%',
+                    marginTop: 5
+
+
+                }}
+                    disabled={true}
+                    onPress={() => {
+
+                        // let temp = [...eventListdata].filter(item => item.id === itemMain.id).map(i => i.isSelected = true)
+                        let temp = eventListdata.map(i =>
+                            i.id === itemMain.id ? { ...i, isSelected: true } : { ...i, isSelected: false }
+                        )
+                     
+                        seteventListData(temp);
+
+
+
+                    }}
+                >
+                    {/* todo */}
+                    {isDisplayRadio ?
+                        <Fontisto name={itemMain.isSelected ? "radio-btn-active" : "radio-btn-passive"}
+                            size={12} color={Colors.RED}
+                            style={{ marginEnd: 10 }}
+                        /> :
+                        <View style={{ marginEnd: 10, width: 12, }}  >{ }</View>}
+
+                    <Text numberOfLines={1} style={{ fontSize: 12, color: Colors.BLACK, textAlign: "left", marginEnd: 10, width: 100, }}  >{txt1}</Text>
+                    <Text numberOfLines={1} style={{ fontSize: 12, color: Colors.BLACK, textAlign: "left", marginEnd: 10, width: 100 }}>{txt2}</Text>
+                    <Text numberOfLines={1} style={{ fontSize: 12, color: Colors.BLACK, textAlign: "left", marginEnd: 10, width: 100 }}>{txt3}</Text>
+                    <Text numberOfLines={1} style={{ fontSize: 12, color: Colors.BLACK, textAlign: "left", marginEnd: 10, width: 100 }}>{txt4}</Text>
+
+                </TouchableOpacity>
+
+            </>)
+    })
+
+
+    const addEventListModal = () => {
+
+        return (
+            <Modal
+                animationType="fade"
+                visible={isEventListModalVisible}
+                onRequestClose={() => {
+
+                }}
+                transparent={true}
+            >
+                <View
+                    style={{
+                        flex: 1,
+                        justifyContent: "center",
+                        alignItems: "center",
+                        backgroundColor: "rgba(0,0,0,0.7)",
+
+
+                    }}
+                >
+                    <View style={{
+                        width: '90%',
+                        backgroundColor: Colors.WHITE,
+                        padding: 10,
+                        borderWidth: 2,
+                        borderColor: Colors.BLACK,
+                        flexDirection: "column",
+                        height: '40%',
+                    }}
+
+                    >
+                        <Text style={{ color: Colors.BLACK, fontSize: 16, fontWeight: "700", textAlign: "left", margin: 5 }}>Select Event</Text>
+                        <ScrollView style={{
+                            width: '100%',
+
+                        }}
+                            horizontal={true}
+                        >
+                            <View style={{ flexDirection: "column" }}>
+
+                                <Text style={GlobalStyle.underline} />
+                                <View style={{
+                                    height: 30, borderBottomColor: 'rgba(208, 212, 214, 0.7)',
+                                    borderBottomWidth: 2,
+
+                                }}>
+                                    {eventListTableRow("Event Name", "Event location", "Start Date", "End Date", false, false, true, 0, 0)}
+                                    {/* <Text style={GlobalStyle.underline} /> */}
+                                </View>
+                                <View>
+                                    <FlatList
+                                        key={"EVENT_LIST"}
+                                        data={eventListdata}
+                                        style={{ height: '80%' }}
+                                        keyExtractor={(item, index) => index.toString()}
+                                        renderItem={({ item, index }) => {
+
+                                            return (
+                                                <>
+                                                    <View style={{
+                                                        height: 35, borderBottomColor: 'rgba(208, 212, 214, 0.7)',
+                                                        borderBottomWidth: 4, marginTop: 5
+                                                    }}>
+                                                        {eventListTableRow(item.name, item.location, moment(item.startdate).format("DD-MM-YYYY"), moment(item.enddate).format("DD-MM-YYYY"), false, false, false, item, index)}
+
+                                                    </View>
+
+                                                </>
+                                            );
+                                        }}
+                                    />
+
+                                </View>
+                            </View>
+
+                        </ScrollView>
+                        <View style={{ flexDirection: "row", alignSelf: "flex-end", marginTop: 10 }}>
+                            <Button
+                                mode="contained"
+
+                                style={{ width: '30%', }}
+                                color={Colors.GRAY}
+                                labelStyle={{ textTransform: "none" }}
+                                onPress={() => {
+                                    setisEventListModalVisible(false)
+                                    // todo
+                                    seteventListData([]);
+                                }}>
+                                Close
+                            </Button>
+                            {/* <Button
+                                mode="contained"
+
+                                style={{ flex: 1 }}
+                                color={Colors.PINK}
+                                labelStyle={{ textTransform: "none" }}
+                                onPress={() => addSelectedEvent()}>
+                                Add
+                            </Button> */}
+                        </View>
+
+                    </View>
+
+                </View>
+            </Modal>
+        )
+    }
+
+
     return (
         <SafeAreaView style={styles.container}>
             {/* <LoaderComponent
@@ -605,7 +820,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                 onRequestClose={() => {setDisabled(false)
                     setEmployeeSelectModel(false);}}
             />
-
+            {addEventListModal()}
             <KeyboardAvoidingView
                 style={{ flex: 1 }}
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -659,6 +874,9 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                             value={itemData.enquirySource}
                             label={"Source of Contact"}
                             editable={false}
+                            rightIconObj={{ name: "information-outline", color: Colors.GRAY }}
+                            showRightIcon={itemData.enquirySource ==="Events" ? true: false}
+                            onRightIconPressed={onEventInfoPress}
                         />
                         <Text style={styles.devider}></Text>
 

@@ -35,7 +35,7 @@ import {
   getEventListApi,
   updateSelectedDate,
   updateEnqStatus,
-  getPreEnquiryDetails,
+  getPreEnquiryDetails,getEventConfigList
 } from "../../../redux/addPreEnquiryReducer";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -166,8 +166,13 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
   });
   const [isSubmitPress, setIsSubmitPress] = useState(false);
   const [isEventListModalVisible, setisEventListModalVisible] = useState(false);
-  const [eventListdata,seteventListData] = useState(EventListData)
+
+
+  const [eventListdata,seteventListData] = useState([])
   const [selectedEventData, setSelectedEventData] = useState([])
+  const [eventConfigRes, setEventConfigRes] = useState([])
+
+
   useEffect(() => {
     getAsyncstoreData();
     setExistingData();
@@ -187,7 +192,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     const employeeData = await AsyncStore.getData(
       AsyncStore.Keys.LOGIN_EMPLOYEE
     );
-
+      
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
       setUserData({
@@ -458,6 +463,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
   };
 
   const submitClicked = async () => {
+  
     Keyboard.dismiss();
     setIsSubmitPress(true);
     // if (
@@ -733,6 +739,21 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         },
       ],
     };
+    let dmsLeadEventDto;
+    if(selectedEventData.length >0){
+       dmsLeadEventDto = {
+        eventId: selectedEventData[0].eventId,
+        eventName: selectedEventData[0].name,
+        eventLocation: selectedEventData[0].location,
+        startDate: selectedEventData[0].startdate,
+        endDate: selectedEventData[0].enddate
+      }
+    } else{
+       dmsLeadEventDto = {
+        
+      }
+    }
+   
 
     // http://ec2-3-7-117-218.ap-south-1.compute.amazonaws.com:8081
 
@@ -743,15 +764,17 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       formData = {
         dmsContactDto: dmsContactDtoObj,
         dmsLeadDto: dmsLeadDtoObj,
+        dmsLeadEventDto: dmsLeadEventDto
       };
     } else {
       url = url + "/account?allocateDse=" + selector.create_enquiry_checked;
       formData = {
         dmsAccountDto: dmsContactDtoObj,
         dmsLeadDto: dmsLeadDtoObj,
+        dmsLeadEventDto: dmsLeadEventDto
       };
     }
-
+    
     let dataObj = {
       url: url,
       body: formData,
@@ -802,6 +825,26 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       }
     }
   }, [selector.updateEnquiryStatus, selector.create_enquiry_response_obj]);
+
+  useEffect(()=>{
+    if (selector.event_list_response_Config_status === "success"){
+      //todo
+     
+      let data = selector.event_list_Config;
+      if(data){
+        let addSelectedFlag = data.content.map(i => ({ ...i, isSelected: false }) );
+
+
+       
+        setEventConfigRes(addSelectedFlag)
+        seteventListData(addSelectedFlag)
+        setisEventListModalVisible(true)
+      }
+     
+
+    }
+  }, [selector.event_list_response_Config_status])
+
 
   const updatePreEneuquiryDetails = () => {
     const { dmsAddressList } = route.params.preEnquiryDetails;
@@ -974,6 +1017,26 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     dispatch(getEventListApi(payload));
   };
 
+  const getEventConfigListFromServer = (startDate, endDate) => {
+    if (
+      startDate === undefined ||
+      startDate === null ||
+      endDate === undefined ||
+      endDate === null
+    ) {
+      return;
+    }
+
+    const payload = {
+      startDate: startDate,
+      endDate: endDate,
+      empId: userData.employeeId,
+      branchId: branchId,
+      orgId: userData.orgId,
+    };
+    dispatch(getEventConfigList(payload));
+  };
+
   // Handle When Event dates selected
   useEffect(() => {
     if (selector.eventStartDate && selector.eventEndDate) {
@@ -1005,6 +1068,13 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         return item;
       }
     })
+   
+    if (findSelected.length > 0) {
+      setSelectedEventData(findSelected);
+      setisEventListModalVisible(false);
+    } else {
+      showToast("Please select event");
+    }
 
 
   }
@@ -1029,10 +1099,10 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
           onPress={  ()=>{
            
             // let temp = [...eventListdata].filter(item => item.id === itemMain.id).map(i => i.isSelected = true)
-            let temp = EventListData.map(i => 
+            let temp = eventListdata.map(i => 
               i.id === itemMain.id ? { ...i, isSelected: true } : { ...i, isSelected: false }
             )
-            
+           
              seteventListData(temp);
             
             
@@ -1114,13 +1184,14 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                     style={{ height: '80%' }}
                     keyExtractor={(item, index) => index.toString()}
                     renderItem={({ item, index }) => {
+                    
                       return (
                         <>
                           <View style={{
                             height: 35, borderBottomColor: 'rgba(208, 212, 214, 0.7)',
                             borderBottomWidth: 4, marginTop: 5
                           }}>
-                            {eventListTableRow(item.eventName, item.eventLocation, item.Startdate, item.Enddate, true, false, false,item,index)}
+                            {eventListTableRow(item.name, item.location, moment(item.startdate).format("DD-MM-YYYY"), moment(item.enddate).format("DD-MM-YYYY"), true, false, false,item,index)}
 
                           </View>
 
@@ -1130,10 +1201,6 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                   />
 
                 </View>
-
-                {/* {eventListTableRow("Event Namedsadasd", "Event location", "10/12/2022", "10/12/2022", true, true,true)}
-                {eventListTableRow("Event Namesadasdsad", "Event locationasdad", "10/12/2022", "10/12/2022", true, false,true)}
-                {eventListTableRow("Event Name", "Event location", "10/12/2022", "10/12/2022", true, false,true)} */}
               </View>
 
             </ScrollView>
@@ -1146,7 +1213,8 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                 labelStyle={{ textTransform: "none" }}
                 onPress={() =>{ 
                   setisEventListModalVisible(false)
-                  seteventListData(EventListData);
+                  // todo
+                  seteventListData([]);
                   }}>
                 Cancel
               </Button>
@@ -1180,7 +1248,10 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
           
           if (dropDownKey === "SOURCE_OF_ENQUIRY") {
             if (item.name === "Events") {
-              setisEventListModalVisible(true);
+              const startOfMonth = moment().startOf('month').format('YYYY-MM-DD');
+              const endOfMonth = moment().endOf('month').format('YYYY-MM-DD');
+              getEventConfigListFromServer(startOfMonth, endOfMonth);
+              // setisEventListModalVisible(true);
             }
             if (item.name === "Event") {
               getEventListFromServer();
