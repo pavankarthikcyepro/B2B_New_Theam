@@ -2061,7 +2061,7 @@ const TargetScreen = ({ route }) => {
                             style={{
                               flexDirection: "row",
                               justifyContent: "space-between",
-                              width: "50%",
+                              width: "55%",
                             }}
                           >
                             <Text
@@ -2109,7 +2109,8 @@ const TargetScreen = ({ route }) => {
                                   style={{
                                     justifyContent: "center",
                                     alignItems: "flex-start",
-                                    width: "50%",
+                                    width: "45%",
+                                    marginLeft:10
                                   }}
                                 >
                                   <Text numberOfLines={1}>
@@ -2118,7 +2119,7 @@ const TargetScreen = ({ route }) => {
                                 </View>
                                 <View
                                   style={{
-                                    width: "45%",
+                                    width: "55%",
                                     justifyContent: "space-around",
                                     flexDirection: "row",
                                     height: 25,
@@ -2192,14 +2193,15 @@ const TargetScreen = ({ route }) => {
                             justifyContent: "space-between",
                             paddingHorizontal: 10,
                             marginTop: 10,
-                            marginVertical: 8,
+                            marginVertical: 5,
                           }}
                         >
                           <View
                             style={{
                               justifyContent: "center",
                               alignItems: "center",
-                              width: "50%",
+                              width: "45%",
+                              marginLeft:10
                             }}
                           >
                             <Text
@@ -2214,13 +2216,13 @@ const TargetScreen = ({ route }) => {
                           </View>
                           <View
                             style={{
-                              width: "45%",
+                              width: "55%",
                               justifyContent: "space-around",
                               flexDirection: "row",
                               height: 25,
                               alignItems: "center",
                               // marginTop: 8,
-                              marginLeft: 20,
+                              marginLeft: 5,
                             }}
                           >
                             <View
