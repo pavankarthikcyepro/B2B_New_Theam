@@ -92,6 +92,7 @@ const ShowRoomMenu = [
   "Digital Payment",
   "Target Planning",
   "My Attendance",
+  "Geolocation",
   "Helpdesk",
   // "Task Management",
   "Drop Analysis",
@@ -283,6 +284,9 @@ const SideMenuScreen = ({ navigation }) => {
         break;
       case 116:
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.attendance);
+        break;
+      case 117:
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.geolocation);
         break;
       case 112:
         signOutClicked();

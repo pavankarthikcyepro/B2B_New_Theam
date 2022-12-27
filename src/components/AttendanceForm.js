@@ -159,6 +159,7 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
           branchId: jsonObj.branchId,
           isPresent: present ? 1 : 0,
           isAbsent: present ? 0 : 1,
+          wfh: workFromHome ? 1 : 0,
           status: "Active",
           comments: comment.trim(),
           isLogOut: present && endBetween <= now && now <= endDate2 ? 1 : 0,
@@ -215,6 +216,7 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
         branchId: payload.branchId,
         isPresent: present ? 1 : 0,
         isAbsent: present ? 0 : 1,
+        wfh: workFromHome ? 1 : 0,
         status: "Active",
         comments: comment.trim(),
         reason: reason?.value ? reason?.value : "",
@@ -293,21 +295,26 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
               )}
             </View>
           </View>
-          {/* {present  && ( */}
           <View style={{ flexDirection: "row" }}>
             <RadioTextItem
               label={"Present"}
               value={"Present"}
               disabled={false}
               status={present ? true : false}
-              onPress={() => setPresent(true)}
+              onPress={() => {
+                setPresent(true);
+                setWorkFromHome(false);
+              }}
             />
             <RadioTextItem
               label={"Leave"}
               value={"Absent"}
               disabled={false}
               status={!present ? true : false}
-              onPress={() => setPresent(false)}
+              onPress={() => {
+                setWorkFromHome(false);
+                setPresent(false);
+              }}
             />
             <RadioTextItem
               label={"WFH"}
@@ -320,7 +327,6 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
               }}
             />
           </View>
-          {/* )} */}
           {showReason && (
             <>
               <View style={{ flexDirection: "row", marginTop: 10 }}>

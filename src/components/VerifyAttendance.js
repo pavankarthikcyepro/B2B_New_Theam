@@ -74,6 +74,7 @@ const VerifyAttendance = ({
   const [currentDate, setCurrentDate] = useState("");
 
   useEffect(() => {
+    setCurrentDate(formatAMPM(new Date()));
     setInterval(() => {
       setCurrentDate(formatAMPM(new Date()));
     }, 30000);

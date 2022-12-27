@@ -1,25 +1,30 @@
 import React, { useEffect, useState } from "react";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import PreEnquiryScreen from "../scenes/mainScenes/EMS/preEnquiryScreen";
-import EnquiryScreen from "../scenes/mainScenes/EMS/enquiryScreen";
-import PreBookingScreen from "../scenes/mainScenes/EMS/prebookingScreen";
-import BookingScreen from "../scenes/mainScenes/EMS/bookingScreen";
 import { Colors } from "../styles";
 import * as AsyncStore from "../asyncStore";
-import ProceedToBookingScreen from "../scenes/mainScenes/MyTasks/proceedToBookingScreen";
-import Leads from "../scenes/mainScenes/EMS/leadsScreen";
 import { StyleSheet, Text, View } from "react-native";
 import { useSelector } from "react-redux";
 import AttendanceScreen from "../scenes/mainScenes/Attendance";
 import AttendanceTopTabScreen from "../scenes/mainScenes/Attendance/AttendanceTop";
+import { createStackNavigator } from "@react-navigation/stack";
+import { MenuIcon } from "./appNavigator";
 
-export const EmsTopTabNavigatorIdentifiers = {
-  preEnquiry: "PRE_ENQUIRY",
-  leads: "LEADS",
-  enquiry: "ENQUIRY",
-  preBooking: "PRE_BOOKING",
-  booking: "BOOKING",
-  proceedToBooking: "PROCEED_BOOKING",
+export const AttendanceTopTabNavigatorIdentifiers = {
+  myattendance: "MY_ATTENDANCE",
+  attendance : "ATTENDANCE_1",
+  leave: "LEAVE"
+};
+
+const screeOptionStyle = {
+  headerTitleStyle: {
+    fontSize: 20,
+    fontWeight: "600",
+  },
+  headerStyle: {
+    backgroundColor: Colors.DARK_GRAY,
+  },
+  headerTintColor: Colors.WHITE,
+  headerBackTitleVisible: false,
 };
 
 const AttendanceTopTab = createMaterialTopTabNavigator();
@@ -36,18 +41,29 @@ const tabBarOptions = {
   },
 };
 
-const EMSTopTabNavigatorOne = () => {
+const MyAttendanceTopTab = createStackNavigator();
+
+const MyAttendanceTopTabNavigatorOne = ({ navigation }) => {
   return (
-    <AttendanceTopTab.Navigator
-      initialRouteName={EmsTopTabNavigatorIdentifiers.preEnquiry}
+    <MyAttendanceTopTab.Navigator
+      initialRouteName={AttendanceTopTabNavigatorIdentifiers.myattendance}
       tabBarOptions={tabBarOptions}
+      screenOptions={{ headerShown: false }}
     >
-      <AttendanceTopTab.Screen
-        name={EmsTopTabNavigatorIdentifiers.preEnquiry}
-        component={PreEnquiryScreen}
-        options={{ title: "Contacts" }}
+      <MyAttendanceTopTab.Screen
+        name={AttendanceTopTabNavigatorIdentifiers.myattendance}
+        component={AttendanceTopTabNavigatorTwo}
+        options={{
+          title: "My Attendance",
+          headerShown: true,
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+          headerStyle: screeOptionStyle.headerStyle,
+          headerTitleStyle: screeOptionStyle.headerTitleStyle,
+          headerTintColor: screeOptionStyle.headerTintColor,
+          headerBackTitleVisible: screeOptionStyle.headerBackTitleVisible,
+        }}
       />
-    </AttendanceTopTab.Navigator>
+    </MyAttendanceTopTab.Navigator>
   );
 };
 
@@ -62,18 +78,6 @@ const Badge = ({ focused, title, countList }) => {
       >
         {title}
       </Text>
-      {/* <View style={styles.badgeContainer}>
-        <Text style={styles.badgeText}>
-          {title == "CONTACTS"
-            ? countList
-              ? countList.length
-              : 0
-            : countList &&
-              countList?.dmsEntity?.leadDtoPage?.numberOfElements > 0
-            ? countList.dmsEntity.leadDtoPage.numberOfElements
-            : 0}
-        </Text>
-      </View> */}
     </View>
   );
 };
@@ -83,56 +87,33 @@ const AttendanceTopTabNavigatorTwo = () => {
   const { leadList } = useSelector((state) => state.leaddropReducer);
   return (
     <AttendanceTopTab.Navigator
-      initialRouteName={EmsTopTabNavigatorIdentifiers.preEnquiry}
+      initialRouteName={AttendanceTopTabNavigatorIdentifiers.attendance}
       tabBarOptions={tabBarOptions}
     >
       <AttendanceTopTab.Screen
-        name={EmsTopTabNavigatorIdentifiers.preEnquiry}
+        name={AttendanceTopTabNavigatorIdentifiers.attendance}
         component={AttendanceTopTabScreen}
         options={{
           title: ({ focused }) => (
             <Badge
               title={"Attendance"}
               focused={focused}
-              //   countList={pre_enquiry_list}
             />
           ),
         }}
       />
       <AttendanceTopTab.Screen
-        name={EmsTopTabNavigatorIdentifiers.leads}
+        name={AttendanceTopTabNavigatorIdentifiers.leave}
         component={AttendanceScreen}
         options={{
           title: ({ focused }) => (
             <Badge
               title={"Leaves"}
               focused={focused}
-              //  countList={leadList}
             />
           ),
         }}
       />
-      {/*<EMSTopTab.Screen*/}
-      {/*  name={EmsTopTabNavigatorIdentifiers.enquiry}*/}
-      {/*  component={EnquiryScreen}*/}
-      {/*  options={{ title: "Enquiry" }}*/}
-      {/*/>*/}
-      {/*<EMSTopTab.Screen*/}
-      {/*  name={EmsTopTabNavigatorIdentifiers.preBooking}*/}
-      {/*  component={PreBookingScreen}*/}
-      {/*  options={{ title: "Booking Approval" }}*/}
-      {/*/>*/}
-      {/*<EMSTopTab.Screen*/}
-      {/*  name={EmsTopTabNavigatorIdentifiers.booking}*/}
-      {/*  component={BookingScreen}*/}
-      {/*  options={{ title: "Booking View" }}*/}
-      {/*/>*/}
-      {/* <EMSTopTab.Screen
-        name={EmsTopTabNavigatorIdentifiers.proceedToBooking}
-        component={ProceedToBookingScreen}
-        initialParams={{ accessoriesList: [] }}
-        options={{ title: "Proceed To Booking" }}
-      /> */}
     </AttendanceTopTab.Navigator>
   );
 };
@@ -157,4 +138,4 @@ const styles = StyleSheet.create({
   badgeText: { fontSize: 13, color: Colors.PINK, fontWeight: "bold" },
 });
 
-export { EMSTopTabNavigatorOne, AttendanceTopTabNavigatorTwo };
+export { MyAttendanceTopTabNavigatorOne, AttendanceTopTabNavigatorTwo };

@@ -97,7 +97,9 @@ import DropLostCancelScreen from "../scenes/mainScenes/DropLostCancel/DropLostCa
 import AddNewEnquiryScreen from "../scenes/mainScenes/EMS/addNewEnquiry";
 import FilterTargetScreen from "../scenes/mainScenes/TargetSettingsScreen/TabScreen/filterTarget";
 import ReceptionistFilterScreen from "../scenes/mainScenes/Home/receptionistFilter";
-import { AttendanceTopTabNavigatorTwo } from "./attendanceTopTabNavigator";
+import { AttendanceTopTabNavigatorTwo, MyAttendanceTopTabNavigatorOne } from "./attendanceTopTabNavigator";
+import GeoLocationScreen from "../scenes/mainScenes/Geolocation";
+import { MyGeolocationTopTabNavigatorOne } from "./geolocationNavigator";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -325,7 +327,8 @@ export const DrawerStackIdentifiers = {
   dropAnalysis: "DROP_ANALYSIS",
   liveLeads: "LIVE_LEADS",
   dropLostCancel: "DROP_LOST_CANCEL",
-  attendance: 'Attendance'
+  attendance: 'Attendance',
+  geolocation: "Geolocation"
 };
 
 export const TabStackIdentifiers = {
@@ -1174,16 +1177,22 @@ const MainStackDrawerNavigator = () => {
         />
         <MainDrawerNavigator.Screen
           name={DrawerStackIdentifiers.attendance}
-          component={AttendanceTopTabNavigatorTwo}
-          options={{
-            title: "My Attendance",
-            // headerLeft: () => <MenuIcon navigation={navigation} />,
-            headerShown: true,
-            headerStyle: screeOptionStyle.headerStyle,
-            headerTitleStyle: screeOptionStyle.headerTitleStyle,
-            headerTintColor: screeOptionStyle.headerTintColor,
-            headerBackTitleVisible: screeOptionStyle.headerBackTitleVisible,
-          }}
+          component={MyAttendanceTopTabNavigatorOne}
+          options={
+            {
+              // title: "My Attendance",
+              // headerLeft: () => <MenuIcon navigation={navigation} />,
+              // headerShown: true,
+              // headerStyle: screeOptionStyle.headerStyle,
+              // headerTitleStyle: screeOptionStyle.headerTitleStyle,
+              // headerTintColor: screeOptionStyle.headerTintColor,
+              // headerBackTitleVisible: screeOptionStyle.headerBackTitleVisible,
+            }
+          }
+        />
+        <MainDrawerNavigator.Screen
+          name={DrawerStackIdentifiers.geolocation}
+          component={MyGeolocationTopTabNavigatorOne}
         />
         <MainDrawerNavigator.Screen
           name={DrawerStackIdentifiers.dropLostCancel}

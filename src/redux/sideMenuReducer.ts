@@ -13,6 +13,7 @@ export const GROUP_STR = "GROUP";
 export const TRANSFER_STR = "TRANSFER";
 export const ATTENDANCE = "ATTENDANCE";
 export const DROP_LOST_CANCEL = "DROP_LOST_CANCEL";
+export const GEOLOCATION = "GEOLOCATION";
 
 const data = [
   {
@@ -37,6 +38,12 @@ const data = [
     title: "My Attendance",
     icon: ATTENDANCE,
     screen: 116,
+    pngIcon: require("../assets/images/Target_Planning-01.png"),
+  },
+  {
+    title: "Geolocation",
+    icon: GEOLOCATION,
+    screen: 117,
     pngIcon: require("../assets/images/Target_Planning-01.png"),
   },
   {

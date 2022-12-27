@@ -26,6 +26,8 @@ import { MenuIcon } from "../../../navigations/appNavigator";
 import WeeklyCalendar from "react-native-weekly-calendar";
 import Geolocation from "@react-native-community/geolocation";
 import { getDistanceBetweenTwoPoints, officeRadius } from "../../../service";
+import { AppNavigator } from "../../../navigations";
+import { GeolocationTopTabNavigatorIdentifiers } from "../../../navigations/geolocationNavigator";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
@@ -37,7 +39,7 @@ const screenWidth = Dimensions.get("window").width;
 const profileWidth = screenWidth / 6;
 const profileBgWidth = profileWidth + 5;
 
-const AttendanceScreen = ({ route, navigation }) => {
+const GeoLocationScreen = ({ route, navigation }) => {
   // const navigation = useNavigation();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
@@ -54,6 +56,8 @@ const AttendanceScreen = ({ route, navigation }) => {
     present: 0,
     wfh: 0,
   });
+  const [userData, setUserData] = useState({});
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => <MenuIcon navigation={navigation} />,
@@ -120,6 +124,7 @@ const AttendanceScreen = ({ route, navigation }) => {
         const jsonObj = JSON.parse(employeeData);
         getProfilePic(jsonObj);
         getAttendanceCount(jsonObj);
+        setUserData(jsonObj);
         const response = await client.get(
           URL.GET_ATTENDANCE_EMPID(jsonObj.empId, jsonObj.orgId)
         );
@@ -177,7 +182,11 @@ const AttendanceScreen = ({ route, navigation }) => {
   const isCurrentDate = (day) => {
     let selectedDate = day.dateString;
     if (currentDate === selectedDate) {
-      setAttendance(true);
+    //   setAttendance(true);
+      navigation.navigate(GeolocationTopTabNavigatorIdentifiers.map, {
+        empId: userData.empId,
+        orgId: userData.orgId,
+      });
     }
   };
 
@@ -237,7 +246,7 @@ const AttendanceScreen = ({ route, navigation }) => {
           setAttendance(false);
         }}
       />
-      <View style={styles.profilePicView}>
+      {/* <View style={styles.profilePicView}>
         <View
           style={{
             ...GlobalStyle.shadow,
@@ -254,75 +263,6 @@ const AttendanceScreen = ({ route, navigation }) => {
         <View style={styles.hoursView}>
           <Text style={styles.totalHours}>{"Total Hours"}</Text>
           <Text style={styles.totalHoursValue}>{"120"}</Text>
-        </View>
-      </View>
-      {/* <View
-        style={{
-          flexDirection: "row",
-          marginBottom: 2,
-          justifyContent: "center",
-          alignItems: "center",
-          marginTop: 25,
-        }}
-      >
-        <View
-          style={{
-            flexDirection: "row",
-            borderColor: Colors.RED,
-            borderWidth: 1,
-            borderRadius: 5,
-            height: 35,
-            marginTop: 2,
-            justifyContent: "center",
-            width: "80%",
-          }}
-        >
-          <TouchableOpacity
-            onPress={() => {
-              setIsWeek(true);
-            }}
-            style={{
-              width: "50%",
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: !isWeek ? Colors.WHITE : Colors.RED,
-              borderTopLeftRadius: 5,
-              borderBottomLeftRadius: 5,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 16,
-                color: !isWeek ? Colors.BLACK : Colors.WHITE,
-                fontWeight: "600",
-              }}
-            >
-              Week
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              setIsWeek(false);
-            }}
-            style={{
-              width: "50%",
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: !isWeek ? Colors.RED : Colors.WHITE,
-              borderTopRightRadius: 5,
-              borderBottomRightRadius: 5,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 16,
-                color: !isWeek ? Colors.WHITE : Colors.BLACK,
-                fontWeight: "600",
-              }}
-            >
-              Month
-            </Text>
-          </TouchableOpacity>
         </View>
       </View> */}
       {!isWeek && (
@@ -401,7 +341,7 @@ const AttendanceScreen = ({ route, navigation }) => {
           />
         </View>
       )}
-      <View style={styles.parameterListContain}>
+      {/* <View style={styles.parameterListContain}>
         <View style={styles.parameterView}>
           <View
             style={{ ...styles.parameterMarker, backgroundColor: Colors.GREEN }}
@@ -422,7 +362,10 @@ const AttendanceScreen = ({ route, navigation }) => {
         </View>
         <View style={styles.parameterView}>
           <View
-            style={{ ...styles.parameterMarker, backgroundColor: Colors.LIGHT_GRAY }}
+            style={{
+              ...styles.parameterMarker,
+              backgroundColor: Colors.LIGHT_GRAY,
+            }}
           />
           <View style={styles.parameterCountView}>
             <Text style={styles.parameterText}>{"Holiday"}</Text>
@@ -431,20 +374,23 @@ const AttendanceScreen = ({ route, navigation }) => {
         </View>
         <View style={styles.parameterView}>
           <View
-            style={{ ...styles.parameterMarker, backgroundColor:  Colors.SKY_LIGHT_BLUE_COLOR }}
+            style={{
+              ...styles.parameterMarker,
+              backgroundColor: Colors.SKY_LIGHT_BLUE_COLOR,
+            }}
           />
           <View style={styles.parameterCountView}>
             <Text style={styles.parameterText}>{"WFH"}</Text>
             <Text style={styles.parameterText}>{attendanceCount.wfh}</Text>
           </View>
         </View>
-      </View>
+      </View> */}
       <LoaderComponent visible={loading} />
     </SafeAreaView>
   );
 };
 
-export default AttendanceScreen;
+export default GeoLocationScreen;
 
 const styles = StyleSheet.create({
   container: {
