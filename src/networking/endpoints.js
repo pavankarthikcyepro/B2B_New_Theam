@@ -180,11 +180,13 @@ const URL = {
     return downloadFile + "/autosave-get-uid/" + `${universalId}`;
   },
   UPDATE_ENQUIRY_DETAILS: () => sales_url + "/enquiry/lead",
-  GET_RULES_CONFIG: (modal, variant, fuel, orgid) => { 
-    return sales_url +
+  GET_RULES_CONFIG: (modal, variant, fuel, orgid) => {
+    return (
+      sales_url +
       "/allotment/rulesConfiguration" +
       `?model=${modal}&variant=${variant}&fuel=${fuel}&orgId=${orgid}`
-   },
+    );
+  },
   GET_CUSTOMER_TYPES: (orgId) => {
     return sales_url + `/master-data/customertype/${orgId}`;
   },
@@ -537,6 +539,13 @@ const URL = {
       `/${empId}/${orgId}`
     );
   },
+  GET_ATTENDANCE_COUNT: (empId, orgId) => {
+    return (
+      sales_url +
+      "/employeeAttendance/attendanceCount" +
+      `/${empId}/${orgId}`
+    );
+  },
   SAVE_EMPLOYEE_ATTENDANCE: () => {
     return sales_url + "/employeeAttendance/saveEmployeeAttendance";
   },
@@ -572,8 +581,8 @@ const URL = {
   RECEPTIONIST_MODEL: () => {
     return dashboard + "/receptionist/model";
   },
-  ROLE_STAGE_ACCESS: (role)=>{
-    return sales_url + "/lead/roleStageAccess/"+role;
+  ROLE_STAGE_ACCESS: (role) => {
+    return sales_url + "/lead/roleStageAccess/" + role;
   },
 };
 

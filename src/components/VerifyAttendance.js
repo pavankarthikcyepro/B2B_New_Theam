@@ -9,8 +9,9 @@ import {
   Platform,
   Keyboard,
   Alert,
+  Image,
 } from "react-native";
-import { Colors } from "../styles";
+import { Colors, GlobalStyle } from "../styles";
 import { IconButton, Checkbox, Button } from "react-native-paper";
 import { RadioTextItem } from "../pureComponents";
 import { Dropdown } from "react-native-element-dropdown";
@@ -24,7 +25,8 @@ import { AppNavigator } from "../navigations";
 import moment from "moment";
 
 const screenWidth = Dimensions.get("window").width;
-
+const profileWidth = screenWidth / 6;
+const profileBgWidth = profileWidth + 5;
 const LocalButtonComp = ({ title, onPress, disabled }) => {
   return (
     <Button
@@ -51,7 +53,12 @@ var isAfterNoon = midDate <= now && now <= endDate;
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
 
-const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
+const VerifyAttendance = ({
+  visible,
+  onRequestClose,
+  inVisible,
+  showReason,
+}) => {
   const navigation = useNavigation();
   const [comment, setComment] = useState("");
   const [commentError, setCommentError] = useState("");
@@ -63,6 +70,25 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
   const [userData, setUserData] = useState({});
   const [punched, setPunched] = useState(false);
   const [active, setActive] = useState(false);
+  const [imageUri, setImageUri] = useState(null);
+  const [currentDate, setCurrentDate] = useState("");
+
+  useEffect(() => {
+    setInterval(() => {
+      setCurrentDate(formatAMPM(new Date()));
+    }, 30000);
+  }, []);
+
+  function formatAMPM(date) {
+    var hours = date.getHours();
+    var minutes = date.getMinutes();
+    var ampm = hours >= 12 ? "pm" : "am";
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+    var strTime = hours + ":" + minutes + " " + ampm.toUpperCase();
+    return strTime;
+  }
   // useEffect(() => {
   //   if (!present) {
   //     callAPI(true);
@@ -82,6 +108,7 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
         setUserData(jsonObj);
+        getProfilePic(jsonObj);
         const response = await client.get(
           URL.GET_ATTENDANCE_EMPID(jsonObj.empId, jsonObj.orgId)
         );
@@ -98,6 +125,28 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
         }
       }
     } catch (error) {}
+  };
+
+  const getProfilePic = (userData) => {
+    fetch(
+      `http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
+    )
+      .then((response) => response.json())
+      .then((json) => {
+        if (json.length > 0) {
+          setImageUri(json[json.length - 1].documentPath);
+        } else {
+          setImageUri(
+            "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
+          );
+        }
+      })
+      .catch((error) => {
+        setImageUri(
+          "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
+        );
+        console.error(error);
+      });
   };
 
   const getReason = async () => {
@@ -230,11 +279,7 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
           AsyncStore.Keys.IS_PRESENT,
           new Date().getDate().toString()
         );
-      // console.log("updatedJson", updatedJson);
       !absentRequest && inVisible();
-      // if (updatedJson.success) {
-      //   !absentRequest && inVisible();
-      // }
     } catch (error) {
       console.error("updatedJsonERROR", error);
     }
@@ -255,183 +300,55 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
         <View style={styles.view1}>
           <View style={{ flexDirection: "row" }}>
             <View style={{ flexDirection: "column", alignItems: "center" }}>
-              <Text style={styles.greetingText}>
-                {"Hi, " + userData.empName}
-              </Text>
-              {}
-              <Text style={styles.greetingText}>
-                {isBetween
-                  ? "Good Morning,"
-                  : isAfterNoon
-                  ? "Good Afternoon,"
-                  : "Good Evening,"}
-              </Text>
-              {present || !active ? (
-                <Text style={styles.greetingText}>
-                  {isBetween && !punched
-                    ? "Please Punch Your Attendance"
-                    : "Please LogOut Your Attendance"}
-                </Text>
-              ) : (
-                <Text style={styles.greetingText}>
-                  {"Today your Attendance is Locked as Absent, For More info "}
-                  <Text
-                    onPress={() => {
-                      navigation.navigate(
-                        AppNavigator.DrawerStackIdentifiers.attendance
-                      );
-                      inVisible();
-                    }}
-                    style={{
-                      textDecorationLine: "underline",
-                      color: Colors.BLUE,
-                    }}
-                  >
-                    {"Click Here"}
-                  </Text>
-                </Text>
-              )}
+              <Text style={styles.profileMatched}>{"Profile Matched!!"}</Text>
             </View>
           </View>
-          {/* {present  && ( */}
-          <View style={{ flexDirection: "row" }}>
-            <RadioTextItem
-              label={"Present"}
-              value={"Present"}
+          <View style={styles.ProfileView}>
+            <View
+              style={{
+                ...GlobalStyle.shadow,
+                ...styles.profilePicBG,
+              }}
+            >
+              <Image
+                style={styles.profilePic}
+                source={{
+                  uri: imageUri,
+                }}
+              />
+            </View>
+            <View style={{ marginLeft: 10 }}>
+              <Text style={styles.greetingText}>{userData?.empName}</Text>
+              <Text style={styles.greetingText}>{userData?.hrmsRole}</Text>
+            </View>
+          </View>
+          <View>
+            <Text style={styles.clockTxt}>
+              {`Clocked in for `}
+              <Text style={styles.time}>{`${currentDate}`}</Text>
+            </Text>
+          </View>
+          <View style={{ flexDirection: "row", marginTop: 10, width: "100%" }}>
+            <LocalButtonComp
+              title={"Cancel"}
               disabled={false}
-              status={present ? true : false}
-              onPress={() => setPresent(true)}
-            />
-            <RadioTextItem
-              label={"Leave"}
-              value={"Absent"}
-              disabled={false}
-              status={!present ? true : false}
-              onPress={() => setPresent(false)}
-            />
-            <RadioTextItem
-              label={"WFH"}
-              value={"WFH"}
-              disabled={false}
-              status={workFromHome ? true : false}
               onPress={() => {
-                setWorkFromHome(!workFromHome);
-                setPresent(!workFromHome);
+                inVisible();
               }}
             />
+            <LocalButtonComp
+              title={"Confirm"}
+              onPress={() => onSubmit()}
+              disabled={false}
+            />
           </View>
-          {/* )} */}
-          {showReason && (
-            <>
-              <View style={{ flexDirection: "row", marginTop: 10 }}>
-                <Dropdown
-                  disable={false}
-                  style={[styles.dropdownContainer]}
-                  placeholderStyle={styles.placeholderStyle}
-                  selectedTextStyle={styles.selectedTextStyle}
-                  inputSearchStyle={styles.inputSearchStyle}
-                  iconStyle={styles.iconStyle}
-                  data={reasonList}
-                  search
-                  maxHeight={300}
-                  labelField="label"
-                  valueField="value"
-                  placeholder={"Reason*"}
-                  value={reason.label}
-                  searchPlaceholder="Search..."
-                  onChange={(val) => {
-                    setReason(val);
-                    setReasonError("");
-                  }}
-                />
-              </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  width: "100%",
-                  alignSelf: "flex-start",
-                }}
-              >
-                {reasonError.length > 0 && (
-                  <Text style={styles.errorText}>{reasonError}</Text>
-                )}
-              </View>
-              <View style={{ flexDirection: "row", marginTop: 10 }}>
-                <TextinputComp
-                  disabled={false}
-                  style={styles.textInputStyle}
-                  label={"Comments"}
-                  autoCapitalize="sentences"
-                  value={comment}
-                  maxLength={150}
-                  onChangeText={(text) => {
-                    setComment(text);
-                    setCommentError("");
-                  }}
-                />
-              </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  width: "100%",
-                  alignSelf: "flex-start",
-                }}
-              >
-                {commentError.length > 0 && (
-                  <Text style={styles.errorText}>{commentError}</Text>
-                )}
-              </View>
-            </>
-          )}
-          <View style={{ flexDirection: "row", marginTop: 10, width: "100%" }}>
-            {present || !active ? (
-              <>
-                <LocalButtonComp
-                  title={"Submit"}
-                  onPress={() => onSubmit()}
-                  disabled={false}
-                />
-                <LocalButtonComp
-                  title={"Close"}
-                  onPress={() => {
-                    inVisible();
-                    // setPresent(false);
-                  }}
-                  disabled={false}
-                />
-              </>
-            ) : (
-              <LocalButtonComp
-                title={"Close"}
-                onPress={() => {
-                  inVisible();
-                }}
-                disabled={false}
-              />
-            )}
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              width: "100%",
-              alignSelf: "flex-start",
-            }}
-          >
-            {!isEmpty(reason) && reason.id == 1265 && (
-              <Text style={{ ...styles.errorText, fontSize: 12, marginTop: 5 }}>
-                {"Hint: Test Drive, Home Visit"}
-              </Text>
-            )}
-          </View>
-          {/* <ActivityIndicator size="large" color={Colors.RED} /> */}
-          {/* <Text style={styles.text1}>{'We are fetching data from server, please wait until the process completed.'}</Text> */}
         </View>
       </View>
     </Modal>
   );
 };
 
-export default AttendanceForm;
+export default VerifyAttendance;
 
 const styles = StyleSheet.create({
   container: {
@@ -441,10 +358,6 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   view1: {
-    // width: screenWidth - 100,
-    // height: 200,
-    // width: 100,
-    // height: 100,
     backgroundColor: Colors.WHITE,
     padding: 20,
     justifyContent: "center",
@@ -518,5 +431,38 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "400",
     color: Colors.DARK_GRAY,
+  },
+  profileMatched: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: Colors.BLACK,
+  },
+  profilePic: {
+    width: profileWidth,
+    height: profileWidth,
+    borderRadius: profileWidth / 2,
+    borderWidth: 2,
+    borderColor: "#fff",
+  },
+  profilePicBG: {
+    width: profileWidth,
+    height: profileWidth,
+    borderRadius: profileWidth / 2,
+    borderColor: "#fff",
+  },
+  time: {
+    color: Colors.RED,
+    fontSize: 18,
+    fontWeight: "600",
+  },
+  clockTxt: {
+    color: Colors.BLACK,
+    fontSize: 17,
+    fontWeight: "600",
+  },
+  ProfileView: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 10,
   },
 });

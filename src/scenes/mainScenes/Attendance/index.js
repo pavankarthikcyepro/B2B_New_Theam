@@ -8,11 +8,12 @@ import {
   TouchableOpacity,
   Dimensions,
   Platform,
+  Image,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
 import { LoaderComponent } from "../../../components";
-import { Colors } from "../../../styles";
+import { Colors, GlobalStyle } from "../../../styles";
 import { client } from "../../../networking/client";
 import URL from "../../../networking/endpoints";
 import { useNavigation } from "@react-navigation/native";
@@ -32,6 +33,9 @@ const officeLocation = {
   latitude: 37.33233141,
   longitude: -122.0312186,
 };
+const screenWidth = Dimensions.get("window").width;
+const profileWidth = screenWidth / 6;
+const profileBgWidth = profileWidth + 5;
 
 const AttendanceScreen = ({ route, navigation }) => {
   // const navigation = useNavigation();
@@ -43,7 +47,13 @@ const AttendanceScreen = ({ route, navigation }) => {
   const [weeklyRecord, setWeeklyRecord] = useState([]);
   const [reason, setReason] = useState(false);
   const [initialPosition, setInitialPosition] = useState({});
-
+  const [imageUri, setImageUri] = useState(null);
+  const [attendanceCount, setAttendanceCount] = useState({
+    holidays: 0,
+    leave: 0,
+    present: 0,
+    wfh: 0,
+  });
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => <MenuIcon navigation={navigation} />,
@@ -108,6 +118,8 @@ const AttendanceScreen = ({ route, navigation }) => {
       );
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
+        getProfilePic(jsonObj);
+        getAttendanceCount(jsonObj);
         const response = await client.get(
           URL.GET_ATTENDANCE_EMPID(jsonObj.empId, jsonObj.orgId)
         );
@@ -176,6 +188,45 @@ const AttendanceScreen = ({ route, navigation }) => {
     }
   };
 
+  const getProfilePic = (userData) => {
+    fetch(
+      `http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
+    )
+      .then((response) => response.json())
+      .then((json) => {
+        if (json.length > 0) {
+          setImageUri(json[json.length - 1].documentPath);
+        } else {
+          setImageUri(
+            "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
+          );
+        }
+      })
+      .catch((error) => {
+        setImageUri(
+          "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
+        );
+        console.error(error);
+      });
+  };
+
+  const getAttendanceCount = async (jsonObj) => {
+    try {
+      const response = await client.get(
+        URL.GET_ATTENDANCE_COUNT(jsonObj.empId, jsonObj.orgId)
+      );
+      const json = await response.json();
+      if (json) {
+        setAttendanceCount({
+          holidays: json.holidays || 0,
+          leave: json.leave || 0,
+          present: json.present || 0,
+          wfh: json.wfh || 0,
+        });
+      }
+    } catch (error) {}
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <AttendanceForm
@@ -186,7 +237,26 @@ const AttendanceScreen = ({ route, navigation }) => {
           setAttendance(false);
         }}
       />
-      <View
+      <View style={styles.profilePicView}>
+        <View
+          style={{
+            ...GlobalStyle.shadow,
+            ...styles.profilePicBG,
+          }}
+        >
+          <Image
+            style={styles.profilePic}
+            source={{
+              uri: imageUri,
+            }}
+          />
+        </View>
+        <View style={styles.hoursView}>
+          <Text style={styles.totalHours}>{"Total Hours"}</Text>
+          <Text style={styles.totalHoursValue}>{"120"}</Text>
+        </View>
+      </View>
+      {/* <View
         style={{
           flexDirection: "row",
           marginBottom: 2,
@@ -254,7 +324,7 @@ const AttendanceScreen = ({ route, navigation }) => {
             </Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </View> */}
       {!isWeek && (
         <View>
           <Calendar
@@ -331,6 +401,42 @@ const AttendanceScreen = ({ route, navigation }) => {
           />
         </View>
       )}
+      <View style={styles.parameterListContain}>
+        <View style={styles.parameterView}>
+          <View
+            style={{ ...styles.parameterMarker, backgroundColor: "lightgreen" }}
+          />
+          <View style={styles.parameterCountView}>
+            <Text style={styles.parameterText}>{"Present"}</Text>
+            <Text style={styles.parameterText}>{attendanceCount.present}</Text>
+          </View>
+        </View>
+        <View style={styles.parameterView}>
+          <View style={{ ...styles.parameterMarker, backgroundColor: "red" }} />
+          <View style={styles.parameterCountView}>
+            <Text style={styles.parameterText}>{"Leave"}</Text>
+            <Text style={styles.parameterText}>{attendanceCount.leave}</Text>
+          </View>
+        </View>
+        <View style={styles.parameterView}>
+          <View
+            style={{ ...styles.parameterMarker, backgroundColor: "lightgrey" }}
+          />
+          <View style={styles.parameterCountView}>
+            <Text style={styles.parameterText}>{"Holiday"}</Text>
+            <Text style={styles.parameterText}>{attendanceCount.holidays}</Text>
+          </View>
+        </View>
+        <View style={styles.parameterView}>
+          <View
+            style={{ ...styles.parameterMarker, backgroundColor: "skyblue" }}
+          />
+          <View style={styles.parameterCountView}>
+            <Text style={styles.parameterText}>{"WFH"}</Text>
+            <Text style={styles.parameterText}>{attendanceCount.wfh}</Text>
+          </View>
+        </View>
+      </View>
       <LoaderComponent visible={loading} />
     </SafeAreaView>
   );
@@ -522,5 +628,69 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: "500",
     color: Colors.WHITE,
+  },
+  parameterCountView: {
+    flexDirection: "row",
+    width: "50%",
+    justifyContent: "space-between",
+  },
+  parameterMarker: {
+    height: 25,
+    width: 25,
+    backgroundColor: "red",
+    borderRadius: 5,
+    marginRight: 5,
+    borderWidth: 0.5,
+    borderColor: "#646464",
+  },
+  parameterView: {
+    flexDirection: "row",
+    width: "60%",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  parameterListContain: {
+    width: "100%",
+    marginTop: 10,
+    marginLeft: 10,
+  },
+  parameterText: {
+    fontSize: 14,
+    fontWeight: "700",
+  },
+  totalHours: {
+    color: "#646464",
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  totalHoursValue: {
+    color: "#252525",
+    fontSize: 17,
+    fontWeight: "700",
+  },
+  hoursView: {
+    flexDirection: "column",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  profilePicView: {
+    marginHorizontal: 25,
+    marginVertical: 10,
+    justifyContent: "space-between",
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  profilePic: {
+    width: profileWidth,
+    height: profileWidth,
+    borderRadius: profileWidth / 2,
+    borderWidth: 2,
+    borderColor: "#fff",
+  },
+  profilePicBG: {
+    width: profileWidth,
+    height: profileWidth,
+    borderRadius: profileWidth / 2,
+    borderColor: "#fff",
   },
 });

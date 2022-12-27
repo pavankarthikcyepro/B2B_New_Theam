@@ -29,6 +29,8 @@ import Geolocation from "@react-native-community/geolocation";
 import { getDistanceBetweenTwoPoints, officeRadius } from "../../../service";
 import Swipeable from "react-native-swipeable";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import { useSafeAreaFrame } from "react-native-safe-area-context";
+import VerifyAttendance from "../../../components/VerifyAttendance";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
@@ -36,6 +38,20 @@ const officeLocation = {
   latitude: 37.33233141,
   longitude: -122.0312186,
 };
+var monthNames = [
+  "JAN",
+  "FEB",
+  "MAR",
+  "APR",
+  "MAY",
+  "JUN",
+  "JUL",
+  "AUG",
+  "SEP",
+  "OCT",
+  "NOV",
+  "DEC",
+];
 
 const AttendanceTopTabScreen = ({ route, navigation }) => {
   // const navigation = useNavigation();
@@ -49,11 +65,11 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
   const [initialPosition, setInitialPosition] = useState({});
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => <MenuIcon navigation={navigation} />,
-    });
-  }, [navigation]);
+  // useLayoutEffect(() => {
+  //   navigation.setOptions({
+  //     headerLeft: () => <MenuIcon navigation={navigation} />,
+  //   });
+  // }, [navigation]);
 
   useEffect(() => {
     navigation.addListener("focus", () => {
@@ -69,37 +85,27 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
   }, []);
 
   function selectedMonth(params) {
-    let d = moment(params);
-    d.month(); // 1
-    console.log(d.month(), params,new Date());
-    return d.format("MMM YYYY");
+    return monthNames[params.getMonth()];
   }
 
   function nextMonth(params) {
-    let current = params;
-    current.setMonth(current.getMonth() + 1);
-    let d = moment(current);
-    d.month(); 
-    return d.format("MMM");
+    if (params.getMonth() == 11) {
+      return monthNames[0];
+    } else {
+      return monthNames[params.getMonth() + 1];
+    }
   }
 
   function previousMonth(params) {
-    let current = params;
-    current.setMonth(current.getMonth() - 1);
-    let d = moment(current);
-    d.month();
-    return d.format("MMM");
+    if (params.getMonth() === 0) {
+      return monthNames[monthNames.length - 1];
+    } else {
+      return monthNames[params.getMonth() - 1];
+    }
   }
 
   const getCurrentLocation = async () => {
     try {
-      // if (Platform.OS === "ios") {
-      //   Geolocation.requestAuthorization();
-      //   Geolocation.setRNConfiguration({
-      //     skipPermissionRequests: false,
-      //     authorizationLevel: "whenInUse",
-      //   });
-      // }
       Geolocation.getCurrentPosition(
         (position) => {
           console.log("Sss", position);
@@ -204,103 +210,42 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
     }
   };
 
-  //   const leftContent = <Text>Pull to activate</Text>;
-
   const renderItem = ({ item }) => {
     return (
-      <Swipeable
-        style={{ width: "98%", marginVertical: 5, marginHorizontal: "2%" }}
-        rightButtons={rightButtons}
-      >
-        <View
-          style={{
-            ...GlobalStyle.shadow,
-            flexDirection: "row",
-            width: "95%",
-            height: 65,
-            alignSelf: "center",
-            padding: 7,
-            backgroundColor: "#fff",
-            borderRadius: 10,
-          }}
-        >
-          <View
-            style={{
-              width: "15%",
-              justifyContent: "center",
-            }}
-          >
-            <View
-              style={{
-                width: "85%",
-                backgroundColor: "lightgrey",
-                alignSelf: "center",
-                alignItems: "center",
-                borderRadius: 6,
-                justifyContent: "space-evenly",
-                height: 40,
-              }}
-            >
-              <Text>{"01"}</Text>
-              <Text>{"MON"}</Text>
+      <Swipeable style={styles.swipeableView} rightButtons={rightButtons}>
+        <View style={styles.shadowView}>
+          <View style={styles.dateDayMasterView}>
+            <View style={styles.dateDayView}>
+              <Text style={styles.dateDayTxt}>{"01"}</Text>
+              <Text style={styles.dateDayTxt}>{"MON"}</Text>
             </View>
           </View>
-          <View
-            style={{
-              backgroundColor: "transparent",
-              width: "15%",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <View style={{ backgroundColor: "red" }}>
-              <Text style={{ color: "#fff", padding: 2.5, fontWeight: "600" }}>
-                {"EL"}
-              </Text>
+          <View style={styles.employeeLeaveView}>
+            <View style={styles.elView}>
+              <Text style={styles.elTxt}>{"EL"}</Text>
             </View>
           </View>
-          <View
-            style={{
-              backgroundColor: "transparent",
-              width: "70%",
-              flexDirection: "row",
-              justifyContent: "space-around",
-              alignItems: "center",
-            }}
-          >
-            <View
-              style={{
-                justifyContent: "space-around",
-                alignItems: "center",
-                height: 50,
-              }}
-            >
-              <Text>{"Punch In"}</Text>
-              <Text>{"10:30 AM"}</Text>
+          <View style={styles.punchMasterView}>
+            <View style={styles.punchInView}>
+              <Text style={styles.punchTitle}>{"Punch In"}</Text>
+              <Text style={styles.punchTime}>{"10:30 AM"}</Text>
             </View>
-            <View
-              style={{
-                height: 40,
-                borderWidth: 0.5,
-              }}
-            />
-            <View
-              style={{
-                justifyContent: "space-around",
-                alignItems: "center",
-                height: 50,
-              }}
-            >
-              <Text>{"Punch Out"}</Text>
-              <Text>{"10:30 PM"}</Text>
+            <View style={styles.divider} />
+            <View style={styles.punchInView}>
+              <Text style={styles.punchTitle}>{"Punch Out"}</Text>
+              <Text style={styles.punchTime}>{"10:30 PM"}</Text>
             </View>
           </View>
         </View>
       </Swipeable>
     );
   };
+
   const rightButtons = [
     <TouchableHighlight
+      onPress={() => {
+        setAttendance(true);
+      }}
       style={{
         backgroundColor: "#646446",
         height: 65,
@@ -310,13 +255,15 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
         borderRadius: 10,
       }}
     >
-      <Text style={{ color: "#fff" }}>Punch In</Text>
+      <Text style={{ color: "#fff", fontSize: 14, fontWeight: "600" }}>
+        Punch In
+      </Text>
     </TouchableHighlight>,
   ];
 
   return (
     <SafeAreaView style={styles.container}>
-      <AttendanceForm
+      <VerifyAttendance
         visible={attendance}
         showReason={reason}
         inVisible={() => {
@@ -324,61 +271,35 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
           setAttendance(false);
         }}
       />
-      {/* {!isWeek && (
-        <View>
-          <Calendar
-            onDayPress={(day) => {
-              console.log("selected day", day);
-              isCurrentDate(day);
-            }}
-            onDayLongPress={(day) => {
-              console.log("selected day", day);
-            }}
-            monthFormat={"MMM yyyy"}
-            onMonthChange={(month) => {
-              console.log("month changed", month);
-            }}
-            hideExtraDays={true}
-            firstDay={1}
-            onPressArrowLeft={(subtractMonth) => subtractMonth()}
-            onPressArrowRight={(addMonth) => addMonth()}
-            enableSwipeMonths={true}
-            theme={{
-              arrowColor: Colors.RED,
-              dotColor: Colors.RED,
-              textMonthFontWeight: "500",
-              monthTextColor: Colors.RED,
-              indicatorColor: Colors.RED,
-              dayTextColor: Colors.BLACK,
-              selectedDayBackgroundColor: Colors.GRAY,
-              textDayFontWeight: "500",
-            }}
-            style={{ padding: 0 }}
-            markingType={"custom"}
-            markedDates={marker}
-          />
-        </View>
-      )} */}
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          width: "90%",
-          alignSelf: "center",
-          paddingVertical: 15,
-        }}
-      >
-        <TouchableOpacity style={{ flexDirection: "row" }}>
-          <MaterialIcons name="arrow-back-ios" size={20} color={Colors.BLACK} />
-          <Text>{previousMonth(currentMonth)}</Text>
+      <View style={styles.headerView}>
+        <TouchableOpacity
+          onPress={() => {
+            var d = currentMonth;
+            d.setMonth(d.getMonth() - 1);
+            setCurrentMonth(new Date(d));
+          }}
+          style={{ flexDirection: "row", alignItems: "center" }}
+        >
+          <MaterialIcons name="arrow-back-ios" size={20} color={Colors.RED} />
+          <Text style={{ color: Colors.RED }}>
+            {previousMonth(currentMonth)}
+          </Text>
         </TouchableOpacity>
-        <Text>{selectedMonth(currentMonth)}</Text>
-        <TouchableOpacity style={{ flexDirection: "row" }}>
-          <Text>{nextMonth(currentMonth)}</Text>
+
+        <Text style={{ color: Colors.RED }}>{selectedMonth(currentMonth)}</Text>
+        <TouchableOpacity
+          onPress={() => {
+            var d = currentMonth;
+            d.setMonth(d.getMonth() + 1);
+            setCurrentMonth(new Date(d));
+          }}
+          style={{ flexDirection: "row", alignItems: "center" }}
+        >
+          <Text style={{ color: Colors.RED }}>{nextMonth(currentMonth)}</Text>
           <MaterialIcons
             name="arrow-forward-ios"
             size={20}
-            color={Colors.BLACK}
+            color={Colors.RED}
           />
         </TouchableOpacity>
       </View>
@@ -578,5 +499,84 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: "500",
     color: Colors.WHITE,
+  },
+  headerView: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "90%",
+    alignSelf: "center",
+    paddingVertical: 15,
+  },
+  dateDayView: {
+    width: "85%",
+    backgroundColor: "lightgrey",
+    alignSelf: "center",
+    alignItems: "center",
+    borderRadius: 6,
+    justifyContent: "space-evenly",
+    height: 40,
+  },
+  dateDayTxt: {
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  dateDayMasterView: {
+    width: "15%",
+    justifyContent: "center",
+  },
+  employeeLeaveView: {
+    width: "15%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  elTxt: {
+    color: "#fff",
+    padding: 2.5,
+    fontWeight: "700",
+    fontSize: 14,
+  },
+  punchMasterView: {
+    width: "70%",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+  },
+  punchInView: {
+    justifyContent: "space-around",
+    alignItems: "center",
+    height: 50,
+  },
+  punchTitle: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#646464",
+  },
+  punchTime: {
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  divider: {
+    height: 40,
+    borderWidth: 0.5,
+    borderColor: "#646464",
+  },
+  elView: {
+    backgroundColor: Colors.RED,
+    borderRadius: 2.5,
+  },
+  shadowView: {
+    ...GlobalStyle.shadow,
+    flexDirection: "row",
+    width: "95%",
+    height: 65,
+    alignSelf: "center",
+    padding: 7,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+  },
+  swipeableView: {
+    width: "98%",
+    marginVertical: 5,
+    marginHorizontal: "2%",
   },
 });
