@@ -946,9 +946,9 @@ const TargetScreen = ({ route }) => {
                                     }}
                                   >
                                     {item.empName}
-                                    {item.childCount > 1 ? "  |" : ""}
+                                    {item?.childCount > 1 ? "  |" : ""}
                                   </Text>
-                                  {item.childCount > 1 && (
+                                  {item?.childCount > 1 && (
                                     <View
                                       style={{
                                         backgroundColor: "lightgrey",
@@ -967,7 +967,7 @@ const TargetScreen = ({ route }) => {
                                         size={15}
                                         color={Colors.BLACK}
                                       />
-                                      <Text>{item.childCount}</Text>
+                                      <Text>{item?.childCount}</Text>
                                     </View>
                                   )}
                                 </View>
@@ -1083,7 +1083,7 @@ const TargetScreen = ({ route }) => {
                                                 <View
                                                   style={{
                                                     flexDirection: "row",
-                                                    justifyContent: "",
+                                                    justifyContent: "space-between",
                                                   }}
                                                 >
                                                   <View
@@ -1103,11 +1103,11 @@ const TargetScreen = ({ route }) => {
                                                       }}
                                                     >
                                                       {innerItem1.empName}
-                                                      {innerItem1.childCount > 1
+                                                      {innerItem1?.childCount > 1
                                                         ? "  |"
                                                         : ""}
                                                     </Text>
-                                                    {innerItem1.childCount >
+                                                    {innerItem1?.childCount >
                                                       1 && (
                                                       <View
                                                         style={{
@@ -1132,7 +1132,7 @@ const TargetScreen = ({ route }) => {
                                                         />
                                                         <Text>
                                                           {
-                                                            innerItem1.childCount
+                                                            innerItem1?.childCount
                                                           }
                                                         </Text>
                                                       </View>
@@ -1260,12 +1260,12 @@ const TargetScreen = ({ route }) => {
                                                               {
                                                                 innerItem2.empName
                                                               }
-                                                              {innerItem2.childCount >
+                                                              {innerItem2?.childCount >
                                                               1
                                                                 ? "  |"
                                                                 : ""}
                                                             </Text>
-                                                            {innerItem2.childCount >
+                                                            {innerItem2?.childCount >
                                                               1 && (
                                                               <View
                                                                 style={{
@@ -1294,7 +1294,7 @@ const TargetScreen = ({ route }) => {
                                                                 />
                                                                 <Text>
                                                                   {
-                                                                    innerItem2.childCount
+                                                                    innerItem2?.childCount
                                                                   }
                                                                 </Text>
                                                               </View>
@@ -1406,6 +1406,7 @@ const TargetScreen = ({ route }) => {
                                                                       justifyContent:
                                                                         "space-between",
                                                                       paddingVertical: 4,
+
                                                                     }}
                                                                   >
                                                                     <View
@@ -1424,12 +1425,12 @@ const TargetScreen = ({ route }) => {
                                                                         {
                                                                           innerItem3.empName
                                                                         }
-                                                                        {innerItem3.childCount >
+                                                                        {innerItem3?.childCount >
                                                                         1
                                                                           ? "  |"
                                                                           : ""}
                                                                       </Text>
-                                                                      {innerItem3.childCount >
+                                                                      {innerItem3?.childCount >
                                                                         1 && (
                                                                         <View
                                                                           style={{
@@ -1460,7 +1461,7 @@ const TargetScreen = ({ route }) => {
                                                                           />
                                                                           <Text>
                                                                             {
-                                                                              innerItem3.childCount
+                                                                              innerItem3?.childCount
                                                                             }
                                                                           </Text>
                                                                         </View>
