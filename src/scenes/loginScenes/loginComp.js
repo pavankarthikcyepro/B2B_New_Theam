@@ -38,6 +38,7 @@ import { AuthContext } from "../../utils/authContext";
 import { LoaderComponent } from '../../components';
 import * as AsyncStore from '../../asyncStore';
 import { showAlertMessage, showToast } from "../../utils/toast";
+import { setBranchId, setBranchName } from "../../utils/helperFunctions";
 // import { TextInput } from 'react-native-paper';
 
 
@@ -133,7 +134,6 @@ const LoginScreen = ({ navigation }) => {
   }, [selector.status])
 
   useEffect(() => {
-
     if (selector.menuListStatus == "completed") {
       // if (selector.branchesList.length > 1) {
       //   navigation.navigate(AuthNavigator.AuthStackIdentifiers.SELECT_BRANCH, { isFromLogin: true, branches: selector.branchesList })
@@ -141,19 +141,18 @@ const LoginScreen = ({ navigation }) => {
       if (selector.branchesList.length > 0) {
         const branchId = selector.branchesList[0].branchId;
         const branchName = selector.branchesList[0].branchName;
-        AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_ID, branchId.toString());
-        AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_NAME, branchName);
+        setBranchId(branchId);
+        setBranchName(branchName);
         signIn(selector.authToken);
         dispatch(clearState());
       } else {
-        showToast("No branches found")
+        showToast("No branches found");
       }
       //getPreEnquiryListFromServer();
-    }
-    else if (selector.menuListStatus == "failed") {
+    } else if (selector.menuListStatus == "failed") {
       showToast("something went wrong");
     }
-  }, [selector.menuListStatus, selector.branchesList])
+  }, [selector.menuListStatus, selector.branchesList]);
 
   const getPreEnquiryListFromServer = async () => {
     let endUrl = "?limit=10&offset=" + "0" + "&status=PREENQUIRY&empId=" + selector.empId;

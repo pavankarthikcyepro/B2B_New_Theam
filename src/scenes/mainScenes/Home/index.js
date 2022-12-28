@@ -52,6 +52,7 @@ import {
   getTotalTargetParametersData,
   getTargetParametersEmpDataInsights,
   updateIsRankHide,
+  getReceptionistData,
 } from "../../../redux/homeReducer";
 import { getCallRecordingCredentials } from "../../../redux/callRecordingReducer";
 import { updateData, updateIsManager } from "../../../redux/sideMenuReducer";
@@ -82,12 +83,13 @@ import allData from "../../../get_target_params_for_all_emps.json";
 import targetData from "../../../get_target_params.json";
 import ReactNativeModal from "react-native-modal";
 import Carousel, { Pagination } from "react-native-snap-carousel";
+import URL from "../../../networking/endpoints";
+import { client } from "../../../networking/client";
 
 const HomeScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
   const [salesDataAry, setSalesDataAry] = useState([]);
-  const [selectedBranchName, setSelectedBranchName] = useState("");
 
   const [dropDownKey, setDropDownKey] = useState("");
   const [dropDownTitle, setDropDownTitle] = useState("Select Data");
@@ -108,12 +110,28 @@ const HomeScreen = ({ route, navigation }) => {
   const [showModal, setShowModal] = useState(false);
   const [options, setOptions] = useState({});
   const [activeBannerIndex, setActiveBannerIndex] = useState(0);
+  const [userData, setUserData] = useState({
+    empId: 0,
+    empName: "",
+    hrmsRole: "",
+    orgId: 0,
+  });
 
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {
       setTargetData().then((r) => {}); //Commented to resolved filter issue for Home Screen
     });
   }, [navigation]);
+
+  useEffect(async () => {
+    if (userData.hrmsRole === "Reception") {
+      let payload = {
+        orgId: userData.orgId,
+        loggedInEmpId: userData.empId,
+      };
+      dispatch(getReceptionistData(payload));
+    }
+  }, [userData]);
 
   const setTargetData = async () => {
     let obj = {
@@ -201,7 +219,6 @@ const HomeScreen = ({ route, navigation }) => {
 
   useEffect(async () => {
     // if (await AsyncStore.getData(AsyncStore.Keys.IS_LOGIN) === 'true'){
-    updateBranchNameInHeader();
     getMenuListFromServer();
     getCustomerType();
     checkLoginUserAndEnableReportButton();
@@ -209,7 +226,6 @@ const HomeScreen = ({ route, navigation }) => {
     // }
 
     const unsubscribe = navigation.addListener("focus", () => {
-      updateBranchNameInHeader(); //Commented to resolved filter issue for Home Screen
       getLoginEmployeeDetailsFromAsyn(); //Commented to resolved filter issue for Home Screen
     });
 
@@ -224,25 +240,24 @@ const HomeScreen = ({ route, navigation }) => {
     }
   };
 
-  const updateBranchNameInHeader = async () => {
-    await AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_NAME).then(
-      (branchName) => {
-        if (branchName) {
-          setSelectedBranchName(branchName);
-        }
-      }
-    );
-  };
-
   const moveToSelectBranch = () => {
     navigation.navigate(AppNavigator.HomeStackIdentifiers.select_branch, {
       isFromLogin: false,
     });
   };
   const moveToFilter = () => {
-    navigation.navigate(AppNavigator.HomeStackIdentifiers.filter, {
-      isFromLogin: false,
-    });
+    if (userData.hrmsRole == "Reception") {
+      navigation.navigate(
+        AppNavigator.HomeStackIdentifiers.receptionistFilter,
+        {
+          isFromLogin: false,
+        }
+      );
+    } else {
+      navigation.navigate(AppNavigator.HomeStackIdentifiers.filter, {
+        isFromLogin: false,
+      });
+    }
   };
   const getMenuListFromServer = async () => {
     let name = await AsyncStore.getData(AsyncStore.Keys.USER_NAME);
@@ -279,6 +294,12 @@ const HomeScreen = ({ route, navigation }) => {
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
+      setUserData({
+        empId: jsonObj.empId,
+        empName: jsonObj.empName,
+        hrmsRole: jsonObj.hrmsRole,
+        orgId: jsonObj.orgId,
+      });
       const payload = {
         orgId: jsonObj.orgId,
         branchId: jsonObj.branchId,
@@ -933,7 +954,11 @@ const HomeScreen = ({ route, navigation }) => {
 
   const renderBanner = ({ item, index }) => {
     return (
-      <Image source={{ uri: item.fileUrl }} style={styles.bannerImage} resizeMode="contain" />
+      <Image
+        source={{ uri: item.fileUrl }}
+        style={styles.bannerImage}
+        resizeMode="contain"
+      />
     );
   };
 
@@ -952,7 +977,7 @@ const HomeScreen = ({ route, navigation }) => {
       />
       <HeaderComp
         title={headerText}
-        branchName={selectedBranchName}
+        branchName={true}
         menuClicked={() => navigation.openDrawer()}
         branchClicked={() => moveToSelectBranch()}
         filterClicked={() => moveToFilter()}
@@ -1003,87 +1028,11 @@ const HomeScreen = ({ route, navigation }) => {
               </TouchableOpacity>
             </View>
           )}
-          {selector.isRankHide ? (
-            <View style={styles.hideRankRow}>
-              <View style={styles.hideRankBox}>
-                <Text style={styles.rankHeadingText}>Dealer Ranking</Text>
-                <TouchableOpacity
-                  style={styles.rankIconBox}
-                  onPress={() => {
-                    navigation.navigate(
-                      AppNavigator.HomeStackIdentifiers.leaderboard
-                    );
-                  }}
-                >
-                  <Image
-                    style={styles.rankIcon}
-                    source={require("../../../assets/images/perform_rank.png")}
-                  />
-                </TouchableOpacity>
-              </View>
-              <View style={styles.hideRankBox}>
-                <Text style={styles.rankHeadingText}>Branch Ranking</Text>
-                <TouchableOpacity
-                  style={styles.rankIconBox}
-                  onPress={() => {
-                    navigation.navigate(
-                      AppNavigator.HomeStackIdentifiers.branchRanking
-                    );
-                  }}
-                >
-                  <Image
-                    style={styles.rankIcon}
-                    source={require("../../../assets/images/perform_rank.png")}
-                  />
-                </TouchableOpacity>
-              </View>
-              <View style={styles.hideRankBox}>
-                <Text style={styles.rankHeadingText}>Retails</Text>
-                <View
-                  style={{
-                    flexDirection: "row",
-                  }}
-                >
-                  <View style={styles.rankIconBox}>
-                    <Image
-                      style={styles.rankIcon}
-                      source={require("../../../assets/images/retail.png")}
-                    />
-                  </View>
-                  <View
-                    style={{
-                      marginTop: 5,
-                      marginLeft: 5,
-                    }}
-                  >
-                    <View style={{ flexDirection: "row" }}>
-                      <Text style={[styles.rankText, { color: Colors.RED }]}>
-                        {retailData?.achievment}
-                      </Text>
-                      <Text style={[styles.rankText]}>
-                        /{retailData?.target}
-                      </Text>
-                    </View>
-                    <View
-                      style={{
-                        marginTop: 5,
-                      }}
-                    >
-                      <Text style={styles.baseText}>Ach v/s Tar</Text>
-                    </View>
-                  </View>
-                </View>
-              </View>
-            </View>
-          ) : (
-            <View style={styles.rankView}>
-              <View style={styles.rankBox}>
-                <Text style={styles.rankHeadingText}>Dealer Ranking</Text>
-                <View
-                  style={{
-                    flexDirection: "row",
-                  }}
-                >
+          {userData.hrmsRole !== "Reception" ? (
+            selector.isRankHide ? (
+              <View style={styles.hideRankRow}>
+                <View style={styles.hideRankBox}>
+                  <Text style={styles.rankHeadingText}>Dealer Ranking</Text>
                   <TouchableOpacity
                     style={styles.rankIconBox}
                     onPress={() => {
@@ -1097,27 +1046,9 @@ const HomeScreen = ({ route, navigation }) => {
                       source={require("../../../assets/images/perform_rank.png")}
                     />
                   </TouchableOpacity>
-                  <View
-                    style={{
-                      marginTop: 5,
-                      marginLeft: 3,
-                    }}
-                  >
-                    {groupDealerRank !== null && (
-                      <Text style={styles.rankText}>
-                        {groupDealerRank}/{groupDealerCount}
-                      </Text>
-                    )}
-                  </View>
                 </View>
-              </View>
-              <View style={styles.rankBox}>
-                <Text style={styles.rankHeadingText}>Branch Ranking</Text>
-                <View
-                  style={{
-                    flexDirection: "row",
-                  }}
-                >
+                <View style={styles.hideRankBox}>
+                  <Text style={styles.rankHeadingText}>Branch Ranking</Text>
                   <TouchableOpacity
                     style={styles.rankIconBox}
                     onPress={() => {
@@ -1131,56 +1062,187 @@ const HomeScreen = ({ route, navigation }) => {
                       source={require("../../../assets/images/perform_rank.png")}
                     />
                   </TouchableOpacity>
-                  <View
-                    style={{
-                      marginTop: 5,
-                      marginLeft: 3,
-                    }}
-                  >
-                    {dealerRank !== null && (
-                      <View style={{ flexDirection: "row" }}>
-                        <Text style={[styles.rankText]}>{dealerRank}</Text>
-                        <Text style={[styles.rankText]}>/{dealerCount}</Text>
-                      </View>
-                    )}
-                  </View>
                 </View>
-              </View>
-              <View style={styles.rankBox}>
-                <Text style={styles.rankHeadingText}>Retails</Text>
-                <View
-                  style={{
-                    flexDirection: "row",
-                  }}
-                >
-                  <View style={styles.rankIconBox}>
-                    <Image
-                      style={styles.rankIcon}
-                      source={require("../../../assets/images/retail.png")}
-                    />
-                  </View>
+                <View style={styles.hideRankBox}>
+                  <Text style={styles.rankHeadingText}>Retails</Text>
                   <View
                     style={{
-                      marginTop: 5,
-                      marginLeft: 5,
+                      flexDirection: "row",
                     }}
                   >
-                    <View style={{ flexDirection: "row" }}>
-                      <Text style={[styles.rankText, { color: Colors.RED }]}>
-                        {retailData?.achievment}
-                      </Text>
-                      <Text style={[styles.rankText]}>
-                        /{retailData?.target}
-                      </Text>
+                    <View style={styles.rankIconBox}>
+                      <Image
+                        style={styles.rankIcon}
+                        source={require("../../../assets/images/retail.png")}
+                      />
                     </View>
                     <View
                       style={{
                         marginTop: 5,
+                        marginLeft: 5,
                       }}
                     >
-                      <Text style={styles.baseText}>Ach v/s Tar</Text>
+                      <View style={{ flexDirection: "row" }}>
+                        <Text style={[styles.rankText, { color: Colors.RED }]}>
+                          {retailData?.achievment}
+                        </Text>
+                        <Text style={[styles.rankText]}>
+                          /{retailData?.target}
+                        </Text>
+                      </View>
+                      <View
+                        style={{
+                          marginTop: 5,
+                        }}
+                      >
+                        <Text style={styles.baseText}>Ach v/s Tar</Text>
+                      </View>
                     </View>
                   </View>
+                </View>
+              </View>
+            ) : (
+              <View style={styles.rankView}>
+                <View style={styles.rankBox}>
+                  <Text style={styles.rankHeadingText}>Dealer Ranking</Text>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                    }}
+                  >
+                    <TouchableOpacity
+                      style={styles.rankIconBox}
+                      onPress={() => {
+                        navigation.navigate(
+                          AppNavigator.HomeStackIdentifiers.leaderboard
+                        );
+                      }}
+                    >
+                      <Image
+                        style={styles.rankIcon}
+                        source={require("../../../assets/images/perform_rank.png")}
+                      />
+                    </TouchableOpacity>
+                    <View
+                      style={{
+                        marginTop: 5,
+                        marginLeft: 3,
+                      }}
+                    >
+                      {groupDealerRank !== null && (
+                        <Text style={styles.rankText}>
+                          {groupDealerRank}/{groupDealerCount}
+                        </Text>
+                      )}
+                    </View>
+                  </View>
+                </View>
+                <View style={styles.rankBox}>
+                  <Text style={styles.rankHeadingText}>Branch Ranking</Text>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                    }}
+                  >
+                    <TouchableOpacity
+                      style={styles.rankIconBox}
+                      onPress={() => {
+                        navigation.navigate(
+                          AppNavigator.HomeStackIdentifiers.branchRanking
+                        );
+                      }}
+                    >
+                      <Image
+                        style={styles.rankIcon}
+                        source={require("../../../assets/images/perform_rank.png")}
+                      />
+                    </TouchableOpacity>
+                    <View
+                      style={{
+                        marginTop: 5,
+                        marginLeft: 3,
+                      }}
+                    >
+                      {dealerRank !== null && (
+                        <View style={{ flexDirection: "row" }}>
+                          <Text style={[styles.rankText]}>{dealerRank}</Text>
+                          <Text style={[styles.rankText]}>/{dealerCount}</Text>
+                        </View>
+                      )}
+                    </View>
+                  </View>
+                </View>
+                <View style={styles.rankBox}>
+                  <Text style={styles.rankHeadingText}>Retails</Text>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                    }}
+                  >
+                    <View style={styles.rankIconBox}>
+                      <Image
+                        style={styles.rankIcon}
+                        source={require("../../../assets/images/retail.png")}
+                      />
+                    </View>
+                    <View
+                      style={{
+                        marginTop: 5,
+                        marginLeft: 5,
+                      }}
+                    >
+                      <View style={{ flexDirection: "row" }}>
+                        <Text style={[styles.rankText, { color: Colors.RED }]}>
+                          {retailData?.achievment}
+                        </Text>
+                        <Text style={[styles.rankText]}>
+                          /{retailData?.target}
+                        </Text>
+                      </View>
+                      <View
+                        style={{
+                          marginTop: 5,
+                        }}
+                      >
+                        <Text style={styles.baseText}>Ach v/s Tar</Text>
+                      </View>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            )
+          ) : null}
+          {userData.hrmsRole == "Reception" && (
+            <View
+              style={{
+                justifyContent: "space-around",
+                flexDirection: "row",
+                marginTop: 20,
+              }}
+            >
+              <View style={{ flexDirection: "column", alignItems: "center" }}>
+                <Text style={styles.rankHeadingText}>{"Leads Allocated"}</Text>
+                <View style={styles.cardView}>
+                  <Text style={{ ...styles.rankText, color: "blue" }}>
+                    {selector.receptionistData?.totalAllocatedCount}
+                  </Text>
+                </View>
+              </View>
+
+              <View style={{ flexDirection: "column", alignItems: "center" }}>
+                <Text style={styles.rankHeadingText}>{"Bookings"}</Text>
+                <View style={styles.cardView}>
+                  <Text style={{ ...styles.rankText, color: "red" }}>
+                    {selector.receptionistData?.bookingCount}
+                  </Text>
+                </View>
+              </View>
+              <View style={{ flexDirection: "column", alignItems: "center" }}>
+                <Text style={styles.rankHeadingText}>{"Retails"}</Text>
+                <View style={styles.cardView}>
+                  <Text style={{ ...styles.rankText, color: "green" }}>
+                    {selector.receptionistData?.RetailCount}
+                  </Text>
                 </View>
               </View>
             </View>
@@ -1480,6 +1542,16 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
   },
   rankIcon: { width: 25, height: 25 },
+  cardView: {
+    width: 45,
+    height: 45,
+    borderWidth: 2,
+    borderColor: "#D3D3D3",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 10,
+    backgroundColor: "#fff",
+  },
   newModalContainer: {
     justifyContent: "center",
     alignItems: "center",
@@ -1548,6 +1620,6 @@ const styles = StyleSheet.create({
   hideRankBox: {
     paddingTop: 5,
     height: 80,
-    alignItems: "center"
+    alignItems: "center",
   },
 });

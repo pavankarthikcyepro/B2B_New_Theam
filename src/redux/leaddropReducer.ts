@@ -74,11 +74,10 @@ export const getLeadDropList = createAsyncThunk(
         payload.limit,
         payload.startdate,
         payload.enddate
-      ),
-      payload.body
+      )
     );
     const json = await response.json();
-
+    
     if (!response.ok) {
       return rejectWithValue(json);
     }
@@ -156,7 +155,7 @@ export const updateBulkApproval = createAsyncThunk(
 
     const response = await client.post(URL.UPDATE_BULKAPPROVAL(), payload);
     const json = await response.json();
-
+    
     if (!response.ok) {
       return rejectWithValue(json);
     }
@@ -228,7 +227,8 @@ const leaddropListSlice = createSlice({
       state.isLoading = true;
     });
     builder.addCase(getLeadDropList.fulfilled, (state, action) => {
-      const dmsLeadDropInfos = action.payload?.dmsLeadDropInfos;
+      const dmsLeadDropInfos = action.payload.dmsLeadDropInfos;
+     
       state.totalPages = 1;
       state.pageNumber = 0;
       state.leadDropList = [];
@@ -236,6 +236,7 @@ const leaddropListSlice = createSlice({
         state.totalPages = dmsLeadDropInfos.totalPages;
         state.pageNumber = dmsLeadDropInfos.pageable.pageNumber;
         state.leadDropList = dmsLeadDropInfos.content;
+       
       }
       state.isLoading = false;
       state.status = "sucess";
@@ -304,15 +305,17 @@ const leaddropListSlice = createSlice({
 
     builder.addCase(updateBulkApproval.pending, (state) => {});
     builder.addCase(updateBulkApproval.fulfilled, (state, action) => {
+      
       if (action.payload.length > 0) {
         showToast("Successfully updated");
+        state.approvalStatus = "sucess";
       }
       // const status = action.payload?.status;
       // if (status === 'SUCCESS') {
 
       // }
       // state.isLoadingExtraData = false;
-      state.approvalStatus = "sucess";
+      
     });
     builder.addCase(updateBulkApproval.rejected, (state, action) => {
       state.approvalStatus = "failed";

@@ -32,7 +32,6 @@ export const getEnquiryDetailsApi = createAsyncThunk(
 
     const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
     const json = await response.json();
-
     if (!response.ok) {
       return rejectWithValue(json);
     }
@@ -181,6 +180,20 @@ export const getLogoNameApi = createAsyncThunk(
       URL.PROFORMA_LOGO_NAME(data.orgId, data.branchId)
     );
     const json = await response.json();
+  
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+export const getProformaListingDetailsApi = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/getProformaListingDetailsApi",
+  async (crmUniversalId, { rejectWithValue }) => {
+    const response = await client.get(
+      URL.PROFORMA_LISTING_DETAILS(crmUniversalId)
+    );
+    const json = await response.json();
 
     if (!response.ok) {
       return rejectWithValue(json);
@@ -248,8 +261,6 @@ export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk(
 export const updateEnquiryDetailsApi = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/updateEnquiryDetailsApi",
   async (payload, { rejectWithValue }) => {
-    console.log("newpayloadddd",JSON.stringify(payload));
-    
     const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
     const json = await response.json();
 
@@ -364,6 +375,22 @@ export const getPendingTasksApi = createAsyncThunk(
   }
 );
 
+export const getTermsAndConditionsOrgwise = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/getTermsAndConditionsOrgwise",
+  async (endUrl, { rejectWithValue }) => {
+    const response = await client.get(URL.PROFORMA_TERMS_N_CONDITIONS(endUrl));
+    // const url = URL.PROFORMA_TERMS_N_CONDITIONS() + endUrl;
+
+    // const response = await client.get(url);
+    const json = await response.json();
+    
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 interface PersonalIntroModel {
   key: string;
   text: string;
@@ -395,6 +422,15 @@ const initialState = {
   maxDate: null,
 
   //Proforma Invoice
+  getTermsNConditions_res:"",
+  getTermsNConditions_res_status:"",
+  proforma_API_respData: "",
+  proforma_API_response: "",
+  proforma_listingdata : [],
+  proforma_houseNo : "",
+  proforma_address:"",
+  profprma_street:"",
+  proforma_gstnNumber:"",
   proforma_orgName: "",
   proforma_logo: "",
   proforma_city: "",
@@ -560,6 +596,18 @@ const initialState = {
   isOpened: false,
   refNo: "",
   rmfgYear: null,
+  //offerprice
+  consumer_offer: "",
+  exchange_offer: "",
+  corporate_offer: "",
+  promotional_offer: "",
+  cash_discount: "",
+  for_accessories: "",
+  additional_offer_1: "",
+  additional_offer_2: "",
+  accessories_discount:"",
+  insurance_discount:"",
+  foc_accessoriesFromServer :"",
 };
 
 const enquiryDetailsOverViewSlice = createSlice({
@@ -622,6 +670,18 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.r_insurence_document_checked = false;
       state.dmsLeadProducts = [];
       state.refNo = "";
+      //offerprice
+      state.consumer_offer = "";
+      state.exchange_offer = "";
+      state.corporate_offer = "";
+      state.promotional_offer = "";
+      state.cash_discount = "";
+      state.for_accessories = "";
+      state.additional_offer_1 = "";
+      state.additional_offer_2 = "";
+      state.accessories_discount = "",
+      state.insurance_discount = "",
+        state.foc_accessoriesFromServer = ""
     },
     clearState2: (state, action) => {
       state.enableEdit = false;
@@ -678,6 +738,16 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.r_insurence_document_checked = false;
       state.dmsLeadProducts = [];
       state.refNo = "";
+      //offerprice
+      state.consumer_offer = "";
+      state.exchange_offer = "";
+      state.corporate_offer = "";
+      state.promotional_offer = "";
+      state.cash_discount = "";
+      state.for_accessories = "";
+      state.additional_offer_1 = "";
+      state.additional_offer_2 = "";
+      state.foc_accessoriesFromServer = "";
     },
     setEditable: (state, action) => {
       state.enableEdit = !state.enableEdit;
@@ -1977,6 +2047,97 @@ const enquiryDetailsOverViewSlice = createSlice({
     updateRefNo: (state, action) => {
       state.refNo = action.payload;
     },
+    setOfferPriceDataForSelectedProforma: (state ,action) =>{
+     
+      let oth_performa_column = action.payload;
+      
+      if(action.payload){
+        state.consumer_offer = oth_performa_column.special_scheme 
+        ? oth_performa_column.special_scheme.toString(): "";
+
+        state.exchange_offer = oth_performa_column.exchange_offers 
+        ? oth_performa_column.exchange_offers.toString(): "";
+      
+        state.corporate_offer = oth_performa_column.corporate_offer
+          ? oth_performa_column.corporate_offer.toString() : "";
+        
+        state.promotional_offer = oth_performa_column.promotional_offers
+          ? oth_performa_column.promotional_offers.toString() : "";
+
+        state.cash_discount = oth_performa_column.cash_discount
+          ? oth_performa_column.cash_discount.toString() : "";
+
+        state.for_accessories = oth_performa_column.foc_accessories
+          ? oth_performa_column.foc_accessories.toString() : "";
+
+        state.foc_accessoriesFromServer = oth_performa_column.foc_accessories
+          ? oth_performa_column.foc_accessories.toString() : "";
+
+        state.additional_offer_1 = oth_performa_column.additional_offer1
+          ? oth_performa_column.additional_offer1.toString() : "";
+
+        state.additional_offer_2 = oth_performa_column.additional_offer2
+          ? oth_performa_column.additional_offer2.toString() : "";
+
+        state.accessories_discount = oth_performa_column.accessories_discount
+          ? oth_performa_column.accessories_discount.toString() : "";
+
+        state.insurance_discount = oth_performa_column.insurance_discount
+          ? oth_performa_column.insurance_discount.toString() : "";
+      }
+    },
+
+    clearOfferPriceData: (state,action)=>{
+      
+      state.consumer_offer = "";
+      state.exchange_offer = "";
+      state.corporate_offer = "";
+      state.promotional_offer = "";
+      state.cash_discount = "";
+      state.for_accessories = "";
+      state.additional_offer_1 = "";
+      state.additional_offer_2 = "";
+      state.accessories_discount = "",
+        state.insurance_discount = ""
+    },
+    setOfferPriceDetails: (
+      state,
+      action: PayloadAction<PersonalIntroModel>
+    ) => {
+      const { key, text } = action.payload;
+      switch (key) {
+        case "CONSUMER_OFFER":
+          state.consumer_offer = text;
+          break;
+        case "EXCHANGE_OFFER":
+          state.exchange_offer = text;
+          break;
+        case "CORPORATE_OFFER":
+          state.corporate_offer = text;
+          break;
+        case "PROMOTIONAL_OFFER":
+          state.promotional_offer = text;
+          break;
+        case "CASH_DISCOUNT":
+          state.cash_discount = text;
+          break;
+        case "FOR_ACCESSORIES":
+          state.for_accessories = text;
+          break;
+        case "ADDITIONAL_OFFER_1":
+          state.additional_offer_1 = text;
+          break;
+        case "ADDITIONAL_OFFER_2":
+          state.additional_offer_2 = text;
+          break;
+        case "ACCESSORIES_DISCOUNT":
+          state.accessories_discount = text;
+          break;
+        case "INSURANCE_DISCOUNT":
+          state.insurance_discount = text;
+          break;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(getEnquiryDetailsApi.pending, (state) => {
@@ -1988,6 +2149,7 @@ const enquiryDetailsOverViewSlice = createSlice({
       //  state.enquiry_details_response = action.payload.dmsEntity;
       state.enquiry_details_response = action.payload;
       state.isOpened = true;
+      
       // }
       state.isLoading = false;
     });
@@ -2002,18 +2164,44 @@ const enquiryDetailsOverViewSlice = createSlice({
       //  state.enquiry_details_response = action.payload.dmsEntity;
       const data = action.payload;
       if (data && data.orgName) {
+       
         state.proforma_orgName = data.orgName;
         state.proforma_logo = data.url;
         state.proforma_branch = data.branchName;
         state.proforma_city = data.city;
         state.proforma_state = data.state;
         state.proforma_pincode = data.pincode;
+        state.proforma_gstnNumber = data.gstnNumber;
+        state.proforma_houseNo = data.houseNo;
+        state.proforma_address = `${data.houseNo}  ${data.street}`;
+        state.profprma_street = data.street;
       }
       state.isLoading = false;
     });
     builder.addCase(getLogoNameApi.rejected, (state, action) => {
       state.isLoading = false;
     });
+
+
+    builder.addCase(getProformaListingDetailsApi.pending, (state) => {
+      state.isLoading = true;
+      state.proforma_listingdata = [];
+    });
+    builder.addCase(getProformaListingDetailsApi.fulfilled, (state, action) => {
+      
+      const data = action.payload;
+      if(data){
+        state.proforma_listingdata = data;
+      }
+      state.isLoading = false;
+    });
+    builder.addCase(getProformaListingDetailsApi.rejected, (state, action) => {
+      state.isLoading = false;
+      state.proforma_listingdata = [];
+    });
+
+
+    
     builder.addCase(
       getOnRoadPriceAndInsurenceDetailsApi.pending,
       (state, action) => {
@@ -2024,6 +2212,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     builder.addCase(
       getOnRoadPriceAndInsurenceDetailsApi.fulfilled,
       (state, action) => {
+        
 
         if (action.payload) {
           state.vehicle_on_road_price_insurence_details_response =
@@ -2055,17 +2244,57 @@ const enquiryDetailsOverViewSlice = createSlice({
       }
     );
     builder.addCase(postProformaInvoiceDetails.pending, (state) => {
+      state.isLoading = true ;
+      state.proforma_API_response = "pending";
+      state.proforma_API_respData = "";
     });
     builder.addCase(postProformaInvoiceDetails.fulfilled, (state, action) => {
       // if (action.payload.dmsEntity) {
       //  state.enquiry_details_response = action.payload.dmsEntity;
-      if (action.payload && action.payload.crmUniversalId)
-        showToast("Successfully updated");
+      if(action.payload){
+     
+        
+
+      if (action.payload && action.payload.crmUniversalId &&
+         action.payload.performa_status ==="ENQUIRYCOMPLETED"){
+
+        showToast("Proforma invoice saved successfully"); 
+        state.proforma_API_response = "ENQUIRYCOMPLETED";
+        state.proforma_API_respData = action.payload;
+
+      } else if (action.payload.performa_status === "SENTFORAPPROVAL"){
+
+        showToast("Proforma invoice sent for approval"); 
+        state.proforma_API_response = "SENTFORAPPROVAL";
+        state.proforma_API_respData = action.payload;
+
+      } else if (action.payload.performa_status === "APPROVED"){
+
+        state.proforma_API_response = "APPROVED";
+        showToast("Proforma invoice approved successfully"); 
+        state.proforma_API_respData = action.payload;
+
+      } else if (action.payload.performa_status === "REJECTED") {
+
+        showToast("Proforma invoice rejected successfully");
+        state.proforma_API_response = "REJECTED";
+        state.proforma_API_respData = action.payload;
+
+      }
+
+        state.isLoading = false;
+        // state.proforma_API_response = "fullfilled";
+    }
+        // showToast("Successfully updated");
+     
       // state.enquiry_details_response = action.payload;
       // state.isOpened = true
       // }
     });
     builder.addCase(postProformaInvoiceDetails.rejected, (state, action) => {
+      state.isLoading = false;
+      state.proforma_API_response = "rejected";
+      state.proforma_API_respData ="";
     });
     builder.addCase(getEnquiryDetailsApiAuto.pending, (state) => {
       state.isLoading = true;
@@ -2202,6 +2431,25 @@ const enquiryDetailsOverViewSlice = createSlice({
       updateEnquiryDetailsApiAutoSave.rejected,
       (state, action) => {}
     );
+
+    // Get terms and conditions org wise
+    builder.addCase(getTermsAndConditionsOrgwise.pending, (state, action) => {
+      state.getTermsNConditions_res_status = "pending";
+      state.getTermsNConditions_res = [];
+      state.isLoading = true;
+    });
+    builder.addCase(getTermsAndConditionsOrgwise.fulfilled, (state, action) => {
+      if (action.payload) {
+        state.getTermsNConditions_res_status = "success";
+        state.getTermsNConditions_res = action.payload;
+      }
+      state.isLoading = false;
+    });
+    builder.addCase(getTermsAndConditionsOrgwise.rejected, (state, action) => {
+      state.getTermsNConditions_res_status = "failed";
+      state.getTermsNConditions_res = [];
+      state.isLoading = false;
+    });
   },
 });
 
@@ -2238,5 +2486,8 @@ export const {
   clearPermanentAddr,
   updateAddressByPincode2,
   updatedmsLeadProduct,
+  setOfferPriceDetails,
+  setOfferPriceDataForSelectedProforma,
+  clearOfferPriceData, 
 } = enquiryDetailsOverViewSlice.actions;
 export default enquiryDetailsOverViewSlice.reducer;

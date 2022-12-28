@@ -233,7 +233,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     orgId: "",
     employeeId: "",
     employeeName: "",
-    isSelfManager: ""
+    isSelfManager: "",
+    isTracker: "",
   });
   const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
   const [modelsList, setModelsList] = useState([]);
@@ -362,7 +363,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       orgId: "",
       employeeId: "",
       employeeName: "",
-      isSelfManager: ""
+      isSelfManager: "",
+      isTracker: "",
     });
     setUploadedImagesDataObj({});
     setTypeOfActionDispatched("");
@@ -486,7 +488,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         orgId: jsonObj.orgId,
         employeeId: jsonObj.empId,
         employeeName: jsonObj.empName,
-        isSelfManager: jsonObj.isSelfManager
+        isSelfManager: jsonObj.isSelfManager,
+        isTracker: jsonObj.isTracker,
       });
       getCarMakeListFromServer(jsonObj.orgId);
       getCarModelListFromServer(jsonObj.orgId);
@@ -2932,16 +2935,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           ref={scrollRef}
         >
           <View style={styles.baseVw}>
-            {/*}       {(leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY' && carModelsList && carModelsList.length > 0) ? <Button style={{ height: 40, width: 200, marginBottom: 15, alignSelf: 'flex-end', alignContent: 'center', backgroundColor: Colors.PINK, color: Colors.WHITE }}
+            {/* {(leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY' && carModelsList && carModelsList.length > 0) ?
+                  <Button style={{ height: 40, width: 200, marginBottom: 15, alignSelf: 'flex-end', alignContent: 'center', backgroundColor: Colors.PINK, color: Colors.WHITE }}
               labelStyle={{ textTransform: "none", fontSize: 16, color: Colors.WHITE }}
-              onPress={() => navigateToProforma()}>Proforma Invoice</Button> : null}
+                onPress={() => navigateToProforma()}><Text>Proforma Invoice</Text></Button> : null} */}
 
-
+            {/* 
            {(leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY' && carModelsList && carModelsList.length > 0) ?
             <Button style={{height:40, width:200,marginBottom:15, alignSelf:'flex-end', alignContent:'center', backgroundColor:Colors.PINK, color: Colors.WHITE}}
               labelStyle={{ textTransform: "none",fontSize:16, color: Colors.WHITE }}
-        onPress={()=> navigateToProforma()}>Proforma Invoice</Button> : null}
-        */}
+                onPress={() => navigateToProforma()}><Text>Proforma Invoice</Text></Button> : null} */}
 
             <List.AccordionGroup
               expandedId={openAccordian}
@@ -5219,6 +5222,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       label={
                         userData.isSelfManager == "Y"
                           ? "Battery Type"
+                          : userData.isTracker == "Y"
+                          ? "Clutch Type"
                           : "Transmission Type"
                       }
                       value={selector.c_transmission_type}
@@ -5647,6 +5652,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     label={
                       userData.isSelfManager == "Y"
                         ? "Battery Type"
+                        : userData.isTracker == "Y"
+                        ? "Clutch Type"
                         : "Transmission Type"
                     }
                     value={selector.r_transmission_type}

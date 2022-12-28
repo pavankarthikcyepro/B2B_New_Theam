@@ -712,7 +712,7 @@ const TaskTranferScreen = () => {
               valueField="value"
               placeholder={"Select Employee"}
               searchPlaceholder="Search..."
-              value={employeeDropDownItem}
+              // value={employeeDropDownItem}
               renderRightIcon={() => (
                 <Image
                   style={{ height: 5, width: 10 }}
@@ -721,7 +721,7 @@ const TaskTranferScreen = () => {
               )}
               onChange={async (item) => {
                 await clearDataOnChangeDropDown();
-                setEmployeeDropDownItem(item.value);
+                setEmployeeDropDownItem(item);
                 getTaskListFromServer(item.value);
                 setTasklistHeader(true);
               }}

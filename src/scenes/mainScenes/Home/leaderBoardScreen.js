@@ -31,29 +31,35 @@ export default function leaderBoardScreen() {
     const [top5RankList, setTop5RankList] = useState([]);
     const [topRankList, setTopRankList] = useState([]);
     const [bottom5RankList, setBottom5RankList] = useState([]);
+    const [loggedInEmpId, setLoggedInEmpId] = useState(0);
     const [reversebottomRankList, setReverseBottomRankList] = useState([]);
 
     
     useEffect(async () => {
-        LogBox.ignoreAllLogs();
-        let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-        if (employeeData) {
-            const jsonObj = JSON.parse(employeeData);
-            if (selector.allGroupDealerData.length > 0) {
-                let tempArr = [], allArray = selector.allGroupDealerData;
-                setGroupDealerCount(selector.allGroupDealerData.length)
-                tempArr = allArray.filter((item) => {
-                    return item.empId === jsonObj.empId
-                })
-                if (tempArr.length > 0) {
-                    setGroupDealerRank(tempArr[0].rank)
-                }
-                else {
-
-                }
-            }
-        };
+      LogBox.ignoreAllLogs();
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        if (jsonObj && jsonObj.empId) {
+          setLoggedInEmpId(jsonObj.empId);
+        }
+        if (selector.allGroupDealerData.length > 0) {
+          let tempArr = [],
+            allArray = selector.allGroupDealerData;
+          setGroupDealerCount(selector.allGroupDealerData.length);
+          tempArr = allArray.filter((item) => {
+            return item.empId === jsonObj.empId;
+          });
+          if (tempArr.length > 0) {
+            setGroupDealerRank(tempArr[0].rank);
+          } else {
+          }
+        }
+      }
     }, []);
+
     useEffect(()=>{
 
         if(selector.leaderboard_list && selector.leaderboard_list.length > 0)
@@ -153,14 +159,17 @@ export default function leaderBoardScreen() {
     }
 
     const renderListItem = (item, extraIndex) => {
+      let isActive = item.empId == loggedInEmpId && !selector.isRankHide;
       return (
-        <View style={styles.tableSubRow}>
+        <View style={isActive ? styles.activeSubRow : styles.tableSubRow}>
           <View style={styles.itemRow}>
-            <Text style={styles.itemRowText}>{item.rank}</Text>
-            <Text style={styles.itemRowText}>{getEmpName(item.empName)}</Text>
-            <Text style={styles.itemRowText}>{getBranchName(item.branchCode)}</Text>
-            <Text style={styles.itemRowText}>{item.achivementPerc}</Text>
-            <Text style={styles.itemRowText}>{item.targetAchivements}</Text>
+            <Text style={isActive ? styles.activeItemRowText :styles.itemRowText}>{item.rank}</Text>
+            <Text style={isActive ? styles.activeItemRowText :styles.itemRowText}>{getEmpName(item.empName)}</Text>
+            <Text style={isActive ? styles.activeItemRowText :styles.itemRowText}>
+              {getBranchName(item.branchCode)}
+            </Text>
+            <Text style={isActive ? styles.activeItemRowText :styles.itemRowText}>{item.achivementPerc}</Text>
+            <Text style={isActive ? styles.activeItemRowText :styles.itemRowText}>{item.targetAchivements}</Text>
           </View>
         </View>
       );
@@ -205,10 +214,10 @@ export default function leaderBoardScreen() {
               {!selector.isRankHide && groupDealerRank !== null && (
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
                   <Text style={styles.rankText}>{groupDealerRank}</Text>
-                  <Text style={{ ...styles.rankText, color: Colors.GRAY }}>
+                  <Text style={styles.rankText}>
                     /
                   </Text>
-                  <Text style={{ ...styles.rankText, color: Colors.GRAY }}>
+                  <Text style={styles.rankText}>
                     {groupDealerCount}
                   </Text>
                 </View>
@@ -347,7 +356,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     padding: 10,
-    marginVertical: 10
+    marginVertical: 10,
   },
   titleIconContainer: {
     transform: [{ rotate: "45deg" }],
@@ -358,7 +367,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  topIconView:{ transform: [{ rotate: "315deg" }] },
+  topIconView: { transform: [{ rotate: "315deg" }] },
 
   // table
   tableContainer: {
@@ -390,8 +399,18 @@ const styles = StyleSheet.create({
     borderColor: "#F2F2F2",
     marginBottom: 3,
   },
+  activeSubRow: {
+    padding: 10,
+    borderRadius: 4,
+    marginBottom: 3,
+    borderWidth: 1,
+    borderBottomWidth: 2,
+    borderColor: Colors.PINK,
+    backgroundColor: Colors.WHITE,
+  },
   itemRow: { flexDirection: "row", width: "100%" },
   itemRowText: { color: "black", textAlign: "center", flex: 1 },
+  activeItemRowText: { color: Colors.BLACK, textAlign: "center", flex: 1, fontWeight: "bold" },
   viewAllContainer: { alignSelf: "flex-end" },
   viewAllText: {
     color: "red",
@@ -425,6 +444,7 @@ const styles = StyleSheet.create({
   rankText: {
     fontSize: 18,
     fontWeight: "700",
+    color: Colors.PINK
   },
   rankBox: {
     paddingTop: 5,

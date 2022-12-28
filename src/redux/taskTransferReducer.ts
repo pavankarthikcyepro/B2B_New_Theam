@@ -180,14 +180,15 @@ export const taskTransferSlice = createSlice({
 
         // Get Department List
         builder.addCase(getDeptDropdown.pending, (state, action) => {
-            state.isLoading = true;
+            // state.isLoading = true;
         })
         builder.addCase(getDeptDropdown.fulfilled, (state, action) => {
+            state.isLoading = false;
             if (action.payload) {
                 const dataObj = action.payload;
                 state.deptList = dataObj ? dataObj : []
             }
-            state.isLoading = false;
+          
         })
         builder.addCase(getDeptDropdown.rejected, (state, action) => {
             state.isLoading = false;
