@@ -51,6 +51,7 @@ import { client } from "../../../../networking/client";
 import URL from "../../../../networking/endpoints";
 import { RenderEmployeeTarget } from "../../Home/TabScreens/components/RenderEmployeeTarget";
 import { RenderGrandTargetTotal } from "../../Home/TabScreens/components/RenderGrandTargetTotal";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 const color = [
   "#9f31bf",
@@ -1898,24 +1899,14 @@ const MainParamScreen = ({ route, navigation }) => {
                 flexDirection: "column",
               }}
               horizontal={true}
-              // directionalLockEnabled={true}
               nestedScrollEnabled={true}
               showsHorizontalScrollIndicator={false}
-              // ref={scrollViewRef}
-              // onContentSizeChange={(contentWidth, contentHeight) => {
-              //   scrollViewRef?.current?.scrollTo({ y: 0, animated: true });
-              // }}
-              // onScroll={(e) => {
-              //   setSlideRight(e.nativeEvent.contentOffset.x);
-              //   // handleScroll(e)
-              // }}
               bounces={false}
               scrollEventThrottle={16}
             >
               <View>
                 {/* TOP Header view */}
                 <View
-                  // key={"headers"}
                   style={{
                     flexDirection: "row",
                     // borderBottomWidth: 0.5,
@@ -2053,15 +2044,40 @@ const MainParamScreen = ({ route, navigation }) => {
                               width: Dimensions.get("screen").width - 28,
                             }}
                           >
-                            <Text
-                              style={{
-                                fontSize: 12,
-                                fontWeight: "600",
-                                textTransform: "capitalize",
-                              }}
-                            >
-                              {item?.empName}
-                            </Text>
+                            <View style={{ flexDirection: "row" }}>
+                              <Text
+                                style={{
+                                  fontSize: 12,
+                                  fontWeight: "600",
+                                  textTransform: "capitalize",
+                                }}
+                              >
+                                {item?.empName}
+                                {item.childCount > 1 ? "  |" : ""}
+                              </Text>
+                              {item.childCount > 1 && (
+                                <View
+                                  style={{
+                                    backgroundColor: "lightgrey",
+                                    flexDirection: "row",
+                                    paddingHorizontal: 7,
+                                    borderRadius: 10,
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                    marginBottom: 5,
+                                    alignSelf: "flex-start",
+                                    marginLeft: 7,
+                                  }}
+                                >
+                                  <MaterialIcons
+                                    name="person"
+                                    size={15}
+                                    color={Colors.BLACK}
+                                  />
+                                  <Text>{item.childCount}</Text>
+                                </View>
+                              )}
+                            </View>
                           </View>
                           {/*Source/Model View END */}
                           <View
@@ -2167,14 +2183,47 @@ const MainParamScreen = ({ route, navigation }) => {
                                                 marginTop: 8,
                                               }}
                                             >
-                                              <Text
-                                                style={{
-                                                  fontSize: 10,
-                                                  fontWeight: "500",
-                                                }}
+                                              <View
+                                                style={{ flexDirection: "row" }}
                                               >
-                                                {innerItem1.empName}
-                                              </Text>
+                                                <Text
+                                                  style={{
+                                                    fontSize: 10,
+                                                    fontWeight: "500",
+                                                  }}
+                                                >
+                                                  {innerItem1.empName}
+                                                  {innerItem1.childCount > 1
+                                                    ? "  |"
+                                                    : ""}
+                                                </Text>
+                                                {innerItem1.childCount > 1 && (
+                                                  <View
+                                                    style={{
+                                                      backgroundColor:
+                                                        "lightgrey",
+                                                      flexDirection: "row",
+                                                      paddingHorizontal: 7,
+                                                      borderRadius: 10,
+                                                      alignItems: "center",
+                                                      justifyContent:
+                                                        "space-between",
+                                                      marginBottom: 5,
+                                                      alignSelf: "flex-start",
+                                                      marginLeft: 7,
+                                                    }}
+                                                  >
+                                                    <MaterialIcons
+                                                      name="person"
+                                                      size={15}
+                                                      color={Colors.BLACK}
+                                                    />
+                                                    <Text>
+                                                      {innerItem1.childCount}
+                                                    </Text>
+                                                  </View>
+                                                )}
+                                              </View>
                                             </View>
                                             {/*Source/Model View END */}
                                             <View
@@ -2261,14 +2310,58 @@ const MainParamScreen = ({ route, navigation }) => {
                                                             : 42),
                                                       }}
                                                     >
-                                                      <Text
+                                                      <View
                                                         style={{
-                                                          fontSize: 10,
-                                                          fontWeight: "500",
+                                                          flexDirection: "row",
                                                         }}
                                                       >
-                                                        {innerItem2.empName}
-                                                      </Text>
+                                                        <Text
+                                                          style={{
+                                                            fontSize: 10,
+                                                            fontWeight: "500",
+                                                          }}
+                                                        >
+                                                          {innerItem2.empName}
+                                                          {innerItem2.childCount >
+                                                          1
+                                                            ? "  |"
+                                                            : ""}
+                                                        </Text>
+                                                        {innerItem2.childCount >
+                                                          1 && (
+                                                          <View
+                                                            style={{
+                                                              backgroundColor:
+                                                                "lightgrey",
+                                                              flexDirection:
+                                                                "row",
+                                                              paddingHorizontal: 7,
+                                                              borderRadius: 10,
+                                                              alignItems:
+                                                                "center",
+                                                              justifyContent:
+                                                                "space-between",
+                                                              marginBottom: 5,
+                                                              alignSelf:
+                                                                "flex-start",
+                                                              marginLeft: 7,
+                                                            }}
+                                                          >
+                                                            <MaterialIcons
+                                                              name="person"
+                                                              size={15}
+                                                              color={
+                                                                Colors.BLACK
+                                                              }
+                                                            />
+                                                            <Text>
+                                                              {
+                                                                innerItem2.childCount
+                                                              }
+                                                            </Text>
+                                                          </View>
+                                                        )}
+                                                      </View>
                                                     </View>
                                                     <View
                                                       style={{
@@ -2356,17 +2449,64 @@ const MainParamScreen = ({ route, navigation }) => {
                                                                   paddingVertical: 4,
                                                                 }}
                                                               >
-                                                                <Text
+                                                                <View
                                                                   style={{
-                                                                    fontSize: 10,
-                                                                    fontWeight:
-                                                                      "500",
+                                                                    flexDirection:
+                                                                      "row",
                                                                   }}
                                                                 >
-                                                                  {
-                                                                    innerItem3.empName
-                                                                  }
-                                                                </Text>
+                                                                  <Text
+                                                                    style={{
+                                                                      fontSize: 10,
+                                                                      fontWeight:
+                                                                        "500",
+                                                                    }}
+                                                                  >
+                                                                    {
+                                                                      innerItem3.empName
+                                                                    }
+                                                                    {innerItem3.childCount >
+                                                                    1
+                                                                      ? "  |"
+                                                                      : ""}
+                                                                  </Text>
+                                                                  {innerItem3.childCount >
+                                                                    1 && (
+                                                                    <View
+                                                                      style={{
+                                                                        backgroundColor:
+                                                                          "lightgrey",
+                                                                        flexDirection:
+                                                                          "row",
+                                                                        paddingHorizontal: 7,
+                                                                        borderRadius: 10,
+                                                                        alignItems:
+                                                                          "center",
+                                                                        justifyContent:
+                                                                          "space-between",
+                                                                        marginBottom: 5,
+                                                                        alignSelf:
+                                                                          "flex-start",
+                                                                        marginLeft: 7,
+                                                                      }}
+                                                                    >
+                                                                      <MaterialIcons
+                                                                        name="person"
+                                                                        size={
+                                                                          15
+                                                                        }
+                                                                        color={
+                                                                          Colors.BLACK
+                                                                        }
+                                                                      />
+                                                                      <Text>
+                                                                        {
+                                                                          innerItem3.childCount
+                                                                        }
+                                                                      </Text>
+                                                                    </View>
+                                                                  )}
+                                                                </View>
                                                               </View>
                                                               <View
                                                                 style={{
@@ -2470,17 +2610,64 @@ const MainParamScreen = ({ route, navigation }) => {
                                                                             paddingVertical: 4,
                                                                           }}
                                                                         >
-                                                                          <Text
+                                                                          <View
                                                                             style={{
-                                                                              fontSize: 10,
-                                                                              fontWeight:
-                                                                                "500",
+                                                                              flexDirection:
+                                                                                "row",
                                                                             }}
                                                                           >
-                                                                            {
-                                                                              innerItem4.empName
-                                                                            }
-                                                                          </Text>
+                                                                            <Text
+                                                                              style={{
+                                                                                fontSize: 10,
+                                                                                fontWeight:
+                                                                                  "500",
+                                                                              }}
+                                                                            >
+                                                                              {
+                                                                                innerItem4.empName
+                                                                              }
+                                                                              {innerItem4.childCount >
+                                                                              1
+                                                                                ? "  |"
+                                                                                : ""}
+                                                                            </Text>
+                                                                            {innerItem4.childCount >
+                                                                              1 && (
+                                                                              <View
+                                                                                style={{
+                                                                                  backgroundColor:
+                                                                                    "lightgrey",
+                                                                                  flexDirection:
+                                                                                    "row",
+                                                                                  paddingHorizontal: 7,
+                                                                                  borderRadius: 10,
+                                                                                  alignItems:
+                                                                                    "center",
+                                                                                  justifyContent:
+                                                                                    "space-between",
+                                                                                  marginBottom: 5,
+                                                                                  alignSelf:
+                                                                                    "flex-start",
+                                                                                  marginLeft: 7,
+                                                                                }}
+                                                                              >
+                                                                                <MaterialIcons
+                                                                                  name="person"
+                                                                                  size={
+                                                                                    15
+                                                                                  }
+                                                                                  color={
+                                                                                    Colors.BLACK
+                                                                                  }
+                                                                                />
+                                                                                <Text>
+                                                                                  {
+                                                                                    innerItem4.childCount
+                                                                                  }
+                                                                                </Text>
+                                                                              </View>
+                                                                            )}
+                                                                          </View>
                                                                         </View>
                                                                         <View
                                                                           style={{
@@ -2590,17 +2777,64 @@ const MainParamScreen = ({ route, navigation }) => {
                                                                                       paddingVertical: 4,
                                                                                     }}
                                                                                   >
-                                                                                    <Text
+                                                                                    <View
                                                                                       style={{
-                                                                                        fontSize: 10,
-                                                                                        fontWeight:
-                                                                                          "500",
+                                                                                        flexDirection:
+                                                                                          "row",
                                                                                       }}
                                                                                     >
-                                                                                      {
-                                                                                        innerItem5.empName
-                                                                                      }
-                                                                                    </Text>
+                                                                                      <Text
+                                                                                        style={{
+                                                                                          fontSize: 10,
+                                                                                          fontWeight:
+                                                                                            "500",
+                                                                                        }}
+                                                                                      >
+                                                                                        {
+                                                                                          innerItem5.empName
+                                                                                        }
+                                                                                        {innerItem5.childCount >
+                                                                                        1
+                                                                                          ? "  |"
+                                                                                          : ""}
+                                                                                      </Text>
+                                                                                      {innerItem5.childCount >
+                                                                                        1 && (
+                                                                                        <View
+                                                                                          style={{
+                                                                                            backgroundColor:
+                                                                                              "lightgrey",
+                                                                                            flexDirection:
+                                                                                              "row",
+                                                                                            paddingHorizontal: 7,
+                                                                                            borderRadius: 10,
+                                                                                            alignItems:
+                                                                                              "center",
+                                                                                            justifyContent:
+                                                                                              "space-between",
+                                                                                            marginBottom: 5,
+                                                                                            alignSelf:
+                                                                                              "flex-start",
+                                                                                            marginLeft: 7,
+                                                                                          }}
+                                                                                        >
+                                                                                          <MaterialIcons
+                                                                                            name="person"
+                                                                                            size={
+                                                                                              15
+                                                                                            }
+                                                                                            color={
+                                                                                              Colors.BLACK
+                                                                                            }
+                                                                                          />
+                                                                                          <Text>
+                                                                                            {
+                                                                                              innerItem5.childCount
+                                                                                            }
+                                                                                          </Text>
+                                                                                        </View>
+                                                                                      )}
+                                                                                    </View>
                                                                                   </View>
                                                                                   <View
                                                                                     style={{
@@ -2713,17 +2947,64 @@ const MainParamScreen = ({ route, navigation }) => {
                                                                                                 paddingVertical: 4,
                                                                                               }}
                                                                                             >
-                                                                                              <Text
+                                                                                              <View
                                                                                                 style={{
-                                                                                                  fontSize: 10,
-                                                                                                  fontWeight:
-                                                                                                    "500",
+                                                                                                  flexDirection:
+                                                                                                    "row",
                                                                                                 }}
                                                                                               >
-                                                                                                {
-                                                                                                  innerItem6.empName
-                                                                                                }
-                                                                                              </Text>
+                                                                                                <Text
+                                                                                                  style={{
+                                                                                                    fontSize: 10,
+                                                                                                    fontWeight:
+                                                                                                      "500",
+                                                                                                  }}
+                                                                                                >
+                                                                                                  {
+                                                                                                    innerItem6.empName
+                                                                                                  }
+                                                                                                  {innerItem6.childCount >
+                                                                                                  1
+                                                                                                    ? "  |"
+                                                                                                    : ""}
+                                                                                                </Text>
+                                                                                                {innerItem6.childCount >
+                                                                                                  1 && (
+                                                                                                  <View
+                                                                                                    style={{
+                                                                                                      backgroundColor:
+                                                                                                        "lightgrey",
+                                                                                                      flexDirection:
+                                                                                                        "row",
+                                                                                                      paddingHorizontal: 7,
+                                                                                                      borderRadius: 10,
+                                                                                                      alignItems:
+                                                                                                        "center",
+                                                                                                      justifyContent:
+                                                                                                        "space-between",
+                                                                                                      marginBottom: 5,
+                                                                                                      alignSelf:
+                                                                                                        "flex-start",
+                                                                                                      marginLeft: 7,
+                                                                                                    }}
+                                                                                                  >
+                                                                                                    <MaterialIcons
+                                                                                                      name="person"
+                                                                                                      size={
+                                                                                                        15
+                                                                                                      }
+                                                                                                      color={
+                                                                                                        Colors.BLACK
+                                                                                                      }
+                                                                                                    />
+                                                                                                    <Text>
+                                                                                                      {
+                                                                                                        innerItem6.childCount
+                                                                                                      }
+                                                                                                    </Text>
+                                                                                                  </View>
+                                                                                                )}
+                                                                                              </View>
                                                                                             </View>
                                                                                             <View
                                                                                               style={{
