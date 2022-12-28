@@ -200,12 +200,12 @@ export const loginSlice = createSlice({
           
           state.status = "sucess";
           state.isLoading = false;
-          state.authToken = dataObj.idToken;
+          state.authToken = dataObj.accessToken;
           state.userName = dataObj.userName;
           state.userData = dataObj;
           // state.employeeId = "";
           // state.password = "";
-          AsyncStore.storeData(AsyncStore.Keys.USER_TOKEN, dataObj.idToken);
+          AsyncStore.storeData(AsyncStore.Keys.USER_TOKEN, dataObj.accessToken);
           AsyncStore.storeData(AsyncStore.Keys.IS_LOGIN, 'true');
           AsyncStore.storeData(AsyncStore.Keys.ACCESS_TOKEN, dataObj.accessToken);
           AsyncStore.storeData(AsyncStore.Keys.REFRESH_TOKEN, dataObj.refreshToken);

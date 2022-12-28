@@ -97,7 +97,7 @@ const LoginScreen = ({ navigation }) => {
     }
 
     let object = {
-      "empname": employeeId,
+      "username": employeeId,
       "password": password
     }
 
@@ -109,11 +109,12 @@ const LoginScreen = ({ navigation }) => {
 
     if (selector.status == "sucess") {
       //signIn(selector.authToken);
+     
       AsyncStore.storeData(AsyncStore.Keys.USER_NAME, selector.userData.userName);
-      AsyncStore.storeData(AsyncStore.Keys.ORG_ID, selector.userData.orgId);
+      AsyncStore.storeData(AsyncStore.Keys.ORG_ID,  String(selector.userData.orgId));
       AsyncStore.storeData(AsyncStore.Keys.REFRESH_TOKEN, selector.userData.refreshToken);
 
-      AsyncStore.storeData(AsyncStore.Keys.USER_TOKEN, selector.userData.idToken).then(() => {
+      AsyncStore.storeData(AsyncStore.Keys.USER_TOKEN, selector.userData.accessToken).then(() => {
         dispatch(getMenuList(selector.userData.userName));
         dispatch(getEmpId(selector.userData.userName));
 

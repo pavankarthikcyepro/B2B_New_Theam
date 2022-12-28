@@ -135,7 +135,7 @@ const SideMenuScreen = ({ navigation }) => {
     EventRegister.addEventListener("ForceLogout",(res)=>{
       
       if(res){
-        // signOutClicked()
+        signOutClicked()
       }
     })
     return ()=>{

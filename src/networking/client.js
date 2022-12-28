@@ -1,5 +1,7 @@
 import * as AsyncStore from '../asyncStore';
 import { EventRegister } from 'react-native-event-listeners'
+import URL from './endpoints';
+import { Alert } from 'react-native';
 export const client = async (authToken, url, methodType, body, customConfig) => {
 
     const headers = {
@@ -7,8 +9,11 @@ export const client = async (authToken, url, methodType, body, customConfig) => 
         'Content-Type': 'application/json',
     }
 
+    // if (authToken) {
+    //     headers['auth-token'] = authToken;
+    // }
     if (authToken) {
-        headers['auth-token'] = authToken;
+        headers['Authorization'] = "Bearer "+authToken;
     }
 
     const config = {
@@ -26,17 +31,55 @@ export const client = async (authToken, url, methodType, body, customConfig) => 
     try {
         const response = await window.fetch(url, config)
        
-        if(response.status == "401"){
-            // let Refresh_token = await AsyncStore.getData(AsyncStore.Keys.REFRESH_TOKEN);
+        if (response.status == 401){
+          
+           
+            let Refresh_token = await AsyncStore.getData(AsyncStore.Keys.REFRESH_TOKEN);
+          
             // call refresh Token API
-             
+            let refreshApiUrl = URL.REFRESHTOKEN();
+           
+            const headers = {
+                'Accept': "application/json",
+                'Content-Type': 'application/json',
+            }
+            const config = {
+                method: "POST",
+                headers: {
+                    ...headers,
+                },
+            }
+            if (Refresh_token) {
+                let payload = {
+                    refreshToken:Refresh_token
+                }
+                config.body = JSON.stringify(payload)
+            }
+           
 
-            // handle  force logout in cash of refresh token expired 
-            // EventRegister.emit("ForceLogout", true)
-        
+            const responseForRefreshApi = await window.fetch(refreshApiUrl, config)   
+           
+            let tempRes = await responseForRefreshApi.json();
+            if (responseForRefreshApi.status == 200){
+             
+                await  AsyncStore.storeData(AsyncStore.Keys.ACCESS_TOKEN, tempRes.accessToken);
+                await  AsyncStore.storeData(AsyncStore.Keys.REFRESH_TOKEN, tempRes.refreshToken);
+            }
+            if (responseForRefreshApi.status == 401 || responseForRefreshApi.status == 403){
+                // handle  force logout in cash of refresh token expired 
+                EventRegister.emit("ForceLogout", true)
+                return;
+            }
+          
+            return Alert.alert(
+                "Authentication failed",
+                "Please try again latter",
+                [
+                    { text: "OK", onPress: () => console.log("OK Pressed") }
+                ]
+            );
         }
        
-      
         return response;
     } catch (err) {
         console.error('err: ', err, url);
