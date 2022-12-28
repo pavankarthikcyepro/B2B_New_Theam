@@ -152,6 +152,7 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
       );
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
+        var n = new Date().toString().split(" ")[4];
         let payload = {
           id: 0,
           orgId: jsonObj.orgId,
@@ -164,6 +165,8 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
           comments: comment.trim(),
           isLogOut: present && endBetween <= now && now <= endDate2 ? 1 : 0,
           reason: reason?.value ? reason?.value : "",
+          punchIn: n,
+          punchOut: null,
         };
         const response = await client.get(
           URL.GET_ATTENDANCE_EMPID(jsonObj.empId, jsonObj.orgId)
@@ -209,6 +212,7 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
 
   const updateData = async (payload, json, absentRequest = false) => {
     try {
+      var n = new Date().toString().split(" ")[4];
       let tempPayload = {
         id: json[json.length - 1].id,
         orgId: payload.orgId,
@@ -221,6 +225,10 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
         comments: comment.trim(),
         reason: reason?.value ? reason?.value : "",
         isLogOut: present && endBetween <= now && now <= endDate2 ? 1 : 0,
+        punchIn: json[json.length - 1].punchIn
+          ? json[json.length - 1].punchIn
+          : n,
+        punchOut: present && endBetween <= now && now <= endDate2 ? n : null,
       };
       const updateData = await client.put(
         URL.UPDATE_EMPLOYEE_ATTENDANCE(json[json.length - 1].id),

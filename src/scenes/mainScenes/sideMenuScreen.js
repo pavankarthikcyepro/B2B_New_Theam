@@ -98,6 +98,20 @@ const ShowRoomMenu = [
   "Drop Analysis",
   "Sign Out",
 ];
+
+const FieldDSEMenu = [
+  "Home",
+  "Live Leads",
+  "Settings",
+  "Digital Payment",
+  "Target Planning",
+  "My Attendance",
+  "Geolocation",
+  "Helpdesk",
+  // "Task Management",
+  "Drop Analysis",
+  "Sign Out",
+];
 const MDMenu = [
   "Home",
   "Live Leads",
@@ -206,7 +220,6 @@ const SideMenuScreen = ({ navigation }) => {
     setUserData(jsonObj);
     // setUserData(jsonObj)
     getProfilePic(jsonObj);
-
     let newFilterData = [];
     if (jsonObj.hrmsRole === "Reception") {
       newFilterData = selector.tableData.filter((item) =>
@@ -219,6 +232,10 @@ const SideMenuScreen = ({ navigation }) => {
     } else if (jsonObj.hrmsRole === "Showroom DSE") {
       newFilterData = selector.tableData.filter((item) =>
         ShowRoomMenu.includes(item.title)
+      );
+    } else if (jsonObj.hrmsRole === "Field DSE") {
+      newFilterData = selector.tableData.filter((item) =>
+        FieldDSEMenu.includes(item.title)
       );
     } else if (jsonObj.hrmsRole === "MD") {
       newFilterData = selector.tableData.filter((item) =>

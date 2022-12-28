@@ -2,12 +2,8 @@ import React, { useEffect, useLayoutEffect, useState } from "react";
 import {
   View,
   Text,
-  Keyboard,
   Platform,
   SafeAreaView,
-  FlatList,
-  TouchableOpacity,
-  Image,
   StyleSheet,
   Alert,
 } from "react-native";
@@ -32,6 +28,7 @@ import { client } from "../../../networking/client";
 import URL from "../../../networking/endpoints";
 import { useNavigation } from "@react-navigation/native";
 import { IconButton } from "react-native-paper";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 const GeolocationMapScreen = ({ route }) => {
   const navigation = useNavigation();
@@ -57,8 +54,6 @@ const GeolocationMapScreen = ({ route }) => {
 
   useEffect(() => {
     console.log(route.params);
-    // getLocation(route.params);
-
     setLoading(true);
     if (route.params) {
       getLocation(route.params);
@@ -91,9 +86,9 @@ const GeolocationMapScreen = ({ route }) => {
         setLoading(false);
       }
     } catch (error) {
-    //   Alert.alert("Something went wrong", "", [
-    //     { text: "OK", onPress: () => navigation.goBack() },
-    //   ]);
+      //   Alert.alert("Something went wrong", "", [
+      //     { text: "OK", onPress: () => navigation.goBack() },
+      //   ]);
       setLoading(false);
     }
   };
@@ -117,7 +112,8 @@ const GeolocationMapScreen = ({ route }) => {
         onRequestClose={() => setShowDatePicker(false)}
       />
       <View style={styles.mapContainer}>
-        {latitude != 0 && longitude != 0 && (
+        {/* {latitude != 0 && longitude != 0 && ( */}
+        {true && (
           <MapView
             style={styles.mapView}
             mapType={"standard"}
@@ -151,7 +147,56 @@ const GeolocationMapScreen = ({ route }) => {
           </MapView>
         )}
       </View>
-
+      <View style={styles.bottomView}>
+        <View style={styles.tableRow}>
+          <View style={styles.colums}>
+            <View style={styles.innerRow}>
+              <MaterialCommunityIcons
+                name="map-marker-distance"
+                size={20}
+                color={Colors.RED}
+              />
+              <Text style={styles.columnsTitle}>{"Travel Distance"}</Text>
+            </View>
+            <Text style={styles.valueTxt}>{"10 KM"}</Text>
+          </View>
+          <View style={styles.colums}>
+            <View style={styles.innerRow}>
+              <MaterialCommunityIcons
+                name="clock-time-four-outline"
+                size={20}
+                color={Colors.RED}
+              />
+              <Text style={styles.columnsTitle}>{"Travel Time"}</Text>
+            </View>
+            <Text style={styles.valueTxt}>{"25 min"}</Text>
+          </View>
+        </View>
+        <View style={styles.tableRow}>
+          <View style={styles.colums}>
+            <View style={styles.innerRow}>
+              <MaterialCommunityIcons
+                name="speedometer"
+                size={20}
+                color={Colors.RED}
+              />
+              <Text style={styles.columnsTitle}>{"Top Speed"}</Text>
+            </View>
+            <Text style={styles.valueTxt}>{"44 km/h"}</Text>
+          </View>
+          <View style={styles.colums}>
+            <View style={styles.innerRow}>
+              <MaterialCommunityIcons
+                name="chart-bar"
+                size={20}
+                color={Colors.RED}
+              />
+              <Text style={styles.columnsTitle}>{"Avg. Speed"}</Text>
+            </View>
+            <Text style={styles.valueTxt}>{"20 km/h"}</Text>
+          </View>
+        </View>
+      </View>
       <LoaderComponent visible={loading} />
     </SafeAreaView>
   );
@@ -172,7 +217,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    bottom: 0,
+    bottom: "40%",
     justifyContent: "flex-end",
     alignItems: "center",
   },
@@ -183,5 +228,37 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
+  },
+  colums: {
+    justifyContent: "flex-start",
+    width: "50%",
+    flexDirection: "column",
+  },
+  tableRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+    height: 60,
+  },
+  innerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  columnsTitle: {
+    fontSize: 14,
+    fontWeight: "500",
+    marginLeft: 5,
+  },
+  valueTxt: {
+    fontSize: 14,
+    fontWeight: "500",
+    marginLeft: 5,
+    color: Colors.BLUE,
+  },
+  bottomView: {
+    flex: 1,
+    top: "70%",
+    width: "85%",
+    alignSelf: "center",
   },
 });

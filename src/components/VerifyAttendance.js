@@ -58,6 +58,7 @@ const VerifyAttendance = ({
   onRequestClose,
   inVisible,
   showReason,
+  logOut = false,
 }) => {
   const navigation = useNavigation();
   const [comment, setComment] = useState("");
@@ -202,6 +203,7 @@ const VerifyAttendance = ({
       );
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
+        var n = new Date().toString().split(" ")[4];
         let payload = {
           id: 0,
           orgId: jsonObj.orgId,
@@ -213,6 +215,8 @@ const VerifyAttendance = ({
           comments: comment.trim(),
           isLogOut: present && endBetween <= now && now <= endDate2 ? 1 : 0,
           reason: reason?.value ? reason?.value : "",
+          punchIn: n,
+          punchOut: null,
         };
         const response = await client.get(
           URL.GET_ATTENDANCE_EMPID(jsonObj.empId, jsonObj.orgId)
@@ -258,6 +262,7 @@ const VerifyAttendance = ({
 
   const updateData = async (payload, json, absentRequest = false) => {
     try {
+      var n = new Date().toString().split(" ")[4];
       let tempPayload = {
         id: json[json.length - 1].id,
         orgId: payload.orgId,
@@ -269,6 +274,10 @@ const VerifyAttendance = ({
         comments: comment.trim(),
         reason: reason?.value ? reason?.value : "",
         isLogOut: present && endBetween <= now && now <= endDate2 ? 1 : 0,
+        punchIn: json[json.length - 1].punchIn
+          ? json[json.length - 1].punchIn
+          : n,
+        punchOut: logOut ? n : null,
       };
       const updateData = await client.put(
         URL.UPDATE_EMPLOYEE_ATTENDANCE(json[json.length - 1].id),
@@ -285,10 +294,6 @@ const VerifyAttendance = ({
       console.error("updatedJsonERROR", error);
     }
   };
-
-  function onClose() {
-    setPresent(false);
-  }
 
   return (
     <Modal

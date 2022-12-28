@@ -34,6 +34,7 @@ import VerifyAttendance from "../../../components/VerifyAttendance";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
+const currentDay = new Date().getDate();
 const officeLocation = {
   latitude: 37.33233141,
   longitude: -122.0312186,
@@ -52,6 +53,7 @@ var monthNames = [
   "NOV",
   "DEC",
 ];
+const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 const AttendanceTopTabScreen = ({ route, navigation }) => {
   // const navigation = useNavigation();
@@ -64,7 +66,8 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
   const [reason, setReason] = useState(false);
   const [initialPosition, setInitialPosition] = useState({});
   const [currentMonth, setCurrentMonth] = useState(new Date());
-
+  const [monthData, setMonthData] = useState([]);
+  const [logOut, setLogOut] = useState(false);
   // useLayoutEffect(() => {
   //   navigation.setOptions({
   //     headerLeft: () => <MenuIcon navigation={navigation} />,
@@ -150,6 +153,13 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
           let newArray = [];
           let dateArray = [];
           let weekArray = [];
+          console.log("LEKEKEK",json.length);
+          setMonthData([...json]);
+          if (json[json.length - 1].punchIn == null) {
+            setLogOut(false);
+          } else {
+            setLogOut(true);
+          }
           for (let i = 0; i < json.length; i++) {
             const element = json[i];
             let format = {
@@ -210,35 +220,172 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
     }
   };
 
+  function formatAMPM(date) {
+    var hours = date.getHours();
+    var minutes = date.getMinutes();
+    var ampm = hours >= 12 ? "pm" : "am";
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+    var strTime = hours + ":" + minutes + " " + ampm.toUpperCase();
+    return strTime;
+  }
+
   const renderItem = ({ item }) => {
-    return (
-      <Swipeable style={styles.swipeableView} rightButtons={rightButtons}>
-        <View style={styles.shadowView}>
-          <View style={styles.dateDayMasterView}>
-            <View style={styles.dateDayView}>
-              <Text style={styles.dateDayTxt}>{"01"}</Text>
-              <Text style={styles.dateDayTxt}>{"MON"}</Text>
+    var punchIntime = new Date("February 04, 2011 " + item?.punchIn);
+    var punchOuttime = new Date("February 04, 2011 " + item?.punchOut);
+    var options = {
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true,
+    };
+    var punchInString = punchIntime.toLocaleString("en-US", options);
+    var punchOutString = punchOuttime.toLocaleString("en-US", options);
+    const date = new Date(item?.createdtimestamp);
+    const day = date.getDate();
+    const weekDay = date.getDay();
+    if (
+      day == currentDay &&
+      date.getMonth() == new Date().getMonth() &&
+      date.getFullYear() == new Date().getFullYear()
+    ) {
+      return (
+        <Swipeable
+          style={styles.swipeableView}
+          rightButtons={
+            item?.punchIn == null ? rightButtons : rightButtonsPunchOut
+          }
+        >
+          <View
+            style={
+              item?.isAbsent == 1
+                ? styles.leaveShadowView
+                : item?.holiday == 1
+                ? styles.holidayShadowView
+                : styles.shadowView
+            }
+          >
+            <View style={styles.dateDayMasterView}>
+              <View style={styles.dateDayView}>
+                <Text style={styles.dateDayTxt}>{day}</Text>
+                <Text style={styles.dateDayTxt}>
+                  {weekdays[weekDay].toUpperCase()}
+                </Text>
+              </View>
+            </View>
+            <View style={styles.employeeLeaveView}>
+              {item?.isAbsent == 1 || item?.holiday == 1 ? (
+                <View style={styles.elView}>
+                  <Text
+                    numberOfLines={1}
+                    style={{
+                      ...styles.elTxt,
+                      fontSize:
+                        item?.isAbsent == 1 ? 14 : item?.holiday == 1 ? 12 : 14,
+                    }}
+                  >
+                    {item?.isAbsent == 1
+                      ? "EL"
+                      : item?.holiday == 1
+                      ? "Holiday"
+                      : ""}
+                  </Text>
+                </View>
+              ) : null}
+            </View>
+            <View style={styles.punchMasterView}>
+              <View style={styles.punchInView}>
+                <Text style={styles.punchTitle}>{"Punch In"}</Text>
+                <Text style={styles.punchTime}>
+                  {item?.punchIn == null
+                    ? "··:·· AM"
+                    : Platform.OS === "ios"
+                    ? punchInString
+                    : formatAMPM(punchIntime)}
+                </Text>
+              </View>
+              <View style={styles.divider} />
+              <View style={styles.punchInView}>
+                <Text style={styles.punchTitle}>{"Punch Out"}</Text>
+                <Text style={styles.punchTime}>
+                  {item?.punchOut == null
+                    ? "··:·· PM"
+                    : Platform.OS === "ios"
+                    ? punchOutString
+                    : formatAMPM(punchOuttime)}
+                </Text>
+              </View>
             </View>
           </View>
-          <View style={styles.employeeLeaveView}>
-            <View style={styles.elView}>
-              <Text style={styles.elTxt}>{"EL"}</Text>
+        </Swipeable>
+      );
+    } else {
+      return (
+        <View style={styles.swipeableView}>
+          <View
+            style={
+              item?.isAbsent == 1
+                ? styles.leaveShadowView
+                : item?.holiday == 1
+                ? styles.holidayShadowView
+                : styles.shadowView
+            }
+          >
+            <View style={styles.dateDayMasterView}>
+              <View style={styles.dateDayView}>
+                <Text style={styles.dateDayTxt}>{day}</Text>
+                <Text style={styles.dateDayTxt}>
+                  {weekdays[weekDay].toUpperCase()}
+                </Text>
+              </View>
             </View>
-          </View>
-          <View style={styles.punchMasterView}>
-            <View style={styles.punchInView}>
-              <Text style={styles.punchTitle}>{"Punch In"}</Text>
-              <Text style={styles.punchTime}>{"10:30 AM"}</Text>
+            <View style={styles.employeeLeaveView}>
+              {item?.isAbsent == 1 || item?.holiday == 1 ? (
+                <View style={styles.elView}>
+                  <Text
+                    numberOfLines={1}
+                    style={{
+                      ...styles.elTxt,
+                      fontSize:
+                        item?.isAbsent == 1 ? 14 : item?.holiday == 1 ? 12 : 14,
+                    }}
+                  >
+                    {item?.isAbsent == 1
+                      ? "EL"
+                      : item?.holiday == 1
+                      ? "Holiday"
+                      : ""}
+                  </Text>
+                </View>
+              ) : null}
             </View>
-            <View style={styles.divider} />
-            <View style={styles.punchInView}>
-              <Text style={styles.punchTitle}>{"Punch Out"}</Text>
-              <Text style={styles.punchTime}>{"10:30 PM"}</Text>
+            <View style={styles.punchMasterView}>
+              <View style={styles.punchInView}>
+                <Text style={styles.punchTitle}>{"Punch In"}</Text>
+                <Text style={styles.punchTime}>
+                  {item?.punchIn == null
+                    ? "··:·· AM"
+                    : Platform.OS === "ios"
+                    ? punchInString
+                    : formatAMPM(punchIntime)}
+                </Text>
+              </View>
+              <View style={styles.divider} />
+              <View style={styles.punchInView}>
+                <Text style={styles.punchTitle}>{"Punch Out"}</Text>
+                <Text style={styles.punchTime}>
+                  {item?.punchOut == null
+                    ? "··:·· PM"
+                    : Platform.OS === "ios"
+                    ? punchOutString
+                    : formatAMPM(punchOuttime)}
+                </Text>
+              </View>
             </View>
           </View>
         </View>
-      </Swipeable>
-    );
+      );
+    }
   };
 
   const rightButtons = [
@@ -246,18 +393,19 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
       onPress={() => {
         setAttendance(true);
       }}
-      style={{
-        backgroundColor: "#646446",
-        height: 65,
-        width: "18%",
-        alignItems: "center",
-        justifyContent: "center",
-        borderRadius: 10,
-      }}
+      style={styles.rightButtonsView}
     >
-      <Text style={{ color: "#fff", fontSize: 14, fontWeight: "600" }}>
-        Punch In
-      </Text>
+      <Text style={styles.punchInTxt}>Punch In</Text>
+    </TouchableHighlight>,
+  ];
+  const rightButtonsPunchOut = [
+    <TouchableHighlight
+      onPress={() => {
+        setAttendance(true);
+      }}
+      style={styles.rightButtonsView}
+    >
+      <Text style={styles.punchOutTxt}>Punch Out</Text>
     </TouchableHighlight>,
   ];
 
@@ -266,6 +414,7 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
       <VerifyAttendance
         visible={attendance}
         showReason={reason}
+        logOut={logOut}
         inVisible={() => {
           getAttendance();
           setAttendance(false);
@@ -304,9 +453,10 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
         </TouchableOpacity>
       </View>
       <FlatList
-        data={[0, 0, 0, 0, 0, 0]}
+        data={monthData}
+        nestedScrollEnabled
         renderItem={renderItem}
-        keyExtractor={(item, index) => index}
+        keyExtractor={(item, index) => item.id}
       />
       <LoaderComponent visible={loading} />
     </SafeAreaView>
@@ -574,9 +724,49 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 10,
   },
+  leaveShadowView: {
+    ...GlobalStyle.shadow,
+    flexDirection: "row",
+    width: "95%",
+    height: 65,
+    alignSelf: "center",
+    padding: 7,
+    backgroundColor: "#d3d3d3",
+    borderRadius: 10,
+  },
+  holidayShadowView: {
+    ...GlobalStyle.shadow,
+    flexDirection: "row",
+    width: "95%",
+    height: 65,
+    alignSelf: "center",
+    padding: 7,
+    backgroundColor: "#ffcccb",
+    borderRadius: 10,
+  },
   swipeableView: {
     width: "98%",
     marginVertical: 5,
     marginHorizontal: "2%",
+  },
+  rightButtonsView: {
+    ...GlobalStyle.shadow,
+    backgroundColor: "#646464",
+    height: 65,
+    width: "18%",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 10,
+  },
+  punchInTxt: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  punchOutTxt: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "600",
+    textAlign: "center",
   },
 });

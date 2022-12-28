@@ -53,6 +53,7 @@ const AttendanceScreen = ({ route, navigation }) => {
     leave: 0,
     present: 0,
     wfh: 0,
+    totalTime: "0",
   });
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -131,12 +132,18 @@ const AttendanceScreen = ({ route, navigation }) => {
           for (let i = 0; i < json.length; i++) {
             const element = json[i];
             let format = {
-              // marked: true,
-              // dotColor: element.isPresent === 1 ? Colors.GREEN : Colors.RED,
               customStyles: {
                 container: {
                   backgroundColor:
-                    element.isPresent === 1 ? Colors.GREEN : "#ff5d68",
+                    element.isPresent === 1
+                      ? element.wfh === 1
+                        ? Colors.SKY_LIGHT_BLUE_COLOR
+                        : Colors.GREEN
+                      : element.holiday === 1
+                      ? Colors.DARK_GRAY
+                      : element.wfh === 1
+                      ? Colors.SKY_LIGHT_BLUE_COLOR
+                      : "#ff5d68",
                 },
                 text: {
                   color: Colors.WHITE,
@@ -218,10 +225,11 @@ const AttendanceScreen = ({ route, navigation }) => {
       const json = await response.json();
       if (json) {
         setAttendanceCount({
-          holidays: json.holidays || 0,
-          leave: json.leave || 0,
-          present: json.present || 0,
-          wfh: json.wfh || 0,
+          holidays: json?.holidays || 0,
+          leave: json?.leave || 0,
+          present: json?.present || 0,
+          wfh: json?.wfh || 0,
+          totalTime: json?.totalTime || "0",
         });
       }
     } catch (error) {}
@@ -253,7 +261,9 @@ const AttendanceScreen = ({ route, navigation }) => {
         </View>
         <View style={styles.hoursView}>
           <Text style={styles.totalHours}>{"Total Hours"}</Text>
-          <Text style={styles.totalHoursValue}>{"120"}</Text>
+          <Text style={styles.totalHoursValue}>
+            {attendanceCount.totalTime}
+          </Text>
         </View>
       </View>
       {/* <View
@@ -422,7 +432,10 @@ const AttendanceScreen = ({ route, navigation }) => {
         </View>
         <View style={styles.parameterView}>
           <View
-            style={{ ...styles.parameterMarker, backgroundColor: Colors.LIGHT_GRAY }}
+            style={{
+              ...styles.parameterMarker,
+              backgroundColor: Colors.DARK_GRAY,
+            }}
           />
           <View style={styles.parameterCountView}>
             <Text style={styles.parameterText}>{"Holiday"}</Text>
@@ -431,7 +444,10 @@ const AttendanceScreen = ({ route, navigation }) => {
         </View>
         <View style={styles.parameterView}>
           <View
-            style={{ ...styles.parameterMarker, backgroundColor:  Colors.SKY_LIGHT_BLUE_COLOR }}
+            style={{
+              ...styles.parameterMarker,
+              backgroundColor: Colors.SKY_LIGHT_BLUE_COLOR,
+            }}
           />
           <View style={styles.parameterCountView}>
             <Text style={styles.parameterText}>{"WFH"}</Text>
