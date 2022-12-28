@@ -279,6 +279,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     editEnable: false,
     isPreBookingApprover: false,
     isSelfManager: "",
+    branchId: 0
   });
   const [showDropDownModel, setShowDropDownModel] = useState(false);
   const [showMultipleDropDownData, setShowMultipleDropDownData] =
@@ -615,6 +616,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       editEnable: false,
       isPreBookingApprover: false,
       isSelfManager: "",
+      branchId: 0
     });
     setShowDropDownModel(false);
     setShowMultipleDropDownData(false);
@@ -982,6 +984,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         editEnable: editEnable,
         isPreBookingApprover: isPreBookingApprover,
         isSelfManager: jsonObj.isSelfManager,
+        branchId: jsonObj?.branchs.length > 0 ? jsonObj.branchs[0].branchId : 0
       });
 
       const payload = {
@@ -3055,7 +3058,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       selectorBooking.update_enquiry_details_response_status === "success" &&
       selectorBooking.update_enquiry_details_response
     ) {
-      displayCreateEnquiryAlert();
+      displayCreateEnquiryAlert(
+        selectorBooking.update_enquiry_details_response.dmsLeadDto
+          .referencenumber
+      );
     } else if (selectorBooking.update_enquiry_details_response_status === "failed") {
       showToastRedAlert("something went wrong");
     }
@@ -3064,9 +3070,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     selectorBooking.update_enquiry_details_response,
   ]);
 
-   displayCreateEnquiryAlert = () => {
+   displayCreateEnquiryAlert = (refNum) => {
      Alert.alert(
-       "Booking Successfully Created",
+       `Booking Successfully Created\nRef Num: ${refNum}`,
        "",
        [
          {
