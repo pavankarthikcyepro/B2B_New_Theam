@@ -12,24 +12,16 @@ import {
   FlatList,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-
 import { LoaderComponent } from "../../../components";
 import { Colors, GlobalStyle } from "../../../styles";
 import { client } from "../../../networking/client";
 import URL from "../../../networking/endpoints";
-import { useNavigation } from "@react-navigation/native";
-import { IconButton } from "react-native-paper";
-import { Calendar } from "react-native-calendars";
 import * as AsyncStore from "../../../asyncStore";
 import moment from "moment";
-import AttendanceForm from "../../../components/AttendanceForm";
-import { MenuIcon } from "../../../navigations/appNavigator";
-import WeeklyCalendar from "react-native-weekly-calendar";
 import Geolocation from "@react-native-community/geolocation";
 import { getDistanceBetweenTwoPoints, officeRadius } from "../../../service";
 import Swipeable from "react-native-swipeable";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import { useSafeAreaFrame } from "react-native-safe-area-context";
 import VerifyAttendance from "../../../components/VerifyAttendance";
 
 const dateFormat = "YYYY-MM-DD";
@@ -59,10 +51,7 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
   // const navigation = useNavigation();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
-  const [isWeek, setIsWeek] = useState(false);
-  const [marker, setMarker] = useState({});
   const [attendance, setAttendance] = useState(false);
-  const [weeklyRecord, setWeeklyRecord] = useState([]);
   const [reason, setReason] = useState(false);
   const [initialPosition, setInitialPosition] = useState({});
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -150,73 +139,17 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
         );
         const json = await response.json();
         if (json) {
-          let newArray = [];
-          let dateArray = [];
-          let weekArray = [];
-          console.log("LEKEKEK",json.length);
           setMonthData([...json]);
           if (json[json.length - 1].punchIn == null) {
             setLogOut(false);
           } else {
             setLogOut(true);
           }
-          for (let i = 0; i < json.length; i++) {
-            const element = json[i];
-            let format = {
-              // marked: true,
-              // dotColor: element.isPresent === 1 ? Colors.GREEN : Colors.RED,
-              customStyles: {
-                container: {
-                  backgroundColor:
-                    element.isPresent === 1 ? Colors.GREEN : "#ff5d68",
-                },
-                text: {
-                  color: Colors.WHITE,
-                  fontWeight: "bold",
-                },
-              },
-            };
-
-            let date = new Date(element.createdtimestamp);
-            let formatedDate = moment(date).format(dateFormat);
-            let weekReport = {
-              start: formatedDate,
-              // duration: "00:20:00",
-              note: element.comments,
-              reason: element.reason,
-              color: element.isPresent === 1 ? Colors.GREEN : "#ff5d68",
-              status: element.isPresent === 1 ? "Present" : "Absent",
-            };
-            dateArray.push(formatedDate);
-            newArray.push(format);
-            weekArray.push(weekReport);
-          }
-          var obj = {};
-          for (let i = 0; i < newArray.length; i++) {
-            const element = newArray[i];
-            obj[dateArray[i]] = element;
-          }
           setLoading(false);
-          setWeeklyRecord(weekArray);
-          setMarker(obj);
         }
       }
     } catch (error) {
       setLoading(false);
-    }
-  };
-
-  const isCurrentDate = (day) => {
-    let selectedDate = day.dateString;
-    if (currentDate === selectedDate) {
-      setAttendance(true);
-    }
-  };
-
-  const isCurrentDateForWeekView = (day) => {
-    let selectedDate = moment(day).format(dateFormat);
-    if (currentDate === selectedDate) {
-      setAttendance(true);
     }
   };
 
@@ -457,6 +390,9 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
         nestedScrollEnabled
         renderItem={renderItem}
         keyExtractor={(item, index) => item.id}
+        contentContainerStyle={{
+          flexGrow: 1,
+        }}
       />
       <LoaderComponent visible={loading} />
     </SafeAreaView>

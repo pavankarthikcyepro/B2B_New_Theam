@@ -409,7 +409,6 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
                   title={"Close"}
                   onPress={() => {
                     inVisible();
-                    // setPresent(false);
                   }}
                   disabled={false}
                 />
