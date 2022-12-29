@@ -8,11 +8,13 @@ import AttendanceScreen from "../scenes/mainScenes/Attendance";
 import AttendanceTopTabScreen from "../scenes/mainScenes/Attendance/AttendanceTop";
 import { createStackNavigator } from "@react-navigation/stack";
 import { MenuIcon } from "./appNavigator";
+import TeamAttendanceScreen from "../scenes/mainScenes/Attendance/TeamAttendance";
 
 export const AttendanceTopTabNavigatorIdentifiers = {
   myattendance: "MY_ATTENDANCE",
   attendance : "ATTENDANCE_1",
-  leave: "LEAVE"
+  leave: "LEAVE",
+  team:"TEAM"
 };
 
 const screeOptionStyle = {
@@ -44,6 +46,26 @@ const tabBarOptions = {
 const MyAttendanceTopTab = createStackNavigator();
 
 const MyAttendanceTopTabNavigatorOne = ({ navigation }) => {
+   const [handleTabDisplay, setHandleTabDisplay] = useState(0);
+
+   useEffect(async () => {
+     const employeeData = await AsyncStore.getData(
+       AsyncStore.Keys.LOGIN_EMPLOYEE
+     );
+     if (employeeData) {
+       const jsonObj = JSON.parse(employeeData);
+       if (
+         jsonObj.hrmsRole === "branch manager" ||
+         jsonObj.hrmsRole === "MD"
+       ) {
+         setHandleTabDisplay(2);
+       } else {
+         setHandleTabDisplay(1);
+       }
+     }
+   }, []);
+
+
   return (
     <MyAttendanceTopTab.Navigator
       initialRouteName={AttendanceTopTabNavigatorIdentifiers.myattendance}
@@ -52,7 +74,11 @@ const MyAttendanceTopTabNavigatorOne = ({ navigation }) => {
     >
       <MyAttendanceTopTab.Screen
         name={AttendanceTopTabNavigatorIdentifiers.myattendance}
-        component={AttendanceTopTabNavigatorTwo}
+        component={
+          handleTabDisplay == 2
+            ? AttendanceTopTabNavigatorTeams
+            : AttendanceTopTabNavigatorTwo
+        }
         options={{
           title: "My Attendance",
           headerShown: true,
@@ -95,10 +121,7 @@ const AttendanceTopTabNavigatorTwo = () => {
         component={AttendanceTopTabScreen}
         options={{
           title: ({ focused }) => (
-            <Badge
-              title={"Attendance"}
-              focused={focused}
-            />
+            <Badge title={"Attendance"} focused={focused} />
           ),
         }}
       />
@@ -106,18 +129,45 @@ const AttendanceTopTabNavigatorTwo = () => {
         name={AttendanceTopTabNavigatorIdentifiers.leave}
         component={AttendanceScreen}
         options={{
-          title: ({ focused }) => (
-            <Badge
-              title={"Leaves"}
-              focused={focused}
-            />
-          ),
+          title: ({ focused }) => <Badge title={"Leaves"} focused={focused} />,
         }}
       />
     </AttendanceTopTab.Navigator>
   );
 };
 
+const AttendanceTopTabNavigatorTeams = () => {
+  return (
+    <AttendanceTopTab.Navigator
+      initialRouteName={AttendanceTopTabNavigatorIdentifiers.attendance}
+      tabBarOptions={tabBarOptions}
+    >
+      <AttendanceTopTab.Screen
+        name={AttendanceTopTabNavigatorIdentifiers.attendance}
+        component={AttendanceTopTabScreen}
+        options={{
+          title: ({ focused }) => (
+            <Badge title={"Attendance"} focused={focused} />
+          ),
+        }}
+      />
+      <AttendanceTopTab.Screen
+        name={AttendanceTopTabNavigatorIdentifiers.leave}
+        component={AttendanceScreen}
+        options={{
+          title: ({ focused }) => <Badge title={"Leaves"} focused={focused} />,
+        }}
+      />
+      <AttendanceTopTab.Screen
+        name={AttendanceTopTabNavigatorIdentifiers.team}
+        component={TeamAttendanceScreen}
+        options={{
+          title: ({ focused }) => <Badge title={"Team"} focused={focused} />,
+        }}
+      />
+    </AttendanceTopTab.Navigator>
+  );
+};
 const styles = StyleSheet.create({
   tabContainer: {
     flexDirection: "row",

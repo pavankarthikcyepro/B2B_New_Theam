@@ -28,6 +28,7 @@ import Geolocation from "@react-native-community/geolocation";
 import { getDistanceBetweenTwoPoints, officeRadius } from "../../../service";
 import { AppNavigator } from "../../../navigations";
 import { GeolocationTopTabNavigatorIdentifiers } from "../../../navigations/geolocationNavigator";
+import { monthNamesCap } from "../Attendance/AttendanceTop";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
@@ -57,6 +58,7 @@ const GeoLocationScreen = ({ route, navigation }) => {
     wfh: 0,
   });
   const [userData, setUserData] = useState({});
+  const [currentMonth, setCurrentMonth] = useState(new Date());
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -75,7 +77,7 @@ const GeoLocationScreen = ({ route, navigation }) => {
   useEffect(() => {
     setLoading(true);
     getAttendance();
-  }, []);
+  }, [currentMonth]);
 
   const getCurrentLocation = async () => {
     try {
@@ -125,8 +127,13 @@ const GeoLocationScreen = ({ route, navigation }) => {
         getProfilePic(jsonObj);
         getAttendanceCount(jsonObj);
         setUserData(jsonObj);
+        var d = currentMonth;
         const response = await client.get(
-          URL.GET_ATTENDANCE_EMPID(jsonObj.empId, jsonObj.orgId)
+          URL.GET_ATTENDANCE_EMPID(
+            jsonObj.empId,
+            jsonObj.orgId,
+            monthNamesCap[d.getMonth()]
+          )
         );
         const json = await response.json();
         if (json) {
@@ -182,7 +189,7 @@ const GeoLocationScreen = ({ route, navigation }) => {
   const isCurrentDate = (day) => {
     let selectedDate = day.dateString;
     if (currentDate === selectedDate) {
-    //   setAttendance(true);
+      //   setAttendance(true);
       navigation.navigate(GeolocationTopTabNavigatorIdentifiers.map, {
         empId: userData.empId,
         orgId: userData.orgId,
@@ -221,8 +228,9 @@ const GeoLocationScreen = ({ route, navigation }) => {
 
   const getAttendanceCount = async (jsonObj) => {
     try {
+      let d = currentMonth;
       const response = await client.get(
-        URL.GET_ATTENDANCE_COUNT(jsonObj.empId, jsonObj.orgId)
+        URL.GET_ATTENDANCE_COUNT(jsonObj.empId, jsonObj.orgId,monthNamesCap[d.getMonth()])
       );
       const json = await response.json();
       if (json) {
@@ -278,6 +286,7 @@ const GeoLocationScreen = ({ route, navigation }) => {
             monthFormat={"MMM yyyy"}
             onMonthChange={(month) => {
               console.log("month changed", month);
+              setCurrentMonth(new Date(month.dateString));
             }}
             hideExtraDays={true}
             firstDay={1}

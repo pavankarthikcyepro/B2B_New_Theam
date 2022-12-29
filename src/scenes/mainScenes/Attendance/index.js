@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -12,12 +12,16 @@ import {
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
-import { LoaderComponent } from "../../../components";
+import {
+  DatePickerComponent,
+  DateRangeComp,
+  LoaderComponent,
+} from "../../../components";
 import { Colors, GlobalStyle } from "../../../styles";
 import { client } from "../../../networking/client";
 import URL from "../../../networking/endpoints";
 import { useNavigation } from "@react-navigation/native";
-import { IconButton } from "react-native-paper";
+import { Button, IconButton } from "react-native-paper";
 import { Calendar } from "react-native-calendars";
 import * as AsyncStore from "../../../asyncStore";
 import moment from "moment";
@@ -26,9 +30,16 @@ import { MenuIcon } from "../../../navigations/appNavigator";
 import WeeklyCalendar from "react-native-weekly-calendar";
 import Geolocation from "@react-native-community/geolocation";
 import { getDistanceBetweenTwoPoints, officeRadius } from "../../../service";
+import { monthNamesCap } from "./AttendanceTop";
+import ReactNativeModal from "react-native-modal";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
+const lastMonthFirstDate = moment(currentDate, dateFormat)
+  .subtract(0, "months")
+  .startOf("month")
+  .format(dateFormat);
+
 const officeLocation = {
   latitude: 37.33233141,
   longitude: -122.0312186,
@@ -36,6 +47,30 @@ const officeLocation = {
 const screenWidth = Dimensions.get("window").width;
 const profileWidth = screenWidth / 6;
 const profileBgWidth = profileWidth + 5;
+const weekdays = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
+
+const LocalButtonComp = ({ title, onPress, disabled }) => {
+  return (
+    <Button
+      style={{ marginHorizontal: 20 }}
+      mode="contained"
+      color={Colors.RED}
+      disabled={disabled}
+      labelStyle={{ textTransform: "none" }}
+      onPress={onPress}
+    >
+      {title}
+    </Button>
+  );
+};
 
 const AttendanceScreen = ({ route, navigation }) => {
   // const navigation = useNavigation();
@@ -55,6 +90,17 @@ const AttendanceScreen = ({ route, navigation }) => {
     wfh: 0,
     totalTime: "0",
   });
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [selectedFromDate, setSelectedFromDate] = useState("");
+  const [selectedToDate, setSelectedToDate] = useState("");
+  const [datePickerId, setDatePickerId] = useState("");
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [hoverReasons, setHoverReasons] = useState("");
+  const [notes, setNotes] = useState("");
+  const fromDateRef = useRef(selectedFromDate);
+  const toDateRef = useRef(selectedToDate);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => <MenuIcon navigation={navigation} />,
@@ -62,8 +108,14 @@ const AttendanceScreen = ({ route, navigation }) => {
   }, [navigation]);
 
   useEffect(() => {
+    console.log(route?.params);
+  }, [route.params]);
+
+  useEffect(() => {
     navigation.addListener("focus", () => {
       getCurrentLocation();
+      setFromDateState(lastMonthFirstDate);
+      setToDateState(currentDate);
       // setLoading(true);
       // getAttendance();
     });
@@ -72,7 +124,34 @@ const AttendanceScreen = ({ route, navigation }) => {
   useEffect(() => {
     setLoading(true);
     getAttendance();
-  }, []);
+  }, [currentMonth]);
+
+  const setFromDateState = (date) => {
+    fromDateRef.current = date;
+    setSelectedFromDate((x) => date);
+  };
+
+  const setToDateState = (date) => {
+    toDateRef.current = date;
+    setSelectedToDate((x) => date);
+  };
+
+  const showDatePickerMethod = (key) => {
+    setShowDatePicker(true);
+    setDatePickerId(key);
+  };
+
+  const updateSelectedDate = (date, key) => {
+    const formatDate = moment(date).format(dateFormat);
+    switch (key) {
+      case "FROM_DATE":
+        setFromDateState(formatDate);
+        break;
+      case "TO_DATE":
+        setToDateState(formatDate);
+        break;
+    }
+  };
 
   const getCurrentLocation = async () => {
     try {
@@ -121,8 +200,13 @@ const AttendanceScreen = ({ route, navigation }) => {
         const jsonObj = JSON.parse(employeeData);
         getProfilePic(jsonObj);
         getAttendanceCount(jsonObj);
+        var d = currentMonth;
         const response = await client.get(
-          URL.GET_ATTENDANCE_EMPID(jsonObj.empId, jsonObj.orgId)
+          URL.GET_ATTENDANCE_EMPID(
+            jsonObj.empId,
+            jsonObj.orgId,
+            monthNamesCap[d.getMonth()]
+          )
         );
         const json = await response.json();
         if (json) {
@@ -219,8 +303,13 @@ const AttendanceScreen = ({ route, navigation }) => {
 
   const getAttendanceCount = async (jsonObj) => {
     try {
+      let d = currentMonth;
       const response = await client.get(
-        URL.GET_ATTENDANCE_COUNT(jsonObj.empId, jsonObj.orgId)
+        URL.GET_ATTENDANCE_COUNT(
+          jsonObj.empId,
+          jsonObj.orgId,
+          monthNamesCap[d.getMonth()]
+        )
       );
       const json = await response.json();
       if (json) {
@@ -235,8 +324,43 @@ const AttendanceScreen = ({ route, navigation }) => {
     } catch (error) {}
   };
 
+  const RenderModal = () => {
+    return (
+      <ReactNativeModal
+        onBackdropPress={() => {
+          setShowModal(false);
+        }}
+        transparent={true}
+        visible={showModal}
+      >
+        <View style={styles.newModalContainer}>
+          <Text>{"Reason: " + hoverReasons}</Text>
+          <Text>{"Note: " + notes}</Text>
+        </View>
+      </ReactNativeModal>
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
+      <RenderModal />
+      <DatePickerComponent
+        visible={showDatePicker}
+        mode={"date"}
+        maximumDate={new Date()}
+        value={new Date()}
+        onChange={(event, selectedDate) => {
+          setShowDatePicker(false);
+          if (Platform.OS === "android") {
+            if (selectedDate) {
+              updateSelectedDate(selectedDate, datePickerId);
+            }
+          } else {
+            updateSelectedDate(selectedDate, datePickerId);
+          }
+        }}
+        onRequestClose={() => setShowDatePicker(false)}
+      />
       <AttendanceForm
         visible={attendance}
         showReason={reason}
@@ -245,6 +369,21 @@ const AttendanceScreen = ({ route, navigation }) => {
           setAttendance(false);
         }}
       />
+      <View
+        style={{ width: "90%", alignSelf: "center", flexDirection: "column" }}
+      >
+        <DateRangeComp
+          fromDate={selectedFromDate}
+          toDate={selectedToDate}
+          fromDateClicked={() => showDatePickerMethod("FROM_DATE")}
+          toDateClicked={() => showDatePickerMethod("TO_DATE")}
+        />
+        <LocalButtonComp
+          title={"Download Report"}
+          onPress={() => {}}
+          disabled={false}
+        />
+      </View>
       <View style={styles.profilePicView}>
         <View
           style={{
@@ -340,15 +479,44 @@ const AttendanceScreen = ({ route, navigation }) => {
           <Calendar
             onDayPress={(day) => {
               console.log("selected day", day);
+              let week = new Date(day.dateString);
+              const weekDay = week.getDay();
+              console.log(weekdays[weekDay]);
               isCurrentDate(day);
             }}
             onDayLongPress={(day) => {
               console.log("selected day", day);
+              let newData = weeklyRecord.filter(
+                (e) => e.start === day.dateString
+              )[0];
+              setHoverReasons(newData?.reason || "");
+              setNotes(newData?.note || "");
+              let week = new Date(day.dateString);
+              const weekDay = week.getDay();
+              if (weekDay == 0 || weekDay == 6) {
+              } else {
+                setShowModal(true);
+              }
             }}
             monthFormat={"MMM yyyy"}
             onMonthChange={(month) => {
               console.log("month changed", month);
+              setCurrentMonth(new Date(month.dateString));
             }}
+            // dayComponent={({ date, state }) => {
+            //   return (
+            //     <View>
+            //       <Text
+            //         style={{
+            //           textAlign: "center",
+            //           color: state === "disabled" ? "gray" : "black",
+            //         }}
+            //       >
+            //         {date.day}
+            //       </Text>
+            //     </View>
+            //   );
+            // }}
             hideExtraDays={true}
             firstDay={1}
             onPressArrowLeft={(subtractMonth) => subtractMonth()}
@@ -369,7 +537,6 @@ const AttendanceScreen = ({ route, navigation }) => {
           />
         </View>
       )}
-
       {isWeek && (
         <View style={{ flex: 1, marginTop: 10 }}>
           <WeeklyCalendar
@@ -710,5 +877,25 @@ const styles = StyleSheet.create({
     height: profileWidth,
     borderRadius: profileWidth / 2,
     borderColor: "#fff",
+  },
+  newModalContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    maxHeight: "50%",
+    maxWidth: "100%",
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: "#fff",
+    marginTop: "30%",
+    marginLeft: "30%",
+    elevation: 20,
+    shadowColor: "#171717",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 3,
+    top: 5,
+
+    position: "absolute",
   },
 });

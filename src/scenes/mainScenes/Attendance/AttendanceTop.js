@@ -45,6 +45,22 @@ var monthNames = [
   "NOV",
   "DEC",
 ];
+
+export const monthNamesCap = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
 const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 const AttendanceTopTabScreen = ({ route, navigation }) => {
@@ -74,7 +90,7 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
   useEffect(() => {
     setLoading(true);
     getAttendance();
-  }, []);
+  }, [currentMonth]);
 
   function selectedMonth(params) {
     return monthNames[params.getMonth()];
@@ -134,8 +150,13 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
       );
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
+        const d = currentMonth;
         const response = await client.get(
-          URL.GET_ATTENDANCE_EMPID(jsonObj.empId, jsonObj.orgId)
+          URL.GET_ATTENDANCE_EMPID(
+            jsonObj.empId,
+            jsonObj.orgId,
+            monthNamesCap[d.getMonth()]
+          )
         );
         const json = await response.json();
         if (json) {

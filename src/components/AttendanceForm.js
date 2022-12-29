@@ -22,6 +22,7 @@ import { createDateTime } from "../service";
 import { useNavigation } from "@react-navigation/native";
 import { AppNavigator } from "../navigations";
 import moment from "moment";
+import { monthNamesCap } from "../scenes/mainScenes/Attendance/AttendanceTop";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -82,8 +83,13 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
         setUserData(jsonObj);
+        var d = new Date();
         const response = await client.get(
-          URL.GET_ATTENDANCE_EMPID(jsonObj.empId, jsonObj.orgId)
+          URL.GET_ATTENDANCE_EMPID(
+            jsonObj.empId,
+            jsonObj.orgId,
+            monthNamesCap[d.getMonth()]
+          )
         );
         const json = await response.json();
         console.log(json[json?.length - 1]);
@@ -168,8 +174,13 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
           punchIn: n,
           punchOut: null,
         };
+        var d = new Date();
         const response = await client.get(
-          URL.GET_ATTENDANCE_EMPID(jsonObj.empId, jsonObj.orgId)
+          URL.GET_ATTENDANCE_EMPID(
+            jsonObj.empId,
+            jsonObj.orgId,
+            monthNamesCap[d.getMonth()]
+          )
         );
         const json = await response.json();
         console.log("OKOKOKOK", json[json?.length - 1]);
@@ -335,7 +346,7 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
               }}
             />
           </View>
-          {showReason && (
+          {showReason || workFromHome && (
             <>
               <View style={{ flexDirection: "row", marginTop: 10 }}>
                 <Dropdown

@@ -93,6 +93,7 @@ import {
 } from "../../../service";
 import ReactNativeModal from "react-native-modal";
 import Carousel, { Pagination } from "react-native-snap-carousel";
+import { monthNamesCap } from "../Attendance/AttendanceTop";
 
 const officeLocation = {
   latitude: 37.33233141,
@@ -189,8 +190,13 @@ const HomeScreen = ({ route, navigation }) => {
         );
         if (employeeData) {
           const jsonObj = JSON.parse(employeeData);
+           var d = new Date();
           const response = await client.get(
-            URL.GET_ATTENDANCE_EMPID(jsonObj.empId, jsonObj.orgId)
+            URL.GET_ATTENDANCE_EMPID(
+              jsonObj.empId,
+              jsonObj.orgId,
+              monthNamesCap[d.getMonth()]
+            )
           );
           const json = await response.json();
           if (json.length != 0) {

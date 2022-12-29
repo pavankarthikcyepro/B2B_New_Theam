@@ -7,6 +7,7 @@ import { Colors } from "../styles";
 import * as AsyncStore from "../asyncStore";
 import URL from "../networking/endpoints";
 import { client } from "../networking/client";
+import { monthNamesCap } from "../scenes/mainScenes/Attendance/AttendanceTop";
 
 var startDate = createDateTime("8:30");
 var endDate = createDateTime("12:00");
@@ -37,8 +38,13 @@ export const MarkAbsent = async (absentRequest = false) => {
             comments: "",
             reason: "",
           };
+          var d = new Date();
           const response = await client.get(
-            URL.GET_ATTENDANCE_EMPID(jsonObj.empId, jsonObj.orgId)
+            URL.GET_ATTENDANCE_EMPID(
+              jsonObj.empId,
+              jsonObj.orgId,
+              monthNamesCap[d.getMonth()]
+            )
           );
           const json = await response.json();
           console.log("OKOKOKOK", json[json?.length - 1]);
@@ -51,8 +57,8 @@ export const MarkAbsent = async (absentRequest = false) => {
             AsyncStore.storeData(AsyncStore.Keys.IS_PRESENT, todaysDate);
           }
         }
-      }else{
-        return
+      } else {
+        return;
       }
     } else {
       AsyncStore.storeData(AsyncStore.Keys.IS_PRESENT, "0");

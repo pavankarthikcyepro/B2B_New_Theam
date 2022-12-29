@@ -532,18 +532,18 @@ const URL = {
     `${dashboardLiveLeads}/dashboard/v4/get_target_params_for_all_emps`,
   GET_TOTAL_OF_TEAM: () =>
     `${dashboard}/v2/get_target_params_immediate_hierarchy`,
-  GET_ATTENDANCE_EMPID: (empId, orgId) => {
+  GET_ATTENDANCE_EMPID: (empId, orgId, month) => {
     return (
       sales_url +
       "/employeeAttendance/getAttendanceByempIdAndorgId" +
-      `/${empId}/${orgId}`
+      `/${empId}/${orgId}/${month}`
     );
   },
-  GET_ATTENDANCE_COUNT: (empId, orgId) => {
+  GET_ATTENDANCE_COUNT: (empId, orgId, month) => {
     return (
       sales_url +
       "/employeeAttendance/attendanceCount" +
-      `/${empId}/${orgId}`
+      `/${empId}/${orgId}/${month}`
     );
   },
   SAVE_EMPLOYEE_ATTENDANCE: () => {
