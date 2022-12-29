@@ -1,9 +1,12 @@
 import * as AsyncStore from '../asyncStore';
 import { EventRegister } from 'react-native-event-listeners'
 import URL from './endpoints';
-import { Alert } from 'react-native';
-export const client = async (authToken, url, methodType, body, customConfig) => {
+import { Alert, } from 'react-native';
+import RNRestart from 'react-native-restart';
+let isdiloadopen = false
+export const client = async (authToken, url, methodType, body, customConfig,isValidate) => {
 
+    
     const headers = {
         'Accept': "application/json",
         'Content-Type': 'application/json',
@@ -29,10 +32,11 @@ export const client = async (authToken, url, methodType, body, customConfig) => 
     }
 
     try {
-        const response = await window.fetch(url, config)
        
-        if (response.status == 401){
-          
+        const response = await window.fetch(url, config)
+      
+       
+        if (response.status == 401 && isValidate === true){
            
             let Refresh_token = await AsyncStore.getData(AsyncStore.Keys.REFRESH_TOKEN);
           
@@ -56,14 +60,19 @@ export const client = async (authToken, url, methodType, body, customConfig) => 
                 config.body = JSON.stringify(payload)
             }
            
-
+            // APi call for refresh token
             const responseForRefreshApi = await window.fetch(refreshApiUrl, config)   
            
-            let tempRes = await responseForRefreshApi.json();
+            
+            let tempRes = await responseForRefreshApi.clone().json();
             if (responseForRefreshApi.status == 200){
-             
-                await  AsyncStore.storeData(AsyncStore.Keys.ACCESS_TOKEN, tempRes.accessToken);
-                await  AsyncStore.storeData(AsyncStore.Keys.REFRESH_TOKEN, tempRes.refreshToken);
+                
+                await  AsyncStore.storeData(AsyncStore.Keys.ACCESS_TOKEN, tempRes.accessToken).then(()=>{
+                   
+                });
+                await AsyncStore.storeData(AsyncStore.Keys.REFRESH_TOKEN, tempRes.refreshToken).then(() => {
+                   
+                });;
             }
             if (responseForRefreshApi.status == 401 || responseForRefreshApi.status == 403){
                 // handle  force logout in cash of refresh token expired 
@@ -71,9 +80,29 @@ export const client = async (authToken, url, methodType, body, customConfig) => 
                 return;
             }
           
+       
+            if(!isdiloadopen){
+                isdiloadopen= true;
+                return Alert.alert(
+                    "Authentication failed",
+                    "need to re-start app",
+                    [
+                        { text: "OK", onPress: () => {
+                            isdiloadopen = false;
+                            // BackHandler.exitApp();
+                            RNRestart.Restart();
+                        } }
+                    ]
+                );
+            }
+            
+        }
+        // for login api fals credentials 
+        if (response.status == 401 && !isValidate){
+            let errdata = await response.clone().json();
             return Alert.alert(
-                "Authentication failed",
-                "Please try again latter",
+                errdata.error,
+                errdata.message,
                 [
                     { text: "OK", onPress: () => console.log("OK Pressed") }
                 ]
@@ -87,19 +116,19 @@ export const client = async (authToken, url, methodType, body, customConfig) => 
     }
 }
 
-client.get = async function (endpoint, customConfig = {}) {
-    let token = await AsyncStore.getData(AsyncStore.Keys.USER_TOKEN);
-    return client(token, endpoint, "GET", null, customConfig)
+client.get = async function (endpoint, customConfig = {}, isValidate = true) {
+    let token = await AsyncStore.getData(AsyncStore.Keys.ACCESS_TOKEN);
+    return client(token, endpoint, "GET", null, customConfig,isValidate)
 }
 
-client.post = async function (endpoint, body, customConfig = {}) {
-    let token = await AsyncStore.getData(AsyncStore.Keys.USER_TOKEN);
-    return client(token, endpoint, "POST", body, customConfig)
+client.post = async function (endpoint, body, customConfig = {},isValidate = true) {
+    let token = await AsyncStore.getData(AsyncStore.Keys.ACCESS_TOKEN);
+    return client(token, endpoint, "POST", body, customConfig,isValidate)
 }
 
-client.put = async function (endpoint, body, customConfig = {}) {
-    let token = await AsyncStore.getData(AsyncStore.Keys.USER_TOKEN);
-    return client(token, endpoint, "PUT", body, customConfig)
+client.put = async function (endpoint, body, customConfig = {}, isValidate = true) {
+    let token = await AsyncStore.getData(AsyncStore.Keys.ACCESS_TOKEN);
+    return client(token, endpoint, "PUT", body, customConfig,isValidate)
 }
 
 export const parseAPIResponse = response => {

@@ -62,7 +62,7 @@ const initialState: LoginState = {
 export const postUserData = createAsyncThunk(
   "LOGIN_SLICE/postUserData",
   async (inputData, { rejectWithValue }) => {
-    const response = await client.post(URL.LOGIN(), inputData);
+    const response = await client.post(URL.LOGIN(), inputData, {}, false);
     const json = await response.json();
     if (!response.ok) {
       return rejectWithValue(json);

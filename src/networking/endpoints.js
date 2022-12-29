@@ -119,54 +119,61 @@ export const getTaskList =
 export const deleteModelCard =
   sales_url + "/lead";
 
-export const vehicleServices_url =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8083/vehicle-services";
-export const admin_url =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8082/admin";
-
-export const customerService_url =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8085/customer-service";
-export const dynamicReports_url =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/dynamic-reports";
-export const dynamicForms =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/dynamic-forms";
-export const orgnaizationHirarchy =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/oh";
 export const dashboard =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/dashboard";
-export const dfGetAll =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/df-get-all";
-export const subSourceAllDetails =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Source_SubSource_AllDetails";
+  baseUrl + "dfd/dashboard";
+
 export const salesGap =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/sales-gap";
-export const lostSubLost =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Lost_SubLost_AllDetails";
+  baseUrl + "dfd/sales-gap"; 
 export const getBranch =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/oh";
-export const downloadFile =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8093/dynamic-reports";
-export const downloadFile1 =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8095/dynamic-reports/etvbrl_report_download";
-export const downloadFile2 =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8095/dynamic-reports/etvbrl_report";
+  baseUrl + "dfd/oh";
 export const tasktransfer =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/sales-gap/target-dropdown";
-
-
-
-export const getEmployeeData =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8089/role-management/employee/dept-employees";
-
+  baseUrl + "dfd/sales-gap/target-dropdown";
 export const getLeaderBoardData =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/dashboard/v2/get_emp_target_ranking/org";
+  baseUrl + "dfd/dashboard/v2/get_emp_target_ranking/org";
 export const getBranchRankingData =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/dashboard/v2/get_emp_target_ranking";
-export const getEnquiryVehicleModelData =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Other_Maker_AllDetails";
+  baseUrl + "dfd/dashboard/v2/get_emp_target_ranking";
+
+export const vehicleServices_url =
+  baseUrl + "dfdl/vehicle-services";
 
 export const dashboardLiveLeads =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8083";
+  baseUrl + "dfdl";
+
+export const dynamicReports_url =
+  baseUrl + "dfdg/dynamic-reports";
+export const dynamicForms =
+  baseUrl + "dfdg/dynamic-forms";
+export const orgnaizationHirarchy =
+  baseUrl + "dfdg/oh";
+export const dfGetAll =
+  baseUrl + "dfdg/df-get-all";
+export const subSourceAllDetails =
+  baseUrl + "dfdg/Source_SubSource_AllDetails";
+export const lostSubLost =
+  baseUrl + "dfdg/Lost_SubLost_AllDetails";
+
+export const getEnquiryVehicleModelData =
+  baseUrl + "dfdg/Other_Maker_AllDetails"; 
+
+
+export const downloadFile =
+  baseUrl + "dfdr/dynamic-reports";
+
+export const downloadFile1 =
+  baseUrl + "etv-schd/dynamic-reports/etvbrl_report_download";
+export const downloadFile2 =
+  baseUrl + "etv-schd/dynamic-reports/etvbrl_report";
+export const getEmployeeData =
+  baseUrl + "role-management/employee/dept-employees";
+
+// not getting used anywhere so not changes and commented 
+// export const admin_url =
+//   "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8082/admin";
+
+// export const customerService_url =
+//   "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8085/customer-service";
+
+
 
 
 const URL = {
@@ -498,13 +505,13 @@ const URL = {
     return downloadFile2;
   },
   LOCATION_LIST: (orgId) => {
-    return `http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/oh/data-nodes?orgId=${orgId}&levelCode=Level4`;
+    return `${baseUrl} + "dfd/oh/data-nodes?orgId=${orgId}&levelCode=Level4`;
   },
   DEALER_CODE_LIST: (orgId) => {
-    return `http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/oh/data-nodes?orgId=1&levelCode=Level5`;
+    return `${baseUrl} + "dfd/oh/data-nodes?orgId=1&levelCode=Level5`;
   },
   DOWNLOAD_REPORT: () => {
-    return `http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8093/dynamic-reports/etvbrl_report`;
+    return baseUrl + "dfdr/dynamic-reports/etvbrl_report";
   },
 
   QR: (orgId, branchId) => {

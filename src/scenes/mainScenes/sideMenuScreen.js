@@ -184,7 +184,11 @@ const SideMenuScreen = ({ navigation }) => {
   };
 
   const getProfilePic = (userData) => {
-    client.get(`http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`)
+    
+    if (userData.empId == undefined || userData.orgId == undefined || userData.branchId == undefined){
+      return;
+    }
+    client.get(`http://ec2-15-207-225-163.ap-south-1.compute.amazonaws.com:8008/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`)
      .then((response) => response.json())
       .then((json) => {
         
