@@ -33,6 +33,19 @@ export const getLeadAge = createAsyncThunk("TASK_360_SLICE/getLeadAge", async (u
     return json;
 })
 
+export const getTaskThreeSixtyHistory = createAsyncThunk(
+  "TASK_360_SLICE/getTaskThreeSixtyHistory",
+  async (universalId, { rejectWithValue }) => {    
+    const response = await client.get(URL.GET_TASK_360_HISTORY(universalId));
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 const taskThreeSixtySlice = createSlice({
     name: "TASK_360_SLICE",
     initialState: {
@@ -42,11 +55,13 @@ const taskThreeSixtySlice = createSlice({
         wrokflow_response_status: "",
         enquiry_leadDto_response: {},
         enquiry_leadDto_response_status: "",
-        leadAge: 0
+        leadAge: 0,
+        taskThreeSixtyHistory: [],
     },
     reducers: {
         clearState: (state, action) => {
-            state.leadAge = 0
+            state.leadAge = 0;
+            state.taskThreeSixtyHistory = [];
         },
     },
     extraReducers: (builder) => {
@@ -101,6 +116,21 @@ const taskThreeSixtySlice = createSlice({
         })
         builder.addCase(getLeadAge.rejected, (state, action) => {
             state.leadAge = 0
+        })
+        
+        builder.addCase(getTaskThreeSixtyHistory.pending, (state, action) => {
+            state.taskThreeSixtyHistory = [];
+            state.isLoading = true;
+        })
+        builder.addCase(getTaskThreeSixtyHistory.fulfilled, (state, action) => {
+            if (action?.payload?.dmsEntity?.taskss) {
+              state.taskThreeSixtyHistory = action.payload.dmsEntity.taskss;
+            }
+            state.isLoading = false;
+        })
+        builder.addCase(getTaskThreeSixtyHistory.rejected, (state, action) => {
+            state.taskThreeSixtyHistory = [];
+            state.isLoading = false;
         })
     }
 });

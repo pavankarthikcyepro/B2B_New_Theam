@@ -627,6 +627,9 @@ const URL = {
   ROLE_STAGE_ACCESS: (role)=>{
     return sales_url + "/lead/roleStageAccess/"+role;
   },
+  GET_TASK_360_HISTORY: (universalId) => {
+    return sales_url + "/workflow/universalId/" + universalId;
+  } 
 };
 
 // bankFinancier, incuranceCompany, enqueryCategory, deliveryCheckList, sublostReason
