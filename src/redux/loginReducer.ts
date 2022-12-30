@@ -62,7 +62,7 @@ const initialState: LoginState = {
 export const postUserData = createAsyncThunk(
   "LOGIN_SLICE/postUserData",
   async (inputData, { rejectWithValue }) => {
-    const response = await client.post(URL.LOGIN(), inputData);
+    const response = await client.post(URL.LOGIN(), inputData, {}, false);
     const json = await response.json();
     if (!response.ok) {
       return rejectWithValue(json);
@@ -197,15 +197,19 @@ export const loginSlice = createSlice({
       .addCase(postUserData.fulfilled, (state, action) => {
         const dataObj = action.payload;
         if (dataObj.status == "200") {
+          
           state.status = "sucess";
           state.isLoading = false;
-          state.authToken = dataObj.idToken;
+          state.authToken = dataObj.accessToken;
           state.userName = dataObj.userName;
           state.userData = dataObj;
           // state.employeeId = "";
           // state.password = "";
-          AsyncStore.storeData(AsyncStore.Keys.USER_TOKEN, dataObj.idToken);
+          AsyncStore.storeData(AsyncStore.Keys.USER_TOKEN, dataObj.accessToken);
           AsyncStore.storeData(AsyncStore.Keys.IS_LOGIN, 'true');
+          AsyncStore.storeData(AsyncStore.Keys.ACCESS_TOKEN, dataObj.accessToken);
+          AsyncStore.storeData(AsyncStore.Keys.REFRESH_TOKEN, dataObj.refreshToken);
+        
         } else if (dataObj.reason) {
           showAlertMessage("Failed", "Incorrect Password");
           state.isLoading = false;

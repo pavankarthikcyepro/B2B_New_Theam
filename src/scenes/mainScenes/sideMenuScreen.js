@@ -53,6 +53,7 @@ import { clearState } from "../../redux/homeReducer";
 import { clearEnqState } from "../../redux/enquiryReducer";
 import { clearLeadDropState } from "../../redux/leaddropReducer";
 import ReactNativeModal from "react-native-modal";
+import { EventRegister } from 'react-native-event-listeners'
 import { setBranchId, setBranchName } from "../../utils/helperFunctions";
 
 const screenWidth = Dimensions.get("window").width;
@@ -131,8 +132,19 @@ const SideMenuScreen = ({ navigation }) => {
 
   useEffect(() => {
     getLoginEmployeeData();
+    EventRegister.addEventListener("ForceLogout",(res)=>{
+      
+      if(res){
+        signOutClicked()
+      }
+    })
+    return ()=>{
+      EventRegister.removeEventListener()
+    }
     // getProfilePic();
   }, []);
+
+
 
   useEffect(() => {
     navigation.addListener("focus", () => {
@@ -172,11 +184,14 @@ const SideMenuScreen = ({ navigation }) => {
   };
 
   const getProfilePic = (userData) => {
-    fetch(
-      `http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
-    )
-      .then((response) => response.json())
+    
+    if (userData.empId == undefined || userData.orgId == undefined || userData.branchId == undefined){
+      return;
+    }
+    client.get(`http://ec2-15-207-225-163.ap-south-1.compute.amazonaws.com:8008/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`)
+     .then((response) => response.json())
       .then((json) => {
+        
         setDataList(json);
         if (json.length > 0) {
           setImageUri(json[json.length - 1].documentPath);
@@ -190,6 +205,27 @@ const SideMenuScreen = ({ navigation }) => {
         }
       })
       .catch((error) => console.error(error));
+
+
+    // fetch(
+    //   `http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
+    // )
+    //   .then((response) => response.json())
+    //   .then((json) => {
+    //   
+    //     setDataList(json);
+    //     if (json.length > 0) {
+    //       setImageUri(json[json.length - 1].documentPath);
+    //       setInitialData(json[json.length - 1]);
+    //       setIsExist(true);
+    //     } else {
+    //       setIsExist(false);
+    //       setImageUri(
+    //         "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
+    //       );
+    //     }
+    //   })
+    //   .catch((error) => console.error(error));
   };
 
   const updateUserData = (jsonObj) => {
@@ -285,7 +321,7 @@ const SideMenuScreen = ({ navigation }) => {
     }
   };
 
-  const signOutClicked = () => {
+const signOutClicked = () => {
     AsyncStore.storeData(AsyncStore.Keys.USER_NAME, "");
     AsyncStore.storeData(AsyncStore.Keys.USER_TOKEN, "");
     AsyncStore.storeData(AsyncStore.Keys.EMP_ID, "");
@@ -344,6 +380,36 @@ const SideMenuScreen = ({ navigation }) => {
       uri: uri.uri,
       name: "image.jpg",
     });
+
+    // client.post(URL.UPLOAD_PROFILE(userData.empId, userData.orgId, userData.branchId))
+    //   .then((response) => response.json())
+    //   .then(async (json) => {
+    //    
+    //     const inputData = {
+    //       ownerId: userData.empId,
+    //       branchId: userData.branchId,
+    //       orgId: userData.orgId,
+    //       fileName: json.fileName,
+    //       documentPath: json.documentPath,
+    //       universalid: json.universalId,
+    //     };
+    //     const response = await client.post(URL.SAVE_PROFILE(), inputData);
+    //     const saveProfile = await response.json();
+    //     if (saveProfile.success) {
+    //       setIsExist(true);
+    //       let newInitial = {
+    //         id: saveProfile.dmsEntity.employeeProfileDtos[0].id,
+    //         universalid: json?.universalId,
+    //       };
+    //       setInitialData(newInitial);
+    //       setImageUri(
+    //         saveProfile.dmsEntity.employeeProfileDtos[0].documentPath ||
+    //         "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
+    //       );
+    //     }
+    //     // setDataList(json);
+    //   })
+    //   .catch((error) => console.error(error));
 
     fetch(
       URL.UPLOAD_PROFILE(userData.empId, userData.orgId, userData.branchId),
@@ -739,6 +805,7 @@ const SideMenuScreen = ({ navigation }) => {
 };
 
 export default SideMenuScreen;
+
 
 const styles = StyleSheet.create({
   container: {

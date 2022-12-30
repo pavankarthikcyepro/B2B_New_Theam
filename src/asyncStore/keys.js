@@ -15,3 +15,4 @@ export const IS_LOGIN = "IS_LOGIN"
 export const EXTENSION_ID = "EXTENSION_ID"
 export const EXTENSSION_PWD ="EXTENSSION_PWD"
 export const TARGET = "TARGET_EMP";
+export const ACCESS_TOKEN = "ACCESS_TOKEN";
