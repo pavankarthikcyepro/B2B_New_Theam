@@ -108,9 +108,9 @@ const LoginScreen = ({ navigation }) => {
     }
 
     let object = {
-      empname: employeeId,
-      password: password,
-    };
+      "username": employeeId,
+      "password": password
+    }
 
     dispatch(postUserData(object));
   };
@@ -120,30 +120,13 @@ const LoginScreen = ({ navigation }) => {
   useEffect(() => {
     if (selector.status == "sucess") {
       //signIn(selector.authToken);
-      AsyncStore.storeData(
-        AsyncStore.Keys.USER_NAME,
-        selector.userData.userName
-      );
-      AsyncStore.storeData(AsyncStore.Keys.ORG_ID, selector.userData.orgId);
-      AsyncStore.storeData(
-        AsyncStore.Keys.REFRESH_TOKEN,
-        selector.userData.refreshToken
-      );
+     
+      AsyncStore.storeData(AsyncStore.Keys.USER_NAME, selector.userData.userName);
+      AsyncStore.storeData(AsyncStore.Keys.ORG_ID,  String(selector.userData.orgId));
+      AsyncStore.storeData(AsyncStore.Keys.REFRESH_TOKEN, selector.userData.refreshToken);
 
-      AsyncStore.storeData(
-        AsyncStore.Keys.USER_TOKEN,
-        selector.userData.idToken
-      ).then(() => {
-        Promise.all([dispatch(getMenuList(selector.userData.userName))]).then(
-          () => {
-            AsyncStore.storeJsonData(
-              AsyncStore.Keys.TODAYSDATE,
-              new Date().getDate()
-            );
-            AsyncStore.storeJsonData(AsyncStore.Keys.COORDINATES, []);
-            startTracking();
-          }
-        );
+      AsyncStore.storeData(AsyncStore.Keys.USER_TOKEN, selector.userData.accessToken).then(() => {
+        dispatch(getMenuList(selector.userData.userName));
         dispatch(getEmpId(selector.userData.userName));
 
         let data = {

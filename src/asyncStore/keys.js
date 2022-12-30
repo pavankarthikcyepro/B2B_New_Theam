@@ -18,3 +18,4 @@ export const TARGET = "TARGET_EMP";
 export const TODAYSDATE = 'TODAYSDATE';
 export const COORDINATES = "COORDINATES";
 export const IS_PRESENT = "IS_PRESENT";
+export const ACCESS_TOKEN = "ACCESS_TOKEN";

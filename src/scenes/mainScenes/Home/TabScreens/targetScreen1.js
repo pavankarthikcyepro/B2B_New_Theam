@@ -37,6 +37,7 @@ import PercentageToggleControl from "./components/EmployeeView/PercentageToggleC
 import { ActivityIndicator, IconButton } from "react-native-paper";
 import { client } from "../../../../networking/client";
 import URL from "../../../../networking/endpoints";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 100) / 5;
@@ -936,25 +937,50 @@ const TargetScreen = ({ route }) => {
                                   width: Dimensions.get("screen").width - 28,
                                 }}
                               >
-                                <Text
-                                  onPress={() => {
-                                    navigation.navigate(
-                                      AppNavigator.HomeStackIdentifiers
-                                        .location,
-                                      {
-                                        empId: item.empId,
-                                        orgId: item.orgId,
-                                      }
-                                    );
-                                  }}
-                                  style={{
-                                    fontSize: 12,
-                                    fontWeight: "600",
-                                    textTransform: "capitalize",
-                                  }}
-                                >
-                                  {item.empName}
-                                </Text>
+                                <View style={{ flexDirection: "row" }}>
+                                  <Text
+                                    onPress={() => {
+                                      navigation.navigate(
+                                        AppNavigator.HomeStackIdentifiers
+                                          .location,
+                                        {
+                                          empId: item.empId,
+                                          orgId: item.orgId,
+                                        }
+                                      );
+                                    }}
+                                    style={{
+                                      fontSize: 12,
+                                      fontWeight: "600",
+                                      textTransform: "capitalize",
+                                    }}
+                                  >
+                                    {item.empName}
+                                    {item?.childCount > 1 ? "  |" : ""}
+                                  </Text>
+                                  {item?.childCount > 1 && (
+                                    <View
+                                      style={{
+                                        backgroundColor: "lightgrey",
+                                        flexDirection: "row",
+                                        paddingHorizontal: 7,
+                                        borderRadius: 10,
+                                        alignItems: "center",
+                                        justifyContent: "space-between",
+                                        marginBottom: 5,
+                                        alignSelf: "flex-start",
+                                        marginLeft: 7,
+                                      }}
+                                    >
+                                      <MaterialIcons
+                                        name="person"
+                                        size={15}
+                                        color={Colors.BLACK}
+                                      />
+                                      <Text>{item?.childCount}</Text>
+                                    </View>
+                                  )}
+                                </View>
                                 <SourceModelView
                                   onClick={() => {
                                     navigation.navigate(
@@ -1067,35 +1093,78 @@ const TargetScreen = ({ route }) => {
                                               >
                                                 <View
                                                   style={{
-                                                    paddingHorizontal: 4,
-                                                    display: "flex",
                                                     flexDirection: "row",
                                                     justifyContent:
                                                       "space-between",
-                                                    marginTop: 8,
                                                   }}
                                                 >
-                                                  <Text
-                                                    onPress={() => {
-                                                      navigation.navigate(
-                                                        AppNavigator
-                                                          .HomeStackIdentifiers
-                                                          .location,
-                                                        {
-                                                          empId:
-                                                            innerItem1.empId,
-                                                          orgId:
-                                                            innerItem1.orgId,
-                                                        }
-                                                      );
-                                                    }}
+                                                  <View
                                                     style={{
-                                                      fontSize: 10,
-                                                      fontWeight: "500",
+                                                      paddingHorizontal: 4,
+                                                      display: "flex",
+                                                      flexDirection: "row",
+                                                      justifyContent:
+                                                        "space-between",
+                                                      marginTop: 8,
                                                     }}
                                                   >
-                                                    {innerItem1.empName}
-                                                  </Text>
+                                                    <Text
+                                                      onPress={() => {
+                                                        navigation.navigate(
+                                                          AppNavigator
+                                                            .HomeStackIdentifiers
+                                                            .location,
+                                                          {
+                                                            empId:
+                                                              innerItem1.empId,
+                                                            orgId:
+                                                              innerItem1.orgId,
+                                                          }
+                                                        );
+                                                      }}
+                                                      style={{
+                                                        fontSize: 10,
+                                                        fontWeight: "500",
+                                                      }}
+                                                    >
+                                                      {innerItem1.empName}
+                                                      {innerItem1?.childCount >
+                                                      1
+                                                        ? "  |"
+                                                        : ""}
+                                                    </Text>
+                                                    {innerItem1?.childCount >
+                                                      1 && (
+                                                      <View
+                                                        style={{
+                                                          backgroundColor:
+                                                            "lightgrey",
+                                                          flexDirection: "row",
+                                                          paddingHorizontal: 7,
+                                                          borderRadius: 10,
+                                                          alignItems: "center",
+                                                          justifyContent:
+                                                            "space-between",
+                                                          marginBottom: 5,
+                                                          alignSelf:
+                                                            "flex-start",
+                                                          marginLeft: 7,
+                                                        }}
+                                                      >
+                                                        <MaterialIcons
+                                                          name="person"
+                                                          size={15}
+                                                          color={Colors.BLACK}
+                                                        />
+                                                        <Text>
+                                                          {
+                                                            innerItem1?.childCount
+                                                          }
+                                                        </Text>
+                                                      </View>
+                                                    )}
+                                                  </View>
+
                                                   <SourceModelView
                                                     onClick={() => {
                                                       navigation.navigate(
@@ -1202,27 +1271,75 @@ const TargetScreen = ({ route }) => {
                                                                 : 42),
                                                           }}
                                                         >
-                                                          <Text
-                                                            onPress={() => {
-                                                              navigation.navigate(
-                                                                AppNavigator
-                                                                  .HomeStackIdentifiers
-                                                                  .location,
-                                                                {
-                                                                  empId:
-                                                                    innerItem2.empId,
-                                                                  orgId:
-                                                                    innerItem2.orgId,
-                                                                }
-                                                              );
-                                                            }}
+                                                          <View
                                                             style={{
-                                                              fontSize: 10,
-                                                              fontWeight: "500",
+                                                              flexDirection:
+                                                                "row",
                                                             }}
                                                           >
-                                                            {innerItem2.empName}
-                                                          </Text>
+                                                            <Text
+                                                              onPress={() => {
+                                                                navigation.navigate(
+                                                                  AppNavigator
+                                                                    .HomeStackIdentifiers
+                                                                    .location,
+                                                                  {
+                                                                    empId:
+                                                                      innerItem2.empId,
+                                                                    orgId:
+                                                                      innerItem2.orgId,
+                                                                  }
+                                                                );
+                                                              }}
+                                                              style={{
+                                                                fontSize: 10,
+                                                                fontWeight:
+                                                                  "500",
+                                                              }}
+                                                            >
+                                                              {
+                                                                innerItem2.empName
+                                                              }
+                                                              {innerItem2?.childCount >
+                                                              1
+                                                                ? "  |"
+                                                                : ""}
+                                                            </Text>
+                                                            {innerItem2?.childCount >
+                                                              1 && (
+                                                              <View
+                                                                style={{
+                                                                  backgroundColor:
+                                                                    "lightgrey",
+                                                                  flexDirection:
+                                                                    "row",
+                                                                  paddingHorizontal: 7,
+                                                                  borderRadius: 10,
+                                                                  alignItems:
+                                                                    "center",
+                                                                  justifyContent:
+                                                                    "space-between",
+                                                                  marginBottom: 5,
+                                                                  alignSelf:
+                                                                    "flex-start",
+                                                                  marginLeft: 7,
+                                                                }}
+                                                              >
+                                                                <MaterialIcons
+                                                                  name="person"
+                                                                  size={15}
+                                                                  color={
+                                                                    Colors.BLACK
+                                                                  }
+                                                                />
+                                                                <Text>
+                                                                  {
+                                                                    innerItem2?.childCount
+                                                                  }
+                                                                </Text>
+                                                              </View>
+                                                            )}
+                                                          </View>
                                                           <SourceModelView
                                                             onClick={() => {
                                                               navigation.navigate(
@@ -1334,30 +1451,77 @@ const TargetScreen = ({ route }) => {
                                                                       paddingVertical: 4,
                                                                     }}
                                                                   >
-                                                                    <Text
-                                                                      onPress={() => {
-                                                                        navigation.navigate(
-                                                                          AppNavigator
-                                                                            .HomeStackIdentifiers
-                                                                            .location,
-                                                                          {
-                                                                            empId:
-                                                                              innerItem3.empId,
-                                                                            orgId:
-                                                                              innerItem3.orgId,
-                                                                          }
-                                                                        );
-                                                                      }}
+                                                                    <View
                                                                       style={{
-                                                                        fontSize: 10,
-                                                                        fontWeight:
-                                                                          "500",
+                                                                        flexDirection:
+                                                                          "row",
                                                                       }}
                                                                     >
-                                                                      {
-                                                                        innerItem3.empName
-                                                                      }
-                                                                    </Text>
+                                                                      <Text
+                                                                        onPress={() => {
+                                                                          navigation.navigate(
+                                                                            AppNavigator
+                                                                              .HomeStackIdentifiers
+                                                                              .location,
+                                                                            {
+                                                                              empId:
+                                                                                innerItem3.empId,
+                                                                              orgId:
+                                                                                innerItem3.orgId,
+                                                                            }
+                                                                          );
+                                                                        }}
+                                                                        style={{
+                                                                          fontSize: 10,
+                                                                          fontWeight:
+                                                                            "500",
+                                                                        }}
+                                                                      >
+                                                                        {
+                                                                          innerItem3.empName
+                                                                        }
+                                                                        {innerItem3?.childCount >
+                                                                        1
+                                                                          ? "  |"
+                                                                          : ""}
+                                                                      </Text>
+                                                                      {innerItem3?.childCount >
+                                                                        1 && (
+                                                                        <View
+                                                                          style={{
+                                                                            backgroundColor:
+                                                                              "lightgrey",
+                                                                            flexDirection:
+                                                                              "row",
+                                                                            paddingHorizontal: 7,
+                                                                            borderRadius: 10,
+                                                                            alignItems:
+                                                                              "center",
+                                                                            justifyContent:
+                                                                              "space-between",
+                                                                            marginBottom: 5,
+                                                                            alignSelf:
+                                                                              "flex-start",
+                                                                            marginLeft: 7,
+                                                                          }}
+                                                                        >
+                                                                          <MaterialIcons
+                                                                            name="person"
+                                                                            size={
+                                                                              15
+                                                                            }
+                                                                            color={
+                                                                              Colors.BLACK
+                                                                            }
+                                                                          />
+                                                                          <Text>
+                                                                            {
+                                                                              innerItem3?.childCount
+                                                                            }
+                                                                          </Text>
+                                                                        </View>
+                                                                      )}
+                                                                    </View>
                                                                     <SourceModelView
                                                                       onClick={() => {
                                                                         navigation.navigate(
@@ -2989,7 +3153,7 @@ export const RenderLevel1NameView = ({
               color: "#fff",
             }}
           >
-            {item.empName.charAt(0)}
+            {item?.empName?.charAt(0)}
           </Text>
         </TouchableOpacity>
         {/* {level === 0 && !!branchName && ( */}
