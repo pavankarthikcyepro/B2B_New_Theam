@@ -482,7 +482,7 @@ export const GetDropList = async (orgId, token, type) => {
     //   headers: {
     //     Accept: "application/json",
     //     "Content-Type": "application/json",
-    //     "auth-token": token
+    //     "Authorization": token
     //   },
     // })
       .then((json) => json.json())
