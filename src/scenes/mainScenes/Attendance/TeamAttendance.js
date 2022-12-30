@@ -28,6 +28,7 @@ import * as AsyncStore from "../../../asyncStore";
 import moment from "moment";
 import { DropDownSelectionItem } from "../../../pureComponents";
 import { AttendanceTopTabNavigatorIdentifiers } from "../../../navigations/attendanceTopTabNavigator";
+import { getUserWiseTargetParameters } from "../../../redux/homeReducer";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
@@ -69,6 +70,8 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
   const [selectedDealerCode, setSelectedDealerCode] = useState("");
   const [selectedMonthYear, setSelectedMonthYear] = useState("");
   const [selectedKey, setSelectedKey] = useState("");
+  const [allParameters, setAllParameters] = useState([]);
+
   const data = [
     {
       role: "Sales Manager",
@@ -152,12 +155,121 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
     },
   ];
 
+  useEffect(() => {
+    getInitialParameters();
+  }, []);
+
+  const getInitialParameters = async () => {
+    try {
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        const payload = getEmployeePayload(employeeData, jsonObj);
+        Promise.all([dispatch(getUserWiseTargetParameters(payload))])
+          .then(async (res) => {
+            let originalData = res[0].payload.employeeTargetAchievements;
+            if (originalData.length > 0) {
+              let myParams = [
+                ...originalData.filter((item) => item.empId === jsonObj.empId),
+              ];
+              myParams[0] = {
+                ...myParams[0],
+                isOpenInner: false,
+                employeeTargetAchievements: [],
+                // targetAchievements: newArray,
+                // tempTargetAchievements: newArray,
+              };
+              setAllParameters(myParams);
+            }
+          })
+          .catch();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const getEmployeePayload = (employeeData, item) => {
+    const jsonObj = JSON.parse(employeeData);
+    const dateFormat = "YYYY-MM-DD";
+    const currentDate = moment().format(dateFormat);
+    const monthFirstDate = moment(currentDate, dateFormat)
+      .subtract(0, "months")
+      .startOf("month")
+      .format(dateFormat);
+    const monthLastDate = moment(currentDate, dateFormat)
+      .subtract(0, "months")
+      .endOf("month")
+      .format(dateFormat);
+    return {
+      orgId: jsonObj.orgId,
+      selectedEmpId: item.empId || item.id,
+      endDate: monthLastDate,
+      loggedInEmpId: jsonObj.empId,
+      empId: item.empId || item.id,
+      startDate: monthFirstDate,
+      levelSelected: null,
+      pageNo: 0,
+      size: 100,
+    };
+  };
+
   const dropdownList = [{ name: "JP Nagar" }, { name: "HCR" }];
 
-  
   const dropDownItemClicked = async (item) => {
     setSelectedKey(item);
     setShowDropDownModel(true);
+  };
+
+  const onEmployeeNameClick = async (item, index, lastParameter) => {
+    try {
+      let localData = [...allParameters];
+      let current = lastParameter[index].isOpenInner;
+      console.log("KKKKKK", current);
+      for (let i = 0; i < lastParameter.length; i++) {
+        lastParameter[i].isOpenInner = false;
+        if (i === lastParameter.length - 1) {
+          lastParameter[index].isOpenInner = !current;
+        }
+      }
+      if (!current) {
+        let employeeData = await AsyncStore.getData(
+          AsyncStore.Keys.LOGIN_EMPLOYEE
+        );
+        if (employeeData) {
+          const jsonObj = JSON.parse(employeeData);
+          const payload = getEmployeePayload(employeeData, item);
+          Promise.all([dispatch(getUserWiseTargetParameters(payload))]).then(
+            async (res) => {
+              let tempRawData = [];
+              tempRawData = res[0]?.payload?.employeeTargetAchievements.filter(
+                (emp) => emp.empId !== item.empId
+              );
+              let newIds = res[0]?.payload?.employeeTargetAchievements.map(
+                (emp) => emp.empId
+              );
+              if (tempRawData.length > 0) {
+                for (let i = 0; i < tempRawData.length; i++) {
+                  // tempRawData[i].empName = tempRawData[i].empName,
+                  tempRawData[i] = {
+                    ...tempRawData[i],
+                    isOpenInner: false,
+                    employeeTargetAchievements: [],
+                    // tempTargetAchievements: tempRawData[i]?.targetAchievements,
+                  };
+                }
+              }
+              console.log("tempRawData", tempRawData);
+              setAllParameters([...tempRawData]);
+            }
+          );
+        }
+      } else {
+        setAllParameters([...tempRawData]);
+      }
+    } catch (error) {}
   };
 
   return (
@@ -212,6 +324,48 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
         </View>
       </View>
       <ScrollView>
+        {/* {allParameters.map((item, index) => {
+          return (
+            <>
+              <View>
+                <Text
+                  onPress={async () => {
+                    let localData = [...allParameters];
+                    await onEmployeeNameClick(item, index, localData);
+                  }}
+                  style={{ textAlign: "center" }}
+                >
+                  {item.empName}
+                </Text>
+              </View>
+              {item.isOpenInner &&
+                item.employeeTargetAchievements.length > 0 &&
+                item.employeeTargetAchievements.map(
+                  (innerItem1, innerIndex1) => {
+                    return (
+                      <>
+                        <View>
+                          <Text
+                            onPress={async () => {
+                              let localData = [...allParameters];
+                              await onEmployeeNameClick(
+                                innerItem1,
+                                innerIndex1,
+                                localData
+                              );
+                            }}
+                            style={{ textAlign: "center" }}
+                          >
+                            {innerItem1.empName}
+                          </Text>
+                        </View>
+                      </>
+                    );
+                  }
+                )}
+            </>
+          );
+        })} */}
         {data.map((item, index) => {
           return (
             <View style={{ flexDirection: "column", marginVertical: 10 }}>

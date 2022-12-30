@@ -166,6 +166,7 @@ export const downloadFile2 =
 export const getEmployeeData =
   baseUrl + "role-management/employee/dept-employees";
 
+export const notification = "http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8096/notificationMaster"
 // not getting used anywhere so not changes and commented 
 // export const admin_url =
 //   "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8082/admin";
@@ -618,12 +619,29 @@ const URL = {
       `/${empId}/${orgId}/${month}`
     );
   },
+  GET_ATTENDANCE_EMPID2: (empId, orgId, start, end) => {
+    return (
+      sales_url +
+      "/employeeAttendance/getDataByFilter" +
+      `/${empId}/${orgId}/${start}/${end}`
+    );
+  },
   GET_ATTENDANCE_COUNT: (empId, orgId, month) => {
     return (
       sales_url +
       "/employeeAttendance/attendanceCount" +
       `/${empId}/${orgId}/${month}`
     );
+  },
+  GET_ATTENDANCE_COUNT2: (empId, orgId, start, end) => {
+    return (
+      sales_url +
+      "/employeeAttendance/filterattendanceCount" +
+      `/${empId}/${orgId}/${start}/${end}`
+    );
+  },
+  NOTIFICATION_LIST: (empId) => {
+    return notification + `/notification/${empId}`;
   },
   SAVE_EMPLOYEE_ATTENDANCE: () => {
     return sales_url + "/employeeAttendance/saveEmployeeAttendance";

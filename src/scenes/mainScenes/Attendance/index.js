@@ -98,6 +98,8 @@ const AttendanceScreen = ({ route, navigation }) => {
   const [showModal, setShowModal] = useState(false);
   const [hoverReasons, setHoverReasons] = useState("");
   const [notes, setNotes] = useState("");
+  const [filterStart,SetFilterStart]= useState(false);
+
   const fromDateRef = useRef(selectedFromDate);
   const toDateRef = useRef(selectedToDate);
 
@@ -116,8 +118,8 @@ const AttendanceScreen = ({ route, navigation }) => {
       getCurrentLocation();
       setFromDateState(lastMonthFirstDate);
       setToDateState(currentDate);
-      // setLoading(true);
-      // getAttendance();
+      setLoading(true);
+      getAttendance();
     });
   }, [navigation]);
 
@@ -125,6 +127,11 @@ const AttendanceScreen = ({ route, navigation }) => {
     setLoading(true);
     getAttendance();
   }, [currentMonth]);
+
+  // useEffect(() => {
+  //   setLoading(true);
+  //   getAttendanceFilter();
+  // }, [selectedFromDate, selectedToDate]);
 
   const setFromDateState = (date) => {
     fromDateRef.current = date;
@@ -146,9 +153,15 @@ const AttendanceScreen = ({ route, navigation }) => {
     switch (key) {
       case "FROM_DATE":
         setFromDateState(formatDate);
+        setLoading(true);
+        getAttendanceFilter();
+        SetFilterStart(true);
         break;
       case "TO_DATE":
         setToDateState(formatDate);
+        setLoading(true);
+        getAttendanceFilter();
+        SetFilterStart(true);
         break;
     }
   };
@@ -188,6 +201,81 @@ const AttendanceScreen = ({ route, navigation }) => {
       );
     } catch (error) {
       console.log("ERROR", error);
+    }
+  };
+
+  const getAttendanceFilter = async () => {
+    try {
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        getProfilePic(jsonObj);
+        getFilterAttendanceCount(jsonObj);
+        var d = currentMonth;
+        const response = await client.get(
+          URL.GET_ATTENDANCE_EMPID2(
+            jsonObj.empId,
+            jsonObj.orgId,
+            selectedFromDate,
+            selectedToDate
+          )
+        );
+        const json = await response.json();
+        if (json) {
+          let newArray = [];
+          let dateArray = [];
+          let weekArray = [];
+          for (let i = 0; i < json.length; i++) {
+            const element = json[i];
+            let format = {
+              customStyles: {
+                container: {
+                  backgroundColor:
+                    element.isPresent === 1
+                      ? element.wfh === 1
+                        ? Colors.SKY_LIGHT_BLUE_COLOR
+                        : Colors.GREEN
+                      : element.holiday === 1
+                      ? Colors.DARK_GRAY
+                      : element.wfh === 1
+                      ? Colors.SKY_LIGHT_BLUE_COLOR
+                      : "#ff5d68",
+                },
+                text: {
+                  color: Colors.WHITE,
+                  fontWeight: "bold",
+                },
+              },
+            };
+
+            let date = new Date(element.createdtimestamp);
+            let formatedDate = moment(date).format(dateFormat);
+            let weekReport = {
+              start: formatedDate,
+              // duration: "00:20:00",
+              note: element.comments,
+              reason: element.reason,
+              color: element.isPresent === 1 ? Colors.GREEN : "#ff5d68",
+              status: element.isPresent === 1 ? "Present" : "Absent",
+            };
+            dateArray.push(formatedDate);
+            newArray.push(format);
+            weekArray.push(weekReport);
+          }
+          var obj = {};
+          for (let i = 0; i < newArray.length; i++) {
+            const element = newArray[i];
+            obj[dateArray[i]] = element;
+          }
+          setLoading(false);
+          setWeeklyRecord(weekArray);
+          setMarker(obj);
+        }
+      }
+    } catch (error) {
+      setLoading(false);
     }
   };
 
@@ -280,9 +368,10 @@ const AttendanceScreen = ({ route, navigation }) => {
   };
 
   const getProfilePic = (userData) => {
-    fetch(
-      `http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
-    )
+    client
+      .get(
+        `http://ec2-15-207-225-163.ap-south-1.compute.amazonaws.com:8008/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
+      )
       .then((response) => response.json())
       .then((json) => {
         if (json.length > 0) {
@@ -309,6 +398,31 @@ const AttendanceScreen = ({ route, navigation }) => {
           jsonObj.empId,
           jsonObj.orgId,
           monthNamesCap[d.getMonth()]
+        )
+      );
+      const json = await response.json();
+      if (json) {
+        setAttendanceCount({
+          holidays: json?.holidays || 0,
+          leave: json?.leave || 0,
+          present: json?.present || 0,
+          wfh: json?.wfh || 0,
+          totalTime: json?.totalTime || "0",
+        });
+      }
+    } catch (error) {}
+  };
+
+  const getFilterAttendanceCount = async (jsonObj) => {
+    try {
+      let d = currentMonth;
+      const response = await client.get(
+        URL.GET_ATTENDANCE_COUNT2(
+          jsonObj.empId,
+          jsonObj.orgId,
+          selectedFromDate,
+          selectedToDate
+          // monthNamesCap[d.getMonth()]
         )
       );
       const json = await response.json();
@@ -405,75 +519,6 @@ const AttendanceScreen = ({ route, navigation }) => {
           </Text>
         </View>
       </View>
-      {/* <View
-        style={{
-          flexDirection: "row",
-          marginBottom: 2,
-          justifyContent: "center",
-          alignItems: "center",
-          marginTop: 25,
-        }}
-      >
-        <View
-          style={{
-            flexDirection: "row",
-            borderColor: Colors.RED,
-            borderWidth: 1,
-            borderRadius: 5,
-            height: 35,
-            marginTop: 2,
-            justifyContent: "center",
-            width: "80%",
-          }}
-        >
-          <TouchableOpacity
-            onPress={() => {
-              setIsWeek(true);
-            }}
-            style={{
-              width: "50%",
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: !isWeek ? Colors.WHITE : Colors.RED,
-              borderTopLeftRadius: 5,
-              borderBottomLeftRadius: 5,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 16,
-                color: !isWeek ? Colors.BLACK : Colors.WHITE,
-                fontWeight: "600",
-              }}
-            >
-              Week
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              setIsWeek(false);
-            }}
-            style={{
-              width: "50%",
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: !isWeek ? Colors.RED : Colors.WHITE,
-              borderTopRightRadius: 5,
-              borderBottomRightRadius: 5,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 16,
-                color: !isWeek ? Colors.WHITE : Colors.BLACK,
-                fontWeight: "600",
-              }}
-            >
-              Month
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View> */}
       {!isWeek && (
         <View>
           <Calendar
@@ -501,7 +546,9 @@ const AttendanceScreen = ({ route, navigation }) => {
             monthFormat={"MMM yyyy"}
             onMonthChange={(month) => {
               console.log("month changed", month);
-              setCurrentMonth(new Date(month.dateString));
+              if (!filterStart) {
+                setCurrentMonth(new Date(month.dateString));
+              }
             }}
             // dayComponent={({ date, state }) => {
             //   return (
