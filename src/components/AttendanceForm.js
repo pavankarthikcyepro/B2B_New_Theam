@@ -346,68 +346,81 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
               }}
             />
           </View>
-          {showReason || workFromHome && (
-            <>
-              <View style={{ flexDirection: "row", marginTop: 10 }}>
-                <Dropdown
-                  disable={false}
-                  style={[styles.dropdownContainer]}
-                  placeholderStyle={styles.placeholderStyle}
-                  selectedTextStyle={styles.selectedTextStyle}
-                  inputSearchStyle={styles.inputSearchStyle}
-                  iconStyle={styles.iconStyle}
-                  data={reasonList}
-                  search
-                  maxHeight={300}
-                  labelField="label"
-                  valueField="value"
-                  placeholder={"Reason*"}
-                  value={reason.label}
-                  searchPlaceholder="Search..."
-                  onChange={(val) => {
-                    setReason(val);
-                    setReasonError("");
+          {showReason ||
+            (workFromHome && (
+              <>
+                <View style={{ flexDirection: "row", marginTop: 10 }}>
+                  {/* <Dropdown
+                    disable={false}
+                    style={[styles.dropdownContainer]}
+                    placeholderStyle={styles.placeholderStyle}
+                    selectedTextStyle={styles.selectedTextStyle}
+                    inputSearchStyle={styles.inputSearchStyle}
+                    iconStyle={styles.iconStyle}
+                    data={reasonList}
+                    search
+                    maxHeight={300}
+                    labelField="label"
+                    valueField="value"
+                    placeholder={"Reason*"}
+                    value={reason.label}
+                    searchPlaceholder="Search..."
+                    onChange={(val) => {
+                      setReason(val);
+                      setReasonError("");
+                    }}
+                  /> */}
+                  <TextinputComp
+                    disabled={false}
+                    style={styles.textInputStyle}
+                    label={"Reason"}
+                    autoCapitalize="sentences"
+                    value={reason}
+                    maxLength={150}
+                    onChangeText={(text) => {
+                      setReason(text);
+                      setReasonError("");
+                    }}
+                  />
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    width: "100%",
+                    alignSelf: "flex-start",
                   }}
-                />
-              </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  width: "100%",
-                  alignSelf: "flex-start",
-                }}
-              >
-                {reasonError.length > 0 && (
-                  <Text style={styles.errorText}>{reasonError}</Text>
-                )}
-              </View>
-              <View style={{ flexDirection: "row", marginTop: 10 }}>
-                <TextinputComp
-                  disabled={false}
-                  style={styles.textInputStyle}
-                  label={"Comments"}
-                  autoCapitalize="sentences"
-                  value={comment}
-                  maxLength={150}
-                  onChangeText={(text) => {
-                    setComment(text);
-                    setCommentError("");
+                >
+                  {reasonError.length > 0 && (
+                    <Text style={styles.errorText}>{reasonError}</Text>
+                  )}
+                </View>
+                <View style={{ flexDirection: "row", marginTop: 10 }}>
+                  <TextinputComp
+                    disabled={false}
+                    style={styles.textInputStyle}
+                    label={"Comments"}
+                    autoCapitalize="sentences"
+                    value={comment}
+                    maxLength={150}
+                    onChangeText={(text) => {
+                      setComment(text);
+                      setCommentError("");
+                    }}
+                  />
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    width: "100%",
+                    alignSelf: "flex-start",
                   }}
-                />
-              </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  width: "100%",
-                  alignSelf: "flex-start",
-                }}
-              >
-                {commentError.length > 0 && (
-                  <Text style={styles.errorText}>{commentError}</Text>
-                )}
-              </View>
-            </>
-          )}
+                >
+                  {commentError.length > 0 && (
+                    <Text style={styles.errorText}>{commentError}</Text>
+                  )}
+                </View>
+              </>
+            ))}
           <View style={{ flexDirection: "row", marginTop: 10, width: "100%" }}>
             {present || !active ? (
               <>
