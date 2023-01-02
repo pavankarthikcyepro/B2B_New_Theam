@@ -318,7 +318,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   
   const [makerData, setMakerData] = useState([]);
   const [isEventListModalVisible, setisEventListModalVisible] = useState(false);
-  const [eventListdata, seteventListData] = useState(EventListData)
+  const [eventListdata, seteventListData] = useState([])
   const [selectedEventData, setSelectedEventData] = useState([])
   const [eventConfigRes, setEventConfigRes] = useState([])
 
@@ -2856,6 +2856,24 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   }
 
   const onEventInfoPress = () => {
+    // todo
+    
+    let tempArr = [
+      {
+        eventName: enqDetails?.eventName,
+        eventLocation: enqDetails?.eventLocation,
+        Startdate: enqDetails?.eventStartDate,
+        Enddate: enqDetails?.eventEndDate,
+        isSelected: false,
+        id: 0
+      }
+    ]
+
+    
+    if(enqDetails.eventName !== null ){
+      seteventListData(tempArr)
+    }
+   
     setisEventListModalVisible(true)
   }
 
@@ -2876,7 +2894,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
 
         }}
-          disabled={isClickable}
+          disabled={true}
           onPress={() => {
 
             // let temp = [...eventListdata].filter(item => item.id === itemMain.id).map(i => i.isSelected = true)
@@ -2937,11 +2955,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             borderWidth: 2,
             borderColor: Colors.BLACK,
             flexDirection: "column",
-            height: '40%',
+            height: '22%',
           }}
 
           >
-            <Text style={{ color: Colors.BLACK, fontSize: 16, fontWeight: "700", textAlign: "left", margin: 5 }}>Select Event</Text>
+            <Text style={{ color: Colors.BLACK, fontSize: 16, fontWeight: "700", textAlign: "left", margin: 5 }}>Selected Event</Text>
             <ScrollView style={{
               width: '100%',
 
@@ -2965,6 +2983,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     data={eventListdata}
                     style={{ height: '80%' }}
                     keyExtractor={(item, index) => index.toString()}
+                    ListEmptyComponent={() => {
+                      return (<View style={{ alignItems: 'center', marginVertical: 20 }}><Text>{"Data Not Available"}</Text></View>)
+                    }}
+
                     renderItem={({ item, index }) => {
 
                       return (
@@ -2973,8 +2995,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                             height: 35, borderBottomColor: 'rgba(208, 212, 214, 0.7)',
                             borderBottomWidth: 4, marginTop: 5
                           }}>
-                            {eventListTableRow(item.name, item.location, moment(item.startdate).format("DD-MM-YYYY"), moment(item.enddate).format("DD-MM-YYYY"), false, false, false, item, index)}
-
+                            {eventListTableRow(item.eventName, item.eventLocation, moment(item.Startdate).format("DD-MM-YYYY"), moment(item.Enddate).format("DD-MM-YYYY"), false, false, false, item, index)}
+                            {/* {eventListTableRow(item.eventName, item.eventLocation, item.Startdate, item.Enddate, false, false, false, item, index)} */}
                           </View>
 
                         </>

@@ -110,7 +110,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     const [leadRefIdForEnq, setleadRefIdForEnq] = useState(null);
 
     const [isEventListModalVisible, setisEventListModalVisible] = useState(false);
-    const [eventListdata, seteventListData] = useState(EventListData)
+    const [eventListdata, seteventListData] = useState([])
     const [selectedEventData, setSelectedEventData] = useState([])
     const [eventConfigRes, setEventConfigRes] = useState([])
 
@@ -649,6 +649,23 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     }
 
     const onEventInfoPress = ()=>{
+        // todo
+        
+        let tempArr =[
+            {
+            eventName: itemData?.eventName,
+            eventLocation: itemData?.eventLocation,
+            Startdate: itemData?.eventStartDate,
+            Enddate: itemData?.eventEndDate,
+            isSelected: false,
+            id: 0
+            }
+        ]
+           
+        
+        if (itemData?.eventName !== null) {
+            seteventListData(tempArr)
+        }
         setisEventListModalVisible(true)
     }
 
@@ -730,11 +747,11 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                         borderWidth: 2,
                         borderColor: Colors.BLACK,
                         flexDirection: "column",
-                        height: '40%',
+                        height: '22%',
                     }}
 
                     >
-                        <Text style={{ color: Colors.BLACK, fontSize: 16, fontWeight: "700", textAlign: "left", margin: 5 }}>Select Event</Text>
+                        <Text style={{ color: Colors.BLACK, fontSize: 16, fontWeight: "700", textAlign: "left", margin: 5 }}>Selected Event</Text>
                         <ScrollView style={{
                             width: '100%',
 
@@ -758,16 +775,20 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                                         data={eventListdata}
                                         style={{ height: '80%' }}
                                         keyExtractor={(item, index) => index.toString()}
-                                        renderItem={({ item, index }) => {
+                                        ListEmptyComponent={() => {
+                                            return (<View style={{ alignItems: 'center', marginVertical: 20 }}><Text>{"Data Not Available"}</Text></View>)
+                                        }}
 
+                                        renderItem={({ item, index }) => {
+                                           
                                             return (
                                                 <>
                                                     <View style={{
                                                         height: 35, borderBottomColor: 'rgba(208, 212, 214, 0.7)',
                                                         borderBottomWidth: 4, marginTop: 5
                                                     }}>
-                                                        {eventListTableRow(item.name, item.location, moment(item.startdate).format("DD-MM-YYYY"), moment(item.enddate).format("DD-MM-YYYY"), false, false, false, item, index)}
-
+                                                        {eventListTableRow(item.eventName, item.eventLocation, moment(item.Startdate).format("DD-MM-YYYY"), moment(item.Enddate).format("DD-MM-YYYY"), false, false, false, item, index)}
+                                                        {/* {eventListTableRow(item.eventName, item.eventLocation, item.Startdate, item.Enddate, false, false, false, item, index)} */}
                                                     </View>
 
                                                 </>

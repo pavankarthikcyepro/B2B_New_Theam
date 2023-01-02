@@ -388,6 +388,20 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       itemData.leadStage = dms.leadStage;
       itemData.universalId = dms.crmUniversalId;
       itemData.referencenumber = dms.referencenumber;
+      if (selectedEventData.length > 0) {
+          itemData.eventId= selectedEventData[0].eventId,
+          itemData.eventName= selectedEventData[0].name,
+          itemData.eventLocation= selectedEventData[0].location,
+            itemData.eventStartDate = selectedEventData[0].startdate,
+            itemData.eventEndDate = selectedEventData[0].enddate
+        }
+         else {
+          itemData.eventId = "",
+          itemData.eventName = "",
+          itemData.eventLocation = "",
+            itemData.eventStartDate = "",
+            itemData.eventEndDate = ""
+        }
       if (!fromEdit) {
         showSucessAlert(itemData);
       } else {
@@ -607,11 +621,22 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         return;
       }
     }
+
+    
+    // check if events are selected 
+    if (selector.sourceOfEnquiry === "Events") {
+      if (selectedEventData.length <= 0) {
+        showToast("Please select event details");
+        return;
+      }
+    }
+   
     setIsSubmitEnable(false);
     if (fromEdit) {
       updatePreEneuquiryDetails();
       return;
     }
+  
     GetPincodeDetails(selector.pincode)
       .then((data) => {
         // Genereate new ref number
@@ -833,12 +858,13 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       //todo
      
       let data = selector.event_list_Config;
+      
       if(data){
         let addSelectedFlag = data.content.map(i => ({ ...i, isSelected: false }) );
 
 
        
-        setEventConfigRes(addSelectedFlag)
+        // setEventConfigRes(addSelectedFlag)
         seteventListData(addSelectedFlag)
         setisEventListModalVisible(true)
       }
@@ -1185,6 +1211,10 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                     data={eventListdata}
                     style={{ height: '80%' }}
                     keyExtractor={(item, index) => index.toString()}
+                    ListEmptyComponent={() => {
+                      return (<View style={{ alignItems: 'center', marginVertical: 20 }}><Text>{"Data Not Available"}</Text></View>)
+                    }}
+
                     renderItem={({ item, index }) => {
                     
                       return (
@@ -1249,6 +1279,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         selectedItems={(item) => {
           
           if (dropDownKey === "SOURCE_OF_ENQUIRY") {
+            setSelectedEventData([])
             if (item.name === "Events") {
               const startOfMonth = moment().startOf('month').format('YYYY-MM-DD');
               const endOfMonth = moment().endOf('month').format('YYYY-MM-DD');

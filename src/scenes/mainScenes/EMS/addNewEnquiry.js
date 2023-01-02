@@ -1286,6 +1286,15 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       return;
     }
 
+    // check if events are selected 
+    if (selector.source_of_enquiry === "Events") {
+      if (selectedEventData.length <= 0) {
+        showToast("Please select event details");
+        return;
+      }
+    }
+
+
     // if (!selector.enquiry_details_response) {
     //   return;
     // }
@@ -3264,6 +3273,10 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     data={eventListdata}
                     style={{ height: '80%' }}
                     keyExtractor={(item, index) => index.toString()}
+                    ListEmptyComponent={() => {
+                      return (<View style={{ alignItems: 'center', marginVertical: 20 }}><Text>{"Data Not Available"}</Text></View>)
+                    }}
+
                     renderItem={({ item, index }) => {
                       return (
                         <>
@@ -3369,6 +3382,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
             );
           }
           if (dropDownKey === "SOURCE_OF_ENQUIRY") {
+            setSelectedEventData([])
             if (item.name === "Events") {
               const startOfMonth = moment().startOf('month').format('YYYY-MM-DD');
               const endOfMonth = moment().endOf('month').format('YYYY-MM-DD');
