@@ -13,6 +13,8 @@ const HeaderComp = ({
   menuClicked,
   branchClicked,
   filterClicked,
+  notification = false,
+  notificationNav,
 }) => {
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.targetSettingsReducer);
@@ -43,7 +45,7 @@ const HeaderComp = ({
 
   return (
     <View style={[style.container, { height: height }]}>
-      <View style={style.subContainer}>
+      <View style={{...style.subContainer, width: notification ? '60%': '73%'}}>
         <IconButton
           icon="menu"
           color={Colors.WHITE}
@@ -82,8 +84,28 @@ const HeaderComp = ({
             size={30}
             onPress={filterClicked}
           />
+          {notification && (<IconButton
+            icon="bell"
+            style={{ padding: 0, margin: 0 }}
+            color={Colors.WHITE}
+            size={25}
+            onPress={notificationNav}
+          />)}
         </View>
       </View>
+      {/* {notification && (
+        <View>
+          <View style={style.filterContainer}>
+            <IconButton
+              icon="bell"
+              style={{ padding: 0, margin: 0 }}
+              color={Colors.WHITE}
+              size={25}
+              onPress={notificationNav}
+            />
+          </View>
+        </View>
+      )} */}
     </View>
   );
 };
@@ -126,5 +148,9 @@ const style = StyleSheet.create({
     fontWeight: "600",
     color: Colors.WHITE,
     width: 60,
+  },
+  filterContainer:{
+    flexDirection:'row',
+    alignItems:'center'
   },
 });

@@ -9,6 +9,7 @@ import {
   Dimensions,
   Platform,
   Image,
+  ScrollView,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -32,6 +33,7 @@ import Geolocation from "@react-native-community/geolocation";
 import { getDistanceBetweenTwoPoints, officeRadius } from "../../../service";
 import { monthNamesCap } from "./AttendanceTop";
 import ReactNativeModal from "react-native-modal";
+import Entypo from "react-native-vector-icons/FontAwesome";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
@@ -89,6 +91,7 @@ const AttendanceScreen = ({ route, navigation }) => {
     present: 0,
     wfh: 0,
     totalTime: "0",
+    total: 0,
   });
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedFromDate, setSelectedFromDate] = useState("");
@@ -177,7 +180,6 @@ const AttendanceScreen = ({ route, navigation }) => {
       // }
       Geolocation.getCurrentPosition(
         (position) => {
-          console.log("Sss", position);
           const initialPosition = JSON.stringify(position);
           let json = JSON.parse(initialPosition);
           setInitialPosition(json.coords);
@@ -187,7 +189,6 @@ const AttendanceScreen = ({ route, navigation }) => {
             json?.coords?.latitude,
             json?.coords?.longitude
           );
-          console.log("LLLLL", dist);
           if (dist > officeRadius) {
             setReason(true); ///true for reason
           } else {
@@ -195,12 +196,12 @@ const AttendanceScreen = ({ route, navigation }) => {
           }
         },
         (error) => {
-          console.log(JSON.stringify(error));
+          // console.log(JSON.stringify(error));
         },
         { enableHighAccuracy: true }
       );
     } catch (error) {
-      console.log("ERROR", error);
+      console.error("ERROR", error);
     }
   };
 
@@ -408,6 +409,7 @@ const AttendanceScreen = ({ route, navigation }) => {
           present: json?.present || 0,
           wfh: json?.wfh || 0,
           totalTime: json?.totalTime || "0",
+          total: json?.total || 0,
         });
       }
     } catch (error) {}
@@ -433,6 +435,7 @@ const AttendanceScreen = ({ route, navigation }) => {
           present: json?.present || 0,
           wfh: json?.wfh || 0,
           totalTime: json?.totalTime || "0",
+          total: json?.total || 0,
         });
       }
     } catch (error) {}
@@ -483,192 +486,215 @@ const AttendanceScreen = ({ route, navigation }) => {
           setAttendance(false);
         }}
       />
-      <View
-        style={{ width: "90%", alignSelf: "center", flexDirection: "column" }}
-      >
-        <DateRangeComp
-          fromDate={selectedFromDate}
-          toDate={selectedToDate}
-          fromDateClicked={() => showDatePickerMethod("FROM_DATE")}
-          toDateClicked={() => showDatePickerMethod("TO_DATE")}
-        />
-        <LocalButtonComp
-          title={"Download Report"}
-          onPress={() => {}}
-          disabled={false}
-        />
-      </View>
-      <View style={styles.profilePicView}>
+      <ScrollView showsVerticalScrollIndicator={false}>
         <View
-          style={{
-            ...GlobalStyle.shadow,
-            ...styles.profilePicBG,
-          }}
+          style={{ width: "90%", alignSelf: "center", flexDirection: "column" }}
         >
-          <Image
-            style={styles.profilePic}
-            source={{
-              uri: imageUri,
-            }}
+          <DateRangeComp
+            fromDate={selectedFromDate}
+            toDate={selectedToDate}
+            fromDateClicked={() => showDatePickerMethod("FROM_DATE")}
+            toDateClicked={() => showDatePickerMethod("TO_DATE")}
           />
         </View>
-        <View style={styles.hoursView}>
-          <Text style={styles.totalHours}>{"Total Hours"}</Text>
-          <Text style={styles.totalHoursValue}>
-            {attendanceCount.totalTime}
-          </Text>
-        </View>
-      </View>
-      {!isWeek && (
-        <View>
-          <Calendar
-            onDayPress={(day) => {
-              console.log("selected day", day);
-              let week = new Date(day.dateString);
-              const weekDay = week.getDay();
-              console.log(weekdays[weekDay]);
-              isCurrentDate(day);
-            }}
-            onDayLongPress={(day) => {
-              console.log("selected day", day);
-              let newData = weeklyRecord.filter(
-                (e) => e.start === day.dateString
-              )[0];
-              setHoverReasons(newData?.reason || "");
-              setNotes(newData?.note || "");
-              let week = new Date(day.dateString);
-              const weekDay = week.getDay();
-              if (weekDay == 0 || weekDay == 6) {
-              } else {
-                setShowModal(true);
-              }
-            }}
-            monthFormat={"MMM yyyy"}
-            onMonthChange={(month) => {
-              console.log("month changed", month);
-              if (!filterStart) {
-                setCurrentMonth(new Date(month.dateString));
-              }
-            }}
-            // dayComponent={({ date, state }) => {
-            //   return (
-            //     <View>
-            //       <Text
-            //         style={{
-            //           textAlign: "center",
-            //           color: state === "disabled" ? "gray" : "black",
-            //         }}
-            //       >
-            //         {date.day}
-            //       </Text>
-            //     </View>
-            //   );
-            // }}
-            hideExtraDays={true}
-            firstDay={1}
-            onPressArrowLeft={(subtractMonth) => subtractMonth()}
-            onPressArrowRight={(addMonth) => addMonth()}
-            enableSwipeMonths={true}
-            theme={{
-              arrowColor: Colors.RED,
-              dotColor: Colors.RED,
-              textMonthFontWeight: "500",
-              monthTextColor: Colors.RED,
-              indicatorColor: Colors.RED,
-              dayTextColor: Colors.BLACK,
-              selectedDayBackgroundColor: Colors.GRAY,
-              textDayFontWeight: "500",
-            }}
-            markingType={"custom"}
-            markedDates={marker}
-          />
-        </View>
-      )}
-      {isWeek && (
-        <View style={{ flex: 1, marginTop: 10 }}>
-          <WeeklyCalendar
-            events={weeklyRecord}
-            titleFormat={"MMM yyyy"}
-            titleStyle={{
-              color: Colors.RED,
-              fontSize: 15,
-              fontWeight: "500",
-              marginVertical: 10,
-            }}
-            themeColor={Colors.RED}
-            dayLabelStyle={{
-              color: Colors.RED,
-            }}
-            onDayPress={(day) => {
-              console.log("selected dayssss", day);
-              isCurrentDateForWeekView(day);
-            }}
-            renderEvent={(event, j) => {
-              return (
-                <View
-                  style={{ ...styles.eventNote, backgroundColor: event.color }}
-                >
-                  <Text style={styles.eventText}>{event.status}</Text>
-                  {event.note?.length > 0 && (
-                    <Text style={styles.eventText}>
-                      {"Comment: " + event.note}
-                    </Text>
-                  )}
-                  {event.reason?.length > 0 && (
-                    <Text style={styles.eventText}>
-                      {"Reason: " + event.reason}
-                    </Text>
-                  )}
-                </View>
-              );
-            }}
-          />
-        </View>
-      )}
-      <View style={styles.parameterListContain}>
-        <View style={styles.parameterView}>
-          <View
-            style={{ ...styles.parameterMarker, backgroundColor: Colors.GREEN }}
-          />
-          <View style={styles.parameterCountView}>
-            <Text style={styles.parameterText}>{"Present"}</Text>
-            <Text style={styles.parameterText}>{attendanceCount.present}</Text>
-          </View>
-        </View>
-        <View style={styles.parameterView}>
-          <View
-            style={{ ...styles.parameterMarker, backgroundColor: Colors.RED }}
-          />
-          <View style={styles.parameterCountView}>
-            <Text style={styles.parameterText}>{"Leave"}</Text>
-            <Text style={styles.parameterText}>{attendanceCount.leave}</Text>
-          </View>
-        </View>
-        <View style={styles.parameterView}>
+        <View style={styles.profilePicView}>
           <View
             style={{
-              ...styles.parameterMarker,
-              backgroundColor: Colors.DARK_GRAY,
+              ...GlobalStyle.shadow,
+              ...styles.profilePicBG,
             }}
-          />
-          <View style={styles.parameterCountView}>
-            <Text style={styles.parameterText}>{"Holiday"}</Text>
-            <Text style={styles.parameterText}>{attendanceCount.holidays}</Text>
+          >
+            <Image
+              style={styles.profilePic}
+              source={{
+                uri: imageUri,
+              }}
+            />
+          </View>
+          <View style={styles.hoursView}>
+            <Text style={styles.totalHours}>{"Total Hours"}</Text>
+            <Text style={styles.totalHoursValue}>
+              {attendanceCount.totalTime}
+            </Text>
           </View>
         </View>
-        <View style={styles.parameterView}>
-          <View
-            style={{
-              ...styles.parameterMarker,
-              backgroundColor: Colors.SKY_LIGHT_BLUE_COLOR,
-            }}
-          />
-          <View style={styles.parameterCountView}>
-            <Text style={styles.parameterText}>{"WFH"}</Text>
-            <Text style={styles.parameterText}>{attendanceCount.wfh}</Text>
+        {!isWeek && (
+          <View>
+            <Calendar
+              onDayPress={(day) => {
+                isCurrentDate(day);
+              }}
+              onDayLongPress={(day) => {
+                console.log("selected day", day);
+                let newData = weeklyRecord.filter(
+                  (e) => e.start === day.dateString
+                )[0];
+                setHoverReasons(newData?.reason || "");
+                setNotes(newData?.note || "");
+                let week = new Date(day.dateString);
+                const weekDay = week.getDay();
+                if (weekDay == 0 || weekDay == 6) {
+                } else {
+                  setShowModal(true);
+                }
+              }}
+              monthFormat={"MMM yyyy"}
+              onMonthChange={(month) => {
+                console.log("month changed", month);
+                if (!filterStart) {
+                  setCurrentMonth(new Date(month.dateString));
+                }
+              }}
+              // dayComponent={({ date, state }) => {
+              //   return (
+              //     <View>
+              //       <Text
+              //         style={{
+              //           textAlign: "center",
+              //           color: state === "disabled" ? "gray" : "black",
+              //         }}
+              //       >
+              //         {date.day}
+              //       </Text>
+              //     </View>
+              //   );
+              // }}
+              hideExtraDays={true}
+              firstDay={1}
+              onPressArrowLeft={(subtractMonth) => subtractMonth()}
+              onPressArrowRight={(addMonth) => addMonth()}
+              enableSwipeMonths={true}
+              theme={{
+                arrowColor: Colors.RED,
+                dotColor: Colors.RED,
+                textMonthFontWeight: "500",
+                monthTextColor: Colors.RED,
+                indicatorColor: Colors.RED,
+                dayTextColor: Colors.BLACK,
+                selectedDayBackgroundColor: Colors.GRAY,
+                textDayFontWeight: "500",
+              }}
+              markingType={"custom"}
+              markedDates={marker}
+            />
+          </View>
+        )}
+        {isWeek && (
+          <View style={{ flex: 1, marginTop: 10 }}>
+            <WeeklyCalendar
+              events={weeklyRecord}
+              titleFormat={"MMM yyyy"}
+              titleStyle={{
+                color: Colors.RED,
+                fontSize: 15,
+                fontWeight: "500",
+                marginVertical: 10,
+              }}
+              themeColor={Colors.RED}
+              dayLabelStyle={{
+                color: Colors.RED,
+              }}
+              onDayPress={(day) => {
+                console.log("selected day", day);
+                isCurrentDateForWeekView(day);
+              }}
+              renderEvent={(event, j) => {
+                return (
+                  <View
+                    style={{
+                      ...styles.eventNote,
+                      backgroundColor: event.color,
+                    }}
+                  >
+                    <Text style={styles.eventText}>{event.status}</Text>
+                    {event.note?.length > 0 && (
+                      <Text style={styles.eventText}>
+                        {"Comment: " + event.note}
+                      </Text>
+                    )}
+                    {event.reason?.length > 0 && (
+                      <Text style={styles.eventText}>
+                        {"Reason: " + event.reason}
+                      </Text>
+                    )}
+                  </View>
+                );
+              }}
+            />
+          </View>
+        )}
+        <View style={styles.parameterListContain}>
+          <View style={styles.parameterView}>
+            <View
+              style={{
+                ...styles.parameterMarker,
+                backgroundColor: Colors.GREEN,
+              }}
+            />
+            <View style={styles.parameterCountView}>
+              <Text style={styles.parameterText}>{"Present"}</Text>
+              <Text style={styles.parameterText}>
+                {attendanceCount.present}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.parameterView}>
+            <View
+              style={{ ...styles.parameterMarker, backgroundColor: Colors.RED }}
+            />
+            <View style={styles.parameterCountView}>
+              <Text style={styles.parameterText}>{"Leave"}</Text>
+              <Text style={styles.parameterText}>{attendanceCount.leave}</Text>
+            </View>
+          </View>
+          <View style={styles.parameterView}>
+            <View
+              style={{
+                ...styles.parameterMarker,
+                backgroundColor: Colors.DARK_GRAY,
+              }}
+            />
+            <View style={styles.parameterCountView}>
+              <Text style={styles.parameterText}>{"Holiday"}</Text>
+              <Text style={styles.parameterText}>
+                {attendanceCount.holidays}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.parameterView}>
+            <View
+              style={{
+                ...styles.parameterMarker,
+                backgroundColor: Colors.SKY_LIGHT_BLUE_COLOR,
+              }}
+            />
+            <View style={styles.parameterCountView}>
+              <Text style={styles.parameterText}>{"WFH"}</Text>
+              <Text style={styles.parameterText}>{attendanceCount.wfh}</Text>
+            </View>
+          </View>
+          <View style={styles.parameterView}>
+            <View
+              style={{
+                width: 25,
+                marginRight: 5,
+              }}
+            />
+            <View style={styles.parameterCountView}>
+              <Text style={styles.parameterText}>{"Total"}</Text>
+              <Text style={styles.parameterText}>{attendanceCount.total}</Text>
+            </View>
           </View>
         </View>
-      </View>
+      </ScrollView>
+      <TouchableOpacity
+        onPress={() => {
+          navigation.navigate(AppNavigator.EmsStackIdentifiers.newEnquiry);
+        }}
+        style={[GlobalStyle.shadow, styles.floatingBtn]}
+      >
+        <Entypo size={30} name="download" color={Colors.WHITE} />
+      </TouchableOpacity>
       <LoaderComponent visible={loading} />
     </SafeAreaView>
   );
@@ -944,5 +970,16 @@ const styles = StyleSheet.create({
     top: 5,
 
     position: "absolute",
+  },
+  floatingBtn: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: 60,
+    position: "absolute",
+    bottom: 25,
+    right: 25,
+    height: 60,
+    backgroundColor: "rgba(255,21,107,6)",
+    borderRadius: 100,
   },
 });

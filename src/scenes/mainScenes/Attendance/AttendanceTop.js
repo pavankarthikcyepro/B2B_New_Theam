@@ -63,6 +63,10 @@ export const monthNamesCap = [
 
 const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
+const getDays = (year, month) => {
+  return new Date(year, month, 0).getDate();
+};
+
 const AttendanceTopTabScreen = ({ route, navigation }) => {
   // const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -116,7 +120,6 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
     try {
       Geolocation.getCurrentPosition(
         (position) => {
-          console.log("Sss", position);
           const initialPosition = JSON.stringify(position);
           let json = JSON.parse(initialPosition);
           setInitialPosition(json.coords);
@@ -126,7 +129,6 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
             json?.coords?.latitude,
             json?.coords?.longitude
           );
-          console.log("LLLLL", dist);
           if (dist > officeRadius) {
             setReason(true); ///true for reason
           } else {
@@ -134,12 +136,12 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
           }
         },
         (error) => {
-          console.log(JSON.stringify(error));
+          // console.log(JSON.stringify(error));
         },
         { enableHighAccuracy: true }
       );
     } catch (error) {
-      console.log("ERROR", error);
+      console.error("ERROR", error);
     }
   };
 
@@ -158,7 +160,19 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
             monthNamesCap[d.getMonth()]
           )
         );
+     
+
         const json = await response.json();
+           const daysInMonth = getDays(new Date().getFullYear(), d.getMonth());
+           console.log("daysInMonth", daysInMonth);
+           let newArr = []
+           for (let i = 0; i < daysInMonth.length; i++) {
+             const element = daysInMonth[i];
+             const sampleData = {
+               date: new Date(`${new Date().getFullYear()}-${d.getMonth()}-${i+1}`),
+             };
+             console.log("sampleData", );
+           }
         if (json) {
           setMonthData([...json]);
           if (json[json.length - 1].punchIn == null) {

@@ -61,6 +61,6 @@
        <service android:name="com.asterinet.react.bgactions.RNBackgroundActionsTask" />
         <meta-data
      android:name="com.google.android.geo.API_KEY"
-     android:value="AIzaSyDiIoBHUeutksbdPqxVvohX50njC0gxVUQ"/>
+     android:value="AIzaSyD1p1YFpi2w3yBrYl1aUpudMqe9IzMQt2Y"/>
     </application>
 </manifest>

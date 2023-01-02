@@ -2186,424 +2186,428 @@ const TargetScreen = ({ route }) => {
                   </View>
                 )}
                 <>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "flex-end",
-                      marginVertical: 10,
-                      marginRight: 10,
-                    }}
-                  >
-                    <SourceModelView
-                      style={{ alignSelf: "flex-end" }}
-                      onClick={() => {
-                        navigation.navigate("RECEP_SOURCE_MODEL", {
-                          empId: userData.empId,
-                          headerTitle: "Source/Model",
-                          loggedInEmpId: userData.empId,
-                          orgId: userData.orgId,
-                        });
-                      }}
-                    />
-                  </View>
                   {userData.hrmsRole == "Reception" && (
-                    <ScrollView showsVerticalScrollIndicator={false}>
+                    <>
                       <View
                         style={{
                           flexDirection: "row",
-                          justifyContent: "space-between",
-                          paddingHorizontal: 10,
+                          justifyContent: "flex-end",
+                          marginVertical: 10,
+                          marginRight: 10,
                         }}
                       >
-                        <View
-                          style={{
-                            justifyContent: "center",
-                            alignItems: "center",
-                            width: "35%",
+                        <SourceModelView
+                          style={{ alignSelf: "flex-end" }}
+                          onClick={() => {
+                            navigation.navigate("RECEP_SOURCE_MODEL", {
+                              empId: userData.empId,
+                              headerTitle: "Source/Model",
+                              loggedInEmpId: userData.empId,
+                              orgId: userData.orgId,
+                            });
                           }}
-                        >
-                          <Text
-                            style={{
-                              fontSize: 14,
-                              fontWeight: "400",
-                              textDecorationLine: "underline",
-                              textDecorationColor: "#00b1ff",
-                            }}
-                          >
-                            {"Consultant Name"}
-                          </Text>
-                        </View>
-
+                        />
+                      </View>
+                      <ScrollView showsVerticalScrollIndicator={false}>
                         <View
                           style={{
                             flexDirection: "row",
                             justifyContent: "space-between",
-                            width: "50%",
+                            paddingHorizontal: 10,
                           }}
                         >
-                          <Text
+                          <View
                             style={{
-                              fontSize: 13,
-                              fontWeight: "400",
-                              textDecorationLine: "underline",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              width: "35%",
                             }}
                           >
-                            {"Leads Allocated"}
-                          </Text>
-                          <Text
+                            <Text
+                              style={{
+                                fontSize: 14,
+                                fontWeight: "400",
+                                textDecorationLine: "underline",
+                                textDecorationColor: "#00b1ff",
+                              }}
+                            >
+                              {"Consultant Name"}
+                            </Text>
+                          </View>
+
+                          <View
                             style={{
-                              fontSize: 13,
-                              fontWeight: "400",
-                              textDecorationLine: "underline",
+                              flexDirection: "row",
+                              justifyContent: "space-between",
+                              width: "50%",
                             }}
                           >
-                            {"Drop Leads"}
-                          </Text>
+                            <Text
+                              style={{
+                                fontSize: 13,
+                                fontWeight: "400",
+                                textDecorationLine: "underline",
+                              }}
+                            >
+                              {"Leads Allocated"}
+                            </Text>
+                            <Text
+                              style={{
+                                fontSize: 13,
+                                fontWeight: "400",
+                                textDecorationLine: "underline",
+                              }}
+                            >
+                              {"Drop Leads"}
+                            </Text>
+                          </View>
                         </View>
-                      </View>
-                      <FlatList
-                        data={selector.receptionistData.consultantList}
-                        style={{ marginTop: 10 }}
-                        nestedScrollEnabled
-                        renderItem={({ item }) => {
-                          Array.prototype.random = function () {
-                            return this[
-                              Math.floor(Math.random() * this.length)
-                            ];
-                          };
-                          let selectedColor = color.random();
-                          return (
+                        <FlatList
+                          data={selector.receptionistData.consultantList}
+                          style={{ marginTop: 10 }}
+                          nestedScrollEnabled
+                          renderItem={({ item }) => {
+                            Array.prototype.random = function () {
+                              return this[
+                                Math.floor(Math.random() * this.length)
+                              ];
+                            };
+                            let selectedColor = color.random();
+                            return (
+                              <View
+                                style={{
+                                  flexDirection: "row",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  paddingHorizontal: 10,
+                                  marginVertical: 5,
+                                }}
+                              >
+                                <View
+                                  style={{
+                                    justifyContent: "center",
+                                    alignItems: "flex-start",
+                                    width: "50%",
+                                  }}
+                                >
+                                  <Text numberOfLines={1}>
+                                    {item?.emp_name}
+                                  </Text>
+                                </View>
+                                <View
+                                  style={{
+                                    width: "45%",
+                                    justifyContent: "space-around",
+                                    flexDirection: "row",
+                                    height: 25,
+                                    alignItems: "center",
+                                    // marginTop: 8,
+                                    marginLeft: 20,
+                                  }}
+                                >
+                                  <View
+                                    style={{
+                                      minWidth: 45,
+                                      height: 25,
+                                      borderColor: selectedColor,
+                                      borderWidth: 1,
+                                      borderRadius: 8,
+                                      justifyContent: "center",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    <Text
+                                      onPress={() => {
+                                        item?.allocatedCount > 0 &&
+                                          navigateToEMS();
+                                      }}
+                                      style={{
+                                        padding: 2,
+                                        textDecorationLine:
+                                          item?.allocatedCount > 0
+                                            ? "underline"
+                                            : "none",
+                                      }}
+                                    >
+                                      {item?.allocatedCount}
+                                    </Text>
+                                  </View>
+                                  <View
+                                    style={{
+                                      minWidth: 45,
+                                      height: 25,
+                                      borderColor: selectedColor,
+                                      borderWidth: 1,
+                                      borderRadius: 8,
+                                      justifyContent: "center",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    <Text
+                                      onPress={() => {
+                                        navigateToDropLostCancel();
+                                      }}
+                                      style={{
+                                        padding: 2,
+                                        textDecorationLine:
+                                          item?.droppedCount > 0
+                                            ? "underline"
+                                            : "none",
+                                      }}
+                                    >
+                                      {item?.droppedCount}
+                                    </Text>
+                                  </View>
+                                </View>
+                              </View>
+                            );
+                          }}
+                        />
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            paddingHorizontal: 10,
+                            marginTop: 10,
+                            marginVertical: 8,
+                          }}
+                        >
+                          <View
+                            style={{
+                              justifyContent: "center",
+                              alignItems: "center",
+                              width: "50%",
+                            }}
+                          >
+                            <Text
+                              style={{
+                                fontSize: 15,
+                                fontWeight: "600",
+                                color: "#00b1ff",
+                              }}
+                            >
+                              {"Total"}
+                            </Text>
+                          </View>
+                          <View
+                            style={{
+                              width: "45%",
+                              justifyContent: "space-around",
+                              flexDirection: "row",
+                              height: 25,
+                              alignItems: "center",
+                              // marginTop: 8,
+                              marginLeft: 20,
+                            }}
+                          >
                             <View
                               style={{
-                                flexDirection: "row",
-                                alignItems: "center",
+                                minWidth: 45,
+                                height: 25,
+                                borderColor: "#00b1ff",
+                                borderWidth: 1,
+                                borderRadius: 8,
                                 justifyContent: "center",
-                                paddingHorizontal: 10,
-                                marginVertical: 5,
+                                alignItems: "center",
                               }}
                             >
-                              <View
-                                style={{
-                                  justifyContent: "center",
-                                  alignItems: "flex-start",
-                                  width: "50%",
-                                }}
-                              >
-                                <Text numberOfLines={1}>{item?.emp_name}</Text>
-                              </View>
-                              <View
-                                style={{
-                                  width: "45%",
-                                  justifyContent: "space-around",
-                                  flexDirection: "row",
-                                  height: 25,
-                                  alignItems: "center",
-                                  // marginTop: 8,
-                                  marginLeft: 20,
-                                }}
-                              >
-                                <View
-                                  style={{
-                                    minWidth: 45,
-                                    height: 25,
-                                    borderColor: selectedColor,
-                                    borderWidth: 1,
-                                    borderRadius: 8,
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                  }}
-                                >
-                                  <Text
-                                    onPress={() => {
-                                      item?.allocatedCount > 0 &&
-                                        navigateToEMS();
-                                    }}
-                                    style={{
-                                      padding: 2,
-                                      textDecorationLine:
-                                        item?.allocatedCount > 0
-                                          ? "underline"
-                                          : "none",
-                                    }}
-                                  >
-                                    {item?.allocatedCount}
-                                  </Text>
-                                </View>
-                                <View
-                                  style={{
-                                    minWidth: 45,
-                                    height: 25,
-                                    borderColor: selectedColor,
-                                    borderWidth: 1,
-                                    borderRadius: 8,
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                  }}
-                                >
-                                  <Text
-                                    onPress={() => {
-                                      navigateToDropLostCancel();
-                                    }}
-                                    style={{
-                                      padding: 2,
-                                      textDecorationLine:
-                                        item?.droppedCount > 0
-                                          ? "underline"
-                                          : "none",
-                                    }}
-                                  >
-                                    {item?.droppedCount}
-                                  </Text>
-                                </View>
-                              </View>
-                            </View>
-                          );
-                        }}
-                      />
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                          paddingHorizontal: 10,
-                          marginTop: 10,
-                          marginVertical: 8,
-                        }}
-                      >
-                        <View
-                          style={{
-                            justifyContent: "center",
-                            alignItems: "center",
-                            width: "50%",
-                          }}
-                        >
-                          <Text
-                            style={{
-                              fontSize: 15,
-                              fontWeight: "600",
-                              color: "#00b1ff",
-                            }}
-                          >
-                            {"Total"}
-                          </Text>
-                        </View>
-                        <View
-                          style={{
-                            width: "45%",
-                            justifyContent: "space-around",
-                            flexDirection: "row",
-                            height: 25,
-                            alignItems: "center",
-                            // marginTop: 8,
-                            marginLeft: 20,
-                          }}
-                        >
-                          <View
-                            style={{
-                              minWidth: 45,
-                              height: 25,
-                              borderColor: "#00b1ff",
-                              borderWidth: 1,
-                              borderRadius: 8,
-                              justifyContent: "center",
-                              alignItems: "center",
-                            }}
-                          >
-                            <Text
-                              onPress={() => {
-                                selector.receptionistData.totalAllocatedCount >
-                                  0 && navigateToEMS();
-                              }}
-                              style={{
-                                padding: 2,
-                                textDecorationLine:
+                              <Text
+                                onPress={() => {
                                   selector.receptionistData
-                                    .totalAllocatedCount > 0
-                                    ? "underline"
-                                    : "none",
+                                    .totalAllocatedCount > 0 && navigateToEMS();
+                                }}
+                                style={{
+                                  padding: 2,
+                                  textDecorationLine:
+                                    selector.receptionistData
+                                      .totalAllocatedCount > 0
+                                      ? "underline"
+                                      : "none",
+                                }}
+                              >
+                                {selector.receptionistData.totalAllocatedCount}
+                              </Text>
+                            </View>
+                            <View
+                              style={{
+                                minWidth: 45,
+                                height: 25,
+                                borderColor: "#00b1ff",
+                                borderWidth: 1,
+                                borderRadius: 8,
+                                justifyContent: "center",
+                                alignItems: "center",
                               }}
                             >
-                              {selector.receptionistData.totalAllocatedCount}
-                            </Text>
+                              <Text
+                                onPress={() => {
+                                  navigateToDropLostCancel();
+                                }}
+                                style={{
+                                  padding: 2,
+                                  textDecorationLine:
+                                    selector.receptionistData
+                                      .totalDroppedCount > 0
+                                      ? "underline"
+                                      : "none",
+                                }}
+                              >
+                                {selector.receptionistData.totalDroppedCount}
+                              </Text>
+                            </View>
                           </View>
-                          <View
-                            style={{
-                              minWidth: 45,
-                              height: 25,
-                              borderColor: "#00b1ff",
-                              borderWidth: 1,
-                              borderRadius: 8,
-                              justifyContent: "center",
-                              alignItems: "center",
-                            }}
-                          >
+                        </View>
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            marginTop: 16,
+                            justifyContent: "space-between",
+                            marginHorizontal: 8,
+                          }}
+                        >
+                          <View style={{ ...styles.statWrap, width: "33%" }}>
                             <Text
-                              onPress={() => {
-                                navigateToDropLostCancel();
-                              }}
                               style={{
-                                padding: 2,
-                                textDecorationLine:
-                                  selector.receptionistData.totalDroppedCount >
-                                  0
-                                    ? "underline"
-                                    : "none",
+                                marginLeft: 10,
+                                fontSize: 16,
+                                fontWeight: "600",
+                                flexDirection: "row",
                               }}
                             >
-                              {selector.receptionistData.totalDroppedCount}
+                              E2B
                             </Text>
+                            {bookingData !== null && enqData !== null ? (
+                              <Text
+                                style={{
+                                  color:
+                                    Math.floor(
+                                      (parseInt(bookingData?.achievment) /
+                                        parseInt(enqData?.achievment)) *
+                                        100
+                                    ) > 40
+                                      ? "#14ce40"
+                                      : "#ff0000",
+                                  fontSize: 12,
+                                  marginRight: 4,
+                                }}
+                              >
+                                {parseInt(bookingData?.achievment) === 0 ||
+                                parseInt(enqData?.achievment) === 0
+                                  ? 0
+                                  : Math.round(
+                                      (parseInt(bookingData?.achievment) /
+                                        parseInt(enqData?.achievment)) *
+                                        100
+                                    )}
+                                %
+                              </Text>
+                            ) : (
+                              <Text
+                                style={{
+                                  color: "#ff0000",
+                                  fontSize: 12,
+                                }}
+                              >
+                                0%
+                              </Text>
+                            )}
+                          </View>
+                          <View style={{ ...styles.statWrap, width: "33%" }}>
+                            <Text
+                              style={{
+                                marginLeft: 10,
+                                fontSize: 16,
+                                fontWeight: "600",
+                              }}
+                            >
+                              E2R
+                            </Text>
+                            {enqData !== null && visitData !== null ? (
+                              <Text
+                                style={{
+                                  color:
+                                    Math.floor(
+                                      (parseInt(visitData?.achievment) /
+                                        parseInt(enqData?.achievment)) *
+                                        100
+                                    ) > 40
+                                      ? "#14ce40"
+                                      : "#ff0000",
+                                  fontSize: 12,
+                                  marginRight: 4,
+                                }}
+                              >
+                                {parseInt(enqData?.achievment) === 0 ||
+                                parseInt(visitData?.achievment) === 0
+                                  ? 0
+                                  : Math.round(
+                                      (parseInt(visitData?.achievment) /
+                                        parseInt(enqData?.achievment)) *
+                                        100
+                                    )}
+                                %
+                              </Text>
+                            ) : (
+                              <Text
+                                style={{
+                                  color: "#ff0000",
+                                  fontSize: 12,
+                                }}
+                              >
+                                0%
+                              </Text>
+                            )}
+                          </View>
+                          <View style={{ ...styles.statWrap, width: "33%" }}>
+                            <Text
+                              style={{
+                                marginLeft: 10,
+                                fontSize: 16,
+                                fontWeight: "600",
+                              }}
+                            >
+                              E2R
+                            </Text>
+                            {finData !== null && retailData !== null ? (
+                              <Text
+                                style={{
+                                  color:
+                                    Math.floor(
+                                      (parseInt(finData?.achievment) /
+                                        parseInt(retailData?.achievment)) *
+                                        100
+                                    ) > 40
+                                      ? "#14ce40"
+                                      : "#ff0000",
+                                  fontSize: 12,
+                                  marginRight: 4,
+                                }}
+                              >
+                                {parseInt(finData?.achievment) === 0 ||
+                                parseInt(retailData?.achievment) === 0
+                                  ? 0
+                                  : Math.round(
+                                      (parseInt(finData?.achievment) /
+                                        parseInt(retailData?.achievment)) *
+                                        100
+                                    )}
+                                %
+                              </Text>
+                            ) : (
+                              <Text
+                                style={{
+                                  color: "#ff0000",
+                                  fontSize: 12,
+                                }}
+                              >
+                                0%
+                              </Text>
+                            )}
                           </View>
                         </View>
-                      </View>
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          marginTop: 16,
-                          justifyContent: "space-between",
-                          marginHorizontal: 8,
-                        }}
-                      >
-                        <View style={{ ...styles.statWrap, width: "33%" }}>
-                          <Text
-                            style={{
-                              marginLeft: 10,
-                              fontSize: 16,
-                              fontWeight: "600",
-                              flexDirection: "row",
-                            }}
-                          >
-                            E2B
-                          </Text>
-                          {bookingData !== null && enqData !== null ? (
-                            <Text
-                              style={{
-                                color:
-                                  Math.floor(
-                                    (parseInt(bookingData?.achievment) /
-                                      parseInt(enqData?.achievment)) *
-                                      100
-                                  ) > 40
-                                    ? "#14ce40"
-                                    : "#ff0000",
-                                fontSize: 12,
-                                marginRight: 4,
-                              }}
-                            >
-                              {parseInt(bookingData?.achievment) === 0 ||
-                              parseInt(enqData?.achievment) === 0
-                                ? 0
-                                : Math.round(
-                                    (parseInt(bookingData?.achievment) /
-                                      parseInt(enqData?.achievment)) *
-                                      100
-                                  )}
-                              %
-                            </Text>
-                          ) : (
-                            <Text
-                              style={{
-                                color: "#ff0000",
-                                fontSize: 12,
-                              }}
-                            >
-                              0%
-                            </Text>
-                          )}
-                        </View>
-                        <View style={{ ...styles.statWrap, width: "33%" }}>
-                          <Text
-                            style={{
-                              marginLeft: 10,
-                              fontSize: 16,
-                              fontWeight: "600",
-                            }}
-                          >
-                            E2R
-                          </Text>
-                          {enqData !== null && visitData !== null ? (
-                            <Text
-                              style={{
-                                color:
-                                  Math.floor(
-                                    (parseInt(visitData?.achievment) /
-                                      parseInt(enqData?.achievment)) *
-                                      100
-                                  ) > 40
-                                    ? "#14ce40"
-                                    : "#ff0000",
-                                fontSize: 12,
-                                marginRight: 4,
-                              }}
-                            >
-                              {parseInt(enqData?.achievment) === 0 ||
-                              parseInt(visitData?.achievment) === 0
-                                ? 0
-                                : Math.round(
-                                    (parseInt(visitData?.achievment) /
-                                      parseInt(enqData?.achievment)) *
-                                      100
-                                  )}
-                              %
-                            </Text>
-                          ) : (
-                            <Text
-                              style={{
-                                color: "#ff0000",
-                                fontSize: 12,
-                              }}
-                            >
-                              0%
-                            </Text>
-                          )}
-                        </View>
-                        <View style={{ ...styles.statWrap, width: "33%" }}>
-                          <Text
-                            style={{
-                              marginLeft: 10,
-                              fontSize: 16,
-                              fontWeight: "600",
-                            }}
-                          >
-                            E2R
-                          </Text>
-                          {finData !== null && retailData !== null ? (
-                            <Text
-                              style={{
-                                color:
-                                  Math.floor(
-                                    (parseInt(finData?.achievment) /
-                                      parseInt(retailData?.achievment)) *
-                                      100
-                                  ) > 40
-                                    ? "#14ce40"
-                                    : "#ff0000",
-                                fontSize: 12,
-                                marginRight: 4,
-                              }}
-                            >
-                              {parseInt(finData?.achievment) === 0 ||
-                              parseInt(retailData?.achievment) === 0
-                                ? 0
-                                : Math.round(
-                                    (parseInt(finData?.achievment) /
-                                      parseInt(retailData?.achievment)) *
-                                      100
-                                  )}
-                              %
-                            </Text>
-                          ) : (
-                            <Text
-                              style={{
-                                color: "#ff0000",
-                                fontSize: 12,
-                              }}
-                            >
-                              0%
-                            </Text>
-                          )}
-                        </View>
-                      </View>
-                    </ScrollView>
+                      </ScrollView>
+                    </>
                   )}
                 </>
                 {/* Header view end */}

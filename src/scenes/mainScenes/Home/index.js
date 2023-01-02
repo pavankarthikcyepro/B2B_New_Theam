@@ -1108,6 +1108,8 @@ const HomeScreen = ({ route, navigation }) => {
         menuClicked={() => navigation.openDrawer()}
         branchClicked={() => moveToSelectBranch()}
         filterClicked={() => moveToFilter()}
+        notification={true}
+        notificationNav={() => navigation.navigate("NOTIF_1")}
       />
       <ScrollView
         showsVerticalScrollIndicator={false}

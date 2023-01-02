@@ -64,11 +64,6 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
   const [userData, setUserData] = useState({});
   const [punched, setPunched] = useState(false);
   const [active, setActive] = useState(false);
-  // useEffect(() => {
-  //   if (!present) {
-  //     callAPI(true);
-  //   }
-  // }, [present]);
 
   useEffect(() => {
     getReason();
@@ -183,7 +178,6 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
           )
         );
         const json = await response.json();
-        console.log("OKOKOKOK", json[json?.length - 1]);
         let latestDate = new Date(
           json[json?.length - 1]?.createdtimestamp
         )?.getDate();
@@ -195,7 +189,7 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
         }
       }
     } catch (error) {
-      console.error("MAIN", error);
+      console.error(error);
     }
   };
 
@@ -206,7 +200,6 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
         payload
       );
       const savedJson = await saveData.json();
-      console.log("savedJson", savedJson, absentRequest);
       !absentRequest &&
         AsyncStore.storeJsonData(
           AsyncStore.Keys.IS_PRESENT,
@@ -217,7 +210,7 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
       //   !absentRequest && inVisible();
       // }
     } catch (error) {
-      console.error("savedJsonERROR", error);
+      console.error(error);
     }
   };
 
@@ -251,13 +244,12 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
           AsyncStore.Keys.IS_PRESENT,
           new Date().getDate().toString()
         );
-      // console.log("updatedJson", updatedJson);
       !absentRequest && inVisible();
       // if (updatedJson.success) {
       //   !absentRequest && inVisible();
       // }
     } catch (error) {
-      console.error("updatedJsonERROR", error);
+      console.error(error);
     }
   };
 

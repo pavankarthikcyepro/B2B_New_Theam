@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -13,22 +13,15 @@ import {
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
-import {
-  DatePickerComponent,
-  DateRangeComp,
-  DropDownComponant,
-  LoaderComponent,
-} from "../../../components";
+import { DropDownComponant } from "../../../components";
 import { Colors, GlobalStyle } from "../../../styles";
 import { client } from "../../../networking/client";
 import URL from "../../../networking/endpoints";
-import { Button, IconButton } from "react-native-paper";
-import { Calendar } from "react-native-calendars";
+import { ActivityIndicator, Button, IconButton } from "react-native-paper";
 import * as AsyncStore from "../../../asyncStore";
 import moment from "moment";
 import { DropDownSelectionItem } from "../../../pureComponents";
 import { AttendanceTopTabNavigatorIdentifiers } from "../../../navigations/attendanceTopTabNavigator";
-import { getUserWiseTargetParameters } from "../../../redux/homeReducer";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
@@ -37,41 +30,32 @@ const lastMonthFirstDate = moment(currentDate, dateFormat)
   .startOf("month")
   .format(dateFormat);
 
-const officeLocation = {
-  latitude: 37.33233141,
-  longitude: -122.0312186,
-};
 const screenWidth = Dimensions.get("window").width;
 const profileWidth = screenWidth / 8;
 const profileBgWidth = profileWidth + 5;
-
-const LocalButtonComp = ({ title, onPress, disabled }) => {
-  return (
-    <Button
-      style={{ marginHorizontal: 20 }}
-      mode="contained"
-      color={Colors.RED}
-      disabled={disabled}
-      labelStyle={{ textTransform: "none" }}
-      onPress={onPress}
-    >
-      {title}
-    </Button>
-  );
-};
+const image = "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg";
 
 const TeamAttendanceScreen = ({ route, navigation }) => {
-  // const navigation = useNavigation();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [showDropDownModel, setShowDropDownModel] = useState(false);
   const [dropDownData, setDropDownData] = useState([]);
-  const [selectedLocation, setSelectedLocation] = useState("");
-  const [selectedDealerCode, setSelectedDealerCode] = useState("");
-  const [selectedMonthYear, setSelectedMonthYear] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState({
+    name: "",
+    id: 0,
+  });
+  const [selectedDealerCode, setSelectedDealerCode] = useState({
+    name: "",
+    id: 0,
+  });
+  const [selectedMonthYear, setSelectedMonthYear] = useState({
+    name: "",
+    id: 0,
+  });
   const [selectedKey, setSelectedKey] = useState("");
   const [allParameters, setAllParameters] = useState([]);
-
+  const [dropdownList, setDropdownList] = useState({});
+  const [employeeList, setEmployeeList] = useState({});
   const data = [
     {
       role: "Sales Manager",
@@ -157,7 +141,18 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     getInitialParameters();
+    // getEmployeeList();
   }, []);
+
+  useEffect(() => {
+    if (
+      selectedLocation.id != 0 &&
+      selectedDealerCode.id != 0 &&
+      selectedMonthYear.id != 0
+    ) {
+      getEmployeeList();
+    }
+  }, [selectedLocation, selectedDealerCode, selectedMonthYear]);
 
   const getInitialParameters = async () => {
     try {
@@ -166,110 +161,63 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
       );
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
-        const payload = getEmployeePayload(employeeData, jsonObj);
-        Promise.all([dispatch(getUserWiseTargetParameters(payload))])
-          .then(async (res) => {
-            let originalData = res[0].payload.employeeTargetAchievements;
-            if (originalData.length > 0) {
-              let myParams = [
-                ...originalData.filter((item) => item.empId === jsonObj.empId),
-              ];
-              myParams[0] = {
-                ...myParams[0],
-                isOpenInner: false,
-                employeeTargetAchievements: [],
-                // targetAchievements: newArray,
-                // tempTargetAchievements: newArray,
-              };
-              setAllParameters(myParams);
-            }
-          })
-          .catch();
+        const response = await client.get(
+          URL.ORG_HIRARCHY(jsonObj.orgId, jsonObj.branchId)
+        );
+        const json = await response.json();
+        setDropdownList(json);
       }
     } catch (error) {
       console.error(error);
     }
   };
 
-  const getEmployeePayload = (employeeData, item) => {
-    const jsonObj = JSON.parse(employeeData);
-    const dateFormat = "YYYY-MM-DD";
-    const currentDate = moment().format(dateFormat);
-    const monthFirstDate = moment(currentDate, dateFormat)
-      .subtract(0, "months")
-      .startOf("month")
-      .format(dateFormat);
-    const monthLastDate = moment(currentDate, dateFormat)
-      .subtract(0, "months")
-      .endOf("month")
-      .format(dateFormat);
-    return {
-      orgId: jsonObj.orgId,
-      selectedEmpId: item.empId || item.id,
-      endDate: monthLastDate,
-      loggedInEmpId: jsonObj.empId,
-      empId: item.empId || item.id,
-      startDate: monthFirstDate,
-      levelSelected: null,
-      pageNo: 0,
-      size: 100,
-    };
+  const getEmployeeList = async () => {
+    try {
+      setLoading(true);
+      setEmployeeList({});
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        // let payload = [643, 644, 645, 646, 647];
+        let payloadx = [
+          selectedLocation.id,
+          selectedDealerCode.id,
+          selectedMonthYear.id,
+        ];
+        const response = await client.post(
+          URL.GET_EMPLOYEES_DROP_DOWN_DATA(jsonObj.orgId, jsonObj.empId),
+          payloadx
+        );
+        const json = await response.json();
+        setEmployeeList(json);
+        setLoading(false);
+      }
+    } catch (error) {
+      setLoading(false);
+      console.error(error);
+    }
   };
-
-  const dropdownList = [{ name: "JP Nagar" }, { name: "HCR" }];
+  // const dropdownList = [{ name: "JP Nagar" }, { name: "HCR" }];
 
   const dropDownItemClicked = async (item) => {
     setSelectedKey(item);
+    switch (item) {
+      case "Location":
+        setDropDownData(dropdownList["Location"].sublevels);
+        break;
+      case "Dealer Code":
+        setDropDownData(dropdownList["Dealer Code"].sublevels);
+        break;
+      case "Month & Years":
+        setDropDownData(dropdownList["Dealer Code"].sublevels);
+        break;
+      default:
+        break;
+    }
     setShowDropDownModel(true);
-  };
-
-  const onEmployeeNameClick = async (item, index, lastParameter) => {
-    try {
-      let localData = [...allParameters];
-      let current = lastParameter[index].isOpenInner;
-      console.log("KKKKKK", current);
-      for (let i = 0; i < lastParameter.length; i++) {
-        lastParameter[i].isOpenInner = false;
-        if (i === lastParameter.length - 1) {
-          lastParameter[index].isOpenInner = !current;
-        }
-      }
-      if (!current) {
-        let employeeData = await AsyncStore.getData(
-          AsyncStore.Keys.LOGIN_EMPLOYEE
-        );
-        if (employeeData) {
-          const jsonObj = JSON.parse(employeeData);
-          const payload = getEmployeePayload(employeeData, item);
-          Promise.all([dispatch(getUserWiseTargetParameters(payload))]).then(
-            async (res) => {
-              let tempRawData = [];
-              tempRawData = res[0]?.payload?.employeeTargetAchievements.filter(
-                (emp) => emp.empId !== item.empId
-              );
-              let newIds = res[0]?.payload?.employeeTargetAchievements.map(
-                (emp) => emp.empId
-              );
-              if (tempRawData.length > 0) {
-                for (let i = 0; i < tempRawData.length; i++) {
-                  // tempRawData[i].empName = tempRawData[i].empName,
-                  tempRawData[i] = {
-                    ...tempRawData[i],
-                    isOpenInner: false,
-                    employeeTargetAchievements: [],
-                    // tempTargetAchievements: tempRawData[i]?.targetAchievements,
-                  };
-                }
-              }
-              console.log("tempRawData", tempRawData);
-              setAllParameters([...tempRawData]);
-            }
-          );
-        }
-      } else {
-        setAllParameters([...tempRawData]);
-      }
-    } catch (error) {}
   };
 
   return (
@@ -278,18 +226,19 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
         visible={showDropDownModel}
         multiple={false}
         headerTitle={"Select"}
-        data={dropdownList}
+        data={dropDownData}
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
+          let newdata = { name: item.name, id: item.id };
           switch (selectedKey) {
             case "Location":
-              setSelectedLocation(item.name);
+              setSelectedLocation(newdata);
               break;
             case "Dealer Code":
-              setSelectedDealerCode(item.name);
+              setSelectedDealerCode(newdata);
               break;
             case "Month & Years":
-              setSelectedMonthYear(item.name);
+              setSelectedMonthYear(newdata);
               break;
             default:
               break;
@@ -301,7 +250,7 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
         <View style={{ marginVertical: 5 }}>
           <DropDownSelectionItem
             label={"Location"}
-            value={selectedLocation}
+            value={selectedLocation.name}
             onPress={() => dropDownItemClicked("Location")}
             takeMinHeight={true}
           />
@@ -309,7 +258,7 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
         <View style={{ marginVertical: 5 }}>
           <DropDownSelectionItem
             label={"Dealer Code"}
-            value={selectedDealerCode}
+            value={selectedDealerCode.name}
             onPress={() => dropDownItemClicked("Dealer Code")}
             takeMinHeight={true}
           />
@@ -317,56 +266,80 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
         <View style={{ marginVertical: 5 }}>
           <DropDownSelectionItem
             label={"Month & Years"}
-            value={selectedMonthYear}
+            value={selectedMonthYear.name}
             onPress={() => dropDownItemClicked("Month & Years")}
             takeMinHeight={true}
           />
         </View>
       </View>
-      <ScrollView>
-        {/* {allParameters.map((item, index) => {
+      <ScrollView s>
+        {loading && (
+          <View>
+            <ActivityIndicator size="large" color={Colors.RED} />
+          </View>
+        )}
+        {Object.keys(employeeList).map(function (key, index) {
           return (
-            <>
-              <View>
-                <Text
-                  onPress={async () => {
-                    let localData = [...allParameters];
-                    await onEmployeeNameClick(item, index, localData);
-                  }}
-                  style={{ textAlign: "center" }}
-                >
-                  {item.empName}
-                </Text>
-              </View>
-              {item.isOpenInner &&
-                item.employeeTargetAchievements.length > 0 &&
-                item.employeeTargetAchievements.map(
-                  (innerItem1, innerIndex1) => {
+            <View style={{ flexDirection: "column", marginVertical: 10 }}>
+              {Object.values(employeeList)[index].length > 0 && (
+                <View>
+                  <Text
+                    style={{ fontSize: 15, fontWeight: "700", marginLeft: 20 }}
+                  >
+                    {Object.keys(employeeList)[index]}
+                  </Text>
+                </View>
+              )}
+              <ScrollView showsHorizontalScrollIndicator={false} horizontal>
+                {Object.values(employeeList)[index].map(
+                  (innerItem, innerIndex) => {
                     return (
-                      <>
-                        <View>
-                          <Text
-                            onPress={async () => {
-                              let localData = [...allParameters];
-                              await onEmployeeNameClick(
-                                innerItem1,
-                                innerIndex1,
-                                localData
-                              );
+                      <TouchableOpacity
+                        onPress={() => {
+                          navigation.jumpTo(
+                            AttendanceTopTabNavigatorIdentifiers.leave,
+                            {
+                              empId: innerItem.code,
+                              orgID: innerItem.orgID,
+                            }
+                          );
+                        }}
+                        style={{
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <View
+                          style={{
+                            ...GlobalStyle.shadow,
+                            ...styles.profilePicBG,
+                          }}
+                        >
+                          <Image
+                            style={styles.profilePic}
+                            source={{
+                              uri: image,
                             }}
-                            style={{ textAlign: "center" }}
-                          >
-                            {innerItem1.empName}
-                          </Text>
+                          />
                         </View>
-                      </>
+                        <Text
+                          numberOfLines={1}
+                          style={{
+                            textAlign: "center",
+                            width: profileWidth + 10,
+                          }}
+                        >
+                          {innerItem.name}
+                        </Text>
+                      </TouchableOpacity>
                     );
                   }
                 )}
-            </>
+              </ScrollView>
+            </View>
           );
-        })} */}
-        {data.map((item, index) => {
+        })}
+        {/* {data.map((item, index) => {
           return (
             <View style={{ flexDirection: "column", marginVertical: 10 }}>
               <View>
@@ -413,9 +386,8 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
               </ScrollView>
             </View>
           );
-        })}
+        })} */}
       </ScrollView>
-      <LoaderComponent visible={loading} />
     </SafeAreaView>
   );
 };

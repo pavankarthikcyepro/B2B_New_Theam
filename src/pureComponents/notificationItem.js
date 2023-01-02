@@ -1,16 +1,15 @@
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { Colors, GlobalStyle } from '../styles';
 
 
-export const NotificationItem = ({ title, date }) => {
-
-    return (
-        <View style={[styles.item]}>
-            <Text style={styles.title}>{title}</Text>
-            <Text style={[styles.title, styles.text2]}>{date}</Text>
-        </View>
-    )
+export const NotificationItem = ({ title, date, onPress }) => {
+  return (
+    <TouchableOpacity onPress={onPress} style={[styles.item]}>
+      <Text style={styles.title}>{title}</Text>
+      {/* <Text style={[styles.title, styles.text2]}>{date}</Text> */}
+    </TouchableOpacity>
+  );
 };
 
 const styles = StyleSheet.create({
