@@ -166,6 +166,8 @@ import {
   EnquiryTypes22
 } from "../../../jsonData/preEnquiryScreenJsonData";
 import Fontisto from "react-native-vector-icons/Fontisto"
+import { client } from "../../../networking/client";
+
 const theme = {
   ...DefaultTheme,
   // Specify custom property
@@ -632,14 +634,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   };
 
   const getInsurenceCompanyNamesFromServer = async (token, orgId) => {
-    await fetch(URL.GET_INSURENCE_COMPANY_NAMES(orgId), {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "auth-token": token,
-      },
-    })
+    // await fetch(URL.GET_INSURENCE_COMPANY_NAMES(orgId), {
+    //   method: "GET",
+    //   headers: {
+    //     Accept: "application/json",
+    //     "Content-Type": "application/json",
+    //     "Authorization": "Bearer " + authToken,
+    //   },
+    // })
+    await client.get(URL.GET_INSURENCE_COMPANY_NAMES(orgId))
       .then((json) => json.json())
       .then((res) => {
         if (res != null && res.length > 0) {
@@ -661,7 +664,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        "auth-token": token,
+        "Authorization": "Bearer " + authToken,
       },
     })
       .then((json) => {
@@ -2063,14 +2066,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       universalId: universalId,
     };
     const url = URL.CUSTOMER_LEAD_REFERENCE();
-    await fetch(url, {
-      headers: {
-        "Content-Type": "application/json",
-        "auth-token": authToken,
-      },
-      method: "POST",
-      body: JSON.stringify(payload),
-    })
+    // await fetch(url, {
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     "Authorization": authToken,
+    //   },
+    //   method: "POST",
+    //   body: JSON.stringify(payload),
+    // })
+    await client.post(url, payload)
       .then((res) => res.json())
       .then((jsonRes) => {
         if (jsonRes.success === true) {
@@ -2633,6 +2637,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       method: "POST",
       headers: {
         "Content-Type": "multipart/form-data",
+        "Authorization": "Bearer " + authToken,
       },
       body: formData,
     })

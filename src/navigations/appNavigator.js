@@ -95,6 +95,7 @@ import DropLostCancelScreen from "../scenes/mainScenes/DropLostCancel/DropLostCa
 import AddNewEnquiryScreen from "../scenes/mainScenes/EMS/addNewEnquiry";
 import FilterTargetScreen from "../scenes/mainScenes/TargetSettingsScreen/TabScreen/filterTarget";
 import ReceptionistFilterScreen from "../scenes/mainScenes/Home/receptionistFilter";
+import TaskThreeSixtyHistory from "../scenes/mainScenes/EMS/taskThreeSixtyHistory";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -351,6 +352,7 @@ export const EmsStackIdentifiers = {
 
   paidAccessories: "PAID_ACCESSORIES",
   task360: "TASK_360",
+  task360History: "TASK_360_HISTORY",
   homeVisit: "HOME_VISIT_1",
   preBookingFollowUp: "PREBOOKING_FOLLOWUP_1",
   bookingFollowUp: "PREBOOKING_FOLLOWUP_1",
@@ -578,6 +580,14 @@ const EmsStackNavigator = ({ navigation }) => {
               return <LeadAge />;
             },
           }}
+        />
+
+        <EmsStack.Screen
+          name={EmsStackIdentifiers.task360History}
+          component={TaskThreeSixtyHistory}
+          options={({ route }) => ({
+            headerTitle: route?.params?.title ?? "History"
+          })}
         />
 
         <EmsStack.Screen

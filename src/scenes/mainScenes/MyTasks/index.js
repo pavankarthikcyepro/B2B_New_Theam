@@ -8,6 +8,7 @@ import URL from "../../../networking/endpoints";
 import * as AsyncStore from "../../../asyncStore";
 import { getMyTasksListApi, getMyTeamsTasksListApi, role, getPendingMyTasksListApi, getRescheduleMyTasksListApi, getUpcomingMyTasksListApi, getTodayMyTasksListApi, getTodayTeamTasksListApi, getUpcomingTeamTasksListApi, getPendingTeamTasksListApi, getRescheduleTeamTasksListApi, updateIndex } from "../../../redux/mytaskReducer";
 import { useDispatch, useSelector } from "react-redux";
+import { client } from "../../../networking/client";
 
 
 const tabBarOptions = {
@@ -187,15 +188,16 @@ const MyTasksScreen = ({ navigation }) => {
       "onlyForEmp": true
     }
 
-    await fetch(URL.GET_MY_TASKS_NEW_DATA(), {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "auth-token": token,
-      },
-      body: JSON.stringify(payload),
-    })
+    // await fetch(URL.GET_MY_TASKS_NEW_DATA(), {
+    //   method: "POST",
+    //   headers: {
+    //     Accept: "application/json",
+    //     "Content-Type": "application/json",
+    //     "auth-token": token,
+    //   },
+    //   body: JSON.stringify(payload),
+    // })
+    await client.post(URL.GET_MY_TASKS_NEW_DATA(),payload)
       .then(json => json.json())
       .then(resp => {
         setResponse(resp);

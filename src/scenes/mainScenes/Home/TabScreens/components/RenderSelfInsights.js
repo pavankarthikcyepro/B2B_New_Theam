@@ -199,21 +199,33 @@ export const RenderSelfInsights = (args) => {
               />
               {item.paramName !== "DROPPED" && (
                 <View style={{ position: "absolute", top: 1, right: 5 }}>
-                  <Text
+                  <TextTicker
+                    duration={10000}
+                    loop={true}
+                    // shouldAnimateTreshold={50}
+                    bounce={false}
+                    repeatSpacer={50}
+                    marqueeDelay={0}
                     style={{
-                      color:
-                        parseInt(
-                          item.achivementPerc.substring(
-                            0,
-                            item.achivementPerc.indexOf("%")
-                          )
-                        ) >= 90
-                          ? Colors.WHITE
-                          : Colors.BLACK,
+                      marginBottom: 0,
                     }}
                   >
-                    {item.target}
-                  </Text>
+                    <Text
+                      style={{
+                        color:
+                          parseInt(
+                            item.achivementPerc.substring(
+                              0,
+                              item.achivementPerc.indexOf("%")
+                            )
+                          ) >= 90
+                            ? Colors.WHITE
+                            : Colors.BLACK,
+                      }}
+                    >
+                      {item.target}
+                    </Text>
+                  </TextTicker>
                 </View>
               )}
             </View>

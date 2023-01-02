@@ -636,14 +636,15 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
   };
 
   const getInsurenceCompanyNamesFromServer = async (token, orgId) => {
-    await fetch(URL.GET_INSURENCE_COMPANY_NAMES(orgId), {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "auth-token": token,
-      },
-    })
+    // await fetch(URL.GET_INSURENCE_COMPANY_NAMES(orgId), {
+    //   method: "GET",
+    //   headers: {
+    //     Accept: "application/json",
+    //     "Content-Type": "application/json",
+    //     "auth-token": token,
+    //   },
+    // })
+    await client.get(URL.GET_INSURENCE_COMPANY_NAMES(orgId))
       .then((json) => json.json())
       .then((res) => {
         if (res != null && res.length > 0) {
@@ -665,7 +666,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        "auth-token": token,
+        "Authorization": "Bearer " + authToken,
       },
     })
       .then((json) => {
@@ -2256,14 +2257,15 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       // universalId: universalId,
     };
     const url = URL.CUSTOMER_LEAD_REFERENCE();
-    await fetch(url, {
-      headers: {
-        "Content-Type": "application/json",
-        "auth-token": authToken,
-      },
-      method: "POST",
-      body: JSON.stringify(payload),
-    })
+    // await fetch(url, {
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     "Authorization": authToken,
+    //   },
+    //   method: "POST",
+    //   body: JSON.stringify(payload),
+    // })
+   await client.post(url,payload)
       .then((res) => res.json())
       .then((jsonRes) => {
         if (jsonRes.success === true) {
@@ -2835,6 +2837,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       method: "POST",
       headers: {
         "Content-Type": "multipart/form-data",
+        "Authorization": "Bearer " + authToken,
       },
       body: formData,
     })
