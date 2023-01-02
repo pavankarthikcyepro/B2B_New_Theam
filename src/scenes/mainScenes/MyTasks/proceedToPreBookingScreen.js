@@ -30,6 +30,7 @@ import { getCurrentTasksListApi, getPendingTasksListApi } from "../../../redux/m
 import URL from "../../../networking/endpoints";
 import { EmsTopTabNavigatorIdentifiers } from "../../../navigations/emsTopTabNavigator";
 import Geolocation from '@react-native-community/geolocation';
+import { client } from "../../../networking/client";
 
 const FirstDependencyArray = ["Lost To Competition", "Lost To Used Car", "Lost to Used Cars from Co-Dealer"];
 const SecondDependencyArray = ["Lost to Competitor", "Lost To Co-Dealer", "Lost To Competition", "Lost To Used Car"];
@@ -263,14 +264,15 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
             universalId: universalId
         }
         const url = URL.CUSTOMER_LEAD_REFERENCE();
-        await fetch(url, {
-            headers: {
-                'Content-Type': 'application/json',
-                'auth-token': authToken
-            },
-            method: "POST",
-            body: JSON.stringify(payload)
-        })
+        // await fetch(url, {
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //         'auth-token': authToken
+        //     },
+        //     method: "POST",
+        //     body: JSON.stringify(payload)
+        // })
+        await client.post(url,payload)
             .then(res => res.json())
             .then(jsonRes => {
                 if (jsonRes.success === true) {

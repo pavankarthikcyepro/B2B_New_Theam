@@ -8,6 +8,7 @@ import moment from "moment";
 import { AppNavigator } from "../../../navigations";
 import { showToast } from "../../../utils/toast";
 import * as AsyncStore from "../../../asyncStore";
+import { EmsStackIdentifiers } from "../../../navigations/appNavigator";
 
 const mytasksIdentifires = {
   testdrive: "TEST_DRIVE",
@@ -20,6 +21,7 @@ const mytasksIdentifires = {
   preenquiryfollowup: "PRE_ENQUIRY_FOLLOW_UP",
   createenquiry: "CREATE_ENQUIRY",
   bookingfollowupdse: "BOOKING_FOLLOW_UP",
+  task360History: "TASK_360_HISTORY",
 };
 
 const TaskThreeSixtyScreen = ({ route, navigation }) => {
@@ -230,7 +232,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                     sections={dataForSectionList}
                     keyExtractor={(item, index) => item + index}
                     renderItem={({ item, index, section }) => {
-                        const date = moment(item.taskUpdatedTime).format("ddd MM/YY h:mm a").split(" ");
+                        const date = moment(item.taskUpdatedTime).format("DD/MM/YY h:mm a").split(" ");
 
                         let topBcgColor = Colors.LIGHT_GRAY;
                         let bottomBcgColor = Colors.LIGHT_GRAY;
@@ -261,6 +263,8 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                               </Text>
                             );
                         }
+
+                        let isHistory = section.title == "Planned Tasks";
 
                         return (
                           <>
@@ -317,7 +321,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                             fontWeight: "400",
                                           }}
                                         >
-                                          {date[0] + " " + date[1]}
+                                          {date[0]}
                                         </Text>
                                         <Text
                                           style={{
@@ -325,7 +329,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                             fontWeight: "400",
                                           }}
                                         >
-                                          {date[2] + " " + date[3]}
+                                          {date[1] + " " + date[2]}
                                         </Text>
                                       </View>
                                     </View>
@@ -423,7 +427,11 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                               ) : null
                             ) : (
                               <View
-                                style={{ width: "100%", flexDirection: "row" }}
+                                style={{
+                                  width: "100%",
+                                  flexDirection: "row",
+                                  alignItems: "center",
+                                }}
                               >
                                 <View
                                   style={{
@@ -470,7 +478,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                           fontWeight: "400",
                                         }}
                                       >
-                                        {date[0] + " " + date[1]}
+                                        {date[0]}
                                       </Text>
                                       <Text
                                         style={{
@@ -478,12 +486,17 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                           fontWeight: "400",
                                         }}
                                       >
-                                        {date[2] + " " + date[3]}
+                                        {date[1] + " " + date[2]}
                                       </Text>
                                     </View>
                                   </View>
                                 </View>
-                                <View style={{ width: "75%", padding: 5 }}>
+                                <View
+                                  style={{
+                                    width: isHistory ? "67%" : "75%",
+                                    padding: 5,
+                                  }}
+                                >
                                   <View
                                     style={[
                                       { backgroundColor: Colors.WHITE },
@@ -564,6 +577,29 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                     )}
                                   </View>
                                 </View>
+                                {isHistory ? (
+                                  <TouchableOpacity
+                                    onPress={() =>
+                                      navigation.navigate(
+                                        EmsStackIdentifiers.task360History,
+                                        {
+                                          identifier:
+                                            mytasksIdentifires.task360History,
+                                          title: checkForTaskNames(
+                                            item.taskName
+                                          ),
+                                          universalId: item.universalId,
+                                        }
+                                      )
+                                    }
+                                  >
+                                    <Image
+                                      source={require("./../../../assets/images/dots.png")}
+                                      resizeMode="contain"
+                                      style={styles.dotContainer}
+                                    />
+                                  </TouchableOpacity>
+                                ) : null}
                               </View>
                             )}
                           </>
@@ -596,6 +632,11 @@ const styles = StyleSheet.create({
   followUpText: {
     fontSize: 14,
     fontWeight: "400",
-    marginVertical:3
+    marginVertical: 3,
   },
+
+  dotContainer:{
+    height: 45,
+    width: 25,
+  }
 });

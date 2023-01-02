@@ -1895,10 +1895,12 @@ const BookingFormScreen = ({ route, navigation }) => {
                 break;
         }
 
+      let tempToken1 = await AsyncStore.getData(AsyncStore.Keys.USER_TOKEN);
         await fetch(URL.UPLOAD_DOCUMENT(), {
             method: "POST",
             headers: {
                 "Content-Type": "multipart/form-data",
+              "Authorization": "Bearer " + tempToken1,
             },
             body: formData,
         })

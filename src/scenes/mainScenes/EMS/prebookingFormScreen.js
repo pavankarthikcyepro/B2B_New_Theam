@@ -150,6 +150,7 @@ import { EmsTopTabNavigatorIdentifiers } from "../../../navigations/emsTopTabNav
 import Geolocation from "@react-native-community/geolocation";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons"
 import Entypo from 'react-native-vector-icons/Entypo'
+import { client } from "../../../networking/client";
 const rupeeSymbol = "\u20B9";
 
 const dmsAttachmentsObj = {
@@ -803,7 +804,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        "auth-token": token,
+        "Authorization": "Bearer " + authToken,
       },
     })
       .then((json) => {
@@ -3080,14 +3081,15 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     };
     const url = URL.CUSTOMER_LEAD_REFERENCE();
 
-    await fetch(url, {
-      headers: {
-        "Content-Type": "application/json",
-        "auth-token": authToken,
-      },
-      method: "POST",
-      body: JSON.stringify(payload),
-    })
+    // await fetch(url, {
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     "auth-token": authToken,
+    //   },
+    //   method: "POST",
+    //   body: JSON.stringify(payload),
+    // })
+    await client.post(url,payload)
       .then((res) => res.json())
       .then((jsonRes) => {
         if (jsonRes.success === true) {
@@ -3362,6 +3364,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       method: "POST",
       headers: {
         "Content-Type": "multipart/form-data",
+        "Authorization": "Bearer " + authToken,
       },
       body: formData,
     })

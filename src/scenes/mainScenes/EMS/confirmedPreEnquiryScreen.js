@@ -25,6 +25,7 @@ import { DropComponent } from './components/dropComp';
 import URL from '../../../networking/endpoints';
 import Geolocation from '@react-native-community/geolocation';
 import moment from 'moment';
+import { client } from '../../../networking/client';
 
 const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
 
@@ -131,15 +132,16 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
 
     const DropPreEnquiryLead = async (payload, enquiryDetailsObj) => {
         setIsLoading(true);
-        await fetch(URL.DROP_ENQUIRY(), {
-            method: "POST",
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-                "auth-token": userToken
-            },
-            body: JSON.stringify(payload)
-        })
+        // await fetch(URL.DROP_ENQUIRY(), {
+        //     method: "POST",
+        //     headers: {
+        //         Accept: "application/json",
+        //         "Content-Type": "application/json",
+        //         "auth-token": userToken
+        //     },
+        //     body: JSON.stringify(payload)
+        // })
+        await client.post(URL.DROP_ENQUIRY(), payload)
             .then(json => json.json())
             .then(response => {
                 if (response.status === "SUCCESS") {
@@ -160,15 +162,16 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     const UpdateRecord = async (enquiryDetailsObj) => {
 
         setIsLoading(true);
-        await fetch(URL.UPDATE_ENQUIRY_DETAILS(), {
-            method: "POST",
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-                "auth-token": userToken
-            },
-            body: JSON.stringify(enquiryDetailsObj)
-        })
+        // await fetch(URL.UPDATE_ENQUIRY_DETAILS(), {
+        //     method: "POST",
+        //     headers: {
+        //         Accept: "application/json",
+        //         "Content-Type": "application/json",
+        //         "auth-token": userToken
+        //     },
+        //     body: JSON.stringify(enquiryDetailsObj)
+        // })
+        await client.post(URL.UPDATE_ENQUIRY_DETAILS(), enquiryDetailsObj)
             .then(json => json.json())
             .then(response => {
                 if (response.success === true) {
@@ -222,7 +225,8 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     useEffect(() => {
         getAsyncStorageData();
         getBranchId();
-        getDropDownApi();
+        // commented it as its getting called multiple time and here its not in use
+        // getDropDownApi();
 
         // api calls
         dispatch(getPreEnquiryDetails(itemData.universalId));
@@ -452,15 +456,16 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
 
     const UpdateRecord007 = async (enquiryDetailsObj) => {
         setIsLoading(true);
-        await fetch(URL.UPDATE_ENQUIRY_DETAILS(), {
-            method: "POST",
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-                "auth-token": userToken
-            },
-            body: JSON.stringify(enquiryDetailsObj)
-        })
+        // await fetch(URL.UPDATE_ENQUIRY_DETAILS(), {
+        //     method: "POST",
+        //     headers: {
+        //         Accept: "application/json",
+        //         "Content-Type": "application/json",
+        //         "auth-token": userToken
+        //     },
+        //     body: JSON.stringify(enquiryDetailsObj)
+        // })
+        await client.post(URL.UPDATE_ENQUIRY_DETAILS(), enquiryDetailsObj)
             .then(json => json.json())
             .then(response => {
                 return respone;
@@ -549,15 +554,16 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     const customerLeadReference = async (enquiryDetailsObj) => {
 
         setIsLoading(true);
-        await fetch(URL.CUSTOMER_LEAD_REFERENCE(), {
-            method: "POST",
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-                "auth-token": userToken
-            },
-            body: JSON.stringify(enquiryDetailsObj)
-        })
+            // await fetch(URL.CUSTOMER_LEAD_REFERENCE(), {
+            //     method: "POST",
+            //     headers: {
+            //         Accept: "application/json",
+            //         "Content-Type": "application/json",
+            //         "auth-token": userToken
+            //     },
+        //     body: JSON.stringify(enquiryDetailsObj)
+        // })
+        await client.post(URL.CUSTOMER_LEAD_REFERENCE(), enquiryDetailsObj )
             .then(json => json.json())
             .then(response => {
                 if (response && response.dmsEntity && response.dmsEntity.leadCustomerReference) {

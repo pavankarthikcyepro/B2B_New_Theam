@@ -48,6 +48,7 @@ import Geolocation from '@react-native-community/geolocation';
 import {
   GetDropList,
 } from "../../../utils/helperFunctions";
+import { client } from "../../../networking/client";
 
 const FirstDependencyArray = [
   "Lost To Competition",
@@ -341,14 +342,15 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
     };
     const url = URL.CUSTOMER_LEAD_REFERENCE();
 
-    await fetch(url, {
-      headers: {
-        "Content-Type": "application/json",
-        "auth-token": authToken,
-      },
-      method: "POST",
-      body: JSON.stringify(payload),
-    })
+    // await fetch(url, {
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     "auth-token": authToken,
+    //   },
+    //   method: "POST",
+    //   body: JSON.stringify(payload),
+    // })
+    await client.post(url,payload)
       .then((res) => res.json())
       .then((jsonRes) => {
         if (jsonRes.success === true) {

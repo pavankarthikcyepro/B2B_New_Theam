@@ -62,6 +62,7 @@ import {
 } from "../../../utils/helperFunctions";
 import moment from "moment";
 import { EmsTopTabNavigatorIdentifiers } from "../../../navigations/emsTopTabNavigator";
+import { client } from "../../../networking/client";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -589,15 +590,16 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     };
 
 
-    await fetch(URL.CUSTOMER_LEAD_REFERENCE(), {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "auth-token": userToken,
-      },
-      body: JSON.stringify(bodyObj),
-    })
+    // await fetch(URL.CUSTOMER_LEAD_REFERENCE(), {
+    //   method: "POST",
+    //   headers: {
+    //     Accept: "application/json",
+    //     "Content-Type": "application/json",
+    //     "auth-token": userToken,
+    //   },
+    //   body: JSON.stringify(bodyObj),
+    // })
+    await client.post(URL.CUSTOMER_LEAD_REFERENCE(),bodyObj)
       .then((response) => response.json())
       .then((jsonObj) => {
         if (jsonObj.success == true) {

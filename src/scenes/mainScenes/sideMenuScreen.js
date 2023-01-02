@@ -443,13 +443,14 @@ const SideMenuScreen = ({ navigation }) => {
     //     // setDataList(json);
     //   })
     //   .catch((error) => console.error(error));
-
+    AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
     fetch(
       URL.UPLOAD_PROFILE(userData.empId, userData.orgId, userData.branchId),
       {
         method: "POST",
         headers: {
           "Content-Type": "multipart/form-data",
+          "Authorization": "Bearer " + token,
         },
         body: formdata,
       }
@@ -481,7 +482,8 @@ const SideMenuScreen = ({ navigation }) => {
         // setDataList(json);
       })
       .catch((error) => console.error(error));
-  };
+  })
+}
 
   const updateProfilePic = async (uri) => {
     try {
@@ -515,7 +517,7 @@ const SideMenuScreen = ({ navigation }) => {
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
-            "auth-token": token,
+            "Authorization": "Bearer " + token,
           },
           body: JSON.stringify(),
         })

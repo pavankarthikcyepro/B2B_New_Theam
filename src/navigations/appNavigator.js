@@ -100,6 +100,7 @@ import ReceptionistFilterScreen from "../scenes/mainScenes/Home/receptionistFilt
 import { AttendanceTopTabNavigatorTwo, MyAttendanceTopTabNavigatorOne } from "./attendanceTopTabNavigator";
 import GeoLocationScreen from "../scenes/mainScenes/Geolocation";
 import { MyGeolocationTopTabNavigatorOne } from "./geolocationNavigator";
+import TaskThreeSixtyHistory from "../scenes/mainScenes/EMS/taskThreeSixtyHistory";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -359,6 +360,7 @@ export const EmsStackIdentifiers = {
 
   paidAccessories: "PAID_ACCESSORIES",
   task360: "TASK_360",
+  task360History: "TASK_360_HISTORY",
   homeVisit: "HOME_VISIT_1",
   preBookingFollowUp: "PREBOOKING_FOLLOWUP_1",
   bookingFollowUp: "PREBOOKING_FOLLOWUP_1",
@@ -593,6 +595,14 @@ const EmsStackNavigator = ({ navigation }) => {
               return <LeadAge />;
             },
           }}
+        />
+
+        <EmsStack.Screen
+          name={EmsStackIdentifiers.task360History}
+          component={TaskThreeSixtyHistory}
+          options={({ route }) => ({
+            headerTitle: route?.params?.title ?? "History"
+          })}
         />
 
         <EmsStack.Screen
