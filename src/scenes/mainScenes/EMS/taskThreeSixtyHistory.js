@@ -18,10 +18,10 @@ const TaskThreeSixtyHistory = (props) => {
   }, []);
 
   const getAllHistory = () => {
-    dispatch(
-      getTaskThreeSixtyHistory("18-286-e9d92b0e-09d8-4da7-946f-c2c6470a3f0b")
-    );
-    // dispatch(getTaskThreeSixtyHistory(props.route.params.universalId));
+    // dispatch(
+    //   getTaskThreeSixtyHistory("18-286-e9d92b0e-09d8-4da7-946f-c2c6470a3f0b")
+    // );
+    dispatch(getTaskThreeSixtyHistory(props.route.params.universalId));
   };
   
   useEffect(() => {
