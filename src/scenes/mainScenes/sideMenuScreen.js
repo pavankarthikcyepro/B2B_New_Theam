@@ -73,6 +73,7 @@ const receptionMenu = [
   // "Task Management",
   "Drop Analysis",
   "Task Transfer",
+  "QR Code",
   "Sign Out",
 ];
 const teleCollerMenu = [
@@ -83,6 +84,7 @@ const teleCollerMenu = [
   "My Attendance",
   "Helpdesk",
   // "Task Management",
+  "QR Code",
   "Drop Analysis",
   "Sign Out",
 ];
@@ -96,6 +98,7 @@ const ShowRoomMenu = [
   "Geolocation",
   "Helpdesk",
   // "Task Management",
+  "QR Code",
   "Drop Analysis",
   "Sign Out",
 ];
@@ -110,6 +113,7 @@ const FieldDSEMenu = [
   "Geolocation",
   "Helpdesk",
   // "Task Management",
+  "QR Code",
   "Drop Analysis",
   "Sign Out",
 ];
@@ -123,6 +127,7 @@ const MDMenu = [
   "Helpdesk",
   // "Task Management",
   "Task Transfer",
+  "QR Code",
   "Drop Analysis",
   "Sign Out",
 ];
@@ -148,7 +153,7 @@ const SideMenuScreen = ({ navigation }) => {
   const [initialData, setInitialData] = useState({});
   const [showModal, setShowModal] = useState(false);
   const [imagePath, setImagePath] = useState("");
-  const route = useRoute();
+  // const route = useRoute();
 
   useEffect(() => {
     getLoginEmployeeData();
@@ -717,8 +722,10 @@ const SideMenuScreen = ({ navigation }) => {
         data={newTableData}
         keyExtractor={(item, index) => index}
         renderItem={({ item, index }) => {
-          const isActive = route?.state?.index == index;
-          const textColor = isActive ? Colors.PINK : "gray"; 
+          const isActive = false;
+          const textColor = "gray"; 
+          // const isActive = route?.state?.index == index;
+          // const textColor = isActive ? Colors.PINK : "gray"; 
           return (
             <>
               {item.title === "Task Transfer" ? (

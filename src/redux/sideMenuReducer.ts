@@ -82,12 +82,6 @@ const data = [
   //   screen: 109,
   //   pngIcon: require('../assets/images/Team_Shuffle-01.png')
   // },
-  {
-    title: "QR Code",
-    icon: BOOKING_TRACKER_STR,
-    screen: 105,
-    pngIcon: require("../assets/images/Digital_Payment-01.png"),
-  },
   // {
   //   title: "Complaints",
   //   icon: DOCUMENT_WALLET_STR,
@@ -111,6 +105,12 @@ const data = [
   //   screen: 111,
   //   pngIcon: require('../assets/images/Reports-01.png')
   // },
+  {
+    title: "QR Code",
+    icon: BOOKING_TRACKER_STR,
+    screen: 105,
+    pngIcon: require("../assets/images/Digital_Payment-01.png"),
+  },
   {
     title: "Drop Analysis",
     icon: DROP_ANALYSIS,
