@@ -855,7 +855,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
               updateOfferPriceData(selector.on_road_price_dto_list_response)
             );
             addingIsPrimary();
-          } else {
+          } else if (!value.color) {
             dispatch(updateOfferPriceData());
             clearPriceConfirmationData();
           }
