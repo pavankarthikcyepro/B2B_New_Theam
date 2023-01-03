@@ -69,6 +69,7 @@ const receptionMenu = [
   // "Task Management",
   "Drop Analysis",
   "Task Transfer",
+  "QR Code",
   "Sign Out",
 ];
 const teleCollerMenu = [
@@ -78,6 +79,7 @@ const teleCollerMenu = [
   "Target Planning",
   "Helpdesk",
   // "Task Management",
+  "QR Code",
   "Drop Analysis",
   "Sign Out",
 ];
@@ -89,6 +91,7 @@ const ShowRoomMenu = [
   "Target Planning",
   "Helpdesk",
   // "Task Management",
+  "QR Code",
   "Drop Analysis",
   "Sign Out",
 ];
@@ -101,6 +104,7 @@ const MDMenu = [
   "Helpdesk",
   // "Task Management",
   "Task Transfer",
+  "QR Code",
   "Drop Analysis",
   "Sign Out",
 ];
