@@ -101,8 +101,12 @@ const AttendanceScreen = ({ route, navigation }) => {
   const [showModal, setShowModal] = useState(false);
   const [hoverReasons, setHoverReasons] = useState("");
   const [notes, setNotes] = useState("");
-  const [filterStart,SetFilterStart]= useState(false);
-
+  const [filterStart, SetFilterStart] = useState(false);
+  const [userData, setUserData] = useState({
+    orgId: "",
+    empId: "",
+    empName: "",
+  });
   const fromDateRef = useRef(selectedFromDate);
   const toDateRef = useRef(selectedToDate);
 
@@ -114,6 +118,7 @@ const AttendanceScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     console.log(route?.params);
+    getAttendanceFilter(route?.params);
   }, [route.params]);
 
   useEffect(() => {
@@ -121,8 +126,8 @@ const AttendanceScreen = ({ route, navigation }) => {
       getCurrentLocation();
       setFromDateState(lastMonthFirstDate);
       setToDateState(currentDate);
-      setLoading(true);
-      getAttendance();
+      // setLoading(true);
+      // getAttendance();
     });
   }, [navigation]);
 
@@ -205,7 +210,7 @@ const AttendanceScreen = ({ route, navigation }) => {
     }
   };
 
-  const getAttendanceFilter = async () => {
+  const getAttendanceFilter = async (newUser) => {
     try {
       let employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -213,12 +218,22 @@ const AttendanceScreen = ({ route, navigation }) => {
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
         getProfilePic(jsonObj);
-        getFilterAttendanceCount(jsonObj);
+        getFilterAttendanceCount(newUser ? newUser : jsonObj);
         var d = currentMonth;
+        console.log(
+          "newUser",
+          newUser,
+          URL.GET_ATTENDANCE_EMPID2(
+            newUser ? newUser.empId : jsonObj.empId,
+            newUser ? newUser.orgId : jsonObj.orgId,
+            selectedFromDate,
+            selectedToDate
+          )
+        );
         const response = await client.get(
           URL.GET_ATTENDANCE_EMPID2(
-            jsonObj.empId,
-            jsonObj.orgId,
+            newUser ? newUser.empId : jsonObj.empId,
+            newUser ? newUser.orgId : jsonObj.orgId,
             selectedFromDate,
             selectedToDate
           )
@@ -297,6 +312,11 @@ const AttendanceScreen = ({ route, navigation }) => {
             monthNamesCap[d.getMonth()]
           )
         );
+        setUserData({
+          orgId: jsonObj.orgId,
+          empId: jsonObj.empId,
+          empName: jsonObj.empName,
+        });
         const json = await response.json();
         if (json) {
           let newArray = [];
@@ -573,6 +593,10 @@ const AttendanceScreen = ({ route, navigation }) => {
                 dayTextColor: Colors.BLACK,
                 selectedDayBackgroundColor: Colors.GRAY,
                 textDayFontWeight: "500",
+                textDayStyle: {
+                  color: Colors.BLACK,
+                },
+                textSectionTitleColor: Colors.BLACK,
               }}
               markingType={"custom"}
               markedDates={marker}
@@ -689,7 +713,7 @@ const AttendanceScreen = ({ route, navigation }) => {
       </ScrollView>
       <TouchableOpacity
         onPress={() => {
-          navigation.navigate(AppNavigator.EmsStackIdentifiers.newEnquiry);
+          alert("download");
         }}
         style={[GlobalStyle.shadow, styles.floatingBtn]}
       >

@@ -147,12 +147,11 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
   useEffect(() => {
     if (
       selectedLocation.id != 0 &&
-      selectedDealerCode.id != 0 &&
-      selectedMonthYear.id != 0
+      selectedDealerCode.id != 0
     ) {
       getEmployeeList();
     }
-  }, [selectedLocation, selectedDealerCode, selectedMonthYear]);
+  }, [selectedLocation, selectedDealerCode]);
 
   const getInitialParameters = async () => {
     try {
@@ -185,7 +184,6 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
         let payloadx = [
           selectedLocation.id,
           selectedDealerCode.id,
-          selectedMonthYear.id,
         ];
         const response = await client.post(
           URL.GET_EMPLOYEES_DROP_DOWN_DATA(jsonObj.orgId, jsonObj.empId),
@@ -263,16 +261,16 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
             takeMinHeight={true}
           />
         </View>
-        <View style={{ marginVertical: 5 }}>
+        {/* <View style={{ marginVertical: 5 }}>
           <DropDownSelectionItem
             label={"Month & Years"}
             value={selectedMonthYear.name}
             onPress={() => dropDownItemClicked("Month & Years")}
             takeMinHeight={true}
           />
-        </View>
+        </View> */}
       </View>
-      <ScrollView s>
+      <ScrollView showsVerticalScrollIndicator={false}>
         {loading && (
           <View>
             <ActivityIndicator size="large" color={Colors.RED} />
@@ -300,7 +298,7 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
                             AttendanceTopTabNavigatorIdentifiers.leave,
                             {
                               empId: innerItem.code,
-                              orgID: innerItem.orgID,
+                              orgId: innerItem.orgId || 18,
                             }
                           );
                         }}

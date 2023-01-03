@@ -136,9 +136,10 @@ const VerifyAttendance = ({
   };
 
   const getProfilePic = (userData) => {
-    fetch(
-      `http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
-    )
+    client
+      .get(
+        `http://ec2-15-207-225-163.ap-south-1.compute.amazonaws.com:8008/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
+      )
       .then((response) => response.json())
       .then((json) => {
         if (json.length > 0) {

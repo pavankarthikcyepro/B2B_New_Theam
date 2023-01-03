@@ -67,6 +67,19 @@ const getDays = (year, month) => {
   return new Date(year, month, 0).getDate();
 };
 
+function getAllDaysInMonth(year, month) {
+  const date = new Date(year, month, 1);
+
+  const dates = [];
+
+  while (date.getMonth() === month) {
+    dates.push(new Date(date));
+    date.setDate(date.getDate() + 1);
+  }
+
+  return dates;
+}
+
 const AttendanceTopTabScreen = ({ route, navigation }) => {
   // const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -86,8 +99,8 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
   useEffect(() => {
     navigation.addListener("focus", () => {
       getCurrentLocation();
-      // setLoading(true);
-      // getAttendance();
+      setLoading(true);
+      getAttendance();
     });
   }, [navigation]);
 
@@ -160,21 +173,27 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
             monthNamesCap[d.getMonth()]
           )
         );
-     
 
         const json = await response.json();
-           const daysInMonth = getDays(new Date().getFullYear(), d.getMonth());
-           console.log("daysInMonth", daysInMonth);
-           let newArr = []
-           for (let i = 0; i < daysInMonth.length; i++) {
-             const element = daysInMonth[i];
-             const sampleData = {
-               date: new Date(`${new Date().getFullYear()}-${d.getMonth()}-${i+1}`),
-             };
-             console.log("sampleData", );
-           }
+        const daysInMonth = getDays(new Date().getFullYear(), d.getMonth());
+        let newArr = [];
+        const date = new Date(d);
+        let dates = getAllDaysInMonth(date.getFullYear(), date.getMonth());
+        for (let i = 0; i < dates.length; i++) {
+          const element = dates[i];
+          const attendance = json.filter(
+            (e) =>
+              new Date(e.createdtimestamp).getDate() ==
+              new Date(element).getDate()
+          );
+          const format = {
+            date: element,
+            ...attendance[0],
+          };
+          newArr.push(format);
+        }
         if (json) {
-          setMonthData([...json]);
+          setMonthData([...newArr]);
           if (json[json.length - 1].punchIn == null) {
             setLogOut(false);
           } else {
@@ -209,7 +228,7 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
     };
     var punchInString = punchIntime.toLocaleString("en-US", options);
     var punchOutString = punchOuttime.toLocaleString("en-US", options);
-    const date = new Date(item?.createdtimestamp);
+    const date = new Date(item?.date);
     const day = date.getDate();
     const weekDay = date.getDay();
     if (
@@ -237,7 +256,7 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
               <View style={styles.dateDayView}>
                 <Text style={styles.dateDayTxt}>{day}</Text>
                 <Text style={styles.dateDayTxt}>
-                  {weekdays[weekDay].toUpperCase()}
+                  {weekdays[weekDay]?.toUpperCase()}
                 </Text>
               </View>
             </View>

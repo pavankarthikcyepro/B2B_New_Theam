@@ -21,7 +21,7 @@
 
 // Dev End Points
 // export const hrms_url =
-  // "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8088/hrms";
+// "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8088/hrms";
 // export const sales_url =
 //   "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales";
 // // "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/account/enquiryAccount?allocateDse=false"
@@ -90,92 +90,78 @@
 // export const profileImageUpdate =
 //   "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic";
 
+
+
 // Dev End Points with JWT
-const baseUrl ="http://ec2-15-207-225-163.ap-south-1.compute.amazonaws.com:8008/";
-export const auth_url = baseUrl+ "auth";
+const baseUrl =
+  "http://ec2-15-207-225-163.ap-south-1.compute.amazonaws.com:8008/";
+export const auth_url = baseUrl + "auth";
 export const hrms_url = baseUrl + "hrms";
-export const inventory_url =
-  baseUrl + "inventory";
-export const ops_url =
-  baseUrl + "ops";
-export const roleManagement_url =
-  baseUrl + "role-management";
-export const sales_url =
-  baseUrl + "sales";
-export const vehicleInfoService_url =
-  baseUrl + "vehicle-information-service";
-export const notificationServices_url =
-  baseUrl + "notification-service";
-export const profileImageUpdate =
-  sales_url + "/employeeprofilepic";
-export const getEmployeeList =
-  sales_url + "/employees/reporting/all/emp";
+export const inventory_url = baseUrl + "inventory";
+export const ops_url = baseUrl + "ops";
+export const roleManagement_url = baseUrl + "role-management";
+export const sales_url = baseUrl + "sales";
+export const vehicleInfoService_url = baseUrl + "vehicle-information-service";
+export const notificationServices_url = baseUrl + "notification-service";
+export const profileImageUpdate = sales_url + "/employeeprofilepic";
+export const getEmployeeList = sales_url + "/employees/reporting/all/emp";
 export const getReportingMangerList =
   sales_url + "/employees/all/reportingManagers/orgId";
-export const updateEmployeeTaskDelegate =
-  sales_url + "/employees/emp";
-export const getTaskList =
-  sales_url + "/task-delegation/get_task_list";
-export const deleteModelCard =
-  sales_url + "/lead";
+export const updateEmployeeTaskDelegate = sales_url + "/employees/emp";
+export const getTaskList = sales_url + "/task-delegation/get_task_list";
+export const deleteModelCard = sales_url + "/lead";
 
-export const dashboard =
-  baseUrl + "dfd/dashboard";
+export const dashboard = baseUrl + "dfd/dashboard";
 
-export const salesGap =
-  baseUrl + "dfd/sales-gap"; 
-export const getBranch =
-  baseUrl + "dfd/oh";
-export const tasktransfer =
-  baseUrl + "dfd/sales-gap/target-dropdown";
+export const salesGap = baseUrl + "dfd/sales-gap";
+export const getBranch = baseUrl + "dfd/oh";
+export const tasktransfer = baseUrl + "dfd/sales-gap/target-dropdown";
 export const getLeaderBoardData =
   baseUrl + "dfd/dashboard/v2/get_emp_target_ranking/org";
 export const getBranchRankingData =
   baseUrl + "dfd/dashboard/v2/get_emp_target_ranking";
 
-export const vehicleServices_url =
-  baseUrl + "dfdl/vehicle-services";
+export const vehicleServices_url = baseUrl + "dfdl/vehicle-services";
 
-export const dashboardLiveLeads =
-  baseUrl + "dfdl";
+export const dashboardLiveLeads = baseUrl + "dfdl";
 
-export const dynamicReports_url =
-  baseUrl + "dfdg/dynamic-reports";
-export const dynamicForms =
-  baseUrl + "dfdg/dynamic-forms";
-export const orgnaizationHirarchy =
-  baseUrl + "dfdg/oh";
-export const dfGetAll =
-  baseUrl + "dfdg/df-get-all";
-export const subSourceAllDetails =
-  baseUrl + "dfdg/Source_SubSource_AllDetails";
-export const lostSubLost =
-  baseUrl + "dfdg/Lost_SubLost_AllDetails";
+export const dynamicReports_url = baseUrl + "dfdg/dynamic-reports";
+export const dynamicForms = baseUrl + "dfdg/dynamic-forms";
+export const orgnaizationHirarchy = baseUrl + "dfdg/oh";
+export const dfGetAll = baseUrl + "dfdg/df-get-all";
+export const subSourceAllDetails = baseUrl + "dfdg/Source_SubSource_AllDetails";
+export const lostSubLost = baseUrl + "dfdg/Lost_SubLost_AllDetails";
 
 export const getEnquiryVehicleModelData =
-  baseUrl + "dfdg/Other_Maker_AllDetails"; 
+  baseUrl + "dfdg/Other_Maker_AllDetails";
 
-
-export const downloadFile =
-  baseUrl + "dfdr/dynamic-reports";
+export const downloadFile = baseUrl + "dfdr/dynamic-reports";
 
 export const downloadFile1 =
   baseUrl + "etv-schd/dynamic-reports/etvbrl_report_download";
-export const downloadFile2 =
-  baseUrl + "etv-schd/dynamic-reports/etvbrl_report";
+export const downloadFile2 = baseUrl + "etv-schd/dynamic-reports/etvbrl_report";
 export const getEmployeeData =
   baseUrl + "role-management/employee/dept-employees";
 
-export const notification = "http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8096/notificationMaster"
-// not getting used anywhere so not changes and commented 
+export const notification =
+  "http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8096/notificationMaster";
+// not getting used anywhere so not changes and commented
 // export const admin_url =
 //   "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8082/admin";
 
 // export const customerService_url =
 //   "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8085/customer-service";
-
-
-
+export const saveLocation =
+  baseUrl + "sales/employeeTracking/saveEmployeeTracking";
+export const locationUpdate =
+  baseUrl + "sales/employeeTracking/updateEmployeeTracking";
+export const reasonDropDown =
+  baseUrl +
+  "dynamic-forms/dropdown";
+export const getDetailsByempIdAndorgId =
+  baseUrl + "sales/employeeTracking/getDetailsByempIdAndorgId";
+export const getLocationCoordinates =
+  baseUrl + "sales/employeeTracking/getLocationByempIdAndorgId";
 
 const URL = {
   // LOGIN: () => hrms_url + "/emplogin",
@@ -683,7 +669,7 @@ const URL = {
   },
   GET_TASK_360_HISTORY: (universalId) => {
     return sales_url + "/workflow/universalId/" + universalId;
-  } 
+  },
 };
 
 // bankFinancier, incuranceCompany, enqueryCategory, deliveryCheckList, sublostReason
