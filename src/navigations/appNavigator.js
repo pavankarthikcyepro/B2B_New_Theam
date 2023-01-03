@@ -90,11 +90,16 @@ import SourceModel from "../scenes/mainScenes/Home/TabScreens/components/Employe
 import LiveLeadsScreen from "../scenes/mainScenes/LiveLeads";
 import { EMSTopTabNavigatorTwo } from "./emsTopTabNavigator";
 import { AppNavigator } from ".";
+import MapScreen from "../scenes/mainScenes/Map";
+import AttendanceScreen from "../scenes/mainScenes/Attendance";
 import RecepSourceModel from "../scenes/mainScenes/Home/TabScreens/components/EmployeeView/RecepSourceModel";
 import DropLostCancelScreen from "../scenes/mainScenes/DropLostCancel/DropLostCancel";
 import AddNewEnquiryScreen from "../scenes/mainScenes/EMS/addNewEnquiry";
 import FilterTargetScreen from "../scenes/mainScenes/TargetSettingsScreen/TabScreen/filterTarget";
 import ReceptionistFilterScreen from "../scenes/mainScenes/Home/receptionistFilter";
+import { AttendanceTopTabNavigatorTwo, MyAttendanceTopTabNavigatorOne } from "./attendanceTopTabNavigator";
+import GeoLocationScreen from "../scenes/mainScenes/Geolocation";
+import { MyGeolocationTopTabNavigatorOne } from "./geolocationNavigator";
 import TaskThreeSixtyHistory from "../scenes/mainScenes/EMS/taskThreeSixtyHistory";
 
 const drawerWidth = 300;
@@ -110,7 +115,7 @@ const screeOptionStyle = {
   headerBackTitleVisible: false,
 };
 
-const MenuIcon = ({ navigation }) => {
+export const MenuIcon = ({ navigation }) => {
   return (
     <IconButton
       icon="menu"
@@ -323,6 +328,8 @@ export const DrawerStackIdentifiers = {
   dropAnalysis: "DROP_ANALYSIS",
   liveLeads: "LIVE_LEADS",
   dropLostCancel: "DROP_LOST_CANCEL",
+  attendance: 'Attendance',
+  geolocation: "Geolocation"
 };
 
 export const TabStackIdentifiers = {
@@ -341,6 +348,7 @@ export const HomeStackIdentifiers = {
   branchRanking: "BRANCH_RANKING",
   sourceModel: "SOURCE_MODEL",
   home: "HOME_SCREEN",
+  location: "MAP_TRACKER",
   receptionistFilter : "REECEPTION_FILTER"
 };
 
@@ -472,6 +480,13 @@ const HomeStackNavigator = ({ navigation }) => {
         component={ReceptionistFilterScreen}
         options={{ title: "Filters" }}
       />
+      <MainDrawerNavigator.Screen
+          name={HomeStackIdentifiers.location}
+          component={MapScreen}
+          options={{
+            title: "Map",
+          }}
+        />
     </HomeStack.Navigator>
   );
 };
@@ -1169,6 +1184,25 @@ const MainStackDrawerNavigator = () => {
           name={DrawerStackIdentifiers.monthlyTarget}
           component={MonthlyTargetStackNavigator}
           initialParams={{ screen: DrawerStackIdentifiers.monthlyTarget }}
+        />
+        <MainDrawerNavigator.Screen
+          name={DrawerStackIdentifiers.attendance}
+          component={MyAttendanceTopTabNavigatorOne}
+          options={
+            {
+              // title: "My Attendance",
+              // headerLeft: () => <MenuIcon navigation={navigation} />,
+              // headerShown: true,
+              // headerStyle: screeOptionStyle.headerStyle,
+              // headerTitleStyle: screeOptionStyle.headerTitleStyle,
+              // headerTintColor: screeOptionStyle.headerTintColor,
+              // headerBackTitleVisible: screeOptionStyle.headerBackTitleVisible,
+            }
+          }
+        />
+        <MainDrawerNavigator.Screen
+          name={DrawerStackIdentifiers.geolocation}
+          component={MyGeolocationTopTabNavigatorOne}
         />
         <MainDrawerNavigator.Screen
           name={DrawerStackIdentifiers.dropLostCancel}

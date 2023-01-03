@@ -64,6 +64,7 @@ import {
   useBlurOnFulfill,
   useClearByFocusCell,
 } from "react-native-confirmation-code-field";
+import { client } from "../../../networking/client";
 
 const LocalButtonComp = ({
   title,
@@ -256,13 +257,14 @@ const TestDriveScreen = ({ route, navigation }) => {
 
   const getRecordDetailsFromServer = async (token) => {
     const url = URL.ENQUIRY_DETAILS(universalId);
-    await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "auth-token": token,
-      },
-    })
+    // await fetch(url, {
+    //   method: "GET",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     "auth-token": token,
+    //   },
+    // })
+    await client.get(url)
       .then((json) => json.json())
       .then((resp) => {
         if (resp.dmsEntity?.dmsLeadDto) {
@@ -530,11 +532,12 @@ const TestDriveScreen = ({ route, navigation }) => {
     } else if (keyId === "DRIVING_LICENSE_BACK") {
       formData.append("documentType", "dlBackUrl");
     }
-
+    let tempToken1 = await AsyncStore.getData(AsyncStore.Keys.USER_TOKEN);
     await fetch(URL.UPLOAD_DOCUMENT(), {
       method: "POST",
       headers: {
         "Content-Type": "multipart/form-data",
+        "Authorization": "Bearer " + tempToken1,
       },
       body: formData,
     })

@@ -73,6 +73,10 @@ export const client = async (authToken, url, methodType, body, customConfig,isVa
                 await AsyncStore.storeData(AsyncStore.Keys.REFRESH_TOKEN, tempRes.refreshToken).then(() => {
                    
                 });;
+                await AsyncStore.storeData(AsyncStore.Keys.USER_TOKEN, tempRes.accessToken).then(() => {
+
+                });
+
             }
             if (responseForRefreshApi.status == 401 || responseForRefreshApi.status == 403){
                 // handle  force logout in cash of refresh token expired 

@@ -1,63 +1,167 @@
-import React from "react";
-import { StyleSheet, Text, View, SafeAreaView, SectionList, StatusBar } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  SafeAreaView,
+  SectionList,
+  StatusBar,
+  FlatList,
+} from "react-native";
 import { Colors, GlobalStyle } from "../../styles";
-import { useDispatch, useSelector } from 'react-redux';
-import { NotificationItem } from '../../pureComponents/notificationItem';
-import { Button } from 'react-native-paper';
+import { useDispatch, useSelector } from "react-redux";
+import { NotificationItem } from "../../pureComponents/notificationItem";
+import { ActivityIndicator, Button } from "react-native-paper";
+import URL from "../../networking/endpoints";
+import { client } from "../../networking/client";
+import * as AsyncStore from "../../asyncStore";
+import { AppNavigator } from "../../navigations";
 
-const NotificationScreen = () => {
+const NotificationScreen = ({ navigation }) => {
+  const selector = useSelector((state) => state.notificationReducer);
+  const [notificationList, setNotificationList] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const selector = useSelector(state => state.notificationReducer);
+  useEffect(() => {
+    getNotifications();
+  }, []);
 
+  const getNotifications = async () => {
+    setLoading(true);
+    try {
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        const response = await client.get(URL.NOTIFICATION_LIST(jsonObj.empId));
+        const json = await response.json();
+        setNotificationList(json);
+        setLoading(false);
+      }
+    } catch (error) {
+      setLoading(false);
+    }
+  };
+
+  const navigateTo = () => {
+    navigation.navigate(AppNavigator.TabStackIdentifiers.myTask);
+    setTimeout(() => {
+      navigation.navigate("NEW_PENDING");
+    }, 750);
+  };
   return (
     <SafeAreaView style={styles.container}>
-
-      <SectionList
-        sections={selector.tableData}
+      <FlatList
+        data={notificationList}
         keyExtractor={(item, index) => index.toString()}
         showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          ...styles.listStyle,
+          justifyContent: !notificationList.length ? "center" : "flex-start",
+        }}
+        ListEmptyComponent={() =>
+          !notificationList.length ? (
+            loading ? (
+              <ActivityIndicator size="large" color={Colors.RED} />
+            ) : (
+              <Text style={styles.emptyMessageStyle}>Empty Notifications</Text>
+            )
+          ) : null
+        }
         renderItem={({ item }) => {
-
           return (
             <View style={{}}>
+              <Text style={styles.header}>{"Follow Up"}</Text>
               <View style={GlobalStyle.shadow}>
-                <NotificationItem title={item.name} date={item.date} />
+                {item.bookingFollowupTaskMessage && (
+                  <NotificationItem
+                    title={item?.bookingFollowupTaskMessage}
+                    date={item?.date}
+                    onPress={navigateTo}
+                  />
+                )}
+                {item.enqFollowupTaskMessage && (
+                  <NotificationItem
+                    title={item?.enqFollowupTaskMessage}
+                    date={item?.date}
+                    onPress={navigateTo}
+                  />
+                )}
+                {item.bookingFollowupTaskMessage && (
+                  <NotificationItem
+                    title={item?.bookingFollowupTaskMessage}
+                    date={item?.date}
+                    onPress={navigateTo}
+                  />
+                )}
+                {item.testDriveTaskMessage && (
+                  <NotificationItem
+                    title={item?.testDriveTaskMessage}
+                    date={item?.date}
+                    onPress={navigateTo}
+                  />
+                )}
+              </View>
+              <Text style={styles.header}>{"Pending Task"}</Text>
+              <View style={GlobalStyle.shadow}>
+                {item.totalPendingTasksMessage && (
+                  <NotificationItem
+                    title={item?.totalPendingTasksMessage}
+                    date={item?.date}
+                    onPress={navigateTo}
+                  />
+                )}
+                {item.homeVisitTaskMessage && (
+                  <NotificationItem
+                    title={item?.homeVisitTaskMessage}
+                    date={item?.date}
+                    onPress={navigateTo}
+                  />
+                )}
+                {item.isTarget && (
+                  <NotificationItem
+                    title={item?.isTarget}
+                    date={item?.date}
+                    onPress={navigateTo}
+                  />
+                )}
+                {item.zeroEnqSc && (
+                  <NotificationItem
+                    title={item?.zeroEnqSc}
+                    date={item?.date}
+                    onPress={navigateTo}
+                  />
+                )}
+                {item.zeroBookingSc && (
+                  <NotificationItem
+                    title={item?.zeroBookingSc}
+                    date={item?.date}
+                    onPress={navigateTo}
+                  />
+                )}
+                {item.zeroRetailSc && (
+                  <NotificationItem
+                    title={item?.zeroRetailSc}
+                    date={item?.date}
+                    onPress={navigateTo}
+                  />
+                )}
               </View>
             </View>
-          )
-        }}
-        renderSectionHeader={({ section: { title } }) => {
-
-          let showMarkAllRead = false;
-          if (title === "Today") {
-            showMarkAllRead = true
-          }
-
-          return (
-            <View style={styles.sectionHeaderVw}>
-              <Text style={styles.header}>{title}</Text>
-              {showMarkAllRead ? <Button
-                mode="text"
-                labelStyle={{ fontSize: 14, color: Colors.RED, textTransform: 'none', textAlign: 'right', paddingRight: 0, marginRight: 0 }}
-                contentStyle={{ margin: 0, padding: 0 }}
-                onPress={() => {}}
-              >
-                Mark all read
-              </Button> : null}
-            </View>
-          )
+          );
         }}
       />
     </SafeAreaView>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: StatusBar.currentHeight,
     marginHorizontal: 10,
-    backgroundColor: Colors.LIGHT_GRAY
+    backgroundColor: Colors.LIGHT_GRAY,
   },
   header: {
     fontSize: 20,
@@ -66,11 +170,19 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.gray,
   },
   sectionHeaderVw: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: Colors.LIGHT_GRAY
-  }
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: Colors.LIGHT_GRAY,
+  },
+  emptyMessageStyle: {
+    textAlign: "center",
+    fontSize: 20,
+  },
+  listStyle: {
+    justifyContent: "center",
+    flex: 1,
+  },
 });
 
 export default NotificationScreen;
