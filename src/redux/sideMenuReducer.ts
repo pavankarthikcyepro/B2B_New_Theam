@@ -11,7 +11,9 @@ export const DIGITAL_PAYMENT_STR = "DIGITAL_PAYMENT";
 export const QR_CODE_STR = "QR_CODE";
 export const GROUP_STR = "GROUP";
 export const TRANSFER_STR = "TRANSFER";
+export const ATTENDANCE = "ATTENDANCE";
 export const DROP_LOST_CANCEL = "DROP_LOST_CANCEL";
+export const GEOLOCATION = "GEOLOCATION";
 
 const data = [
   {
@@ -30,6 +32,18 @@ const data = [
     title: "Target Planning",
     icon: CUSTOMER_RELATIONSHIP_STR,
     screen: 106,
+    pngIcon: require("../assets/images/Target_Planning-01.png"),
+  },
+  {
+    title: "My Attendance",
+    icon: ATTENDANCE,
+    screen: 116,
+    pngIcon: require("../assets/images/Target_Planning-01.png"),
+  },
+  {
+    title: "Geolocation",
+    icon: GEOLOCATION,
+    screen: 117,
     pngIcon: require("../assets/images/Target_Planning-01.png"),
   },
   {
@@ -127,6 +141,12 @@ const dataForManager = [
     title: "Target Planning",
     icon: CUSTOMER_RELATIONSHIP_STR,
     screen: 106,
+  },
+  {
+    title: "My Attendance",
+    icon: ATTENDANCE,
+    screen: 116,
+    pngIcon: require("../assets/images/Target_Planning-01.png"),
   },
   // {
   //   title: "Task Management",

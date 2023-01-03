@@ -28,6 +28,7 @@ import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 import Entypo from "react-native-vector-icons/FontAwesome";
 import { client } from "../../networking/client";
 import URL, { profileImageUpdate } from "../../networking/endpoints";
+import BackgroundService from "react-native-background-actions";
 
 // import { EVENT_MANAGEMENT, CUSTOMER_RELATIONSHIP, DOCUMENT_WALLET, HOME_LINE, BOOKING_TRACKER } from "../assets/svg";
 
@@ -67,6 +68,7 @@ const receptionMenu = [
   "Drop/Lost/Cancel",
   "Digital Payment",
   "Target Planning",
+  "My Attendance",
   "Helpdesk",
   // "Task Management",
   "Drop Analysis",
@@ -78,6 +80,7 @@ const teleCollerMenu = [
   "Settings",
   "Digital Payment",
   "Target Planning",
+  "My Attendance",
   "Helpdesk",
   // "Task Management",
   "Drop Analysis",
@@ -89,6 +92,22 @@ const ShowRoomMenu = [
   "Settings",
   "Digital Payment",
   "Target Planning",
+  "My Attendance",
+  "Geolocation",
+  "Helpdesk",
+  // "Task Management",
+  "Drop Analysis",
+  "Sign Out",
+];
+
+const FieldDSEMenu = [
+  "Home",
+  "Live Leads",
+  "Settings",
+  "Digital Payment",
+  "Target Planning",
+  "My Attendance",
+  "Geolocation",
   "Helpdesk",
   // "Task Management",
   "Drop Analysis",
@@ -100,6 +119,7 @@ const MDMenu = [
   "Settings",
   "Digital Payment",
   "Target Planning",
+  "My Attendance",
   "Helpdesk",
   // "Task Management",
   "Task Transfer",
@@ -236,7 +256,6 @@ const SideMenuScreen = ({ navigation }) => {
     setUserData(jsonObj);
     // setUserData(jsonObj)
     getProfilePic(jsonObj);
-
     let newFilterData = [];
     if (jsonObj.hrmsRole === "Reception") {
       newFilterData = selector.tableData.filter((item) =>
@@ -249,6 +268,10 @@ const SideMenuScreen = ({ navigation }) => {
     } else if (jsonObj.hrmsRole === "Showroom DSE") {
       newFilterData = selector.tableData.filter((item) =>
         ShowRoomMenu.includes(item.title)
+      );
+    } else if (jsonObj.hrmsRole === "Field DSE") {
+      newFilterData = selector.tableData.filter((item) =>
+        FieldDSEMenu.includes(item.title)
       );
     } else if (jsonObj.hrmsRole === "MD") {
       newFilterData = selector.tableData.filter((item) =>
@@ -312,6 +335,12 @@ const SideMenuScreen = ({ navigation }) => {
       case 115:
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropLostCancel);
         break;
+      case 116:
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.attendance);
+        break;
+      case 117:
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.geolocation);
+        break;
       case 112:
         signOutClicked();
         break;
@@ -321,7 +350,7 @@ const SideMenuScreen = ({ navigation }) => {
     }
   };
 
-const signOutClicked = () => {
+  const signOutClicked = async () => {
     AsyncStore.storeData(AsyncStore.Keys.USER_NAME, "");
     AsyncStore.storeData(AsyncStore.Keys.USER_TOKEN, "");
     AsyncStore.storeData(AsyncStore.Keys.EMP_ID, "");
@@ -329,6 +358,10 @@ const signOutClicked = () => {
     AsyncStore.storeData(AsyncStore.Keys.EXTENSION_ID, "");
     AsyncStore.storeData(AsyncStore.Keys.EXTENSSION_PWD, "");
     AsyncStore.storeData(AsyncStore.Keys.IS_LOGIN, "false");
+    AsyncStore.storeJsonData(AsyncStore.Keys.TODAYSDATE, new Date().getDate());
+    AsyncStore.storeJsonData(AsyncStore.Keys.COORDINATES, []);
+    await BackgroundService.stop();
+
     navigation.closeDrawer();
     //realm.close();
     setBranchId("");

@@ -15,4 +15,7 @@ export const IS_LOGIN = "IS_LOGIN"
 export const EXTENSION_ID = "EXTENSION_ID"
 export const EXTENSSION_PWD ="EXTENSSION_PWD"
 export const TARGET = "TARGET_EMP";
+export const TODAYSDATE = 'TODAYSDATE';
+export const COORDINATES = "COORDINATES";
+export const IS_PRESENT = "IS_PRESENT";
 export const ACCESS_TOKEN = "ACCESS_TOKEN";

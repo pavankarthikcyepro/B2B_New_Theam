@@ -154,6 +154,7 @@ android {
     }
 
     defaultConfig {
+        multiDexEnabled true
         applicationId "com.b2b_new_theme"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
@@ -235,6 +236,10 @@ dependencies {
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
+    implementation project(':react-native-push-notification')
+
+    implementation 'androidx.work:work-runtime-ktx:2.7.0'
+    
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
       exclude group:'com.facebook.fbjni'
     }
