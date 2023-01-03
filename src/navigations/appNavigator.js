@@ -1057,10 +1057,6 @@ const MainStackDrawerNavigator = () => {
           component={SettingsStackNavigator}
         />
         <MainDrawerNavigator.Screen
-          name={DrawerStackIdentifiers.digitalPayment}
-          component={DigitalPaymentStackNavigator}
-        />
-        <MainDrawerNavigator.Screen
           name={DrawerStackIdentifiers.helpdesk}
           component={HelpDeskStackNavigator}
         />
@@ -1072,6 +1068,10 @@ const MainStackDrawerNavigator = () => {
         <MainDrawerNavigator.Screen
           name={DrawerStackIdentifiers.taskManagement}
           component={TaskManagementStackNavigator}
+        />
+        <MainDrawerNavigator.Screen
+          name={DrawerStackIdentifiers.digitalPayment}
+          component={DigitalPaymentStackNavigator}
         />
         <MainDrawerNavigator.Screen
           name={DrawerStackIdentifiers.dropAnalysis}

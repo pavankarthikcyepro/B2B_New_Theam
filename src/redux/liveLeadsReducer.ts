@@ -695,7 +695,7 @@ export const liveLeadsSlice = createSlice({
                 if (action.payload) {
                     state.target_parameters_data = [];
                     state.target_parameters_data = action.payload;
-                    AsyncStore.storeData('TARGET_DATA', JSON.stringify(action.payload))
+                    AsyncStore.storeData('TARGET_DATA_LIVE_LEADS', JSON.stringify(action.payload))
                 }
                 // state.isLoading = false;
             })
@@ -715,8 +715,14 @@ export const liveLeadsSlice = createSlice({
                     state.isTeamPresent = action.payload.employeeTargetAchievements.length > 1;
                     state.all_target_parameters_data = action.payload.overallTargetAchivements;
                     state.all_emp_parameters_data = action.payload.employeeTargetAchievements;
-                    AsyncStore.storeData('TARGET_ALL', JSON.stringify(action.payload.overallTargetAchivements))
-                    AsyncStore.storeData('TARGET_EMP_ALL', JSON.stringify(action.payload.employeeTargetAchievements))
+                    AsyncStore.storeData(
+                      "TARGET_ALL_LIVE_LEADS",
+                      JSON.stringify(action.payload.overallTargetAchivements)
+                    );
+                    AsyncStore.storeData(
+                      "TARGET_EMP_ALL_LIVE_LEADS",
+                      JSON.stringify(action.payload.employeeTargetAchievements)
+                    );
                 }
             })
             .addCase(getTargetParametersAllData.rejected, (state, action) => {
@@ -795,7 +801,10 @@ export const liveLeadsSlice = createSlice({
                         x = rest;
                     })
                     state.self_target_parameters_data = payloadData;
-                    AsyncStore.storeData('TARGET_EMP', JSON.stringify(payloadData))
+                    AsyncStore.storeData(
+                      "TARGET_EMP_LIVE_LEADS",
+                      JSON.stringify(payloadData)
+                    );
                 } else{
                     state.self_target_parameters_data = empData
                 }
@@ -817,7 +826,10 @@ export const liveLeadsSlice = createSlice({
                         x = rest;
                     })
                     state.insights_target_parameters_data = payloadData;
-                    AsyncStore.storeData('TARGET_EMP', JSON.stringify(payloadData))
+                    AsyncStore.storeData(
+                      "TARGET_EMP_LIVE_LEADS",
+                      JSON.stringify(payloadData)
+                    );
                 }
                 state.isLoading = false;
             })
@@ -838,8 +850,14 @@ export const liveLeadsSlice = createSlice({
                     state.isTeamPresent = action.payload.employeeTargetAchievements.length > 1;
                     state.all_target_parameters_data = action.payload.overallTargetAchivements;
                     state.all_emp_parameters_data = action.payload.employeeTargetAchievements;
-                    AsyncStore.storeData('TARGET_ALL', JSON.stringify(action.payload.overallTargetAchivements))
-                    AsyncStore.storeData('TARGET_EMP_ALL', JSON.stringify(action.payload.employeeTargetAchievements))
+                    AsyncStore.storeData(
+                      "TARGET_ALL_LIVE_LEADS",
+                      JSON.stringify(action.payload.overallTargetAchivements)
+                    );
+                    AsyncStore.storeData(
+                      "TARGET_EMP_ALL_LIVE_LEADS",
+                      JSON.stringify(action.payload.employeeTargetAchievements)
+                    );
                 }
             })
             .addCase(getNewTargetParametersAllData.rejected, (state, action) => {
