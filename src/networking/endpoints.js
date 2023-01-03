@@ -434,6 +434,10 @@ const URL = {
   GET_EMPLOYEES_DROP_DOWN_DATA: (orgId, employeeId) => {
     return orgnaizationHirarchy + `/active-dropdowns/${orgId}/${employeeId}`;
   },
+  GET_EMPLOYEES_DROP_DOWN_DATA_FOR_ATTENDANCE: (orgId, employeeId) => {
+    return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8092/dfd/oh/team-attendance/${orgId}/${employeeId}`;
+    return orgnaizationHirarchy + `/team-attendance/${orgId}/${employeeId}`;
+  },
   GET_EMPLOYEES_ACTIVE_BRANCHES: (orgId, employeeId) => {
     return orgnaizationHirarchy + `/active-branches/${orgId}/${employeeId}`;
   },

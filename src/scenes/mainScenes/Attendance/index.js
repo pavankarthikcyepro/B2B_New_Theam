@@ -28,7 +28,6 @@ import * as AsyncStore from "../../../asyncStore";
 import moment from "moment";
 import AttendanceForm from "../../../components/AttendanceForm";
 import { MenuIcon } from "../../../navigations/appNavigator";
-import WeeklyCalendar from "react-native-weekly-calendar";
 import Geolocation from "@react-native-community/geolocation";
 import { getDistanceBetweenTwoPoints, officeRadius } from "../../../service";
 import { monthNamesCap } from "./AttendanceTop";
@@ -118,7 +117,11 @@ const AttendanceScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     console.log(route?.params);
-    getAttendanceFilter(route?.params);
+    if (route?.params) {
+      setFromDateState(lastMonthFirstDate);
+      setToDateState(currentDate);
+      getAttendanceFilter(route?.params);
+    }
   }, [route.params]);
 
   useEffect(() => {
@@ -132,8 +135,13 @@ const AttendanceScreen = ({ route, navigation }) => {
   }, [navigation]);
 
   useEffect(() => {
-    setLoading(true);
-    getAttendance();
+    if (route.params) {
+      setLoading(true);
+      getAttendance(route?.params);
+    } else {
+      setLoading(true);
+      getAttendance();
+    }
   }, [currentMonth]);
 
   // useEffect(() => {
@@ -162,13 +170,13 @@ const AttendanceScreen = ({ route, navigation }) => {
       case "FROM_DATE":
         setFromDateState(formatDate);
         setLoading(true);
-        getAttendanceFilter();
+        getAttendanceFilter(route?.params);
         SetFilterStart(true);
         break;
       case "TO_DATE":
         setToDateState(formatDate);
         setLoading(true);
-        getAttendanceFilter();
+        getAttendanceFilter(route?.params);
         SetFilterStart(true);
         break;
     }
@@ -217,19 +225,9 @@ const AttendanceScreen = ({ route, navigation }) => {
       );
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
-        getProfilePic(jsonObj);
+        getProfilePic(newUser ? newUser : jsonObj);
         getFilterAttendanceCount(newUser ? newUser : jsonObj);
         var d = currentMonth;
-        console.log(
-          "newUser",
-          newUser,
-          URL.GET_ATTENDANCE_EMPID2(
-            newUser ? newUser.empId : jsonObj.empId,
-            newUser ? newUser.orgId : jsonObj.orgId,
-            selectedFromDate,
-            selectedToDate
-          )
-        );
         const response = await client.get(
           URL.GET_ATTENDANCE_EMPID2(
             newUser ? newUser.empId : jsonObj.empId,
@@ -295,20 +293,20 @@ const AttendanceScreen = ({ route, navigation }) => {
     }
   };
 
-  const getAttendance = async () => {
+  const getAttendance = async (newUser) => {
     try {
       let employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
       );
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
-        getProfilePic(jsonObj);
-        getAttendanceCount(jsonObj);
+        getProfilePic(newUser ? newUser : jsonObj);
+        getAttendanceCount(newUser ? newUser : jsonObj);
         var d = currentMonth;
         const response = await client.get(
           URL.GET_ATTENDANCE_EMPID(
-            jsonObj.empId,
-            jsonObj.orgId,
+            newUser ? newUser.empId : jsonObj.empId,
+            newUser ? newUser.orgId : jsonObj.orgId,
             monthNamesCap[d.getMonth()]
           )
         );
@@ -376,7 +374,9 @@ const AttendanceScreen = ({ route, navigation }) => {
 
   const isCurrentDate = (day) => {
     let selectedDate = day.dateString;
-    if (currentDate === selectedDate) {
+    if (route?.params) {
+      return;
+    } else if (currentDate === selectedDate) {
       setAttendance(true);
     }
   };
@@ -518,18 +518,21 @@ const AttendanceScreen = ({ route, navigation }) => {
           />
         </View>
         <View style={styles.profilePicView}>
-          <View
-            style={{
-              ...GlobalStyle.shadow,
-              ...styles.profilePicBG,
-            }}
-          >
-            <Image
-              style={styles.profilePic}
-              source={{
-                uri: imageUri,
+          <View style={{ justifyContent: "center", alignItems: "center" }}>
+            <View
+              style={{
+                ...GlobalStyle.shadow,
+                ...styles.profilePicBG,
               }}
-            />
+            >
+              <Image
+                style={styles.profilePic}
+                source={{
+                  uri: imageUri,
+                }}
+              />
+            </View>
+            <Text style={styles.employeeName}>{route?.params?.empName}</Text>
           </View>
           <View style={styles.hoursView}>
             <Text style={styles.totalHours}>{"Total Hours"}</Text>
@@ -538,7 +541,6 @@ const AttendanceScreen = ({ route, navigation }) => {
             </Text>
           </View>
         </View>
-        {!isWeek && (
           <View>
             <Calendar
               onDayPress={(day) => {
@@ -602,51 +604,6 @@ const AttendanceScreen = ({ route, navigation }) => {
               markedDates={marker}
             />
           </View>
-        )}
-        {isWeek && (
-          <View style={{ flex: 1, marginTop: 10 }}>
-            <WeeklyCalendar
-              events={weeklyRecord}
-              titleFormat={"MMM yyyy"}
-              titleStyle={{
-                color: Colors.RED,
-                fontSize: 15,
-                fontWeight: "500",
-                marginVertical: 10,
-              }}
-              themeColor={Colors.RED}
-              dayLabelStyle={{
-                color: Colors.RED,
-              }}
-              onDayPress={(day) => {
-                console.log("selected day", day);
-                isCurrentDateForWeekView(day);
-              }}
-              renderEvent={(event, j) => {
-                return (
-                  <View
-                    style={{
-                      ...styles.eventNote,
-                      backgroundColor: event.color,
-                    }}
-                  >
-                    <Text style={styles.eventText}>{event.status}</Text>
-                    {event.note?.length > 0 && (
-                      <Text style={styles.eventText}>
-                        {"Comment: " + event.note}
-                      </Text>
-                    )}
-                    {event.reason?.length > 0 && (
-                      <Text style={styles.eventText}>
-                        {"Reason: " + event.reason}
-                      </Text>
-                    )}
-                  </View>
-                );
-              }}
-            />
-          </View>
-        )}
         <View style={styles.parameterListContain}>
           <View style={styles.parameterView}>
             <View
@@ -1005,5 +962,11 @@ const styles = StyleSheet.create({
     height: 60,
     backgroundColor: "rgba(255,21,107,6)",
     borderRadius: 100,
+  },
+  employeeName: {
+    color: "#252525",
+    fontSize: 14,
+    fontWeight: "700",
+    marginTop: 5,
   },
 });

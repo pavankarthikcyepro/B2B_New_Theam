@@ -56,7 +56,8 @@ const MyAttendanceTopTabNavigatorOne = ({ navigation }) => {
        const jsonObj = JSON.parse(employeeData);
        if (
          jsonObj.hrmsRole === "branch manager" ||
-         jsonObj.hrmsRole === "MD"
+         jsonObj.hrmsRole === "MD" ||
+         jsonObj.hrmsRole === "Sales Manager"
        ) {
          setHandleTabDisplay(2);
        } else {
