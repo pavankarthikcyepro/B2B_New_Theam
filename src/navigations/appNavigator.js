@@ -1213,16 +1213,16 @@ const MainStackDrawerNavigator = () => {
           component={TaskTransferStackNavigator}
         />
         <MainDrawerNavigator.Screen
-          name={DrawerStackIdentifiers.digitalPayment}
-          component={DigitalPaymentStackNavigator}
-        />
-        <MainDrawerNavigator.Screen
           name={DrawerStackIdentifiers.helpdesk}
           component={HelpDeskStackNavigator}
         />
         <MainDrawerNavigator.Screen
           name={DrawerStackIdentifiers.settings}
           component={SettingsStackNavigator}
+        />
+        <MainDrawerNavigator.Screen
+          name={DrawerStackIdentifiers.digitalPayment}
+          component={DigitalPaymentStackNavigator}
         />
         <MainDrawerNavigator.Screen
           name={DrawerStackIdentifiers.dropAnalysis}
