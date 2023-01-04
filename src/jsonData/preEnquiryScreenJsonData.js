@@ -117,7 +117,7 @@ export const CustomerTypesObj21 = {
   "fleet owner": [
     {
       "id": "1",
-      "name": "Fleet"
+      "name": "Fleet Owner"
     }
   ],
   "hire": [
