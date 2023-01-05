@@ -391,6 +391,32 @@ export const getTermsAndConditionsOrgwise = createAsyncThunk(
   }
 );
 
+
+export const getEventConfigList = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/getEventConfigList",
+  async (payload: any, { rejectWithValue }) => {
+
+    const customConfig = {
+      branchid: payload.branchId,
+      orgid: payload.orgId,
+    };
+    const response = await client.get(
+      URL.GET_EVENTS_NEW(payload.startDate, payload.endDate, payload.empId),
+      customConfig
+    );
+
+    try {
+      const json = await response.json();
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      return rejectWithValue({ message: "Json parse error: " + response });
+    }
+  }
+);
+
 interface PersonalIntroModel {
   key: string;
   text: string;
@@ -608,6 +634,8 @@ const initialState = {
   accessories_discount:"",
   insurance_discount:"",
   foc_accessoriesFromServer :"",
+  event_list_Config: [],
+  event_list_response_Config_status: "",
 };
 
 const enquiryDetailsOverViewSlice = createSlice({
@@ -681,7 +709,9 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.additional_offer_2 = "";
       state.accessories_discount = "",
       state.insurance_discount = "",
-        state.foc_accessoriesFromServer = ""
+        state.foc_accessoriesFromServer = "",
+        state.event_list_Config = [];
+      state.event_list_response_Config_status = "";
     },
     clearState2: (state, action) => {
       state.enableEdit = false;
@@ -2449,6 +2479,26 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.getTermsNConditions_res_status = "failed";
       state.getTermsNConditions_res = [];
       state.isLoading = false;
+    });
+
+
+    // Get event config list 
+    builder.addCase(getEventConfigList.pending, (state, action) => {
+      state.event_list_Config = [];
+      state.event_list_response_Config_status = "pending";
+      state.isLoading = true;
+    });
+    builder.addCase(getEventConfigList.fulfilled, (state, action) => {
+      if (action.payload) {
+        state.event_list_Config = action.payload;
+      }
+      state.event_list_response_Config_status = "success";
+      state.isLoading = false;
+    });
+    builder.addCase(getEventConfigList.rejected, (state, action) => {
+      state.event_list_response_Config_status = "failed";
+      state.isLoading = false;
+      state.event_list_Config = [];
     });
   },
 });

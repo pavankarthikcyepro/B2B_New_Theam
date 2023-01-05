@@ -118,6 +118,34 @@ export const getEventListApi = createAsyncThunk(
     }
   }
 );
+
+
+export const getEventConfigList = createAsyncThunk(
+  "ADD_PRE_ENQUIRY_SLICE/getEventConfigList",
+  async (payload: any, { rejectWithValue }) => {
+   
+    const customConfig = {
+      branchid: payload.branchId,
+      orgid: payload.orgId,
+    };
+    const response = await client.get(
+      URL.GET_EVENTS_NEW(payload.startDate, payload.endDate, payload.empId),
+      customConfig
+    );
+   
+    try {
+      const json = await response.json();
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      return rejectWithValue({ message: "Json parse error: " + response });
+    }
+  }
+);
+
+
  const getAsyncstoreData = async () => {
         const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
  }
@@ -167,6 +195,8 @@ export const addPreEnquirySlice = createSlice({
     create_enquiry_response_obj: {},
     event_list: [],
     event_list_response_status: "",
+    event_list_Config: [],
+    event_list_response_Config_status: "",
   },
   reducers: {
     clearState: (state) => {
@@ -197,7 +227,9 @@ export const addPreEnquirySlice = createSlice({
       state.updateEnquiryStatus = "";
       state.create_enquiry_response_obj = {};
       state.event_list = [];
+      state.event_list_Config = [];
       state.event_list_response_status = "";
+      state.event_list_response_Config_status = "";
     },
     setCreateEnquiryCheckbox: (state, action) => {
       state.create_enquiry_checked = !state.create_enquiry_checked;
@@ -432,6 +464,26 @@ state.customerType = "";
         state.event_list_response_status = "failed";
         state.isLoading = false;
       })
+
+      // Get Event List configuration
+      .addCase(getEventConfigList.pending, (state, action) => {
+        state.event_list_Config = [];
+        state.event_list_response_Config_status = "pending";
+        state.isLoading = true;
+      })
+      .addCase(getEventConfigList.fulfilled, (state, action) => {
+        if (action.payload) {
+          state.event_list_Config = action.payload;
+        }
+        state.event_list_response_Config_status = "success";
+        state.isLoading = false;
+      })
+      .addCase(getEventConfigList.rejected, (state, action) => {
+        state.event_list_response_Config_status = "failed";
+        state.isLoading = false;
+        state.event_list_Config = [];
+      })
+
       .addCase(getPreEnquiryDetails.pending, (state, action) => {})
       .addCase(getPreEnquiryDetails.fulfilled, (state, action) => {})
       .addCase(getPreEnquiryDetails.rejected, (state, action) => {});
