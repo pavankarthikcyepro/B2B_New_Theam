@@ -297,6 +297,24 @@ const URL = {
   GET_DRIVERS_LIST: (orgId) => {
     return roleManagement_url + `/user/role/name/Driver/${orgId}`;
   },
+  GET_ROLES_LIST: () => {
+    return (
+      "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8089/role-management" +
+      `/dms/getRoles`
+    );
+  },
+  GET_DESGINATION_LIST: () => {
+    return (
+      "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8089/role-management" +
+      `/dms/getDesignation`
+    );
+  },
+  SAVE_EMPLOYEE: () => {
+    return (
+      "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8089/role-management" +
+      `/dms/save-employee`
+    );
+  },
   GET_TEST_DRIVE_VEHICLES: (branchId, orgId) => {
     return (
       inventory_url +
