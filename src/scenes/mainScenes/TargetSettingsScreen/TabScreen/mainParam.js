@@ -375,17 +375,19 @@ const MainParamScreen = ({ route, navigation }) => {
     }
   }, [homeSelector.login_employee_details]);
 
-  const getBranchName = (branchId) => {
+  const getBranchName = (branchId, isFull = false) => {
     let branchName = "";
     if (branches.length > 0) {
       const branch = branches.find((x) => +x.branchId === +branchId);
       if (branch) {
-        branchName = branch.branchName.split(" - ")[0];
+        branchName = isFull
+          ? branch.branchName
+          : branch.branchName.split(" - ")[0];
       }
     }
     return branchName;
   };
-
+  
   const clearOwnData = () => {
     setIsNoTargetAvailable(true);
     setOwnData({
@@ -1559,10 +1561,20 @@ const MainParamScreen = ({ route, navigation }) => {
           moduleType={"home"}
           editParameters={editParameters}
           editAndUpdate={(x) => {
+            let branchName = item?.branchName;
+            let branch = item?.branch;
+
+            if (!branchName) {
+              branchName = getBranchName(item.branchId, true);
+            }
+            if (!branch) {
+              branch = item.branchId;
+            }
+
             setSelectedDropdownData([
               {
-                label: item?.branchName,
-                value: item?.branch,
+                label: branchName,
+                value: branch,
               },
             ]);
             if (
@@ -1571,10 +1583,10 @@ const MainParamScreen = ({ route, navigation }) => {
               selector?.startDate === item?.startDate
             ) {
               setSelectedBranch({
-                label: item?.branchName,
-                value: item?.branch,
+                label: branchName,
+                value: branch,
               });
-              setDefaultBranch(item?.branch);
+              setDefaultBranch(branch);
               setAddOrEdit("E");
             } else {
               setDefaultBranch(null);
@@ -1609,10 +1621,20 @@ const MainParamScreen = ({ route, navigation }) => {
           moduleType={"home"}
           editParameters={editParameters}
           editAndUpdate={(x) => {
+            let branchName = item?.branchName;
+            let branch = item?.branch;
+
+            if (!branchName) {
+              branchName = getBranchName(item.branchId, true);
+            }
+            if (!branch) {
+              branch = item.branchId;
+            }
+
             setSelectedDropdownData([
               {
-                label: item?.branchName,
-                value: item?.branch,
+                label: branchName,
+                value: branch,
               },
             ]);
             if (
@@ -1622,10 +1644,10 @@ const MainParamScreen = ({ route, navigation }) => {
               item?.startDate
             ) {
               setSelectedBranch({
-                label: item?.branchName,
-                value: item?.branch,
+                label: branchName,
+                value: branch,
               });
-              setDefaultBranch(item?.branch);
+              setDefaultBranch(branch);
               setAddOrEdit("E");
             } else {
               setDefaultBranch(null);
