@@ -324,6 +324,12 @@ const URL = {
   GET_EVENTS: () => {
     return ops_url + `/dms/getAllServiceEventsByFilterByStatus`;
   }, // getAllServiceEventsByFilter replaced by getAllServiceEventsByFilterByStatus
+
+  GET_EVENTS_NEW: (startDate, endDate, empId) => {
+    return ops_url + `/dms/getAllServiceEventsByFilter?startdate=${startDate}&enddate=${endDate}&organiserid=${empId}`;
+  },
+
+
   GET_SOURCE_OF_ENQUIRY: (orgId) => {
     return subSourceAllDetails + `?organizationId=${orgId}`;
     //return sales_url + `/master-data/source-of-enquiry/${orgId}`;
