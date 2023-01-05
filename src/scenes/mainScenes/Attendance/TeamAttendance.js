@@ -291,13 +291,14 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
                     return (
                       <TouchableOpacity
                         onPress={() => {
-                          navigation.jumpTo(
-                            AttendanceTopTabNavigatorIdentifiers.leave,
+                          navigation.navigate(
+                            AttendanceTopTabNavigatorIdentifiers.team_attendance,
                             {
                               empId: innerItem.code,
                               orgId: innerItem.orgId || 18,
                               branchId: innerItem.branch || 286,
                               empName: innerItem.name || "",
+                              profilePic: innerItem.docPath || image,
                             }
                           );
                         }}
@@ -315,7 +316,7 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
                           <Image
                             style={styles.profilePic}
                             source={{
-                              uri: image,
+                              uri: innerItem.docPath || image,
                             }}
                           />
                         </View>

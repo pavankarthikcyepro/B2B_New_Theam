@@ -106,9 +106,16 @@ const AppScreen = () => {
         if (isBetween) {
           Geolocation.watchPosition(
             async (lastPosition) => {
+              console.log("lastPOSTION", lastPosition);
+              let speed =
+                lastPosition?.coords?.speed <= -1
+                  ? 0
+                  : lastPosition?.coords?.speed * 3.6;
+              console.log("SPEED=============", speed);
               const employeeData = await AsyncStore.getData(
                 AsyncStore.Keys.LOGIN_EMPLOYEE
               );
+              // console.log("employeeData", employeeData);
               if (employeeData) {
                 const jsonObj = JSON.parse(employeeData);
                 const trackingResponse = await client.get(
@@ -116,6 +123,7 @@ const AppScreen = () => {
                     `/${jsonObj.empId}/${jsonObj.orgId}`
                 );
                 const trackingJson = await trackingResponse.json();
+
                 var newLatLng = {
                   latitude: lastPosition.coords.latitude,
                   longitude: lastPosition.coords.longitude,
@@ -126,9 +134,8 @@ const AppScreen = () => {
                   lastPosition?.coords?.latitude,
                   lastPosition?.coords?.longitude
                 );
-
                 if (dist > officeRadius) {
-                  sendAlertLocalNotification();
+                  // sendAlertLocalNotification();
                 } else {
                   // seteReason(false);
                 }
@@ -136,6 +143,7 @@ const AppScreen = () => {
                   trackingJson.length > 0
                     ? JSON.parse(trackingJson[trackingJson.length - 1].location)
                     : null;
+
                 if (coordinates.length > 0 && parsedValue) {
                   if (
                     objectsEqual(
@@ -146,11 +154,13 @@ const AppScreen = () => {
                     return;
                   }
                 }
+
                 let newArray = [...coordinates, ...[newLatLng]];
                 let date = new Date(
                   trackingJson[trackingJson.length - 1]?.createdtimestamp
                 );
                 let condition = date.getDate() == new Date().getDate();
+                console.log("sss",trackingJson);
                 if (trackingJson.length > 0 && condition) {
                   let tempPayload = {
                     id: trackingJson[trackingJson.length - 1]?.id,
@@ -161,17 +171,24 @@ const AppScreen = () => {
                     updateTimestamp: new Date().getTime(),
                     purpose: "",
                     location: JSON.stringify(newArray),
+                    kmph: speed.toString(),
+                    speed: speed.toString(),
                   };
-                  const response = await client.put(
-                    locationUpdate +
-                      `/${trackingJson[trackingJson.length - 1].id}`,
-                    tempPayload
-                  );
-                  const json = await response.json();
-                  await AsyncStore.storeJsonData(
-                    AsyncStore.Keys.COORDINATES,
-                    newArray
-                  );
+                                    console.log("SSxxxsddddsSS");
+
+                  if (speed <= 10) {
+                    await AsyncStore.storeJsonData(
+                      AsyncStore.Keys.COORDINATES,
+                      newArray
+                    );
+                    console.log("SSSS");
+                    const response = await client.put(
+                      locationUpdate +
+                        `/${trackingJson[trackingJson.length - 1].id}`,
+                      tempPayload
+                    );
+                    const json = await response.json();
+                  }
                 } else {
                   let payload = {
                     id: 0,
@@ -182,13 +199,21 @@ const AppScreen = () => {
                     updateTimestamp: new Date().getTime(),
                     purpose: "",
                     location: JSON.stringify(newArray),
+                    kmph: speed.toString(),
+                    speed: speed.toString(),
                   };
-                  const response = await client.post(saveLocation, payload);
-                  const json = await response.json();
-                  await AsyncStore.storeJsonData(
-                    AsyncStore.Keys.COORDINATES,
-                    newArray
-                  );
+                  console.log("SSxxxsssSS");
+
+                  if (speed <= 10) {
+                    console.log("SSsssSS");
+
+                    await AsyncStore.storeJsonData(
+                      AsyncStore.Keys.COORDINATES,
+                      newArray
+                    );
+                    const response = await client.post(saveLocation, payload);
+                    const json = await response.json();
+                  }
                 }
               }
             },

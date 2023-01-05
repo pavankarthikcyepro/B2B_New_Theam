@@ -10,6 +10,7 @@ import {
   Platform,
   Image,
   ScrollView,
+  Alert,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -21,7 +22,6 @@ import {
 import { Colors, GlobalStyle } from "../../../styles";
 import { client } from "../../../networking/client";
 import URL from "../../../networking/endpoints";
-import { useNavigation } from "@react-navigation/native";
 import { Button, IconButton } from "react-native-paper";
 import { Calendar } from "react-native-calendars";
 import * as AsyncStore from "../../../asyncStore";
@@ -33,6 +33,8 @@ import { getDistanceBetweenTwoPoints, officeRadius } from "../../../service";
 import { monthNamesCap } from "./AttendanceTop";
 import ReactNativeModal from "react-native-modal";
 import Entypo from "react-native-vector-icons/FontAwesome";
+import RNFetchBlob from "rn-fetch-blob";
+import AttendanceDetail from "../../../components/AttendanceDetail";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
@@ -58,21 +60,6 @@ const weekdays = [
   "Saturday",
 ];
 
-const LocalButtonComp = ({ title, onPress, disabled }) => {
-  return (
-    <Button
-      style={{ marginHorizontal: 20 }}
-      mode="contained"
-      color={Colors.RED}
-      disabled={disabled}
-      labelStyle={{ textTransform: "none" }}
-      onPress={onPress}
-    >
-      {title}
-    </Button>
-  );
-};
-
 const AttendanceScreen = ({ route, navigation }) => {
   // const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -95,16 +82,20 @@ const AttendanceScreen = ({ route, navigation }) => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedFromDate, setSelectedFromDate] = useState("");
   const [selectedToDate, setSelectedToDate] = useState("");
+  const [payRoll, setPayRoll] = useState("");
   const [datePickerId, setDatePickerId] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [hoverReasons, setHoverReasons] = useState("");
   const [notes, setNotes] = useState("");
+  const [status, setStatus] = useState("");
+  const [userName, setUserName] = useState("");
   const [filterStart, SetFilterStart] = useState(false);
   const [userData, setUserData] = useState({
     orgId: "",
     empId: "",
     empName: "",
+    role: "",
   });
   const fromDateRef = useRef(selectedFromDate);
   const toDateRef = useRef(selectedToDate);
@@ -126,7 +117,7 @@ const AttendanceScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     navigation.addListener("focus", () => {
-      getCurrentLocation();
+      // getCurrentLocation();
       setFromDateState(lastMonthFirstDate);
       setToDateState(currentDate);
       // setLoading(true);
@@ -148,6 +139,15 @@ const AttendanceScreen = ({ route, navigation }) => {
   //   setLoading(true);
   //   getAttendanceFilter();
   // }, [selectedFromDate, selectedToDate]);
+
+  useEffect(() => {
+    var from = new Date(selectedFromDate);
+    var toDate = new Date(
+      new Date(selectedFromDate).setDate(from.getDate() + 30)
+    );
+    // setToDateState(moment(toDate).format(dateFormat));
+    setPayRoll(moment(toDate).format(dateFormat));
+  }, [selectedFromDate]);
 
   const setFromDateState = (date) => {
     fromDateRef.current = date;
@@ -227,6 +227,7 @@ const AttendanceScreen = ({ route, navigation }) => {
         const jsonObj = JSON.parse(employeeData);
         getProfilePic(newUser ? newUser : jsonObj);
         getFilterAttendanceCount(newUser ? newUser : jsonObj);
+        setUserName(newUser ? newUser.empName : jsonObj.empName);
         var d = currentMonth;
         const response = await client.get(
           URL.GET_ATTENDANCE_EMPID2(
@@ -314,7 +315,9 @@ const AttendanceScreen = ({ route, navigation }) => {
           orgId: jsonObj.orgId,
           empId: jsonObj.empId,
           empName: jsonObj.empName,
+          role: jsonObj.hrmsRole,
         });
+        setUserName(jsonObj.empName);
         const json = await response.json();
         if (json) {
           let newArray = [];
@@ -351,7 +354,12 @@ const AttendanceScreen = ({ route, navigation }) => {
               note: element.comments,
               reason: element.reason,
               color: element.isPresent === 1 ? Colors.GREEN : "#ff5d68",
-              status: element.isPresent === 1 ? "Present" : "Absent",
+              status:
+                element.isPresent === 1
+                  ? "Present"
+                  : element.wfh === 1
+                  ? "WFH"
+                  : "Absent",
             };
             dateArray.push(formatedDate);
             newArray.push(format);
@@ -461,30 +469,120 @@ const AttendanceScreen = ({ route, navigation }) => {
     } catch (error) {}
   };
 
-  const RenderModal = () => {
-    return (
-      <ReactNativeModal
-        onBackdropPress={() => {
-          setShowModal(false);
-        }}
-        transparent={true}
-        visible={showModal}
-      >
-        <View style={styles.newModalContainer}>
-          <Text>{"Reason: " + hoverReasons}</Text>
-          <Text>{"Note: " + notes}</Text>
-        </View>
-      </ReactNativeModal>
-    );
+  const downloadReport = async () => {
+    try {
+      const payload = {
+        orgId: userData.orgId,
+        fromDate: selectedFromDate,
+        toDate: selectedToDate,
+      };
+      const response = await client.post(URL.GET_ATTENDANCE_REPORT(), payload);
+      const json = await response.json();
+      if (json.downloadUrl) {
+        // console.log(json);
+        downloadInLocal(URL.GET_DOWNLOAD_URL(json.downloadUrl));
+      }
+    } catch (error) {
+      alert("Something went wrong");
+    }
   };
+
+  const getFileExtention = (fileUrl) => {
+    // To get the file extension
+    return /[.]/.exec(fileUrl) ? /[^.]+$/.exec(fileUrl) : undefined;
+  };
+
+  const downloadInLocal = async (url) => {
+    const { config, fs } = RNFetchBlob;
+    let downloadDir = Platform.select({
+      ios: fs.dirs.DocumentDir,
+      android: fs.dirs.DownloadDir,
+    });
+    let date = new Date();
+    let file_ext = getFileExtention(url);
+    file_ext = "." + file_ext[0];
+    let options = {};
+    if (Platform.OS === "android") {
+      options = {
+        fileCache: true,
+        addAndroidDownloads: {
+          useDownloadManager: true, // setting it to true will use the device's native download manager and will be shown in the notification bar.
+          notification: true,
+          path:
+            downloadDir +
+            "/ATTENDANCE_" +
+            Math.floor(date.getTime() + date.getSeconds() / 2) +
+            file_ext, // this is the path where your downloaded file will live in
+          description: "Downloading image.",
+        },
+      };
+      config(options)
+        .fetch("GET", url)
+        .then((res) => {
+          setLoading(false);
+          RNFetchBlob.android.actionViewIntent(res.path());
+          // do some magic here
+        })
+        .catch((err) => {
+          console.error(err);
+          setLoading(false);
+        });
+    }
+    if (Platform.OS === "ios") {
+      options = {
+        fileCache: true,
+        path:
+          downloadDir +
+          "/ATTENDANCE_" +
+          Math.floor(date.getTime() + date.getSeconds() / 2) +
+          file_ext,
+        // mime: 'application/xlsx',
+        // appendExt: 'xlsx',
+        //path: filePath,
+        //appendExt: fileExt,
+        notification: true,
+      };
+
+      config(options)
+        .fetch("GET", url)
+        .then((res) => {
+          setLoading(false);
+          setTimeout(() => {
+            // RNFetchBlob.ios.previewDocument('file://' + res.path());   //<---Property to display iOS option to save file
+            RNFetchBlob.ios.openDocument(res.data); //<---Property to display downloaded file on documaent viewer
+            // Alert.alert(CONSTANTS.APP_NAME,'File download successfully');
+          }, 300);
+        })
+        .catch((errorMessage) => {
+          setLoading(false);
+        });
+    }
+  };
+
+  // const RenderModal = () => {
+  //   return (
+  //     <ReactNativeModal
+  //       onBackdropPress={() => {
+  //         setShowModal(false);
+  //       }}
+  //       transparent={true}
+  //       visible={showModal}
+  //     >
+  //       <View style={styles.newModalContainer}>
+  //         <Text>{"Reason: " + hoverReasons}</Text>
+  //         <Text>{"Note: " + notes}</Text>
+  //       </View>
+  //     </ReactNativeModal>
+  //   );
+  // };
 
   return (
     <SafeAreaView style={styles.container}>
-      <RenderModal />
+      {/* <RenderModal /> */}
       <DatePickerComponent
         visible={showDatePicker}
         mode={"date"}
-        maximumDate={new Date()}
+        maximumDate={payRoll != "" ? new Date(payRoll) : new Date()}
         value={new Date()}
         onChange={(event, selectedDate) => {
           setShowDatePicker(false);
@@ -498,13 +596,16 @@ const AttendanceScreen = ({ route, navigation }) => {
         }}
         onRequestClose={() => setShowDatePicker(false)}
       />
-      <AttendanceForm
+      <AttendanceDetail
         visible={attendance}
         showReason={reason}
         inVisible={() => {
-          getAttendance();
           setAttendance(false);
         }}
+        reasonText={hoverReasons || "No Reason Available"}
+        noteText={notes || "No Notes Available"}
+        status={status}
+        userName={route?.params?.empName ? route?.params?.empName : userName}
       />
       <ScrollView showsVerticalScrollIndicator={false}>
         <View
@@ -541,69 +642,95 @@ const AttendanceScreen = ({ route, navigation }) => {
             </Text>
           </View>
         </View>
-          <View>
-            <Calendar
-              onDayPress={(day) => {
-                isCurrentDate(day);
-              }}
-              onDayLongPress={(day) => {
-                console.log("selected day", day);
-                let newData = weeklyRecord.filter(
-                  (e) => e.start === day.dateString
-                )[0];
+        <View>
+          <Calendar
+            disabledDaysIndexes={[6, 7]}
+            onDayPress={(day) => {
+              // isCurrentDate(day);
+              let newData = weeklyRecord.filter(
+                (e) => e.start === day.dateString
+              )[0];
+              if (newData?.status == "Absent" || newData?.status == "WFH") {
                 setHoverReasons(newData?.reason || "");
+                setStatus(newData?.status);
                 setNotes(newData?.note || "");
-                let week = new Date(day.dateString);
-                const weekDay = week.getDay();
-                if (weekDay == 0 || weekDay == 6) {
-                } else {
-                  setShowModal(true);
-                }
-              }}
-              monthFormat={"MMM yyyy"}
-              onMonthChange={(month) => {
-                console.log("month changed", month);
-                if (!filterStart) {
-                  setCurrentMonth(new Date(month.dateString));
-                }
-              }}
-              // dayComponent={({ date, state }) => {
-              //   return (
-              //     <View>
-              //       <Text
-              //         style={{
-              //           textAlign: "center",
-              //           color: state === "disabled" ? "gray" : "black",
-              //         }}
-              //       >
-              //         {date.day}
-              //       </Text>
-              //     </View>
-              //   );
-              // }}
-              hideExtraDays={true}
-              firstDay={1}
-              onPressArrowLeft={(subtractMonth) => subtractMonth()}
-              onPressArrowRight={(addMonth) => addMonth()}
-              enableSwipeMonths={true}
-              theme={{
-                arrowColor: Colors.RED,
-                dotColor: Colors.RED,
-                textMonthFontWeight: "500",
-                monthTextColor: Colors.RED,
-                indicatorColor: Colors.RED,
-                dayTextColor: Colors.BLACK,
-                selectedDayBackgroundColor: Colors.GRAY,
-                textDayFontWeight: "500",
-                textDayStyle: {
-                  color: Colors.BLACK,
+                setAttendance(true);
+              }
+            }}
+            onDayLongPress={(day) => {
+              console.log("selected day", day);
+              // let newData = weeklyRecord.filter(
+              //   (e) => e.start === day.dateString
+              // )[0];
+              // setHoverReasons(newData?.reason || "");
+              // setNotes(newData?.note || "");
+              // let week = new Date(day.dateString);
+              // const weekDay = week.getDay();
+              // if (weekDay == 0 || weekDay == 6) {
+              // } else {
+              //   // setShowModal(true);
+              // }
+            }}
+            monthFormat={"MMM yyyy"}
+            onMonthChange={(month) => {
+              console.log("month changed", month);
+              if (!filterStart) {
+                setCurrentMonth(new Date(month.dateString));
+              }
+            }}
+            // dayComponent={({ date, state }) => {
+            //   return (
+            //     <View>
+            //       <Text
+            //         style={{
+            //           textAlign: "center",
+            //           color: state === "disabled" ? "gray" : "black",
+            //         }}
+            //       >
+            //         {date.day}
+            //       </Text>
+            //     </View>
+            //   );
+            // }}
+            hideExtraDays={true}
+            // firstDay={1}
+            onPressArrowLeft={(subtractMonth) => subtractMonth()}
+            onPressArrowRight={(addMonth) => addMonth()}
+            enableSwipeMonths={true}
+            theme={{
+              "stylesheet.calendar.header": {
+                dayTextAtIndex0: {
+                  color: Colors.GRAY,
                 },
-                textSectionTitleColor: Colors.BLACK,
-              }}
-              markingType={"custom"}
-              markedDates={marker}
-            />
-          </View>
+                dayTextAtIndex6: {
+                  color: Colors.GRAY,
+                },
+              },
+              "stylesheet.day.basic": {
+                dayTextAtIndex0: {
+                  color: Colors.GRAY,
+                },
+                dayTextAtIndex6: {
+                  color: Colors.GRAY,
+                },
+              },
+              arrowColor: Colors.RED,
+              dotColor: Colors.RED,
+              textMonthFontWeight: "500",
+              monthTextColor: Colors.RED,
+              indicatorColor: Colors.RED,
+              dayTextColor: Colors.BLACK,
+              selectedDayBackgroundColor: Colors.GRAY,
+              textDayFontWeight: "500",
+              textDayStyle: {
+                color: Colors.BLACK,
+              },
+              textSectionTitleColor: Colors.BLACK,
+            }}
+            markingType={"custom"}
+            markedDates={marker}
+          />
+        </View>
         <View style={styles.parameterListContain}>
           <View style={styles.parameterView}>
             <View
@@ -668,14 +795,18 @@ const AttendanceScreen = ({ route, navigation }) => {
           </View>
         </View>
       </ScrollView>
-      <TouchableOpacity
-        onPress={() => {
-          alert("download");
-        }}
-        style={[GlobalStyle.shadow, styles.floatingBtn]}
-      >
-        <Entypo size={30} name="download" color={Colors.WHITE} />
-      </TouchableOpacity>
+      {userData.role === "branch manager" ||
+      userData.role === "MD" ||
+      userData.role === "Sales Manager" ? (
+        <TouchableOpacity
+          onPress={() => {
+            downloadReport();
+          }}
+          style={[GlobalStyle.shadow, styles.floatingBtn]}
+        >
+          <Entypo size={30} name="download" color={Colors.WHITE} />
+        </TouchableOpacity>
+      ) : null}
       <LoaderComponent visible={loading} />
     </SafeAreaView>
   );
@@ -892,6 +1023,7 @@ const styles = StyleSheet.create({
     width: "100%",
     marginTop: 10,
     marginLeft: 10,
+    marginBottom: 25,
   },
   parameterText: {
     fontSize: 14,
