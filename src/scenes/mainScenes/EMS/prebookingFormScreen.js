@@ -851,8 +851,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
         if (
           value?.model &&
-          selector?.pre_booking_details_response?.dmsLeadDto?.leadStatus !=
-          "ENQUIRYCOMPLETED" &&
+          // selector?.pre_booking_details_response?.dmsLeadDto?.leadStatus !=
+          // "ENQUIRYCOMPLETED" &&
           modelData.model == value.model
         ) {
           if (modelData.variant == value.variant) {
@@ -1477,6 +1477,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     setTotalOnRoadPrice(0);
     setTcsAmount(0);
     setTotalOnRoadPriceAfterDiscount(0);
+
+    console.log("==========================");
+    console.log("clearPriceConfirmationData");
+    console.log("==========================");
   };
 
   const showDropDownModelMethod = (key, headerText) => {
