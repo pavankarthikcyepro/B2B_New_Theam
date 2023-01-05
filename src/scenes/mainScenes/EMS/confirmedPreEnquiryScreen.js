@@ -303,25 +303,37 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
 
     // Handle Employees List Response
     useEffect(() => {
-
-        if (selector.employees_list.length === 0 && selector.employees_list_status === "success") {
-            const endUrl = `${itemData.universalId}` + '?' + 'stage=PreEnquiry';
-            dispatch(getaAllTasks(endUrl));
+      if (
+        selector.employees_list.length === 0 &&
+        selector.employees_list_status === "success"
+      ) {
+        if (userData?.employeeId) {
+          let newObj = {
+            name: userData.employeeName,
+            id: userData.employeeId,
+          };
+          updateEmployee(newObj);
+        } else {
+          const endUrl = `${itemData.universalId}` + "?" + "stage=PreEnquiry";
+          dispatch(getaAllTasks(endUrl));
         }
-        else if (selector.employees_list.length > 0 && selector.employees_list_status === "success") {
-            let newData = [];
-            selector.employees_list.forEach(element => {
-                const obj = {
-                    id: element.empId,
-                    name: element.empName,
-                    selected: false,
-                }
-                newData.push(obj);
-            });
-            setEmployeesData([...newData]);
-            setEmployeeSelectModel(true);
-        }
-    }, [selector.employees_list, selector.employees_list_status])
+      } else if (
+        selector.employees_list.length > 0 &&
+        selector.employees_list_status === "success"
+      ) {
+        let newData = [];
+        selector.employees_list.forEach((element) => {
+          const obj = {
+            id: element.empId,
+            name: element.empName,
+            selected: false,
+          };
+          newData.push(obj);
+        });
+        setEmployeesData([...newData]);
+        setEmployeeSelectModel(true);
+      }
+    }, [selector.employees_list, selector.employees_list_status]);
 
     // Handle Get All Tasks Response
     useEffect(() => {

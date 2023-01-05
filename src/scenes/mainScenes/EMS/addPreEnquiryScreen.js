@@ -738,7 +738,9 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       setIsSubmitEnable(true);
       dispatch(updateEnqStatus(""));
       showToastSucess("Contact successfully updated");
-      navigation.popToTop();
+      navigation.navigate(EmsTopTabNavigatorIdentifiers.preEnquiry, {
+        isContactRefresh: true,
+      });
     } else if (selector.updateEnquiryStatus === "failed") {
       setIsSubmitEnable(true);
       if (
