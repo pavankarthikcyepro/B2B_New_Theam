@@ -145,10 +145,7 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
   }, []);
 
   useEffect(() => {
-    if (
-      selectedLocation.id != 0 &&
-      selectedDealerCode.id != 0
-    ) {
+    if (selectedLocation.id != 0 && selectedDealerCode.id != 0) {
       getEmployeeList();
     }
   }, [selectedLocation, selectedDealerCode]);
@@ -180,17 +177,18 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
       );
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
-        // let payload = [643, 644, 645, 646, 647];
-        let payloadx = [
-          selectedLocation.id,
-          selectedDealerCode.id,
-        ];
+        let payload = [selectedLocation.id, selectedDealerCode.id];
         const response = await client.post(
-          URL.GET_EMPLOYEES_DROP_DOWN_DATA(jsonObj.orgId, jsonObj.empId),
-          payloadx
+          URL.GET_EMPLOYEES_DROP_DOWN_DATA_FOR_ATTENDANCE(
+            jsonObj.orgId,
+            jsonObj.empId
+          ),
+          payload
         );
         const json = await response.json();
-        setEmployeeList(json);
+        if (!json.status) {
+          setEmployeeList(json);
+        }
         setLoading(false);
       }
     } catch (error) {
@@ -198,7 +196,6 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
       console.error(error);
     }
   };
-  // const dropdownList = [{ name: "JP Nagar" }, { name: "HCR" }];
 
   const dropDownItemClicked = async (item) => {
     setSelectedKey(item);
@@ -294,11 +291,14 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
                     return (
                       <TouchableOpacity
                         onPress={() => {
-                          navigation.jumpTo(
-                            AttendanceTopTabNavigatorIdentifiers.leave,
+                          navigation.navigate(
+                            AttendanceTopTabNavigatorIdentifiers.team_attendance,
                             {
                               empId: innerItem.code,
                               orgId: innerItem.orgId || 18,
+                              branchId: innerItem.branch || 286,
+                              empName: innerItem.name || "",
+                              profilePic: innerItem.docPath || image,
                             }
                           );
                         }}
@@ -316,7 +316,7 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
                           <Image
                             style={styles.profilePic}
                             source={{
-                              uri: image,
+                              uri: innerItem.docPath || image,
                             }}
                           />
                         </View>

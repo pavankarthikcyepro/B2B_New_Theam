@@ -23,6 +23,8 @@ import { getDistanceBetweenTwoPoints, officeRadius } from "../../../service";
 import Swipeable from "react-native-swipeable";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import VerifyAttendance from "../../../components/VerifyAttendance";
+import AttendanceForm from "../../../components/AttendanceForm";
+import AttendanceFromSelf from "../../../components/AttendanceFromSelf";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
@@ -90,6 +92,8 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [monthData, setMonthData] = useState([]);
   const [logOut, setLogOut] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+
   // useLayoutEffect(() => {
   //   navigation.setOptions({
   //     headerLeft: () => <MenuIcon navigation={navigation} />,
@@ -243,7 +247,10 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
             item?.punchIn == null ? rightButtons : rightButtonsPunchOut
           }
         >
-          <View
+          <TouchableOpacity
+            onPress={() => {
+              !item?.punchOut && setAttendance(true);
+            }}
             style={
               item?.isAbsent == 1
                 ? styles.leaveShadowView
@@ -303,7 +310,7 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
                 </Text>
               </View>
             </View>
-          </View>
+          </TouchableOpacity>
         </Swipeable>
       );
     } else {
@@ -403,8 +410,22 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
         showReason={reason}
         logOut={logOut}
         inVisible={() => {
-          getAttendance();
+          // getAttendance();
           setAttendance(false);
+        }}
+        onLogin={() => {
+          setAttendance(false);
+          setTimeout(() => {
+            setShowModal(true);
+          }, 250);
+        }}
+      />
+      <AttendanceFromSelf
+        visible={showModal}
+        showReason={reason}
+        inVisible={() => {
+          getAttendance();
+          setShowModal(false);
         }}
       />
       <View style={styles.headerView}>
@@ -447,6 +468,7 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
         contentContainerStyle={{
           flexGrow: 1,
         }}
+        showsVerticalScrollIndicator={false}
       />
       <LoaderComponent visible={loading} />
     </SafeAreaView>

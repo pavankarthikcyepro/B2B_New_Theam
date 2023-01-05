@@ -47,7 +47,7 @@ export const MarkAbsent = async (absentRequest = false) => {
             )
           );
           const json = await response.json();
-          console.log("OKOKOKOK", json[json?.length - 1]);
+          // console.log("OKOKOKOK", json[json?.length - 1]);
           let latestDate = new Date(
             json[json?.length - 1]?.createdtimestamp
           )?.getDate();
