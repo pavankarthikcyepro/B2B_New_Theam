@@ -218,7 +218,8 @@ const BookingFormScreen = ({ route, navigation }) => {
         isManager: false,
         editEnable: false,
         isPreBookingApprover: false,
-        isSelfManager: ""
+        isSelfManager: "",
+        isTracker: ""
     });
     const [showDropDownModel, setShowDropDownModel] = useState(false);
     const [showMultipleDropDownData, setShowMultipleDropDownData] =
@@ -304,13 +305,14 @@ const BookingFormScreen = ({ route, navigation }) => {
         setOpenAccordian(0);
         setComponentAppear(false);
         setUserData({
-            orgId: "",
-            employeeId: "",
-            employeeName: "",
-            isManager: false,
-            editEnable: false,
-            isPreBookingApprover: false,
-            isSelfManager: ""
+          orgId: "",
+          employeeId: "",
+          employeeName: "",
+          isManager: false,
+          editEnable: false,
+          isPreBookingApprover: false,
+          isSelfManager: "",
+          isTracker: "",
         });
         setShowDropDownModel(false);
         setShowMultipleDropDownData(false);
@@ -541,7 +543,8 @@ const BookingFormScreen = ({ route, navigation }) => {
                 isManager: isManager,
                 editEnable: editEnable,
                 isPreBookingApprover: isPreBookingApprover,
-                isSelfManager: jsonObj.isSelfManager
+                isSelfManager: jsonObj.isSelfManager,
+                isTracker: jsonObj.isTracker,
             });
 
             const payload = {
@@ -2795,6 +2798,8 @@ const BookingFormScreen = ({ route, navigation }) => {
                     label={
                       userData.isSelfManager == "Y"
                         ? "Battery Type*"
+                        : userData.isTracker == "Y"
+                        ? "Clutch type"
                         : "Transmission Type*"
                     }
                     disabled={true}

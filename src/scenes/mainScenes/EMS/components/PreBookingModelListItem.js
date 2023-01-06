@@ -95,7 +95,8 @@ export const PreBookingModelListitemCom = ({
     orgId: "",
     employeeId: "",
     employeeName: "",
-    isSelfManager: ""
+    isSelfManager: "",
+    isTracker: "",
   });
   const [selectedCarVarientsData, setSelectedCarVarientsData] = useState({
     varientList: [],
@@ -168,7 +169,8 @@ export const PreBookingModelListitemCom = ({
           orgId: jsonObj.orgId,
           employeeId: jsonObj.employeeId,
           employeeName: jsonObj.empName,
-          isSelfManager: jsonObj.isSelfManager
+          isSelfManager: jsonObj.isSelfManager,
+          isTracker: jsonObj.isTracker,
         });
         getCarModelListFromServer(jsonObj.orgId);
         updateVariantModelsData(item.model, false);
@@ -531,13 +533,15 @@ export const PreBookingModelListitemCom = ({
           marginVertical: 10,
           borderRadius: 5,
           backgroundColor: Colors.LIGHT_GRAY2,
-        }}>
+        }}
+      >
         <View
           style={{
             flexDirection: "row",
             width: "100%",
             justifyContent: "space-between",
-          }}>
+          }}
+        >
           <View style={{ height: 50, width: "46%", justifyContent: "center" }}>
             <Text
               style={{
@@ -546,7 +550,8 @@ export const PreBookingModelListitemCom = ({
                 marginLeft: 10,
                 textAlignVertical: "center",
               }}
-              numberOfLines={2}>
+              numberOfLines={2}
+            >
               {carModel}
             </Text>
           </View>
@@ -568,9 +573,11 @@ export const PreBookingModelListitemCom = ({
                      */}
           <View
             style={{ flexDirection: "row", alignItems: "center" }}
-            disabled={disabled}>
+            disabled={disabled}
+          >
             <Text
-              style={{ color: Colors.WHITE, fontSize: 16, marginRight: 10 }}>
+              style={{ color: Colors.WHITE, fontSize: 16, marginRight: 10 }}
+            >
               Is Primary
             </Text>
             <Switch
@@ -616,7 +623,8 @@ export const PreBookingModelListitemCom = ({
                   ? "red"
                   : "rgba(208, 212, 214, 0.7)",
             },
-          ]}></Text>
+          ]}
+        ></Text>
         <DropDownSelectionItem
           label={"Variant*"}
           value={carVariant}
@@ -632,7 +640,8 @@ export const PreBookingModelListitemCom = ({
                   ? "red"
                   : "rgba(208, 212, 214, 0.7)",
             },
-          ]}></Text>
+          ]}
+        ></Text>
         <DropDownSelectionItem
           label={"Color*"}
           value={carColor}
@@ -648,7 +657,8 @@ export const PreBookingModelListitemCom = ({
                   ? "red"
                   : "rgba(208, 212, 214, 0.7)",
             },
-          ]}></Text>
+          ]}
+        ></Text>
         <TextinputComp
           style={{ height: 65, width: "100%" }}
           label={userData.isSelfManager == "Y" ? "Range*" : "Fuel Type*"}
@@ -660,7 +670,13 @@ export const PreBookingModelListitemCom = ({
 
         <TextinputComp
           style={{ height: 65, width: "100%" }}
-          label={userData.isSelfManager == "Y" ? "Battery Type*" : "Transmission Type*"}
+          label={
+            userData.isSelfManager == "Y"
+              ? "Battery Type*"
+              : userData.isTracker == "Y"
+              ? "Clutch type*"
+              : "Transmission Type*"
+          }
           editable={false}
           value={carTransmissionType}
           disabled={disabled}
@@ -674,14 +690,16 @@ export const PreBookingModelListitemCom = ({
         onRequestClose={() => {
           setImagePath("");
         }}
-        transparent={true}>
+        transparent={true}
+      >
         <View
           style={{
             flex: 1,
             justifyContent: "center",
             alignItems: "center",
             backgroundColor: "rgba(0,0,0,0.7)",
-          }}>
+          }}
+        >
           <View style={{ width: "90%" }}>
             <Image
               style={{ width: "100%", height: 400, borderRadius: 4 }}
@@ -701,9 +719,11 @@ export const PreBookingModelListitemCom = ({
               borderRadius: 5,
               backgroundColor: Colors.RED,
             }}
-            onPress={() => setImagePath("")}>
+            onPress={() => setImagePath("")}
+          >
             <Text
-              style={{ fontSize: 14, fontWeight: "600", color: Colors.WHITE }}>
+              style={{ fontSize: 14, fontWeight: "600", color: Colors.WHITE }}
+            >
               Close
             </Text>
           </TouchableOpacity>
