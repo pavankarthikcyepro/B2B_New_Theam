@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { LoaderComponent } from "../../../components";
 import { Colors, GlobalStyle } from "../../../styles";
 import { client } from "../../../networking/client";
-import URL from "../../../networking/endpoints";
+import URL, { baseUrl } from "../../../networking/endpoints";
 import { IconButton } from "react-native-paper";
 import { Calendar } from "react-native-calendars";
 import * as AsyncStore from "../../../asyncStore";
@@ -204,8 +204,12 @@ const GeoLocationScreen = ({ route, navigation }) => {
   };
 
   const getProfilePic = (userData) => {
+      console.log("manthanfff ")
+    // fetch(
+    //   `http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
+    // )
     fetch(
-      `http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
+      `${baseUrl}sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
     )
       .then((response) => response.json())
       .then((json) => {

@@ -27,7 +27,7 @@ import { useIsFocused, useRoute } from "@react-navigation/native";
 import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 import Entypo from "react-native-vector-icons/FontAwesome";
 import { client } from "../../networking/client";
-import URL, { profileImageUpdate } from "../../networking/endpoints";
+import URL, { baseUrl, profileImageUpdate } from "../../networking/endpoints";
 import BackgroundService from "react-native-background-actions";
 
 // import { EVENT_MANAGEMENT, CUSTOMER_RELATIONSHIP, DOCUMENT_WALLET, HOME_LINE, BOOKING_TRACKER } from "../assets/svg";
@@ -213,7 +213,8 @@ const SideMenuScreen = ({ navigation }) => {
     if (userData.empId == undefined || userData.orgId == undefined || userData.branchId == undefined){
       return;
     }
-    client.get(`http://ec2-15-207-225-163.ap-south-1.compute.amazonaws.com:8008/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`)
+    // client.get(`http://ec2-15-207-225-163.ap-south-1.compute.amazonaws.com:8008/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`)
+    client.get(`${baseUrl}sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`)
      .then((response) => response.json())
       .then((json) => {
         
