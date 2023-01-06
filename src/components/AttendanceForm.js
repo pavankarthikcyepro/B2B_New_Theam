@@ -206,6 +206,7 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
           new Date().getDate().toString()
         );
       !absentRequest && inVisible();
+      inVisible();
       // if (savedJson.success) {
       //   !absentRequest && inVisible();
       // }
@@ -245,6 +246,7 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
           new Date().getDate().toString()
         );
       !absentRequest && inVisible();
+      inVisible();
       // if (updatedJson.success) {
       //   !absentRequest && inVisible();
       // }
@@ -339,7 +341,7 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
             />
           </View>
           {showReason ||
-            (workFromHome && (
+            ((workFromHome || !present) && (
               <>
                 <View style={{ flexDirection: "row", marginTop: 10 }}>
                   {/* <Dropdown

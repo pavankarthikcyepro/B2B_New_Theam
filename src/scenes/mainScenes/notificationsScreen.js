@@ -16,6 +16,7 @@ import URL from "../../networking/endpoints";
 import { client } from "../../networking/client";
 import * as AsyncStore from "../../asyncStore";
 import { AppNavigator } from "../../navigations";
+import { DOWN_ARROW, FOLLOW_UP, HOME_VISIT, PENDING_TASK, TARGET, TEST_DRIVE } from "../../assets/icon";
 
 const NotificationScreen = ({ navigation }) => {
   const selector = useSelector((state) => state.notificationReducer);
@@ -79,6 +80,7 @@ const NotificationScreen = ({ navigation }) => {
                     title={item?.bookingFollowupTaskMessage}
                     date={item?.date}
                     onPress={navigateTo}
+                    icon={FOLLOW_UP}
                   />
                 )}
                 {item.enqFollowupTaskMessage && (
@@ -86,30 +88,26 @@ const NotificationScreen = ({ navigation }) => {
                     title={item?.enqFollowupTaskMessage}
                     date={item?.date}
                     onPress={navigateTo}
-                  />
-                )}
-                {item.bookingFollowupTaskMessage && (
-                  <NotificationItem
-                    title={item?.bookingFollowupTaskMessage}
-                    date={item?.date}
-                    onPress={navigateTo}
-                  />
-                )}
-                {item.testDriveTaskMessage && (
-                  <NotificationItem
-                    title={item?.testDriveTaskMessage}
-                    date={item?.date}
-                    onPress={navigateTo}
+                    icon={FOLLOW_UP}
                   />
                 )}
               </View>
               <Text style={styles.header}>{"Pending Task"}</Text>
               <View style={GlobalStyle.shadow}>
+                {item.testDriveTaskMessage && (
+                  <NotificationItem
+                    title={item?.testDriveTaskMessage}
+                    date={item?.date}
+                    onPress={navigateTo}
+                    icon={TEST_DRIVE}
+                  />
+                )}
                 {item.totalPendingTasksMessage && (
                   <NotificationItem
                     title={item?.totalPendingTasksMessage}
                     date={item?.date}
                     onPress={navigateTo}
+                    icon={PENDING_TASK}
                   />
                 )}
                 {item.homeVisitTaskMessage && (
@@ -117,6 +115,7 @@ const NotificationScreen = ({ navigation }) => {
                     title={item?.homeVisitTaskMessage}
                     date={item?.date}
                     onPress={navigateTo}
+                    icon={HOME_VISIT}
                   />
                 )}
                 {item.isTarget && (
@@ -124,6 +123,7 @@ const NotificationScreen = ({ navigation }) => {
                     title={item?.isTarget}
                     date={item?.date}
                     onPress={navigateTo}
+                    icon={TARGET}
                   />
                 )}
                 {item.zeroEnqSc && (
@@ -131,6 +131,7 @@ const NotificationScreen = ({ navigation }) => {
                     title={item?.zeroEnqSc}
                     date={item?.date}
                     onPress={navigateTo}
+                    icon={DOWN_ARROW}
                   />
                 )}
                 {item.zeroBookingSc && (
@@ -138,6 +139,7 @@ const NotificationScreen = ({ navigation }) => {
                     title={item?.zeroBookingSc}
                     date={item?.date}
                     onPress={navigateTo}
+                    icon={DOWN_ARROW}
                   />
                 )}
                 {item.zeroRetailSc && (
@@ -145,6 +147,7 @@ const NotificationScreen = ({ navigation }) => {
                     title={item?.zeroRetailSc}
                     date={item?.date}
                     onPress={navigateTo}
+                    icon={DOWN_ARROW}
                   />
                 )}
               </View>

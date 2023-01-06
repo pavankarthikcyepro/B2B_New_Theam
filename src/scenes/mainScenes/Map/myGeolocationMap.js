@@ -34,22 +34,22 @@ const GeolocationMapScreen = ({ route }) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
-  const [coordinates, setCoordinates] = useState([]);
+  const [coordinates, setCoordinates] = useState(position);
   const [longitude, setLongitude] = useState(0);
   const [latitude, setLatitude] = useState(0);
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <IconButton
-          icon="filter"
-          color={Colors.WHITE}
-          size={30}
-          onPress={() => setShowDatePicker(true)}
-        />
-      ),
-    });
+    // navigation.setOptions({
+    //   headerRight: () => (
+    //     <IconButton
+    //       icon="filter"
+    //       color={Colors.WHITE}
+    //       size={30}
+    //       onPress={() => setShowDatePicker(true)}
+    //     />
+    //   ),
+    // });
   }, [navigation]);
 
   useEffect(() => {
@@ -63,10 +63,14 @@ const GeolocationMapScreen = ({ route }) => {
   const getLocation = async (params) => {
     try {
       const response = await client.get(
-        URL.GET_LOCATION_COORDINATES(params.empId, params.orgId)
+        URL.GET_MAP_COORDINATES_BY_ID(params.empId, params.orgId, params.date)
       );
+      // const response = await fetch(URL.GET_MAP_COORDINATES_BY_ID(params.empId, params.orgId, params.date))  ;
       // const response = await client.get(URL.GET_LOCATION_COORDINATES(919, 18));
+      console.log("SSS", response, JSON.stringify(response.data));
       const json = await response.json();
+      console.log("json", json);
+
       if (json) {
         const longitude = json.reduce(
           (total, next) => total + next.longitude,
@@ -121,25 +125,29 @@ const GeolocationMapScreen = ({ route }) => {
               Platform.OS === "ios" ? PROVIDER_DEFAULT : PROVIDER_GOOGLE
             }
             initialRegion={{
-              latitude: latitude,
-              longitude: longitude,
+              latitude: 37.37457281,
+              longitude: -122.14588663,
               latitudeDelta: 0.04,
               longitudeDelta: 0.05,
             }}
             zoomEnabled={true}
-            // showsUserLocation={true}
+            showsUserLocation={true}
           >
             <Polyline
-              coordinates={coordinates}
+              coordinates={position}
               strokeColor={Colors.PINK} // fallback for when `strokeColors` is not supported by the map-provider
               strokeColors={[Colors.PINK]}
               strokeWidth={4}
+              onPress={(text) => {
+                console.log(text);
+                // alert(text);
+              }}
             />
             {position.map((marker, index) => (
               <Marker
                 key={index}
                 coordinate={marker}
-                image={index === coordinates.length - 1 ? CYEPRO : HISTORY_LOC}
+                image={index === position?.length - 1 ? CYEPRO : HISTORY_LOC}
                 // title={marker}
                 // description={}
               />
@@ -173,7 +181,7 @@ const GeolocationMapScreen = ({ route }) => {
           </View>
         </View>
         <View style={styles.tableRow}>
-          <View style={styles.colums}>
+          {/* <View style={styles.colums}>
             <View style={styles.innerRow}>
               <MaterialCommunityIcons
                 name="speedometer"
@@ -183,8 +191,8 @@ const GeolocationMapScreen = ({ route }) => {
               <Text style={styles.columnsTitle}>{"Top Speed"}</Text>
             </View>
             <Text style={styles.valueTxt}>{"44 km/h"}</Text>
-          </View>
-          <View style={styles.colums}>
+          </View> */}
+          {/* <View style={styles.colums}>
             <View style={styles.innerRow}>
               <MaterialCommunityIcons
                 name="chart-bar"
@@ -194,7 +202,7 @@ const GeolocationMapScreen = ({ route }) => {
               <Text style={styles.columnsTitle}>{"Avg. Speed"}</Text>
             </View>
             <Text style={styles.valueTxt}>{"20 km/h"}</Text>
-          </View>
+          </View> */}
         </View>
       </View>
       <LoaderComponent visible={loading} />
