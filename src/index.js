@@ -111,7 +111,7 @@ const AppScreen = () => {
                 lastPosition?.coords?.speed <= -1
                   ? 0
                   : lastPosition?.coords?.speed * 3.6;
-              console.log("SPEED=============", speed);
+              // console.log("SPEED=============", speed);
               const employeeData = await AsyncStore.getData(
                 AsyncStore.Keys.LOGIN_EMPLOYEE
               );
@@ -143,24 +143,26 @@ const AppScreen = () => {
                   trackingJson.length > 0
                     ? JSON.parse(trackingJson[trackingJson.length - 1].location)
                     : null;
+                console.log("ssgfgfgfgfgs", newLatLng, parsedValue);
 
-                if (coordinates.length > 0 && parsedValue) {
-                  if (
-                    objectsEqual(
-                      coordinates[coordinates.length - 1],
-                      parsedValue[parsedValue.length - 1]
-                    )
-                  ) {
-                    return;
-                  }
+                if (newLatLng && parsedValue) {
+                  // if (
+                  //   objectsEqual(
+                  //     newLatLng,
+                  //     parsedValue[parsedValue.length - 1]
+                  //   )
+                  // ) {
+                  //   return;
+                  // }
                 }
 
                 let newArray = [...coordinates, ...[newLatLng]];
                 let date = new Date(
                   trackingJson[trackingJson.length - 1]?.createdtimestamp
                 );
-                let condition = date.getDate() == new Date().getDate();
-                console.log("sss",trackingJson);
+
+                let condition =
+                  new Date(date).getDate() == new Date().getDate();
                 if (trackingJson.length > 0 && condition) {
                   let tempPayload = {
                     id: trackingJson[trackingJson.length - 1]?.id,
@@ -174,13 +176,13 @@ const AppScreen = () => {
                     kmph: speed.toString(),
                     speed: speed.toString(),
                   };
-                                    console.log("SSxxxsddddsSS");
+                  console.log("SSxxxsddddsSS");
 
                   if (speed <= 10) {
-                    await AsyncStore.storeJsonData(
-                      AsyncStore.Keys.COORDINATES,
-                      newArray
-                    );
+                    // await AsyncStore.storeJsonData(
+                    //   AsyncStore.Keys.COORDINATES,
+                    //   newArray
+                    // );
                     console.log("SSSS");
                     const response = await client.put(
                       locationUpdate +

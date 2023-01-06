@@ -9,6 +9,7 @@ import {
   Platform,
   Keyboard,
   Alert,
+  TouchableOpacity,
 } from "react-native";
 import { Colors } from "../styles";
 import { IconButton, Checkbox, Button } from "react-native-paper";
@@ -74,7 +75,7 @@ const AttendanceFromSelf = ({
   useEffect(() => {
     getReason();
     getDetails();
-  }, []);
+  }, [visible]);
 
   const getDetails = async () => {
     try {
@@ -323,6 +324,9 @@ const AttendanceFromSelf = ({
       onRequestClose={onRequestClose}
     >
       <View style={styles.container}>
+        <TouchableOpacity onPress={()=>inVisible()} style={styles.badgeContainer}>
+          <Text style={styles.badgeText}>{'X'}</Text>
+        </TouchableOpacity>
         <View style={styles.view1}>
           <View style={{ flexDirection: "row" }}>
             <View style={{ flexDirection: "column", alignItems: "center" }}>
@@ -554,6 +558,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
+  cross: {
+    position: "absolute",
+    zIndex: 100,
+    elevation: 100,
+  },
   view1: {
     // width: screenWidth - 100,
     // height: 200,
@@ -564,7 +573,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 8,
-    margin: 10,
+    // margin: 10,
   },
   text1: {
     marginTop: 20,
@@ -633,4 +642,17 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     color: Colors.DARK_GRAY,
   },
+  badgeContainer: {
+    bottom: 0,
+    // right: 10,
+    alignSelf: "flex-end",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: Colors.RED,
+    borderRadius: 15,
+    height: 30,
+    width: 30,
+    marginRight:45,
+  },
+  badgeText: { fontSize: 12, color: Colors.WHITE, fontWeight: "bold" },
 });

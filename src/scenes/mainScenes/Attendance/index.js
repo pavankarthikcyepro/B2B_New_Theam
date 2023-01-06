@@ -21,7 +21,7 @@ import {
 } from "../../../components";
 import { Colors, GlobalStyle } from "../../../styles";
 import { client } from "../../../networking/client";
-import URL from "../../../networking/endpoints";
+import URL, { baseUrl } from "../../../networking/endpoints";
 import { Button, IconButton } from "react-native-paper";
 import { Calendar } from "react-native-calendars";
 import * as AsyncStore from "../../../asyncStore";
@@ -62,6 +62,7 @@ const weekdays = [
 
 const AttendanceScreen = ({ route, navigation }) => {
   // const navigation = useNavigation();
+  const selector = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [isWeek, setIsWeek] = useState(false);
@@ -399,7 +400,7 @@ const AttendanceScreen = ({ route, navigation }) => {
   const getProfilePic = (userData) => {
     client
       .get(
-        `http://ec2-15-207-225-163.ap-south-1.compute.amazonaws.com:8008/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
+        `${baseUrl}sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
       )
       .then((response) => response.json())
       .then((json) => {
@@ -795,9 +796,7 @@ const AttendanceScreen = ({ route, navigation }) => {
           </View>
         </View>
       </ScrollView>
-      {userData.role === "branch manager" ||
-      userData.role === "MD" ||
-      userData.role === "Sales Manager" ? (
+      {selector.isDSE ? null : (
         <TouchableOpacity
           onPress={() => {
             downloadReport();
@@ -806,7 +805,7 @@ const AttendanceScreen = ({ route, navigation }) => {
         >
           <Entypo size={30} name="download" color={Colors.WHITE} />
         </TouchableOpacity>
-      ) : null}
+      )}
       <LoaderComponent visible={loading} />
     </SafeAreaView>
   );

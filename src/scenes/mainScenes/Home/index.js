@@ -94,6 +94,7 @@ import {
 import ReactNativeModal from "react-native-modal";
 import Carousel, { Pagination } from "react-native-snap-carousel";
 import { monthNamesCap } from "../Attendance/AttendanceTop";
+import { getNotificationList } from "../../../redux/notificationReducer";
 
 const officeLocation = {
   latitude: 37.33233141,
@@ -190,6 +191,7 @@ const HomeScreen = ({ route, navigation }) => {
         );
         if (employeeData) {
           const jsonObj = JSON.parse(employeeData);
+          dispatch(getNotificationList(jsonObj));
            var d = new Date();
           const response = await client.get(
             URL.GET_ATTENDANCE_EMPID(

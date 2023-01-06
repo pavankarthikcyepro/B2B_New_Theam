@@ -47,6 +47,8 @@ const tabBarOptions = {
 const MyAttendanceTopTab = createStackNavigator();
 
 const MyAttendanceTopTabNavigatorOne = ({ navigation }) => {
+    const selector = useSelector((state) => state.homeReducer);
+
    const [handleTabDisplay, setHandleTabDisplay] = useState(0);
 
    useEffect(async () => {
@@ -77,9 +79,9 @@ const MyAttendanceTopTabNavigatorOne = ({ navigation }) => {
       <MyAttendanceTopTab.Screen
         name={AttendanceTopTabNavigatorIdentifiers.myattendance}
         component={
-          handleTabDisplay == 2
-            ? AttendanceTopTabNavigatorTeams
-            : AttendanceTopTabNavigatorTwo
+          selector?.isDSE
+            ? AttendanceTopTabNavigatorTwo
+            : AttendanceTopTabNavigatorTeams
         }
         options={{
           title: "My Attendance",
