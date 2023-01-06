@@ -56,25 +56,26 @@ export const RenderGrandTotal = (parameter) => {
                     acc
                   )}%`}
             </Text>
-            {moduleType !== "live-leads" && (
-              <Text
-                style={[
-                  styles.totalText,
-                  {
-                    width:
-                      moduleType === "live-leads"
-                        ? 70
-                        : param === "Accessories"
-                        ? 65
-                        : 56,
-                    color: Colors.WHITE,
-                    backgroundColor: Colors.MAROON + "30",
-                  },
-                ]}
-              >
-                {Number(selectedParameter.target)}
-              </Text>
-            )}
+            {moduleType !== "live-leads" &&
+              selectedParameter?.paramName !== "DROPPED" ? (
+                <Text
+                  style={[
+                    styles.totalText,
+                    {
+                      width:
+                        moduleType === "live-leads"
+                          ? 70
+                          : param === "Accessories"
+                          ? 65
+                          : 56,
+                      color: Colors.WHITE,
+                      backgroundColor: Colors.MAROON + "30",
+                    },
+                  ]}
+                >
+                  {Number(selectedParameter.target)}
+                </Text>
+              ) : null}
           </View>
         );
       })}
@@ -104,7 +105,7 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     fontSize: 12,
     height: 20,
-    paddingTop: 2,
+    paddingTop: 3,
     textAlign: "center",
   },
 });
