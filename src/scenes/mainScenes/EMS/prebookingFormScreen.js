@@ -843,8 +843,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
         if (
           value?.model &&
-          selector?.pre_booking_details_response?.dmsLeadDto?.leadStatus !=
-            "ENQUIRYCOMPLETED" &&
+          // selector?.pre_booking_details_response?.dmsLeadDto?.leadStatus !=
+          //   "ENQUIRYCOMPLETED" &&
           modelData.model == value.model
         ) {
           if (modelData.variant == value.variant) {
