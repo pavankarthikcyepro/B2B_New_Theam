@@ -21,7 +21,7 @@ import {
 } from "../../../components";
 import { Colors, GlobalStyle } from "../../../styles";
 import { client } from "../../../networking/client";
-import URL from "../../../networking/endpoints";
+import URL, { baseUrl } from "../../../networking/endpoints";
 import { Button, IconButton } from "react-native-paper";
 import { Calendar } from "react-native-calendars";
 import * as AsyncStore from "../../../asyncStore";
@@ -400,7 +400,7 @@ const AttendanceScreen = ({ route, navigation }) => {
   const getProfilePic = (userData) => {
     client
       .get(
-        `http://ec2-15-207-225-163.ap-south-1.compute.amazonaws.com:8008/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
+        `${baseUrl}sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
       )
       .then((response) => response.json())
       .then((json) => {

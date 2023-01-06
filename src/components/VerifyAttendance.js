@@ -18,7 +18,7 @@ import { Dropdown } from "react-native-element-dropdown";
 import { TextinputComp } from "./textinputComp";
 import * as AsyncStore from "../asyncStore";
 import { client } from "../networking/client";
-import URL, { reasonDropDown } from "../networking/endpoints";
+import URL, { baseUrl, reasonDropDown } from "../networking/endpoints";
 import { createDateTime } from "../service";
 import { useNavigation } from "@react-navigation/native";
 import { AppNavigator } from "../navigations";
@@ -138,7 +138,7 @@ const VerifyAttendance = ({
   const getProfilePic = (userData) => {
     client
       .get(
-        `http://ec2-15-207-225-163.ap-south-1.compute.amazonaws.com:8008/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
+        `${baseUrl}sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
       )
       .then((response) => response.json())
       .then((json) => {
