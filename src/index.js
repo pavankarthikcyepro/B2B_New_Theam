@@ -146,14 +146,14 @@ const AppScreen = () => {
                 console.log("ssgfgfgfgfgs", newLatLng, parsedValue);
 
                 if (newLatLng && parsedValue) {
-                  if (
-                    objectsEqual(
-                      newLatLng,
-                      parsedValue[parsedValue.length - 1]
-                    )
-                  ) {
-                    return;
-                  }
+                  // if (
+                  //   objectsEqual(
+                  //     newLatLng,
+                  //     parsedValue[parsedValue.length - 1]
+                  //   )
+                  // ) {
+                  //   return;
+                  // }
                 }
 
                 let newArray = [...coordinates, ...[newLatLng]];
@@ -179,10 +179,10 @@ const AppScreen = () => {
                   console.log("SSxxxsddddsSS");
 
                   if (speed <= 10) {
-                    await AsyncStore.storeJsonData(
-                      AsyncStore.Keys.COORDINATES,
-                      newArray
-                    );
+                    // await AsyncStore.storeJsonData(
+                    //   AsyncStore.Keys.COORDINATES,
+                    //   newArray
+                    // );
                     console.log("SSSS");
                     const response = await client.put(
                       locationUpdate +

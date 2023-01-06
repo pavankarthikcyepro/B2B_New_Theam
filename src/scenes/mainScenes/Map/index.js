@@ -79,6 +79,11 @@ const MapScreen = ({ route }) => {
       if (json.length > 0) {
         setData(json);
         const newArr = json.map((item) => item.location[0]);
+        let arr = [];
+        for (let i = 0; i < json.length; i++) {
+          const element = json[i];
+          arr.push(...element.location);
+        }
         const longitude = newArr.reduce(
           (total, next) => total + next.longitude,
           0
@@ -89,16 +94,16 @@ const MapScreen = ({ route }) => {
         );
         console.log(
           "AVERGARE LAT LOG",
-          latitude / newArr.length,
-          longitude / newArr.length,
+          // latitude / newArr.length,
+          // longitude / newArr.length,
           "\n",
-          newArr
+          arr
         );
-        setLatitude(newArr[newArr.length - 1].latitude);
-        setLongitude(newArr[newArr.length - 1].longitude);
+        setLatitude(arr[arr.length - 1].latitude);
+        setLongitude(arr[arr.length - 1].longitude);
         // setLatitude(latitude / newArr.length);
         // setLongitude(longitude / newArr.length);
-        setCoordinates(newArr);
+        setCoordinates(arr);
         setLoading(false);
       } else {
         Alert.alert("No data are Available", "", [
@@ -133,6 +138,11 @@ const MapScreen = ({ route }) => {
         setData(json);
 
         const newArr = json.map((item) => item.location[0]);
+        let arr = [];
+        for (let i = 0; i < json.length; i++) {
+          const element = json[i];
+          arr.push(...element.location);
+        }
         const longitude = newArr.reduce(
           (total, next) => total + next.longitude,
           0
@@ -143,17 +153,16 @@ const MapScreen = ({ route }) => {
         );
         console.log(
           "AVERGARE LAT LOG",
-          latitude / newArr.length,
-          longitude / newArr.length,
+          // latitude / newArr.length,
+          // longitude / newArr.length,
           "\n",
-          newArr
+          arr
         );
-
-        setLatitude(newArr[newArr.length - 1].latitude);
-        setLongitude(newArr[newArr.length - 1].longitude);
+        setLatitude(arr[arr.length - 1].latitude);
+        setLongitude(arr[arr.length - 1].longitude);
         // setLatitude(latitude / newArr.length);
         // setLongitude(longitude / newArr.length);
-        setCoordinates(newArr);
+        setCoordinates(arr);
         setLoading(false);
       } else {
         setData([]);
@@ -193,6 +202,7 @@ const MapScreen = ({ route }) => {
         onChange={(event, selectedDate) => {
           console.log("date: ", selectedDate);
           getLocationByDate(selectedDate);
+          setShowDatePicker(false);
         }}
         onRequestClose={() => setShowDatePicker(false)}
       />
