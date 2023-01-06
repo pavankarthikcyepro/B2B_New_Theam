@@ -56,6 +56,9 @@ import { clearLeadDropState } from "../../redux/leaddropReducer";
 import ReactNativeModal from "react-native-modal";
 import { EventRegister } from 'react-native-event-listeners'
 import { setBranchId, setBranchName } from "../../utils/helperFunctions";
+import Snackbar from "react-native-snackbar";
+import NetInfo, { } from "@react-native-community/netinfo";
+
 
 const screenWidth = Dimensions.get("window").width;
 const profileWidth = screenWidth / 6;
@@ -153,14 +156,41 @@ const SideMenuScreen = ({ navigation }) => {
   const [initialData, setInitialData] = useState({});
   const [showModal, setShowModal] = useState(false);
   const [imagePath, setImagePath] = useState("");
+  const [isNetworkPoor, setisNetworkPoor] = useState(false);
   // const route = useRoute();
 
   useEffect(() => {
     getLoginEmployeeData();
+   
+    
     EventRegister.addEventListener("ForceLogout",(res)=>{
       
       if(res){
         signOutClicked()
+      }
+    })
+   
+  
+    let isdiloadopen = false;
+    EventRegister.addEventListener("poorNetwork", (res) => {
+     
+     
+      if (res) {
+       // todo
+        
+        if (!isdiloadopen) {
+          isdiloadopen = true;
+          
+            RenderPoorNetWorkError();
+          // console.log("manthan000d ", isdiloadopen)
+          setTimeout(() => {
+            isdiloadopen = false;
+          
+              Snackbar.dismiss();
+         
+          }, 4000);
+        }
+       
       }
     })
     return ()=>{
@@ -562,6 +592,29 @@ const SideMenuScreen = ({ navigation }) => {
     // } catch (err) {
     // }
   };
+
+  const RenderPoorNetWorkError=()=>{
+        return  Snackbar.show({
+                        text: "Poor network Please check your internet connection",
+                        textColor: Colors.WHITE,
+                        backgroundColor: Colors.GRAY,
+          duration: Snackbar.LENGTH_INDEFINITE,
+                        position:"top"
+
+                    });
+    // return Alert.alert(
+    //   "Poor Network",
+    //   "Please check your internet connection",
+    //   [
+    //     {
+    //       text: "OK", onPress: () => {
+    //         // isNetworkDialogopen = false;
+
+    //       }
+    //     }
+    //   ]
+    // );
+  }
 
   const RenderModal = () => {
     return (
