@@ -923,6 +923,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       if (isPrimaryEnabled === "Y") {
         await setIsPrimaryCurrentIndex(index);
         updateVariantModelsData(item.model, true, item.variant);
+        dispatch(updateOfferPriceData());
+        clearPriceConfirmationData();
       }
       if (carModelsList && carModelsList.length > 0) {
         let arr = await [...carModelsList];
