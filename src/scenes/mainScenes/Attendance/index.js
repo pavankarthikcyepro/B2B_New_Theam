@@ -62,6 +62,7 @@ const weekdays = [
 
 const AttendanceScreen = ({ route, navigation }) => {
   // const navigation = useNavigation();
+  const selector = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [isWeek, setIsWeek] = useState(false);
@@ -795,9 +796,7 @@ const AttendanceScreen = ({ route, navigation }) => {
           </View>
         </View>
       </ScrollView>
-      {userData.role === "branch manager" ||
-      userData.role === "MD" ||
-      userData.role === "Sales Manager" ? (
+      {selector.isDSE ? null : (
         <TouchableOpacity
           onPress={() => {
             downloadReport();
@@ -806,7 +805,7 @@ const AttendanceScreen = ({ route, navigation }) => {
         >
           <Entypo size={30} name="download" color={Colors.WHITE} />
         </TouchableOpacity>
-      ) : null}
+      )}
       <LoaderComponent visible={loading} />
     </SafeAreaView>
   );
