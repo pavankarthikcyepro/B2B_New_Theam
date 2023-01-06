@@ -9,7 +9,7 @@ export const NotificationItem = ({ title, date, onPress, icon }) => {
         source={icon}
         style={{ height: 35, width: 35, resizeMode: "contain" }}
       />
-      <View style={{margin:5, flex:1}}>
+      <View style={{ margin: 5, flex: 1 }}>
         <Text style={styles.title}>{title}</Text>
       </View>
       {/* <Text style={[styles.title, styles.text2]}>{date}</Text> */}
@@ -17,6 +17,20 @@ export const NotificationItem = ({ title, date, onPress, icon }) => {
   );
 };
 
+export const NotificationItemWithoutNav = ({ title, date, icon }) => {
+  return (
+    <View style={[styles.item]}>
+      <Image
+        source={icon}
+        style={{ height: 35, width: 35, resizeMode: "contain" }}
+      />
+      <View style={{ margin: 5, flex: 1 }}>
+        <Text style={styles.title}>{title}</Text>
+      </View>
+      {/* <Text style={[styles.title, styles.text2]}>{date}</Text> */}
+    </View>
+  );
+};
 const styles = StyleSheet.create({
   item: {
     backgroundColor: Colors.WHITE,

@@ -196,12 +196,19 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
           };
           newArr.push(format);
         }
+        let latestDate = new Date(
+          json[json.length - 1].createdtimestamp
+        ).getDate();
+        let currentDate = new Date().getDate();
         if (json) {
           setMonthData([...newArr]);
-          if (json[json.length - 1].punchIn == null) {
-            setLogOut(false);
-          } else {
+          if (
+            json[json.length - 1].punchIn != null &&
+            latestDate == currentDate
+          ) {
             setLogOut(true);
+          } else {
+            setLogOut(false);
           }
           setLoading(false);
         }
@@ -251,13 +258,14 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
             onPress={() => {
               !item?.punchOut && setAttendance(true);
             }}
-            style={
-              item?.isAbsent == 1
+            style={{
+              ...(item?.isAbsent == 1
                 ? styles.leaveShadowView
                 : item?.holiday == 1
                 ? styles.holidayShadowView
-                : styles.shadowView
-            }
+                : styles.shadowView),
+              backgroundColor: "#c4c4c4",
+            }}
           >
             <View style={styles.dateDayMasterView}>
               <View style={styles.dateDayView}>

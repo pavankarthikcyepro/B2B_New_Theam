@@ -316,7 +316,7 @@ const VerifyAttendance = ({
         <View style={styles.view1}>
           <View style={{ flexDirection: "row" }}>
             <View style={{ flexDirection: "column", alignItems: "center" }}>
-              <Text style={styles.profileMatched}>{"Profile Matched!!"}</Text>
+              {/* <Text style={styles.profileMatched}>{"Profile Matched!!"}</Text> */}
             </View>
           </View>
           <View style={styles.ProfileView}>
@@ -353,7 +353,7 @@ const VerifyAttendance = ({
               }}
             />
             <LocalButtonComp
-              title={logOut? "Log Out":"Login"}
+              title={logOut ? "Log Out" : "Login"}
               onPress={() => onLogin()}
               disabled={false}
             />

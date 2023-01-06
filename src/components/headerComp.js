@@ -45,7 +45,9 @@ const HeaderComp = ({
 
   return (
     <View style={[style.container, { height: height }]}>
-      <View style={{...style.subContainer, width: notification ? '60%': '73%'}}>
+      <View
+        style={{ ...style.subContainer, width: notification ? "60%" : "73%" }}
+      >
         <IconButton
           icon="menu"
           color={Colors.WHITE}
@@ -84,13 +86,22 @@ const HeaderComp = ({
             size={30}
             onPress={filterClicked}
           />
-          {notification && (<IconButton
-            icon="bell"
-            style={{ padding: 0, margin: 0 }}
-            color={Colors.WHITE}
-            size={25}
-            onPress={notificationNav}
-          />)}
+          {notification && (
+            <>
+              <IconButton
+                icon="bell"
+                style={{ padding: 0, margin: 0 }}
+                color={Colors.WHITE}
+                size={25}
+                onPress={notificationNav}
+              />
+              {/* <View style={style.badgeContainer}>
+                <Text style={style.badgeText}>
+                  {0}
+                </Text>
+              </View> */}
+            </>
+          )}
         </View>
       </View>
       {/* {notification && (
@@ -149,8 +160,20 @@ const style = StyleSheet.create({
     color: Colors.WHITE,
     width: 60,
   },
-  filterContainer:{
-    flexDirection:'row',
-    alignItems:'center'
+  filterContainer: {
+    flexDirection: "row",
+    alignItems: "center",
   },
+  badgeContainer: {
+    bottom: 0,
+    right:10,
+    alignSelf: "flex-start",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor:Colors.RED,
+    borderRadius:7.5,
+    height:15,
+    width:15
+  },
+  badgeText: { fontSize: 12, color: Colors.WHITE, fontWeight: "bold" },
 });
