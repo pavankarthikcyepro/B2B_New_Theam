@@ -1565,7 +1565,6 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
         }
 
         payloadx.dmsLeadDto.dmsAttachments = Object.assign([], tempAttachments);
-        console.log(JSON.stringify(payloadx));
         let payloady = {
           dmsContactDto: payloadx.dmsAccountDto,
           dmsLeadDto: payloadx.dmsLeadDto,
@@ -2480,11 +2479,39 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
           customerTypes =
             CustomerTypesObj22[selector.enquiry_segment.toLowerCase()];
           selector.customerType = "";
+        } else if (orgId == 26) {
+          let tmpArr = [];
+          if (selector.enquiry_segment == "Personal") {
+            tmpArr = Object.assign(
+              [],
+              selector.customer_types?.personal
+                ? selector.customer_types.personal
+                : CustomerTypesObj[selector.enquiry_segment.toLowerCase()]
+            );
+          } else if (selector.enquiry_segment == "Company") {
+            tmpArr = Object.assign(
+              [],
+              selector.customer_types?.company
+                ? selector.customer_types.company
+                : CustomerTypesObj[selector.enquiry_segment.toLowerCase()]
+            );
+          } else {
+            tmpArr = Object.assign(
+              [],
+              selector.customer_types?.commercial
+                ? selector.customer_types.commercial
+                : CustomerTypesObj[selector.enquiry_segment.toLowerCase()]
+            );
+          }
+
+          customerTypes = [...tmpArr];
+          selector.customerType = "";
         } else {
           customerTypes =
             CustomerTypesObj[selector.enquiry_segment.toLowerCase()];
           selector.customerType = "";
         }
+
         setDataForDropDown([...customerTypes]);
         break;
       case "SOURCE_OF_ENQUIRY":
@@ -2988,9 +3015,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
   };
 
   updateSubSourceData = (item) => {
-    console.log("item: ", JSON.stringify(item));
     if (item.subsource && item.subsource.length > 0) {
-      console.log("INSIDE IF");
       const updatedData = [];
       item.subsource.forEach((subItem, index) => {
         const newItem = { ...subItem };
@@ -2999,10 +3024,8 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
           updatedData.push(newItem);
         }
       });
-      console.log("DATA: ", JSON.stringify(updatedData));
       setSubSourceData(updatedData);
     } else {
-      console.log("INSIDE ELSE");
       setSubSourceData([]);
     }
   };

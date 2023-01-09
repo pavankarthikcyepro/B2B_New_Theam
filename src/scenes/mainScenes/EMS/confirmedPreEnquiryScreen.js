@@ -738,7 +738,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                                             textTransform: 'none',
                                             color: Colors.WHITE,
                                         }}
-                                        onPress={createEnquiryClicked}
+                                        onPress={() => createEnquiryClicked()}
                                     >
                                         Create Enquiry
                                     </Button>
