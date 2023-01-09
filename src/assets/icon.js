@@ -5,6 +5,9 @@ const HOME_VISIT = require("./Icons/house.png");
 const PENDING_TASK = require("./Icons/pending.png");
 const TARGET = require("./Icons/target.png");
 const TEST_DRIVE = require("./Icons/test-drive.png");
+const INSURANCE = require("./Icons/insurance.png");
+const FINANCE = require("./Icons/finance.png");
+const WARRANTY = require("./Icons/warranty.png");
 
 export {
   DOWN_ARROW,
@@ -14,4 +17,7 @@ export {
   PENDING_TASK,
   TARGET,
   TEST_DRIVE,
+  INSURANCE,
+  FINANCE,
+  WARRANTY,
 };
