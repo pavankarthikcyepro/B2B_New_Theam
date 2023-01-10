@@ -282,6 +282,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     isPreBookingApprover: false,
     isSelfManager: "",
     isTracker: "",
+    branchId: 0,
   });
   const [showDropDownModel, setShowDropDownModel] = useState(false);
   const [showMultipleDropDownData, setShowMultipleDropDownData] =
@@ -623,6 +624,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       isPreBookingApprover: false,
       isSelfManager: "",
       isTracker: "",
+      branchId: 0,
     });
     setShowDropDownModel(false);
     setShowMultipleDropDownData(false);
@@ -849,8 +851,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
         if (
           value?.model &&
-          selector?.pre_booking_details_response?.dmsLeadDto?.leadStatus !=
-          "ENQUIRYCOMPLETED" &&
+          // selector?.pre_booking_details_response?.dmsLeadDto?.leadStatus !=
+          // "ENQUIRYCOMPLETED" &&
           modelData.model == value.model
         ) {
           if (modelData.variant == value.variant) {
@@ -861,7 +863,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
               updateOfferPriceData(selector.on_road_price_dto_list_response)
             );
             addingIsPrimary();
-          } else {
+          } else if (!value.color) {
             dispatch(updateOfferPriceData());
             clearPriceConfirmationData();
           }
@@ -1015,6 +1017,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         isPreBookingApprover: isPreBookingApprover,
         isSelfManager: jsonObj.isSelfManager,
         isTracker: jsonObj.isTracker,
+        branchId: jsonObj.branchId,
       });
 
       const payload = {
@@ -1474,6 +1477,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     setTotalOnRoadPrice(0);
     setTcsAmount(0);
     setTotalOnRoadPriceAfterDiscount(0);
+
+    console.log("==========================");
+    console.log("clearPriceConfirmationData");
+    console.log("==========================");
   };
 
   const showDropDownModelMethod = (key, headerText) => {
@@ -3124,7 +3131,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       selectorBooking.update_enquiry_details_response_status === "success" &&
       selectorBooking.update_enquiry_details_response
     ) {
-      displayCreateEnquiryAlert();
+      displayCreateEnquiryAlert(
+        selectorBooking.update_enquiry_details_response.dmsLeadDto
+          .referencenumber
+      );
     } else if (selectorBooking.update_enquiry_details_response_status === "failed") {
       showToastRedAlert("something went wrong");
     }
@@ -3133,10 +3143,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     selectorBooking.update_enquiry_details_response,
   ]);
 
-  displayCreateEnquiryAlert = () => {
+  displayCreateEnquiryAlert = (refNum) => {
     Alert.alert(
       "Booking Successfully Created",
-      "",
+      `Booking Successfully Created\nRef Num: ${refNum}`,
       [
         {
           text: "OK",

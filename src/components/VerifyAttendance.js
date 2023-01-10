@@ -18,7 +18,7 @@ import { Dropdown } from "react-native-element-dropdown";
 import { TextinputComp } from "./textinputComp";
 import * as AsyncStore from "../asyncStore";
 import { client } from "../networking/client";
-import URL, { reasonDropDown } from "../networking/endpoints";
+import URL, { baseUrl, reasonDropDown } from "../networking/endpoints";
 import { createDateTime } from "../service";
 import { useNavigation } from "@react-navigation/native";
 import { AppNavigator } from "../navigations";
@@ -60,6 +60,7 @@ const VerifyAttendance = ({
   inVisible,
   showReason,
   logOut = false,
+  onLogin,
 }) => {
   const navigation = useNavigation();
   const [comment, setComment] = useState("");
@@ -121,7 +122,6 @@ const VerifyAttendance = ({
           )
         );
         const json = await response.json();
-        console.log(json[json?.length - 1]);
         const lastDate = moment().format(dateFormat);
         const lastPresentDate = new Date(
           json[json?.length - 1]?.createdtimestamp
@@ -138,7 +138,7 @@ const VerifyAttendance = ({
   const getProfilePic = (userData) => {
     client
       .get(
-        `http://ec2-15-207-225-163.ap-south-1.compute.amazonaws.com:8008/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
+        `${baseUrl}sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
       )
       .then((response) => response.json())
       .then((json) => {
@@ -234,7 +234,6 @@ const VerifyAttendance = ({
           )
         );
         const json = await response.json();
-        console.log("OKOKOKOK", json[json?.length - 1]);
         let latestDate = new Date(
           json[json?.length - 1]?.createdtimestamp
         )?.getDate();
@@ -257,7 +256,6 @@ const VerifyAttendance = ({
         payload
       );
       const savedJson = await saveData.json();
-      console.log("savedJson", savedJson, absentRequest);
       !absentRequest &&
         AsyncStore.storeJsonData(
           AsyncStore.Keys.IS_PRESENT,
@@ -268,7 +266,7 @@ const VerifyAttendance = ({
       //   !absentRequest && inVisible();
       // }
     } catch (error) {
-      console.error("savedJsonERROR", error);
+      console.error("ERROR", error);
     }
   };
 
@@ -303,7 +301,7 @@ const VerifyAttendance = ({
         );
       !absentRequest && inVisible();
     } catch (error) {
-      console.error("updatedJsonERROR", error);
+      console.error("ERROR", error);
     }
   };
 
@@ -318,7 +316,7 @@ const VerifyAttendance = ({
         <View style={styles.view1}>
           <View style={{ flexDirection: "row" }}>
             <View style={{ flexDirection: "column", alignItems: "center" }}>
-              <Text style={styles.profileMatched}>{"Profile Matched!!"}</Text>
+              {/* <Text style={styles.profileMatched}>{"Profile Matched!!"}</Text> */}
             </View>
           </View>
           <View style={styles.ProfileView}>
@@ -355,8 +353,8 @@ const VerifyAttendance = ({
               }}
             />
             <LocalButtonComp
-              title={"Confirm"}
-              onPress={() => onSubmit()}
+              title={logOut ? "Log Out" : "Login"}
+              onPress={() => onLogin()}
               disabled={false}
             />
           </View>

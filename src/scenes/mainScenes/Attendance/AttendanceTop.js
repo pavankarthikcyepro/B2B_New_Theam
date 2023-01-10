@@ -23,6 +23,8 @@ import { getDistanceBetweenTwoPoints, officeRadius } from "../../../service";
 import Swipeable from "react-native-swipeable";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import VerifyAttendance from "../../../components/VerifyAttendance";
+import AttendanceForm from "../../../components/AttendanceForm";
+import AttendanceFromSelf from "../../../components/AttendanceFromSelf";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
@@ -90,6 +92,8 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [monthData, setMonthData] = useState([]);
   const [logOut, setLogOut] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+
   // useLayoutEffect(() => {
   //   navigation.setOptions({
   //     headerLeft: () => <MenuIcon navigation={navigation} />,
@@ -192,13 +196,25 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
           };
           newArr.push(format);
         }
-        if (json) {
+
+        if (json.length > 0) {
+          let latestDate = new Date(
+            json[json.length - 1].createdtimestamp
+          ).getDate();
+
+          let currentDate = new Date().getDate();
           setMonthData([...newArr]);
-          if (json[json.length - 1].punchIn == null) {
-            setLogOut(false);
-          } else {
+          if (
+            json[json.length - 1].punchIn != null &&
+            latestDate == currentDate
+          ) {
             setLogOut(true);
+          } else {
+            setLogOut(false);
           }
+          setLoading(false);
+        } else {
+          setMonthData([...newArr]);
           setLoading(false);
         }
       }
@@ -237,20 +253,25 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
       date.getFullYear() == new Date().getFullYear()
     ) {
       return (
-        <Swipeable
+        <View style={styles.swipeableView}>
+          {/* <Swipeable
           style={styles.swipeableView}
           rightButtons={
             item?.punchIn == null ? rightButtons : rightButtonsPunchOut
           }
-        >
-          <View
-            style={
-              item?.isAbsent == 1
+        > */}
+          <TouchableOpacity
+            onPress={() => {
+              !item?.punchOut && setAttendance(true);
+            }}
+            style={{
+              ...(item?.isAbsent == 1
                 ? styles.leaveShadowView
                 : item?.holiday == 1
                 ? styles.holidayShadowView
-                : styles.shadowView
-            }
+                : styles.shadowView),
+              backgroundColor: "#c4c4c4",
+            }}
           >
             <View style={styles.dateDayMasterView}>
               <View style={styles.dateDayView}>
@@ -282,7 +303,7 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
             </View>
             <View style={styles.punchMasterView}>
               <View style={styles.punchInView}>
-                <Text style={styles.punchTitle}>{"Punch In"}</Text>
+                <Text style={styles.punchTitle}>{"Log In"}</Text>
                 <Text style={styles.punchTime}>
                   {item?.punchIn == null
                     ? "··:·· AM"
@@ -293,7 +314,7 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
               </View>
               <View style={styles.divider} />
               <View style={styles.punchInView}>
-                <Text style={styles.punchTitle}>{"Punch Out"}</Text>
+                <Text style={styles.punchTitle}>{"Log Out"}</Text>
                 <Text style={styles.punchTime}>
                   {item?.punchOut == null
                     ? "··:·· PM"
@@ -303,8 +324,9 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
                 </Text>
               </View>
             </View>
-          </View>
-        </Swipeable>
+          </TouchableOpacity>
+          {/* </Swipeable> */}
+        </View>
       );
     } else {
       return (
@@ -348,7 +370,7 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
             </View>
             <View style={styles.punchMasterView}>
               <View style={styles.punchInView}>
-                <Text style={styles.punchTitle}>{"Punch In"}</Text>
+                <Text style={styles.punchTitle}>{"Log In"}</Text>
                 <Text style={styles.punchTime}>
                   {item?.punchIn == null
                     ? "··:·· AM"
@@ -359,7 +381,7 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
               </View>
               <View style={styles.divider} />
               <View style={styles.punchInView}>
-                <Text style={styles.punchTitle}>{"Punch Out"}</Text>
+                <Text style={styles.punchTitle}>{"Log Out"}</Text>
                 <Text style={styles.punchTime}>
                   {item?.punchOut == null
                     ? "··:·· PM"
@@ -382,7 +404,7 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
       }}
       style={styles.rightButtonsView}
     >
-      <Text style={styles.punchInTxt}>Punch In</Text>
+      <Text style={styles.punchInTxt}>Log In</Text>
     </TouchableHighlight>,
   ];
   const rightButtonsPunchOut = [
@@ -392,7 +414,7 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
       }}
       style={styles.rightButtonsView}
     >
-      <Text style={styles.punchOutTxt}>Punch Out</Text>
+      <Text style={styles.punchOutTxt}>Log Out</Text>
     </TouchableHighlight>,
   ];
 
@@ -403,8 +425,22 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
         showReason={reason}
         logOut={logOut}
         inVisible={() => {
-          getAttendance();
+          // getAttendance();
           setAttendance(false);
+        }}
+        onLogin={() => {
+          setAttendance(false);
+          setTimeout(() => {
+            setShowModal(true);
+          }, 250);
+        }}
+      />
+      <AttendanceFromSelf
+        visible={showModal}
+        showReason={reason}
+        inVisible={() => {
+          getAttendance();
+          setShowModal(false);
         }}
       />
       <View style={styles.headerView}>
@@ -447,6 +483,7 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
         contentContainerStyle={{
           flexGrow: 1,
         }}
+        showsVerticalScrollIndicator={false}
       />
       <LoaderComponent visible={loading} />
     </SafeAreaView>

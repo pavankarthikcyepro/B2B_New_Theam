@@ -15,15 +15,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { LoaderComponent } from "../../../components";
 import { Colors, GlobalStyle } from "../../../styles";
 import { client } from "../../../networking/client";
-import URL from "../../../networking/endpoints";
-import { useNavigation } from "@react-navigation/native";
+import URL, { baseUrl } from "../../../networking/endpoints";
 import { IconButton } from "react-native-paper";
 import { Calendar } from "react-native-calendars";
 import * as AsyncStore from "../../../asyncStore";
 import moment from "moment";
 import AttendanceForm from "../../../components/AttendanceForm";
 import { MenuIcon } from "../../../navigations/appNavigator";
-import WeeklyCalendar from "react-native-weekly-calendar";
 import Geolocation from "@react-native-community/geolocation";
 import { getDistanceBetweenTwoPoints, officeRadius } from "../../../service";
 import { AppNavigator } from "../../../navigations";
@@ -188,13 +186,14 @@ const GeoLocationScreen = ({ route, navigation }) => {
 
   const isCurrentDate = (day) => {
     let selectedDate = day.dateString;
-    if (currentDate === selectedDate) {
+    // if (currentDate === selectedDate) {
       //   setAttendance(true);
       navigation.navigate(GeolocationTopTabNavigatorIdentifiers.map, {
         empId: userData.empId,
         orgId: userData.orgId,
+        date: selectedDate,
       });
-    }
+    // }
   };
 
   const isCurrentDateForWeekView = (day) => {
@@ -205,8 +204,12 @@ const GeoLocationScreen = ({ route, navigation }) => {
   };
 
   const getProfilePic = (userData) => {
+      console.log("manthanfff ")
+    // fetch(
+    //   `http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
+    // )
     fetch(
-      `http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
+      `${baseUrl}sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
     )
       .then((response) => response.json())
       .then((json) => {
@@ -230,7 +233,11 @@ const GeoLocationScreen = ({ route, navigation }) => {
     try {
       let d = currentMonth;
       const response = await client.get(
-        URL.GET_ATTENDANCE_COUNT(jsonObj.empId, jsonObj.orgId,monthNamesCap[d.getMonth()])
+        URL.GET_ATTENDANCE_COUNT(
+          jsonObj.empId,
+          jsonObj.orgId,
+          monthNamesCap[d.getMonth()]
+        )
       );
       const json = await response.json();
       if (json) {
@@ -254,62 +261,41 @@ const GeoLocationScreen = ({ route, navigation }) => {
           setAttendance(false);
         }}
       />
-      {/* <View style={styles.profilePicView}>
-        <View
-          style={{
-            ...GlobalStyle.shadow,
-            ...styles.profilePicBG,
+      <View>
+        <Calendar
+          onDayPress={(day) => {
+            console.log("selected day", day);
+            isCurrentDate(day);
           }}
-        >
-          <Image
-            style={styles.profilePic}
-            source={{
-              uri: imageUri,
-            }}
-          />
-        </View>
-        <View style={styles.hoursView}>
-          <Text style={styles.totalHours}>{"Total Hours"}</Text>
-          <Text style={styles.totalHoursValue}>{"120"}</Text>
-        </View>
-      </View> */}
-      {!isWeek && (
-        <View>
-          <Calendar
-            onDayPress={(day) => {
-              console.log("selected day", day);
-              isCurrentDate(day);
-            }}
-            onDayLongPress={(day) => {
-              console.log("selected day", day);
-            }}
-            monthFormat={"MMM yyyy"}
-            onMonthChange={(month) => {
-              console.log("month changed", month);
-              setCurrentMonth(new Date(month.dateString));
-            }}
-            hideExtraDays={true}
-            firstDay={1}
-            onPressArrowLeft={(subtractMonth) => subtractMonth()}
-            onPressArrowRight={(addMonth) => addMonth()}
-            enableSwipeMonths={true}
-            theme={{
-              arrowColor: Colors.RED,
-              dotColor: Colors.RED,
-              textMonthFontWeight: "500",
-              monthTextColor: Colors.RED,
-              indicatorColor: Colors.RED,
-              dayTextColor: Colors.BLACK,
-              selectedDayBackgroundColor: Colors.GRAY,
-              textDayFontWeight: "500",
-            }}
-            markingType={"custom"}
-            markedDates={marker}
-          />
-        </View>
-      )}
+          onDayLongPress={(day) => {
+            console.log("selected day", day);
+          }}
+          monthFormat={"MMM yyyy"}
+          onMonthChange={(month) => {
+            console.log("month changed", month);
+            setCurrentMonth(new Date(month.dateString));
+          }}
+          hideExtraDays={true}
+          firstDay={1}
+          onPressArrowLeft={(subtractMonth) => subtractMonth()}
+          onPressArrowRight={(addMonth) => addMonth()}
+          enableSwipeMonths={true}
+          theme={{
+            arrowColor: Colors.RED,
+            dotColor: Colors.RED,
+            textMonthFontWeight: "500",
+            monthTextColor: Colors.RED,
+            indicatorColor: Colors.RED,
+            dayTextColor: Colors.BLACK,
+            selectedDayBackgroundColor: Colors.GRAY,
+            textDayFontWeight: "500",
+          }}
+          markingType={"custom"}
+          markedDates={marker}
+        />
+      </View>
 
-      {isWeek && (
+      {/* {isWeek && (
         <View style={{ flex: 1, marginTop: 10 }}>
           <WeeklyCalendar
             events={weeklyRecord}
@@ -349,51 +335,7 @@ const GeoLocationScreen = ({ route, navigation }) => {
             }}
           />
         </View>
-      )}
-      {/* <View style={styles.parameterListContain}>
-        <View style={styles.parameterView}>
-          <View
-            style={{ ...styles.parameterMarker, backgroundColor: Colors.GREEN }}
-          />
-          <View style={styles.parameterCountView}>
-            <Text style={styles.parameterText}>{"Present"}</Text>
-            <Text style={styles.parameterText}>{attendanceCount.present}</Text>
-          </View>
-        </View>
-        <View style={styles.parameterView}>
-          <View
-            style={{ ...styles.parameterMarker, backgroundColor: Colors.RED }}
-          />
-          <View style={styles.parameterCountView}>
-            <Text style={styles.parameterText}>{"Leave"}</Text>
-            <Text style={styles.parameterText}>{attendanceCount.leave}</Text>
-          </View>
-        </View>
-        <View style={styles.parameterView}>
-          <View
-            style={{
-              ...styles.parameterMarker,
-              backgroundColor: Colors.LIGHT_GRAY,
-            }}
-          />
-          <View style={styles.parameterCountView}>
-            <Text style={styles.parameterText}>{"Holiday"}</Text>
-            <Text style={styles.parameterText}>{attendanceCount.holidays}</Text>
-          </View>
-        </View>
-        <View style={styles.parameterView}>
-          <View
-            style={{
-              ...styles.parameterMarker,
-              backgroundColor: Colors.SKY_LIGHT_BLUE_COLOR,
-            }}
-          />
-          <View style={styles.parameterCountView}>
-            <Text style={styles.parameterText}>{"WFH"}</Text>
-            <Text style={styles.parameterText}>{attendanceCount.wfh}</Text>
-          </View>
-        </View>
-      </View> */}
+      )} */}
       <LoaderComponent visible={loading} />
     </SafeAreaView>
   );
