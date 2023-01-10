@@ -6,7 +6,7 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 import ListComponent from "./components/ListComponent";
 import URL from "../../../networking/endpoints";
 import * as AsyncStore from "../../../asyncStore";
-import { getMyTasksListApi, getMyTeamsTasksListApi, role, getPendingMyTasksListApi, getRescheduleMyTasksListApi, getUpcomingMyTasksListApi, getTodayMyTasksListApi, getTodayTeamTasksListApi, getUpcomingTeamTasksListApi, getPendingTeamTasksListApi, getRescheduleTeamTasksListApi, updateIndex } from "../../../redux/mytaskReducer";
+import { getMyTasksListApi, getMyTeamsTasksListApi, role, getPendingMyTasksListApi, getRescheduleMyTasksListApi, getUpcomingMyTasksListApi, getTodayMyTasksListApi, getTodayTeamTasksListApi, getUpcomingTeamTasksListApi, getPendingTeamTasksListApi, getRescheduleTeamTasksListApi, updateIndex, getRescheduled } from "../../../redux/mytaskReducer";
 import { useDispatch, useSelector } from "react-redux";
 import { client } from "../../../networking/client";
 
@@ -101,6 +101,7 @@ const MyTasksScreen = ({ navigation }) => {
       // dispatch(getMyTasksListApi(jsonObj.empId));
       // dispatch(getMyTeamsTasksListApi(jsonObj.empId));
       dispatch(role(jsonObj.hrmsRole));
+      dispatch(getRescheduled(jsonObj.empId));
 
       // if (homeSelector.isTeamPresent){
       //   Promise.all([
