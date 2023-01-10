@@ -25,6 +25,7 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import VerifyAttendance from "../../../components/VerifyAttendance";
 import AttendanceForm from "../../../components/AttendanceForm";
 import AttendanceFromSelf from "../../../components/AttendanceFromSelf";
+import { ActivityIndicator } from "react-native-paper";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
@@ -262,7 +263,9 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
         > */}
           <TouchableOpacity
             onPress={() => {
-              !item?.punchOut && setAttendance(true);
+              if (item?.isAbsent != 1) {
+                !item?.punchOut && setAttendance(true);
+              }
             }}
             style={{
               ...(item?.isAbsent == 1
@@ -483,6 +486,15 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
         contentContainerStyle={{
           flexGrow: 1,
         }}
+        ListEmptyComponent={() =>
+          !monthData.length ? (
+            loading ? (
+              <ActivityIndicator size="large" color={Colors.RED} />
+            ) : (
+              <Text>Something Went Wrong</Text>
+            )
+          ) : null
+        }
         showsVerticalScrollIndicator={false}
       />
       <LoaderComponent visible={loading} />

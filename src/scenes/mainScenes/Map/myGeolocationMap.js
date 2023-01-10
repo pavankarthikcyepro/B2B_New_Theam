@@ -229,6 +229,10 @@ const GeolocationMapScreen = ({ route }) => {
               <Marker
                 key={index}
                 coordinate={marker}
+                style={{
+                  height:15,
+                  width:15
+                }}
                 image={index === coordinates.length - 1 ? CYEPRO : HISTORY_LOC}
                 // title={marker}
                 // description={}
