@@ -248,7 +248,6 @@ export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk(
 export const updateEnquiryDetailsApi = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/updateEnquiryDetailsApi",
   async (payload, { rejectWithValue }) => {
-    console.log("newpayloadddd",JSON.stringify(payload));
     
     const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
     const json = await response.json();
@@ -556,6 +555,7 @@ const initialState = {
   enquiry_details_response: null,
   update_enquiry_details_response: null,
   customer_types_response: null,
+  customer_types: null,
   isAddressSet: false,
   isOpened: false,
   refNo: "",
@@ -581,6 +581,7 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.enquiry_details_response = null;
       state.update_enquiry_details_response = null;
       state.customer_types_response = null;
+      state.customer_types = null;
       state.employee_id = "";
       state.gstin_number = "";
       state.expected_delivery_date = "";
@@ -637,6 +638,7 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.enquiry_details_response = null;
       state.update_enquiry_details_response = null;
       state.customer_types_response = null;
+      state.customer_types = null;
       state.employee_id = "";
       state.gstin_number = "";
       state.expected_delivery_date = "";
@@ -699,6 +701,32 @@ const enquiryDetailsOverViewSlice = createSlice({
             state.customer_types_data = CustomerTypesObj21[value.toLowerCase()];
           } else if (+orgId == 22) {
             state.customer_types_data = CustomerTypesObj22[value.toLowerCase()];
+          } else if (+orgId == 26) {
+            let tmpArr = [];
+            if (value == "Personal") {
+              tmpArr = Object.assign(
+                [],
+                state.customer_types?.personal
+                  ? state.customer_types.personal
+                  : CustomerTypesObj22[value.toLowerCase()]
+              );
+            } else if (value == "Company") {
+              tmpArr = Object.assign(
+                [],
+                state.customer_types?.company
+                  ? state.customer_types.company
+                  : CustomerTypesObj22[value.toLowerCase()]
+              );
+            } else {
+              tmpArr = Object.assign(
+                [],
+                state.customer_types?.commercial
+                  ? state.customer_types.commercial
+                  : CustomerTypesObj22[value.toLowerCase()]
+              );
+            }
+
+            state.customer_types_data = tmpArr;
           } else {
             state.customer_types_data = CustomerTypesObj[value.toLowerCase()];
           }
@@ -2152,6 +2180,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     // Get Customer Types
     builder.addCase(getCustomerTypesApi.pending, (state, action) => {
       state.customer_types_response = null;
+      state.customer_types = null;
       state.isLoading = true;
     });
     builder.addCase(getCustomerTypesApi.fulfilled, (state, action) => {
@@ -2160,6 +2189,9 @@ const enquiryDetailsOverViewSlice = createSlice({
         let personalTypes = [];
         let commercialTypes = [];
         let companyTypes = [];
+        let personalTypes2 = [];
+        let commercialTypes2 = [];
+        let companyTypes2 = [];
         customerTypes.forEach((customer) => {
           const obj = { id: customer.id, name: customer.customerType };
           if (customer.customerType === "Fleet") {
@@ -2169,6 +2201,14 @@ const enquiryDetailsOverViewSlice = createSlice({
           } else {
             personalTypes.push(obj);
           }
+
+          if (customer.enquirySegment === "Personal") {
+            personalTypes2.push(obj);
+          } else if (customer.enquirySegment === "Company") {
+            companyTypes2.push(obj);
+          } else {
+            commercialTypes2.push(obj);
+          }
         });
         const obj = {
           personal: personalTypes,
@@ -2176,12 +2216,20 @@ const enquiryDetailsOverViewSlice = createSlice({
           company: companyTypes,
           handicapped: companyTypes,
         };
+        const obj2 = {
+          personal: personalTypes2,
+          commercial: commercialTypes2,
+          company: companyTypes2,
+          handicapped: companyTypes2,
+        };
         state.customer_types_response = obj;
+        state.customer_types = obj2;
       }
       state.isLoading = false;
     });
     builder.addCase(getCustomerTypesApi.rejected, (state, action) => {
       state.customer_types_response = null;
+      state.customer_types = null;
       state.isLoading = false;
     });
     //update ref number
