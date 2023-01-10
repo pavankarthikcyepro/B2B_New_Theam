@@ -64,7 +64,7 @@ const AttendanceFromSelf = ({
   const [commentError, setCommentError] = useState("");
   const [present, setPresent] = useState(true);
   const [workFromHome, setWorkFromHome] = useState(false);
-  const [reason, setReason] = useState({});
+  const [reason, setReason] = useState("");
   const [reasonError, setReasonError] = useState("");
   const [reasonList, setReasonList] = useState([]);
   const [userData, setUserData] = useState({});
@@ -100,7 +100,15 @@ const AttendanceFromSelf = ({
         ).getDate();
         const todaysDate = new Date().getDate();
         let present = json[json?.length - 1].isPresent;
-        if (todaysDate === lastPresentDate && present == 1) {
+        let wfh = json[json?.length - 1].wfh;
+        if (todaysDate === lastPresentDate) {
+          if (present == 1) {
+            setPresent(true);
+            setWorkFromHome(false);
+          } else if (wfh == 1) {
+            setWorkFromHome(true);
+            setPresent(false);
+          }
           setPunched(true);
         }
       }
@@ -129,11 +137,11 @@ const AttendanceFromSelf = ({
     let error = false;
     if (showReason) {
       if (isEmpty(reason)) {
-        setReasonError("Please Select a Reason");
+        setReasonError("Please Enter Your Reason");
         error = true;
       }
       if (comment.trim().length == 0) {
-        setCommentError("Please enter your comments");
+        setCommentError("Please Enter Your Comments");
         error = true;
       }
     }
@@ -165,14 +173,14 @@ const AttendanceFromSelf = ({
           orgId: jsonObj.orgId,
           empId: jsonObj.empId,
           branchId: jsonObj.branchId,
-          isPresent: present ? 1 : 0,
-          isAbsent: present ? 0 : 1,
+          isPresent: present && !workFromHome ? 1 : 0,
+          isAbsent: present ? 0 : workFromHome ? 0 : 1,
           wfh: workFromHome ? 1 : 0,
           status: "Active",
           comments: comment.trim(),
           isLogOut: present && endBetween <= now && now <= endDate2 ? 1 : 0,
           reason: reason?.value ? reason?.value : "",
-          punchIn: n,
+          punchIn: present ? n : workFromHome ? n : null,
           punchOut: null,
         };
         var d = new Date();
@@ -229,8 +237,8 @@ const AttendanceFromSelf = ({
         orgId: payload.orgId,
         empId: payload.empId,
         branchId: payload.branchId,
-        isPresent: present ? 1 : 0,
-        isAbsent: present ? 0 : 1,
+        isPresent: present && !workFromHome ? 1 : 0,
+        isAbsent: present ? 0 : workFromHome ? 0 : 1,
         wfh: workFromHome ? 1 : 0,
         status: "Active",
         comments: comment.trim(),
@@ -282,12 +290,15 @@ const AttendanceFromSelf = ({
           orgId: jsonObj.orgId,
           empId: jsonObj.empId,
           branchId: jsonObj.branchId,
-          isPresent: present ? 1 : 0,
-          isAbsent: present ? 0 : 1,
+          isPresent: present && !workFromHome ? 1 : 0,
+          isAbsent: 0,
           wfh: workFromHome ? 1 : 0,
           status: "Active",
           comments: comment.trim(),
-          isLogOut: present && endBetween <= now && now <= endDate2 ? 1 : 0,
+          isLogOut:
+            (present || workFromHome) && endBetween <= now && now <= endDate2
+              ? 1
+              : 0,
           reason: reason?.value ? reason?.value : "",
           punchIn: n,
           punchOut: null,
@@ -324,8 +335,11 @@ const AttendanceFromSelf = ({
       onRequestClose={onRequestClose}
     >
       <View style={styles.container}>
-        <TouchableOpacity onPress={()=>inVisible()} style={styles.badgeContainer}>
-          <Text style={styles.badgeText}>{'X'}</Text>
+        <TouchableOpacity
+          onPress={() => inVisible()}
+          style={styles.badgeContainer}
+        >
+          <Text style={styles.badgeText}>{"X"}</Text>
         </TouchableOpacity>
         <View style={styles.view1}>
           <View style={{ flexDirection: "row" }}>
@@ -370,23 +384,36 @@ const AttendanceFromSelf = ({
           </View>
           <View style={{ flexDirection: "row" }}>
             {punched ? (
-              <RadioTextItem
-                label={"Present"}
-                value={"Present"}
-                disabled={false}
-                status={present ? true : false}
-                onPress={() => {
-                  setPresent(true);
-                  setWorkFromHome(false);
-                }}
-              />
+              present ? (
+                <RadioTextItem
+                  label={"Present"}
+                  value={"Present"}
+                  disabled={false}
+                  status={present && !workFromHome ? true : false}
+                  onPress={() => {
+                    setPresent(true);
+                    setWorkFromHome(false);
+                  }}
+                />
+              ) : workFromHome ? (
+                <RadioTextItem
+                  label={"WFH"}
+                  value={"WFH"}
+                  disabled={false}
+                  status={workFromHome ? true : false}
+                  onPress={() => {
+                    setWorkFromHome(!workFromHome);
+                    setPresent(!workFromHome);
+                  }}
+                />
+              ) : null
             ) : (
               <>
                 <RadioTextItem
                   label={"Present"}
                   value={"Present"}
                   disabled={false}
-                  status={present ? true : false}
+                  status={present && !workFromHome ? true : false}
                   onPress={() => {
                     setPresent(true);
                     setWorkFromHome(false);
@@ -408,18 +435,17 @@ const AttendanceFromSelf = ({
                   disabled={false}
                   status={workFromHome ? true : false}
                   onPress={() => {
-                    setWorkFromHome(!workFromHome);
+                    setWorkFromHome(true);
                     setPresent(!workFromHome);
                   }}
                 />
               </>
             )}
           </View>
-          {showReason ||
-            ((workFromHome || !present) && (
-              <>
-                <View style={{ flexDirection: "row", marginTop: 10 }}>
-                  {/* <Dropdown
+          {workFromHome || !present ? (
+            <>
+              <View style={{ flexDirection: "row", marginTop: 10 }}>
+                {/* <Dropdown
                     disable={false}
                     style={[styles.dropdownContainer]}
                     placeholderStyle={styles.placeholderStyle}
@@ -439,57 +465,57 @@ const AttendanceFromSelf = ({
                       setReasonError("");
                     }}
                   /> */}
-                  <TextinputComp
-                    disabled={false}
-                    style={styles.textInputStyle}
-                    label={"Reason"}
-                    autoCapitalize="sentences"
-                    value={reason}
-                    maxLength={150}
-                    onChangeText={(text) => {
-                      setReason(text);
-                      setReasonError("");
-                    }}
-                  />
-                </View>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    width: "100%",
-                    alignSelf: "flex-start",
+                <TextinputComp
+                  disabled={false}
+                  style={styles.textInputStyle}
+                  label={"Reason"}
+                  autoCapitalize="sentences"
+                  value={reason}
+                  maxLength={150}
+                  onChangeText={(text) => {
+                    setReason(text);
+                    setReasonError("");
                   }}
-                >
-                  {reasonError.length > 0 && (
-                    <Text style={styles.errorText}>{reasonError}</Text>
-                  )}
-                </View>
-                <View style={{ flexDirection: "row", marginTop: 10 }}>
-                  <TextinputComp
-                    disabled={false}
-                    style={styles.textInputStyle}
-                    label={"Comments"}
-                    autoCapitalize="sentences"
-                    value={comment}
-                    maxLength={150}
-                    onChangeText={(text) => {
-                      setComment(text);
-                      setCommentError("");
-                    }}
-                  />
-                </View>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    width: "100%",
-                    alignSelf: "flex-start",
+                />
+              </View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  width: "100%",
+                  alignSelf: "flex-start",
+                }}
+              >
+                {reasonError.length > 0 && (
+                  <Text style={styles.errorText}>{reasonError}</Text>
+                )}
+              </View>
+              <View style={{ flexDirection: "row", marginTop: 10 }}>
+                <TextinputComp
+                  disabled={false}
+                  style={styles.textInputStyle}
+                  label={"Comments"}
+                  autoCapitalize="sentences"
+                  value={comment}
+                  maxLength={150}
+                  onChangeText={(text) => {
+                    setComment(text);
+                    setCommentError("");
                   }}
-                >
-                  {commentError.length > 0 && (
-                    <Text style={styles.errorText}>{commentError}</Text>
-                  )}
-                </View>
-              </>
-            ))}
+                />
+              </View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  width: "100%",
+                  alignSelf: "flex-start",
+                }}
+              >
+                {commentError.length > 0 && (
+                  <Text style={styles.errorText}>{commentError}</Text>
+                )}
+              </View>
+            </>
+          ) : null}
           <View style={{ flexDirection: "row", marginTop: 10, width: "100%" }}>
             {punched ? (
               <LocalButtonComp
@@ -500,7 +526,7 @@ const AttendanceFromSelf = ({
             ) : !punched && present ? (
               <LocalButtonComp
                 title={"Log In"}
-                onPress={() => onSubmit()}
+                onPress={() => callAPI()}
                 disabled={false}
               />
             ) : present || !active ? (
@@ -652,7 +678,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     height: 30,
     width: 30,
-    marginRight:45,
+    marginRight: 45,
   },
   badgeText: { fontSize: 12, color: Colors.WHITE, fontWeight: "bold" },
 });
