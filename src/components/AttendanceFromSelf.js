@@ -100,7 +100,15 @@ const AttendanceFromSelf = ({
         ).getDate();
         const todaysDate = new Date().getDate();
         let present = json[json?.length - 1].isPresent;
-        if (todaysDate === lastPresentDate && present == 1) {
+        let wfh = json[json?.length - 1].wfh;
+        if (todaysDate === lastPresentDate) {
+          if (present == 1) {
+            setPresent(true);
+            setWorkFromHome(false);
+          } else if (wfh == 1) {
+            setWorkFromHome(true);
+            setPresent(false);
+          }
           setPunched(true);
         }
       }
@@ -165,7 +173,7 @@ const AttendanceFromSelf = ({
           orgId: jsonObj.orgId,
           empId: jsonObj.empId,
           branchId: jsonObj.branchId,
-          isPresent: present ? 1 : 0,
+          isPresent: present && !workFromHome ? 1 : 0,
           isAbsent: present ? 0 : 1,
           wfh: workFromHome ? 1 : 0,
           status: "Active",
@@ -229,7 +237,7 @@ const AttendanceFromSelf = ({
         orgId: payload.orgId,
         empId: payload.empId,
         branchId: payload.branchId,
-        isPresent: present ? 1 : 0,
+        isPresent: present && !workFromHome ? 1 : 0,
         isAbsent: present ? 0 : 1,
         wfh: workFromHome ? 1 : 0,
         status: "Active",
@@ -282,7 +290,7 @@ const AttendanceFromSelf = ({
           orgId: jsonObj.orgId,
           empId: jsonObj.empId,
           branchId: jsonObj.branchId,
-          isPresent: present ? 1 : 0,
+          isPresent: present && !workFromHome ? 1 : 0,
           isAbsent: present ? 0 : 1,
           wfh: workFromHome ? 1 : 0,
           status: "Active",
@@ -324,8 +332,11 @@ const AttendanceFromSelf = ({
       onRequestClose={onRequestClose}
     >
       <View style={styles.container}>
-        <TouchableOpacity onPress={()=>inVisible()} style={styles.badgeContainer}>
-          <Text style={styles.badgeText}>{'X'}</Text>
+        <TouchableOpacity
+          onPress={() => inVisible()}
+          style={styles.badgeContainer}
+        >
+          <Text style={styles.badgeText}>{"X"}</Text>
         </TouchableOpacity>
         <View style={styles.view1}>
           <View style={{ flexDirection: "row" }}>
@@ -370,23 +381,36 @@ const AttendanceFromSelf = ({
           </View>
           <View style={{ flexDirection: "row" }}>
             {punched ? (
-              <RadioTextItem
-                label={"Present"}
-                value={"Present"}
-                disabled={false}
-                status={present ? true : false}
-                onPress={() => {
-                  setPresent(true);
-                  setWorkFromHome(false);
-                }}
-              />
+              present ? (
+                <RadioTextItem
+                  label={"Present"}
+                  value={"Present"}
+                  disabled={false}
+                  status={present && !workFromHome ? true : false}
+                  onPress={() => {
+                    setPresent(true);
+                    setWorkFromHome(false);
+                  }}
+                />
+              ) : workFromHome ? (
+                <RadioTextItem
+                  label={"WFH"}
+                  value={"WFH"}
+                  disabled={false}
+                  status={workFromHome ? true : false}
+                  onPress={() => {
+                    setWorkFromHome(!workFromHome);
+                    setPresent(!workFromHome);
+                  }}
+                />
+              ) : null
             ) : (
               <>
                 <RadioTextItem
                   label={"Present"}
                   value={"Present"}
                   disabled={false}
-                  status={present ? true : false}
+                  status={present && !workFromHome ? true : false}
                   onPress={() => {
                     setPresent(true);
                     setWorkFromHome(false);
