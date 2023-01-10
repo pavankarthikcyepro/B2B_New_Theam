@@ -241,9 +241,8 @@ const RegisterScreen = ({ navigation }) => {
 
     const response = await client.post(URL.SAVE_EMPLOYEE(), payload);
     const json = await response.json();
-    console.log("SAVESDDDD", json);
     if (json) {
-      showToastRedAlert("Your Account is Successfully created");
+      showToastRedAlert("Your Account is Successfully Created");
       navigation.reset({
         index: 0,
         routes: [{ name: AuthStackIdentifiers.LOGIN }],
