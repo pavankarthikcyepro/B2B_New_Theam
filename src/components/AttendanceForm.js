@@ -87,14 +87,21 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
           )
         );
         const json = await response.json();
-        console.log(json[json?.length - 1]);
         const lastDate = moment().format(dateFormat);
         const lastPresentDate = new Date(
           json[json?.length - 1]?.createdtimestamp
         ).getDate();
         const todaysDate = new Date().getDate();
         let present = json[json?.length - 1].isPresent;
-        if (todaysDate === lastPresentDate && present == 1) {
+        let wfh = json[json?.length - 1].wfh;
+        if (todaysDate === lastPresentDate) {
+          if (present == 1) {
+            setPresent(true);
+            setWorkFromHome(false);
+          } else if (wfh == 1) {
+            setWorkFromHome(true);
+            setPresent(false);
+          }
           setPunched(true);
         }
       }
@@ -159,7 +166,7 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
           orgId: jsonObj.orgId,
           empId: jsonObj.empId,
           branchId: jsonObj.branchId,
-          isPresent: present ? 1 : 0,
+          isPresent: present && !workFromHome ? 1 : 0,
           isAbsent: present ? 0 : 1,
           wfh: workFromHome ? 1 : 0,
           status: "Active",
@@ -223,7 +230,7 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
         orgId: payload.orgId,
         empId: payload.empId,
         branchId: payload.branchId,
-        isPresent: present ? 1 : 0,
+        isPresent: present && !workFromHome ? 1 : 0,
         isAbsent: present ? 0 : 1,
         wfh: workFromHome ? 1 : 0,
         status: "Active",
@@ -313,7 +320,7 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
               label={"Present"}
               value={"Present"}
               disabled={false}
-              status={present ? true : false}
+              status={present && !workFromHome ? true : false}
               onPress={() => {
                 setPresent(true);
                 setWorkFromHome(false);
