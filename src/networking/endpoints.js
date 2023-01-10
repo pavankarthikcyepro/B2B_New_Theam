@@ -294,22 +294,13 @@ const URL = {
     return roleManagement_url + `/user/role/name/Driver/${orgId}`;
   },
   GET_ROLES_LIST: () => {
-    return (
-      "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8089/role-management" +
-      `/dms/getRoles`
-    );
+    return roleManagement_url + `/dms/getRoles`;
   },
   GET_DESGINATION_LIST: () => {
-    return (
-      "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8089/role-management" +
-      `/dms/getDesignation`
-    );
+    return roleManagement_url + `/dms/getDesignation`;
   },
   SAVE_EMPLOYEE: () => {
-    return (
-      "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8089/role-management" +
-      `/dms/save-employee`
-    );
+    return roleManagement_url + `/dms/save-employee`;
   },
   GET_TEST_DRIVE_VEHICLES: (branchId, orgId) => {
     return (

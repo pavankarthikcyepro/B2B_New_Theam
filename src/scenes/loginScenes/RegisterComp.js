@@ -39,7 +39,11 @@ import { IconButton } from "react-native-paper";
 import { AuthContext } from "../../utils/authContext";
 import { LoaderComponent } from "../../components";
 import * as AsyncStore from "../../asyncStore";
-import { showAlertMessage, showToast } from "../../utils/toast";
+import {
+  showAlertMessage,
+  showToast,
+  showToastRedAlert,
+} from "../../utils/toast";
 import BackgroundService from "react-native-background-actions";
 import Geolocation from "@react-native-community/geolocation";
 import {
@@ -58,12 +62,16 @@ import URL, {
 } from "../../networking/endpoints";
 import { client } from "../../networking/client";
 import {
+  isEmail,
+  isValidate,
   PincodeDetailsNew,
   setBranchId,
   setBranchName,
 } from "../../utils/helperFunctions";
 import { DropDownSelectionItem, RadioTextItem } from "../../pureComponents";
 import { NewDropDownComponent } from "../../components/dropDownComponent";
+import { Dropdown } from "react-native-element-dropdown";
+import { AuthStackIdentifiers } from "../../navigations/authNavigator";
 
 // import { TextInput } from 'react-native-paper';
 const officeLocation = {
@@ -75,6 +83,8 @@ const ScreenWidth = Dimensions.get("window").width;
 const ScreenHeight = Dimensions.get("window").height;
 
 const RegisterScreen = ({ navigation }) => {
+  const { signOut } = React.useContext(AuthContext);
+
   const selector = useSelector((state) => state.loginReducer);
   const dispatch = useDispatch();
   const fadeAnima = useRef(new Animated.Value(0)).current;
@@ -90,7 +100,10 @@ const RegisterScreen = ({ navigation }) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [role, setRole] = useState("");
   const [Designation, setDesignation] = useState("");
-
+  const [rolelist, setRolelist] = useState("");
+  const [Designationlist, setDesignationlist] = useState("");
+  const [addressData, setAddressData] = useState([]);
+  const [addressData2, setAddressData2] = useState([]);
   const [permanentAddress, setPermanentAddress] = useState({
     pincode: "",
     isUrban: "",
@@ -141,6 +154,10 @@ const RegisterScreen = ({ navigation }) => {
       const response2 = await client.get(URL.GET_DESGINATION_LIST());
       const json = await response.json();
       const json2 = await response2.json();
+      if (json && json2) {
+        setRolelist(json);
+        setDesignationlist(json2);
+      }
     } catch (error) {}
   }, []);
 
@@ -451,7 +468,7 @@ const RegisterScreen = ({ navigation }) => {
             for (let i = 0; i < res.length; i++) {
               tempAddr.push({ label: res[i].Name, value: res[i] });
               if (i === res.length - 1) {
-                //   setAddressData([...tempAddr]);
+                setAddressData([...tempAddr]);
               }
             }
           }
@@ -476,7 +493,7 @@ const RegisterScreen = ({ navigation }) => {
             for (let i = 0; i < res.length; i++) {
               tempAddr.push({ label: res[i].Name, value: res[i] });
               if (i === res.length - 1) {
-                //   setAddressData2([...tempAddr]);
+                setAddressData2([...tempAddr]);
               }
             }
           }
@@ -486,6 +503,102 @@ const RegisterScreen = ({ navigation }) => {
       (rejected) => {}
     );
   };
+
+  const onSubmit = async () => {
+    if (email.length == 0) {
+      showToastRedAlert("Please enter Email");
+      return;
+    }
+
+    if (!isEmail(email)) {
+      showToast("Please enter valid email");
+      return;
+    }
+    if (userName.length == 0) {
+      showToastRedAlert("Please enter Name");
+      return;
+    }
+    if (!isValidate(userName)) {
+      showToast("Please enter alphabetics only in Name");
+      return;
+    }
+
+    if (mobileNo.length == 0) {
+      showToastRedAlert("Please enter mobile number");
+      return;
+    }
+    if (role.length === 0) {
+      showToast("Please Select Any Role");
+      return;
+    }
+    if (Designation.length === 0) {
+      showToast("Please Select Any Designaion");
+      return;
+    }
+    //  if (password.length > 8) {
+    //    showToastRedAlert("Password length must be greater than 8");
+    //    return;
+    //  }
+    //  if (password !== confirmPassword) {
+    //    showToastRedAlert("Please Enter Confirm Password Same as Password");
+    //    return;
+    //  }
+    if (communicationAddress.pincode.length === 0) {
+      showToast("Please enter Communication pincode");
+      return;
+    }
+    if (permanentAddress.pincode.length === 0) {
+      showToast("Please enter Permanent pincode");
+      return;
+    }
+
+    let payload = {
+      email: email,
+      empName: userName,
+      dmsRole: role,
+      mobile: mobileNo,
+      dmsDesignation: Designation,
+      // password: password,
+      address: {
+        presentAddress: {
+          pincode: communicationAddress.pincode,
+          isUrban: communicationAddress.isUrban,
+          isRural: communicationAddress.isRural,
+          houseNo: communicationAddress.houseNo,
+          street: communicationAddress.street,
+          village: communicationAddress.village,
+          city: communicationAddress.city,
+          district: communicationAddress.district,
+          state: communicationAddress.state,
+          country: null,
+        },
+        permanentAddress: {
+          pincode: permanentAddress.pincode,
+          isUrban: permanentAddress.isUrban,
+          isRural: permanentAddress.isRural,
+          houseNo: permanentAddress.houseNo,
+          street: permanentAddress.street,
+          village: permanentAddress.village,
+          city: permanentAddress.city,
+          district: permanentAddress.district,
+          state: permanentAddress.state,
+          country: null,
+        },
+      },
+    };
+
+    const response = await client.post(URL.SAVE_EMPLOYEE(), payload);
+    const json = await response.json();
+    console.log("SAVESDDDD", json);
+    if (json) {
+      showToastRedAlert("Your Account is Successfully created");
+      navigation.reset({
+        index: 0,
+        routes: [{ name: AuthStackIdentifiers.LOGIN }],
+      });
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="white" barStyle="dark-content" />
@@ -531,47 +644,63 @@ const RegisterScreen = ({ navigation }) => {
           mode={"outlined"}
           onChangeText={(text) => setEmail(text)}
         />
+        <View style={{ height: 10 }} />
         <TextinputComp
           value={userName}
           error={selector.showLoginErr}
           errorMsg={selector.loginErrMessage}
-          label={"Username"}
+          label={"Name"}
           mode={"outlined"}
           onChangeText={(text) => setUserName(text)}
         />
+        <View style={{ height: 10 }} />
         <TextinputComp
           value={mobileNo}
           error={selector.showLoginErr}
           errorMsg={selector.loginErrMessage}
           label={"Mobile Number"}
           mode={"outlined"}
+          maxLength={10}
           onChangeText={(text) => setMobileNo(text)}
         />
+        <View style={{ height: 10 }} />
         <NewDropDownComponent
           // value={selector.employeeId}
           error={selector.showLoginErr}
           errorMsg={selector.loginErrMessage}
           label={"Role"}
           mode={"outlined"}
+          labelField={"roleName"}
+          valueField={"roleName"}
+          data={rolelist ? rolelist : []}
           showDropDown={() => setShowMultiSelectDropDown(true)}
           onDismiss={() => setShowMultiSelectDropDown(false)}
           visible={showMultiSelectDropDown}
-          onChangeText={(text) => dispatch(updateEmployeeId(text))}
+          onChangeText={(text) => {
+            setRole(text.roleId);
+          }}
         />
+        <View style={{ height: 10 }} />
         <NewDropDownComponent
           // value={selector.employeeId}
           error={selector.showLoginErr}
           errorMsg={selector.loginErrMessage}
           label={"Designation"}
           mode={"outlined"}
+          labelField={"designationName"}
+          valueField={"designationName"}
+          data={Designationlist ? Designationlist : []}
           showDropDown={() => setShowMultiSelectDropDown(false)}
           onDismiss={() => setShowMultiSelectDropDown(false)}
           visible={showMultiSelectDropDown}
-          onChangeText={(text) => dispatch(updateEmployeeId(text))}
+          onChangeText={(text) => {
+            console.log(text);
+            setDesignation(text.dmsDesignationId);
+          }}
         />
 
         {/* <View style={{ height: 20 }}></View> */}
-        <TextinputComp
+        {/* <TextinputComp
           value={password}
           error={selector.showPasswordErr}
           errorMsg={selector.passwordErrMessage}
@@ -585,9 +714,9 @@ const RegisterScreen = ({ navigation }) => {
           }}
           onChangeText={(text) => setPassword(text)}
           onRightIconPressed={() => dispatch(updateSecurePassword())}
-        />
+        /> */}
         {/* <View style={{ height: 20 }}></View> */}
-        <TextinputComp
+        {/* <TextinputComp
           value={confirmPassword}
           error={selector.showPasswordErr}
           errorMsg={selector.passwordErrMessage}
@@ -601,7 +730,8 @@ const RegisterScreen = ({ navigation }) => {
           }}
           onChangeText={(text) => setConfirmPassword(text)}
           onRightIconPressed={() => dispatch(updateSecurePassword())}
-        />
+        /> */}
+        <View style={{ height: 10 }} />
         <TextinputComp
           // style={styles.textInputStyle}
           mode={"outlined"}
@@ -620,6 +750,9 @@ const RegisterScreen = ({ navigation }) => {
                 ...permanentAddress,
                 ...(permanentAddress.pincode = text),
               });
+            if (text.length === 6) {
+              updateAddressDetails(text);
+            }
           }}
         />
         <Text
@@ -631,16 +764,31 @@ const RegisterScreen = ({ navigation }) => {
           ]}
         ></Text>
 
-        {[]?.length > 0 && (
+        {addressData?.length > 0 && (
           <>
+            <View style={{ height: 10 }} />
             <Text style={GlobalStyle.underline}></Text>
             <Dropdown
-              style={[styles.dropdownContainer]}
+              style={[
+                styles.dropdownContainer,
+                {
+                  height: 50,
+                  width: "100%",
+                  fontSize: 16,
+                  fontWeight: "400",
+                  backgroundColor: Colors.WHITE,
+                  borderColor: Colors.BLACK,
+                  borderWidth: 1,
+                  marginTop: 10,
+                  borderRadius: 6,
+                  padding: 15,
+                },
+              ]}
               placeholderStyle={styles.placeholderStyle}
               selectedTextStyle={styles.selectedTextStyle}
               inputSearchStyle={styles.inputSearchStyle}
               iconStyle={styles.iconStyle}
-              data={[]}
+              data={addressData}
               search
               maxHeight={300}
               labelField="label"
@@ -651,7 +799,14 @@ const RegisterScreen = ({ navigation }) => {
               // onFocus={() => setIsFocus(true)}
               // onBlur={() => setIsFocus(false)}
               onChange={(val) => {
-                dispatch(updateAddressByPincode(val.value));
+                setCommunication({
+                  ...communicationAddress,
+                  ...((communicationAddress.village = val.value.Block),
+                  (communicationAddress.mandal = val.value.Mandal),
+                  (communicationAddress.district = val.value.District),
+                  (communicationAddress.city = val.value.District),
+                  (communicationAddress.state = val.value.State)),
+                });
               }}
             />
           </>
@@ -695,7 +850,6 @@ const RegisterScreen = ({ navigation }) => {
             }}
           />
         </View>
-        <Text style={GlobalStyle.underline}></Text>
         <TextinputComp
           mode={"outlined"}
           value={communicationAddress.houseNo}
@@ -714,7 +868,7 @@ const RegisterScreen = ({ navigation }) => {
               });
           }}
         />
-        <Text style={GlobalStyle.underline} />
+        <View style={{ height: 10 }} />
         <TextinputComp
           mode={"outlined"}
           value={communicationAddress.street}
@@ -734,7 +888,7 @@ const RegisterScreen = ({ navigation }) => {
               });
           }}
         />
-        <Text style={GlobalStyle.underline} />
+        <View style={{ height: 10 }} />
         <>
           <TextinputComp
             mode={"outlined"}
@@ -755,8 +909,7 @@ const RegisterScreen = ({ navigation }) => {
                 });
             }}
           />
-          <Text style={GlobalStyle.underline} />
-
+          <View style={{ height: 10 }} />
           <TextinputComp
             mode={"outlined"}
             value={communicationAddress.mandal}
@@ -776,8 +929,7 @@ const RegisterScreen = ({ navigation }) => {
                 });
             }}
           />
-          <Text style={GlobalStyle.underline} />
-
+          <View style={{ height: 10 }} />
           <TextinputComp
             mode={"outlined"}
             value={communicationAddress.city}
@@ -792,7 +944,7 @@ const RegisterScreen = ({ navigation }) => {
               })
             }
           />
-          <Text style={GlobalStyle.underline} />
+          <View style={{ height: 10 }} />
           <TextinputComp
             mode={"outlined"}
             value={communicationAddress.district}
@@ -807,7 +959,7 @@ const RegisterScreen = ({ navigation }) => {
               })
             }
           />
-          <Text style={GlobalStyle.underline} />
+          <View style={{ height: 10 }} />
           <TextinputComp
             mode={"outlined"}
             value={communicationAddress.state}
@@ -822,7 +974,7 @@ const RegisterScreen = ({ navigation }) => {
               })
             }
           />
-          <Text style={GlobalStyle.underline} />
+          <View style={{ height: 10 }} />
         </>
         {/* )} */}
         <View style={{ height: 20, backgroundColor: Colors.WHITE }}></View>
@@ -865,8 +1017,7 @@ const RegisterScreen = ({ navigation }) => {
             }}
           />
         </View>
-        <Text style={GlobalStyle.underline}></Text>
-
+        <View style={{ height: 10 }} />
         <View>
           <TextinputComp
             mode={"outlined"}
@@ -879,6 +1030,9 @@ const RegisterScreen = ({ navigation }) => {
                 ...permanentAddress,
                 ...(permanentAddress.pincode = text),
               });
+              if (text.length === 6) {
+                updateAddressDetails2(text);
+              }
             }}
           />
           <Text
@@ -890,16 +1044,32 @@ const RegisterScreen = ({ navigation }) => {
             ]}
           ></Text>
 
-          {[]?.length > 0 && (
+          {addressData2?.length > 0 && (
             <>
+              <View style={{ height: 10 }} />
               <Text style={GlobalStyle.underline}></Text>
               <Dropdown
-                style={[styles.dropdownContainer]}
+                mode={"outlined"}
+                style={[
+                  styles.dropdownContainer,
+                  {
+                    height: 50,
+                    width: "100%",
+                    fontSize: 16,
+                    fontWeight: "400",
+                    backgroundColor: Colors.WHITE,
+                    borderColor: Colors.BLACK,
+                    borderWidth: 1,
+                    marginTop: 10,
+                    borderRadius: 6,
+                    padding: 15,
+                  },
+                ]}
                 placeholderStyle={styles.placeholderStyle}
                 selectedTextStyle={styles.selectedTextStyle}
                 inputSearchStyle={styles.inputSearchStyle}
                 iconStyle={styles.iconStyle}
-                data={[]}
+                data={addressData2}
                 search
                 maxHeight={300}
                 labelField="label"
@@ -910,7 +1080,14 @@ const RegisterScreen = ({ navigation }) => {
                 // onFocus={() => setIsFocus(true)}
                 // onBlur={() => setIsFocus(false)}
                 onChange={(val) => {
-                  dispatch(updateAddressByPincode2(val.value));
+                  setPermanentAddress({
+                    ...permanentAddress,
+                    ...((permanentAddress.village = val.value.Block),
+                    (permanentAddress.mandal = val.value.Mandal),
+                    (permanentAddress.district = val.value.District),
+                    (permanentAddress.city = val.value.District),
+                    (permanentAddress.state = val.value.State)),
+                  });
                 }}
               />
             </>
@@ -942,8 +1119,6 @@ const RegisterScreen = ({ navigation }) => {
               }
             />
           </View>
-          <Text style={GlobalStyle.underline}></Text>
-
           <TextinputComp
             mode={"outlined"}
             label={"H.No"}
@@ -957,7 +1132,7 @@ const RegisterScreen = ({ navigation }) => {
               })
             }
           />
-          <Text style={GlobalStyle.underline} />
+          <View style={{ height: 10 }} />
           <TextinputComp
             mode={"outlined"}
             label={"Street Name"}
@@ -972,7 +1147,7 @@ const RegisterScreen = ({ navigation }) => {
               })
             }
           />
-          <Text style={GlobalStyle.underline}></Text>
+          <View style={{ height: 10 }} />
           <TextinputComp
             mode={"outlined"}
             value={permanentAddress.village}
@@ -987,7 +1162,7 @@ const RegisterScreen = ({ navigation }) => {
               })
             }
           />
-          <Text style={GlobalStyle.underline} />
+          <View style={{ height: 10 }} />
           <TextinputComp
             mode={"outlined"}
             value={permanentAddress.mandal}
@@ -1002,7 +1177,7 @@ const RegisterScreen = ({ navigation }) => {
               })
             }
           />
-          <Text style={GlobalStyle.underline}></Text>
+          <View style={{ height: 10 }} />
           <TextinputComp
             mode={"outlined"}
             value={permanentAddress.city}
@@ -1017,7 +1192,7 @@ const RegisterScreen = ({ navigation }) => {
               })
             }
           />
-          <Text style={GlobalStyle.underline} />
+          <View style={{ height: 10 }} />
           <TextinputComp
             mode={"outlined"}
             value={permanentAddress.district}
@@ -1032,7 +1207,7 @@ const RegisterScreen = ({ navigation }) => {
               })
             }
           />
-          <Text style={GlobalStyle.underline} />
+          <View style={{ height: 10 }} />
           <TextinputComp
             mode={"outlined"}
             value={permanentAddress.state}
@@ -1047,7 +1222,7 @@ const RegisterScreen = ({ navigation }) => {
               })
             }
           />
-          <Text style={GlobalStyle.underline} />
+          <View style={{ height: 10 }} />
         </View>
         {/* <View style={styles.forgotView}>
             <Pressable onPress={forgotClicked}>
@@ -1055,7 +1230,7 @@ const RegisterScreen = ({ navigation }) => {
             </Pressable>
           </View> */}
         <View style={{ height: 40 }}></View>
-        <Pressable style={styles.loginButton} onPress={() => loginClicked()}>
+        <Pressable style={styles.loginButton} onPress={() => onSubmit()}>
           <Text style={styles.buttonText}>Register your Account</Text>
         </Pressable>
         <Image

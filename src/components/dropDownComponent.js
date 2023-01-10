@@ -56,9 +56,11 @@ const NewDropDownComponent = ({
   visible = false,
   showDropDown,
   onDismiss,
+  valueField,
+  labelField,
+  data
 }) => {
   const [colors, setColors] = useState("");
-
   let rightIconComp = null;
   if (showRightIcon) {
     if (rightIconObj) {
@@ -85,8 +87,8 @@ const NewDropDownComponent = ({
   }
 
   return (
-      <View style={{ width: "100%" ,}}>
-        {/* <TextInput
+    <View style={{ width: "100%" }}>
+      {/* <TextInput
           style={[
             {
               height: 50,
@@ -126,65 +128,67 @@ const NewDropDownComponent = ({
           onEndEditing={onEndEditing}
           onPressOut={onPressOut}
         /> */}
-        <Dropdown
-          label={label}
-          mode={mode}
-          visible={visible}
-          //   showDropDown={showDropDown}
-          //   onDismiss={onDismiss}
-          value={colors}
-          setValue={setColors}
-          data={colorList}
-          labelField="label"
-          valueField="value"
-          placeholder={label}
-          style={[
-            {
-              height: 50,
-              width: "100%",
-              fontSize: 16,
-              fontWeight: "400",
-              backgroundColor: Colors.WHITE,
-              borderColor: Colors.BLACK,
-              borderWidth: 1,
-              marginTop: 10,
-              borderRadius:6,
-              padding:15,
+      <Dropdown
+        label={label}
+        mode={mode}
+        visible={visible}
+        //   showDropDown={showDropDown}
+        //   onDismiss={onDismiss}
+        // value={colors}
+        onChange={(item) => {
+          onChangeText(item);
+        }}
+        data={data}
+        labelField={labelField}
+        valueField={valueField}
+        placeholder={label}
+        style={[
+          {
+            height: 50,
+            width: "100%",
+            fontSize: 16,
+            fontWeight: "400",
+            backgroundColor: Colors.WHITE,
+            borderColor: Colors.BLACK,
+            borderWidth: 1,
+            marginTop: 10,
+            borderRadius: 6,
+            padding: 15,
             //   zIndex:1000
             //   height:55
-            },
-            style,
-          ]}
-          placeholderStyle={{
-            color:Colors.GRAY
-          }}
-          //   dropDownItemStyle={{
-          //     backgroundColor: "white",
-          //     zIndex: 1000,
-          //     elevation: 1000,
-          //   }}
-          //   style={[
-          //     {
-          //       height: 50,
-          //       width: "100%",
-          //       fontSize: 16,
-          //       fontWeight: "400",
-          //       backgroundColor: Colors.WHITE,
-          //     },
-          //     style,
-          //   ]}
-        />
-        {error ? (
-          <HelperText
-            type="error"
-            visible={true}
-            padding={"none"}
-            style={{ color: Colors.RED }}
-          >
-            {errorMsg}
-          </HelperText>
-        ) : null}
-      </View>
+          },
+          style,
+        ]}
+        placeholderStyle={{
+          color: Colors.GRAY,
+        }}
+        //   dropDownItemStyle={{
+        //     backgroundColor: "white",
+        //     zIndex: 1000,
+        //     elevation: 1000,
+        //   }}
+        //   style={[
+        //     {
+        //       height: 50,
+        //       width: "100%",
+        //       fontSize: 16,
+        //       fontWeight: "400",
+        //       backgroundColor: Colors.WHITE,
+        //     },
+        //     style,
+        //   ]}
+      />
+      {error ? (
+        <HelperText
+          type="error"
+          visible={true}
+          padding={"none"}
+          style={{ color: Colors.RED }}
+        >
+          {errorMsg}
+        </HelperText>
+      ) : null}
+    </View>
   );
 };
 
