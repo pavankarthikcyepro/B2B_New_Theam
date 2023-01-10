@@ -627,9 +627,9 @@ const HomeScreen = ({ route, navigation }) => {
     };
 
     Promise.all([
-      dispatch(getLeadSourceTableList(payload)),
-      dispatch(getVehicleModelTableList(payload)),
-      dispatch(getEventTableList(payload)),
+      // dispatch(getLeadSourceTableList(payload)),
+      // dispatch(getVehicleModelTableList(payload)),
+      // dispatch(getEventTableList(payload)),
       // dispatch(getLostDropChartData(payload))
     ]).then(() => {});
 
