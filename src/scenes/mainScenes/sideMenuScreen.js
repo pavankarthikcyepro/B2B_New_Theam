@@ -175,7 +175,7 @@ const SideMenuScreen = ({ navigation }) => {
 
   const getProfilePic = (userData) => {
     fetch(
-      `http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
+      `http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
     )
       .then((response) => response.json())
       .then((json) => {
