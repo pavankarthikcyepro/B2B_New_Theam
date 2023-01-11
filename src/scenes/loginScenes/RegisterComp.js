@@ -40,6 +40,7 @@ import { DropDownSelectionItem, RadioTextItem } from "../../pureComponents";
 import { NewDropDownComponent } from "../../components/dropDownComponent";
 import { Dropdown } from "react-native-element-dropdown";
 import { AuthStackIdentifiers } from "../../navigations/authNavigator";
+import { updateSecurePassword } from "../../redux/loginReducer";
 
 // import { TextInput } from 'react-native-paper';
 const ScreenWidth = Dimensions.get("window").width;
@@ -187,14 +188,14 @@ const RegisterScreen = ({ navigation }) => {
       showToast("Please Select Any Designaion");
       return;
     }
-    //  if (password.length > 8) {
-    //    showToastRedAlert("Password length must be greater than 8");
-    //    return;
-    //  }
-    //  if (password !== confirmPassword) {
-    //    showToastRedAlert("Please Enter Confirm Password Same as Password");
-    //    return;
-    //  }
+     if (password.length > 8) {
+       showToastRedAlert("Password length must be greater than 8");
+       return;
+     }
+     if (password !== confirmPassword) {
+       showToastRedAlert("Please Enter Confirm Password Same as Password");
+       return;
+     }
     if (communicationAddress.pincode.length === 0) {
       showToast("Please enter Communication pincode");
       return;
@@ -210,7 +211,7 @@ const RegisterScreen = ({ navigation }) => {
       dmsRole: role,
       mobile: mobileNo,
       dmsDesignation: Designation,
-      // password: password,
+      password: password,
       address: {
         presentAddress: {
           pincode: communicationAddress.pincode,
@@ -349,8 +350,8 @@ const RegisterScreen = ({ navigation }) => {
           }}
         />
 
-        {/* <View style={{ height: 20 }}></View> */}
-        {/* <TextinputComp
+        <View style={{ height: 10 }} />
+        <TextinputComp
           value={password}
           error={selector.showPasswordErr}
           errorMsg={selector.passwordErrMessage}
@@ -364,9 +365,9 @@ const RegisterScreen = ({ navigation }) => {
           }}
           onChangeText={(text) => setPassword(text)}
           onRightIconPressed={() => dispatch(updateSecurePassword())}
-        /> */}
-        {/* <View style={{ height: 20 }}></View> */}
-        {/* <TextinputComp
+        />
+        <View style={{ height: 10 }} />
+        <TextinputComp
           value={confirmPassword}
           error={selector.showPasswordErr}
           errorMsg={selector.passwordErrMessage}
@@ -380,7 +381,7 @@ const RegisterScreen = ({ navigation }) => {
           }}
           onChangeText={(text) => setConfirmPassword(text)}
           onRightIconPressed={() => dispatch(updateSecurePassword())}
-        /> */}
+        />
         <View style={{ height: 10 }} />
         <TextinputComp
           // style={styles.textInputStyle}
