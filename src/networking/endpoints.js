@@ -157,7 +157,7 @@ export const reasonDropDown = baseUrl + "dynamic-forms/dropdown";
 export const getDetailsByempIdAndorgId =
   baseUrl + "sales/employeeTracking/getDetailsByempIdAndorgId";
 export const getLocationCoordinates =
-  baseUrl + "sales/employeeTracking/getLocationByempIdAndorgId";
+baseUrl + "sales/employeeTracking/getLocationByempIdAndorgId";
 
 const URL = {
   // LOGIN: () => hrms_url + "/emplogin",
@@ -203,6 +203,8 @@ const URL = {
     return sales_url + `/master-data/customertype/${orgId}`;
   },
   MY_TASKS: () => sales_url + "/workflow/assignedTasks?",
+  MY_TASKS_RESCHEDULED_HISTORY: (empId) =>
+    sales_url + `/task-history/resheduled-update-today?empId=${empId}`,
   CONTACT_DETAILS: (universalId) => {
     return sales_url + "/lead/id/" + universalId;
   },
@@ -335,9 +337,11 @@ const URL = {
   }, // getAllServiceEventsByFilter replaced by getAllServiceEventsByFilterByStatus
 
   GET_EVENTS_NEW: (startDate, endDate, empId) => {
-    return ops_url + `/dms/getAllServiceEventsByFilter?startdate=${startDate}&enddate=${endDate}&organiserid=${empId}`;
+    return (
+      ops_url +
+      `/dms/getAllServiceEventsByFilter?startdate=${startDate}&enddate=${endDate}&organiserid=${empId}`
+    );
   },
-
 
   GET_SOURCE_OF_ENQUIRY: (orgId) => {
     return subSourceAllDetails + `?organizationId=${orgId}`;
@@ -459,7 +463,7 @@ const URL = {
   },
   GET_ATTENDANCE_REPORT: () => {
     return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8081/sales/reports/attendance_report`;
-    return sales_url + '/reports/attendance_report';
+    return sales_url + "/reports/attendance_report";
   },
   GET_DOWNLOAD_URL: (file) => {
     return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8081/sales/reports/downloadFile/${file}`;
