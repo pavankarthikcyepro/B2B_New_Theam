@@ -353,7 +353,7 @@ const VerifyAttendance = ({
               }}
             />
             <LocalButtonComp
-              title={logOut ? "Log Out" : "Login"}
+              title={"Submit"}
               onPress={() => onLogin()}
               disabled={false}
             />
