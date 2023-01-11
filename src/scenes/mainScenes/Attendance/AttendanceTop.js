@@ -263,9 +263,9 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
         > */}
           <TouchableOpacity
             onPress={() => {
-              if (item?.isAbsent != 1) {
+              // if (item?.isAbsent != 1) {
                 !item?.punchOut && setAttendance(true);
-              }
+              // }
             }}
             style={{
               ...(item?.isAbsent == 1

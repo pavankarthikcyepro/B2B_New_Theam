@@ -109,7 +109,7 @@ const AttendanceFromSelf = ({
             setWorkFromHome(true);
             setPresent(false);
           }
-          setPunched(true);
+          // setPunched(true);
         }
       }
     } catch (error) {}
