@@ -54,6 +54,7 @@ import {
   getTargetParametersEmpDataInsights,
   updateIsRankHide,
   getReceptionistData,
+  updateIsModalVisible,
 } from "../../../redux/homeReducer";
 import { getCallRecordingCredentials } from "../../../redux/callRecordingReducer";
 import { updateData, updateIsManager } from "../../../redux/sideMenuReducer";
@@ -95,6 +96,7 @@ import ReactNativeModal from "react-native-modal";
 import Carousel, { Pagination } from "react-native-snap-carousel";
 import { monthNamesCap } from "../Attendance/AttendanceTop";
 import { getNotificationList } from "../../../redux/notificationReducer";
+import AttendanceFromSelf from "../../../components/AttendanceFromSelf";
 
 const officeLocation = {
   latitude: 37.33233141,
@@ -138,7 +140,7 @@ const HomeScreen = ({ route, navigation }) => {
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {
       getCurrentLocation();
-      setTargetData().then(() =>{}); //Commented to resolved filter issue for Home Screen
+      setTargetData().then(() => {}); //Commented to resolved filter issue for Home Screen
     });
   }, [navigation]);
 
@@ -168,9 +170,10 @@ const HomeScreen = ({ route, navigation }) => {
   };
 
   useEffect(() => {
-    if (selector.isModalVisible 
+    if (
+      selector.isModalVisible
       // && !isEmpty(initialPosition)
-      ) {
+    ) {
       getDetails();
     }
   }, [selector.isModalVisible, initialPosition]);
@@ -187,14 +190,14 @@ const HomeScreen = ({ route, navigation }) => {
       var endDate = createDateTime("21:30");
       var now = new Date();
       var isBetween = startDate <= now && now <= endDate;
-      if (isBetween) {
+      if (true) {
         let employeeData = await AsyncStore.getData(
           AsyncStore.Keys.LOGIN_EMPLOYEE
         );
         if (employeeData) {
           const jsonObj = JSON.parse(employeeData);
           dispatch(getNotificationList(jsonObj));
-           var d = new Date();
+          var d = new Date();
           const response = await client.get(
             URL.GET_ATTENDANCE_EMPID(
               jsonObj.empId,
@@ -217,30 +220,31 @@ const HomeScreen = ({ route, navigation }) => {
             //   setReason(false);
             // }
             if (date.getDate() != new Date().getDate()) {
-              if (startDate <= now && now <= startBetween) {
-                setAttendance(true);
-              } else {
-                setAttendance(false);
-              }
+              setAttendance(true);
+              // if (startDate <= now && now <= startBetween) {
+              //   setAttendance(true);
+              // } else {
+              //   setAttendance(false);
+              // }
             } else {
-              if (endBetween <= now && now <= endDate && json.isLogOut == 0) {
-                setAttendance(true);
-              } else {
-                setAttendance(false);
-              }
+              // if (endBetween <= now && now <= endDate && json.isLogOut == 0) {
+              //   setAttendance(true);
+              // } else {
+              //   setAttendance(false);
+              // }
             }
           } else {
-            console.log("LSOSLSOSL");
-                         setAttendance(true);
-
-          //  if (startDate <= now && now <= startBetween) {
-          //    setAttendance(true);
-          //  } else {
-          //    setAttendance(false);
-          //  }
+            console.log("DDDD");
+            setAttendance(true);
+            //  if (startDate <= now && now <= startBetween) {
+            //    setAttendance(true);
+            //  } else {
+            //    setAttendance(false);
+            //  }
           }
         }
       }
+      dispatch(updateIsModalVisible(false));
     } catch (error) {
       console.error(error);
     }
@@ -1090,7 +1094,7 @@ const HomeScreen = ({ route, navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <RenderModal />
-      <AttendanceForm
+      <AttendanceFromSelf
         visible={attendance}
         showReason={reason}
         inVisible={() => {

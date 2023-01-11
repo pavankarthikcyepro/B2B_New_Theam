@@ -60,7 +60,7 @@ const weekdays = [
   "Saturday",
 ];
 
-const AttendanceScreen = ({ route, navigation }) => {
+const AttendanceTeamMemberScreen = ({ route, navigation }) => {
   // const navigation = useNavigation();
   const selector = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
@@ -121,8 +121,8 @@ const AttendanceScreen = ({ route, navigation }) => {
       // getCurrentLocation();
       setFromDateState(lastMonthFirstDate);
       setToDateState(currentDate);
-      setLoading(true);
-      getAttendance();
+    //   setLoading(true);
+    //   getAttendance();
     });
   }, [navigation]);
 
@@ -811,7 +811,7 @@ const AttendanceScreen = ({ route, navigation }) => {
   );
 };
 
-export default AttendanceScreen;
+export default AttendanceTeamMemberScreen;
 
 const styles = StyleSheet.create({
   container: {

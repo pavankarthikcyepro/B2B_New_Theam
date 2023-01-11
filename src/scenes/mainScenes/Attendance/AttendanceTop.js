@@ -264,7 +264,7 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
           <TouchableOpacity
             onPress={() => {
               // if (item?.isAbsent != 1) {
-                !item?.punchOut && setAttendance(true);
+              !item?.punchOut && setAttendance(true);
               // }
             }}
             style={{
@@ -272,6 +272,8 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
                 ? styles.leaveShadowView
                 : item?.holiday == 1
                 ? styles.holidayShadowView
+                : item?.wfh == 1
+                ? styles.wfhShadowView
                 : styles.shadowView),
               backgroundColor: "#c4c4c4",
             }}
@@ -285,7 +287,7 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
               </View>
             </View>
             <View style={styles.employeeLeaveView}>
-              {item?.isAbsent == 1 || item?.holiday == 1 ? (
+              {item?.isAbsent == 1 || item?.holiday == 1 || item?.wfh == 1 ? (
                 <View style={styles.elView}>
                   <Text
                     numberOfLines={1}
@@ -299,6 +301,8 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
                       ? "EL"
                       : item?.holiday == 1
                       ? "Holiday"
+                      : item?.wfh == 1
+                      ? "WFH"
                       : ""}
                   </Text>
                 </View>
@@ -340,6 +344,8 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
                 ? styles.leaveShadowView
                 : item?.holiday == 1
                 ? styles.holidayShadowView
+                : item?.wfh == 1
+                ? styles.wfhShadowView
                 : styles.shadowView
             }
           >
@@ -462,6 +468,7 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
         </TouchableOpacity>
 
         <Text style={{ color: Colors.RED }}>{selectedMonth(currentMonth)}</Text>
+        {currentMonth.getMonth() !== new Date().getMonth() ?
         <TouchableOpacity
           onPress={() => {
             var d = currentMonth;
@@ -476,7 +483,7 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
             size={20}
             color={Colors.RED}
           />
-        </TouchableOpacity>
+        </TouchableOpacity> : <View style={{width:45}}/>}
       </View>
       <FlatList
         data={monthData}
@@ -781,6 +788,16 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     padding: 7,
     backgroundColor: "#ffcccb",
+    borderRadius: 10,
+  },
+  wfhShadowView: {
+    ...GlobalStyle.shadow,
+    flexDirection: "row",
+    width: "95%",
+    height: 65,
+    alignSelf: "center",
+    padding: 7,
+    backgroundColor: Colors.SKY_LIGHT_BLUE_COLOR,
     borderRadius: 10,
   },
   swipeableView: {

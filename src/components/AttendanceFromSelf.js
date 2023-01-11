@@ -71,7 +71,7 @@ const AttendanceFromSelf = ({
   const [punched, setPunched] = useState(false);
   const [active, setActive] = useState(false);
   const [alreadyPresent, setAlreadyPresent] = useState(false);
-
+  const [status, setStatus] = useState("");
   useEffect(() => {
     getReason();
     getDetails();
@@ -101,15 +101,28 @@ const AttendanceFromSelf = ({
         const todaysDate = new Date().getDate();
         let present = json[json?.length - 1].isPresent;
         let wfh = json[json?.length - 1].wfh;
+        let isAbsent = json[json?.length - 1].isAbsent;
         if (todaysDate === lastPresentDate) {
+          setReason(json[json?.length - 1].reason);
+          setComment(json[json?.length - 1].comments);
           if (present == 1) {
+            setStatus("PRESENT");
             setPresent(true);
             setWorkFromHome(false);
+            setPunched(true);
           } else if (wfh == 1) {
+            setStatus("WFH");
             setWorkFromHome(true);
+            setPresent(null);
+            setPunched(true);
+          } else if (isAbsent == 1) {
+            setStatus("LEAVE");
             setPresent(false);
+            setPunched(false);
+            setWorkFromHome(false);
           }
-          // setPunched(true);
+        } else {
+          setPunched(false);
         }
       }
     } catch (error) {}
@@ -357,7 +370,7 @@ const AttendanceFromSelf = ({
               </Text>
               {present || !active ? (
                 <Text style={styles.greetingText}>
-                  {isBetween && !punched
+                  {!punched
                     ? "Please Punch Your Attendance"
                     : "Please LogOut Your Attendance"}
                 </Text>
@@ -383,7 +396,7 @@ const AttendanceFromSelf = ({
             </View>
           </View>
           <View style={{ flexDirection: "row" }}>
-            {punched ? (
+            {/* {punched ? (
               present ? (
                 <RadioTextItem
                   label={"Present"}
@@ -407,40 +420,40 @@ const AttendanceFromSelf = ({
                   }}
                 />
               ) : null
-            ) : (
-              <>
-                <RadioTextItem
-                  label={"Present"}
-                  value={"Present"}
-                  disabled={false}
-                  status={present && !workFromHome ? true : false}
-                  onPress={() => {
-                    setPresent(true);
-                    setWorkFromHome(false);
-                  }}
-                />
-                <RadioTextItem
-                  label={"Leave"}
-                  value={"Absent"}
-                  disabled={false}
-                  status={!present ? true : false}
-                  onPress={() => {
-                    setWorkFromHome(false);
-                    setPresent(false);
-                  }}
-                />
-                <RadioTextItem
-                  label={"WFH"}
-                  value={"WFH"}
-                  disabled={false}
-                  status={workFromHome ? true : false}
-                  onPress={() => {
-                    setWorkFromHome(true);
-                    setPresent(!workFromHome);
-                  }}
-                />
-              </>
-            )}
+            ) : ( */}
+            <>
+              <RadioTextItem
+                label={"Present"}
+                value={"Present"}
+                disabled={false}
+                status={present && !workFromHome ? true : false}
+                onPress={() => {
+                  setPresent(true);
+                  setWorkFromHome(false);
+                }}
+              />
+              <RadioTextItem
+                label={"Leave"}
+                value={"Absent"}
+                disabled={false}
+                status={present === false ? true : false}
+                onPress={() => {
+                  setWorkFromHome(false);
+                  setPresent(false);
+                }}
+              />
+              <RadioTextItem
+                label={"WFH"}
+                value={"WFH"}
+                disabled={false}
+                status={workFromHome ? true : false}
+                onPress={() => {
+                  setWorkFromHome(true);
+                  setPresent(null);
+                }}
+              />
+            </>
+            {/* )} */}
           </View>
           {workFromHome || !present ? (
             <>
@@ -517,42 +530,80 @@ const AttendanceFromSelf = ({
             </>
           ) : null}
           <View style={{ flexDirection: "row", marginTop: 10, width: "100%" }}>
-            {punched ? (
+            {/* {punched && present ? (
               <LocalButtonComp
                 title={"Log Out"}
                 onPress={() => LogOut()}
                 disabled={false}
               />
-            ) : !punched && present ? (
-              <LocalButtonComp
-                title={"Log In"}
-                onPress={() => callAPI()}
-                disabled={false}
-              />
-            ) : present || !active ? (
+            ) : null} */}
+            {/* {punched && !present ? (
               <>
                 <LocalButtonComp
                   title={"Submit"}
                   onPress={() => onSubmit()}
                   disabled={false}
                 />
-                <LocalButtonComp
-                  title={"Close"}
-                  onPress={() => {
-                    inVisible();
-                  }}
-                  disabled={false}
-                />
               </>
-            ) : (
+            ) : null} */}
+            {punched && present ? (
+              <>
+                {status == "WFH" || status == "LEAVE" ? (
+                  <LocalButtonComp
+                    title={"Log In"}
+                    onPress={() => callAPI()}
+                    disabled={false}
+                  />
+                ) : (
+                  <LocalButtonComp
+                    title={"Log Out"}
+                    onPress={() => LogOut()}
+                    disabled={false}
+                  />
+                )}
+              </>
+            ) : !punched && present ? (
               <LocalButtonComp
-                title={"Close"}
-                onPress={() => {
-                  inVisible();
-                }}
+                title={"Log In"}
+                onPress={() => callAPI()}
                 disabled={false}
               />
-            )}
+            ) : punched && !present && !workFromHome ? (
+              <LocalButtonComp
+                title={"Submit"}
+                onPress={() => onSubmit()}
+                disabled={false}
+              />
+            ) : !punched && !present && !workFromHome ? (
+              <LocalButtonComp
+                title={"Submit"}
+                onPress={() => onSubmit()}
+                disabled={false}
+              />
+            ) : !punched && !present && workFromHome ? (
+              <LocalButtonComp
+                title={"Submit"}
+                onPress={() => onSubmit()}
+                disabled={false}
+              />
+            ) : present || !active ? (
+              <>
+                {status == "PRESENT" || status == "LEAVE" ? (
+                  <LocalButtonComp
+                    title={"Submit"}
+                    onPress={() => onSubmit()}
+                    disabled={false}
+                  />
+                ) : null}
+                {punched && status == "WFH" ? (
+                  <LocalButtonComp
+                    title={"Log Out"}
+                    onPress={() => LogOut()}
+                    disabled={false}
+                  />
+                ) : null}
+              </>
+            ) : null}
           </View>
           <View
             style={{
@@ -669,7 +720,7 @@ const styles = StyleSheet.create({
     color: Colors.DARK_GRAY,
   },
   badgeContainer: {
-    bottom: 0,
+    bottom: 5,
     // right: 10,
     alignSelf: "flex-end",
     justifyContent: "center",
@@ -678,7 +729,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     height: 30,
     width: 30,
-    marginRight: 45,
+    marginRight: 42,
   },
   badgeText: { fontSize: 12, color: Colors.WHITE, fontWeight: "bold" },
 });
