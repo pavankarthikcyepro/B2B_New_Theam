@@ -1111,7 +1111,7 @@ const BookingFormScreen = ({ route, navigation }) => {
         let lifeTax = taxPercent !== '' ? getLifeTaxNew(Number(taxPercent)) : 0;
         setLifeTaxAmount(lifeTax);
         totalPrice += lifeTax;
-        totalPrice += priceInfomationData.registration_charges;
+        // totalPrice += priceInfomationData.registration_charges;
         totalPrice += selectedInsurencePrice;
         if (selector.insurance_type !== '') {
             totalPrice += selectedAddOnsPrice;
