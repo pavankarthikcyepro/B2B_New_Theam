@@ -892,6 +892,16 @@ const LeadsScreen = ({ route, navigation }) => {
       </View>
     );
   };
+  
+  const renderLoadMore = () => {
+   
+    return (
+      <View style={styles.footer}>
+        <Text style={styles.btnText}>Loading More...</Text>
+        <ActivityIndicator color={Colors.GRAY} />
+      </View>
+    );
+  };
 
   const getFirstLetterUpperCase = (name) => {
     return name.charAt(0).toUpperCase() + name.slice(1);
@@ -1025,6 +1035,134 @@ function navigateTo(params) {
        });
      }
 }
+
+  const renderItem = ({ item, index }) => (<>
+    <View>
+      <MyTaskNewItem
+        from={item.leadStage}
+        name={
+          getFirstLetterUpperCase(item.firstName) +
+          " " +
+          getFirstLetterUpperCase(item.lastName)
+        }
+        navigator={navigation}
+        uniqueId={item.leadId}
+        type={
+          item.leadStage === "ENQUIRY"
+            ? "Enq"
+            : item.leadStage === "BOOKING"
+              ? "Book"
+              : "PreBook"
+        }
+        status={""}
+        created={item.modifiedDate}
+        dmsLead={item.salesConsultant}
+        phone={item.phone}
+        source={item.enquirySource}
+        model={item.model}
+        leadStatus={item.leadStatus}
+        leadStage={item.leadStage}
+        needStatus={"YES"}
+        enqCat={item.enquiryCategory}
+        stageAccess={stageAccess}
+        onlylead={true}
+        userData={userData.hrmsRole}
+        EmployeesRoles={EmployeesRoles}
+        onItemPress={() => {
+          // console.log(item.leadStage);
+          // navigateTo(item.leadStage);
+          // return
+          navigation.navigate(
+            AppNavigator.EmsStackIdentifiers.task360,
+            {
+              universalId: item.universalId,
+              mobileNo: item.phone,
+              leadStatus: item.leadStatus,
+            }
+          );
+          return
+          let user = userData.hrmsRole.toLowerCase();
+          if (EmployeesRoles.includes(user)) {
+            if (
+              stageAccess[0]?.viewStage?.includes(item.leadStage)
+            ) {
+              navigation.navigate(
+                AppNavigator.EmsStackIdentifiers.task360,
+                {
+                  universalId: item.universalId,
+                  mobileNo: item.phone,
+                  leadStatus: item.leadStatus,
+                }
+              );
+            } else {
+              alert("No Access");
+            }
+          } else {
+            navigation.navigate(
+              AppNavigator.EmsStackIdentifiers.task360,
+              {
+                universalId: item.universalId,
+                mobileNo: item.phone,
+                leadStatus: item.leadStatus,
+              }
+            );
+          }
+        }}
+        onDocPress={() => {
+          let user = userData.hrmsRole.toLowerCase();
+          if (EmployeesRoles.includes(user)) {
+            if (
+              stageAccess[0]?.viewStage?.includes(item.leadStage)
+            ) {
+              let route =
+                AppNavigator.EmsStackIdentifiers.detailsOverview;
+              switch (item.leadStage) {
+                case "BOOKING":
+                  route =
+                    AppNavigator.EmsStackIdentifiers.bookingForm;
+                  break;
+                case "PRE_BOOKING":
+                case "PREBOOKING":
+                  route =
+                    AppNavigator.EmsStackIdentifiers
+                      .preBookingForm;
+                  break;
+              }
+              navigation.navigate(route, {
+                universalId: item.universalId,
+                enqDetails: item,
+                leadStatus: item.leadStatus,
+                leadStage: item.leadStage,
+              });
+            } else {
+              alert("No Access");
+            }
+          } else {
+            let route =
+              AppNavigator.EmsStackIdentifiers.detailsOverview;
+            switch (item.leadStage) {
+              case "BOOKING":
+                route =
+                  AppNavigator.EmsStackIdentifiers.bookingForm;
+                break;
+              case "PRE_BOOKING":
+              case "PREBOOKING":
+                route =
+                  AppNavigator.EmsStackIdentifiers.preBookingForm;
+                break;
+            }
+            navigation.navigate(route, {
+              universalId: item.universalId,
+              enqDetails: item,
+              leadStatus: item.leadStatus,
+              leadStage: item.leadStage,
+            });
+          }
+        }}
+      />
+    </View>
+  </>)
+
   return (
     <SafeAreaView style={styles.container}>
       <DatePickerComponent
@@ -1279,146 +1417,14 @@ function navigateTo(params) {
             }
             showsVerticalScrollIndicator={false}
             onEndReachedThreshold={0}
-            // onEndReached={() => {
-            //     if (appSelector.searchKey === '') {
-            //         getMoreEnquiryListFromServer()
-            //     }
-            // }}
+              // onEndReached={() => {
+              //   renderLoadMore()
+              //   // if (appSelector.searchKey === ''){
+              //   //     getMorePreEnquiryListFromServer()
+              //   // }  
+              // }}
             ListFooterComponent={renderFooter}
-            renderItem={({ item, index }) => {
-              let color = Colors.WHITE;
-              if (index % 2 !== 0) {
-                color = Colors.LIGHT_GRAY;
-              }
-              return (
-                <>
-                  <View>
-                    <MyTaskNewItem
-                      from={item.leadStage}
-                      name={
-                        getFirstLetterUpperCase(item.firstName) +
-                        " " +
-                        getFirstLetterUpperCase(item.lastName)
-                      }
-                      navigator={navigation}
-                      uniqueId={item.leadId}
-                      type={
-                        item.leadStage === "ENQUIRY"
-                          ? "Enq"
-                          : item.leadStage === "BOOKING"
-                          ? "Book"
-                          : "PreBook"
-                      }
-                      status={""}
-                      created={item.modifiedDate}
-                      dmsLead={item.salesConsultant}
-                      phone={item.phone}
-                      source={item.enquirySource}
-                      model={item.model}
-                      leadStatus={item.leadStatus}
-                      leadStage={item.leadStage}
-                      needStatus={"YES"}
-                      enqCat={item.enquiryCategory}
-                      stageAccess={stageAccess}
-                      onlylead={true}
-                      userData={userData.hrmsRole}
-                      EmployeesRoles={EmployeesRoles}
-                      onItemPress={() => {
-                        // console.log(item.leadStage);
-                        // navigateTo(item.leadStage);
-                        // return
-                        navigation.navigate(
-                          AppNavigator.EmsStackIdentifiers.task360,
-                          {
-                            universalId: item.universalId,
-                            mobileNo: item.phone,
-                            leadStatus: item.leadStatus,
-                          }
-                        );
-                        return
-                        let user = userData.hrmsRole.toLowerCase();
-                        if (EmployeesRoles.includes(user)) {
-                          if (
-                            stageAccess[0]?.viewStage?.includes(item.leadStage)
-                          ) {
-                            navigation.navigate(
-                              AppNavigator.EmsStackIdentifiers.task360,
-                              {
-                                universalId: item.universalId,
-                                mobileNo: item.phone,
-                                leadStatus: item.leadStatus,
-                              }
-                            );
-                          } else {
-                            alert("No Access");
-                          }
-                        } else {
-                          navigation.navigate(
-                            AppNavigator.EmsStackIdentifiers.task360,
-                            {
-                              universalId: item.universalId,
-                              mobileNo: item.phone,
-                              leadStatus: item.leadStatus,
-                            }
-                          );
-                        }
-                      }}
-                      onDocPress={() => {
-                        let user = userData.hrmsRole.toLowerCase();
-                        if (EmployeesRoles.includes(user)) {
-                          if (
-                            stageAccess[0]?.viewStage?.includes(item.leadStage)
-                          ) {
-                            let route =
-                              AppNavigator.EmsStackIdentifiers.detailsOverview;
-                            switch (item.leadStage) {
-                              case "BOOKING":
-                                route =
-                                  AppNavigator.EmsStackIdentifiers.bookingForm;
-                                break;
-                              case "PRE_BOOKING":
-                              case "PREBOOKING":
-                                route =
-                                  AppNavigator.EmsStackIdentifiers
-                                    .preBookingForm;
-                                break;
-                            }
-                            navigation.navigate(route, {
-                              universalId: item.universalId,
-                              enqDetails: item,
-                              leadStatus: item.leadStatus,
-                              leadStage: item.leadStage,
-                            });
-                          } else {
-                            alert("No Access");
-                          }
-                        } else {
-                          let route =
-                            AppNavigator.EmsStackIdentifiers.detailsOverview;
-                          switch (item.leadStage) {
-                            case "BOOKING":
-                              route =
-                                AppNavigator.EmsStackIdentifiers.bookingForm;
-                              break;
-                            case "PRE_BOOKING":
-                            case "PREBOOKING":
-                              route =
-                                AppNavigator.EmsStackIdentifiers.preBookingForm;
-                              break;
-                          }
-                          navigation.navigate(route, {
-                            universalId: item.universalId,
-                            enqDetails: item,
-                            leadStatus: item.leadStatus,
-                            leadStage: item.leadStage,
-                          });
-                        }
-                      }}
-                    />
-                  </View>
-                </>
-              );
-            }}
+            renderItem={renderItem}
           />
         </View>
       )}
