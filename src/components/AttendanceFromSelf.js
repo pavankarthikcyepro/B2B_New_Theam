@@ -179,7 +179,7 @@ const AttendanceFromSelf = ({
           status: "Active",
           comments: comment.trim(),
           isLogOut: present && endBetween <= now && now <= endDate2 ? 1 : 0,
-          reason: reason?.value ? reason?.value : "",
+          reason: reason ? reason : "",
           punchIn: present ? n : workFromHome ? n : null,
           punchOut: null,
         };
@@ -242,7 +242,7 @@ const AttendanceFromSelf = ({
         wfh: workFromHome ? 1 : 0,
         status: "Active",
         comments: comment.trim(),
-        reason: reason?.value ? reason?.value : "",
+        reason: reason ? reason : "",
         isLogOut: absentRequest
           ? 1
           : present && endBetween <= now && now <= endDate2
@@ -299,7 +299,7 @@ const AttendanceFromSelf = ({
             (present || workFromHome) && endBetween <= now && now <= endDate2
               ? 1
               : 0,
-          reason: reason?.value ? reason?.value : "",
+          reason: reason ? reason : "",
           punchIn: n,
           punchOut: null,
         };

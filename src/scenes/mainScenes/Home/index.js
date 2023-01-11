@@ -168,7 +168,9 @@ const HomeScreen = ({ route, navigation }) => {
   };
 
   useEffect(() => {
-    if (selector.isModalVisible && !isEmpty(initialPosition)) {
+    if (selector.isModalVisible 
+      // && !isEmpty(initialPosition)
+      ) {
       getDetails();
     }
   }, [selector.isModalVisible, initialPosition]);
@@ -203,17 +205,17 @@ const HomeScreen = ({ route, navigation }) => {
           const json = await response.json();
           if (json.length != 0) {
             let date = new Date(json[json.length - 1].createdtimestamp);
-            let dist = getDistanceBetweenTwoPoints(
-              officeLocation.latitude,
-              officeLocation.longitude,
-              initialPosition?.latitude,
-              initialPosition?.longitude
-            );
-            if (dist > officeRadius) {
-              setReason(true); ///true for reason
-            } else {
-              setReason(false);
-            }
+            // let dist = getDistanceBetweenTwoPoints(
+            //   officeLocation.latitude,
+            //   officeLocation.longitude,
+            //   initialPosition?.latitude,
+            //   initialPosition?.longitude
+            // );
+            // if (dist > officeRadius) {
+            //   setReason(true); ///true for reason
+            // } else {
+            //   setReason(false);
+            // }
             if (date.getDate() != new Date().getDate()) {
               if (startDate <= now && now <= startBetween) {
                 setAttendance(true);
@@ -228,11 +230,14 @@ const HomeScreen = ({ route, navigation }) => {
               }
             }
           } else {
-           if (startDate <= now && now <= startBetween) {
-             setAttendance(true);
-           } else {
-             setAttendance(false);
-           }
+            console.log("LSOSLSOSL");
+                         setAttendance(true);
+
+          //  if (startDate <= now && now <= startBetween) {
+          //    setAttendance(true);
+          //  } else {
+          //    setAttendance(false);
+          //  }
           }
         }
       }

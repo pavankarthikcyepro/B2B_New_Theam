@@ -58,7 +58,7 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
   const [commentError, setCommentError] = useState("");
   const [present, setPresent] = useState(true);
   const [workFromHome, setWorkFromHome] = useState(false);
-  const [reason, setReason] = useState({});
+  const [reason, setReason] = useState("");
   const [reasonError, setReasonError] = useState("");
   const [reasonList, setReasonList] = useState([]);
   const [userData, setUserData] = useState({});
@@ -172,7 +172,7 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
           status: "Active",
           comments: comment.trim(),
           isLogOut: present && endBetween <= now && now <= endDate2 ? 1 : 0,
-          reason: reason?.value ? reason?.value : "",
+          reason: reason ? reason : "",
           punchIn: n,
           punchOut: null,
         };
@@ -235,7 +235,7 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
         wfh: workFromHome ? 1 : 0,
         status: "Active",
         comments: comment.trim(),
-        reason: reason?.value ? reason?.value : "",
+        reason: reason ? reason : "",
         isLogOut: present && endBetween <= now && now <= endDate2 ? 1 : 0,
         punchIn: json[json.length - 1].punchIn
           ? json[json.length - 1].punchIn
@@ -290,7 +290,7 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
               </Text>
               {present || !active ? (
                 <Text style={styles.greetingText}>
-                  {isBetween && !punched
+                  {!punched
                     ? "Please Punch Your Attendance"
                     : "Please LogOut Your Attendance"}
                 </Text>
