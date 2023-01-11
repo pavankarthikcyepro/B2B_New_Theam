@@ -1,10 +1,10 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { SafeAreaView, View, Text, StyleSheet, FlatList, Dimensions, Image, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 import { Colors } from '../../../styles';
 import { IconButton } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
-import { } from '../../../redux/homeReducer';
+import { getTargetParametersEmpDataInsights } from '../../../redux/homeReducer';
 import * as AsyncStore from '../../../asyncStore';
 import { DatePickerComponent, DropDownComponant } from '../../../components';
 import { DateSelectItem, DropDownSelectionItem } from '../../../pureComponents';
@@ -23,6 +23,7 @@ import {
     getSalesComparisonData
 } from '../../../redux/homeReducer';
 import { showAlertMessage, showToast } from '../../../utils/toast';
+import { AppNavigator } from '../../../navigations';
 
 const screenWidth = Dimensions.get("window").width;
 const buttonWidth = (screenWidth - 100) / 2;
@@ -50,7 +51,7 @@ const FilterScreen = ({ navigation }) => {
     const [fromDate, setFromDate] = useState("");
     const [toDate, setToDate] = useState("");
     const [nameKeyList, setNameKeyList] = useState([]);
-    const [userData, setUserData] = useState({ branchId: "", orgId: "", employeeId: "", employeeName: "" })
+    const [userData, setUserData] = useState({ branchId: "", orgId: "", employeeId: "", employeeName: "", primaryDesignation: "" })
     const [employeeTitleNameList, setEmloyeeTitleNameList] = useState([]);
     const [employeeDropDownDataLocal, setEmployeeDropDownDataLocal] = useState({});
     const [dropDownFrom, setDropDownFrom] = useState("");
@@ -64,7 +65,7 @@ const FilterScreen = ({ navigation }) => {
         const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
-            setUserData({ branchId: jsonObj.branchId, orgId: jsonObj.orgId, employeeId: jsonObj.empId, employeeName: jsonObj.empName })
+            setUserData({ branchId: jsonObj.branchId, orgId: jsonObj.orgId, employeeId: jsonObj.empId, employeeName: jsonObj.empName, primaryDesignation: jsonObj.primaryDesignation })
         }
     }
 
@@ -85,8 +86,13 @@ const FilterScreen = ({ navigation }) => {
         setToDate(monthLastDate);
     }, [selector.filter_drop_down_data])
 
-    const dropDownItemClicked = (index) => {
+    useEffect(() => {
+        if (nameKeyList.length > 0) {
+            dropDownItemClicked(4, true);
+        }
+    }, [nameKeyList, userData]);
 
+    const dropDownItemClicked = async (index, initalCall = false) => {
         const topRowSelectedIds = [];
         if (index > 0) {
             const topRowData = totalDataObj[nameKeyList[index - 1]].sublevels;
@@ -111,10 +117,40 @@ const FilterScreen = ({ navigation }) => {
         else {
             data = totalDataObj[nameKeyList[index]].sublevels
         }
-
-        setDropDownData([...data])
+        let newData = [];
+        const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            for (let i = 0; i < data.length; i++) {
+                const id = data[i];
+                for (let j = 0; j < jsonObj.branchs.length; j++) {
+                    const id2 = jsonObj.branchs[j];
+                    if (id2.branchName === id.name) {
+                        newData.push(id);
+                    }
+                }
+            }
+        }
+        if (index === 4) {
+            setDropDownData([...newData])
+            if (initalCall) {
+                let updatedMultipleData = [...newData];
+                const obj = { ...updatedMultipleData[0] };
+                if (obj.selected != undefined) {
+                    obj.selected = !obj.selected;
+                } else {
+                    obj.selected = true;
+                }
+                updatedMultipleData[0] = obj;
+                updateSelectedItems(updatedMultipleData, index, true);
+            } else {
+                updateSelectedItemsForEmployeeDropDown(newData, index);
+            }
+        } else {
+            setDropDownData([...data])
+        }
         setSelectedItemIndex(index);
-        setShowDropDownModel(true);
+        !initalCall && setShowDropDownModel(true);
         setDropDownFrom("ORG_TABLE")
     }
 
@@ -137,9 +173,8 @@ const FilterScreen = ({ navigation }) => {
         setDropDownFrom("EMPLOYEE_TABLE")
     }
 
-    const updateSelectedItems = (data, index) => {
+    const updateSelectedItems = (data, index, initalCall = false) => {
 
-        // console.log("index: ", index)
 
         const totalDataObjLocal = { ...totalDataObj };
 
@@ -212,8 +247,8 @@ const FilterScreen = ({ navigation }) => {
             "sublevels": data
         }
         totalDataObjLocal[key] = newOBJ;
-        // console.log("totalDataObjLocal: ", JSON.stringify(totalDataObjLocal));
         setTotalDataObj({ ...totalDataObjLocal });
+        initalCall && submitBtnClicked(totalDataObjLocal);
     }
 
     const updateSelectedItemsForEmployeeDropDown = (data, index) => {
@@ -246,13 +281,12 @@ const FilterScreen = ({ navigation }) => {
         setTotalDataObj({ ...totalDataObjLocal });
     }
 
-    const submitBtnClicked = () => {
-
+    const submitBtnClicked = (initialData) => {
         let i = 0;
         const selectedIds = [];
         for (i; i < nameKeyList.length; i++) {
             let key = nameKeyList[i];
-            const dataArray = totalDataObj[key].sublevels;
+            const dataArray = initialData ? initialData[key].sublevels : totalDataObj[key].sublevels;
             if (dataArray.length > 0) {
                 dataArray.forEach((item, index) => {
                     if (item.selected != undefined && item.selected == true) {
@@ -261,7 +295,6 @@ const FilterScreen = ({ navigation }) => {
                 })
             }
         }
-        // console.log("selectedIds: ", selectedIds);
         if (selectedIds.length > 0) {
             setIsLoading(true);
             getDashboadTableDataFromServer(selectedIds, "LEVEL");
@@ -295,11 +328,9 @@ const FilterScreen = ({ navigation }) => {
             selectedIds: selectedIds
         }
 
-        // console.log("PAYLOAD 1:", payload1);
         Promise.all([
             dispatch(getEmployeesDropDownData(payload1))
         ]).then(() => {
-            console.log("CALLED");
             Promise.all([
                 dispatch(getLeadSourceTableList(payload)),
                 dispatch(getVehicleModelTableList(payload)),
@@ -311,20 +342,21 @@ const FilterScreen = ({ navigation }) => {
                 dispatch(getSalesData(payload2)),
                 dispatch(getSalesComparisonData(payload2)),
                 // // Target Params Data
-                dispatch(getTargetParametersData(payload2))
+                dispatch(getTargetParametersData(payload2)),
+                dispatch(getTargetParametersEmpDataInsights(payload2))  // Added to filter an Home Screen's INSIGHT
             ]).then(() => {
-                console.log("SUCCESS");
             }).catch(() => {
-
+                setIsLoading(false);
             })
         }).catch(() => {
-            
+            setIsLoading(false);
         })
         if (from == "EMPLOYEE") {
             navigation.goBack();
+            // navigation.navigate(AppNavigator.TabStackIdentifiers.home, { screen: "Home", params: { from: 'Filter' }, })
         }
-        else{
-            navigation.goBack();
+        else {
+            // navigation.goBack(); // NEED TO COMMENT FOR ASSOCIATE FILTER
         }
     }
 
@@ -347,11 +379,23 @@ const FilterScreen = ({ navigation }) => {
                 }
                 newDataObj[key] = newArray;
             }
-            setEmloyeeTitleNameList(names);
-            setEmployeeDropDownDataLocal(newDataObj);
+            setName(names, newDataObj)
         }
-        setIsLoading(false);
     }, [selector.employees_drop_down_data])
+
+    const setName = useCallback(
+        (names, newDataObj) => {
+            function isEmpty(obj) {
+                return Object.keys(obj).length === 0;
+            }
+            if (!isEmpty(names) && !isEmpty(newDataObj)) {
+                setEmloyeeTitleNameList(names);
+                setEmployeeDropDownDataLocal(newDataObj);
+                setIsLoading(false);
+            }
+        },
+        [employeeDropDownDataLocal, employeeTitleNameList],
+    );
 
     const clearBtnForEmployeeData = () => {
         let newDataObj = {};
@@ -381,7 +425,6 @@ const FilterScreen = ({ navigation }) => {
                 }
             })
         }
-        // console.log("selectedIds: ", selectedIds);
         if (selectedIds.length > 0) {
             getDashboadTableDataFromServer(selectedIds, "EMPLOYEE");
         }
@@ -432,7 +475,6 @@ const FilterScreen = ({ navigation }) => {
                 mode={"date"}
                 value={new Date(Date.now())}
                 onChange={(event, selectedDate) => {
-                    // console.log("date: ", selectedDate);
                     if (Platform.OS === "android") {
                         if (selectedDate) {
                             updateSelectedDate(selectedDate, datePickerId);
@@ -448,7 +490,7 @@ const FilterScreen = ({ navigation }) => {
             <View style={{ flex: 1, paddingVertical: 10, paddingHorizontal: 10, backgroundColor: Colors.WHITE }}>
 
                 <FlatList
-                    data={[1, 2]}
+                    data={employeeTitleNameList.length > 0 ? [1, 2, 3] : [1, 2]}
                     keyExtractor={(item, index) => "MAIN" + index.toString()}
                     renderItem={({ item, index }) => {
 
@@ -495,13 +537,13 @@ const FilterScreen = ({ navigation }) => {
                                                 if (selectedNames.length > 0) {
                                                     selectedNames = selectedNames.slice(0, selectedNames.length - 1);
                                                 }
-
                                                 return (
                                                     <View>
                                                         <DropDownSelectionItem
                                                             label={item}
                                                             value={selectedNames}
-                                                            onPress={() => dropDownItemClicked(index)}
+                                                            onPress={() =>
+                                                                dropDownItemClicked(index)}
                                                             takeMinHeight={true}
                                                         />
                                                     </View>

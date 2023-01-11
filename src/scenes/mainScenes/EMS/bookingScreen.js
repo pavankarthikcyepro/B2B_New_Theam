@@ -103,13 +103,21 @@ const BookingScreen = ({ navigation }) => {
                 let tempData = []
                 tempData = selector.pre_booking_list.filter((item) => {
                     return (
-                        item.firstName
-                            .toLowerCase()
-                            .includes(appSelector.searchKey.toLowerCase()) ||
-                        item.lastName
-                            .toLowerCase()
-                            .includes(appSelector.searchKey.toLowerCase()) ||
-                        item.phone.includes(appSelector.searchKey)
+                      `${item.firstName} ${item.lastName}`
+                        .toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase()) ||
+                      item.phone
+                        .toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase()) ||
+                      item.enquirySource
+                        .toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase()) ||
+                      item.enquiryCategory
+                        ?.toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase()) ||
+                      item.model
+                        .toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase())
                     );
                 })
                 setSearchedData([]);
@@ -154,7 +162,6 @@ const BookingScreen = ({ navigation }) => {
             setFromDateState(lastMonthFirstDate);
             const tomorrowDate = moment().add(1, "day").format(dateFormat)
             setToDateState(currentDate);
-            console.log("$$$$$$$$$$$$$ BOOKING SCREEN $$$$$$$$$$$$$$$");
             getDataFromDB()
         });
 
@@ -331,30 +338,37 @@ const BookingScreen = ({ navigation }) => {
         dispatch(updateIsSearch(true));
     };
     return (
-      <SafeAreaView style={styles.container}>
+        <SafeAreaView style={styles.container}>
+            <DatePickerComponent
+                visible={showDatePicker}
+                mode={"date"}
+                value={new Date(Date.now())}
+                onChange={(event, selectedDate) => {
+                    setShowDatePicker(false);
+                    if (Platform.OS === "android") {
+                        if (selectedDate) {
+                            updateSelectedDate(selectedDate, datePickerId);
+                        }
+                    } else {
+                        updateSelectedDate(selectedDate, datePickerId);
+                    }
+                }}
+                onRequestClose={() => setShowDatePicker(false)}
+            />
 
-        <DatePickerComponent
-          visible={showDatePicker}
-          mode={"date"}
-          value={datePickerId === "FROM_DATE" ? fromDate : toDate}
-          onChange={onChange}
-          onRequestClose={handleModal}
-        />
-
-        <SortAndFilterComp
-          visible={sortAndFilterVisible}
-          categoryList={categoryList}
-          modelList={vehicleModelList}
-          sourceList={sourceList}
-          submitCallback={(payload) => {
-            // console.log("payload: ", payload);
-            applySelectedFilters(payload);
-            setSortAndFilterVisible(false);
-          }}
-          onRequestClose={() => {
-            setSortAndFilterVisible(false);
-          }}
-        />
+            <SortAndFilterComp
+                visible={sortAndFilterVisible}
+                categoryList={categoryList}
+                modelList={vehicleModelList}
+                sourceList={sourceList}
+                submitCallback={(payload) => {
+                    applySelectedFilters(payload);
+                    setSortAndFilterVisible(false);
+                }}
+                onRequestClose={() => {
+                    setSortAndFilterVisible(false);
+                }}
+            />
 
             <View style={styles.view1}>
                 <View style={{ width: "80%" }}>
@@ -439,7 +453,7 @@ const BookingScreen = ({ navigation }) => {
                                     type="Book"
                                     status={""}
                                     created={item.modifiedDate}
-                                    dmsLead={item.createdBy}
+                                    dmsLead={item.salesConsultant}
                                     phone={item.phone}
                                     source={item.enquirySource}
                                     model={item.model}
@@ -449,12 +463,10 @@ const BookingScreen = ({ navigation }) => {
                                     enqCat={item.enquiryCategory}
                                     onItemPress={() =>
                                         {
-                                                console.log("PBK: ", JSON.stringify(item));
                                                 navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, { universalId: item.universalId, leadStatus: item.leadStatus })
                                             }
                                     }
                                     onDocPress={() => {
-                                      console.log("BK DTLS:", item);
                                       navigation.navigate(
                                         AppNavigator.EmsStackIdentifiers
                                           .bookingForm,

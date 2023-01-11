@@ -122,7 +122,6 @@ const ComplaintsScreen = ({ navigation }) => {
       'Test body',
       { cc: '' }
     ).then(() => {
-      console.log('Your message was successfully sent!');
       showToastSucess("Your message was successfully sent!")
     });
   }
@@ -145,7 +144,6 @@ const ComplaintsScreen = ({ navigation }) => {
         mode={"date"}
         value={new Date(Date.now())}
         onChange={(event, selectedDate) => {
-          console.log("date: ", selectedDate);
           if (Platform.OS === "android") {
             if (selectedDate) {
               updateSelectedDate(selectedDate, datePickerId);

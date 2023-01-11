@@ -95,7 +95,6 @@ export const TargetListComp = ({ data, titlesData, from, totalWidth, type }) => 
                 mode={"date"}
                 value={new Date(Date.now())}
                 onChange={(event, selectedDate) => {
-                    console.log("date: ", selectedDate);
                     if (Platform.OS === "android") {
                         if (selectedDate) {
                             updateSelectedDate(selectedDate);

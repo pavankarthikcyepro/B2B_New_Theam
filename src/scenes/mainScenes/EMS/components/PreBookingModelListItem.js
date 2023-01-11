@@ -69,7 +69,9 @@ export const PreBookingModelListitemCom = ({
   index,
   leadStage,
   isSubmitPress,
+  isOnlyOne,
   onChangeSubmit,
+  disabled = false,
 }) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
@@ -93,6 +95,8 @@ export const PreBookingModelListitemCom = ({
     orgId: "",
     employeeId: "",
     employeeName: "",
+    isSelfManager: "",
+    isTracker: "",
   });
   const [selectedCarVarientsData, setSelectedCarVarientsData] = useState({
     varientList: [],
@@ -100,16 +104,16 @@ export const PreBookingModelListitemCom = ({
   });
   const [carModelsData, setCarModelsData] = useState([]);
 
+  const [isEdit, setIsEdit] = useState(false);
+
   const showDropDownModelMethod = (key, headerText) => {
     Keyboard.dismiss();
     onChangeSubmit();
     switch (key) {
       case "MODEL":
-        console.log("onpreseed", carModelsData);
         setDataForDropDown([...carModelsData]);
         break;
       case "VARIENT":
-        console.log("TTTTT: ", selectedCarVarientsData);
         setDataForDropDown([...selectedCarVarientsData.varientListForDropDown]);
         break;
       case "COLOR":
@@ -139,7 +143,6 @@ export const PreBookingModelListitemCom = ({
   }, [navigation]);
   const getAsyncstoreData = async () => {
     try {
-      console.log("CAR MODEL:", item.model);
       const employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
       );
@@ -166,6 +169,8 @@ export const PreBookingModelListitemCom = ({
           orgId: jsonObj.orgId,
           employeeId: jsonObj.employeeId,
           employeeName: jsonObj.empName,
+          isSelfManager: jsonObj.isSelfManager,
+          isTracker: jsonObj.isTracker,
         });
         getCarModelListFromServer(jsonObj.orgId);
         updateVariantModelsData(item.model, false);
@@ -190,7 +195,10 @@ export const PreBookingModelListitemCom = ({
     if (!selectedModelName || selectedModelName.length === 0) {
       return;
     }
-    console.log("CALLED MODEL: ", selectedModelName, carModelsData);
+    if (item.model == selectedModelName) {
+      return;
+    }
+
     let arrTemp = carModelsData.filter(function (obj) {
       return obj.model === selectedModelName;
     });
@@ -208,30 +216,6 @@ export const PreBookingModelListitemCom = ({
       setCarTransmissionType("");
       try {
         var carmodeldata;
-        // if (leadStage === 'PREBOOKING') {
-        //      carmodeldata = {
-        //         "color": '',
-        //         "fuel": '',
-        //         "id": item.id,
-        //         "model": selectedModelName,
-        //         "transimmisionType": '',
-        //         "variant": '',
-        //          "isPrimary": item.isPrimary
-
-        //     }
-        // }
-        // else {
-        //      carmodeldata = {
-        //         "color": '',
-        //         "fuel": '',
-        //         "id": item.id,
-        //         "model": selectedModelName,
-        //         "transimmisionType": '',
-        //         "variant": '',
-        //         "isPrimary":item.isPrimary
-
-        //     }
-        // }
         carmodeldata = {
           color: "",
           fuel: "",
@@ -247,10 +231,7 @@ export const PreBookingModelListitemCom = ({
 
         await dispatch(updatedmsLeadProduct(modelsarr));
       } catch (error) {
-        // alert(error)
       }
-
-      // selector.dmsLeadProducts[index] = carmodeldata
       let mArray = carModelObj.varients;
       if (mArray.length) {
         mArray.forEach((item) => {
@@ -267,7 +248,6 @@ export const PreBookingModelListitemCom = ({
           updateColorsDataForSelectedVarient(selectedVarientName, [...mArray]);
         }
       }
-      console.log("MARRAY: ", mArray);
     }
   };
 
@@ -275,7 +255,6 @@ export const PreBookingModelListitemCom = ({
     if (!selectedModelName || selectedModelName.length === 0) {
       return;
     }
-    console.log("CALLED MODEL: ", selectedModelName, carModelsData);
     let arrTemp = carModelsData.filter(function (obj) {
       return obj.model === selectedModelName;
     });
@@ -398,8 +377,6 @@ export const PreBookingModelListitemCom = ({
         }
       }
       return variants;
-      // await console.log("VARIANTS=====", JSON.stringify(variants))
-      // alert(JSON.stringify(variants))
     } catch (error) {}
   };
 
@@ -443,9 +420,7 @@ export const PreBookingModelListitemCom = ({
   };
 
   useEffect(() => {
-    console.log("UPDATE CAR MODEL", carModelsData);
     if (carModelsData.length > 0) {
-      console.log("CALLED$$$$$$$$");
       if (item?.model) {
         setInitialValients(item?.model);
       }
@@ -453,13 +428,8 @@ export const PreBookingModelListitemCom = ({
   }, [carModelsData]);
 
   useEffect(() => {
-    console.log("VARIENTS: ", selectedCarVarientsData);
     if (selectedCarVarientsData.varientList.length > 0) {
       try {
-        // alert("is variant "+isVariantUpdated)
-        // if(isVariantUpdated)
-        // {
-        //     setisVariantUpdated(false)
         if (item?.variant) {
           setInitialColors(item?.variant, selectedCarVarientsData.varientList);
         }
@@ -470,7 +440,6 @@ export const PreBookingModelListitemCom = ({
 
   const getCarModelListFromServer = (orgId) => {
     // Call Api
-    console.log("CALLED LIST API");
     GetCarModelList(orgId)
       .then(
         (resolve) => {
@@ -489,7 +458,6 @@ export const PreBookingModelListitemCom = ({
         },
         (rejected) => {
           // alert("reject")
-          console.log("getCarModelListFromServer Failed");
         }
       )
       .finally(() => {
@@ -529,14 +497,14 @@ export const PreBookingModelListitemCom = ({
     dispatch(updatedmsLeadProduct(modelsarr));
   };
   return (
-    <View>
+    <View disabled={disabled}>
       <DropDownComponant
+        disabled={disabled}
         visible={showDropDownModel}
         headerTitle={dropDownTitle}
         data={dataForDropDown}
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
-          console.log("ITEM:", JSON.stringify(item));
           if (dropDownKey === "MODEL") {
             updateVariantModelsData(item.name, false);
           } else if (dropDownKey === "VARIENT") {
@@ -603,7 +571,10 @@ export const PreBookingModelListitemCom = ({
                         </View> : null
                     } 
                      */}
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <View
+            style={{ flexDirection: "row", alignItems: "center" }}
+            disabled={disabled}
+          >
             <Text
               style={{ color: Colors.WHITE, fontSize: 16, marginRight: 10 }}
             >
@@ -612,13 +583,11 @@ export const PreBookingModelListitemCom = ({
             <Switch
               icon=" toggle-switch-off-outline"
               value={isPrimary === "Y" ? true : false}
+              disabled={disabled}
               onValueChange={() => {
                 if (isPrimary === "N") {
                   isPrimaryOnclick("Y", index, item);
                   setisPrimary("Y");
-                } else {
-                  isPrimaryOnclick("N", index, item);
-                  setisPrimary("N");
                 }
               }}
               color={Colors.PINK}
@@ -626,12 +595,14 @@ export const PreBookingModelListitemCom = ({
             />
           </View>
           <TouchableOpacity
+            disabled={isOnlyOne}
             onPress={(value) => modelOnclick(index, item, "delete")}
           >
             <IconButton
               icon="trash-can-outline"
-              color={Colors.PINK}
+              color={isOnlyOne ? Colors.DARK_GRAY : Colors.PINK}
               size={25}
+              disabled={isOnlyOne}
               //  onPress={alert("delete")}
             />
           </TouchableOpacity>
@@ -641,6 +612,7 @@ export const PreBookingModelListitemCom = ({
           label={"Model*"}
           value={carModel}
           onPress={() => showDropDownModelMethod("MODEL", "Select Model")}
+          disabled={disabled}
         />
         <Text
           style={[
@@ -657,6 +629,7 @@ export const PreBookingModelListitemCom = ({
           label={"Variant*"}
           value={carVariant}
           onPress={() => showDropDownModelMethod("VARIENT", "Select Variant")}
+          disabled={disabled}
         />
         <Text
           style={[
@@ -673,6 +646,7 @@ export const PreBookingModelListitemCom = ({
           label={"Color*"}
           value={carColor}
           onPress={() => showDropDownModelMethod("COLOR", "Select Color")}
+          disabled={disabled}
         />
         <Text
           style={[
@@ -687,17 +661,25 @@ export const PreBookingModelListitemCom = ({
         ></Text>
         <TextinputComp
           style={{ height: 65, width: "100%" }}
-          label={"Fuel Type"}
+          label={userData.isSelfManager == "Y" ? "Range*" : "Fuel Type*"}
           editable={false}
           value={carFuelType}
+          disabled={disabled}
         />
         <Text style={GlobalStyle.underline} />
 
         <TextinputComp
           style={{ height: 65, width: "100%" }}
-          label={"Transmission Type"}
+          label={
+            userData.isSelfManager == "Y"
+              ? "Battery Type*"
+              : userData.isTracker == "Y"
+              ? "Clutch type*"
+              : "Transmission Type*"
+          }
           editable={false}
           value={carTransmissionType}
+          disabled={disabled}
         />
         <Text style={GlobalStyle.underline} />
       </View>

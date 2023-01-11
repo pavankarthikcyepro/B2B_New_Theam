@@ -8,6 +8,9 @@ import { Provider } from 'react-redux';
 import reduxStore from './redux/reduxStore';
 import * as AsyncStore from './asyncStore';
 import { AuthContext } from './utils/authContext';
+import { enableScreens } from 'react-native-screens';
+
+enableScreens();
 
 const AppScreen = () => {
 

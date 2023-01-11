@@ -77,7 +77,6 @@ const EnquiryScreen = ({ navigation }) => {
     useEffect(() => {
         setSearchQuery('');
         if (selector.enquiry_list.length > 0) {
-            console.log("ENQ LENGTH: ", selector.enquiry_list.length);
             setSearchedData(selector.enquiry_list)
         }
         else{
@@ -92,13 +91,21 @@ const EnquiryScreen = ({ navigation }) => {
                 let tempData = []
                 tempData = selector.enquiry_list.filter((item) => {
                     return (
-                        item.firstName
-                            .toLowerCase()
-                            .includes(appSelector.searchKey.toLowerCase()) ||
-                        item.lastName
-                            .toLowerCase()
-                            .includes(appSelector.searchKey.toLowerCase()) ||
-                        item.phone.includes(appSelector.searchKey)
+                      `${item.firstName} ${item.lastName}`
+                        .toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase()) ||
+                      item.phone
+                        .toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase()) ||
+                      item.enquirySource
+                        .toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase()) ||
+                      item.enquiryCategory
+                        ?.toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase()) ||
+                      item.model
+                        .toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase())
                     );
                 })
                 setSearchedData([]);
@@ -172,9 +179,7 @@ const EnquiryScreen = ({ navigation }) => {
     }
 
     const getEnquiryListFromServer = (empId, startDate, endDate) => {
-        console.log("DATE: ", empId, startDate, endDate);
         const payload = getPayloadData(empId, startDate, endDate, 0)
-        console.log("payload called", payload)
         dispatch(getEnquiryList(payload));
     }
 
@@ -196,7 +201,6 @@ const EnquiryScreen = ({ navigation }) => {
     const getMoreEnquiryListFromServer = async () => {
         if (selector.isLoadingExtraData) { return }
         if (employeeId && ((selector.pageNumber + 1) < selector.totalPages)) {
-            console.log("GET MORE: ", selector.pageNumber, selector.totalPages);
 
             const payload = getPayloadData(employeeId, selectedFromDate, selectedToDate, (selector.pageNumber + 1))
             dispatch(getMoreEnquiryList(payload));
@@ -295,29 +299,38 @@ const EnquiryScreen = ({ navigation }) => {
     };
 
     return (
-      <SafeAreaView style={styles.container}>
-        <DatePickerComponent
-          visible={showDatePicker}
-          mode={"date"}
-          value={datePickerId === "FROM_DATE" ? fromDate : toDate}
-          onChange={onChange}
-          onRequestClose={handleModal}
-        />
+        <SafeAreaView style={styles.container}>
 
-        <SortAndFilterComp
-          visible={sortAndFilterVisible}
-          categoryList={categoryList}
-          modelList={vehicleModelList}
-          sourceList={sourceList}
-          submitCallback={(payload) => {
-            // console.log("payload: ", payload);
-            applySelectedFilters(payload);
-            setSortAndFilterVisible(false);
-          }}
-          onRequestClose={() => {
-            setSortAndFilterVisible(false);
-          }}
-        />
+            <DatePickerComponent
+                visible={showDatePicker}
+                mode={"date"}
+                value={new Date(Date.now())}
+                onChange={(event, selectedDate) => {
+                    setShowDatePicker(false)
+                    if (Platform.OS === "android") {
+                        if (selectedDate) {
+                            updateSelectedDate(selectedDate, datePickerId);
+                        }
+                    } else {
+                        updateSelectedDate(selectedDate, datePickerId);
+                    }
+                }}
+                onRequestClose={() => setShowDatePicker(false)}
+            />
+
+            <SortAndFilterComp
+                visible={sortAndFilterVisible}
+                categoryList={categoryList}
+                modelList={vehicleModelList}
+                sourceList={sourceList}
+                submitCallback={(payload) => {
+                    applySelectedFilters(payload);
+                    setSortAndFilterVisible(false);
+                }}
+                onRequestClose={() => {
+                    setSortAndFilterVisible(false);
+                }}
+            />
 
             <View style={styles.view1}>
                 <View style={{ width: "80%" }}>
@@ -382,7 +395,7 @@ const EnquiryScreen = ({ navigation }) => {
                                             type='Enq'
                                             status={""}
                                             created={item.modifiedDate}
-                                            dmsLead={item.createdBy}
+                                            dmsLead={item.salesConsultant}
                                             phone={item.phone}
                                             source={item.enquirySource}
                                             model={item.model}
@@ -391,7 +404,6 @@ const EnquiryScreen = ({ navigation }) => {
                                             needStatus={"YES"}
                                             enqCat={item.enquiryCategory}
                                             onItemPress={() => {
-                                                console.log("ENQ: ", JSON.stringify(item));
                                                 navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, { universalId: item.universalId, mobileNo: item.phone, leadStatus: item.leadStatus })
                                             }}
                                             onDocPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.detailsOverview, { universalId: item.universalId, enqDetails: item, leadStatus: item.leadStatus, leadStage: item.leadStage })}

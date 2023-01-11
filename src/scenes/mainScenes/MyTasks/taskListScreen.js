@@ -21,16 +21,17 @@ import * as AsyncStorage from "../../../asyncStore";
 import { EmptyListView } from "../../../pureComponents";
 
 const mytasksIdentifires = {
-    testdrive: "TEST_DRIVE",
-    testdriveapproval: "TEST_DRIVE_APPROVAL",
-    proceedtobooking: "PROCEED_TO_BOOKING",
-    proceedtoprebooking: "PROCEED_TO_PRE_BOOKING",
-    prebookingfollowup: "PRE_BOOKING_FOLLOW_UP",
-    homevisit: "HOME_VISIT",
-    enquiryfollowup: "ENQUIRY_FOLLOW_UP",
-    preenquiryfollowup: "PRE_ENQUIRY_FOLLOW_UP",
-    createenquiry: "CREATE_ENQUIRY"
-}
+  testdrive: "TEST_DRIVE",
+  testdriveapproval: "TEST_DRIVE_APPROVAL",
+  proceedtobooking: "PROCEED_TO_BOOKING",
+  proceedtoprebooking: "PROCEED_TO_PRE_BOOKING",
+  prebookingfollowup: "PRE_BOOKING_FOLLOW_UP",
+  homevisit: "HOME_VISIT",
+  enquiryfollowup: "ENQUIRY_FOLLOW_UP",
+  preenquiryfollowup: "PRE_ENQUIRY_FOLLOW_UP",
+  createenquiry: "CREATE_ENQUIRY",
+  "bookingfollowup-dse": "BOOKING_FOLLOW_UP",
+};
 
 const TaskListScreen = ({ route, navigation }) => {
     const dispatch = useDispatch();
@@ -55,7 +56,6 @@ const TaskListScreen = ({ route, navigation }) => {
         const finalTaskName = trimName.replace(/ /g, "");
         let navigationId = ""
         let taskNameNew = ''
-        console.log("FINAL TASK NAME:", finalTaskName);
         switch (finalTaskName) {
             case "testdrive":
                 navigationId = AppNavigator.MyTasksStackIdentifiers.testDrive;
@@ -89,6 +89,10 @@ const TaskListScreen = ({ route, navigation }) => {
                 navigationId = AppNavigator.MyTasksStackIdentifiers.enquiryFollowUp;
                 taskNameNew = 'Booking approval task'
                 break;
+            case "bookingfollowup-dse":
+                navigationId = AppNavigator.MyTasksStackIdentifiers.bookingFollowUp;
+                taskNameNew = "Booking Followup -DSE";
+                break;
             case "createenquiry":
                 navigationId = AppNavigator.MyTasksStackIdentifiers.createEnquiry;
                 taskNameNew = ''
@@ -112,10 +116,25 @@ const TaskListScreen = ({ route, navigation }) => {
                                     setSearchedData(route.params.data);
                                 }
                                 else{
-                                    console.log(route.params.data[0]);
                                     let tempData = [];
                                     tempData = route.params.data.filter(item => {
-                                        return item.customerName.toLowerCase().includes(text.toLowerCase()) || item.salesExecutive.toLowerCase().includes(text.toLowerCase())
+                                        return (
+                                          item.customerName
+                                            .toLowerCase()
+                                            .includes(text.toLowerCase()) ||
+                                          item.phoneNo
+                                            .toLowerCase()
+                                            .includes(text.toLowerCase()) ||
+                                          item.model
+                                            .toLowerCase()
+                                            .includes(text.toLowerCase()) ||
+                                          item.sourceType
+                                            .toLowerCase()
+                                            .includes(text.toLowerCase()) ||
+                                          item.salesExecutive
+                                            .toLowerCase()
+                                            .includes(text.toLowerCase())
+                                        );
                                     })
                                     if(tempData.length > 0){
                                         setSearchedData([...tempData])

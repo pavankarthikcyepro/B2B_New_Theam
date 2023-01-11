@@ -8,7 +8,6 @@ export const getCurrentTasksListApi = createAsyncThunk("MY_TASKS/getCurrentTasks
   const url = URL.GET_CURRENT_TASK_LIST() + endUrl;
   const response = await client.get(url);
   const json = await response.json()
-  console.log(json)
   if (!response.ok) {
     return rejectWithValue(json);
   }
@@ -58,8 +57,6 @@ export const getMyTasksListApi = createAsyncThunk("MY_TASKS/getMyTasksListApi", 
   const url = URL.GET_MY_TASKS_NEW_DATA();
   const response = await client.post(url, payload);
   const json = await response.json()
-  console.log(json, "url")
-  // console.log(json)
   if (!response.ok) {
     return rejectWithValue(json);
   }
@@ -76,8 +73,6 @@ export const getMyTeamsTasksListApi = createAsyncThunk("MY_Teams_TASKS/getMyTeam
   const url = URL.GET_MY_TASKS_NEW_DATA();
   const response = await client.post(url, payload);
   const json = await response.json()
-  console.log(json, "url")
-  // console.log(json)
   if (!response.ok) {
     return rejectWithValue(json);
   }
@@ -88,8 +83,6 @@ export const getTodayMyTasksListApi = createAsyncThunk("MY_TASKS/getTodayMyTasks
   const url = URL.GET_MY_TASKS_NEW_DATA();
   const response = await client.post(url, payload);
   const json = await response.json()
-  console.log(json, "url")
-  // console.log(json)
   if (!response.ok) {
     return rejectWithValue(json);
   }
@@ -100,8 +93,6 @@ export const getUpcomingMyTasksListApi = createAsyncThunk("MY_TASKS/getUpcomingM
   const url = URL.GET_MY_TASKS_NEW_DATA();
   const response = await client.post(url, payload);
   const json = await response.json()
-  console.log(json, "url")
-  // console.log(json)
   if (!response.ok) {
     return rejectWithValue(json);
   }
@@ -112,8 +103,6 @@ export const getPendingMyTasksListApi = createAsyncThunk("MY_TASKS/getPendingMyT
   const url = URL.GET_MY_TASKS_NEW_DATA();
   const response = await client.post(url, payload);
   const json = await response.json()
-  console.log(json, "url")
-  // console.log(json)
   if (!response.ok) {
     return rejectWithValue(json);
   }
@@ -124,8 +113,16 @@ export const getRescheduleMyTasksListApi = createAsyncThunk("MY_TASKS/getResched
   const url = URL.GET_MY_TASKS_NEW_DATA();
   const response = await client.post(url, payload);
   const json = await response.json()
-  console.log(json, "url")
-  // console.log(json)
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const getCompletedMyTasksListApi = createAsyncThunk("MY_TASKS/getCompletedMyTasksListApi", async (payload, { rejectWithValue }) => {
+  const url = URL.GET_MY_TASKS_NEW_DATA();
+  const response = await client.post(url, payload);
+  const json = await response.json()
   if (!response.ok) {
     return rejectWithValue(json);
   }
@@ -136,8 +133,6 @@ export const getTodayTeamTasksListApi = createAsyncThunk("MY_TASKS/getTodayTeamT
   const url = URL.GET_MY_TASKS_NEW_DATA();
   const response = await client.post(url, payload);
   const json = await response.json()
-  console.log(JSON.stringify(json), "url")
-  // console.log(json)
   if (!response.ok) {
     return rejectWithValue(json);
   }
@@ -148,8 +143,6 @@ export const getUpcomingTeamTasksListApi = createAsyncThunk("MY_TASKS/getUpcomin
   const url = URL.GET_MY_TASKS_NEW_DATA();
   const response = await client.post(url, payload);
   const json = await response.json()
-  console.log(json, "url")
-  // console.log(json)
   if (!response.ok) {
     return rejectWithValue(json);
   }
@@ -160,8 +153,6 @@ export const getPendingTeamTasksListApi = createAsyncThunk("MY_TASKS/getPendingT
   const url = URL.GET_MY_TASKS_NEW_DATA();
   const response = await client.post(url, payload);
   const json = await response.json()
-  console.log(json, "url")
-  // console.log(json)
   if (!response.ok) {
     return rejectWithValue(json);
   }
@@ -172,8 +163,16 @@ export const getRescheduleTeamTasksListApi = createAsyncThunk("MY_TASKS/getResch
   const url = URL.GET_MY_TASKS_NEW_DATA();
   const response = await client.post(url, payload);
   const json = await response.json()
-  console.log(json, "url")
-  // console.log(json)
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const getCompletedTeamTasksListApi = createAsyncThunk("MY_TASKS/getCompletedTeamTasksListApi", async (payload, { rejectWithValue }) => {
+  const url = URL.GET_MY_TASKS_NEW_DATA();
+  const response = await client.post(url, payload);
+  const json = await response.json()
   if (!response.ok) {
     return rejectWithValue(json);
   }
@@ -373,6 +372,19 @@ export const mytaskSlice = createSlice({
       state.myReData = [];
       state.isLoading = false;
     })
+    
+    builder.addCase(getCompletedMyTasksListApi.pending, (state) => {
+      state.myReData = [];
+      state.isLoading = true;
+    })
+    builder.addCase(getCompletedMyTasksListApi.fulfilled, (state, action) => {
+      state.myReData = action.payload.completedData;
+      state.isLoading = false;
+    })
+    builder.addCase(getCompletedMyTasksListApi.rejected, (state, action) => {
+      state.myReData = [];
+      state.isLoading = false;
+    })
 
     builder.addCase(getTodayTeamTasksListApi.pending, (state) => {
       state.teamTodayData = [];
@@ -422,6 +434,19 @@ export const mytaskSlice = createSlice({
       state.isTeamsTaskLoading = false;
     })
     builder.addCase(getRescheduleTeamTasksListApi.rejected, (state, action) => {
+      state.teamReData = [];
+      state.isTeamsTaskLoading = false;
+    })
+    
+    builder.addCase(getCompletedTeamTasksListApi.pending, (state) => {
+      state.teamReData = [];
+      state.isTeamsTaskLoading = false;
+    })
+    builder.addCase(getCompletedTeamTasksListApi.fulfilled, (state, action) => {
+      state.teamReData = action.payload.completedData;
+      state.isTeamsTaskLoading = false;
+    })
+    builder.addCase(getCompletedTeamTasksListApi.rejected, (state, action) => {
       state.teamReData = [];
       state.isTeamsTaskLoading = false;
     })

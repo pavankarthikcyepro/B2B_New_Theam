@@ -51,7 +51,6 @@ const getUserName = async () => {
     if (!name) {
         name = 'TEST_USER';
     }
-    console.log('name: ', name);
     return name;
 }
 

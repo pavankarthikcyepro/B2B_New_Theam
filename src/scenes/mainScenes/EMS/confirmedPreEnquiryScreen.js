@@ -24,10 +24,12 @@ import { isRejected } from '@reduxjs/toolkit';
 import { DropComponent } from './components/dropComp';
 import URL from '../../../networking/endpoints';
 import Geolocation from '@react-native-community/geolocation';
+import moment from 'moment';
 
 const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
 
     const selector = useSelector(state => state.confirmedPreEnquiryReducer);
+    const homeSelector = useSelector(state => state.homeReducer);
     const dispatch = useDispatch();
     const { itemData, fromCreatePreEnquiry } = route.params;
     const [employeeId, setEmployeeId] = useState("");
@@ -70,7 +72,6 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                 />
             ),
         });
-        console.log("DATA:", JSON.stringify(route.params.itemData));
     }, [navigation]);
 
     const goParentScreen = () => {
@@ -105,23 +106,23 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         }
 
         const payload = {
-            dmsLeadDropInfo: {
-                additionalRemarks: dropRemarks,
-                branchId: Number(branchId),
-                brandName: dropBrandName,
-                dealerName: dropDealerName,
-                leadId: leadId,
-                crmUniversalId: itemData.universalId,
-                lostReason: dropReason,
-                lostSubReason: dropSubReason,
-                organizationId: userData.orgId,
-                otherReason: "",
-                droppedBy: userData.employeeId,
-                location: dropLocation,
-                model: dropModel,
-                stage: "PREENQUIRY",
-                status: "PREENQUIRY",
-            },
+          dmsLeadDropInfo: {
+            additionalRemarks: dropRemarks,
+            branchId: Number(branchId),
+            brandName: dropBrandName,
+            dealerName: dropDealerName,
+            leadId: leadId,
+            crmUniversalId: itemData.universalId,
+            lostReason: dropReason,
+            lostSubReason: dropSubReason,
+            organizationId: userData.orgId,
+            otherReason: "",
+            droppedBy: userData.employeeId,
+            location: dropLocation,
+            model: dropModel,
+            stage: "PREENQUIRY",
+            status: "PREENQUIRY",
+          },
         };
         DropPreEnquiryLead(payload, enquiryDetailsObj)
     };
@@ -129,7 +130,6 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
 
 
     const DropPreEnquiryLead = async (payload, enquiryDetailsObj) => {
-        console.log("DROP PAY: ", URL.DROP_ENQUIRY(), payload);
         setIsLoading(true);
         await fetch(URL.DROP_ENQUIRY(), {
             method: "POST",
@@ -160,7 +160,6 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     const UpdateRecord = async (enquiryDetailsObj) => {
 
         setIsLoading(true);
-        console.log("UPDATE PAY: ", URL.UPDATE_ENQUIRY_DETAILS(), userToken, enquiryDetailsObj);
         await fetch(URL.UPDATE_ENQUIRY_DETAILS(), {
             method: "POST",
             headers: {
@@ -174,8 +173,16 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
             .then(response => {
                 if (response.success === true) {
                     // go to parent screen
+                    // getPreEnquiryListFromServer();
+                    // navigation.navigate(EmsTopTabNavigatorIdentifiers.enquiry);
                     showToastSucess("Sent for Manager Approval");
-                    goToParentScreen();
+                    navigation.navigate(
+                      EmsTopTabNavigatorIdentifiers.preEnquiry,
+                      {
+                        isContactRefresh: true,
+                      }
+                    );
+                    dispatch(clearState());
                 } else {
                     showToast("Update Drop Lead Failed")
                 }
@@ -189,14 +196,30 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     }
 
     const getPreEnquiryListFromServer = async () => {
-        if (employeeId) {
-            let endUrl = "?limit=10&offset=" + "0" + "&status=PREENQUIRY&empId=" + employeeId;
-            dispatch(getPreEnquiryData(endUrl));
-        }
-    }
+      const dateFormat = "YYYY-MM-DD";
+      const currentDate = moment()
+        .add(0, "day")
+        .endOf("month")
+        .format(dateFormat);
+      const lastMonthFirstDate = moment(currentDate, dateFormat)
+        .subtract(0, "months")
+        .startOf("month")
+        .format(dateFormat);
+
+      if (employeeId) {
+        payload = {
+          startdate: lastMonthFirstDate,
+          enddate: currentDate,
+          empId: employeeId,
+          status: "PREENQUIRY",
+          offset: 0,
+          limit: 500,
+        };
+        dispatch(getPreEnquiryData(payload));
+      }
+    };
 
     useEffect(() => {
-
         getAsyncStorageData();
         getBranchId();
         getDropDownApi();
@@ -232,7 +255,6 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     const getBranchId = () => {
 
         AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_ID).then((branchId) => {
-            // console.log("branch id:", branchId)
             setBranchId(branchId);
         });
     }
@@ -241,7 +263,6 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
-            // console.log("json:", jsonObj);
             setOrganizationId(jsonObj.orgId);
             setEmployeeId(jsonObj.empId);
             setUserData({
@@ -264,14 +285,11 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
 
         GetDropList(orgId, token, "Pre%20Enquiry").then(resolve => {
             setDropData(resolve);
-        }, reject => {
-            console.log("Getting pre enquiry list faild")
-        })
+        }, reject => {})
     }
 
     const getCurrentLocation = () => {
         Geolocation.getCurrentPosition(info => {
-            console.log(info)
             setCurrentLocation({
                 lat: info.coords.latitude,
                 long: info.coords.longitude
@@ -281,25 +299,37 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
 
     // Handle Employees List Response
     useEffect(() => {
-
-        if (selector.employees_list.length === 0 && selector.employees_list_status === "success") {
-            const endUrl = `${itemData.universalId}` + '?' + 'stage=PreEnquiry';
-            dispatch(getaAllTasks(endUrl));
+      if (
+        selector.employees_list.length === 0 &&
+        selector.employees_list_status === "success"
+      ) {
+        if (userData?.employeeId) {
+          let newObj = {
+            name: userData.employeeName,
+            id: userData.employeeId,
+          };
+          updateEmployee(newObj);
+        } else {
+          const endUrl = `${itemData.universalId}` + "?" + "stage=PreEnquiry";
+          dispatch(getaAllTasks(endUrl));
         }
-        else if (selector.employees_list.length > 0 && selector.employees_list_status === "success") {
-            let newData = [];
-            selector.employees_list.forEach(element => {
-                const obj = {
-                    id: element.empId,
-                    name: element.empName,
-                    selected: false,
-                }
-                newData.push(obj);
-            });
-            setEmployeesData([...newData]);
-            setEmployeeSelectModel(true);
-        }
-    }, [selector.employees_list, selector.employees_list_status])
+      } else if (
+        selector.employees_list.length > 0 &&
+        selector.employees_list_status === "success"
+      ) {
+        let newData = [];
+        selector.employees_list.forEach((element) => {
+          const obj = {
+            id: element.empId,
+            name: element.empName,
+            selected: false,
+          };
+          newData.push(obj);
+        });
+        setEmployeesData([...newData]);
+        setEmployeeSelectModel(true);
+      }
+    }, [selector.employees_list, selector.employees_list_status]);
 
     // Handle Get All Tasks Response
     useEffect(() => {
@@ -312,14 +342,13 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     useEffect(() => {
         if (selector.all_pre_enquiry_tasks.length > 0 && employeeId) {
             let arrTemp = selector.all_pre_enquiry_tasks.filter((obj, index) => {
-                return obj.taskName === 'Create Enquiry' && obj.assignee.empId == employeeId;
+                return obj.taskName === 'Create Enquiry' && obj.assignee.empId === employeeId;
             })
             let filteredObj = arrTemp.length > 0 ? { ...arrTemp[0] } : undefined;
             if (filteredObj !== undefined) {
                 filteredObj.taskStatus = "CLOSED";
                 filteredObj.lat = currentLocation ? currentLocation.lat.toString() : null;
                 filteredObj.lon = currentLocation ? currentLocation.long.toString() : null;
-                // console.log("filteredObj: ", filteredObj);
                 dispatch(assignTaskApi(filteredObj));
             }
         }
@@ -359,21 +388,31 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     }
 
     const updateRefNumber = async () => {
-        let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-        if (employeeData) {
-            const jsonObj = JSON.parse(employeeData);
-            const payload = {
-                "branchid": Number(branchId),
-                "leadstage": "ENQUIRY",
-                "orgid": jsonObj.orgId,
-                "universalId": itemData.universalId
-            }
-            console.log("PAYLOAD LEAD REF:", payload);
-            customerLeadReference(payload)
-        }
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        const payload = {
+          branchid: Number(branchId),
+          leadstage: "ENQUIRY",
+          orgid: jsonObj.orgId,
+          universalId: itemData.universalId,
+        };
+        customerLeadReference(payload);
 
-        goToParentScreen();
+        if (
+          jsonObj.hrmsRole === "Reception" ||
+          jsonObj.hrmsRole === "Tele Caller"
+        ) {
+            goToParentScreen();
+            return;
+        }
+      }
+
+      goToEnquiry();
     }
+
     const updateEnquiryDetailsCreateEnquiry = (leadRefIdForEnq) => {
         //SarathKumarUppuluri
         let enquiryDetailsObj = { ...selector.pre_enquiry_details };
@@ -396,7 +435,6 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     };
 
     {/*  const PostPreEnquiryLead = async (enquiryDetailsObj) => {
-        console.log("DROP PAY: ", URL.DROP_ENQUIRY(), payload);
         setIsLoading(true);
         await fetch(URL.DROP_ENQUIRY(), {
             method: "POST",
@@ -425,9 +463,8 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     } */}
 
     const UpdateRecord007 = async (enquiryDetailsObj) => {
-
+        console.log("sssss",JSON.stringify(enquiryDetailsObj));
         setIsLoading(true);
-        console.log("<<<<<<<WE ARE DONE>>>>>>>>>>>: ", URL.UPDATE_ENQUIRY_DETAILS(), userToken, enquiryDetailsObj);
         await fetch(URL.UPDATE_ENQUIRY_DETAILS(), {
             method: "POST",
             headers: {
@@ -439,25 +476,31 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         })
             .then(json => json.json())
             .then(response => {
-
+                return respone;
             })
             .catch(err => {
-                console.error(err);
-                showToastRedAlert(err);
+                if (typeof err === 'string') {
+                    showToastRedAlert(err);
+                }
                 setIsLoading(false);
             })
     }
 
+    const goToEnquiry = () => {
+        getPreEnquiryListFromServer();
+        navigation.navigate(EmsTopTabNavigatorIdentifiers.leads, {fromScreen : "contacts"});
+        dispatch(clearState());
+    }
+
     const goToParentScreen = () => {
         getPreEnquiryListFromServer();
-        navigation.navigate(EmsTopTabNavigatorIdentifiers.enquiry);
-        // navigation.popToTop();
+        // navigation.navigate(EmsTopTabNavigatorIdentifiers.enquiry);
+        navigation.popToTop();
         dispatch(clearState());
     }
 
 
     const handleBackButtonClick = () => {
-        console.log("back pressed")
         navigation.popToTop();
         return true;
     }
@@ -472,14 +515,14 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     }
 
     const getDropDownApi = () => {
-        return fetch('http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8091/Lost_SubLost_AllDetails?organizationId=1&stageName=Pre%20Enquiry')
-            .then((response) => response.json())
-            .then((json) => {
-                return json.Drop;
-            })
-            .catch((error) => {
-                console.error(error);
-            });
+                return fetch('http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8091/Lost_SubLost_AllDetails?organizationId=1&stageName=Pre%20Enquiry')
+          .then((response) => response.json())
+          .then((json) => {
+            return json.Drop;
+          })
+          .catch((error) => {
+            console.error(error);
+          });
     }
 
     const createEnquiryClicked = () => {
@@ -509,7 +552,6 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                 //         "orgid": jsonObj.orgId,
                 //         "universalId": itemData.universalId
                 //     }
-                //     console.log("PAYLOAD LEAD REF:", payload);
                 //     customerLeadReference(payload)
                 //    // dispatch(customerLeadRef(payload))
 
@@ -520,7 +562,6 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     const customerLeadReference = async (enquiryDetailsObj) => {
 
         setIsLoading(true);
-        console.log("<<<<<<<WE ARE DONE>>>>>>>>>>>: ", URL.UPDATE_ENQUIRY_DETAILS(), userToken, enquiryDetailsObj);
         await fetch(URL.CUSTOMER_LEAD_REFERENCE(), {
             method: "POST",
             headers: {
@@ -532,9 +573,8 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         })
             .then(json => json.json())
             .then(response => {
-                console.log("Customer Refernce=====", response)
                 if (response && response.dmsEntity && response.dmsEntity.leadCustomerReference) {
-                    dispatch(updateEnquiryDetailsCreateEnquiry(response.dmsEntity.leadCustomerReference.referencenumber));
+                    dispatch(() => updateEnquiryDetailsCreateEnquiry(response.dmsEntity.leadCustomerReference.referencenumber));
                 }
             })
             .catch(err => {
@@ -549,7 +589,6 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     }
 
     const updateEmployee = (employeeObj) => {
-        console.log("employee: ", employeeObj)
         let dmsLeadDto = { ...selector.pre_enquiry_details.dmsLeadDto };
         dmsLeadDto.salesConsultant = employeeObj.name;
         dispatch(updateEmployeeApi(dmsLeadDto));
@@ -589,11 +628,11 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                 <ScrollView
                     automaticallyAdjustContentInsets={true}
                     bounces={true}
-                    contentContainerStyle={{ padding: 10 }}
+                    contentContainerStyle={{ paddingHorizontal: 10 }}
                     style={{ flex: 1 }}
                 >
                     <View style={styles.view1}>
-                        <Text style={styles.text1}>{"Contact"}</Text>
+                        <Text style={styles.text1}>{"Contacts"}</Text>
                         <IconButton
                             icon='square-edit-outline'
                             color={Colors.DARK_GRAY}
@@ -604,14 +643,14 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
 
                     <View style={[{ borderRadius: 6 }]}>
                         <TextinputComp
-                            style={{ height: 70 }}
+                            style={{ height: 50 }}
                             value={itemData.firstName + ' ' + itemData.lastName}
                             label={'Customer Name'}
                             editable={false}
                         />
                         <Text style={styles.devider}></Text>
                         <TextinputComp
-                            style={{ height: 70 }}
+                            style={{ height: 50 }}
                             value={itemData.phone}
                             label={'Mobile Number'}
                             editable={false}
@@ -619,7 +658,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                         <Text style={styles.devider}></Text>
 
                         <TextinputComp
-                            style={{ height: 70 }}
+                            style={{ height: 50 }}
                             value={convertTimeStampToDateString(
                                 itemData.createdDate
                             )}
@@ -629,7 +668,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                         <Text style={styles.devider}></Text>
 
                         <TextinputComp
-                            style={{ height: 70 }}
+                            style={{ height: 50 }}
                             value={itemData.enquirySource}
                             label={"Source of Contact"}
                             editable={false}
@@ -637,7 +676,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                         <Text style={styles.devider}></Text>
 
                         <TextinputComp
-                            style={{ height: 70 }}
+                            style={{ height: 50 }}
                             value={itemData.model}
                             label={'Model'}
                             editable={false}
@@ -645,7 +684,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                         <Text style={styles.devider}></Text>
 
                         <TextinputComp
-                            style={{ height: 70 }}
+                            style={{ height: 50 }}
                             value={checkForLeadStage()}
                             label={'Status'}
                             editable={false}
@@ -699,12 +738,13 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                                             textTransform: 'none',
                                             color: Colors.WHITE,
                                         }}
-                                        onPress={createEnquiryClicked}
+                                        onPress={() => createEnquiryClicked()}
                                     >
                                         Create Enquiry
                                     </Button>
 
                                     <Button
+                                        disabled={disabled}
                                         mode='contained'
                                         style={{ width: 120 }}
                                         color={Colors.GRAY}

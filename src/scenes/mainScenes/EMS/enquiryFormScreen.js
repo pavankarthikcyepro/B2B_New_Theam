@@ -38,6 +38,7 @@ import { ModelListitemCom } from "./components/ModelListitemCom";
 import { ProformaComp } from "./components/ProformComp";
 
 import {
+  clearStateData,
   clearState,
   setEditable,
   setDatePicker,
@@ -110,6 +111,7 @@ import {
   Enquiry_Drop_Reasons,
   Insurence_Types,
   Referred_By_Source,
+  Gender_Types,
 } from "../../../jsonData/enquiryFormScreenJsonData";
 import {
   showAlertMessage,
@@ -124,7 +126,9 @@ import {
   emiCalculator,
   GetCarModelList,
   GetDropList,
+  GetEnquiryCarModelList,
   GetFinanceBanksList,
+  isCheckPanOrAadhaar,
   PincodeDetails,
   PincodeDetailsNew,
 } from "../../../utils/helperFunctions";
@@ -154,6 +158,13 @@ import {
 } from "../../../redux/proceedToPreBookingReducer";
 import { EmsTopTabNavigatorIdentifiers } from "../../../navigations/emsTopTabNavigator";
 import { getCurrentTasksListApi, getPendingTasksListApi } from "../../../redux/mytaskReducer";
+import {
+  CustomerTypesObj,
+  CustomerTypesObj21,
+  CustomerTypesObj22,
+  EnquiryTypes21,
+  EnquiryTypes22
+} from "../../../jsonData/preEnquiryScreenJsonData";
 
 const theme = {
   ...DefaultTheme,
@@ -164,6 +175,29 @@ const theme = {
     ...DefaultTheme.colors,
     background: Colors.WHITE,
   },
+};
+
+const dmsAttachmentsObj = {
+  branchId: null,
+  contentSize: 0,
+  createdBy: convertDateStringToMilliseconds(new Date()),
+  description: null,
+  documentNumber: "",
+  documentPath: "",
+  documentType: "",
+  documentVersion: 0,
+  fileName: "",
+  gstNumber: null,
+  id: 0,
+  isActive: null,
+  isPrivate: null,
+  keyName: "",
+  modifiedBy: "",
+  orgId: null,
+  ownerId: null,
+  ownerName: "",
+  parentId: null,
+  tinNumber: null,
 };
 
 const DetailsOverviewScreen = ({ route, navigation }) => {
@@ -199,6 +233,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     orgId: "",
     employeeId: "",
     employeeName: "",
+    isSelfManager: ""
   });
   const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
   const [modelsList, setModelsList] = useState([]);
@@ -231,6 +266,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const [currentLocation, setCurrentLocation] = useState(null);
   const [authToken, setAuthToken] = useState("");
+  
+  const [makerData, setMakerData] = useState([]);
 
   const [selectedDates, setSelectedDates] = useState(new Date(Date.now()));
 
@@ -294,7 +331,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       // if (enqDetails?.leadStage === "ENQUIRY" && enqDetails?.leadStatus === null) {
       updateEnquiry();
       // }
-    }, 10000);
+    }, 5000);
     return () => {
       clearInterval(interval);
     };
@@ -348,6 +385,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       orgId: "",
       employeeId: "",
       employeeName: "",
+      isSelfManager: ""
     });
     setUploadedImagesDataObj({});
     setTypeOfActionDispatched("");
@@ -380,6 +418,21 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     dispatch(clearState());
     navigation.goBack();
   };
+
+  const goToLeadScreen = () => {
+    clearLocalData();
+    dispatch(clearState());
+    navigation.navigate(EmsTopTabNavigatorIdentifiers.leads, {
+      fromScreen: "enquiry",
+    });
+  };
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearStateData());
+      clearLocalData();
+    }
+  }, [])
 
   useEffect(() => {
     getAuthToken();
@@ -456,7 +509,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         orgId: jsonObj.orgId,
         employeeId: jsonObj.empId,
         employeeName: jsonObj.empName,
+        isSelfManager: jsonObj.isSelfManager
       });
+      getCarMakeListFromServer(jsonObj.orgId);
       getCarModelListFromServer(jsonObj.orgId);
 
       // Get Token
@@ -515,13 +570,33 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           }
         },
         (rejected) => {
-          console.log("getCarModelListFromServer Failed");
         }
       )
       .finally(() => {
         // Get Enquiry Details
         getEnquiryDetailsFromServer();
       });
+  };
+
+  const getCarMakeListFromServer = (orgId) => {
+    // Call Api
+    GetEnquiryCarModelList(orgId)
+      .then(
+        (resolve) => {
+          let makeList = [];
+          if (resolve.length > 0) {
+            resolve.forEach((item) => {
+              makeList.push({
+                ...item,
+                name: item.otherMaker,
+              });
+            });
+            setMakerData([...makeList]);
+          }
+        },
+        (rejected) => {}
+      )
+      .finally(() => {});
   };
 
   const getInsurenceCompanyNamesFromServer = async (token, orgId) => {
@@ -616,7 +691,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           let tempAddr = [];
           if (res.length > 0) {
             for (let i = 0; i < res.length; i++) {
-              if (res[i].Block === selector.village) {
+              if (res[i].Block === selector.village || res[i].Name === selector.village) {
                 setDefaultAddress(res[i]);
               }
               tempAddr.push({ label: res[i].Name, value: res[i] });
@@ -628,7 +703,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           // dispatch(updateAddressByPincode(resolve));
         },
         (rejected) => {
-          console.log("rejected...: ", rejected);
         }
       );
     }
@@ -679,23 +753,48 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       );
       // Update Attachment details
 
-      saveAttachmentDetailsInLocalObject(dmsLeadDto.dmsAttachments);
+      saveAttachmentDetailsInLocalObject(dmsLeadDto.dmsAttachments, dmsLeadDto.dmsExchagedetails);
       dispatch(updateDmsAttachmentDetails(dmsLeadDto.dmsAttachments));
     }
   }, [selector.enquiry_details_response]); //selector.enquiry_details_response
 
-  const saveAttachmentDetailsInLocalObject = (dmsAttachments) => {
+  function isEmpty(obj) {
+    return Object.keys(obj).length === 0;
+  }
+
+  const saveAttachmentDetailsInLocalObject = (dmsAttachments, exchangeDoc) => {
     if (dmsAttachments.length > 0) {
       const dataObj = {};
       dmsAttachments.forEach((item, index) => {
-        const obj = {
-          documentPath: item.documentPath,
-          documentType: item.documentType,
-          fileName: item.fileName,
-          keyName: item.keyName,
-        };
-        dataObj[item.documentType] = obj;
+        if(!dataObj[item.documentType]){
+          const obj = {
+            documentPath: item.documentPath,
+            documentType: item.documentType,
+            fileName: item.fileName,
+            keyName: item.keyName,
+          };
+          dataObj[item.documentType] = obj;
+        }
       });
+
+      if (exchangeDoc.length > 0 && !isEmpty(exchangeDoc[0])) {
+        const obj = {
+          documentPath: exchangeDoc[0]?.regDocumentPath,
+          documentType: "regNoD",
+          fileName: exchangeDoc[0]?.regDocumentPath?.split("/")?.pop(),
+          keyName: exchangeDoc[0]?.regDocumentKey,
+        };
+        dataObj["regNoD"] = obj;
+        if (exchangeDoc[0]?.insuranceAvailable == "true") {
+          const obj = {
+            documentPath: exchangeDoc[0]?.insuranceDocumentPath,
+            documentType: "insurance",
+            fileName: exchangeDoc[0]?.insuranceDocumentPath?.split("/")?.pop(),
+            keyName: exchangeDoc[0]?.insuranceDocumentKey,
+          };
+          dataObj["insurance"] = obj;
+        }
+      }
       setUploadedImagesDataObj({ ...dataObj });
     }
   };
@@ -724,7 +823,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             );
           })
           .catch(() => {
-            console.log("INSIDE CATCH");
           });
       }
       // dispatch(getEnquiryDetailsApi({universalId, leadStage, leadStatus}));
@@ -788,7 +886,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       }
 
       await setCarModelsList(array);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const updateEnquiry = async () => {
@@ -821,211 +919,104 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
         let tempAttachments = [];
-        if (
-          selector.pan_number ||
-          dmsLeadDto.dmsAttachments.filter((item) => {
-            return item.documentType === "pan";
-          })
-        ) {
-          tempAttachments.push({
-            branchId: jsonObj.branchs[0]?.branchId,
-            contentSize: 0,
-            createdBy: new Date().getSeconds(),
-            description: "",
-            documentNumber: selector.pan_number,
-            documentPath:
-              dmsLeadDto.dmsAttachments.length > 0
-                ? dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "pan";
-                  })[0]?.documentPath
-                  ? dmsLeadDto.dmsAttachments.filter((item) => {
-                      return item.documentType === "pan";
-                    })[0]?.documentPath
-                  : ""
-                : "",
-            documentType: "pan",
-            documentVersion: 0,
-            fileName:
-              dmsLeadDto.dmsAttachments.length > 0
-                ? dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "pan";
-                  })[0]?.fileName
-                  ? dmsLeadDto.dmsAttachments.filter((item) => {
-                      return item.documentType === "pan";
-                    })[0]?.fileName
-                  : ""
-                : "",
-            gstNumber: "",
-            id: 0,
-            isActive: 0,
-            isPrivate: 0,
-            keyName:
-              dmsLeadDto.dmsAttachments.length > 0
-                ? dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "pan";
-                  })[0]?.keyName
-                  ? dmsLeadDto.dmsAttachments.filter((item) => {
-                      return item.documentType === "pan";
-                    })[0]?.keyName
-                  : ""
-                : "",
-            modifiedBy: jsonObj.empName,
-            orgId: jsonObj.orgId,
-            ownerId: "",
-            ownerName: jsonObj.empName,
-            parentId: "",
-            tinNumber: "",
-          });
-        }
-        if (
-          selector.adhaar_number ||
-          dmsLeadDto.dmsAttachments.filter((item) => {
-            return item.documentType === "aadhar";
-          })
-        ) {
-          tempAttachments.push({
-            branchId: jsonObj.branchs[0]?.branchId,
-            contentSize: 0,
-            createdBy: new Date().getSeconds(),
-            description: "",
-            documentNumber: selector.adhaar_number,
-            documentPath:
-              dmsLeadDto.dmsAttachments.length > 0
-                ? dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "aadhar";
-                  })[0]?.documentPath
-                  ? dmsLeadDto.dmsAttachments.filter((item) => {
-                      return item.documentType === "aadhar";
-                    })[0]?.documentPath
-                  : ""
-                : "",
-            documentType: "aadhar",
-            documentVersion: 0,
-            fileName:
-              dmsLeadDto.dmsAttachments.length > 0
-                ? dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "aadhar";
-                  })[0]?.fileName
-                  ? dmsLeadDto.dmsAttachments.filter((item) => {
-                      return item.documentType === "aadhar";
-                    })[0]?.fileName
-                  : ""
-                : "",
-            gstNumber: "",
-            id: 0,
-            isActive: 0,
-            isPrivate: 0,
-            keyName:
-              dmsLeadDto.dmsAttachments.length > 0
-                ? dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "aadhar";
-                  })[0]?.keyName
-                  ? dmsLeadDto.dmsAttachments.filter((item) => {
-                      return item.documentType === "aadhar";
-                    })[0]?.keyName
-                  : ""
-                : "",
-            modifiedBy: jsonObj.empName,
-            orgId: jsonObj.orgId,
-            ownerId: "",
-            ownerName: jsonObj.empName,
-            parentId: "",
-            tinNumber: "",
-          });
-        }
-        if (
-          selector.employee_id ||
-          dmsLeadDto.dmsAttachments.filter((item) => {
-            return item.documentType === "employeeId";
-          })
-        ) {
-          tempAttachments.push({
-            branchId: jsonObj.branchs[0]?.branchId,
-            contentSize: 0,
-            createdBy: new Date().getSeconds(),
-            description: "",
-            documentNumber: selector.employee_id,
-            documentPath:
-              dmsLeadDto.dmsAttachments.length > 0
-                ? dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "employeeId";
-                  })[0]?.documentPath
-                  ? dmsLeadDto.dmsAttachments.filter((item) => {
-                      return item.documentType === "employeeId";
-                    })[0]?.documentPath
-                  : ""
-                : "",
-            documentType: "employeeId",
-            documentVersion: 0,
-            fileName:
-              dmsLeadDto.dmsAttachments.length > 0
-                ? dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "employeeId";
-                  })[0]?.fileName
-                  ? dmsLeadDto.dmsAttachments.filter((item) => {
-                      return item.documentType === "employeeId";
-                    })[0]?.fileName
-                  : ""
-                : "",
-            gstNumber: "",
-            id: 0,
-            isActive: 0,
-            isPrivate: 0,
-            keyName:
-              dmsLeadDto.dmsAttachments.length > 0
-                ? dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "employeeId";
-                  })[0]?.keyName
-                  ? dmsLeadDto.dmsAttachments.filter((item) => {
-                      return item.documentType === "employeeId";
-                    })[0]?.keyName
-                  : ""
-                : "",
-            modifiedBy: jsonObj.empName,
-            orgId: jsonObj.orgId,
-            ownerId: "",
-            ownerName: jsonObj.empName,
-            parentId: "",
-            tinNumber: "",
-          });
-        }
-        if (Object.keys(uploadedImagesDataObj).length > 0) {
-          let tempImages = Object.entries(uploadedImagesDataObj).map((e) => ({
-            name: e[0],
-            value: e[1],
-          }));
-          for (let i = 0; i < tempImages.length; i++) {
-            tempAttachments.push({
-              branchId: jsonObj.branchs[0]?.branchId,
-              contentSize: 0,
-              createdBy: new Date().getSeconds(),
-              description: "",
-              documentNumber: "",
-              documentPath: tempImages[i].value.documentPath,
-              documentType: tempImages[i].name,
-              documentVersion: 0,
-              fileName: tempImages[i].value.fileName,
-              gstNumber: "",
-              id: 0,
-              isActive: 0,
-              isPrivate: 0,
-              keyName: tempImages[i].value.keyName,
-              modifiedBy: jsonObj.empName,
-              orgId: jsonObj.orgId,
-              ownerId: "",
-              ownerName: jsonObj.empName,
-              parentId: "",
-              tinNumber: "",
-            });
 
-            if (i === tempImages.length - 1) {
-              dmsLeadDto.dmsAttachments = tempAttachments;
-            }
+        // pan number
+        if (selector.pan_number) {
+          let newArr = dmsLeadDto.dmsAttachments.filter((item) => {
+            return item.documentType === "pan";
+          });
+          if (newArr.length) {
+            tempAttachments.push({
+              ...newArr[0],
+              documentNumber: selector.pan_number,
+              createdBy: convertDateStringToMilliseconds(new Date()),
+            });
           }
-        } else {
-          dmsLeadDto.dmsAttachments = tempAttachments;
         }
+
+        // aadhar number
+        if (selector.adhaar_number) {
+          let newArr = dmsLeadDto.dmsAttachments.filter((item) => {
+            return item.documentType === "aadhar";
+          });
+          if (newArr.length) {
+            tempAttachments.push({
+              ...newArr[0],
+              documentNumber: selector.adhaar_number,
+              createdBy: convertDateStringToMilliseconds(new Date()),
+            });
+          }
+        }
+
+        // employee id number
+        if (selector.employee_id) {
+          let newArr = dmsLeadDto.dmsAttachments.filter((item) => {
+            return item.documentType === "employeeId";
+          });
+          if (newArr.length) {
+            tempAttachments.push({
+              ...newArr[0],
+              documentNumber: selector.employee_id,
+              createdBy: convertDateStringToMilliseconds(new Date()),
+            });
+          }
+        }
+
+        // if (Object.keys(uploadedImagesDataObj).length > 0) {
+        //   let tempImages = Object.entries(uploadedImagesDataObj).map((e) => ({
+        //     name: e[0],
+        //     value: e[1],
+        //   }));
+        //   for (let i = 0; i < tempImages.length; i++) {
+        //     if (
+        //       tempImages[i].name != "pan" &&
+        //       tempImages[i].name != "aadhar" &&
+        //       tempImages[i].name != "employeeId"
+        //     ) {
+        //       tempAttachments.push({
+        //         branchId: jsonObj.branchs[0]?.branchId,
+        //         contentSize: 0,
+        //         createdBy: convertDateStringToMilliseconds(new Date()),
+        //         description: "",
+        //         documentNumber: "",
+        //         documentPath: tempImages[i].value.documentPath,
+        //         documentType: tempImages[i].name,
+        //         documentVersion: 0,
+        //         fileName: tempImages[i].value.fileName,
+        //         gstNumber: "",
+        //         id: 0,
+        //         isActive: 0,
+        //         isPrivate: 0,
+        //         keyName: tempImages[i].value.keyName,
+        //         modifiedBy: jsonObj.empName,
+        //         orgId: jsonObj.orgId,
+        //         ownerId: "",
+        //         ownerName: jsonObj.empName,
+        //         parentId: "",
+        //         tinNumber: "",
+        //       });
+        //     }
+
+        //     if (i === tempImages.length - 1) {
+        //       dmsLeadDto.dmsAttachments = tempAttachments;
+        //     }
+        //   }
+        // } else {
+        //   dmsLeadDto.dmsAttachments = tempAttachments;
+        // }
+
+        dmsLeadDto.dmsAttachments = tempAttachments;
       }
+
+      var tempDmsLeadProducts = selector.dmsLeadProducts
+      var tempArr = [...carModelsList, ...tempDmsLeadProducts.filter(a => a)]
+
+      dmsLeadDto.dmsLeadProducts = tempArr.filter((value, index) => {
+        const _value = JSON.stringify(value);
+        return index === tempArr.findIndex(obj => {
+          return JSON.stringify(obj) === _value;
+        });
+      });
     }
 
     if (selector.enquiry_details_response.hasOwnProperty("dmsContactDto")) {
@@ -1078,12 +1069,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const submitClicked = async () => {
     //Personal Intro
     setIsSubmitPress(true);
-    if (selector.salutation.length == 0) {
-      scrollToPos(0);
-      setOpenAccordian("2");
-      showToast("Please fill required salutation field in Personal Intro");
-      return;
-    }
 
     // if (selector.enquiry_segment.toLowerCase() == "personal") {
     //   if (
@@ -1096,114 +1081,51 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     //   }
     // }
 
+    if (selector.enquiry_segment.toLowerCase() == "personal") {
+      if (selector.gender.length == 0) {
+        scrollToPos(0);
+        setOpenAccordian("2");
+        showToast("Please select Gender");
+        return;
+      }
+    }
+
+
     if (!isValidate(selector.firstName)) {
       scrollToPos(0);
       setOpenAccordian("2");
       showToast("please enter alphabetics only in firstname");
       return;
     }
+
     if (!isValidate(selector.lastName)) {
       scrollToPos(0);
       setOpenAccordian("2");
       showToast("please enter alphabetics only in lastname");
       return;
     }
-    // if (!isValidateAlphabetics(selector.relationName)) {
-    //   scrollToPos(0)
-    //   setOpenAccordian('2')
-    //   showToast("please enter alphabetics only in relationname");
-    //   return;
-    // }
-    if (!isValidateAlphabetics(selector.streetName)) {
-      scrollToPos(3);
-      setOpenAccordian("3");
-      showToast("Please enter alphabetics only in street name");
-      return;
-    }
-    //Customer Profile
 
-    if (selector.designation.length == 0) {
-      scrollToPos(2);
-      setOpenAccordian("1");
-      showToast("Please fill designation");
-      return;
-    }
-    // if (selector.expected_delivery_date.length == 0) {
-    //   showToast("Please select expected delivery date");
-    //   return;
-    // }
     if (selector.enquiry_segment.length == 0) {
       scrollToPos(2);
       setOpenAccordian("1");
       showToast("Please select enquery segment");
       return;
     }
+
     if (selector.customer_type.length == 0) {
       scrollToPos(2);
       setOpenAccordian("1");
       showToast("Please select customer type");
       return;
     }
+
     if (selector.buyer_type.length == 0) {
       scrollToPos(2);
       setOpenAccordian("1");
       showToast("Please fill  Buyer type");
       return;
     }
-    // if (!isValidateAlphabetics(selector.occupation)) {
-    //   showToast("Please enter alphabetics only in occupation");
-    //   return;
-    // }
 
-    if (!isValidateAlphabetics(selector.designation)) {
-      scrollToPos(2);
-      setOpenAccordian("1");
-      showToast("Please enter alphabetics only in designation");
-      return;
-    }
-    //communication Address
-    if (selector.houseNum.length == 0) {
-      scrollToPos(3);
-      setOpenAccordian("3");
-      showToast("Please fill H.No ");
-      return;
-    }
-    if (selector.streetName.length == 0) {
-      scrollToPos(3);
-      setOpenAccordian("3");
-      showToast("Please fill Street Name ");
-      return;
-    }
-    if (selector.village.length == 0) {
-      scrollToPos(3);
-      setOpenAccordian("3");
-      showToast("Please fill village ");
-      return;
-    }
-    if (selector.mandal.length == 0) {
-      scrollToPos(3);
-      setOpenAccordian("3");
-      showToast("Please fill mandal");
-      return;
-    }
-    if (selector.city.length == 0) {
-      scrollToPos(3);
-      setOpenAccordian("3");
-      showToast("Please fill city ");
-      return;
-    }
-    if (selector.state.length == 0) {
-      scrollToPos(3);
-      setOpenAccordian("3");
-      showToast("Please fill state ");
-      return;
-    }
-    if (selector.district.length == 0) {
-      scrollToPos(3);
-      setOpenAccordian("3");
-      showToast("Please fill district ");
-      return;
-    }
     // if (
     //   selector.p_pincode.length == 0 ||
     //   selector.p_urban_or_rural.length == 0 ||
@@ -1220,68 +1142,20 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     //   showToast("Please fill permanent address ");
     //   return;
     // }
+
     if (selector.p_pincode.length == 0) {
       scrollToPos(14);
       setOpenAccordian("3");
       showToast("Please fill Permanent pincode");
       return;
     }
+
     if (selector.p_urban_or_rural.length == 0) {
       scrollToPos(14);
       setOpenAccordian("3");
       showToast("Please fill Permanent Urban or Rural");
       return;
     }
-    if (selector.p_houseNum.length == 0) {
-      scrollToPos(14);
-      setOpenAccordian("3");
-      showToast("Please fill Permanent house number");
-      return;
-    }
-    if (selector.p_streetName.length == 0) {
-      scrollToPos(14);
-      setOpenAccordian("3");
-      showToast("Please fill Permanent street");
-      return;
-    }
-    if (selector.p_village.length == 0) {
-      scrollToPos(14);
-      setOpenAccordian("3");
-      showToast("Please fill Permanent village");
-      return;
-    }
-    if (selector.p_mandal.length == 0) {
-      scrollToPos(14);
-      setOpenAccordian("3");
-      showToast("Please fill Permanent mandal");
-      return;
-    }
-    if (selector.p_city.length == 0) {
-      scrollToPos(14);
-      setOpenAccordian("3");
-      showToast("Please fill Permanent City");
-      return;
-    }
-    if (selector.p_district.length == 0) {
-      scrollToPos(14);
-      setOpenAccordian("3");
-      showToast("Please fill Permanent District");
-      return;
-    }
-    if (selector.p_state.length == 0) {
-      scrollToPos(14);
-      setOpenAccordian("3");
-      showToast("Please fill Permanent state");
-      return;
-    }
-
-    // Model Selection
-    // if (carModelsList.length == 0) {
-    //   scrollToPos(4)
-    //   setOpenAccordian('4')
-    //   showToast("Please fill model details");
-    //   return;
-    // }
 
     if (checkModelSelection()) {
       scrollToPos(4);
@@ -1300,25 +1174,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       showToast("Select is Primary for atleast one vehicle");
       return;
     }
-    // if (
-    //   selector.model.length == 0) {
-    //   scrollToPos(4)
-    //   setOpenAccordian('4')
-    //   showToast("Please fill model");
-    //   return;
-    // }
-    // if (selector.varient.length == 0) {
-    //   scrollToPos(4)
-    //   setOpenAccordian('4')
-    //   showToast("Please fill Varient");
-    //   return;
-    // }
-    // if (selector.color.length == 0) {
-    //   scrollToPos(4)
-    //   setOpenAccordian('4')
-    //   showToast("Please fill color");
-    //   return;
-    // }
 
     //Finance Details
     if (selector.retail_finance.length == 0) {
@@ -1463,15 +1318,20 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     //   return;
     // }
 
-    if (
-      selector.pan_number.length > 0 &&
-      !isValidateAplhaNumeric(selector.pan_number)
-    ) {
+    if (isCheckPanOrAadhaar("pan", selector.pan_number)) {
       scrollToPos(6);
       setOpenAccordian("6");
       showToast("Please enter proper PAN number");
       return;
     }
+    
+    if (isCheckPanOrAadhaar("aadhaar", selector.adhaar_number)) {
+      scrollToPos(6);
+      setOpenAccordian("6");
+      showToast("Please enter proper Aadhaar number");
+      return;
+    }
+
     if (
       selector.gstin_number.length > 0 &&
       !isValidateAplhaNumeric(selector.gstin_number)
@@ -1499,7 +1359,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     if (dmsEntity.hasOwnProperty("dmsLeadDto")) {
       try {
         dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
-      } catch (error) {}
+      } catch (error) { }
       dmsLeadDto.firstName = selector.firstName;
       dmsLeadDto.lastName = selector.lastName;
       dmsLeadDto.phone = selector.mobile;
@@ -1508,218 +1368,105 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       let primaryModel = carModelsList.filter((item) => item.isPrimary === "Y");
       dmsLeadDto.model = primaryModel[0].model;
 
-      // await alert(JSON.stringify(dmsLeadDto.dmsLeadProducts))
-
       const employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
       );
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
-        let tempAttachments = [];
-        if (
-          selector.pan_number ||
-          dmsLeadDto.dmsAttachments.filter((item) => {
-            return item.documentType === "pan";
-          })
-        ) {
-          tempAttachments.push({
-            branchId: jsonObj.branchs[0]?.branchId,
-            contentSize: 0,
-            createdBy: new Date().getSeconds(),
-            description: "",
-            documentNumber: selector.pan_number,
-            documentPath:
-              dmsLeadDto.dmsAttachments.length > 0
-                ? dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "pan";
-                  })[0]?.documentPath
-                  ? dmsLeadDto.dmsAttachments.filter((item) => {
-                      return item.documentType === "pan";
-                    })[0]?.documentPath
-                  : ""
-                : "",
-            documentType: "pan",
-            documentVersion: 0,
-            fileName:
-              dmsLeadDto.dmsAttachments.length > 0
-                ? dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "pan";
-                  })[0]?.fileName
-                  ? dmsLeadDto.dmsAttachments.filter((item) => {
-                      return item.documentType === "pan";
-                    })[0]?.fileName
-                  : ""
-                : "",
-            gstNumber: "",
-            id: 0,
-            isActive: 0,
-            isPrivate: 0,
-            keyName:
-              dmsLeadDto.dmsAttachments.length > 0
-                ? dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "pan";
-                  })[0]?.keyName
-                  ? dmsLeadDto.dmsAttachments.filter((item) => {
-                      return item.documentType === "pan";
-                    })[0]?.keyName
-                  : ""
-                : "",
-            modifiedBy: jsonObj.empName,
-            orgId: jsonObj.orgId,
-            ownerId: "",
-            ownerName: jsonObj.empName,
-            parentId: "",
-            tinNumber: "",
-          });
-        }
-        if (
-          selector.adhaar_number ||
-          dmsLeadDto.dmsAttachments.filter((item) => {
-            return item.documentType === "aadhar";
-          })
-        ) {
-          tempAttachments.push({
-            branchId: jsonObj.branchs[0]?.branchId,
-            contentSize: 0,
-            createdBy: new Date().getSeconds(),
-            description: "",
-            documentNumber: selector.adhaar_number,
-            documentPath:
-              dmsLeadDto.dmsAttachments.length > 0
-                ? dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "aadhar";
-                  })[0]?.documentPath
-                  ? dmsLeadDto.dmsAttachments.filter((item) => {
-                      return item.documentType === "aadhar";
-                    })[0]?.documentPath
-                  : ""
-                : "",
-            documentType: "aadhar",
-            documentVersion: 0,
-            fileName:
-              dmsLeadDto.dmsAttachments.length > 0
-                ? dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "aadhar";
-                  })[0]?.fileName
-                  ? dmsLeadDto.dmsAttachments.filter((item) => {
-                      return item.documentType === "aadhar";
-                    })[0]?.fileName
-                  : ""
-                : "",
-            gstNumber: "",
-            id: 0,
-            isActive: 0,
-            isPrivate: 0,
-            keyName:
-              dmsLeadDto.dmsAttachments.length > 0
-                ? dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "aadhar";
-                  })[0]?.keyName
-                  ? dmsLeadDto.dmsAttachments.filter((item) => {
-                      return item.documentType === "aadhar";
-                    })[0]?.keyName
-                  : ""
-                : "",
-            modifiedBy: jsonObj.empName,
-            orgId: jsonObj.orgId,
-            ownerId: "",
-            ownerName: jsonObj.empName,
-            parentId: "",
-            tinNumber: "",
-          });
-        }
-        if (
-          selector.employee_id ||
-          dmsLeadDto.dmsAttachments.filter((item) => {
-            return item.documentType === "employeeId";
-          })
-        ) {
-          tempAttachments.push({
-            branchId: jsonObj.branchs[0]?.branchId,
-            contentSize: 0,
-            createdBy: new Date().getSeconds(),
-            description: "",
-            documentNumber: selector.employee_id,
-            documentPath:
-              dmsLeadDto.dmsAttachments.length > 0
-                ? dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "employeeId";
-                  })[0]?.documentPath
-                  ? dmsLeadDto.dmsAttachments.filter((item) => {
-                      return item.documentType === "employeeId";
-                    })[0]?.documentPath
-                  : ""
-                : "",
-            documentType: "employeeId",
-            documentVersion: 0,
-            fileName:
-              dmsLeadDto.dmsAttachments.length > 0
-                ? dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "employeeId";
-                  })[0]?.fileName
-                  ? dmsLeadDto.dmsAttachments.filter((item) => {
-                      return item.documentType === "employeeId";
-                    })[0]?.fileName
-                  : ""
-                : "",
-            gstNumber: "",
-            id: 0,
-            isActive: 0,
-            isPrivate: 0,
-            keyName:
-              dmsLeadDto.dmsAttachments.length > 0
-                ? dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "employeeId";
-                  })[0]?.keyName
-                  ? dmsLeadDto.dmsAttachments.filter((item) => {
-                      return item.documentType === "employeeId";
-                    })[0]?.keyName
-                  : ""
-                : "",
-            modifiedBy: jsonObj.empName,
-            orgId: jsonObj.orgId,
-            ownerId: "",
-            ownerName: jsonObj.empName,
-            parentId: "",
-            tinNumber: "",
-          });
-        }
+        let empObj = {
+          branchId: jsonObj.branchs[0]?.branchId,
+          modifiedBy: jsonObj.empName,
+          orgId: jsonObj.orgId,
+          ownerName: jsonObj.empName,
+        };
+        let tempAttachments = Object.assign([], dmsLeadDto.dmsAttachments);
+
+        let imgObjArr = [];
         if (Object.keys(uploadedImagesDataObj).length > 0) {
-          let tempImages = Object.entries(uploadedImagesDataObj).map((e) => ({
+          imgObjArr = Object.entries(uploadedImagesDataObj).map((e) => ({
             name: e[0],
             value: e[1],
           }));
-          for (let i = 0; i < tempImages.length; i++) {
-            tempAttachments.push({
-              branchId: jsonObj.branchs[0]?.branchId,
-              contentSize: 0,
-              createdBy: new Date().getSeconds(),
-              description: "",
-              documentNumber: "",
-              documentPath: tempImages[i].value.documentPath,
-              documentType: tempImages[i].name,
-              documentVersion: 0,
-              fileName: tempImages[i].value.fileName,
-              gstNumber: "",
-              id: 0,
-              isActive: 0,
-              isPrivate: 0,
-              keyName: tempImages[i].value.keyName,
-              modifiedBy: jsonObj.empName,
-              orgId: jsonObj.orgId,
-              ownerId: "",
-              ownerName: jsonObj.empName,
-              parentId: "",
-              tinNumber: "",
-            });
+        }
 
-            if (i === tempImages.length - 1) {
-              dmsLeadDto.dmsAttachments = tempAttachments;
+        for (let i = 0; i < imgObjArr.length; i++) {
+          let isAvailable = false;
+          for (let j = 0; j < tempAttachments.length; j++) {
+            if(tempAttachments[j].documentType == imgObjArr[i].name){
+              isAvailable = true;
+              break;
             }
           }
-        } else {
-          dmsLeadDto.dmsAttachments = tempAttachments;
+
+          if (!isAvailable) {
+            let newObj = {
+              ...dmsAttachmentsObj,
+              documentPath: imgObjArr[i].value.documentPath,
+              fileName: imgObjArr[i].value.fileName,
+              keyName: imgObjArr[i].value.keyName,
+              documentType: imgObjArr[i].name,
+              createdBy: convertDateStringToMilliseconds(new Date()),
+              ...empObj,
+            };
+
+            if (imgObjArr[i].name === "pan" && selector.pan_number){
+              newObj.documentNumber = selector.pan_number;
+            }else if (imgObjArr[i].name == "aadhar" && selector.adhaar_number) {
+              newObj.documentNumber = selector.adhaar_number;
+            } else if (imgObjArr[i].name == "employeeId" && selector.employee_id) {
+              newObj.documentNumber = selector.employee_id;
+            }
+
+            tempAttachments.push(Object.assign({}, newObj));
+          }
         }
+
+        let panArr = tempAttachments.filter((item) => {
+          return item.documentType === "pan";
+        });
+
+        let aadharArr = tempAttachments.filter((item) => {
+          return item.documentType === "aadhar";
+        });
+
+        let empArr = tempAttachments.filter((item) => {
+          return item.documentType === "employeeId";
+        });
+
+        // if pan number
+        if (!panArr.length && selector.pan_number) {
+          newObj = {
+            ...dmsAttachmentsObj,
+            documentNumber: selector.pan_number,
+            documentType: "pan",
+            ...empObj,
+          };
+          tempAttachments.push(Object.assign({}, newObj));
+        }
+
+        // if aadhar number
+        if (!aadharArr.length && selector.adhaar_number) {
+          newObj = {
+            ...dmsAttachmentsObj,
+            documentNumber: selector.adhaar_number,
+            documentType: "aadhar",
+            ...empObj,
+          };
+          tempAttachments.push(Object.assign({}, newObj));
+        }
+
+        // if emp id
+        if (!empArr.length && selector.employee_id) {
+          newObj = {
+            ...dmsAttachmentsObj,
+            documentNumber: selector.employee_id,
+            documentType: "employeeId",
+            ...empObj,
+          };
+          tempAttachments.push(Object.assign({}, newObj));
+        }
+
+        dmsLeadDto.dmsAttachments = Object.assign([], tempAttachments);
       }
     }
 
@@ -1816,7 +1563,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     dataObj.leadStatus = "ENQUIRYCOMPLETED";
     dataObj.dmsAddresses = mapDMSAddress(dataObj.dmsAddresses);
     dataObj.dmsLeadProducts = mapLeadProducts(dataObj.dmsLeadProducts);
-    dataObj.model = carModelsList[0].model;
+    dataObj.model = carModelsList[0]?.model;
     dataObj.dmsfinancedetails = mapDmsFinanceDetails(dataObj.dmsfinancedetails);
     dataObj.dmsLeadScoreCards = mapDmsLeadScoreCards(dataObj.dmsLeadScoreCards);
     dataObj.dmsExchagedetails = mapExchangeDetails(dataObj.dmsExchagedetails);
@@ -1940,6 +1687,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
     return dmsExchagedetails;
   };
+
   const modelOnclick = async (index, value, type) => {
     try {
       if (type == "update") {
@@ -1967,27 +1715,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         if (type == "delete") {
           let arr = await [...carModelsList];
           arr.splice(index, 1);
+          setCarModelsList(Object.assign([], arr));
+          dispatch(updatedmsLeadProduct(Object.assign([], arr)));
           deleteModalFromServer({ value });
-
-          let item = {
-            color: arr[0].color,
-            fuel: arr[0].fuel,
-            id: arr[0].id,
-            model: arr[0].model,
-            transimmisionType: arr[0].transimmisionType,
-            variant: arr[0].variant,
-            isPrimary: "Y",
-          };
-          // arr[0] = item;
-          // arr.unshift(item);
-          // arr.splice(0, 1);
-
-          // if (arr[0].variant !== "" && arr[0].model !== "") {
-          //   updateVariantModelsData(arr[0].model, true, arr[0].variant);
-          // }
-          // setCarModelsList([])
-          await setCarModelsList([...arr]);
-          // carModelsList.splice(0, 1)
         }
       }
     } catch (error) {
@@ -2005,15 +1735,18 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       if (carModelsList && carModelsList.length > 0) {
         let arr = await [...carModelsList];
         var data = arr[isPrimaryCureentIndex];
-        const cardata = await {
-          color: data.color,
-          fuel: data.fuel,
-          id: data.id,
-          model: data.model,
-          transimmisionType: data.transimmisionType,
-          variant: data.variant,
-          isPrimary: "N",
-        };
+        if (data) {
+          const cardata = await {
+            color: data.color,
+            fuel: data.fuel,
+            id: data.id,
+            model: data.model,
+            transimmisionType: data.transimmisionType,
+            variant: data.variant,
+            isPrimary: "N",
+          };
+          arr[isPrimaryCureentIndex] = cardata;
+        }
         const selecteditem = await {
           color: item.color,
           fuel: item.fuel,
@@ -2023,8 +1756,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           variant: item.variant,
           isPrimary: "Y",
         };
-        //await setCarModelsList([])
-        arr[isPrimaryCureentIndex] = cardata;
         arr[index] = selecteditem;
         dispatch(updatedmsLeadProduct([...arr]));
         await setCarModelsList([...arr]);
@@ -2060,6 +1791,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       // dataObj.yearofManufacture = convertDateStringToMillisecondsUsingMoment(
       //   selector.r_mfg_year
       // );
+      dataObj.regDocumentKey = selector.regDocumentKey;
+      dataObj.regDocumentPath = selector.regDocumentPath;
+      dataObj.insuranceDocumentKey = selector.insuranceDocumentKey;
+      dataObj.insuranceDocumentPath = selector.insuranceDocumentPath;
       dataObj.yearofManufacture = selector.r_mfg_year;
       dataObj.kiloMeters = selector.r_kms_driven_or_odometer_reading;
       dataObj.expectedPrice = selector.r_expected_price
@@ -2069,28 +1804,31 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dataObj.hypothication = selector.r_hypothication_name;
       dataObj.hypothicationBranch = selector.r_hypothication_branch;
       // Pending
-      dataObj.registrationDate = convertDateStringToMillisecondsUsingMoment(
-        selector.r_registration_date
+      dataObj.registrationDate = moment(
+        selector.r_registration_date,
+        "DD/MM/YYYY"
       );
-      dataObj.registrationValidityDate =
-        convertDateStringToMillisecondsUsingMoment(
-          selector.r_registration_validity_date
-        );
+      dataObj.registrationValidityDate = moment(
+        selector.r_registration_validity_date,
+        "DD/MM/YYYY"
+      );
       dataObj.insuranceAvailable = `${selector.r_insurence_checked}`;
       dataObj.insuranceDocumentAvailable =
         selector.r_insurence_document_checked;
       dataObj.insuranceCompanyName = selector.r_insurence_company_name;
       // Pending
-      dataObj.insuranceExpiryDate = selector.r_insurence_expiry_date
-        ? Number(selector.r_insurence_expiry_date)
+      dataObj.insuranceExpiryDate = selector.r_insurence_to_date
+        ? moment(selector.r_insurence_to_date, "DD/MM/YYYY")
         : "";
       dataObj.insuranceType = selector.r_insurence_type;
       // Pending
-      dataObj.insuranceFromDate = convertDateStringToMillisecondsUsingMoment(
-        selector.r_insurence_from_date
+      dataObj.insuranceFromDate = moment(
+        selector.r_insurence_from_date,
+        "DD/MM/YYYY"
       );
-      dataObj.insuranceToDate = convertDateStringToMillisecondsUsingMoment(
-        selector.r_insurence_to_date
+      dataObj.insuranceToDate = moment(
+        selector.r_insurence_to_date,
+        "DD/MM/YYYY"
       );
     }
     return dataObj;
@@ -2101,13 +1839,33 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     if (dmsAttachments.length > 0) {
       dmsAttachments.forEach((obj, index) => {
         const item = uploadedImagesDataObj[obj.documentType];
-        const object = formatAttachment(
-          { ...obj },
-          item,
-          index,
-          obj.documentType
-        );
-        dmsAttachments[index] = object;
+
+        let finalObj = {};
+
+        if (item) {
+          finalObj = formatAttachment(
+            { ...obj },
+            item,
+            index,
+            obj.documentType
+          );
+        } else {
+          let subItem = {
+            documentType: obj.documentType,
+            documentPath: "",
+            keyName: "",
+            fileName: "",
+          };
+
+          finalObj = formatAttachment(
+            { ...obj },
+            subItem,
+            index,
+            obj.documentType
+          );
+        }
+
+        dmsAttachments[index] = finalObj;
       });
     } else {
       Object.keys(uploadedImagesDataObj).forEach((key, index) => {
@@ -2120,7 +1878,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   };
 
   const formatAttachment = (data, photoObj, index, typeOfDocument) => {
-    let object = { ...data };
+    let object = { ...dmsAttachmentsObj, ...data };
     object.branchId = selectedBranchId;
     object.ownerName = userData.employeeName;
     object.orgId = userData.orgId;
@@ -2128,8 +1886,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     object.documentPath = photoObj?.documentPath;
     object.keyName = photoObj?.keyName;
     object.fileName = photoObj?.fileName;
-    object.createdBy = new Date().getTime();
-    object.id = `${index}`;
+    object.createdBy = convertDateStringToMilliseconds(new Date());
+    // object.id = `${index}`;
     object.modifiedBy = userData.employeeName;
     object.ownerId = userData.employeeId;
     switch (typeOfDocument) {
@@ -2139,8 +1897,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       case "aadhar":
         object.documentNumber = selector.adhaar_number;
         break;
-      case "REGDOC":
+      case "regNoD":
         object.documentNumber = selector.r_reg_no;
+        break;
+      case "employeeId":
+        object.documentNumber = selector.employee_id;
         break;
     }
     return object;
@@ -2181,7 +1942,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             [
               {
                 text: "Cancel",
-                onPress: () => console.log("Cancel Pressed"),
+                onPress: () => {},
                 style: "cancel",
               },
               {
@@ -2314,7 +2075,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
       if (
         proceedToPreSelector.update_enquiry_details_response_status ===
-          "success" &&
+        "success" &&
         proceedToPreSelector.update_enquiry_details_response
       ) {
         if (typeOfActionDispatched === "PROCEED_TO_PREBOOKING") {
@@ -2365,7 +2126,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const goToParentScreen = () => {
     getMyTasksListFromServer();
-    navigation.navigate(EmsTopTabNavigatorIdentifiers.preBooking);
+    navigation.navigate(EmsTopTabNavigatorIdentifiers.leads, {
+      fromScreen: "proceedToBookingApproval",
+    });
     dispatch(preClearState());
     dispatch(clearState2());
     clearState();
@@ -2406,7 +2169,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           (selector.enquiry_details_response.dmsLeadDto.buyerType ===
             "Replacement Buyer" ||
             selector.enquiry_details_response.dmsLeadDto.buyerType ===
-              "Exchange Buyer")
+            "Exchange Buyer")
         ) {
           pendingTaskNames.push("Evaluation : Pending \n");
         }
@@ -2434,9 +2197,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       const jsonObj = JSON.parse(employeeData);
       if (
         selector.enquiry_details_response.dmsLeadDto.salesConsultant ==
-          jsonObj.empName ||
+        jsonObj.empName ||
         selector.enquiry_details_response.dmsLeadDto.createdBy ==
-          jsonObj.empName
+        jsonObj.empName
       ) {
         if (universalId) {
           const endUrl = universalId + "?" + "stage=Enquiry";
@@ -2471,9 +2234,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         // getEnquiryListFromServer();
       } else if (typeOfActionDispatched === "UPDATE_ENQUIRY") {
         showToastSucess("Successfully Enquiry Updated");
-        clearLocalData();
-        dispatch(clearState());
-        navigation.goBack();
+        goToLeadScreen();
       }
     }
   }, [selector.update_enquiry_details_response]);
@@ -2501,7 +2262,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
     let enquiryDetailsObj = { ...selector.enquiry_details_response };
     let dmsLeadDto = { ...enquiryDetailsObj.dmsLeadDto };
-    dmsLeadDto.leadStatus = "ENQUIRYCOMPLETED";
+    // dmsLeadDto.leadStatus = "ENQUIRYCOMPLETED";
     dmsLeadDto.leadStage = "DROPPED";
     enquiryDetailsObj.dmsLeadDto = dmsLeadDto;
 
@@ -2544,7 +2305,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         {
           text: "OK",
           onPress: () => {
-            goParentScreen();
+            goToLeadScreen();
           },
         },
       ]);
@@ -2553,13 +2314,66 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const showDropDownModelMethod = (key, headerText) => {
     Keyboard.dismiss();
-
+    const orgId = +userData.orgId;
     switch (key) {
       case "ENQUIRY_SEGMENT":
-        setDataForDropDown([...Enquiry_Segment_Data]);
+        let segments = [...Enquiry_Segment_Data];
+        if (orgId === 21) {
+          segments = [...EnquiryTypes21];
+        } else if (orgId === 22) {
+          segments = [...EnquiryTypes22];
+        }
+        setDataForDropDown(segments);
         break;
       case "CUSTOMER_TYPE":
-        setDataForDropDown([...selector.customer_types_data]);
+        // if (selector.customer_typcustomer_types_dataes_data.length === 0) {
+        //   showToast("No Customer Types found");
+        //   return;
+        // }
+
+        let customerTypes = []
+        customerTypes = CustomerTypesObj21[selector.enquiry_segment.toLowerCase()]
+        if (orgId === 21) {
+          customerTypes = CustomerTypesObj21[selector.enquiry_segment.toLowerCase()];
+          selector.customerType = "";
+        }
+        else if (orgId === 22) {
+          customerTypes = CustomerTypesObj22[selector.enquiry_segment.toLowerCase()];
+          selector.customerType = "";
+        }
+        else if (orgId == 26) {
+          let tmpArr = [];
+          if (selector.enquiry_segment == "Personal") {
+            tmpArr = Object.assign(
+              [],
+              selector.customer_types?.personal
+                ? selector.customer_types.personal
+                : CustomerTypesObj[selector.enquiry_segment.toLowerCase()]
+            );
+          } else if (selector.enquiry_segment == "Company") {
+            tmpArr = Object.assign(
+              [],
+              selector.customer_types?.company
+                ? selector.customer_types.company
+                : CustomerTypesObj[selector.enquiry_segment.toLowerCase()]
+            );
+          } else {
+            tmpArr = Object.assign(
+              [],
+              selector.customer_types?.commercial
+                ? selector.customer_types.commercial
+                : CustomerTypesObj[selector.enquiry_segment.toLowerCase()]
+            );
+          }
+
+          customerTypes = [...tmpArr];
+          selector.customerType = "";
+        }
+        else {
+          customerTypes = CustomerTypesObj[selector.enquiry_segment.toLowerCase()];
+          selector.customerType = "";
+        }
+        setDataForDropDown([...customerTypes]);
         break;
       case "SUB_SOURCE_OF_ENQUIRY":
         setDataForDropDown([...Enquiry_Sub_Source_Type_Data]);
@@ -2586,7 +2400,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         setDataForDropDown([...Salutation_Types]);
         break;
       case "GENDER":
-        setDataForDropDown([...selector.gender_types_data]);
+        setDataForDropDown([...Gender_Types]);
         break;
       case "RELATION":
         setDataForDropDown([...selector.relation_types_data]);
@@ -2613,7 +2427,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         setDataForDropDown([...Approx_Auual_Income_Types]);
         break;
       case "C_MAKE":
-        setDataForDropDown([...All_Car_Brands]);
+        setDataForDropDown([...makerData]);
         break;
       case "C_MODEL":
         setDataForDropDown([...c_model_types]);
@@ -2625,7 +2439,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         setDataForDropDown([...Transmission_Types]);
         break;
       case "R_MAKE":
-        setDataForDropDown([...All_Car_Brands]);
+        setDataForDropDown([...makerData]);
         break;
       case "R_MODEL":
         setDataForDropDown([...r_model_types]);
@@ -2710,7 +2524,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       if (mArray.length) {
         mArray.map((item) => {
           newArray.push({
-            id: item.id,
+            id: item.varient_id,
             name: item.color,
           });
         });
@@ -2726,9 +2540,19 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const updateModelTypesForCustomerNeedAnalysis = (brandName, dropDownKey) => {
     let modelsData = [];
-    All_Car_Brands.forEach((item) => {
-      if (item.name === brandName) {
-        modelsData = item.models;
+    makerData.forEach((item) => {
+      if (item.otherMaker === brandName) {
+        let newArr = item.othermodels;
+        let finalArr = [];
+        newArr.forEach((newItem) => {
+          let newObj = {
+            ...newItem,
+            name: newItem.otherModel,
+          };
+          finalArr.push(newObj);
+        });
+
+        modelsData = finalArr;
       }
     });
     // alert("color")
@@ -2770,7 +2594,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         formData.append("documentType", "aadhar");
         break;
       case "UPLOAD_REG_DOC":
-        formData.append("documentType", "REGDOC");
+        formData.append("documentType", "regNoD");
         break;
       case "UPLOAD_INSURENCE":
         formData.append("documentType", "insurance");
@@ -2782,16 +2606,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         formData.append("documentType", "payslips");
         break;
       case "UPLOAD_PATTA_PASS_BOOK":
-        formData.append("documentType", "passbook");
+        formData.append("documentType", "pattaPassBook");
         break;
       case "UPLOAD_PENSION_LETTER":
-        formData.append("documentType", "pension");
+        formData.append("documentType", "pensionLetter");
         break;
       case "UPLOAD_IMA_CERTIFICATE":
         formData.append("documentType", "imaCertificate");
         break;
       case "UPLOAD_LEASING_CONFIRMATION":
-        formData.append("documentType", "leasingConfirm");
+        formData.append("documentType", "leasingConfirmationLetter");
         break;
       case "UPLOAD_ADDRESS_PROOF":
         formData.append("documentType", "address");
@@ -2811,9 +2635,37 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       .then((response) => response.json())
       .then((response) => {
         if (response) {
-          const dataObj = { ...uploadedImagesDataObj };
-          dataObj[response.documentType] = response;
-          setUploadedImagesDataObj({ ...dataObj });
+          if (keyId === "UPLOAD_REG_DOC") {
+            dispatch(
+              setReplacementBuyerDetails({
+                key: "R_REG_DOC_KEY",
+                text: response.keyName,
+              })
+            );
+            dispatch(
+              setReplacementBuyerDetails({
+                key: "R_REG_DOC_PATH",
+                text: response.documentPath,
+              })
+            );
+          } else if (keyId === "UPLOAD_INSURENCE") {
+            dispatch(
+              setReplacementBuyerDetails({
+                key: "R_INS_DOC_KEY",
+                text: response.keyName,
+              })
+            );
+            dispatch(
+              setReplacementBuyerDetails({
+                key: "R_INS_DOC_PATH",
+                text: response.documentPath,
+              })
+            );
+          } else {
+            const dataObj = { ...uploadedImagesDataObj };
+            dataObj[response.documentType] = response;
+            setUploadedImagesDataObj({ ...dataObj });
+          }
         }
       })
       .catch((error) => {
@@ -2833,11 +2685,34 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       case "AADHAR":
         delete imagesDataObj.aadhar;
         break;
-      case "REGDOC":
-        delete imagesDataObj.REGDOC;
+      case "regNoD":
+        dispatch(
+          setReplacementBuyerDetails({
+            key: "R_REG_DOC_KEY",
+            text: "",
+          })
+        );
+        dispatch(
+          setReplacementBuyerDetails({
+            key: "R_REG_DOC_PATH",
+            text: "",
+          })
+        );
         break;
       case "INSURENCE":
         delete imagesDataObj.insurance;
+        dispatch(
+          setReplacementBuyerDetails({
+            key: "R_INS_DOC_KEY",
+            text: "",
+          })
+        );
+        dispatch(
+          setReplacementBuyerDetails({
+            key: "R_INS_DOC_PATH",
+            text: "",
+          })
+        );
         break;
       case "EMPLOYEE_ID":
         delete imagesDataObj.employeeId;
@@ -2846,16 +2721,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         delete imagesDataObj.payslips;
         break;
       case "PATTA_PASS_BOOK":
-        delete imagesDataObj.passbook;
+        delete imagesDataObj.pattaPassBook;
         break;
       case "PENSION_LETTER":
-        delete imagesDataObj.pension;
+        delete imagesDataObj.pensionLetter;
         break;
       case "IMA_CERTIFICATE":
         delete imagesDataObj.imaCertificate;
         break;
       case "LEASING_CONFIRMATION":
-        delete imagesDataObj.leasingConfirm;
+        delete imagesDataObj.leasingConfirmationLetter;
         break;
       case "ADDRESS_PROOF":
         delete imagesDataObj.address;
@@ -2911,7 +2786,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         // dispatch(updateAddressByPincode(resolve));
       },
       (rejected) => {
-        console.log("rejected...: ", rejected);
       }
     );
   };
@@ -2938,7 +2812,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         // dispatch(updateAddressByPincode(resolve));
       },
       (rejected) => {
-        console.log("rejected...: ", rejected);
       }
     );
   };
@@ -2954,6 +2827,23 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         <ActivityIndicator size="small" color={Colors.RED} />
       </View>
     );
+  }
+
+  const isPermanent = () => {
+    if (
+      selector?.p_pincode == selector?.pincode &&
+      selector?.p_houseNum == selector?.houseNum &&
+      selector?.p_streetName == selector?.streetName &&
+      selector?.p_village == selector?.village &&
+      selector?.p_mandal == selector?.mandal &&
+      selector?.p_city == selector?.city &&
+      selector?.p_district == selector?.district &&
+      selector?.p_state == selector?.state
+    ) {
+      return "YES"
+    } else {
+      return "NO"
+    }
   }
 
   return (
@@ -2987,9 +2877,28 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           ) {
             updateModelTypesForCustomerNeedAnalysis(item.name, dropDownKey);
           }
+
+          if (
+            dropDownKey === "RETAIL_FINANCE" &&
+            selector.retail_finance !== item.name
+          ) {
+            dispatch(
+              setFinancialDetails({ key: "BANK_R_FINANCE_NAME", text: "" })
+            );
+            dispatch(setFinancialDetails({ key: "LOAN_AMOUNT", text: "" }));
+            dispatch(
+              setFinancialDetails({ key: "RATE_OF_INTEREST", text: "" })
+            );
+          }
+
           setShowDropDownModel(false);
           dispatch(
-            setDropDownData({ key: dropDownKey, value: item.name, id: item.id })
+            setDropDownData({
+              key: dropDownKey,
+              value: item.name,
+              id: item.id,
+              orgId: userData.orgId,
+            })
           );
         }}
       />
@@ -3079,31 +2988,35 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               expandedId={openAccordian}
               onAccordionPress={(expandedId) => updateAccordian(expandedId)}
             >
-              {/* { (leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY') ? <List.Accordion
-                id={"10"}
-                title={"Proforma Invoice"}
-                titleStyle={{
-                  color: openAccordian === "10" ? Colors.BLACK : Colors.BLACK,
-                  fontSize: 16,
-                  fontWeight: "600",
-                }}
-                style={[
-                  {
-                    backgroundColor:
-                      openAccordian === "10"
-                        ? Colors.RED
-                        : Colors.WHITE,
-                    height: 60,
-                    // justifyContent: 'center'
-                  },
-                  styles.accordianBorder,
-                ]}
-              >
-                <ProformaComp
-                  modelDetails={selector.dmsLeadProducts[0]}
-                  branchId={selectedBranchId} />
-              </List.Accordion> : null} */}
-              <View style={styles.space}></View>
+              {/* {leadStatus === "ENQUIRYCOMPLETED" && leadStage === "ENQUIRY" ? (
+                <List.Accordion
+                  id={"10"}
+                  title={"Proforma Invoice"}
+                  titleStyle={{
+                    color: openAccordian === "10" ? Colors.BLACK : Colors.BLACK,
+                    fontSize: 16,
+                    fontWeight: "600",
+                  }}
+                  style={[
+                    {
+                      backgroundColor:
+                        openAccordian === "10" ? Colors.RED : Colors.WHITE,
+                      height: 60,
+                      // justifyContent: 'center'
+                    },
+                    styles.accordianBorder,
+                  ]}
+                >
+                  <ProformaComp
+                    route={route}
+                    userData={userData}
+                    modelDetails={selector.dmsLeadProducts[0]}
+                    branchId={selectedBranchId}
+                    universalId={route.params.universalId}
+                  />
+                </List.Accordion>
+              ) : null}
+              <View style={styles.space}></View> */}
 
               {/* 1. Personal Intro */}
               <List.Accordion
@@ -3123,32 +3036,60 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   styles.accordianBorder,
                 ]}
               >
-                <DropDownSelectionItem
-                  label={"Salutation*"}
-                  value={selector.salutation}
-                  onPress={() =>
-                    showDropDownModelMethod("SALUTATION", "Select Salutation")
-                  }
-                />
-                <Text
-                  style={[
-                    GlobalStyle.underline,
-                    {
-                      backgroundColor:
-                        isSubmitPress && selector.salutation === ""
-                          ? "red"
-                          : "rgba(208, 212, 214, 0.7)",
-                    },
-                  ]}
-                ></Text>
-                {selector.enquiry_segment.toLowerCase() == "personal" ? (
-                  <DropDownSelectionItem
-                    label={"Gender"}
-                    value={selector.gender}
-                    onPress={() => showDropDownModelMethod("GENDER", "Gender")}
-                  />
-                ) : null}
+                <View
+                  style={{
+                    flexDirection: "row",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    backgroundColor: Colors.WHITE,
+                  }}
+                >
+                  <View
+                    style={{
+                      width:
+                        selector.enquiry_segment.toLowerCase() === "personal"
+                          ? "45%"
+                          : "100%",
+                    }}
+                  >
+                    <DropDownSelectionItem
+                      label={"Salutation"}
+                      value={selector.salutation}
+                      onPress={() =>
+                        showDropDownModelMethod(
+                          "SALUTATION",
+                          "Select Salutation"
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline} />
+                  </View>
+                  <View style={{ width: "45%" }}>
+                    {selector.enquiry_segment.toLowerCase() === "personal" ? (
+                      <>
+                        <DropDownSelectionItem
+                          label={"Gender*"}
+                          value={selector.gender}
+                          onPress={() =>
+                            showDropDownModelMethod("GENDER", "Gender")
+                          }
+                        />
 
+                        <Text
+                          style={[
+                            GlobalStyle.underline,
+                            {
+                              backgroundColor:
+                                isSubmitPress && selector.gender === ""
+                                  ? "red"
+                                  : "rgba(208, 212, 214, 0.7)",
+                            },
+                          ]}
+                        ></Text>
+                      </>
+                    ) : null}
+                  </View>
+                </View>
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.firstName}
@@ -3195,27 +3136,42 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     },
                   ]}
                 ></Text>
-                <DropDownSelectionItem
-                  label={"Relation"}
-                  value={selector.relation}
-                  onPress={() =>
-                    showDropDownModelMethod("RELATION", "Relation")
-                  }
-                />
 
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.relationName}
-                  label={"Relation Name"}
-                  autoCapitalize="words"
-                  keyboardType={"default"}
-                  maxLength={50}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setPersonalIntro({ key: "RELATION_NAME", text: text })
-                    )
-                  }
-                />
+                <View
+                  style={{
+                    flexDirection: "row",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    backgroundColor: Colors.WHITE,
+                  }}
+                >
+                  <View style={{ width: "45%" }}>
+                    <DropDownSelectionItem
+                      label={"Relation"}
+                      value={selector.relation}
+                      onPress={() =>
+                        showDropDownModelMethod("RELATION", "Relation")
+                      }
+                    />
+                  </View>
+                  <View style={{ width: "45%" }}>
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.relationName}
+                      label={"Relation Name"}
+                      autoCapitalize="words"
+                      keyboardType={"default"}
+                      maxLength={50}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setPersonalIntro({ key: "RELATION_NAME", text: text })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                  </View>
+                </View>
+
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.mobile}
@@ -3266,22 +3222,39 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {selector.enquiry_segment.toLowerCase() == "personal" ? (
                   <View>
-                    <DateSelectItem
-                      label={"Date Of Birth"}
-                      value={selector.dateOfBirth}
-                      onPress={() => dispatch(setDatePicker("DATE_OF_BIRTH"))}
-                    />
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      value={selector.age}
-                      label={"Age"}
-                      keyboardType={"phone-pad"}
-                      maxLength={10}
-                      onChangeText={(text) =>
-                        dispatch(setPersonalIntro({ key: "AGE", text: text }))
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        backgroundColor: Colors.WHITE,
+                      }}
+                    >
+                      <View style={{ width: "45%" }}>
+                        <DateSelectItem
+                          label={"Date Of Birth"}
+                          value={selector.dateOfBirth}
+                          onPress={() =>
+                            dispatch(setDatePicker("DATE_OF_BIRTH"))
+                          }
+                        />
+                      </View>
+                      <View style={{ width: "45%" }}>
+                        <TextinputComp
+                          style={styles.textInputStyle}
+                          value={selector?.age?.toString()}
+                          label={"Age"}
+                          keyboardType={"phone-pad"}
+                          maxLength={5}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setPersonalIntro({ key: "AGE", text: text })
+                            )
+                          }
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                      </View>
+                    </View>
                     <DateSelectItem
                       label={"Anniversary Date"}
                       value={selector.anniversaryDate}
@@ -3331,7 +3304,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.designation}
                   autoCapitalize="words"
-                  label={"Designation*"}
+                  label={"Designation"}
                   keyboardType={"default"}
                   maxLength={40}
                   onChangeText={(text) =>
@@ -3340,17 +3313,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     )
                   }
                 />
-                <Text
-                  style={[
-                    GlobalStyle.underline,
-                    {
-                      backgroundColor:
-                        isSubmitPress && selector.designation === ""
-                          ? "red"
-                          : "rgba(208, 212, 214, 0.7)",
-                    },
-                  ]}
-                ></Text>
+                <Text style={GlobalStyle.underline} />
 
                 <DropDownSelectionItem
                   label={"Enquiry Segment*"}
@@ -3406,7 +3369,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.source_of_enquiry}
-                  label={"Source Of Enquiry"}
+                  label={"Source Of Enquiry*"}
                   editable={false}
                 />
                 <Text style={GlobalStyle.underline}></Text>
@@ -3532,17 +3495,21 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   }
                 />
 
-                {/* <DropDownSelectionItem
-                  label={"Enquiry Category"}
+                <DropDownSelectionItem
+                  label={"Enquiry Category*"}
                   disabled={true}
-                  value={selector.enquiry_category.length == 0 ? "Hot" : selector.enquiry_category}
+                  value={
+                    selector.enquiry_category.length == 0
+                      ? "Hot"
+                      : selector.enquiry_category
+                  }
                   onPress={() =>
                     showDropDownModelMethod(
                       "ENQUIRY_CATEGORY",
                       "Enquiry Category"
                     )
                   }
-                /> */}
+                />
 
                 <DropDownSelectionItem
                   label={"Buyer Type*"}
@@ -3593,12 +3560,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 />
 
                 <DropDownSelectionItem
-                  label={"What is prime expectation from the car?"}
+                  label={"What is prime expectation from the Vehicle?"}
                   value={selector.prime_expectation_from_car}
                   onPress={() =>
                     showDropDownModelMethod(
                       "PRIME_EXPECTATION_CAR",
-                      "What is prime expectation from the car?"
+                      "What is prime expectation from the Vehicle?"
                     )
                   }
                 />
@@ -3709,7 +3676,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.houseNum}
-                  label={"H.No*"}
+                  label={"H.No"}
                   maxLength={50}
                   // keyboardType={"number-pad"}
                   onChangeText={(text) =>
@@ -3718,21 +3685,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     )
                   }
                 />
-                <Text
-                  style={[
-                    GlobalStyle.underline,
-                    {
-                      backgroundColor:
-                        isSubmitPress && selector.houseNum === ""
-                          ? "red"
-                          : "rgba(208, 212, 214, 0.7)",
-                    },
-                  ]}
-                ></Text>
+                <Text style={GlobalStyle.underline} />
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.streetName}
-                  label={"Street Name*"}
+                  label={"Street Name"}
                   autoCapitalize="words"
                   maxLength={120}
                   keyboardType={"default"}
@@ -3745,23 +3702,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     )
                   }
                 />
-                <Text
-                  style={[
-                    GlobalStyle.underline,
-                    {
-                      backgroundColor:
-                        isSubmitPress && selector.streetName === ""
-                          ? "red"
-                          : "rgba(208, 212, 214, 0.7)",
-                    },
-                  ]}
-                ></Text>
+                <Text style={GlobalStyle.underline} />
                 {/* {selector.isAddressSet && ( */}
                 <>
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.village}
-                    label={"Village/Town*"}
+                    label={"Village/Town"}
                     autoCapitalize="words"
                     maxLength={50}
                     keyboardType={"default"}
@@ -3774,22 +3721,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress && selector.village === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
+                  <Text style={GlobalStyle.underline} />
 
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.mandal}
-                    label={"Mandal*"}
+                    label={"Mandal/Tahsil"}
                     autoCapitalize="words"
                     maxLength={50}
                     keyboardType={"default"}
@@ -3802,22 +3739,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress && selector.mandal === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
+                  <Text style={GlobalStyle.underline} />
 
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.city}
-                    label={"City*"}
+                    label={"City"}
                     autoCapitalize="words"
                     maxLength={50}
                     keyboardType={"default"}
@@ -3827,21 +3754,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress && selector.city === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
+                  <Text style={GlobalStyle.underline} />
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.district}
-                    label={"District*"}
+                    label={"District"}
                     autoCapitalize="words"
                     maxLength={50}
                     keyboardType={"default"}
@@ -3854,21 +3771,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress && selector.district === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
+                  <Text style={GlobalStyle.underline} />
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.state}
-                    label={"State*"}
+                    label={"State"}
                     autoCapitalize="words"
                     maxLength={50}
                     keyboardType={"default"}
@@ -3881,17 +3788,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress && selector.state === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
+                  <Text style={GlobalStyle.underline} />
                 </>
                 {/* )} */}
                 <View
@@ -3911,7 +3808,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     label={"Yes"}
                     value={"yes"}
                     status={
-                      selector.is_permanent_address_same === "YES"
+                      selector.is_permanent_address_same === "YES" ||
+                      isPermanent() === "YES"
                         ? true
                         : false
                     }
@@ -4035,7 +3933,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                   <TextinputComp
                     style={styles.textInputStyle}
-                    label={"H.No*"}
+                    label={"H.No"}
                     // keyboardType={"number-pad"}
                     maxLength={50}
                     value={selector.p_houseNum}
@@ -4048,20 +3946,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress && selector.p_houseNum === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
+                  <Text style={GlobalStyle.underline} />
                   <TextinputComp
                     style={styles.textInputStyle}
-                    label={"Street Name*"}
+                    label={"Street Name"}
                     autoCapitalize="words"
                     keyboardType={"default"}
                     maxLength={50}
@@ -4079,7 +3967,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.p_village}
-                    label={"Village/Town*"}
+                    label={"Village/Town"}
                     autoCapitalize="words"
                     maxLength={50}
                     keyboardType={"default"}
@@ -4092,21 +3980,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress && selector.p_village === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
+                  <Text style={GlobalStyle.underline} />
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.p_mandal}
-                    label={"Mandal*"}
+                    label={"Mandal"}
                     autoCapitalize="words"
                     maxLength={50}
                     keyboardType={"default"}
@@ -4123,7 +4001,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.p_city}
-                    label={"City*"}
+                    label={"City"}
                     autoCapitalize="words"
                     maxLength={50}
                     keyboardType={"default"}
@@ -4136,21 +4014,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress && selector.p_city === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
+                  <Text style={GlobalStyle.underline} />
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.p_district}
-                    label={"District*"}
+                    label={"District"}
                     autoCapitalize="words"
                     maxLength={50}
                     keyboardType={"default"}
@@ -4163,21 +4031,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress && selector.p_district === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
+                  <Text style={GlobalStyle.underline} />
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.p_state}
-                    label={"State*"}
+                    label={"State"}
                     autoCapitalize="words"
                     maxLength={50}
                     keyboardType={"default"}
@@ -4190,17 +4048,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress && selector.p_state === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
+                  <Text style={GlobalStyle.underline} />
                 </View>
                 {/* ) : null} */}
               </List.Accordion>
@@ -4272,8 +4120,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <FlatList
                   //  style={{ height: faltListHeight }}
                   data={carModelsList}
-                  //extraData={carModelsList}
-                  keyExtractor={(item, index) => index.toString()}
+                  extraData={carModelsList}
+                  // keyExtractor={(item, index) => item.id.toString()}
                   renderItem={({ item, index }) => {
                     return (
                       // <Pressable onPress={() => selectedItem(item, index)}>
@@ -4284,6 +4132,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           index={index}
                           item={item}
                           isSubmitPress={isSubmitPress}
+                          isOnlyOne={carModelsList.length === 1 ? true : false}
                           onChangeSubmit={() => setIsSubmitPress(false)}
                         />
 
@@ -4492,7 +4341,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       label={"Rate of Interest"}
                       keyboardType={"numeric"}
                       maxLength={10}
-                      value={selector.rate_of_interest}
+                      value={selector.rate_of_interest?.toString()}
                       onChangeText={(text) => {
                         emiCal(
                           selector.loan_amount,
@@ -4526,7 +4375,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       label={"Loan of Tenure(Months)"}
                       keyboardType={"numeric"}
                       maxLength={3}
-                      value={selector.loan_of_tenure}
+                      value={selector.loan_of_tenure?.toString()}
                       onChangeText={(text) => {
                         emiCal(
                           selector.loan_amount,
@@ -4654,18 +4503,21 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       style={styles.textInputStyle}
                       value={selector.adhaar_number}
                       label={"Aadhaar Number"}
-                      keyboardType={"phone-pad"}
+                      keyboardType={"number-pad"}
                       maxLength={12}
                       onChangeText={(text) =>
                         dispatch(
-                          setUploadDocuments({ key: "ADHAR", text: text })
+                          setUploadDocuments({
+                            key: "ADHAR",
+                            text: text.replace(/[^0-9]/g, ""),
+                          })
                         )
                       }
                     />
                     <Text style={GlobalStyle.underline}></Text>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
-                        name={"Upload Adhar"}
+                        name={"Upload Aadhaar"}
                         onPress={() => dispatch(setImagePicker("UPLOAD_ADHAR"))}
                       />
                     </View>
@@ -4845,7 +4697,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         }
                       />
                     </View>
-                    {uploadedImagesDataObj.passbook ? (
+                    {uploadedImagesDataObj.pattaPassBook ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
                           style={{
@@ -4857,9 +4709,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                             alignItems: "center",
                           }}
                           onPress={() => {
-                            if (uploadedImagesDataObj.passbook?.documentPath) {
+                            if (
+                              uploadedImagesDataObj.pattaPassBook?.documentPath
+                            ) {
                               setImagePath(
-                                uploadedImagesDataObj.passbook?.documentPath
+                                uploadedImagesDataObj.pattaPassBook
+                                  ?.documentPath
                               );
                             }
                           }}
@@ -4876,7 +4731,50 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
-                            fileName={uploadedImagesDataObj.passbook.fileName}
+                            fileName={
+                              uploadedImagesDataObj.pattaPassBook.fileName
+                            }
+                            from={"PATTA_PASS_BOOK"}
+                          />
+                        </View>
+                      </View>
+                    ) : uploadedImagesDataObj.pattaPassBook ? (
+                      <View style={{ flexDirection: "row" }}>
+                        <TouchableOpacity
+                          style={{
+                            width: "20%",
+                            height: 30,
+                            backgroundColor: Colors.SKY_BLUE,
+                            borderRadius: 4,
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                          onPress={() => {
+                            if (
+                              uploadedImagesDataObj.pattaPassBook?.documentPath
+                            ) {
+                              setImagePath(
+                                uploadedImagesDataObj.pattaPassBook
+                                  ?.documentPath
+                              );
+                            }
+                          }}
+                        >
+                          <Text
+                            style={{
+                              color: Colors.WHITE,
+                              fontSize: 14,
+                              fontWeight: "600",
+                            }}
+                          >
+                            Preview
+                          </Text>
+                        </TouchableOpacity>
+                        <View style={{ width: "80%" }}>
+                          <DisplaySelectedImage
+                            fileName={
+                              uploadedImagesDataObj.pattaPassBook.fileName
+                            }
                             from={"PATTA_PASS_BOOK"}
                           />
                         </View>
@@ -4897,7 +4795,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         }
                       />
                     </View>
-                    {uploadedImagesDataObj.pension ? (
+                    {uploadedImagesDataObj.pensionLetter ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
                           style={{
@@ -4909,9 +4807,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                             alignItems: "center",
                           }}
                           onPress={() => {
-                            if (uploadedImagesDataObj.pension?.documentPath) {
+                            if (
+                              uploadedImagesDataObj.pensionLetter?.documentPath
+                            ) {
                               setImagePath(
-                                uploadedImagesDataObj.pension?.documentPath
+                                uploadedImagesDataObj.pensionLetter
+                                  ?.documentPath
                               );
                             }
                           }}
@@ -4928,7 +4829,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
-                            fileName={uploadedImagesDataObj.pension.fileName}
+                            fileName={
+                              uploadedImagesDataObj.pensionLetter.fileName
+                            }
                             from={"PENSION_LETTER"}
                           />
                         </View>
@@ -5008,7 +4911,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         }
                       />
                     </View>
-                    {uploadedImagesDataObj.leasingConfirm ? (
+                    {uploadedImagesDataObj.leasingConfirmationLetter ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
                           style={{
@@ -5021,10 +4924,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           }}
                           onPress={() => {
                             if (
-                              uploadedImagesDataObj.leasingConfirm?.documentPath
+                              uploadedImagesDataObj.leasingConfirmationLetter
+                                ?.documentPath
                             ) {
                               setImagePath(
-                                uploadedImagesDataObj.leasingConfirm
+                                uploadedImagesDataObj.leasingConfirmationLetter
                                   ?.documentPath
                               );
                             }
@@ -5043,7 +4947,51 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
                             fileName={
-                              uploadedImagesDataObj.leasingConfirm.fileName
+                              uploadedImagesDataObj.leasingConfirmationLetter
+                                .fileName
+                            }
+                            from={"LEASING_CONFIRMATION"}
+                          />
+                        </View>
+                      </View>
+                    ) : uploadedImagesDataObj.leasingConfirmationLetter ? (
+                      <View style={{ flexDirection: "row" }}>
+                        <TouchableOpacity
+                          style={{
+                            width: "20%",
+                            height: 30,
+                            backgroundColor: Colors.SKY_BLUE,
+                            borderRadius: 4,
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                          onPress={() => {
+                            if (
+                              uploadedImagesDataObj.leasingConfirmationLetter
+                                ?.documentPath
+                            ) {
+                              setImagePath(
+                                uploadedImagesDataObj.leasingConfirmationLetter
+                                  ?.documentPath
+                              );
+                            }
+                          }}
+                        >
+                          <Text
+                            style={{
+                              color: Colors.WHITE,
+                              fontSize: 14,
+                              fontWeight: "600",
+                            }}
+                          >
+                            Preview
+                          </Text>
+                        </TouchableOpacity>
+                        <View style={{ width: "80%" }}>
+                          <DisplaySelectedImage
+                            fileName={
+                              uploadedImagesDataObj.leasingConfirmationLetter
+                                .fileName
                             }
                             from={"LEASING_CONFIRMATION"}
                           />
@@ -5097,6 +5045,46 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
                             fileName={uploadedImagesDataObj.address.fileName}
+                            from={"ADDRESS_PROOF"}
+                          />
+                        </View>
+                      </View>
+                    ) : uploadedImagesDataObj.addressProof?.fileName ? (
+                      <View style={{ flexDirection: "row" }}>
+                        <TouchableOpacity
+                          style={{
+                            width: "20%",
+                            height: 30,
+                            backgroundColor: Colors.SKY_BLUE,
+                            borderRadius: 4,
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                          onPress={() => {
+                            if (
+                              uploadedImagesDataObj.addressProof?.documentPath
+                            ) {
+                              setImagePath(
+                                uploadedImagesDataObj.addressProof?.documentPath
+                              );
+                            }
+                          }}
+                        >
+                          <Text
+                            style={{
+                              color: Colors.WHITE,
+                              fontSize: 14,
+                              fontWeight: "600",
+                            }}
+                          >
+                            Preview
+                          </Text>
+                        </TouchableOpacity>
+                        <View style={{ width: "80%" }}>
+                          <DisplaySelectedImage
+                            fileName={
+                              uploadedImagesDataObj.addressProof.fileName
+                            }
                             from={"ADDRESS_PROOF"}
                           />
                         </View>
@@ -5260,14 +5248,20 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <Text style={GlobalStyle.underline}></Text>
 
                     <DropDownSelectionItem
-                      label={"Fuel Type"}
+                      label={
+                        userData.isSelfManager == "Y" ? "Range" : "Fuel Type"
+                      }
                       value={selector.c_fuel_type}
                       onPress={() =>
                         showDropDownModelMethod("C_FUEL_TYPE", "Fuel Type")
                       }
                     />
                     <DropDownSelectionItem
-                      label={"Transmission Type"}
+                      label={
+                        userData.isSelfManager == "Y"
+                          ? "Battery Type"
+                          : "Transmission Type"
+                      }
                       value={selector.c_transmission_type}
                       onPress={() =>
                         showDropDownModelMethod(
@@ -5559,7 +5553,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       onPress={() => dispatch(setImagePicker("UPLOAD_REG_DOC"))}
                     />
                   </View>
-                  {uploadedImagesDataObj.REGDOC ? (
+                  {selector.regDocumentPath ? (
                     <View style={{ flexDirection: "row" }}>
                       <TouchableOpacity
                         style={{
@@ -5571,10 +5565,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           alignItems: "center",
                         }}
                         onPress={() => {
-                          if (uploadedImagesDataObj.REGDOC?.documentPath) {
-                            setImagePath(
-                              uploadedImagesDataObj.REGDOC?.documentPath
-                            );
+                          if (selector.regDocumentPath) {
+                            setImagePath(selector.regDocumentPath);
                           }
                         }}
                       >
@@ -5590,8 +5582,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       </TouchableOpacity>
                       <View style={{ width: "80%" }}>
                         <DisplaySelectedImage
-                          fileName={uploadedImagesDataObj.REGDOC.fileName}
-                          from={"REGDOC"}
+                          fileName={selector.regDocumentKey}
+                          from={"regNoD"}
                         />
                       </View>
                     </View>
@@ -5684,14 +5676,20 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   <Text style={GlobalStyle.underline}></Text>
 
                   <DropDownSelectionItem
-                    label={"Fuel Type"}
+                    label={
+                      userData.isSelfManager == "Y" ? "Range" : "Fuel Type"
+                    }
                     value={selector.r_fuel_type}
                     onPress={() =>
                       showDropDownModelMethod("R_FUEL_TYPE", "Fuel Type")
                     }
                   />
                   <DropDownSelectionItem
-                    label={"Transmission Type"}
+                    label={
+                      userData.isSelfManager == "Y"
+                        ? "Battery Type"
+                        : "Transmission Type"
+                    }
                     value={selector.r_transmission_type}
                     onPress={() =>
                       showDropDownModelMethod(
@@ -5871,7 +5869,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <View>
                       <View style={styles.select_image_bck_vw}>
                         <ImageSelectItem
-                          name={"Upload Insurence"}
+                          name={"Upload Insurance"}
                           onPress={() =>
                             dispatch(setImagePicker("UPLOAD_INSURENCE"))
                           }
@@ -5883,7 +5881,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           from={"INSURENCE"}
                         />
                       ) : null} */}
-                      {uploadedImagesDataObj.insurance ? (
+                      {selector.insuranceDocumentPath ? (
                         <View style={{ flexDirection: "row" }}>
                           <TouchableOpacity
                             style={{
@@ -5895,12 +5893,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                               alignItems: "center",
                             }}
                             onPress={() => {
-                              if (
-                                uploadedImagesDataObj.insurance?.documentPath
-                              ) {
-                                setImagePath(
-                                  uploadedImagesDataObj.insurance?.documentPath
-                                );
+                              if (selector.insuranceDocumentPath) {
+                                setImagePath(selector.insuranceDocumentPath);
                               }
                             }}
                           >
@@ -5916,9 +5910,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           </TouchableOpacity>
                           <View style={{ width: "80%" }}>
                             <DisplaySelectedImage
-                              fileName={
-                                uploadedImagesDataObj.insurance.fileName
-                              }
+                              fileName={selector.insuranceDocumentKey}
                               from={"INSURENCE"}
                             />
                           </View>
@@ -5931,19 +5923,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <View>
                       <DateSelectItem
                         label={"Insurance Policy Expiry Date"}
-                        value={
-                          selector.r_insurence_expiry_date
-                            ? moment(
-                                new Date(
-                                  Number(selector.r_insurence_expiry_date)
-                                )
-                              ).format("DD/MM/YYYY")
-                            : selector.r_insurence_expiry_date
-                        }
+                        value={selector.r_insurence_to_date}
                         onPress={() =>
-                          dispatch(
-                            setDatePicker("R_INSURENCE_POLICIY_EXPIRY_DATE")
-                          )
+                          dispatch(setDatePicker("R_INSURENCE_TO_DATE"))
                         }
                       />
                     </View>
@@ -6016,7 +5998,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               {isDropSelected ? (
                 <List.Accordion
                   id={"10"}
-                  title={"Enquiry Drop Section"}
+                  title={"Enquiry Lost Section"}
                   titleStyle={{
                     color: openAccordian === "10" ? Colors.BLACK : Colors.BLACK,
                     fontSize: 16,
@@ -6180,7 +6162,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   textInputStyle: {
-    height: 65,
+    height: 50,
     width: "100%",
   },
   space: {
@@ -6236,7 +6218,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.WHITE,
   },
   actionBtnView: {
-    marginTop: 80,
+    marginTop: 8,
     flexDirection: "row",
     justifyContent: "space-evenly",
     alignItems: "center",

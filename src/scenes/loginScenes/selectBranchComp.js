@@ -8,13 +8,16 @@ import * as AsyncStore from '../../asyncStore';
 import {
     clearState,
 } from "../../redux/loginReducer";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { showToast } from "../../utils/toast";
 import { AuthContext } from "../../utils/authContext";
+import { updateSelectedBranchId } from "../../redux/targetSettingsReducer";
+import { setBranchId, setBranchName } from "../../utils/helperFunctions";
 
 
 const SelectBranchComp = ({ route, navigation }) => {
 
+    const selector = useSelector((state) => state.targetSettingsReducer);
     const [checked, setChecked] = React.useState('first');
     const [branchList, setBranchList] = useState([]);
     const [selectedBranchId, setSelectedBranchId] = useState("");
@@ -23,53 +26,68 @@ const SelectBranchComp = ({ route, navigation }) => {
     const dispatch = useDispatch();
 
     React.useEffect(async () => {
-
-        let branchList = [];
-        if (route.params.isFromLogin) {
-            branchList = route.params.branches;
-        } else {
-            try {
-                const branchData = await AsyncStore.getData("BRANCHES_DATA");
-                branchList = JSON.parse(branchData);
-            }
-            catch (err) {
-                branchList = [];
-            }
-
-            const branchId = await AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_ID);
-            setSelectedBranchId(branchId);
-            const branchName = await AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_NAME);
-            setSelectedBranchName(branchName);
+      let branchList = [];
+      if (route.params.isFromLogin) {
+        branchList = route.params.branches;
+      } else {
+        try {
+          const branchData = await AsyncStore.getData("BRANCHES_DATA");
+          branchList = JSON.parse(branchData);
+        } catch (err) {
+          branchList = [];
         }
-        setBranchList(branchList);
-    }, [])
+
+        let branchId = "";
+        let branchName = "";
+
+        if (selector.selectedBranchId) {
+          branchId = selector.selectedBranchId;
+        } else {
+          branchId = await AsyncStore.getData(
+            AsyncStore.Keys.SELECTED_BRANCH_ID
+          );
+        }
+
+        if (selector.selectedBranchName) {
+          branchName = selector.selectedBranchName;
+        } else {
+          branchName = await AsyncStore.getData(
+            AsyncStore.Keys.SELECTED_BRANCH_NAME
+          );
+        }
+
+        setSelectedBranchId(branchId);
+        setSelectedBranchName(branchName);
+      }
+      setBranchList(branchList);
+    }, []);
 
     const branchSelected = (selectedItem) => {
-
-        setSelectedBranchId(selectedItem.branchId);
-        setSelectedBranchName(selectedItem.branchName);
-    }
+      setSelectedBranchId(selectedItem.branchId);
+      setSelectedBranchName(selectedItem.branchName);
+    };
 
     const proceedBtnClicked = () => {
+      if (route.params.isFromLogin) {
+        if (selectedBranchId != "") {
+          AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
+            setBranchData();
+            signIn(token);
+            dispatch(clearState());
+          });
+        } else {
+          showToast("Please select branch");
+        }
+      } else {
+        setBranchData();
+        navigation.goBack();
+      }
+    };
 
-        if (route.params.isFromLogin) {
-            if (selectedBranchId != "") {
-                AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
-                    AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_ID, selectedBranchId.toString());
-                    AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_NAME, selectedBranchName);
-                    signIn(token);
-                    dispatch(clearState());
-                })
-            } else {
-                showToast("Please select branch")
-            }
-        }
-        else {
-            AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_ID, selectedBranchId.toString());
-            AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_NAME, selectedBranchName);
-            navigation.goBack();
-        }
-    }
+    const setBranchData = () => {
+      setBranchId(selectedBranchId);
+      setBranchName(selectedBranchName);
+    };
 
     return (
         <SafeAreaView style={styles.container}>

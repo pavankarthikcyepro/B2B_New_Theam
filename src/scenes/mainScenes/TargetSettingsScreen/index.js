@@ -124,7 +124,6 @@ const TargetSettingsScreen = ({ route, navigation }) => {
 
     const initialTask = async () => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-        // console.log("$$$$$ LOGIN EMP:", employeeData);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
             let hrmsRole = await jsonObj.hrmsRole
@@ -150,7 +149,6 @@ const TargetSettingsScreen = ({ route, navigation }) => {
             }
             const dateFormat = "YYYY-MM-DD";
             const currentDate = moment().format(dateFormat)
-            console.log("CURRENT MONTH:", new Date().getMonth());
             let monthArr = [];
             monthArr = selector.monthList.filter((item) => {
                 return item.id === (new Date().getMonth() + 1)
@@ -168,23 +166,19 @@ const TargetSettingsScreen = ({ route, navigation }) => {
 
             if (jsonObj.roles.length > 0) {
                 let rolesArr = [];
-                console.log("ROLLS2:", jsonObj.roles);
                 rolesArr = jsonObj.roles.filter((item) => {
                     return item === "Admin Prod" || item === "App Admin" || item === "Manager" || item === "TL" || item === "General Manager" || item === "branch manager" || item === "Testdrive_Manager"
                 })
                 if (rolesArr.length > 0) {
-                    console.log("FOUND");
                     dispatch(updateIsTeamPresent(true))
                 }
             }
-            // console.log("$$$$$$$ PAYLOAD: ", payload2)
             Promise.all([
                 dispatch(getSpecialDropValue({ "bu": "1", "dropdownType": "Specialselection", "parentId": 0 })),
                 dispatch(getEmployeesActiveBranch(payload)),
                 dispatch(getEmployeesRolls(payload)),
                 dispatch(getAllTargetMapping(payload2)),
             ]).then(() => {
-                console.log('SUCCESS');
             });
 
 
@@ -235,7 +229,6 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                 data={dataForDropDown}
                 onRequestClose={() => setShowDropDownModel(false)}
                 selectedItems={(item) => {
-                    console.log("ITEM:", item, ', : moment: ', moment().month() + 1);
                     if (item && item.id < moment().month() + 1) {
                         showToast('Targets cannot be set for previous months.');
                         return;
@@ -249,7 +242,6 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                         const currentDate = moment().format(dateFormat)
                         const splitDate = currentDate.split('-')
                         const tempDate = new Date(splitDate[0], item.id - 1, 1, 1, 1, 1)
-                        console.log("DATE:", tempDate, moment(tempDate).format(dateFormat));
                         const selectedMonthDate = moment(tempDate).format(dateFormat);
                         const monthFirstDate = moment(selectedMonthDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
                         const monthLastDate = moment(selectedMonthDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
@@ -269,7 +261,6 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                 mode={"date"}
                 value={new Date(Date.now())}
                 onChange={(event, selectedDate) => {
-                    console.log("date: ", selectedDate, moment(selectedDate).format(dateFormat));
                     if (Platform.OS === "android") {
                         if (selectedDate) {
                             updateSelectedDate(selectedDate, datePickerId);

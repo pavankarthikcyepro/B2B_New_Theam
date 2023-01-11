@@ -14,7 +14,8 @@ import {
   generateOtpApi,
   validateOtpApi,
   setDatePicker,
-  updateSelectedDate
+  updateSelectedDate,
+  updateHomeVisit
 } from "../../../redux/homeVisitReducer";
 import {
   showToastSucess,
@@ -26,7 +27,7 @@ import {
   getCurrentTasksListApi,
   getPendingTasksListApi,
 } from "../../../redux/mytaskReducer";
-import { isValidateAlphabetics, convertDateStringToMillisecondsUsingMoment } from "../../../utils/helperFunctions";
+import { convertDateStringToMillisecondsUsingMoment } from "../../../utils/helperFunctions";
 import { DateSelectItem, RadioTextItem } from "../../../pureComponents";
 import {
   CodeField,
@@ -94,10 +95,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
     value: otpValue,
     setValue: setOtpValue,
   });
-  const [reasonList, setReasonList] = useState([{
-    label: 'Other',
-    value: 'Other'
-  }]);
+  const [reasonList, setReasonList] = useState([]);
   const [currentLocation, setCurrentLocation] = useState(null);
   const [otherReason, setOtherReason] = useState('');
   const [defaultReasonIndex, setDefaultReasonIndex] = useState(null);
@@ -116,7 +114,6 @@ const HomeVisitScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     navigation.addListener('focus', () => {
-      console.log("TYPE:", reasonTaskName);
       getCurrentLocation()
       getReasonListData(reasonTaskName)
     })
@@ -124,7 +121,6 @@ const HomeVisitScreen = ({ route, navigation }) => {
 
   const getCurrentLocation = () => {
     Geolocation.getCurrentPosition(info => {
-      console.log(info)
       setCurrentLocation({
         lat: info.coords.latitude,
         long: info.coords.longitude
@@ -138,13 +134,12 @@ const HomeVisitScreen = ({ route, navigation }) => {
       let findIndex = reasonList.findIndex((item) => {
         return item.value === selector.reason
       })
-      console.log("DEFAULT INDEX:", findIndex);
       if (findIndex !== -1) {
         setDefaultReasonIndex(reasonList[findIndex].value)
       }
       else {
-        dispatch(setHomeVisitDetails({ key: "REASON", text: 'Other' }));
-        setDefaultReasonIndex('Other')
+        dispatch(setHomeVisitDetails({ key: "REASON", text: 'Others' }));
+        setDefaultReasonIndex('Others')
         setOtherReason(reason)
       }
     }
@@ -162,7 +157,6 @@ const HomeVisitScreen = ({ route, navigation }) => {
       Promise.all([
         dispatch(getReasonList(payload))
       ]).then((res) => {
-        console.log("all done", JSON.stringify(res));
         let tempReasonList = [];
         let allReasons = res[0].payload;
         if (allReasons.length > 0) {
@@ -224,12 +218,12 @@ const HomeVisitScreen = ({ route, navigation }) => {
       return;
     }
 
-    if (selector.customer_remarks.length === 0) {
+    if (selector.customer_remarks.trim().length === 0) {
       showToast("Please enter customer remarks");
       return;
     }
 
-    if (selector.employee_remarks.length === 0) {
+    if (selector.employee_remarks.trim().length === 0) {
       showToast("Please Enter employee remarks");
       return;
     }
@@ -258,23 +252,22 @@ const HomeVisitScreen = ({ route, navigation }) => {
       return;
     }
 
-    if (selector.reason === 'Other' && otherReason.length === 0) {
+    if (selector.reason === 'Others' && otherReason.length === 0) {
       showToast("Please Enter Other Reason");
       return;
     }
 
-    if (selector.customer_remarks.length === 0) {
+    if (selector.customer_remarks.trim().length === 0) {
       showToast("Please enter customer remarks");
       return;
     }
 
-    if (selector.employee_remarks.length === 0) {
+    if (selector.employee_remarks.trim().length === 0) {
       showToast("Please Enter employee remarks");
       return;
     }
-
     const newTaskObj = { ...selector.task_details_response };
-    newTaskObj.reason = selector.reason === 'Other' ? otherReason : selector.reason;
+    newTaskObj.reason = selector.reason === 'Others' ? otherReason : selector.reason;
     newTaskObj.customerRemarks = selector.customer_remarks;
     newTaskObj.employeeRemarks = selector.employee_remarks;
     newTaskObj.lat = currentLocation ? currentLocation.lat.toString() : null;
@@ -282,6 +275,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
     newTaskObj.taskActualEndTime = convertDateStringToMillisecondsUsingMoment(
       selector.actual_end_time
     );
+
     if (actionType === "CLOSE_TASK") {
       newTaskObj.taskStatus = "CLOSED";
     }
@@ -298,7 +292,6 @@ const HomeVisitScreen = ({ route, navigation }) => {
       }
       newTaskObj.taskStatus = "RESCHEDULED";
     }
-    console.log("PAYLOAD:", JSON.stringify(newTaskObj));
     dispatch(updateTaskApi(newTaskObj));
     setActionType(actionType);
   };
@@ -349,24 +342,12 @@ const HomeVisitScreen = ({ route, navigation }) => {
     }
   }, [selector.validate_otp_response_status])
 
-  const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate;
-    setDate(currentDate);
-
-    if (Platform.OS === "android") {
-      if (!currentDate) {
-        dispatch(updateSelectedDate({ key: "NONE", text: currentDate }));
-      } else {
-        dispatch(updateSelectedDate({ key: "", text: currentDate }));
-      }
-    } else {
-      dispatch(updateSelectedDate({ key: "", text: currentDate }));
+  const isViewMode = () => {
+    if (route?.params?.taskStatus === "CLOSED") {
+      return true;
     }
+    return false;
   };
-  const onDatePickerDone = () => {
-    onChange('', date);
-    dispatch(setDatePicker('CLOSE'))
-  }
 
   return (
     <KeyboardAvoidingView
@@ -380,10 +361,15 @@ const HomeVisitScreen = ({ route, navigation }) => {
           visible={selector.showDatepicker}
           mode={"date"}
           minimumDate={selector.minDate}
-          maximumDate={selector.maxDate}          
-          value={date}          
-          onChange={onChange}
-          onRequestClose={onDatePickerDone}          
+          maximumDate={selector.maxDate}
+          value={new Date(Date.now())}
+          onChange={(event, selectedDate) => {
+            if (Platform.OS === "android") {
+              //setDatePickerVisible(false);
+            }
+            dispatch(updateSelectedDate({ key: "", text: selectedDate }));
+          }}
+          onRequestClose={() => dispatch(setDatePicker())}
         />
         <View style={{ padding: 15 }}>
           <View style={[GlobalStyle.shadow, { backgroundColor: Colors.WHITE }]}>
@@ -401,12 +387,14 @@ const HomeVisitScreen = ({ route, navigation }) => {
             </Text>
             <View style={styles.view2}>
               <RadioTextItem
+                disabled={isViewMode()}
                 label={"Showroom address"}
                 value={"Showroom address"}
                 status={addressType === 1 ? true : false}
                 onPress={() => setAddressType(1)}
               />
               <RadioTextItem
+                disabled={isViewMode()}
                 label={"Customer address"}
                 value={"Customer address"}
                 status={addressType === 2 ? true : false}
@@ -418,7 +406,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
             {addressType === 2 && (
               <View>
                 <TextinputComp
-                  style={{ height: 65, maxHeight: 100, width: "100%" }}
+                  style={{ height: 50, maxHeight: 100, width: "100%" }}
                   value={customerAddress}
                   label={"Customer Address"}
                   multiline={true}
@@ -430,14 +418,19 @@ const HomeVisitScreen = ({ route, navigation }) => {
                 <Text style={GlobalStyle.underline}></Text>
               </View>
             )}
-            <View style={{ position: 'relative' }}>
-              {selector.reason !== '' &&
-                <View style={{ position: 'absolute', top: 0, left: 10, zIndex: 99 }}>
-                  <Text style={{ fontSize: 13, color: Colors.GRAY }}>Reason*</Text>
+            <View style={{ position: "relative" }}>
+              {selector.reason !== "" && (
+                <View
+                  style={{ position: "absolute", top: 0, left: 10, zIndex: 99 }}
+                >
+                  <Text style={{ fontSize: 13, color: Colors.GRAY }}>
+                    Reason*
+                  </Text>
                 </View>
-              }
+              )}
               <Dropdown
-                style={[styles.dropdownContainer,]}
+                disable={isViewMode()}
+                style={[styles.dropdownContainer]}
                 placeholderStyle={styles.placeholderStyle}
                 selectedTextStyle={styles.selectedTextStyle}
                 inputSearchStyle={styles.inputSearchStyle}
@@ -452,27 +445,40 @@ const HomeVisitScreen = ({ route, navigation }) => {
                 value={defaultReasonIndex}
                 // onFocus={() => setIsFocus(true)}
                 // onBlur={() => setIsFocus(false)}
-                onChange={val => {
-                  console.log("£££", val);
-                  dispatch(setHomeVisitDetails({ key: "REASON", text: val.value }));
+                onChange={(val) => {
+                  dispatch(
+                    setHomeVisitDetails({ key: "REASON", text: val.value })
+                  );
                 }}
               />
-              <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.reason === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
+              <Text
+                style={[
+                  GlobalStyle.underline,
+                  {
+                    backgroundColor:
+                      isSubmitPress && selector.reason === ""
+                        ? "red"
+                        : "rgba(208, 212, 214, 0.7)",
+                  },
+                ]}
+              ></Text>
             </View>
-            {selector.reason === 'Other' &&
+            {selector.reason === "Others" && (
               <TextinputComp
+                disabled={isViewMode()}
                 style={styles.textInputStyle}
                 label={"Other reason"}
-              autoCapitalize="words"
+                autoCapitalize="words"
                 value={otherReason}
                 maxLength={50}
                 onChangeText={(text) => {
-                  setOtherReason(text)
+                  setOtherReason(text);
                 }}
               />
-            }
+            )}
             <Text style={GlobalStyle.underline}></Text>
             <TextinputComp
+              disabled={isViewMode()}
               style={styles.textInputStyle}
               label={"Customer Remarks*"}
               autoCapitalize="words"
@@ -484,8 +490,19 @@ const HomeVisitScreen = ({ route, navigation }) => {
                 )
               }
             />
-            <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.customer_remarks === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
+            <Text
+              style={[
+                GlobalStyle.underline,
+                {
+                  backgroundColor:
+                    isSubmitPress && selector.customer_remarks === ""
+                      ? "red"
+                      : "rgba(208, 212, 214, 0.7)",
+                },
+              ]}
+            ></Text>
             <TextinputComp
+              disabled={isViewMode()}
               style={styles.textInputStyle}
               label={"Employee Remarks*"}
               autoCapitalize="words"
@@ -497,28 +514,65 @@ const HomeVisitScreen = ({ route, navigation }) => {
                 )
               }
             />
-            <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.employee_remarks === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
+            <Text
+              style={[
+                GlobalStyle.underline,
+                {
+                  backgroundColor:
+                    isSubmitPress && selector.employee_remarks === ""
+                      ? "red"
+                      : "rgba(208, 212, 214, 0.7)",
+                },
+              ]}
+            ></Text>
             <DateSelectItem
-              label={"Actual Start Date"}
+              disabled={isViewMode()}
+              label={"Next Followup Date"}
+              // label={"Actual Start Date"}
               value={selector.actual_start_time}
               onPress={() => dispatch(setDatePicker("ACTUAL_START_TIME"))}
             //  value={selector.expected_delivery_date}
             // onPress={() =>
             // dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
             />
-            <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && (selector.actual_start_time === '' || isDateError) ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-            <DateSelectItem
+            <Text
+              style={[
+                GlobalStyle.underline,
+                {
+                  backgroundColor:
+                    isSubmitPress &&
+                      (selector.actual_start_time === "" || isDateError)
+                      ? "red"
+                      : "rgba(208, 212, 214, 0.7)",
+                },
+              ]}
+            ></Text>
+            {/* <DateSelectItem
+              disabled={isViewMode()}
               label={"Actual End Date"}
               value={selector.actual_end_time}
               onPress={() => dispatch(setDatePicker("ACTUAL_END_TIME"))}
             />
-            <Text style={GlobalStyle.underline}></Text>
+            <Text style={GlobalStyle.underline}></Text> */}
           </View>
 
           {isCloseSelected ? (
-            <View style={{ marginTop: 20, paddingHorizontal: otpViewHorizontalPadding }}>
-              <View style={{ height: 60, justifyContent: 'center', alignItems: "center" }}>
-                <Text style={{ textAlign: "center" }}>{"We have sent an OTP to mobile number, please verify"}</Text>
+            <View
+              style={{
+                marginTop: 20,
+                paddingHorizontal: otpViewHorizontalPadding,
+              }}
+            >
+              <View
+                style={{
+                  height: 60,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Text style={{ textAlign: "center" }}>
+                  {"We have sent an OTP to mobile number, please verify"}
+                </Text>
               </View>
               <CodeField
                 ref={ref}
@@ -534,17 +588,17 @@ const HomeVisitScreen = ({ route, navigation }) => {
                   <Text
                     key={index}
                     style={[otpStyles.cell, isFocused && otpStyles.focusCell]}
-                    onLayout={getCellOnLayoutHandler(index)}>
+                    onLayout={getCellOnLayoutHandler(index)}
+                  >
                     {symbol || (isFocused ? <Cursor /> : null)}
                   </Text>
                 )}
               />
             </View>
           ) : null}
-
         </View>
 
-        {!isCloseSelected ? (
+        {!isCloseSelected && !isViewMode() ? (
           // <View style={styles.view1}>
           //   <Button
           //     mode="contained"
@@ -655,7 +709,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   textInputStyle: {
-    height: 65,
+    height: 50,
     width: "100%",
   },
   view1: {
@@ -709,13 +763,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   chooseAddressTextStyle: {
-    padding: 10,
+    paddingHorizontal: 10,
+    paddingTop: 10,
     justifyContent: "center",
     color: Colors.GRAY,
   },
   view2: {
     flexDirection: "row",
     paddingLeft: 12,
-    paddingBottom: 5,
+    paddingBottom: 2,
   },
 });

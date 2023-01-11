@@ -8,8 +8,8 @@ import {
     KeyboardAvoidingView,
     Keyboard,
     Platform,
-    Alert,
-    Dimensions
+    Alert,Image,
+    Dimensions,TouchableOpacity,Modal,
 } from "react-native";
 
 import { Colors, GlobalStyle } from "../../../styles";
@@ -87,10 +87,14 @@ const TestDriveScreen = ({ route, navigation }) => {
     const [dataForDropDown, setDataForDropDown] = useState([]);
     const [dropDownKey, setDropDownKey] = useState("");
     const [dropDownTitle, setDropDownTitle] = useState("Select Data");
+     const [imagePath, setImagePath] = useState("");
     const [userData, setUserData] = useState({
-        orgId: "",
-        employeeId: "",
-        employeeName: "",
+      orgId: "",
+      employeeId: "",
+      employeeName: "",
+      isSelfManager: "",
+      isOtp: "",
+      isTracker: "",
     });
     const [selectedBranchId, setSelectedBranchId] = useState("");
     const [showDatePickerModel, setShowDatePickerModel] = useState(false);
@@ -149,6 +153,7 @@ const TestDriveScreen = ({ route, navigation }) => {
         setValue: setOtpValue,
     });
     const [isSubmitPress, setIsSubmitPress] = useState(false);
+    const [vehicleDetails, setVehicleDetails] =useState({});
     let date = new Date();
     date.setDate(date.getDate() + 9);
 
@@ -229,6 +234,9 @@ const TestDriveScreen = ({ route, navigation }) => {
                     orgId: jsonObj.orgId,
                     employeeId: jsonObj.empId,
                     employeeName: jsonObj.empName,
+                    isSelfManager: jsonObj.isSelfManager,
+                    isOtp: jsonObj.isOtp,
+                    isTracker: jsonObj.isTracker,
                 });
 
                 // Get Branch Id
@@ -246,7 +254,6 @@ const TestDriveScreen = ({ route, navigation }) => {
                             dispatch(getTestDriveDseEmployeeListApi(jsonObj.orgId)),
                             dispatch(getDriversListApi(jsonObj.orgId)),
                         ]).then(() => {
-                            console.log("all done");
                         });
                     }
                 );
@@ -282,7 +289,6 @@ const TestDriveScreen = ({ route, navigation }) => {
     const getRecordDetailsFromServer = async (token) => {
 
         const url = URL.ENQUIRY_DETAILS(universalId);
-        console.log("url: ", url);
         await fetch(url, {
             method: "GET",
             headers: {
@@ -292,7 +298,6 @@ const TestDriveScreen = ({ route, navigation }) => {
         })
             .then(json => json.json())
             .then(resp => {
-                console.log("$$$$resp: ", JSON.stringify(resp))
                 if (resp.dmsEntity?.dmsLeadDto) {
 
                     const leadDtoObj = resp.dmsEntity?.dmsLeadDto;
@@ -314,6 +319,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                         } else {
                             primaryModel = dmsLeadProducts[0];
                         }
+
                         const {model, variant, fuel, transimmisionType} = primaryModel;
                         setSelectedVehicleDetails({
                             model,
@@ -333,30 +339,47 @@ const TestDriveScreen = ({ route, navigation }) => {
 
     // Handle Task Details Response
     useEffect(() => {
-        if (selector.test_drive_vehicle_list_for_drop_down.length > 0 && selectedVehicleDetails?.varient !== '') {
-            let tempObj = { ...selectedVehicleDetails };
-            let findModel = [];
-            console.log("MODELS: ", selector.test_drive_vehicle_list_for_drop_down);
-            findModel = selector.test_drive_vehicle_list_for_drop_down.filter((item) => {
-                return item.varientName === selectedVehicleDetails.varient || item.model === selectedVehicleDetails.model
-            })
-            if (findModel.length > 0) {
-                console.log('find model: ', findModel)
-                tempObj.vehicleId = findModel[0].vehicleId;
-                tempObj.varientId = findModel[0].varientId;
+      if (
+        selector.test_drive_vehicle_list_for_drop_down.length > 0 &&
+        selectedVehicleDetails?.varient !== ""
+      ) {
+        let tempObj = { ...selectedVehicleDetails };
+        let findModel = [];
+        findModel = selector.test_drive_vehicle_list_for_drop_down.filter(
+          (item) => {
+            return item.model == selectedVehicleDetails.model;
+          }
+        );
+        tempObj.vehicleId = findModel[0].vehicleId;
 
-                if (selector.test_drive_varients_obj_for_drop_down[findModel[0].model]) {
-                    const varientsData =
-                        selector.test_drive_varients_obj_for_drop_down[findModel[0].model];
-                    setVarientListForDropDown(varientsData);
-                }
+        if (findModel.length > 0) {
+          let findVarient = [];
+          findVarient = selector.test_drive_varients_obj_for_drop_down[
+            findModel[0].model
+          ].filter((item) => {
+            return item.varientName == selectedVehicleDetails.varient;
+          });
+          if (findVarient.length > 0) {
+            tempObj.varientId = findVarient[0].varientId;
+
+            if (
+              selector.test_drive_varients_obj_for_drop_down[findModel[0].model]
+            ) {
+              const varientsData =
+                selector.test_drive_varients_obj_for_drop_down[
+                  findModel[0].model
+                ];
+              setVarientListForDropDown(varientsData);
             }
-            else{
-                tempObj.fuelType = '';
-                tempObj.transType = '';
-            }
-            setSelectedVehicleDetails(tempObj)
+          } else {
+            tempObj.varientId = findModel[0].varientId;
+          }
+        } else {
+          tempObj.fuelType = "";
+          tempObj.transType = "";
         }
+        setSelectedVehicleDetails(tempObj);
+      }
     }, [selector.test_drive_vehicle_list_for_drop_down]);
 
     useEffect(() => {
@@ -366,39 +389,69 @@ const TestDriveScreen = ({ route, navigation }) => {
     }, [selector.task_details_response, taskStatusAndName])
 
     const getTestDriveAppointmentDetailsFromServer = async () => {
-        if (selector.task_details_response.entityModuleId) {
-            const employeeData = await AsyncStore.getData(
-                AsyncStore.Keys.LOGIN_EMPLOYEE
-            );
-            if (employeeData) {
-                const jsonObj = JSON.parse(employeeData);
-                const payload = {
-                    barnchId: selectedBranchId,
-                    orgId: jsonObj.orgId,
-                    entityModuleId: selector.task_details_response.entityModuleId,
-                };
-                console.log("getTestDriveAppointmentDetailsApi PAYLOAD:", payload);
-                dispatch(getTestDriveAppointmentDetailsApi(payload));
-            }
-
+      if (selector.task_details_response.entityModuleId) {
+        const employeeData = await AsyncStore.getData(
+          AsyncStore.Keys.LOGIN_EMPLOYEE
+        );
+        if (employeeData) {
+          const jsonObj = JSON.parse(employeeData);
+          const payload = {
+            barnchId: selectedBranchId,
+            orgId: jsonObj.orgId,
+            entityModuleId: selector.task_details_response.entityModuleId,
+          };
+          dispatch(getTestDriveAppointmentDetailsApi(payload));
         }
+      }
     };
 
     useEffect(() => {
-        if (selector.test_drive_appointment_details_response) {
-            const {status, vehicleId, varientId} = selector.test_drive_appointment_details_response; // /testdrive/history?branchId
-            if (status === "SENT_FOR_APPROVAL") {
-                const selectedModel = selector.test_drive_vehicle_list.filter((item) => { // demoVehicle/vehicles?branchId
-                    return item.varientId === varientId && item.vehicleId === vehicleId
-                })
-                if (selectedModel.length > 0) {
-                        const {fuelType, model, transmission_type, varientName, varientId, vehicleId} = selectedModel[0].vehicleInfo;
-                        setSelectedVehicleDetails({varient: varientName, fuelType, model, transType: transmission_type, varientId, vehicleId});
-                }
-            }
-            setIsRecordEditable(false);
-            updateTaskDetails(selector.test_drive_appointment_details_response)
+      if (selector.test_drive_appointment_details_response) {
+        let vehicleId =
+          selector.test_drive_appointment_details_response.vehicleId;
+        let varientId =
+          selector.test_drive_appointment_details_response.varientId;
+
+        if (selector.test_drive_appointment_details_response.vehicleInfo) {
+          vehicleId =
+            selector.test_drive_appointment_details_response.vehicleInfo
+              .vehicleId;
+          varientId =
+            selector.test_drive_appointment_details_response.vehicleInfo
+              .varientId;
+              setVehicleDetails(selector.test_drive_appointment_details_response.vehicleInfo);
         }
+
+        const selectedModel = selector.test_drive_vehicle_list.filter(
+          (item) => {
+            return item.varientId === varientId && item.vehicleId === vehicleId;
+          }
+        );
+          vehicleId =
+          selector.test_drive_appointment_details_response.vehicleId;
+        if (selectedModel.length > 0) {
+          const {
+            fuelType,
+            model,
+            transmission_type,
+            varientName,
+            varientId,
+          } = selectedModel[0].vehicleInfo;
+
+          setTimeout(() => {
+            setSelectedVehicleDetails({
+              varient: varientName,
+              fuelType,
+              model,
+              transType: transmission_type,
+              varientId,
+              vehicleId,
+            });
+          }, 2000);
+        }
+        setIsRecordEditable(false);
+        updateTaskDetails(selector.test_drive_appointment_details_response);
+      }
     }, [selector.test_drive_appointment_details_response]);
 
     useEffect(() => {
@@ -406,19 +459,16 @@ const TestDriveScreen = ({ route, navigation }) => {
             const taskStatus =
                 selector.task_details_response.taskStatus;
             const taskName = selector.task_details_response.taskName;
-            console.log("TASK STATUS:", taskStatus, taskName);
             if (taskStatus === "SENT_FOR_APPROVAL" && taskName === "Test Drive") {
-                setHandleActionButtons(2);
+                setHandleActionButtons(4);
             } else if (
                 taskStatus === "ASSIGNED" &&
                 taskName === "Test Drive Approval"
             ) {
-                console.log("INSIDE A");
                 setHandleActionButtons(3);
             } else if (taskStatus === "APPROVED" && taskName === "Test Drive") {
-                console.log("INSIDE B");
-                setHandleActionButtons(4);
-            } else if (taskStatus === "CANCELLED") {
+                setHandleActionButtons(4);              //
+            } else if (taskStatus === "CANCELLED") {    //
                 setHandleActionButtons(5);
             }
             else if (taskStatus === "ASSIGNED" && taskName === "Test Drive") {
@@ -447,7 +497,6 @@ const TestDriveScreen = ({ route, navigation }) => {
     }, [selector.drivers_list, selector.driverId]);
 
     const updateTaskDetails = (taskDetailsObj) => {
-        console.log("taskDetailsObj: ", taskDetailsObj);
         if (taskDetailsObj.vehicleInfo) {
             const vehicleInfo = taskDetailsObj.vehicleInfo;
 
@@ -527,7 +576,6 @@ const TestDriveScreen = ({ route, navigation }) => {
         })
             .then((response) => response.json())
             .then((response) => {
-                console.log("response", response);
                 if (response) {
                     const dataObj = { ...uploadedImagesDataObj };
                     dataObj[response.documentType] = response;
@@ -649,6 +697,27 @@ const TestDriveScreen = ({ route, navigation }) => {
             return;
         }
 
+        const preferredTime = moment(selector.customer_preferred_time, "HH:mm");
+        const startTime = moment(selector.actual_start_time, "HH:mm");
+        const endTime = moment(selector.actual_end_time, "HH:mm");
+
+        let preferredTimeDiff = moment(preferredTime).diff(startTime, "m");
+        let diff = moment(endTime).diff(startTime, "m");
+
+        if (0 == preferredTimeDiff) {
+          showToast("Customer Preferred Time and Actual Start Time Should not be Equal");
+          return;
+        } else if (0 > preferredTimeDiff) {
+          showToast("Customer Preferred Should not be less than Actual Start Time");
+          return;
+        } else if (0 == diff) {
+          showToast("Actual Start Time and Actual End Time Should not be Equal");
+          return;
+        } else if (0 > diff) {
+          showToast("Actual End Time Should not be less than Actual Start Time");
+          return;
+        }
+
         if (selectedVehicleDetails.vehicleId === 0 || selectedVehicleDetails.varientId === 0) {
             showToast("Please select model & variant");
             return;
@@ -705,24 +774,25 @@ const TestDriveScreen = ({ route, navigation }) => {
         setTaskStatusAndName({ status: status, name: taskName });
 
         let appointmentObj = {
-            address: customerAddress,
-            branchId: selectedBranchId,
-            customerHaveingDl: customerHavingDrivingLicense === 1,
-            customerId: universalId,
-            dseId: selectedDseDetails.id,
-            location: location,
-            orgId: userData.orgId,
-            source: "ShowroomWalkin",
-            startTime: actualStartTime,
-            endTime: actualEndTime,
-            testDriveDatetime: prefferedTime,
-            testdriveId: 0,
-            status: status,
-            varientId: varientId,
-            vehicleId: vehicleId,
-            driverId: selectedDriverDetails.id.toString(),
-            dlBackUrl: "",
-            dlFrontUrl: "",
+          address: customerAddress,
+          branchId: selectedBranchId,
+          customerHaveingDl: customerHavingDrivingLicense === 1,
+          customerId: universalId,
+          dseId: selectedDseDetails.id,
+          location: location,
+          orgId: userData.orgId,
+          source: "ShowroomWalkin",
+          startTime: actualStartTime,
+          endTime: actualEndTime,
+          testDriveDatetime: prefferedTime,
+          testdriveId: 0,
+          status: status,
+          varientId: varientId,
+          vehicleId: vehicleId,
+          driverId: selectedDriverDetails.id.toString(),
+          dlBackUrl: "",
+          dlFrontUrl: "",
+          vehicleInfo:vehicleDetails
         };
 
         if (customerHavingDrivingLicense === 1) {
@@ -799,7 +869,11 @@ const TestDriveScreen = ({ route, navigation }) => {
                 return;
             }
         }
-        generateOtpToCloseTask();
+        if (userData.isOtp == "Y") {
+          generateOtpToCloseTask();
+        } else {
+          submitClicked("CLOSED", "Test Drive")
+        }
         setIsCloseSelected(true)
     };
 
@@ -836,7 +910,6 @@ const TestDriveScreen = ({ route, navigation }) => {
     }
     // Handle Update Test Drive Task response
     useEffect(() => {
-        console.log('repsonse: ', selector.test_drive_update_task_response, ', task status: ', taskStatusAndName)
         if (selector.test_drive_update_task_response === "success" && taskStatusAndName.status === 'SENT_FOR_APPROVAL') {
             autoApproveTestDrive();
                 // showAlertMsg(true);
@@ -864,7 +937,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                     text: "OK",
                     onPress: () => {
                         dispatch(clearState());
-                        navigation.goBack();
+                        navigation.popToTop();
                     },
                 },
             ],
@@ -932,7 +1005,6 @@ const TestDriveScreen = ({ route, navigation }) => {
 
     const updateSelectedVehicleDetails = (vehicleInfo, fromVarient) => {
         //Update Varient List
-        console.log("VEHICLE INFO: ", JSON.stringify(vehicleInfo));
         if (selector.test_drive_varients_obj_for_drop_down[vehicleInfo.model]) {
             const varientsData =
                 selector.test_drive_varients_obj_for_drop_down[vehicleInfo.model];
@@ -945,7 +1017,8 @@ const TestDriveScreen = ({ route, navigation }) => {
             transType: fromVarient ? vehicleInfo.transmission_type : "",
             // fuelType: vehicleInfo.fuelType || "",
             // transType: vehicleInfo.transmission_type || "",
-            vehicleId: vehicleInfo.vehicleId,
+            // vehicleId: vehicleInfo.vehicleId,
+            vehicleId: vehicleInfo.id,
             varientId: fromVarient ? vehicleInfo.varientId : '',
         });
     };
@@ -1026,17 +1099,19 @@ const TestDriveScreen = ({ route, navigation }) => {
         }
     }, [selector.validate_otp_response_status])
 
-    const onDatePickerDone = () => {
-        onChange('', selectedDate);
-        setShowDatePickerModel(false)
-    }
+    const isViewMode = () => {
+      if (route?.params?.taskStatus === "CLOSED") {
+        return true;
+      }
+      return false;
+    };
+
     return (
       <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
         <ImagePickerComponent
           visible={showImagePicker}
           keyId={imagePickerKey}
           selectedImage={(data, keyId) => {
-            console.log("imageObj: ", data, keyId);
             uploadSelectedImage(data, keyId);
             setShowImagePicker(false);
           }}
@@ -1066,133 +1141,207 @@ const TestDriveScreen = ({ route, navigation }) => {
           visible={showDatePickerModel}
           mode={datePickerMode}
           minimumDate={new Date(Date.now())}
-          value={selectedDate}
-          onChange={onChange}
-          onRequestClose={onDatePickerDone}
+          maximumDate={date}
+          value={new Date(Date.now())}
+          onChange={(event, selectedDate) => {
+            setShowDatePickerModel(false);
+
+            let formatDate = "";
+            if (selectedDate) {
+              if (datePickerMode === "date") {
+                formatDate = convertToDate(selectedDate);
+                validateSelectedDateForTestDrive(selectedDate);
+              } else {
+                if (Platform.OS === "ios") {
+                  formatDate = convertToTime(selectedDate);
+                } else {
+                  formatDate = convertToTime(selectedDate);
+                }
+              }
+            }
+
+            if (Platform.OS === "android") {
+              if (selectedDate) {
+                dispatch(
+                  updateSelectedDate({ key: datePickerKey, text: formatDate })
+                );
+              }
+            } else {
+              dispatch(
+                updateSelectedDate({ key: datePickerKey, text: formatDate })
+              );
+            }
+          }}
+          onRequestClose={() => setShowDatePickerModel(false)}
         />
-        {/* {showDatePickerModel && (
-          <DateTimePicker
-            testID="dateTimePicker"
-            value={date}
-            //   mode=""
-            is24Hour={true}
-            onChange={onChange}
-          />
-        )} */}
 
-            <KeyboardAvoidingView
-                style={{ flex: 1 }}
-                behavior={Platform.OS === "ios" ? "padding" : "height"}
-                enabled
-                keyboardVerticalOffset={100}
-            >
-                {/* // 1. Test Drive */}
-                <ScrollView
-                    automaticallyAdjustContentInsets={true}
-                    bounces={true}
-                    showsVerticalScrollIndicator={false}
-                    contentContainerStyle={{ padding: 10, marginBottom: 20 }}
-                    keyboardShouldPersistTaps={"handled"}
-                    style={{ flex: 1 }}
-                >
-                    <View style={styles.baseVw}>
-                        {/* // 1.Test Drive */}
-                        <View
-                            style={[
-                                styles.accordianBckVw,
-                                GlobalStyle.shadow,
-                                { backgroundColor: "white" },
-                            ]}
-                        >
-                            <TextinputComp
-                                style={{ height: 65, width: "100%" }}
-                                value={name}
-                                label={"Name*"}
-                                editable={true}
-                                disabled={false}
-                                onChangeText={(text) => setName(text)}
-                            />
-                            <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && name === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                            <TextinputComp
-                                style={{ height: 65, width: "100%" }}
-                                value={email}
-                                label={"Email ID"}
-                                keyboardType={"email-address"}
-                                editable={true}
-                                disabled={false}
-                                onChangeText={(text) => setEmail(text)}
-                            />
-                            <Text style={[GlobalStyle.underline]}></Text>
-                            <TextinputComp
-                                style={{ height: 65, width: "100%" }}
-                                value={mobileNumber}
-                                label={"Mobile Number*"}
-                                maxLength={10}
-                                keyboardType={"phone-pad"}
-                                editable={true}
-                                disabled={false}
-                                onChangeText={(text) => setMobileNumber(text)}
-                            />
-                            <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && !mobileNumber ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          enabled
+          keyboardVerticalOffset={100}
+        >
+          {/* // 1. Test Drive */}
+          <ScrollView
+            automaticallyAdjustContentInsets={true}
+            bounces={true}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ padding: 10, marginBottom: 20 }}
+            keyboardShouldPersistTaps={"handled"}
+            style={{ flex: 1 }}
+          >
+            <View style={styles.baseVw}>
+              {/* // 1.Test Drive */}
+              <View
+                style={[
+                  styles.accordianBckVw,
+                  GlobalStyle.shadow,
+                  { backgroundColor: "white" },
+                ]}
+              >
+                <TextinputComp
+                  style={styles.textInputStyle}
+                  value={name}
+                  label={"Name*"}
+                  disabled={isViewMode()}
+                  onChangeText={(text) => setName(text)}
+                />
+                <Text
+                  style={[
+                    GlobalStyle.underline,
+                    {
+                      backgroundColor:
+                        isSubmitPress && name === ""
+                          ? "red"
+                          : "rgba(208, 212, 214, 0.7)",
+                    },
+                  ]}
+                ></Text>
+                <TextinputComp
+                  style={styles.textInputStyle}
+                  value={email}
+                  label={"Email ID"}
+                  keyboardType={"email-address"}
+                  disabled={isViewMode()}
+                  onChangeText={(text) => setEmail(text)}
+                />
+                <Text style={[GlobalStyle.underline]}></Text>
+                <TextinputComp
+                  style={styles.textInputStyle}
+                  value={mobileNumber}
+                  label={"Mobile Number*"}
+                  maxLength={10}
+                  keyboardType={"phone-pad"}
+                  disabled={isViewMode()}
+                  onChangeText={(text) => setMobileNumber(text)}
+                />
+                <Text
+                  style={[
+                    GlobalStyle.underline,
+                    {
+                      backgroundColor:
+                        isSubmitPress && !mobileNumber
+                          ? "red"
+                          : "rgba(208, 212, 214, 0.7)",
+                    },
+                  ]}
+                ></Text>
 
-                            <DropDownSelectionItem
-                                label={"Model*"}
-                                value={selectedVehicleDetails.vehicleId ? selectedVehicleDetails.model : ''}
-                                // disabled={!isRecordEditable}
-                                disabled={false}
-                                onPress={() => showDropDownModelMethod("MODEL", "Model")}
-                            />
-                            <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selectedVehicleDetails.vehicleId === 0 ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                            <DropDownSelectionItem
-                                label={"Varient*"}
-                                value={selectedVehicleDetails.varientId ? selectedVehicleDetails.varient : ''}
-                                // disabled={!isRecordEditable}
-                                disabled={false}
-                                onPress={() => showDropDownModelMethod("VARIENT", "Varient")}
-                            />
-                            <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selectedVehicleDetails.varientId === 0 ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                            <TextinputComp
-                                style={{ height: 65, width: "100%" }}
-                                label={"Fuel Type"}
-                                value={selectedVehicleDetails.fuelType}
-                                editable={false}
-                                disabled={true}
-                            />
-                            <Text style={GlobalStyle.underline}></Text>
+                <DropDownSelectionItem
+                  label={"Model*"}
+                  value={
+                    selectedVehicleDetails.model
+                      ? selectedVehicleDetails.model
+                      : ""
+                  }
+                  // disabled={!isRecordEditable}
+                  disabled={isViewMode()}
+                  onPress={() => showDropDownModelMethod("MODEL", "Model")}
+                />
+                <Text
+                  style={[
+                    GlobalStyle.underline,
+                    {
+                      backgroundColor:
+                        isSubmitPress && selectedVehicleDetails.vehicleId === 0
+                          ? "red"
+                          : "rgba(208, 212, 214, 0.7)",
+                    },
+                  ]}
+                ></Text>
+                <DropDownSelectionItem
+                  label={"Varient*"}
+                  value={
+                    selectedVehicleDetails.varient
+                      ? selectedVehicleDetails.varient
+                      : ""
+                  }
+                  // disabled={!isRecordEditable}
+                  disabled={isViewMode()}
+                  onPress={() => showDropDownModelMethod("VARIENT", "Varient")}
+                />
+                <Text
+                  style={[
+                    GlobalStyle.underline,
+                    {
+                      backgroundColor:
+                        isSubmitPress && selectedVehicleDetails.varientId === 0
+                          ? "red"
+                          : "rgba(208, 212, 214, 0.7)",
+                    },
+                  ]}
+                ></Text>
+                <TextinputComp
+                  style={styles.textInputStyle}
+                  label={userData.isSelfManager == "Y" ? "Range" : "Fuel Type"}
+                  value={selectedVehicleDetails.fuelType}
+                  editable={false}
+                  disabled={true}
+                />
+                <Text style={GlobalStyle.underline}></Text>
 
                 <TextinputComp
-                  style={{ height: 65, width: "100%" }}
-                  label={"Transmission Type"}
+                  style={styles.textInputStyle}
+                  label={
+                    userData.isSelfManager == "Y"
+                      ? "Battery Type"
+                      : userData.isTracker == "Y"
+                      ? "Clutch type"
+                      : "Transmission Type"
+                  }
                   value={selectedVehicleDetails.transType}
                   editable={false}
                   disabled={true}
                 />
                 <Text style={GlobalStyle.underline}></Text>
 
-                            <Text style={styles.chooseAddressTextStyle}>
-                                {"Choose address:"}
-                            </Text>
-                            <View style={styles.view2}>
-                                <RadioTextItem
-                                    label={"Showroom address"}
-                                    value={"Showroom address"}
-                                    status={addressType === 1}
-                                    onPress={() => setAddressType(1)}
-                                />
-                                <RadioTextItem
-                                    label={"Customer address"}
-                                    value={"Customer address"}
-                                    status={addressType === 2}
-                                    onPress={() => setAddressType(2)}
-                                />
-                            </View>
-                            <Text style={GlobalStyle.underline}></Text>
+                <Text style={styles.chooseAddressTextStyle}>
+                  {"Choose address:"}
+                </Text>
+                <View style={styles.view2}>
+                  <RadioTextItem
+                    label={"Showroom address"}
+                    value={"Showroom address"}
+                    status={addressType === 1}
+                    disabled={isViewMode()}
+                    onPress={() => setAddressType(1)}
+                  />
+                  <RadioTextItem
+                    label={"Customer address"}
+                    value={"Customer address"}
+                    status={addressType === 2}
+                    disabled={isViewMode()}
+                    onPress={() => setAddressType(2)}
+                  />
+                </View>
+                <Text style={GlobalStyle.underline}></Text>
 
                 {addressType === 2 && (
                   <View>
                     <TextinputComp
                       style={{ height: 65, maxHeight: 100, width: "100%" }}
                       value={customerAddress}
+                      disabled={isViewMode()}
                       label={"Customer Address"}
                       multiline={true}
                       numberOfLines={4}
@@ -1213,12 +1362,14 @@ const TestDriveScreen = ({ route, navigation }) => {
                   }}
                 >
                   <RadioTextItem
+                    disabled={isViewMode()}
                     label={"Yes"}
                     value={"Yes"}
                     status={customerHavingDrivingLicense === 1}
                     onPress={() => setCustomerHavingDrivingLicense(1)}
                   />
                   <RadioTextItem
+                    disabled={isViewMode()}
                     label={"No"}
                     value={"No"}
                     status={customerHavingDrivingLicense === 2}
@@ -1233,13 +1384,48 @@ const TestDriveScreen = ({ route, navigation }) => {
                         onPress={() =>
                           showImagePickerMethod("DRIVING_LICENSE_FRONT")
                         }
+                        disabled={isViewMode()}
                       />
                     </View>
                     {uploadedImagesDataObj.dlFrontUrl ? (
-                      <DisplaySelectedImage
-                        fileName={uploadedImagesDataObj.dlFrontUrl.fileName}
-                        from={"DLFRONTURL"}
-                      />
+                      <View style={{ flexDirection: "row" }}>
+                        <TouchableOpacity
+                          style={{
+                            width: "20%",
+                            height: 30,
+                            backgroundColor: Colors.SKY_BLUE,
+                            borderRadius: 4,
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                          onPress={() => {
+                            if (
+                              uploadedImagesDataObj.dlFrontUrl?.documentPath
+                            ) {
+                              setImagePath(
+                                uploadedImagesDataObj.dlFrontUrl?.documentPath
+                              );
+                            }
+                          }}
+                        >
+                          <Text
+                            style={{
+                              color: Colors.WHITE,
+                              fontSize: 14,
+                              fontWeight: "600",
+                            }}
+                          >
+                            Preview
+                          </Text>
+                        </TouchableOpacity>
+
+                        <View style={{ width: "80%" }}>
+                          <DisplaySelectedImage
+                            fileName={uploadedImagesDataObj.dlFrontUrl.fileName}
+                            from={"DLFRONTURL"}
+                          />
+                        </View>
+                      </View>
                     ) : null}
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -1247,13 +1433,45 @@ const TestDriveScreen = ({ route, navigation }) => {
                         onPress={() =>
                           showImagePickerMethod("DRIVING_LICENSE_BACK")
                         }
+                        disabled={isViewMode()}
                       />
                     </View>
                     {uploadedImagesDataObj.dlBackUrl ? (
-                      <DisplaySelectedImage
-                        fileName={uploadedImagesDataObj.dlBackUrl.fileName}
-                        from={"DLBACKURL"}
-                      />
+                      <View style={{ flexDirection: "row" }}>
+                        <TouchableOpacity
+                          style={{
+                            width: "20%",
+                            height: 30,
+                            backgroundColor: Colors.SKY_BLUE,
+                            borderRadius: 4,
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                          onPress={() => {
+                            if (uploadedImagesDataObj.dlBackUrl?.documentPath) {
+                              setImagePath(
+                                uploadedImagesDataObj.dlBackUrl?.documentPath
+                              );
+                            }
+                          }}
+                        >
+                          <Text
+                            style={{
+                              color: Colors.WHITE,
+                              fontSize: 14,
+                              fontWeight: "600",
+                            }}
+                          >
+                            Preview
+                          </Text>
+                        </TouchableOpacity>
+                        <View style={{ width: "80%" }}>
+                          <DisplaySelectedImage
+                            fileName={uploadedImagesDataObj.dlBackUrl.fileName}
+                            from={"DLBACKURL"}
+                          />
+                        </View>
+                      </View>
                     ) : null}
                   </View>
                 )}
@@ -1261,10 +1479,10 @@ const TestDriveScreen = ({ route, navigation }) => {
                 <Text style={GlobalStyle.underline}></Text>
 
                 <DateSelectItem
-                  label={"Customer Preffered Date"}
+                  label={"Customer Preferred Date*"}
                   value={selector.customer_preferred_date}
                   // disabled={!isRecordEditable}
-                  disabled={false}
+                  disabled={isViewMode()}
                   onPress={() =>
                     showDatePickerModelMethod("PREFERRED_DATE", "date")
                   }
@@ -1289,7 +1507,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                   label={"List of Drivers"}
                   value={selectedDriverDetails.name}
                   // disabled={!isRecordEditable}
-                  disabled={false}
+                  disabled={isViewMode()}
                   onPress={() =>
                     showDropDownModelMethod(
                       "LIST_OF_DRIVERS",
@@ -1298,10 +1516,10 @@ const TestDriveScreen = ({ route, navigation }) => {
                   }
                 />
                 <DateSelectItem
-                  label={"Customer Preffered Time"}
+                  label={"Customer Preferred Time*"}
                   value={selector.customer_preferred_time}
                   // disabled={!isRecordEditable}
-                  disabled={false}
+                  disabled={isViewMode()}
                   onPress={() =>
                     showDatePickerModelMethod("CUSTOMER_PREFERRED_TIME", "time")
                   }
@@ -1320,10 +1538,10 @@ const TestDriveScreen = ({ route, navigation }) => {
                 {/* <View style={{ flexDirection: "row" }}>
                                 <View style={{ width: "50%" }}> */}
                 <DateSelectItem
-                  label={"Actual start Time"}
+                  label={"Actual start Time*"}
                   value={selector.actual_start_time}
                   // disabled={!isRecordEditable}
-                  disabled={false}
+                  disabled={isViewMode()}
                   onPress={() =>
                     showDatePickerModelMethod("ACTUAL_START_TIME", "time")
                   }
@@ -1342,9 +1560,9 @@ const TestDriveScreen = ({ route, navigation }) => {
                 {/* </View>
                                 <View style={{ width: "50%" }}> */}
                 <DateSelectItem
-                  label={"Actual End Time"}
+                  label={"Actual End Time*"}
                   value={selector.actual_end_time}
-                  disabled={false}
+                  disabled={isViewMode()}
                   // disabled={!isRecordEditable}
                   onPress={() =>
                     showDatePickerModelMethod("ACTUAL_END_TIME", "time")
@@ -1376,7 +1594,7 @@ const TestDriveScreen = ({ route, navigation }) => {
               </View>
             </View>
 
-            {handleActionButtons === 1 && (
+            {handleActionButtons === 1 && !isViewMode() && (
               <View style={styles.view1}>
                 <LocalButtonComp
                   title={"Close"}
@@ -1392,8 +1610,13 @@ const TestDriveScreen = ({ route, navigation }) => {
                 />
               </View>
             )}
-            {handleActionButtons === 2 && (
+            {handleActionButtons === 2 && !isViewMode() && (
               <View style={styles.view1}>
+                <LocalButtonComp
+                  title={"Close"}
+                  // disabled={selector.isLoading}
+                  onPress={() => navigation.goBack()}
+                />
                 <LocalButtonComp
                   title={"Cancel"}
                   // disabled={selector.isLoading}
@@ -1401,7 +1624,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 />
               </View>
             )}
-            {handleActionButtons === 3 && (
+            {handleActionButtons === 3 && !isViewMode() && (
               <View style={styles.view1}>
                 <LocalButtonComp
                   title={"Reject"}
@@ -1420,7 +1643,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 />
               </View>
             )}
-            {handleActionButtons === 4 && (
+            {handleActionButtons === 4 && !isViewMode() && (
               <View style={styles.view1}>
                 <LocalButtonComp
                   title={"Close"}
@@ -1510,6 +1733,52 @@ const TestDriveScreen = ({ route, navigation }) => {
             ) : null}
           </ScrollView>
         </KeyboardAvoidingView>
+
+        <Modal
+          animationType="fade"
+          visible={imagePath !== ""}
+          onRequestClose={() => {
+            setImagePath("");
+          }}
+          transparent={true}
+        >
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: "rgba(0,0,0,0.7)",
+            }}
+          >
+            <View style={{ width: "90%" }}>
+              <Image
+                style={{ width: "100%", height: 400, borderRadius: 4 }}
+                resizeMode="contain"
+                source={{ uri: imagePath }}
+              />
+            </View>
+            <TouchableOpacity
+              style={{
+                width: 100,
+                height: 40,
+                justifyContent: "center",
+                alignItems: "center",
+                position: "absolute",
+                left: "37%",
+                bottom: "15%",
+                borderRadius: 5,
+                backgroundColor: Colors.RED,
+              }}
+              onPress={() => setImagePath("")}
+            >
+              <Text
+                style={{ fontSize: 14, fontWeight: "600", color: Colors.WHITE }}
+              >
+                Close
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
       </SafeAreaView>
     );
 };

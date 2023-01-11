@@ -81,13 +81,21 @@ const PreBookingScreen = ({ navigation }) => {
                 let tempData = []
                 tempData = selector.pre_booking_list.filter((item) => {
                     return (
-                        item.firstName
-                            .toLowerCase()
-                            .includes(appSelector.searchKey.toLowerCase()) ||
-                        item.lastName
-                            .toLowerCase()
-                            .includes(appSelector.searchKey.toLowerCase()) ||
-                        item.phone.includes(appSelector.searchKey)
+                      `${item.firstName} ${item.lastName}`
+                        .toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase()) ||
+                      item.phone
+                        .toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase()) ||
+                      item.enquirySource
+                        .toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase()) ||
+                      item.enquiryCategory
+                        ?.toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase()) ||
+                      item.model
+                        .toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase())
                     );
                 })
                 setSearchedData([]);
@@ -131,7 +139,6 @@ const PreBookingScreen = ({ navigation }) => {
             setFromDateState(lastMonthFirstDate);
             const tomorrowDate = moment().add(1, "day").format(dateFormat)
             setToDateState(currentDate);
-            console.log("$$$$$$$$$$$$$ PRE BOOKING SCREEN $$$$$$$$$$$$$$$");
             // getPreBookingListFromServer(empIdStateRef.current, fromDateRef.current, toDateRef.current);
             getDataFromDB()
         });
@@ -295,14 +302,24 @@ const PreBookingScreen = ({ navigation }) => {
     };
 
     return (
-      <SafeAreaView style={styles.container}>
-        <DatePickerComponent
-          visible={showDatePicker}
-          mode={"date"}
-          value={datePickerId === "FROM_DATE" ? fromDate : toDate}
-          onChange={onChange}
-          onRequestClose={handleModal}
-        />
+        <SafeAreaView style={styles.container}>
+
+            <DatePickerComponent
+                visible={showDatePicker}
+                mode={"date"}
+                value={new Date(Date.now())}
+                onChange={(event, selectedDate) => {
+                    setShowDatePicker(false)
+                    if (Platform.OS === "android") {
+                        if (selectedDate) {
+                            updateSelectedDate(selectedDate, datePickerId);
+                        }
+                    } else {
+                        updateSelectedDate(selectedDate, datePickerId);
+                    }
+                }}
+                onRequestClose={() => setShowDatePicker(false)}
+            />
 
             <SortAndFilterComp
                 visible={sortAndFilterVisible}
@@ -310,7 +327,6 @@ const PreBookingScreen = ({ navigation }) => {
                 modelList={vehicleModelList}
                 sourceList={sourceList}
                 submitCallback={(payload) => {
-                    // console.log("payload: ", payload);
                     applySelectedFilters(payload);
                     setSortAndFilterVisible(false);
                 }}
@@ -382,7 +398,7 @@ const PreBookingScreen = ({ navigation }) => {
                                             type='PreBook'
                                             status={""}
                                             created={item.modifiedDate}
-                                            dmsLead={item.createdBy}
+                                            dmsLead={item.salesConsultant}
                                             phone={item.phone}
                                             source={item.enquirySource}
                                             model={item.model}
@@ -391,7 +407,6 @@ const PreBookingScreen = ({ navigation }) => {
                                             needStatus={"YES"}
                                             enqCat={item.enquiryCategory}
                                             onItemPress={() =>  {
-                                                console.log("PBK: ", JSON.stringify(item));
                                                 navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, { universalId: item.universalId, mobileNo: item.phone, leadStatus: item.leadStatus })
                                             }}
                                             onDocPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.preBookingForm, { universalId: item.universalId , leadStage: item.leadStage, leadStatus: item.leadStatus})}

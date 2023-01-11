@@ -5,10 +5,11 @@ import URL from "../../../../../networking/endpoints";
 import {Colors} from "../../../../../styles";
 import moment from "moment";
 import * as AsyncStore from "../../../../../asyncStore";
+import {achievementPercentage} from "../../../../../utils/helperFunctions";
 
 export const RenderEmployeeTotal = (userData) => {
-    const paramsData = ['Enquiry', 'Test Drive', 'Home Visit', 'Booking', 'INVOICE', 'Finance', 'Insurance', 'Exchange', 'EXTENDEDWARRANTY', 'Accessories'];
-    const {empId, branchId, level} = userData;
+    const paramsData = ['Enquiry', 'Test Drive', 'Home Visit', 'Booking', 'INVOICE', 'Exchange', 'Finance', 'Insurance',  'EXTENDEDWARRANTY', 'Accessories'];
+    const {empId, branchId, level, displayType} = userData;
     const [empParams, setEmpParams] = useState([]);
     const [branches, setBranches] = useState([]);
     useEffect(async () => {
@@ -73,7 +74,7 @@ export const RenderEmployeeTotal = (userData) => {
                   {branches.length > 0 &&
                     branches
                       .find((x) => +x.branchId === +branchId)
-                      .branchName.split(" - ")[0]}
+                      ?.branchName.split(" - ")[0]}
                 </Text>
               </View>
             }
@@ -103,11 +104,14 @@ export const RenderEmployeeTotal = (userData) => {
                 empParams &&
                 empParams.length &&
                 empParams.filter((item) => item.paramName === param)[0];
-              return (
+                const enquiryParameter = empParams.filter((item) => item.paramName === 'Enquiry')[0];
+                return (
                 <TotalView
                   key={param}
                   item={selectedParameter}
+                  enqParam={enquiryParameter}
                   parameterType={param}
+                  displayType={displayType}
                 />
               );
             })}
@@ -118,12 +122,14 @@ export const RenderEmployeeTotal = (userData) => {
 }
 
 export const TotalView = (parameter) => {
-    const {item, parameterType} = parameter;
+    const {enqParam, item, parameterType, displayType} = parameter;
     return (
         <View style={[styles.itemBox, {width: parameterType === 'Accessories' ? 60 : 50}]}>
-            <Text
-                style={[styles.totalText1]}>{item ? Number(item.achievment) : 0}</Text>
-            <View style={{height: 1, backgroundColor: Colors.BLACK, 
+            <Text style={[styles.totalText1]}>{item ?
+                        displayType === 0 ? item.achievment : achievementPercentage(item.achievment, item.target, parameterType, enqParam.achievment)
+                    : 0}
+            </Text>
+            <View style={{height: 1, backgroundColor: Colors.BLACK,
               // alignSelf: 'stretch'
               }}/>
             <Text

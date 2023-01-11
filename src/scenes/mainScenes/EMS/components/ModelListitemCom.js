@@ -1,33 +1,33 @@
 import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 import {
-    SafeAreaView,
-    StyleSheet,
-    View,
-    Text,
-    ScrollView,
-    Pressable,
-    Keyboard,
-    ActivityIndicator,
-    KeyboardAvoidingView,
-    Alert,
-    BackHandler,
-    Image,
-    TouchableOpacity,
-    Modal
+  SafeAreaView,
+  StyleSheet,
+  View,
+  Text,
+  ScrollView,
+  Pressable,
+  Keyboard,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Alert,
+  BackHandler,
+  Image,
+  TouchableOpacity,
+  Modal
 } from "react-native";
 import {
-    DefaultTheme,
-    Checkbox,
-    IconButton,
-    List,
-    Button,
-    ToggleButton, Switch
+  DefaultTheme,
+  Checkbox,
+  IconButton,
+  List,
+  Button,
+  ToggleButton, Switch
 } from "react-native-paper";
 import {
-    showAlertMessage,
-    showToast,
-    showToastRedAlert,
-    showToastSucess,
+  showAlertMessage,
+  showToast,
+  showToastRedAlert,
+  showToastSucess,
 } from "../../../../utils/toast";
 import { Colors, GlobalStyle } from "../../../../styles";
 import * as AsyncStore from "../../../../asyncStore";
@@ -35,30 +35,30 @@ import * as AsyncStore from "../../../../asyncStore";
 import VectorImage from "react-native-vector-image";
 import { useDispatch, useSelector } from "react-redux";
 import {
-    TextinputComp,
-    DropDownComponant,
-    DatePickerComponent,
+  TextinputComp,
+  DropDownComponant,
+  DatePickerComponent,
 } from "../../../../components";
 import {
-    convertDateStringToMilliseconds,
-    convertDateStringToMillisecondsUsingMoment,
-    emiCalculator,
-    GetCarModelList,
-    GetDropList,
-    GetFinanceBanksList,
-    PincodeDetails,
-    PincodeDetailsNew
+  convertDateStringToMilliseconds,
+  convertDateStringToMillisecondsUsingMoment,
+  emiCalculator,
+  GetCarModelList,
+  GetDropList,
+  GetFinanceBanksList,
+  PincodeDetails,
+  PincodeDetailsNew
 } from "../../../../utils/helperFunctions";
 import {
-    RadioTextItem,
-    DropDownSelectionItem,
-    ImageSelectItem,
-    DateSelectItem,
+  RadioTextItem,
+  DropDownSelectionItem,
+  ImageSelectItem,
+  DateSelectItem,
 } from "../../../../pureComponents";
 import {
-    setDropDownData,
-    updateFuelAndTransmissionType,
-    updatedmsLeadProduct
+  setDropDownData,
+  updateFuelAndTransmissionType,
+  updatedmsLeadProduct
 } from "../../../../redux/enquiryFormReducer";
 import { useNavigation } from '@react-navigation/native';
 export const ModelListitemCom = ({
@@ -70,6 +70,7 @@ export const ModelListitemCom = ({
   leadStage,
   isSubmitPress,
   onChangeSubmit,
+  isOnlyOne,
 }) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
@@ -93,6 +94,8 @@ export const ModelListitemCom = ({
     orgId: "",
     employeeId: "",
     employeeName: "",
+    isSelfManager: "",
+    isTracker: "",
   });
   const [selectedCarVarientsData, setSelectedCarVarientsData] = useState({
     varientList: [],
@@ -105,15 +108,12 @@ export const ModelListitemCom = ({
     onChangeSubmit();
     switch (key) {
       case "MODEL":
-        console.log("onpreseed", carModelsData);
         setDataForDropDown([...carModelsData]);
         break;
       case "VARIENT":
-        console.log("TTTTT: ", selectedCarVarientsData);
         setDataForDropDown([...selectedCarVarientsData.varientListForDropDown]);
         break;
       case "COLOR":
-        console.log("TTTTT: ", carColorsData);
         setDataForDropDown([...carColorsData]);
         break;
     }
@@ -140,7 +140,6 @@ export const ModelListitemCom = ({
   }, [navigation]);
   const getAsyncstoreData = async () => {
     try {
-      console.log("CAR MODEL:", item.model);
       const employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
       );
@@ -169,6 +168,8 @@ export const ModelListitemCom = ({
           orgId: jsonObj.orgId,
           employeeId: jsonObj.employeeId,
           employeeName: jsonObj.empName,
+          isSelfManager: jsonObj.isSelfManager,
+          isTracker: jsonObj.isTracker
         });
         getCarModelListFromServer(jsonObj.orgId);
         updateVariantModelsData(item.model, false);
@@ -193,7 +194,6 @@ export const ModelListitemCom = ({
     if (!selectedModelName || selectedModelName.length === 0) {
       return;
     }
-    console.log("CALLED MODEL: ", selectedModelName, carModelsData);
     let arrTemp = carModelsData.filter(function (obj) {
       return obj.model === selectedModelName;
     });
@@ -270,7 +270,6 @@ export const ModelListitemCom = ({
           updateColorsDataForSelectedVarient(selectedVarientName, [...mArray]);
         }
       }
-      //console.log("MARRAY: ", mArray);
     }
   };
 
@@ -278,7 +277,6 @@ export const ModelListitemCom = ({
     if (!selectedModelName || selectedModelName.length === 0) {
       return;
     }
-    // console.log("CALLED MODEL: ", selectedModelName, carModelsData);
     let arrTemp = carModelsData.filter(function (obj) {
       return obj.model === selectedModelName;
     });
@@ -402,9 +400,8 @@ export const ModelListitemCom = ({
         }
       }
       return variants;
-      // await console.log("VARIANTS=====", JSON.stringify(variants))
       // alert(JSON.stringify(variants))
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const setInitialColors = (selectedVarientName, varientList) => {
@@ -447,9 +444,7 @@ export const ModelListitemCom = ({
   };
 
   useEffect(() => {
-    console.log("UPDATE CAR MODEL", carModelsData);
     if (carModelsData.length > 0) {
-      console.log("CALLED$$$$$$$$");
       if (item?.model) {
         setInitialValients(item?.model);
       }
@@ -457,7 +452,6 @@ export const ModelListitemCom = ({
   }, [carModelsData]);
 
   useEffect(() => {
-    console.log("VARIENTS: ", selectedCarVarientsData);
     if (selectedCarVarientsData.varientList.length > 0) {
       try {
         // alert("is variant "+isVariantUpdated)
@@ -468,13 +462,12 @@ export const ModelListitemCom = ({
           setInitialColors(item?.variant, selectedCarVarientsData.varientList);
         }
         // }
-      } catch (error) {}
+      } catch (error) { }
     }
   }, [selectedCarVarientsData]);
 
   const getCarModelListFromServer = (orgId) => {
     // Call Api
-    console.log("CALLED LIST API");
     GetCarModelList(orgId)
       .then(
         (resolve) => {
@@ -493,7 +486,6 @@ export const ModelListitemCom = ({
         },
         (rejected) => {
           // alert("reject")
-          console.log("getCarModelListFromServer Failed");
         }
       )
       .finally(() => {
@@ -541,7 +533,6 @@ export const ModelListitemCom = ({
         data={dataForDropDown}
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
-          console.log("ITEM:", JSON.stringify(item));
           if (dropDownKey === "MODEL") {
             updateVariantModelsData(item.name, false);
           } else if (dropDownKey === "VARIENT") {
@@ -631,12 +622,14 @@ export const ModelListitemCom = ({
             />
           </View>
           <TouchableOpacity
+            disabled={isOnlyOne}
             onPress={(value) => modelOnclick(index, item, "delete")}
           >
             <IconButton
               icon="trash-can-outline"
-              color={Colors.PINK}
+              color={isOnlyOne ? Colors.DARK_GRAY : Colors.PINK}
               size={25}
+              disabled={isOnlyOne}
               //  onPress={alert("delete")}
             />
           </TouchableOpacity>
@@ -692,7 +685,7 @@ export const ModelListitemCom = ({
         ></Text>
         <TextinputComp
           style={{ height: 65, width: "100%" }}
-          label={"Fuel Type"}
+          label={userData.isSelfManager == "Y" ? "Range*" : "Fuel Type*"}
           editable={false}
           value={carFuelType}
         />
@@ -700,7 +693,13 @@ export const ModelListitemCom = ({
 
         <TextinputComp
           style={{ height: 65, width: "100%" }}
-          label={"Transmission Type"}
+          label={
+            userData.isSelfManager == "Y"
+              ? "Battery Type*"
+              : userData?.isTracker == "Y"
+              ? "Clutch type*"
+              : "Transmission Type*"
+          }
           editable={false}
           value={carTransmissionType}
         />

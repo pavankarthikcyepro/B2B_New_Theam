@@ -16,12 +16,6 @@ export const getTaskList = createAsyncThunk("TASK_TRANSFER/getTaskList", async (
 });
 
 export const getBranchDropdown = createAsyncThunk("TASK_TRANSFER/getBranchDropdown", async (payload, { rejectWithValue }) => {
-    console.log("BRANCH URL:", URL.TARGET_DROPDOWN(
-        payload["orgId"],
-        payload["parent"],
-        payload["child"],
-        payload["parentId"]
-    ));
     
     const response = await client.get(URL.TARGET_DROPDOWN(
         payload["orgId"],
@@ -37,12 +31,6 @@ export const getBranchDropdown = createAsyncThunk("TASK_TRANSFER/getBranchDropdo
 });
 
 export const getDeptDropdown = createAsyncThunk("TASK_TRANSFER/getDeptDropdown", async (payload, { rejectWithValue }) => {
-    console.log("DEPT URL:", URL.TARGET_DROPDOWN(
-        payload["orgId"],
-        payload["parent"],
-        payload["child"],
-        payload["parentId"]
-    ));
     
     const response = await client.get(URL.TARGET_DROPDOWN(
         payload["orgId"],
@@ -58,12 +46,6 @@ export const getDeptDropdown = createAsyncThunk("TASK_TRANSFER/getDeptDropdown",
 });
 
 export const getDeptDropdownTrans = createAsyncThunk("TASK_TRANSFER/getDeptDropdownTrans", async (payload, { rejectWithValue }) => {
-    console.log("DEPT URL:", URL.TARGET_DROPDOWN(
-        payload["orgId"],
-        payload["parent"],
-        payload["child"],
-        payload["parentId"]
-    ));
     
     const response = await client.get(URL.TARGET_DROPDOWN(
         payload["orgId"],
@@ -79,12 +61,6 @@ export const getDeptDropdownTrans = createAsyncThunk("TASK_TRANSFER/getDeptDropd
 });
 
 export const getDesignationDropdown = createAsyncThunk("TASK_TRANSFER/getDesignationDropdown", async (payload, { rejectWithValue }) => {
-    console.log("DESIG URL:", URL.TARGET_DROPDOWN(
-        payload["orgId"],
-        payload["parent"],
-        payload["child"],
-        payload["parentId"]
-    ));
     
     const response = await client.get(URL.TARGET_DROPDOWN(
         payload["orgId"],
@@ -100,12 +76,6 @@ export const getDesignationDropdown = createAsyncThunk("TASK_TRANSFER/getDesigna
 });
 
 export const getDesignationDropdownTrans = createAsyncThunk("TASK_TRANSFER/getDesignationDropdownTrans", async (payload, { rejectWithValue }) => {
-    console.log("DESIG URL:", URL.TARGET_DROPDOWN(
-        payload["orgId"],
-        payload["parent"],
-        payload["child"],
-        payload["parentId"]
-    ));
     
     const response = await client.get(URL.TARGET_DROPDOWN(
         payload["orgId"],
@@ -121,12 +91,6 @@ export const getDesignationDropdownTrans = createAsyncThunk("TASK_TRANSFER/getDe
 });
 
 export const getEmployeeDetails = createAsyncThunk("TASK_TRANSFER/getEmployeeDetails", async (payload, { rejectWithValue }) => {
-    console.log("EMP URL:", URL.GET_EMPLOYEE_DETAILS(
-        payload["orgId"],
-        payload["branchId"],
-        payload["deptId"],
-        payload["desigId"]
-    ));
     
     const response = await client.get(URL.GET_EMPLOYEE_DETAILS(
         payload["orgId"],
@@ -141,12 +105,6 @@ export const getEmployeeDetails = createAsyncThunk("TASK_TRANSFER/getEmployeeDet
 });
 
 export const getEmployeeDetailsTrans = createAsyncThunk("TASK_TRANSFER/getEmployeeDetailsTrans", async (payload, { rejectWithValue }) => {
-    console.log("EMP URL:", URL.GET_EMPLOYEE_DETAILS(
-        payload["orgId"],
-        payload["branchId"],
-        payload["deptId"],
-        payload["desigId"]
-    ));
     
     const response = await client.get(URL.GET_EMPLOYEE_DETAILS(
         payload["orgId"],
@@ -161,14 +119,6 @@ export const getEmployeeDetailsTrans = createAsyncThunk("TASK_TRANSFER/getEmploy
 });
 
 export const submitTaskTransfer = createAsyncThunk("TASK_TRANSFER/submitTaskTransfer", async (payload, { rejectWithValue }) => {
-    console.log("EMP URL:", URL.TRANSFER_TASK(
-        payload["fromUserId"],
-        payload["toUserId"]
-    ), {
-        fromEmpId: payload["fromUserId"].toString(),
-        taskIdList: payload["taskIdList"],
-        toEmpId: payload["toUserId"].toString()
-    });
 
     const response = await client.post(URL.TRANSFER_TASK(
         payload["fromUserId"],
@@ -295,7 +245,6 @@ export const taskTransferSlice = createSlice({
         })
         builder.addCase(getEmployeeDetails.fulfilled, (state, action) => {
             if (action.payload?.success) {
-                console.log("EMP:", JSON.stringify(action.payload));
                 
                 const dataObj = action.payload;
                 state.employeeList = dataObj ? dataObj.dmsEntity.employees : []
@@ -341,7 +290,6 @@ export const taskTransferSlice = createSlice({
             
         })
         builder.addCase(submitTaskTransfer.fulfilled, (state, action) => {
-            console.log("TTRTTRTR", action.payload);
             
             if (action.payload.success){
                 state.taskTransferStatus = 'success'

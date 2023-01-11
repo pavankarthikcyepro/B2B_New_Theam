@@ -1,26 +1,93 @@
 import React from "react";
 import {StyleSheet, Text, View} from "react-native";
 import {Colors} from "../../../../../styles";
+import {achievementPercentage} from "../../../../../utils/helperFunctions";
 
 export const RenderGrandTotal = (parameter) => {
-    const {parameterType, totalParams} = parameter;
-    const selectedParameter = totalParams.filter((item) => item.paramName === parameterType)[0];
-    return (
-        <View style={[styles.itemBox, {width: parameterType === 'Accessories' ? 60 : 50}]}>
-            <Text style={[styles.totalText1, {marginBottom: 0}]}>{Number(selectedParameter.achievment)}</Text>
-            <View style={{height: 1, backgroundColor: Colors.WHITE, 
-                // alignSelf: 'stretch'
-                }} />
-            <Text style={[styles.totalText, {width: parameterType === 'Accessories' ? 80 : 50}]}>{Number(selectedParameter.target)}</Text>
-        </View>
-    )
-}
+  // const paramsData = ['Enquiry', 'Test Drive', 'Home Visit', 'Booking', 'INVOICE', 'Finance', 'Insurance', 'Exchange', 'EXTENDEDWARRANTY', 'Accessories'];
+  const { params, totalParams, displayType, moduleType } = parameter;
+  const paramsData = params.map(({ paramName }) => paramName);
+  return (
+    <>
+      {paramsData.map((param) => {
+        const selectedParameter = totalParams.filter(
+          (item) => item.paramName === param
+        )[0];
+        const enq = totalParams.filter(
+          (item) => item.paramName === "Enquiry"
+        )[0];
+        const ret = totalParams.filter(
+          (item) => item.paramName === "INVOICE"
+        )[0];
+        const acc = totalParams.filter(
+          (item) => item.paramName === "Accessories"
+        )[0];
+
+        return (
+          <View
+            key={param}
+            style={[
+              styles.itemBox,
+              {
+                width:
+                  moduleType === "live-leads"
+                    ? 70
+                    : param === "Accessories"
+                    ? 60
+                    : 55,
+                backgroundColor: Colors.RED,
+              },
+            ]}
+          >
+            <Text
+              style={[
+                styles.totalText1,
+                { marginBottom: 0, color: Colors.WHITE },
+              ]}
+            >
+              {displayType === 0
+                ? Number(selectedParameter.achievment)
+                : `${achievementPercentage(
+                    selectedParameter.achievment,
+                    selectedParameter.target,
+                    param,
+                    enq,
+                    ret,
+                    acc
+                  )}%`}
+            </Text>
+            {moduleType !== "live-leads" &&
+              selectedParameter?.paramName !== "DROPPED" ? (
+                <Text
+                  style={[
+                    styles.totalText,
+                    {
+                      width:
+                        moduleType === "live-leads"
+                          ? 70
+                          : param === "Accessories"
+                          ? 65
+                          : 56,
+                      color: Colors.WHITE,
+                      backgroundColor: Colors.MAROON + "30",
+                    },
+                  ]}
+                >
+                  {Number(selectedParameter.target)}
+                </Text>
+              ) : null}
+          </View>
+        );
+      })}
+    </>
+  );
+};
 
 
 const styles = StyleSheet.create({
   itemBox: {
-    width: 60,
-    height: 40,
+    width: 100,
+    height: 45,
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 2,
@@ -28,14 +95,17 @@ const styles = StyleSheet.create({
   totalText: {
     color: "#fff",
     fontWeight: "bold",
-    fontSize: 14,
+    fontSize: 12,
+    height: 25,
     textAlign: "center",
+    paddingTop: 3,
   },
   totalText1: {
     color: "#fff",
-    fontWeight: "bold",
-    fontSize: 14,
+    fontWeight: "400",
+    fontSize: 12,
+    height: 20,
+    paddingTop: 3,
     textAlign: "center",
-    textDecorationLine: "underline",
   },
 });

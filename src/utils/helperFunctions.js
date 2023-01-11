@@ -2,7 +2,10 @@ import qs from "qs";
 import { Linking, Alert, Platform, PermissionsAndroid } from "react-native";
 import moment from "moment";
 import URL from "../networking/endpoints";
-import { AuthNavigator } from "../navigations";
+import { showToastRedAlert } from '../utils/toast';
+import store from "../redux/reduxStore";
+import * as AsyncStore from "../asyncStore";
+import { updateSelectedBranchId, updateSelectedBranchName } from "../redux/targetSettingsReducer";
 
 export const isMobileNumber = (mobile) => {
   // var regex = /^[1-9]{1}[0-9]{9}$/; // /^\d{10}$/
@@ -49,6 +52,29 @@ export const isValidateAlphabetics = (text) => {
   return false;
 };
 
+export const isCheckPanOrAadhaar = (type, text) => {
+  let error = false;
+  if (type === "pan") {
+    if (text.length > 0) {
+      if (text.length != 10) {
+        error = true;
+      } else if (!isValidateAplhaNumeric(text)) {
+        error = true;
+      }
+    }
+  } else {
+    if (text.length > 0) {
+      if (text.length != 12) {
+        error = true;
+      } else if (!isPincode(text)) {
+        error = true;
+      }
+    }
+  }
+
+  return error;
+};
+
 export const isValidateAplhaNumeric = (text) => {
   // const regex = /^[a-zA-Z]+$/;/^[A-Za-z0-9]+$/
   const regex = /^[A-Za-z0-9]+$/;
@@ -58,7 +84,7 @@ export const isValidateAplhaNumeric = (text) => {
   return false;
 };
 export const navigatetoCallWebView = async () => {
- 
+
   const requestMicroPhonePermission = async () => {
     if (Platform.OS === 'android') {
       try {
@@ -77,10 +103,10 @@ export const navigatetoCallWebView = async () => {
       }
     } else return true;
   };
-  const requestCameraPermission = async() =>{
+  const requestCameraPermission = async () => {
 
-    if(Platform.OS === "android"){
-      try{
+    if (Platform.OS === "android") {
+      try {
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.CAMERA,
           {
@@ -90,17 +116,17 @@ export const navigatetoCallWebView = async () => {
         );
         return granted === PermissionsAndroid.RESULTS.GRANTED;
 
-      }catch(error){
+      } catch (error) {
         return false;
       }
-    }else return true;
+    } else return true;
 
   }
   //return requestCameraPermission()
   var granted = await requestCameraPermission()
   var granted2 = await requestMicroPhonePermission()
-  if(granted && granted2)
-  return true 
+  if (granted && granted2)
+    return true
   else return false
 
   // (granted)
@@ -110,7 +136,6 @@ export const navigatetoCallWebView = async () => {
 }
 
 export const callNumber = (phone) => {
-  console.log("callNumber ----> ", phone);
   let phoneNumber = phone;
   if (Platform.OS !== "android") {
     phoneNumber = `telprompt:${phone}`;
@@ -120,26 +145,27 @@ export const callNumber = (phone) => {
   Linking.canOpenURL(phoneNumber)
     .then((supported) => {
       if (!supported) {
-        Alert.alert("Phone number is not available");
+        // Alert.alert("Phone number is not available");
+        showToastRedAlert("Phone number is not available");
       } else {
         return Linking.openURL(phoneNumber);
       }
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {});
 };
 
 sendWhatsApp = (phone) => {
   let msg = 'Say Something';
-  let phoneWithCountryCode = '+91'+phone;
+  let phoneWithCountryCode = '+91' + phone;
 
   let mobile = Platform.OS == 'ios' ? phoneWithCountryCode : '+' + phoneWithCountryCode;
   if (mobile) {
     if (msg) {
       let url = 'whatsapp://send?text=' + msg + '&phone=' + mobile;
       Linking.openURL(url).then((data) => {
-        console.log('WhatsApp Opened');
       }).catch(() => {
-        alert('Make sure WhatsApp installed on your device');
+        // alert('Make sure WhatsApp installed on your device');
+        showToastRedAlert('Make sure WhatsApp is installed on your device');
       });
     } else {
       alert('Please insert message to send');
@@ -189,14 +215,20 @@ export const convertToDate = (isoDate, format = "DD/MM/YYYY") => {
 export const convertTimeStampToDateString = (timeStamp, format) => {
   if (!timeStamp || timeStamp.length === 0) return "";
   format = format ? format : "DD/MM/YYYY h:mm a";
-  
+
   const date = moment(Number(timeStamp)).format(format);
-  
+
+  return date;
+};
+
+export const convertTimeStringToDate = (timeStamp, format) => {
+  if (!timeStamp || timeStamp.length === 0) return "";
+  format = format ? format : "DD/MM/YYYY";
+  const date = moment(timeStamp).format(format);
   return date;
 };
 
 export const convertDateStringToMilliseconds = (dateString) => {
-  console.log("dateString:-=-=-=-=-> ", dateString);
   if (!dateString) {
     return null;
   }
@@ -264,7 +296,6 @@ export const emiCalculator = (principle, tenureInMonths, interestRate) => {
     const step1 = Math.pow(1 / (1 + interest), months);
     const emi = Math.round(((amount * interest) / (1 - step1)) * 100) / 100;
     const finalEmi = Math.round(emi).toString();
-    console.log("finalEmi: ", finalEmi);
     return finalEmi;
   }
   return "";
@@ -277,7 +308,6 @@ export const PincodeDetails = async (pincode) => {
     })
       .then((json) => json.json())
       .then((res) => {
-        // console.log("PINCODE:", JSON.stringify(res));
         if (res != undefined && res.length > 0) {
           if (res[0].PostOffice != null && res[0].PostOffice.length > 0) {
             resolve({ ...res[0].PostOffice[0] });
@@ -299,7 +329,6 @@ export const PincodeDetailsNew = async (pincode) => {
     })
       .then((json) => json.json())
       .then((res) => {
-        console.log("PINCODE:", JSON.stringify(res));
         if (res != undefined && res.length > 0) {
           resolve(res[0].PostOffice)
         } else {
@@ -313,7 +342,6 @@ export const PincodeDetailsNew = async (pincode) => {
 export const GetCarModelList = async (orgId, token = "") => {
   return await new Promise((resolve, reject) => {
     const url = URL.VEHICLE_MODELS(orgId);
-    // console.log("url: ", url);
     fetch(url, {
       method: "GET",
       headers: {
@@ -324,7 +352,6 @@ export const GetCarModelList = async (orgId, token = "") => {
     })
       .then((json) => json.json())
       .then((res) => {
-        // console.log("res: ", JSON.stringify(res))
         if (res != undefined && res.length > 0) {
           resolve(res);
         } else {
@@ -335,10 +362,9 @@ export const GetCarModelList = async (orgId, token = "") => {
   });
 };
 
-export const GetFinanceBanksList = async (orgId, token) => {
+export const GetEnquiryCarModelList = async (orgId, token = "") => {
   return await new Promise((resolve, reject) => {
-    const url = URL.GET_BANK_DETAILS(orgId);
-    console.log("url: ", url);
+    const url = URL.ENQUIRY_VEHICLE_MODELS(orgId);
     fetch(url, {
       method: "GET",
       headers: {
@@ -349,7 +375,29 @@ export const GetFinanceBanksList = async (orgId, token) => {
     })
       .then((json) => json.json())
       .then((res) => {
-        // console.log("res: ", JSON.stringify(res))
+        if (res != undefined && res.length > 0) {
+          resolve(res);
+        } else {
+          reject([]);
+        }
+      })
+      .catch((err) => reject([]));
+  });
+}; 
+
+export const GetFinanceBanksList = async (orgId, token) => {
+  return await new Promise((resolve, reject) => {
+    const url = URL.GET_BANK_DETAILS(orgId);
+    fetch(url, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "auth-token": token,
+      },
+    })
+      .then((json) => json.json())
+      .then((res) => {
         if (res != undefined && res.length > 0) {
           resolve(res);
         } else {
@@ -362,8 +410,38 @@ export const GetFinanceBanksList = async (orgId, token) => {
 
 export const GetPaidAccessoriesList = async (vehicleId, orgId, token) => {
   return await new Promise((resolve, reject) => {
+    // const url = URL.GET_PAID_ACCESSORIES_LIST(vehicleId);
+    const url = URL.GET_PAID_ACCESSORIES_LIST2(vehicleId, orgId);
+    fetch(url, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "auth-token": token,
+        // orgId: orgId,
+      },
+    })
+      .then((json) => json.json())
+      .then((res) => {
+        if (res != undefined) {
+          if (res != undefined && res.length > 0) {
+            resolve(res);
+          }
+          else {
+            resolve([]);
+          }
+        } else {
+          reject("Get Paid Acceossories List failed");
+        }
+      })
+      .catch((err) => reject(err));
+  });
+};
+
+
+export const GetPaidAccessoriesList2 = async (vehicleId, orgId, token) => {
+  return await new Promise((resolve, reject) => {
     const url = URL.GET_PAID_ACCESSORIES_LIST(vehicleId);
-    //console.log("url: ", url);
     fetch(url, {
       method: "GET",
       headers: {
@@ -375,7 +453,6 @@ export const GetPaidAccessoriesList = async (vehicleId, orgId, token) => {
     })
       .then((json) => json.json())
       .then((res) => {
-        //console.log("res: ", JSON.stringify(res))
         if (res.success == true) {
           if (res.accessorylist != undefined && res.accessorylist.length > 0) {
             resolve(res.accessorylist);
@@ -390,10 +467,9 @@ export const GetPaidAccessoriesList = async (vehicleId, orgId, token) => {
   });
 };
 
-export const GetDropList = async ( orgId, token, type) => {
+export const GetDropList = async (orgId, token, type) => {
   return await new Promise((resolve, reject) => {
     const url = URL.GET_DROP_LIST(orgId, type);
-    //console.log("url: ", url);
     fetch(url, {
       method: "GET",
       headers: {
@@ -404,15 +480,17 @@ export const GetDropList = async ( orgId, token, type) => {
     })
       .then((json) => json.json())
       .then((res) => {
-        //console.log("res: ", JSON.stringify(res))
         if (res != undefined && res.length > 0) {
           const updatedData = [];
           res.forEach(obj => {
-            const newObj = {...obj};
+            const newObj = { ...obj };
             if (newObj.status === "Active") {
               newObj.name = newObj.lostReason;
+              newObj.sublostreasons.forEach(subObj => {
+                subObj.name = subObj.subReason
+              })
               updatedData.push(newObj)
-            } 
+            }
           })
           resolve(updatedData);
         } else {
@@ -421,4 +499,79 @@ export const GetDropList = async ( orgId, token, type) => {
       })
       .catch((err) => reject(err));
   });
+};
+
+export const achievementPercentage = (achievement, tgt, paramName, enq = {}, ret = {}, acc = {}) => {
+  const enqCal = ["Enquiry", "PreEnquiry"];
+  const retCal = ["Exchange", "Finance", "Insurance", "EXTENDEDWARRANTY"];
+  const accCal = ["Accessories"];
+
+  let target = tgt;
+  if (achievement) {
+    achievement = Number(achievement);
+  } else {
+    achievement = 0;
+  }
+
+  if (paramName && retCal.includes(paramName)) {
+    target = ret.achievment;
+  } else if (paramName && accCal.includes(paramName)) {
+    target = acc.target;
+  } else if (paramName && !enqCal.includes(paramName)) {
+    target = enq.achievment;
+  } else {
+    if (target) {
+      target = Number(target);
+    } else {
+      target = 0;
+    }
+  }
+
+  return target > 0 ? Math.round((achievement / target) * 100) : achievement;
+};
+
+export const sourceModelPercentage = (achievement, target) => {
+  if (achievement) {
+    achievement = Number(achievement);
+  } else {
+    achievement = 0;
+  }
+  
+  if (target) {
+    target = Number(target);
+  } else {
+    target = 0;
+  }
+
+  return target > 0 ? Math.round((achievement / target) * 100) : achievement;
+};
+
+// export const achievementPercentage = (achievement, tgt, paramName, enquiryAchievement) => {
+//   const paramsToCalculateDirectTotal = ['Enquiry', 'Accessories', 'PreEnquiry'];
+//   let target = tgt;
+//   if (paramName && !paramsToCalculateDirectTotal.includes(paramName)) {
+//     target = enquiryAchievement;
+//   }
+//   if (achievement) {
+//     achievement = Number(achievement);
+//   } else {
+//     achievement = 0;
+//   }
+//   if (target) {
+//     target = Number(target);
+//   } else {
+//     target = 0;
+//   }
+//   return target > 0 ? Math.round((achievement / target) * 100) : achievement; // if denominator is > 0, display percentage, else no change, display achievement
+// }
+
+export const setBranchId = async (value) => {
+  let data = value.toString();
+  store.dispatch(updateSelectedBranchId(data));
+  await AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_ID, data);
+};
+
+export const setBranchName = async (value) => {
+  store.dispatch(updateSelectedBranchName(value));
+  await AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_NAME, value);
 };

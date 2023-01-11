@@ -34,7 +34,6 @@ const CreateEnquiryScreen = ({ route, navigation }) => {
 
     const getCurrentLocation = () => {
         Geolocation.getCurrentPosition(info => {
-            console.log(info)
             setCurrentLocation({
                 lat: info.coords.latitude,
                 long: info.coords.longitude

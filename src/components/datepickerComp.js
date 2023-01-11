@@ -54,7 +54,7 @@ const DatePickerComponent = ({ visible = false, onRequestClose, value, mode = "d
                                 Done
                             </Button>
                         </View>
-                        <DateTimePicker 
+                        <DateTimePicker
                             testID="dateTimePicker"
                             value={value}
                             mode={mode}
@@ -66,7 +66,7 @@ const DatePickerComponent = ({ visible = false, onRequestClose, value, mode = "d
                             minimumDate={minimumDate}
                             textColor={Colors.RED}
                            //timeZoneOffsetInSeconds={18000}
-                            
+
                         />
                     </View>
                 </SafeAreaView>
@@ -105,14 +105,14 @@ const styles = StyleSheet.create({
     },
 })
 
-// mode :- 
+// mode :-
 
 // "date" (default for iOS and Android and Windows)
 // "time"
 // "datetime" (iOS only)
 // "countdown" (iOS only)
 
-// display :- 
+// display :-
 
 // "default" - Show a default date picker (spinner/calendar/clock) based on mode and Android version.
 // "spinner"
