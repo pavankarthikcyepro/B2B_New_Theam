@@ -95,8 +95,8 @@ const RegisterScreen = ({ navigation }) => {
 
   useEffect(async () => {
     try {
-      const response = await client.get(URL.GET_ROLES_LIST());
-      const response2 = await client.get(URL.GET_DESGINATION_LIST());
+      const response = await client.get(URL.GET_ROLES_LIST(), {}, false);
+      const response2 = await client.get(URL.GET_DESGINATION_LIST(), {}, false);
       const json = await response.json();
       const json2 = await response2.json();
       if (json && json2) {
@@ -105,7 +105,6 @@ const RegisterScreen = ({ navigation }) => {
       }
     } catch (error) {}
   }, []);
-
 
   const updateAddressDetails = (pincode) => {
     if (pincode.length != 6) {
@@ -188,14 +187,14 @@ const RegisterScreen = ({ navigation }) => {
       showToast("Please Select Any Designaion");
       return;
     }
-     if (password.length > 8) {
-       showToastRedAlert("Password length must be greater than 8");
-       return;
-     }
-     if (password !== confirmPassword) {
-       showToastRedAlert("Please Enter Confirm Password Same as Password");
-       return;
-     }
+    if (password.length > 8) {
+      showToastRedAlert("Password length must be greater than 8");
+      return;
+    }
+    if (password !== confirmPassword) {
+      showToastRedAlert("Please Enter Confirm Password Same as Password");
+      return;
+    }
     if (communicationAddress.pincode.length === 0) {
       showToast("Please enter Communication pincode");
       return;
@@ -240,7 +239,7 @@ const RegisterScreen = ({ navigation }) => {
       },
     };
 
-    const response = await client.post(URL.SAVE_EMPLOYEE(), payload);
+    const response = await client.post(URL.SAVE_EMPLOYEE(), payload, {}, false);
     const json = await response.json();
     if (json) {
       showToastRedAlert("Your Account is Successfully Created");
