@@ -220,7 +220,6 @@ const LoginScreen = ({ navigation }) => {
         if (isBetween) {
           Geolocation.watchPosition(
             async (lastPosition) => {
-              console.log("lastPOSTION", lastPosition);
               let speed =
                 lastPosition?.coords?.speed <= -1
                   ? 0
@@ -257,8 +256,6 @@ const LoginScreen = ({ navigation }) => {
                   trackingJson.length > 0
                     ? JSON.parse(trackingJson[trackingJson.length - 1].location)
                     : null;
-                console.log("ssgfgfgfgfgs", newLatLng, parsedValue);
-
                 // if (newLatLng && parsedValue) {
                 //   if (
                 //     objectsEqual(newLatLng, parsedValue[parsedValue.length - 1])
