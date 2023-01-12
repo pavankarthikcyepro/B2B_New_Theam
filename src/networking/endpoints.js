@@ -92,7 +92,7 @@
 
 // Dev End Points with JWT
 export const baseUrl =
-  "https://stage-api.cyepro.com/";
+  "http://ec2-15-207-225-163.ap-south-1.compute.amazonaws.com:8008/";
 export const auth_url = baseUrl + "auth";
 export const hrms_url = baseUrl + "hrms";
 export const inventory_url = baseUrl + "inventory";
