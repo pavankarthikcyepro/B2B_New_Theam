@@ -13,14 +13,16 @@ import AttendanceTeamMemberScreen from "../scenes/mainScenes/Attendance/teamInde
 import { IconButton } from "react-native-paper";
 import { AppNavigator } from ".";
 import AttendanceFilter from "../scenes/mainScenes/Attendance/AttendanceFilter";
+import AttendanceDashboard from "../scenes/mainScenes/Attendance/Dashboard";
 
 export const AttendanceTopTabNavigatorIdentifiers = {
   myattendance: "MY_ATTENDANCE",
-  attendance : "ATTENDANCE_1",
+  attendance: "ATTENDANCE_1",
   leave: "LEAVE",
-  team:"TEAM",
-  team_attendance:"TEAM_ATTENDANCE",
-  filter:"FILTER"
+  team: "TEAM",
+  team_attendance: "TEAM_ATTENDANCE",
+  filter: "FILTER",
+  dashboard: "DASHBOARD",
 };
 
 const screeOptionStyle = {
@@ -52,28 +54,27 @@ const tabBarOptions = {
 const MyAttendanceTopTab = createStackNavigator();
 
 const MyAttendanceTopTabNavigatorOne = ({ navigation }) => {
-    const selector = useSelector((state) => state.homeReducer);
+  const selector = useSelector((state) => state.homeReducer);
 
-   const [handleTabDisplay, setHandleTabDisplay] = useState(0);
+  const [handleTabDisplay, setHandleTabDisplay] = useState(0);
 
-   useEffect(async () => {
-     const employeeData = await AsyncStore.getData(
-       AsyncStore.Keys.LOGIN_EMPLOYEE
-     );
-     if (employeeData) {
-       const jsonObj = JSON.parse(employeeData);
-       if (
-         jsonObj.hrmsRole === "branch manager" ||
-         jsonObj.hrmsRole === "MD" ||
-         jsonObj.hrmsRole === "Sales Manager"
-       ) {
-         setHandleTabDisplay(2);
-       } else {
-         setHandleTabDisplay(1);
-       }
-     }
-   }, []);
-
+  useEffect(async () => {
+    const employeeData = await AsyncStore.getData(
+      AsyncStore.Keys.LOGIN_EMPLOYEE
+    );
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      if (
+        jsonObj.hrmsRole === "branch manager" ||
+        jsonObj.hrmsRole === "MD" ||
+        jsonObj.hrmsRole === "Sales Manager"
+      ) {
+        setHandleTabDisplay(2);
+      } else {
+        setHandleTabDisplay(1);
+      }
+    }
+  }, []);
 
   return (
     <MyAttendanceTopTab.Navigator
@@ -92,17 +93,20 @@ const MyAttendanceTopTabNavigatorOne = ({ navigation }) => {
           title: "My Attendance",
           headerShown: true,
           headerLeft: () => <MenuIcon navigation={navigation} />,
-          headerRight: () => (
-            <IconButton
-              icon="filter-outline"
-              style={{ padding: 0, margin: 0 }}
-              color={Colors.WHITE}
-              size={30}
-              onPress={() =>
-                navigation.navigate(AttendanceTopTabNavigatorIdentifiers.filter)
-              }
-            />
-          ),
+          headerRight: () =>
+            selector?.isDSE ? null : (
+              <IconButton
+                icon="filter-outline"
+                style={{ padding: 0, margin: 0 }}
+                color={Colors.WHITE}
+                size={30}
+                onPress={() =>
+                  navigation.navigate(
+                    AttendanceTopTabNavigatorIdentifiers.filter
+                  )
+                }
+              />
+            ),
           headerStyle: screeOptionStyle.headerStyle,
           headerTitleStyle: screeOptionStyle.headerTitleStyle,
           headerTintColor: screeOptionStyle.headerTintColor,
@@ -169,9 +173,18 @@ const AttendanceTopTabNavigatorTwo = () => {
 const AttendanceTopTabNavigatorTeams = () => {
   return (
     <AttendanceTopTab.Navigator
-      initialRouteName={AttendanceTopTabNavigatorIdentifiers.attendance}
+      initialRouteName={AttendanceTopTabNavigatorIdentifiers.dashboard}
       tabBarOptions={tabBarOptions}
     >
+      <AttendanceTopTab.Screen
+        name={AttendanceTopTabNavigatorIdentifiers.dashboard}
+        component={AttendanceDashboard}
+        options={{
+          title: ({ focused }) => (
+            <Badge title={"Dashboard"} focused={focused} />
+          ),
+        }}
+      />
       <AttendanceTopTab.Screen
         name={AttendanceTopTabNavigatorIdentifiers.attendance}
         component={AttendanceTopTabScreen}
