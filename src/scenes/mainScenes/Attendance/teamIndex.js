@@ -113,17 +113,21 @@ const AttendanceTeamMemberScreen = ({ route, navigation }) => {
       // setFromDateState(lastMonthFirstDate);
       // setToDateState(currentDate);
       setLoading(true);
-      getAttendanceFilter(route?.params, selector.selectedDate);
-      setFromDateState(
-        selector.selectedDate.startDate
-          ? selector.selectedDate.startDate
-          : selectedFromDate
-      );
-      setToDateState(
-        selector.selectedDate.endDate
-          ? selector.selectedDate.endDate
-          : selectedToDate
-      );
+      // getAttendanceFilter(route?.params, selector.selectedDate);
+      setFromDateState(lastMonthFirstDate);
+      setToDateState(currentDate);
+      GetCountByMonth(lastMonthFirstDate, currentDate);
+      getAttendanceByMonth(lastMonthFirstDate, currentDate);
+      // setFromDateState(
+      //   selector.selectedDate.startDate
+      //     ? selector.selectedDate.startDate
+      //     : selectedFromDate
+      // );
+      // setToDateState(
+      //   selector.selectedDate.endDate
+      //     ? selector.selectedDate.endDate
+      //     : selectedToDate
+      // );
     }
   }, [route.params]);
 
@@ -141,7 +145,7 @@ const AttendanceTeamMemberScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     if (route.params) {
-      // setLoading(true);
+      setLoading(true);
       // getAttendance(route?.params);
       // setFromDateState(
       //   selector.selectedDate.startDate

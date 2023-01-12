@@ -93,20 +93,20 @@ const MyAttendanceTopTabNavigatorOne = ({ navigation }) => {
           title: "My Attendance",
           headerShown: true,
           headerLeft: () => <MenuIcon navigation={navigation} />,
-          headerRight: () =>
-            selector?.isDSE ? null : (
-              <IconButton
-                icon="filter-outline"
-                style={{ padding: 0, margin: 0 }}
-                color={Colors.WHITE}
-                size={30}
-                onPress={() =>
-                  navigation.navigate(
-                    AttendanceTopTabNavigatorIdentifiers.filter
-                  )
-                }
-              />
-            ),
+          // headerRight: () =>
+          //   selector?.isDSE ? null : (
+          //     <IconButton
+          //       icon="filter-outline"
+          //       style={{ padding: 0, margin: 0 }}
+          //       color={Colors.WHITE}
+          //       size={30}
+          //       onPress={() =>
+          //         navigation.navigate(
+          //           AttendanceTopTabNavigatorIdentifiers.filter
+          //         )
+          //       }
+          //     />
+          //   ),
           headerStyle: screeOptionStyle.headerStyle,
           headerTitleStyle: screeOptionStyle.headerTitleStyle,
           headerTintColor: screeOptionStyle.headerTintColor,

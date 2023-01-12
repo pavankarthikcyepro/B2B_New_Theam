@@ -112,7 +112,7 @@ const AttendanceScreen = ({ route, navigation }) => {
     if (route?.params) {
       setFromDateState(lastMonthFirstDate);
       setToDateState(currentDate);
-      getAttendanceFilter(route?.params);
+      // getAttendanceFilter(route?.params);
     }
   }, [route.params]);
 
@@ -123,6 +123,7 @@ const AttendanceScreen = ({ route, navigation }) => {
       setToDateState(currentDate);
       GetCountByMonth(lastMonthFirstDate, currentDate);
       getAttendanceByMonth(lastMonthFirstDate, currentDate);
+      getProfilePic();
       // setLoading(true);
       // getAttendance();
     });
@@ -228,7 +229,7 @@ const AttendanceScreen = ({ route, navigation }) => {
       );
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
-        getProfilePic(newUser ? newUser : jsonObj);
+        // getProfilePic(newUser ? newUser : jsonObj);
         getFilterAttendanceCount(newUser ? newUser : jsonObj);
         setUserName(newUser ? newUser.empName : jsonObj.empName);
         var d = currentMonth;
@@ -304,7 +305,7 @@ const AttendanceScreen = ({ route, navigation }) => {
       );
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
-        getProfilePic(newUser ? newUser : jsonObj);
+        // getProfilePic(newUser ? newUser : jsonObj);
         getAttendanceCount(newUser ? newUser : jsonObj);
         var d = currentMonth;
         const response = await client.get(
@@ -399,27 +400,35 @@ const AttendanceScreen = ({ route, navigation }) => {
     }
   };
 
-  const getProfilePic = (userData) => {
-    client
-      .get(
-        `${baseUrl}sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
-      )
-      .then((response) => response.json())
-      .then((json) => {
-        if (json.length > 0) {
-          setImageUri(json[json.length - 1].documentPath);
-        } else {
-          setImageUri(
-            "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
-          );
-        }
-      })
-      .catch((error) => {
-        setImageUri(
-          "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
-        );
-        console.error(error);
-      });
+  const getProfilePic = async (userData) => {
+    try {
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        await client
+          .get(
+            `${baseUrl}sales/employeeprofilepic/get/${jsonObj.empId}/${jsonObj.orgId}/${jsonObj.branchId}`
+          )
+          .then((response) => response.json())
+          .then((json) => {
+            if (json.length > 0) {
+              setImageUri(json[json.length - 1].documentPath);
+            } else {
+              setImageUri(
+                "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
+              );
+            }
+          })
+          .catch((error) => {
+            setImageUri(
+              "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
+            );
+            console.error(error);
+          });
+      }
+    } catch (error) {}
   };
 
   const getAttendanceCount = async (jsonObj) => {
@@ -511,7 +520,7 @@ const AttendanceScreen = ({ route, navigation }) => {
       );
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
-        getProfilePic(jsonObj);
+        // getProfilePic(jsonObj);
         var d = currentMonth;
         const response = await client.get(
           URL.GET_ATTENDANCE_EMPID2(jsonObj.empId, jsonObj.orgId, start, end)

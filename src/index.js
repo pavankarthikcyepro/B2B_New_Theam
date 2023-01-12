@@ -111,11 +111,9 @@ const AppScreen = () => {
                 lastPosition?.coords?.speed <= -1
                   ? 0
                   : lastPosition?.coords?.speed * 3.6;
-              // console.log("SPEED=============", speed);
               const employeeData = await AsyncStore.getData(
                 AsyncStore.Keys.LOGIN_EMPLOYEE
               );
-              // console.log("employeeData", employeeData);
               if (employeeData) {
                 const jsonObj = JSON.parse(employeeData);
                 const trackingResponse = await client.get(
@@ -143,8 +141,6 @@ const AppScreen = () => {
                   trackingJson.length > 0
                     ? JSON.parse(trackingJson[trackingJson.length - 1].location)
                     : null;
-                console.log("ssgfgfgfgfgs", newLatLng, parsedValue);
-
                 if (newLatLng && parsedValue) {
                   // if (
                   //   objectsEqual(
@@ -176,14 +172,11 @@ const AppScreen = () => {
                     kmph: speed.toString(),
                     speed: speed.toString(),
                   };
-                  console.log("SSxxxsddddsSS");
-
                   if (speed <= 10) {
                     // await AsyncStore.storeJsonData(
                     //   AsyncStore.Keys.COORDINATES,
                     //   newArray
                     // );
-                    console.log("SSSS");
                     const response = await client.put(
                       locationUpdate +
                         `/${trackingJson[trackingJson.length - 1].id}`,
@@ -204,11 +197,7 @@ const AppScreen = () => {
                     kmph: speed.toString(),
                     speed: speed.toString(),
                   };
-                  console.log("SSxxxsssSS");
-
                   if (speed <= 10) {
-                    console.log("SSsssSS");
-
                     await AsyncStore.storeJsonData(
                       AsyncStore.Keys.COORDINATES,
                       newArray
@@ -243,7 +232,6 @@ const AppScreen = () => {
         if (startDate <= now && now <= startBetween) {
           // sendLocalNotification();
         }
-        // console.log("AppState", AppState.currentState);
         if (
           AppState.currentState === "background" ||
           AppState.currentState === "inactive"
@@ -258,7 +246,6 @@ const AppScreen = () => {
         }
         try {
           let todaysDate = await AsyncStore.getData(AsyncStore.Keys.TODAYSDATE);
-          console.log("LLLLLL");
           if (todaysDate) {
             getCoordinates();
           } else {
@@ -271,7 +258,6 @@ const AppScreen = () => {
   };
 
   const startTracking = async () => {
-    console.log("KKKKKK");
     if (Platform.OS === "ios") {
       Geolocation.requestAuthorization((value) => {
         // alert(value);

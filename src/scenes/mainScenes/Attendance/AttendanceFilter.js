@@ -376,7 +376,7 @@ const AttendanceFilter = ({ route, navigation }) => {
         })
       );
 
-      navigation.navigate(AttendanceTopTabNavigatorIdentifiers.team);
+      navigation.navigate(AttendanceTopTabNavigatorIdentifiers.dashboard);
       //   getDashboadTableDataFromServer(selectedIds, "LEVEL");
     } else {
       showToast("Please select any value");

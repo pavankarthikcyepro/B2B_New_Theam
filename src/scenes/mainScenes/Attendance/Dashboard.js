@@ -11,10 +11,15 @@ import {
   Image,
   ScrollView,
   useWindowDimensions,
+  FlatList,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
-import { DropDownComponant } from "../../../components";
+import {
+  DatePickerComponent,
+  DateRangeComp,
+  DropDownComponant,
+} from "../../../components";
 import { Colors, GlobalStyle } from "../../../styles";
 import { client } from "../../../networking/client";
 import URL from "../../../networking/endpoints";
@@ -48,50 +53,22 @@ const image = "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg";
 const chartHeight = itemWidth - 20;
 const overlayViewHeight = chartHeight - 10;
 
-const FirstRoute = () => (
-  <View style={{ flex: 1, backgroundColor: "#ff4081" }} />
-);
-const SecondRoute = () => (
-  <View style={{ flex: 1, backgroundColor: "#673ab7" }} />
-);
-const ThirdRoute = () => (
-  <View style={{ flex: 1, backgroundColor: "#673ab7" }} />
-);
-const FourthRoute = () => (
-  <View style={{ flex: 1, backgroundColor: "#673ab7" }} />
-);
-
-const renderScene = SceneMap({
-  first: FirstRoute,
-  second: SecondRoute,
-  third: ThirdRoute,
-  fourth: FourthRoute,
-});
-
 const AttendanceDashboard = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.homeReducer);
   const [loading, setLoading] = useState(false);
-  const [showDropDownModel, setShowDropDownModel] = useState(false);
-  const [dropDownData, setDropDownData] = useState([]);
-  const [selectedLocation, setSelectedLocation] = useState({
-    name: "",
-    id: 0,
-  });
-  const [selectedDealerCode, setSelectedDealerCode] = useState({
-    name: "",
-    id: 0,
-  });
-  const [selectedMonthYear, setSelectedMonthYear] = useState({
-    name: "",
-    id: 0,
-  });
-  const [selectedKey, setSelectedKey] = useState("");
-  const [allParameters, setAllParameters] = useState([]);
-  const [dropdownList, setDropdownList] = useState({});
-  const [employeeList, setEmployeeList] = useState({});
   const [chartData, setChartData] = useState([]);
+  const [todaysLeave, setTodaysLeave] = useState([]);
+  const [todaysPresent, setTodaysPresent] = useState([]);
+  const [todaysWFH, setTodaysWFH] = useState([]);
+  const [todaysNoLogged, setTodaysNoLogged] = useState([]);
+  const [selectedFromDate, setSelectedFromDate] = useState("");
+  const [selectedToDate, setSelectedToDate] = useState("");
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [datePickerId, setDatePickerId] = useState("");
 
+  const fromDateRef = useRef(selectedFromDate);
+  const toDateRef = useRef(selectedToDate);
   const layout = useWindowDimensions();
 
   const [index, setIndex] = React.useState(0);
@@ -103,15 +80,10 @@ const AttendanceDashboard = ({ route, navigation }) => {
   ]);
 
   useEffect(() => {
-    // getInitialParameters();
-    getEmployeeList();
+    setFromDateState(lastMonthFirstDate);
+    setToDateState(currentDate);
+    getEmployeeList(lastMonthFirstDate, currentDate);
   }, []);
-
-  useEffect(() => {
-    if (selectedLocation.id != 0 && selectedDealerCode.id != 0) {
-      getEmployeeList();
-    }
-  }, [selectedLocation, selectedDealerCode]);
 
   useEffect(() => {
     if (selector.selectedIDS.length > 0) {
@@ -119,28 +91,24 @@ const AttendanceDashboard = ({ route, navigation }) => {
     }
   }, [selector.selectedIDS]);
 
-  const getInitialParameters = async () => {
-    try {
-      let employeeData = await AsyncStore.getData(
-        AsyncStore.Keys.LOGIN_EMPLOYEE
-      );
-      if (employeeData) {
-        const jsonObj = JSON.parse(employeeData);
-        const response = await client.get(
-          URL.ORG_HIRARCHY(jsonObj.orgId, jsonObj.branchId)
-        );
-        const json = await response.json();
-        setDropdownList(json);
-      }
-    } catch (error) {
-      console.error(error);
-    }
+  const setFromDateState = (date) => {
+    fromDateRef.current = date;
+    setSelectedFromDate((x) => date);
   };
 
-  const getEmployeeList = async (data) => {
+  const setToDateState = (date) => {
+    toDateRef.current = date;
+    setSelectedToDate((x) => date);
+  };
+
+  const showDatePickerMethod = (key) => {
+    setShowDatePicker(true);
+    setDatePickerId(key);
+  };
+
+  const getChartData = async (start, end) => {
     try {
-      //   setLoading(true);
-      setEmployeeList({});
+      setLoading(true);
       let employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
       );
@@ -149,24 +117,26 @@ const AttendanceDashboard = ({ route, navigation }) => {
         let newPayload = {
           userId: jsonObj.empId,
           orgId: jsonObj.orgId,
-          startDate: "2023-01-01",
-          endDate: "2023-01-15",
+          startDate: start,
+          endDate: end,
         };
         const response2 = await client.post(
           URL.GET_TEAM_ATTENDANCE_COUNT(),
           newPayload
         );
         const json = await response2.json();
-        let newData = [
-          { label: "Present", value: json?.totalData?.totalPresent || 0 },
-          { label: "Leave", value: json?.totalData?.totalAbsent || 0 },
-          { label: "WFH", value: json?.totalData?.totalWFH || 0 },
-          { label: "No Logged", value: json?.totalData?.totalNotLoggedIn || 0 },
-        ];
-        setChartData(newData);
-        // if (!json.status) {
-        //   setEmployeeList(json);
-        // }
+        if (json) {
+          let newData = [
+            { label: "Present", value: json?.totalData?.totalPresent || 0 },
+            { label: "Leave", value: json?.totalData?.totalAbsent || 0 },
+            { label: "WFH", value: json?.totalData?.totalWFH || 0 },
+            {
+              label: "No Logged",
+              value: json?.totalData?.totalNotLoggedIn || 0,
+            },
+          ];
+          setChartData(newData);
+        }
         setLoading(false);
       }
     } catch (error) {
@@ -175,23 +145,139 @@ const AttendanceDashboard = ({ route, navigation }) => {
     }
   };
 
-  const dropDownItemClicked = async (item) => {
-    setSelectedKey(item);
-    switch (item) {
-      case "Location":
-        setDropDownData(dropdownList["Location"].sublevels);
+  const getEmployeeList = async (start, end) => {
+    try {
+      setLoading(true);
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        let newPayload = {
+          userId: jsonObj.empId,
+          orgId: jsonObj.orgId,
+          startDate: "",
+          endDate: "",
+        };
+        const response2 = await client.post(
+          URL.GET_TEAM_ATTENDANCE_COUNT(),
+          newPayload
+        );
+        const json = await response2.json();
+        if (json) {
+          let newData = [
+            { label: "Present", value: json?.todayData?.totalPresent || 0 },
+            { label: "Leave", value: json?.todayData?.totalAbsent || 0 },
+            { label: "WFH", value: json?.todayData?.totalWFH || 0 },
+            {
+              label: "No Logged",
+              value: json?.todayData?.totalNotLoggedIn || 0,
+            },
+          ];
+          setChartData(newData);
+          let todaysPresent = json.todayData.users.filter(
+            (e) => e.status == "PRESENT"
+          );
+          let todaysLeave = json.todayData.users.filter(
+            (e) => e.status == "ABSENT"
+          );
+          let todaysNoLogged = json.todayData.users.filter(
+            (e) => e.status == "NOT LOGGED IN"
+          );
+          let todaysWFH = json.todayData.users.filter(
+            (e) => e.status == "WORK FROM HOME"
+          );
+          setTodaysPresent(todaysPresent);
+          setTodaysLeave(todaysLeave);
+          setTodaysNoLogged(todaysNoLogged);
+          setTodaysWFH(todaysWFH);
+        }
+        setLoading(false);
+      }
+    } catch (error) {
+      setLoading(false);
+      console.error(error);
+    }
+  };
+
+  const updateSelectedDate = (date, key) => {
+    const formatDate = moment(date).format(dateFormat);
+    switch (key) {
+      case "FROM_DATE":
+        setFromDateState(formatDate);
+        getChartData(formatDate, selectedToDate);
         break;
-      case "Dealer Code":
-        setDropDownData(dropdownList["Dealer Code"].sublevels);
-        break;
-      case "Month & Years":
-        setDropDownData(dropdownList["Dealer Code"].sublevels);
-        break;
-      default:
+      case "TO_DATE":
+        setToDateState(formatDate);
+        getChartData(selectedFromDate, formatDate);
         break;
     }
-    setShowDropDownModel(true);
   };
+
+  const FirstRoute = () => <RenderView data={todaysPresent} />;
+  const SecondRoute = () => <RenderView data={todaysLeave} />;
+  const ThirdRoute = () => <RenderView data={todaysWFH} />;
+  const FourthRoute = () => <RenderView data={todaysNoLogged} />;
+
+  const RenderView = ({ data }) => {
+    return (
+      <View style={{ flex: 1 }}>
+        <View style={styles.tableTitle}>
+          <View style={{ flex: 0.25 }}>
+            <Text style={styles.tableTitleTxt}>{"Location"}</Text>
+          </View>
+          <View style={{ flex: 0.25 }}>
+            <Text style={styles.tableTitleTxt}>{"Branch"}</Text>
+          </View>
+          <View style={{ flex: 0.25 }}>
+            <Text style={styles.tableTitleTxt}>{"Employee Name"}</Text>
+          </View>
+        </View>
+        <View style={styles.divider} />
+        <FlatList
+          style={{ flex: 1 }}
+          data={data}
+          renderItem={renderItem}
+          keyExtractor={(item, index) => index}
+          ListEmptyComponent={() =>
+            loading ? (
+              <ActivityIndicator size="large" color={Colors.RED} />
+            ) : (
+              <View style={styles.noDataView}>
+                <Text style={styles.tableTitleTxt}>No Data</Text>
+              </View>
+            )
+          }
+          ItemSeparatorComponent={() => {
+            return <View style={{ height: 10 }} />;
+          }}
+        />
+      </View>
+    );
+  };
+
+  const renderItem = ({ item }) => {
+    return (
+      <View style={styles.titleView}>
+        <View style={{ flex: 0.25 }}>
+          <Text style={styles.parametersTxt}>{item?.location}</Text>
+        </View>
+        <View style={{ flex: 0.25 }}>
+          <Text style={styles.parametersTxt}>{item?.branch}</Text>
+        </View>
+        <View style={{ flex: 0.25 }}>
+          <Text style={styles.parametersTxt}>{item?.name}</Text>
+        </View>
+      </View>
+    );
+  };
+
+  const renderScene = SceneMap({
+    first: FirstRoute,
+    second: SecondRoute,
+    third: ThirdRoute,
+    fourth: FourthRoute,
+  });
 
   const renderAttendance = (item) => {
     return (
@@ -208,8 +294,6 @@ const AttendanceDashboard = ({ route, navigation }) => {
           series={series}
           sliceColor={sliceColor}
         />
-        {/* <PIEICON width={chartHeight} height={chartHeight} /> */}
-        {/* // Overlay View */}
         <View
           style={{
             position: "absolute",
@@ -243,137 +327,78 @@ const AttendanceDashboard = ({ route, navigation }) => {
       </View>
     );
   };
+
   return (
     <SafeAreaView style={styles.container}>
-      <DropDownComponant
-        visible={showDropDownModel}
-        multiple={false}
-        headerTitle={"Select"}
-        data={dropDownData}
-        onRequestClose={() => setShowDropDownModel(false)}
-        selectedItems={(item) => {
-          let newdata = { name: item.name, id: item.id };
-          switch (selectedKey) {
-            case "Location":
-              setSelectedLocation(newdata);
-              break;
-            case "Dealer Code":
-              setSelectedDealerCode(newdata);
-              break;
-            case "Month & Years":
-              setSelectedMonthYear(newdata);
-              break;
-            default:
-              break;
+      <DatePickerComponent
+        visible={showDatePicker}
+        mode={"date"}
+        maximumDate={new Date()}
+        value={new Date()}
+        onChange={(event, selectedDate) => {
+          setShowDatePicker(false);
+          if (Platform.OS === "android") {
+            if (selectedDate) {
+              updateSelectedDate(selectedDate, datePickerId);
+            }
+          } else {
+            updateSelectedDate(selectedDate, datePickerId);
           }
-          setShowDropDownModel(false);
         }}
+        onRequestClose={() => setShowDatePicker(false)}
       />
-      <View
-        style={{
-          width: "95%",
-          alignSelf: "center",
-          marginTop: 10,
-          flexDirection: "row",
-          justifyContent: "space-around",
-          ...GlobalStyle.shadow,
-        }}
-      >
+      <DateRangeComp
+        fromDate={selectedFromDate}
+        toDate={selectedToDate}
+        fromDateClicked={() => showDatePickerMethod("FROM_DATE")}
+        toDateClicked={() => showDatePickerMethod("TO_DATE")}
+      />
+      <View style={styles.chartView}>
         {chartData.length > 0 &&
+          !loading &&
           chartData.map((item) => {
             return renderAttendance(item);
           })}
       </View>
-      {/* <ScrollView showsVerticalScrollIndicator={false}> */}
       {loading && (
         <View>
           <ActivityIndicator size="large" color={Colors.RED} />
         </View>
       )}
-      {Object.keys(employeeList).map(function (key, index) {
-        return (
-          <View style={{ flexDirection: "column", marginVertical: 10 }}>
-            {Object.values(employeeList)[index].length > 0 && (
-              <View>
-                <Text
-                  style={{ fontSize: 15, fontWeight: "700", marginLeft: 20 }}
-                >
-                  {Object.keys(employeeList)[index]}
-                </Text>
-              </View>
-            )}
-            <ScrollView showsHorizontalScrollIndicator={false} horizontal>
-              {Object.values(employeeList)[index].map(
-                (innerItem, innerIndex) => {
-                  return (
-                    <TouchableOpacity
-                      onPress={() => {
-                        navigation.navigate(
-                          AttendanceTopTabNavigatorIdentifiers.team_attendance,
-                          {
-                            empId: innerItem.code,
-                            orgId: innerItem.orgId || 18,
-                            branchId: innerItem.branch || 286,
-                            empName: innerItem.name || "",
-                            profilePic: innerItem.docPath || image,
-                          }
-                        );
-                      }}
-                      style={{
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <View
-                        style={{
-                          ...GlobalStyle.shadow,
-                          ...styles.profilePicBG,
-                        }}
-                      >
-                        <Image
-                          style={styles.profilePic}
-                          source={{
-                            uri: innerItem.docPath || image,
-                          }}
-                        />
-                      </View>
-                      <Text
-                        numberOfLines={1}
-                        style={{
-                          textAlign: "center",
-                          width: profileWidth + 10,
-                        }}
-                      >
-                        {innerItem.name}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                }
-              )}
-            </ScrollView>
-          </View>
-        );
-      })}
       <TabView
         navigationState={{ index, routes }}
         renderScene={renderScene}
         onIndexChange={setIndex}
         initialLayout={{ width: layout.width }}
-        renderTabBar={(props,) => (
-          <TabBar
-            // renderLabel={({ route, color }) => (
-            //   <Text style={{ color: "black", margin: 8 }}>{route.title}</Text>
-            // )}
-            style={{ backgroundColor: "#fff" }}
-          />
-        )} // <-- add this line
+        renderTabBar={renderTabBar}
       />
-      {/* </ScrollView> */}
     </SafeAreaView>
   );
 };
 
-
+const renderTabBar = (props) => {
+  return (
+    <TabBar
+      {...props}
+      renderLabel={({ focused, route }) => {
+        return (
+          <Text
+            size={20}
+            category="Medium"
+            style={[
+              styles.titleText,
+              { color: focused ? Colors.RED : Colors.DARK_GRAY },
+            ]}
+          >
+            {route.title}
+          </Text>
+        );
+      }}
+      indicatorStyle={styles.indicatorStyle}
+      style={styles.tabBar}
+    />
+  );
+};
 export default AttendanceDashboard;
 
 const styles = StyleSheet.create({
@@ -381,6 +406,10 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     backgroundColor: Colors.LIGHT_GRAY,
+  },
+  titleText: {
+    fontSize: 12,
+    fontWeight: "600",
   },
   component: {
     width: Dimensions.get("window").width,
@@ -625,5 +654,54 @@ const styles = StyleSheet.create({
     borderRadius: profileWidth / 2,
     borderColor: "#fff",
     margin: 10,
+  },
+  tabBar: {
+    backgroundColor: "#ffffff",
+    // borderBottomWidth: 1,
+    // borderColor: Colors.BLACK,
+  },
+  indicatorStyle: {
+    backgroundColor: Colors.RED,
+    padding: 1.5,
+    marginBottom: -2,
+  },
+  titleView: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    flex: 1,
+  },
+  parametersTxt: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: Colors.DARK_GRAY,
+  },
+  tableTitle: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    paddingVertical: 10,
+    width: "100%",
+    alignItems: "center",
+  },
+  tableTitleTxt: {
+    fontSize: 14,
+    fontWeight: "bold",
+  },
+  noDataView: {
+    flex: 1,
+    alignContent: "center",
+    alignItems: "center",
+  },
+  divider: {
+    width: "100%",
+    height: 1,
+    backgroundColor: Colors.BLACK,
+    marginBottom: 10,
+  },
+  chartView: {
+    width: "95%",
+    alignSelf: "center",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    ...GlobalStyle.shadow,
   },
 });
