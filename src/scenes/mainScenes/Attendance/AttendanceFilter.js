@@ -14,13 +14,14 @@ import {
 import { Colors } from "../../../styles";
 import { IconButton } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
-import { getTargetParametersEmpDataInsights, updateTheTeamAttendanceFilter } from "../../../redux/homeReducer";
+import {
+  getTargetParametersEmpDataInsights,
+  updateTheTeamAttendanceFilter,
+  updateTheTeamAttendanceFilterDate,
+} from "../../../redux/homeReducer";
 import * as AsyncStore from "../../../asyncStore";
 import { DatePickerComponent, DropDownComponant } from "../../../components";
-import {
-  DateSelectItem,
-  DropDownSelectionItem,
-} from "../../../pureComponents";
+import { DateSelectItem, DropDownSelectionItem } from "../../../pureComponents";
 import moment from "moment";
 import { Button } from "react-native-paper";
 import {
@@ -368,8 +369,15 @@ const AttendanceFilter = ({ route, navigation }) => {
     if (selectedIds.length > 0) {
       setIsLoading(true);
       dispatch(updateTheTeamAttendanceFilter(selectedIds));
-      navigation.navigate(AttendanceTopTabNavigatorIdentifiers.team)
-    //   getDashboadTableDataFromServer(selectedIds, "LEVEL");
+      dispatch(
+        updateTheTeamAttendanceFilterDate({
+          startDate: fromDate,
+          endDate: toDate,
+        })
+      );
+
+      navigation.navigate(AttendanceTopTabNavigatorIdentifiers.team);
+      //   getDashboadTableDataFromServer(selectedIds, "LEVEL");
     } else {
       showToast("Please select any value");
     }
@@ -664,31 +672,31 @@ const AttendanceFilter = ({ route, navigation }) => {
                       }}
                     />
                   </View>
-                    <View style={styles.submitBtnBckVw}>
-                      <Button
-                        labelStyle={{
-                          color: Colors.RED,
-                          textTransform: "none",
-                        }}
-                        style={{ width: buttonWidth }}
-                        mode="outlined"
-                        onPress={clearBtnClicked}
-                      >
-                        Clear
-                      </Button>
-                      <Button
-                        labelStyle={{
-                          color: Colors.WHITE,
-                          textTransform: "none",
-                        }}
-                        style={{ width: buttonWidth }}
-                        contentStyle={{ backgroundColor: Colors.BLACK }}
-                        mode="contained"
-                        onPress={()=>submitBtnClicked(null)}
-                      >
-                        Submit
-                      </Button>
-                    </View>
+                  <View style={styles.submitBtnBckVw}>
+                    <Button
+                      labelStyle={{
+                        color: Colors.RED,
+                        textTransform: "none",
+                      }}
+                      style={{ width: buttonWidth }}
+                      mode="outlined"
+                      onPress={clearBtnClicked}
+                    >
+                      Clear
+                    </Button>
+                    <Button
+                      labelStyle={{
+                        color: Colors.WHITE,
+                        textTransform: "none",
+                      }}
+                      style={{ width: buttonWidth }}
+                      contentStyle={{ backgroundColor: Colors.BLACK }}
+                      mode="contained"
+                      onPress={() => submitBtnClicked(null)}
+                    >
+                      Submit
+                    </Button>
+                  </View>
                 </View>
               );
             } else if (index === 2) {

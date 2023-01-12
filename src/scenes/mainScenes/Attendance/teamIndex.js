@@ -110,29 +110,52 @@ const AttendanceTeamMemberScreen = ({ route, navigation }) => {
   useEffect(() => {
     console.log(route?.params);
     if (route?.params) {
-      setFromDateState(lastMonthFirstDate);
-      setToDateState(currentDate);
-      getAttendanceFilter(route?.params);
+      // setFromDateState(lastMonthFirstDate);
+      // setToDateState(currentDate);
+      setLoading(true);
+      getAttendanceFilter(route?.params, selector.selectedDate);
+      setFromDateState(
+        selector.selectedDate.startDate
+          ? selector.selectedDate.startDate
+          : selectedFromDate
+      );
+      setToDateState(
+        selector.selectedDate.endDate
+          ? selector.selectedDate.endDate
+          : selectedToDate
+      );
     }
   }, [route.params]);
 
   useEffect(() => {
     navigation.addListener("focus", () => {
       // getCurrentLocation();
-      setFromDateState(lastMonthFirstDate);
-      setToDateState(currentDate);
-    //   setLoading(true);
-    //   getAttendance();
+      // setFromDateState(lastMonthFirstDate);
+      // setToDateState(currentDate);
+      // GetCountByMonth(lastMonthFirstDate, currentDate);
+      // getAttendanceByMonth(lastMonthFirstDate, currentDate);
+      // setLoading(true);
+      // getAttendance();
     });
   }, [navigation]);
 
   useEffect(() => {
     if (route.params) {
-      setLoading(true);
-      getAttendance(route?.params);
+      // setLoading(true);
+      // getAttendance(route?.params);
+      // setFromDateState(
+      //   selector.selectedDate.startDate
+      //     ? selector.selectedDate.startDate
+      //     : selectedFromDate
+      // );
+      // setToDateState(
+      //   selector.selectedDate.endDate
+      //     ? selector.selectedDate.endDate
+      //     : selectedToDate
+      // );
     } else {
-      setLoading(true);
-      getAttendance();
+      // setLoading(true);
+      // getAttendance();
     }
   }, [currentMonth]);
 
@@ -183,43 +206,7 @@ const AttendanceTeamMemberScreen = ({ route, navigation }) => {
     }
   };
 
-  const getCurrentLocation = async () => {
-    try {
-      // if (Platform.OS === "ios") {
-      //   Geolocation.requestAuthorization();
-      //   Geolocation.setRNConfiguration({
-      //     skipPermissionRequests: false,
-      //     authorizationLevel: "whenInUse",
-      //   });
-      // }
-      Geolocation.getCurrentPosition(
-        (position) => {
-          const initialPosition = JSON.stringify(position);
-          let json = JSON.parse(initialPosition);
-          setInitialPosition(json.coords);
-          let dist = getDistanceBetweenTwoPoints(
-            officeLocation.latitude,
-            officeLocation.longitude,
-            json?.coords?.latitude,
-            json?.coords?.longitude
-          );
-          if (dist > officeRadius) {
-            setReason(true); ///true for reason
-          } else {
-            setReason(false);
-          }
-        },
-        (error) => {
-          // console.log(JSON.stringify(error));
-        },
-        { enableHighAccuracy: true }
-      );
-    } catch (error) {
-      console.error("ERROR", error);
-    }
-  };
-
-  const getAttendanceFilter = async (newUser) => {
+  const getAttendanceFilter = async (newUser, date) => {
     try {
       let employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -227,15 +214,15 @@ const AttendanceTeamMemberScreen = ({ route, navigation }) => {
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
         getProfilePic(newUser ? newUser : jsonObj);
-        getFilterAttendanceCount(newUser ? newUser : jsonObj);
+        getFilterAttendanceCount(newUser ? newUser : jsonObj, date);
         setUserName(newUser ? newUser.empName : jsonObj.empName);
         var d = currentMonth;
         const response = await client.get(
           URL.GET_ATTENDANCE_EMPID2(
             newUser ? newUser.empId : jsonObj.empId,
             newUser ? newUser.orgId : jsonObj.orgId,
-            selectedFromDate,
-            selectedToDate
+            date ? date.startDate : selectedFromDate,
+            date ? date.endDate : selectedToDate
           )
         );
         const json = await response.json();
@@ -293,6 +280,32 @@ const AttendanceTeamMemberScreen = ({ route, navigation }) => {
     } catch (error) {
       setLoading(false);
     }
+  };
+
+  const getFilterAttendanceCount = async (jsonObj, date) => {
+    try {
+      let d = currentMonth;
+      const response = await client.get(
+        URL.GET_ATTENDANCE_COUNT2(
+          jsonObj.empId,
+          jsonObj.orgId,
+          date ? date.startDate : selectedFromDate,
+          date ? date.endDate : selectedToDate
+          // monthNamesCap[d.getMonth()]
+        )
+      );
+      const json = await response.json();
+      if (json) {
+        setAttendanceCount({
+          holidays: json?.holidays || 0,
+          leave: json?.leave || 0,
+          present: json?.present || 0,
+          wfh: json?.wfh || 0,
+          totalTime: json?.totalTime || "0",
+          total: json?.total || 0,
+        });
+      }
+    } catch (error) {}
   };
 
   const getAttendance = async (newUser) => {
@@ -444,30 +457,110 @@ const AttendanceTeamMemberScreen = ({ route, navigation }) => {
     } catch (error) {}
   };
 
-  const getFilterAttendanceCount = async (jsonObj) => {
+  const GetCountByMonth = async (start, end) => {
     try {
-      let d = currentMonth;
-      const response = await client.get(
-        URL.GET_ATTENDANCE_COUNT2(
-          jsonObj.empId,
-          jsonObj.orgId,
-          selectedFromDate,
-          selectedToDate
-          // monthNamesCap[d.getMonth()]
-        )
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
       );
-      const json = await response.json();
-      if (json) {
-        setAttendanceCount({
-          holidays: json?.holidays || 0,
-          leave: json?.leave || 0,
-          present: json?.present || 0,
-          wfh: json?.wfh || 0,
-          totalTime: json?.totalTime || "0",
-          total: json?.total || 0,
-        });
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        let d = currentMonth;
+        const response = await client.get(
+          URL.GET_ATTENDANCE_COUNT2(
+            route?.params ? route?.params.empId : jsonObj.empId,
+            route?.params ? route?.params.orgId : jsonObj.orgId,
+            start,
+            end
+            // monthNamesCap[d.getMonth()]
+          )
+        );
+        const json = await response.json();
+        if (json) {
+          setAttendanceCount({
+            holidays: json?.holidays || 0,
+            leave: json?.leave || 0,
+            present: json?.present || 0,
+            wfh: json?.wfh || 0,
+            totalTime: json?.totalTime || "0",
+            total: json?.total || 0,
+          });
+        }
       }
     } catch (error) {}
+  };
+
+  const getAttendanceByMonth = async (start, end) => {
+    try {
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        getProfilePic(route?.params ? route?.params : jsonObj.empId);
+        var d = currentMonth;
+        const response = await client.get(
+          URL.GET_ATTENDANCE_EMPID2(
+            route?.params ? route?.params.empId : jsonObj.empId,
+            route?.params ? route?.params.orgId : jsonObj.orgId,
+            start,
+            end
+          )
+        );
+        const json = await response.json();
+        if (json) {
+          let newArray = [];
+          let dateArray = [];
+          let weekArray = [];
+          for (let i = 0; i < json.length; i++) {
+            const element = json[i];
+            let format = {
+              customStyles: {
+                container: {
+                  backgroundColor:
+                    element.isPresent === 1
+                      ? element.wfh === 1
+                        ? Colors.SKY_LIGHT_BLUE_COLOR
+                        : Colors.GREEN
+                      : element.holiday === 1
+                      ? Colors.DARK_GRAY
+                      : element.wfh === 1
+                      ? Colors.SKY_LIGHT_BLUE_COLOR
+                      : "#ff5d68",
+                },
+                text: {
+                  color: Colors.WHITE,
+                  fontWeight: "bold",
+                },
+              },
+            };
+
+            let date = new Date(element.createdtimestamp);
+            let formatedDate = moment(date).format(dateFormat);
+            let weekReport = {
+              start: formatedDate,
+              // duration: "00:20:00",
+              note: element.comments,
+              reason: element.reason,
+              color: element.isPresent === 1 ? Colors.GREEN : "#ff5d68",
+              status: element.isPresent === 1 ? "Present" : "Absent",
+            };
+            dateArray.push(formatedDate);
+            newArray.push(format);
+            weekArray.push(weekReport);
+          }
+          var obj = {};
+          for (let i = 0; i < newArray.length; i++) {
+            const element = newArray[i];
+            obj[dateArray[i]] = element;
+          }
+          setLoading(false);
+          setWeeklyRecord(weekArray);
+          setMarker(obj);
+        }
+      }
+    } catch (error) {
+      setLoading(false);
+    }
   };
 
   const downloadReport = async () => {
@@ -675,8 +768,18 @@ const AttendanceTeamMemberScreen = ({ route, navigation }) => {
             monthFormat={"MMM yyyy"}
             onMonthChange={(month) => {
               console.log("month changed", month);
+              const startDate = moment(month.dateString, dateFormat)
+                .subtract(0, "months")
+                .startOf("month")
+                .format(dateFormat);
+              const endDate = moment(month.dateString, dateFormat)
+                .subtract(0, "months")
+                .endOf("month")
+                .format(dateFormat);
+              GetCountByMonth(startDate, endDate);
+              getAttendanceByMonth(startDate, endDate);
               if (!filterStart) {
-                setCurrentMonth(new Date(month.dateString));
+                // setCurrentMonth(new Date(month.dateString));
               }
             }}
             // dayComponent={({ date, state }) => {
