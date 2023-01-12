@@ -241,7 +241,7 @@ const AppScreen = () => {
         var endDate = createDateTime("21:30");
         var now = new Date();
         if (startDate <= now && now <= startBetween) {
-          sendLocalNotification();
+          // sendLocalNotification();
         }
         // console.log("AppState", AppState.currentState);
         if (
@@ -254,10 +254,11 @@ const AppScreen = () => {
         }
 
         if (endBetween <= now && now <= endDate) {
-          sendLocalNotification();
+          // sendLocalNotification();
         }
         try {
           let todaysDate = await AsyncStore.getData(AsyncStore.Keys.TODAYSDATE);
+          console.log("LLLLLL");
           if (todaysDate) {
             getCoordinates();
           } else {
@@ -270,6 +271,7 @@ const AppScreen = () => {
   };
 
   const startTracking = async () => {
+    console.log("KKKKKK");
     if (Platform.OS === "ios") {
       Geolocation.requestAuthorization((value) => {
         // alert(value);

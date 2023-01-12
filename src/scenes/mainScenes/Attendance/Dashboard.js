@@ -10,6 +10,7 @@ import {
   Platform,
   Image,
   ScrollView,
+  useWindowDimensions,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -23,6 +24,7 @@ import moment from "moment";
 import { DropDownSelectionItem } from "../../../pureComponents";
 import { AttendanceTopTabNavigatorIdentifiers } from "../../../navigations/attendanceTopTabNavigator";
 import PieChart from "react-native-pie-chart";
+import { SceneMap, TabBar, TabView } from "react-native-tab-view";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
@@ -45,6 +47,26 @@ const sliceColor = ["#5BBD66", Colors.RED];
 const image = "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg";
 const chartHeight = itemWidth - 20;
 const overlayViewHeight = chartHeight - 10;
+
+const FirstRoute = () => (
+  <View style={{ flex: 1, backgroundColor: "#ff4081" }} />
+);
+const SecondRoute = () => (
+  <View style={{ flex: 1, backgroundColor: "#673ab7" }} />
+);
+const ThirdRoute = () => (
+  <View style={{ flex: 1, backgroundColor: "#673ab7" }} />
+);
+const FourthRoute = () => (
+  <View style={{ flex: 1, backgroundColor: "#673ab7" }} />
+);
+
+const renderScene = SceneMap({
+  first: FirstRoute,
+  second: SecondRoute,
+  third: ThirdRoute,
+  fourth: FourthRoute,
+});
 
 const AttendanceDashboard = ({ route, navigation }) => {
   const dispatch = useDispatch();
@@ -69,6 +91,16 @@ const AttendanceDashboard = ({ route, navigation }) => {
   const [dropdownList, setDropdownList] = useState({});
   const [employeeList, setEmployeeList] = useState({});
   const [chartData, setChartData] = useState([]);
+
+  const layout = useWindowDimensions();
+
+  const [index, setIndex] = React.useState(0);
+  const [routes] = React.useState([
+    { key: "first", title: "Present" },
+    { key: "second", title: "Leave" },
+    { key: "third", title: "WFH" },
+    { key: "fourth", title: "No Logged" },
+  ]);
 
   useEffect(() => {
     // getInitialParameters();
@@ -114,21 +146,9 @@ const AttendanceDashboard = ({ route, navigation }) => {
       );
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
-        // let payload =
-        //   data.length > 0
-        //     ? data
-        //     : [(selectedLocation.id, selectedDealerCode.id)];
-        // const response = await client.post(
-        //   URL.GET_EMPLOYEES_DROP_DOWN_DATA_FOR_ATTENDANCE(
-        //     jsonObj.orgId,
-        //     jsonObj.empId
-        //   ),
-        //   payload
-        // // );
-        // const json = await response.json();
         let newPayload = {
-          userId: 942,
-          orgId: "18",
+          userId: jsonObj.empId,
+          orgId: jsonObj.orgId,
           startDate: "2023-01-01",
           endDate: "2023-01-15",
         };
@@ -264,107 +284,95 @@ const AttendanceDashboard = ({ route, navigation }) => {
             return renderAttendance(item);
           })}
       </View>
-
-      {/* <View style={{ width: "95%", alignSelf: "center", marginTop: 10 }}> */}
-      {/* <View style={{ marginVertical: 5 }}>
-          <DropDownSelectionItem
-            label={"Location"}
-            value={selectedLocation.name}
-            onPress={() => dropDownItemClicked("Location")}
-            takeMinHeight={true}
-          />
+      {/* <ScrollView showsVerticalScrollIndicator={false}> */}
+      {loading && (
+        <View>
+          <ActivityIndicator size="large" color={Colors.RED} />
         </View>
-        <View style={{ marginVertical: 5 }}>
-          <DropDownSelectionItem
-            label={"Dealer Code"}
-            value={selectedDealerCode.name}
-            onPress={() => dropDownItemClicked("Dealer Code")}
-            takeMinHeight={true}
-          />
-        </View> */}
-      {/* <View style={{ marginVertical: 5 }}>
-          <DropDownSelectionItem
-            label={"Month & Years"}
-            value={selectedMonthYear.name}
-            onPress={() => dropDownItemClicked("Month & Years")}
-            takeMinHeight={true}
-          />
-        </View> */}
-      {/* </View> */}
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {loading && (
-          <View>
-            <ActivityIndicator size="large" color={Colors.RED} />
-          </View>
-        )}
-        {Object.keys(employeeList).map(function (key, index) {
-          return (
-            <View style={{ flexDirection: "column", marginVertical: 10 }}>
-              {Object.values(employeeList)[index].length > 0 && (
-                <View>
-                  <Text
-                    style={{ fontSize: 15, fontWeight: "700", marginLeft: 20 }}
-                  >
-                    {Object.keys(employeeList)[index]}
-                  </Text>
-                </View>
-              )}
-              <ScrollView showsHorizontalScrollIndicator={false} horizontal>
-                {Object.values(employeeList)[index].map(
-                  (innerItem, innerIndex) => {
-                    return (
-                      <TouchableOpacity
-                        onPress={() => {
-                          navigation.navigate(
-                            AttendanceTopTabNavigatorIdentifiers.team_attendance,
-                            {
-                              empId: innerItem.code,
-                              orgId: innerItem.orgId || 18,
-                              branchId: innerItem.branch || 286,
-                              empName: innerItem.name || "",
-                              profilePic: innerItem.docPath || image,
-                            }
-                          );
-                        }}
+      )}
+      {Object.keys(employeeList).map(function (key, index) {
+        return (
+          <View style={{ flexDirection: "column", marginVertical: 10 }}>
+            {Object.values(employeeList)[index].length > 0 && (
+              <View>
+                <Text
+                  style={{ fontSize: 15, fontWeight: "700", marginLeft: 20 }}
+                >
+                  {Object.keys(employeeList)[index]}
+                </Text>
+              </View>
+            )}
+            <ScrollView showsHorizontalScrollIndicator={false} horizontal>
+              {Object.values(employeeList)[index].map(
+                (innerItem, innerIndex) => {
+                  return (
+                    <TouchableOpacity
+                      onPress={() => {
+                        navigation.navigate(
+                          AttendanceTopTabNavigatorIdentifiers.team_attendance,
+                          {
+                            empId: innerItem.code,
+                            orgId: innerItem.orgId || 18,
+                            branchId: innerItem.branch || 286,
+                            empName: innerItem.name || "",
+                            profilePic: innerItem.docPath || image,
+                          }
+                        );
+                      }}
+                      style={{
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <View
                         style={{
-                          alignItems: "center",
-                          justifyContent: "center",
+                          ...GlobalStyle.shadow,
+                          ...styles.profilePicBG,
                         }}
                       >
-                        <View
-                          style={{
-                            ...GlobalStyle.shadow,
-                            ...styles.profilePicBG,
+                        <Image
+                          style={styles.profilePic}
+                          source={{
+                            uri: innerItem.docPath || image,
                           }}
-                        >
-                          <Image
-                            style={styles.profilePic}
-                            source={{
-                              uri: innerItem.docPath || image,
-                            }}
-                          />
-                        </View>
-                        <Text
-                          numberOfLines={1}
-                          style={{
-                            textAlign: "center",
-                            width: profileWidth + 10,
-                          }}
-                        >
-                          {innerItem.name}
-                        </Text>
-                      </TouchableOpacity>
-                    );
-                  }
-                )}
-              </ScrollView>
-            </View>
-          );
-        })}
-      </ScrollView>
+                        />
+                      </View>
+                      <Text
+                        numberOfLines={1}
+                        style={{
+                          textAlign: "center",
+                          width: profileWidth + 10,
+                        }}
+                      >
+                        {innerItem.name}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                }
+              )}
+            </ScrollView>
+          </View>
+        );
+      })}
+      <TabView
+        navigationState={{ index, routes }}
+        renderScene={renderScene}
+        onIndexChange={setIndex}
+        initialLayout={{ width: layout.width }}
+        renderTabBar={(props,) => (
+          <TabBar
+            // renderLabel={({ route, color }) => (
+            //   <Text style={{ color: "black", margin: 8 }}>{route.title}</Text>
+            // )}
+            style={{ backgroundColor: "#fff" }}
+          />
+        )} // <-- add this line
+      />
+      {/* </ScrollView> */}
     </SafeAreaView>
   );
 };
+
 
 export default AttendanceDashboard;
 

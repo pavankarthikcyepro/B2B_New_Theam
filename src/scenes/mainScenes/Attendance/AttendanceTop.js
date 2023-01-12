@@ -110,7 +110,7 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
   }, [navigation]);
 
   useEffect(() => {
-    setLoading(true);
+    // setLoading(true);
     getAttendance();
   }, [currentMonth]);
 
@@ -504,7 +504,7 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
         }
         showsVerticalScrollIndicator={false}
       />
-      <LoaderComponent visible={loading} />
+      {/* <LoaderComponent visible={loading} /> */}
     </SafeAreaView>
   );
 };

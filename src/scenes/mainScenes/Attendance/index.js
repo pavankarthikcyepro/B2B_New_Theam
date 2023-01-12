@@ -133,7 +133,7 @@ const AttendanceScreen = ({ route, navigation }) => {
       setLoading(true);
       getAttendance(route?.params);
     } else {
-      setLoading(true);
+      // setLoading(true);
       // getAttendance();
     }
   }, [currentMonth]);

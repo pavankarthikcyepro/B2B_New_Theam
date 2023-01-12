@@ -100,7 +100,6 @@ const VerifyAttendance = ({
   // }, [present]);
 
   useEffect(() => {
-    getReason();
     getDetails();
   }, []);
 
@@ -156,20 +155,6 @@ const VerifyAttendance = ({
         );
         console.error(error);
       });
-  };
-
-  const getReason = async () => {
-    try {
-      let payload = {
-        bu: "18",
-        dropdownType: "AttendanceReason",
-        parentId: 0,
-      };
-      const response = await client.post(reasonDropDown, payload);
-      const json = await response.json();
-      const newArr1 = json.map((v) => ({ ...v, label: v.key }));
-      setReasonList(newArr1);
-    } catch (error) {}
   };
 
   function isEmpty(obj) {
