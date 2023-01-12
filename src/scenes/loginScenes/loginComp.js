@@ -42,7 +42,15 @@ import * as AsyncStore from "../../asyncStore";
 import { showAlertMessage, showToast } from "../../utils/toast";
 import BackgroundService from "react-native-background-actions";
 import Geolocation from "@react-native-community/geolocation";
-import { distanceFilterValue, getDistanceBetweenTwoPoints, officeRadius, options, sendAlertLocalNotification, sendLocalNotification, sleep } from "../../service";
+import {
+  distanceFilterValue,
+  getDistanceBetweenTwoPoints,
+  officeRadius,
+  options,
+  sendAlertLocalNotification,
+  sendLocalNotification,
+  sleep,
+} from "../../service";
 import {
   getDetailsByempIdAndorgId,
   locationUpdate,
@@ -108,9 +116,9 @@ const LoginScreen = ({ navigation }) => {
     }
 
     let object = {
-      "username": employeeId,
-      "password": password
-    }
+      username: employeeId,
+      password: password,
+    };
 
     dispatch(postUserData(object));
   };
@@ -120,12 +128,24 @@ const LoginScreen = ({ navigation }) => {
   useEffect(() => {
     if (selector.status == "sucess") {
       //signIn(selector.authToken);
-     
-      AsyncStore.storeData(AsyncStore.Keys.USER_NAME, selector.userData.userName);
-      AsyncStore.storeData(AsyncStore.Keys.ORG_ID,  String(selector.userData.orgId));
-      AsyncStore.storeData(AsyncStore.Keys.REFRESH_TOKEN, selector.userData.refreshToken);
 
-      AsyncStore.storeData(AsyncStore.Keys.USER_TOKEN, selector.userData.accessToken).then(() => {
+      AsyncStore.storeData(
+        AsyncStore.Keys.USER_NAME,
+        selector.userData.userName
+      );
+      AsyncStore.storeData(
+        AsyncStore.Keys.ORG_ID,
+        String(selector.userData.orgId)
+      );
+      AsyncStore.storeData(
+        AsyncStore.Keys.REFRESH_TOKEN,
+        selector.userData.refreshToken
+      );
+
+      AsyncStore.storeData(
+        AsyncStore.Keys.USER_TOKEN,
+        selector.userData.accessToken
+      ).then(() => {
         dispatch(getMenuList(selector.userData.userName));
         dispatch(getEmpId(selector.userData.userName));
 
@@ -133,7 +153,7 @@ const LoginScreen = ({ navigation }) => {
           userName: selector.userData.userName,
           orgId: selector.userData.orgId,
         };
-
+        startTracking();
         // dispatch(getCallRecordingCredentials(data))
         // dispatch(getCustomerTypeList());
         // dispatch(getCarModalList(selector.userData.orgId))
@@ -312,7 +332,6 @@ const LoginScreen = ({ navigation }) => {
                   };
 
                   if (speed <= 10) {
-
                     await AsyncStore.storeJsonData(
                       AsyncStore.Keys.COORDINATES,
                       newArray
@@ -333,35 +352,35 @@ const LoginScreen = ({ navigation }) => {
     } catch (error) {}
   };
 
- const veryIntensiveTask = async (taskDataArguments) => {
-   // Example of an infinite loop task
-   const { delay } = taskDataArguments;
-   await new Promise(async (resolve) => {
-     for (let i = 0; BackgroundService.isRunning(); i++) {
-       // console.log(i);
-       var startDate = createDateTime("8:30");
-       var startBetween = createDateTime("9:30");
-       var endBetween = createDateTime("20:30");
-       var endDate = createDateTime("21:30");
-       var now = new Date();
-       if (startDate <= now && now <= startBetween) {
-         sendLocalNotification();
-       }
-       if (endBetween <= now && now <= endDate) {
-         sendLocalNotification();
-       }
-       try {
-         let todaysDate = await AsyncStore.getData(AsyncStore.Keys.TODAYSDATE);
-         if (todaysDate) {
-           getCoordinates();
-         } else {
-           initialData();
-         }
-       } catch (error) {}
-       await sleep(delay);
-     }
-   });
- };
+  const veryIntensiveTask = async (taskDataArguments) => {
+    // Example of an infinite loop task
+    const { delay } = taskDataArguments;
+    await new Promise(async (resolve) => {
+      for (let i = 0; BackgroundService.isRunning(); i++) {
+        // console.log(i);
+        var startDate = createDateTime("8:30");
+        var startBetween = createDateTime("9:30");
+        var endBetween = createDateTime("20:30");
+        var endDate = createDateTime("21:30");
+        var now = new Date();
+        if (startDate <= now && now <= startBetween) {
+          sendLocalNotification();
+        }
+        if (endBetween <= now && now <= endDate) {
+          sendLocalNotification();
+        }
+        try {
+          let todaysDate = await AsyncStore.getData(AsyncStore.Keys.TODAYSDATE);
+          if (todaysDate) {
+            getCoordinates();
+          } else {
+            initialData();
+          }
+        } catch (error) {}
+        await sleep(delay);
+      }
+    });
+  };
 
   const startTracking = async () => {
     if (Platform.OS === "ios") {
