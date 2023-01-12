@@ -240,12 +240,14 @@ const RegisterScreen = ({ navigation }) => {
 
     const response = await client.post(URL.SAVE_EMPLOYEE(), payload, {}, false);
     const json = await response.json();
-    if (json) {
+    if (json.empId) {
       showToastRedAlert("Your Account is Successfully Created");
       navigation.reset({
         index: 0,
         routes: [{ name: AuthStackIdentifiers.LOGIN }],
       });
+    } else {
+      showToastRedAlert("Something went Wrong!");
     }
   };
 
@@ -314,39 +316,43 @@ const RegisterScreen = ({ navigation }) => {
           onChangeText={(text) => setMobileNo(text)}
         />
         <View style={{ height: 10 }} />
-        <NewDropDownComponent
-          // value={selector.employeeId}
-          error={selector.showLoginErr}
-          errorMsg={selector.loginErrMessage}
-          label={"Role"}
-          mode={"outlined"}
-          labelField={"roleName"}
-          valueField={"roleName"}
-          data={rolelist ? rolelist : []}
-          showDropDown={() => setShowMultiSelectDropDown(true)}
-          onDismiss={() => setShowMultiSelectDropDown(false)}
-          visible={showMultiSelectDropDown}
-          onChangeText={(text) => {
-            setRole(text.roleId);
-          }}
-        />
+        {rolelist.length > 0 ? (
+          <NewDropDownComponent
+            // value={selector.employeeId}
+            error={selector.showLoginErr}
+            errorMsg={selector.loginErrMessage}
+            label={"Role"}
+            mode={"outlined"}
+            labelField={"roleName"}
+            valueField={"roleName"}
+            data={rolelist.length > 0 ? rolelist : []}
+            showDropDown={() => setShowMultiSelectDropDown(true)}
+            onDismiss={() => setShowMultiSelectDropDown(false)}
+            visible={showMultiSelectDropDown}
+            onChangeText={(text) => {
+              setRole(text.roleId);
+            }}
+          />
+        ) : null}
         <View style={{ height: 10 }} />
-        <NewDropDownComponent
-          // value={selector.employeeId}
-          error={selector.showLoginErr}
-          errorMsg={selector.loginErrMessage}
-          label={"Designation"}
-          mode={"outlined"}
-          labelField={"designationName"}
-          valueField={"designationName"}
-          data={Designationlist ? Designationlist : []}
-          showDropDown={() => setShowMultiSelectDropDown(false)}
-          onDismiss={() => setShowMultiSelectDropDown(false)}
-          visible={showMultiSelectDropDown}
-          onChangeText={(text) => {
-            setDesignation(text.dmsDesignationId);
-          }}
-        />
+        {Designationlist.length ? (
+          <NewDropDownComponent
+            // value={selector.employeeId}
+            error={selector.showLoginErr}
+            errorMsg={selector.loginErrMessage}
+            label={"Designation"}
+            mode={"outlined"}
+            labelField={"designationName"}
+            valueField={"designationName"}
+            data={Designationlist.length > 0 ? Designationlist : []}
+            showDropDown={() => setShowMultiSelectDropDown(false)}
+            onDismiss={() => setShowMultiSelectDropDown(false)}
+            visible={showMultiSelectDropDown}
+            onChangeText={(text) => {
+              setDesignation(text.dmsDesignationId);
+            }}
+          />
+        ) : null}
 
         <View style={{ height: 10 }} />
         <TextinputComp

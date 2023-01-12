@@ -88,46 +88,6 @@ const NewDropDownComponent = ({
 
   return (
     <View style={{ width: "100%" }}>
-      {/* <TextInput
-          style={[
-            {
-              height: 50,
-              width: "100%",
-              fontSize: 16,
-              fontWeight: "400",
-              backgroundColor: Colors.WHITE,
-            },
-            style,
-          ]}
-          mode={mode}
-          label={label}
-          value={value}
-          disabled={disabled}
-          placeholder={placeholder}
-          error={error}
-          keyboardType={keyboardType}
-          selectionColor={Colors.BLACK}
-          underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
-          underlineColor={Colors.LIGHT_GRAY}
-          outlineColor={Colors.BLACK}
-          maxLength={maxLength}
-          multiline={multiline}
-          numberOfLines={numberOfLines}
-          editable={editable}
-          onChangeText={onChangeText}
-          secureTextEntry={isSecure}
-          left={leftText}
-          right={rightIconComp}
-          spellCheck={false}
-          autoCapitalize={autoCapitalize}
-          theme={{
-            colors: { primary: Colors.GRAY, underlineColor: "transparent" },
-          }}
-          // onPressIn={onPressIn}
-          onFocus={onPressIn}
-          onEndEditing={onEndEditing}
-          onPressOut={onPressOut}
-        /> */}
       <Dropdown
         label={label}
         mode={mode}
@@ -154,6 +114,7 @@ const NewDropDownComponent = ({
             marginTop: 10,
             borderRadius: 6,
             padding: 15,
+            color: Colors.BLACK,
             //   zIndex:1000
             //   height:55
           },

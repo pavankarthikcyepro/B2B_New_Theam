@@ -205,6 +205,20 @@ const URL = {
   GET_DRIVERS_LIST: (orgId) => {
     return roleManagement_url + `/user/role/name/Driver/${orgId}`;
   },
+  GET_ROLES_LIST: () => {
+    return "https://stage-api.cyepro.com/role-management" + `/dms/getRoles`;
+  },
+  GET_DESGINATION_LIST: () => {
+    return (
+      "https://stage-api.cyepro.com/role-management" + `/dms/getDesignation`
+    );
+  },
+  SAVE_EMPLOYEE: () => {
+    return (
+      "https://stage-api.cyepro.com/role-management" +
+      `/dms/save-employee`
+    );
+  },
   GET_TEST_DRIVE_VEHICLES: (branchId, orgId) => {
     return (
       inventory_url +
