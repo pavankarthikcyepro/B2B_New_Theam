@@ -237,19 +237,20 @@ const LoginScreen = ({ navigation }) => {
         var endDate = createDateTime("21:30");
         var now = new Date();
         var isBetween = startDate <= now && now <= endDate;
-        if (isBetween) {
+        if (true) {
           Geolocation.watchPosition(
             async (lastPosition) => {
               let speed =
                 lastPosition?.coords?.speed <= -1
                   ? 0
                   : lastPosition?.coords?.speed * 3.6;
-              // console.log("SPEED=============", speed);
+              console.log("SPEED=============", speed);
               const employeeData = await AsyncStore.getData(
                 AsyncStore.Keys.LOGIN_EMPLOYEE
               );
               // console.log("employeeData", employeeData);
               if (employeeData) {
+                console.log("LLLLLL");
                 const jsonObj = JSON.parse(employeeData);
                 const trackingResponse = await client.get(
                   getDetailsByempIdAndorgId +
@@ -310,12 +311,16 @@ const LoginScreen = ({ navigation }) => {
                       AsyncStore.Keys.COORDINATES,
                       newArray
                     );
+                    console.log("tempPayload", tempPayload);
+
                     const response = await client.put(
                       locationUpdate +
                         `/${trackingJson[trackingJson.length - 1].id}`,
                       tempPayload
                     );
+
                     const json = await response.json();
+                    console.log("KKKKsssssK", json);
                   }
                 } else {
                   let payload = {
@@ -336,8 +341,10 @@ const LoginScreen = ({ navigation }) => {
                       AsyncStore.Keys.COORDINATES,
                       newArray
                     );
+                    console.log("KKKKK");
                     const response = await client.post(saveLocation, payload);
                     const json = await response.json();
+                    console.log("KKKKK", json);
                   }
                 }
               }
@@ -364,10 +371,10 @@ const LoginScreen = ({ navigation }) => {
         var endDate = createDateTime("21:30");
         var now = new Date();
         if (startDate <= now && now <= startBetween) {
-          sendLocalNotification();
+          // sendLocalNotification();
         }
         if (endBetween <= now && now <= endDate) {
-          sendLocalNotification();
+          // sendLocalNotification();
         }
         try {
           let todaysDate = await AsyncStore.getData(AsyncStore.Keys.TODAYSDATE);

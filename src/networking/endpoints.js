@@ -92,7 +92,8 @@
 
 // Dev End Points with JWT
 export const baseUrl =
-  "http://ec2-15-207-225-163.ap-south-1.compute.amazonaws.com:8008/";
+"https://stage-api.cyepro.com/";
+  // "http://ec2-15-207-225-163.ap-south-1.compute.amazonaws.com:8008/";
 export const auth_url = baseUrl + "auth";
 export const hrms_url = baseUrl + "hrms";
 export const inventory_url = baseUrl + "inventory";
@@ -442,26 +443,25 @@ const URL = {
   },
   GET_MAP_COORDINATES_BY_ID: (employeeId, orgId, date) => {
     // return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8081/sales/employeeTracking/getDetailsByDate/1205/22/2023-01-05`;
-    return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8081/sales/employeeTracking/getDetailsByDate/${employeeId}/${orgId}/${date}`;
+    // return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8081/sales/employeeTracking/getDetailsByDate/${employeeId}/${orgId}/${date}`;
     return (
       sales_url +
       `/employeeTracking/getDetailsByDate/${employeeId}/${orgId}/${date}`
     );
   },
   GET_EMPLOYEES_DROP_DOWN_DATA_FOR_ATTENDANCE: (orgId, employeeId) => {
-    return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8092/dfd/oh/team-attendance/${orgId}/${employeeId}`;
-    return baseUrl + `dfd/team-attendance/${orgId}/${employeeId}`;
+    // return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8092/dfd/oh/team-attendance/${orgId}/${employeeId}`;
+    return baseUrl + `dfd/oh/team-attendance/${orgId}/${employeeId}`;
   },
   GET_ATTENDANCE_REPORT: () => {
-    return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8081/sales/reports/attendance_report`;
+    // return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8081/sales/reports/attendance_report`;
     return sales_url + "/reports/attendance_report";
   },
   GET_DOWNLOAD_URL: (file) => {
-    return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8081/sales/reports/downloadFile/${file}`;
+    // return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8081/sales/reports/downloadFile/${file}`;
     return sales_url + `reports/downloadFile/${file}`;
   },
   GET_TEAM_ATTENDANCE_COUNT: () => {
-    // return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8081/sales/employeeAttendance/userAttendance`;
     return sales_url + `/employeeAttendance/userAttendance`;
   },
   GET_EMPLOYEES_ACTIVE_BRANCHES: (orgId, employeeId) => {

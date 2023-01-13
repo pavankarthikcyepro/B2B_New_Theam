@@ -186,42 +186,6 @@ const AttendanceScreen = ({ route, navigation }) => {
     }
   };
 
-  const getCurrentLocation = async () => {
-    try {
-      // if (Platform.OS === "ios") {
-      //   Geolocation.requestAuthorization();
-      //   Geolocation.setRNConfiguration({
-      //     skipPermissionRequests: false,
-      //     authorizationLevel: "whenInUse",
-      //   });
-      // }
-      Geolocation.getCurrentPosition(
-        (position) => {
-          const initialPosition = JSON.stringify(position);
-          let json = JSON.parse(initialPosition);
-          setInitialPosition(json.coords);
-          let dist = getDistanceBetweenTwoPoints(
-            officeLocation.latitude,
-            officeLocation.longitude,
-            json?.coords?.latitude,
-            json?.coords?.longitude
-          );
-          if (dist > officeRadius) {
-            setReason(true); ///true for reason
-          } else {
-            setReason(false);
-          }
-        },
-        (error) => {
-          // console.log(JSON.stringify(error));
-        },
-        { enableHighAccuracy: true }
-      );
-    } catch (error) {
-      console.error("ERROR", error);
-    }
-  };
-
   const getAttendanceFilter = async (newUser) => {
     try {
       let employeeData = await AsyncStore.getData(
@@ -581,6 +545,7 @@ const AttendanceScreen = ({ route, navigation }) => {
       setLoading(false);
     }
   };
+  
   const downloadReport = async () => {
     try {
       const payload = {
@@ -721,7 +686,11 @@ const AttendanceScreen = ({ route, navigation }) => {
       />
       <ScrollView showsVerticalScrollIndicator={false}>
         <View
-          style={{ width: "90%", alignSelf: "center", flexDirection: "column" }}
+          style={{
+            width: "90%",
+            alignSelf: "center",
+            flexDirection: "column",
+          }}
         >
           <DateRangeComp
             fromDate={selectedFromDate}
@@ -794,9 +763,10 @@ const AttendanceScreen = ({ route, navigation }) => {
                 .subtract(0, "months")
                 .endOf("month")
                 .format(dateFormat);
-              GetCountByMonth(startDate, endDate);
-              getAttendanceByMonth(startDate, endDate);
+
               if (!filterStart) {
+                GetCountByMonth(startDate, endDate);
+                getAttendanceByMonth(startDate, endDate);
                 // setCurrentMonth(new Date(month.dateString));
               }
             }}
@@ -903,6 +873,18 @@ const AttendanceScreen = ({ route, navigation }) => {
               <Text style={styles.parameterText}>{attendanceCount.wfh}</Text>
             </View>
           </View>
+          {/* <View style={styles.parameterView}>
+            <View
+              style={{
+                width: 25,
+                marginRight: 5,
+              }}
+            />
+            <View style={styles.parameterCountView}>
+              <Text style={styles.parameterText}>{"No Logged"}</Text>
+              <Text style={styles.parameterText}>{attendanceCount.total}</Text>
+            </View>
+          </View> */}
           <View style={styles.parameterView}>
             <View
               style={{

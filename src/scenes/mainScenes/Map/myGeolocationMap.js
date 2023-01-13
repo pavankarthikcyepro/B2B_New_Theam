@@ -43,6 +43,7 @@ const GeolocationMapScreen = ({ route }) => {
   const [latitude, setLatitude] = useState(0);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [data, setData] = useState([]);
+  const [distance, setDistance] = useState([]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -92,6 +93,19 @@ const GeolocationMapScreen = ({ route }) => {
         // setLatitude(latitude / newArr.length);
         // setLongitude(longitude / newArr.length);
         setCoordinates(arr);
+        var result = [];
+        for (var i = 0; i < arr.length - 1; i++) {
+          result.push(
+            getDistanceBetweenTwoPoints(
+              arr[i].latitude,
+              arr[i].longitude,
+              arr[i + 1].latitude,
+              arr[i + 1].longitude
+            )
+          );
+        }
+        // console.log(result, sumArray(result));
+        setDistance(result);
         setLoading(false);
       } else {
         Alert.alert("No data are Available", "", [
@@ -108,10 +122,22 @@ const GeolocationMapScreen = ({ route }) => {
     }
   };
 
+  function sumArray(array) {
+    const ourArray = array;
+    let sum = 0;
+
+    for (let i = 0; i < ourArray.length; i += 1) {
+      sum += ourArray[i];
+    }
+
+    return sum;
+  }
+
+
   const getLocationByDate = async (params) => {
     try {
-       setLatitude(0);
-       setLongitude(0);
+      setLatitude(0);
+      setLongitude(0);
       let date = moment(params).format(dateFormat);
       const response = await client.get(
         URL.GET_MAP_COORDINATES_BY_ID(
@@ -144,6 +170,18 @@ const GeolocationMapScreen = ({ route }) => {
         // setLatitude(latitude / newArr.length);
         // setLongitude(longitude / newArr.length);
         setCoordinates(arr);
+        var result = [];
+        for (var i = 0; i < arr.length - 1; i++) {
+          result.push(
+            getDistanceBetweenTwoPoints(
+              arr[i].latitude,
+              arr[i].longitude,
+              arr[i + 1].latitude,
+              arr[i + 1].longitude
+            )
+          );
+        }
+        setDistance(result);
         setLoading(false);
       } else {
         setData([]);
@@ -164,7 +202,8 @@ const GeolocationMapScreen = ({ route }) => {
   function diff_minutes(dt2, dt1) {
     var diff = (dt2.getTime() - dt1.getTime()) / 1000;
     diff /= 60;
-    return Math.abs(Math.round(diff));
+    // console.log(parseFloat(diff).toFixed(2));
+    return Math.abs(parseFloat(diff).toFixed(2));
   }
 
   const position = [
@@ -213,9 +252,10 @@ const GeolocationMapScreen = ({ route }) => {
               <Marker
                 key={index}
                 coordinate={marker}
+                tracksViewChanges={false}
                 style={{
-                  height:15,
-                  width:15
+                  height: 15,
+                  width: 15,
                 }}
                 image={index === coordinates.length - 1 ? CYEPRO : HISTORY_LOC}
                 // title={marker}
@@ -236,22 +276,21 @@ const GeolocationMapScreen = ({ route }) => {
               />
               <Text style={styles.columnsTitle}>{"Travel Distance"}</Text>
             </View>
-            {coordinates.length > 0 ? (
+            {distance.length > 0 ? (
               <Text style={styles.valueTxt}>
-                {Math.round(
+                {/* {Math.round(
                   getDistanceBetweenTwoPoints(
                     coordinates[0].latitude,
                     coordinates[0].longitude,
                     coordinates[coordinates.length - 1].latitude,
                     coordinates[coordinates.length - 1].longitude
                   ) || 0
-                )}
+                )} */}
+                {parseFloat(sumArray(distance)).toFixed(2) || 0}
                 {" KM"}
               </Text>
             ) : (
-              <Text style={styles.valueTxt}>
-                {"-- KM"}
-              </Text>
+              <Text style={styles.valueTxt}>{"-- KM"}</Text>
             )}
           </View>
           <View style={styles.colums}>
@@ -265,12 +304,12 @@ const GeolocationMapScreen = ({ route }) => {
             </View>
             {data.length > 0 ? (
               <Text style={styles.valueTxt}>
-                {Math.round(
+                {parseFloat(
                   diff_minutes(
-                    new Date(data[0].updatedtimestamp),
-                    new Date(data[data.length - 1].updatedtimestamp)
+                    new Date(data[data.length - 1].updatedtimestamp),
+                    new Date(data[0].createdtimestamp)
                   )
-                ) || 0}
+                ).toFixed(2) || 0}
                 {" min"}
               </Text>
             ) : (
