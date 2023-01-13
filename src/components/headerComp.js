@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Colors } from "../styles";
 import * as AsyncStore from "../asyncStore";
 import { setBranchId, setBranchName } from "../utils/helperFunctions";
+import NotificationIcon from "./NotificationIcon";
 
 const HeaderComp = ({
   title,
@@ -14,7 +15,7 @@ const HeaderComp = ({
   branchClicked,
   filterClicked,
   notification = false,
-  notificationNav,
+  navigation,
 }) => {
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.targetSettingsReducer);
@@ -86,37 +87,9 @@ const HeaderComp = ({
             size={30}
             onPress={filterClicked}
           />
-          {notification && (
-            <>
-              <IconButton
-                icon="bell"
-                style={{ padding: 0, margin: 0 }}
-                color={Colors.WHITE}
-                size={25}
-                onPress={notificationNav}
-              />
-              {/* <View style={style.badgeContainer}>
-                <Text style={style.badgeText}>
-                  {0}
-                </Text>
-              </View> */}
-            </>
-          )}
+          {notification && <NotificationIcon navigation={navigation} />}
         </View>
       </View>
-      {/* {notification && (
-        <View>
-          <View style={style.filterContainer}>
-            <IconButton
-              icon="bell"
-              style={{ padding: 0, margin: 0 }}
-              color={Colors.WHITE}
-              size={25}
-              onPress={notificationNav}
-            />
-          </View>
-        </View>
-      )} */}
     </View>
   );
 };
@@ -130,7 +103,6 @@ const style = StyleSheet.create({
     alignItems: "center",
     backgroundColor: Colors.DARK_GRAY,
     height: 56,
-    paddingRight: 5,
   },
   subContainer: {
     flexDirection: "row",
