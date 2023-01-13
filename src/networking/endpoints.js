@@ -279,6 +279,8 @@ const URL = {
     return sales_url + `/enquiry/performaDetails`;
   },
   SEND_ON_ROAD_PRICE_DETAILS: () => sales_url + "/on-road-price",
+  GET_OTHER_PRICES_DROP_DOWN: (orgId) =>
+    decodeURI(`${dfGetAll}/${orgId}/%22Active%22/${orgId}/otherCharges`),
   GET_ALL_OFFERS: (varientId, vehicleId) => {
     return (
       ops_url +
@@ -459,10 +461,6 @@ const URL = {
   GET_DOWNLOAD_URL: (file) => {
     return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8081/sales/reports/downloadFile/${file}`;
     return sales_url + `reports/downloadFile/${file}`;
-  },
-  GET_TEAM_ATTENDANCE_COUNT: () => {
-    // return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8081/sales/employeeAttendance/userAttendance`;
-    return sales_url + `/employeeAttendance/userAttendance`;
   },
   GET_EMPLOYEES_ACTIVE_BRANCHES: (orgId, employeeId) => {
     return orgnaizationHirarchy + `/active-branches/${orgId}/${employeeId}`;
