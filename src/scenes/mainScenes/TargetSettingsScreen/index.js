@@ -194,12 +194,7 @@ const TargetSettingsScreen = ({ route, navigation }) => {
         selectedIds: [],
       };
 
-      const payload2 = {
-        empId: jsonObj.empId,
-        pageNo: 1,
-        size: 500,
-        // "targetType": selector.targetType
-      };
+   
       const dateFormat = "YYYY-MM-DD";
       const currentDate = moment().format(dateFormat);
       let monthArr = [];
@@ -224,7 +219,14 @@ const TargetSettingsScreen = ({ route, navigation }) => {
 
       dispatch(updateEndDate(monthLastDate));
       setToDate(monthLastDate);
-
+      const payload2 = {
+        empId: jsonObj.empId,
+        pageNo: 1,
+        size: 500,
+        startDate: monthFirstDate,
+        endDate:monthLastDate
+        // "targetType": selector.targetType
+      };
       if (jsonObj.roles.length > 0) {
         let rolesArr = [];
         rolesArr = jsonObj.roles.filter((item) => {
@@ -242,6 +244,7 @@ const TargetSettingsScreen = ({ route, navigation }) => {
           dispatch(updateIsTeamPresent(true));
         }
       }
+      
       Promise.all([
         dispatch(
           getSpecialDropValue({
