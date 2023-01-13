@@ -247,14 +247,16 @@ const MainParamScreen = ({ route, navigation }) => {
   }
   useEffect(async () => {
     try {
+   
       if (!isEmpty(selector.filterPayload)) {
         let filterData = selector.filterPayload.params;
         let employeeData = await AsyncStore.getData(
           AsyncStore.Keys.LOGIN_EMPLOYEE
         );
         if (employeeData) {
+         
           const jsonObj = JSON.parse(employeeData);
-          const payload = getEmployeePayload(
+          const payload = getEmployeePayloadV2(
             employeeData,
             filterData?.selectedID
           );
@@ -263,7 +265,7 @@ const MainParamScreen = ({ route, navigation }) => {
               let input = res[0].payload.employeeTargetAchievements[0];
               let payload1 = getEmployeePayloadTotal(
                 employeeData,
-                [filterData?.selectedID?.id],
+                [filterData?.selectedID],
                 [input.branchId],
                 filterData?.fromDate,
                 filterData?.toDate
@@ -273,6 +275,7 @@ const MainParamScreen = ({ route, navigation }) => {
                 payload1
               );
               const json1 = await response1.json();
+              //todo
               if (json1) {
                 let newArr = json1?.data;
                 newArr[0] = {
@@ -283,10 +286,13 @@ const MainParamScreen = ({ route, navigation }) => {
                   designation: json1?.data[0]?.designation,
                   targetAchievements: getDataFormat(json1?.data[0]),
                   tempTargetAchievements: getDataFormat(json1?.data[0]),
-                  branchName: json1?.data[0]?.branchName,
-                  branch: json1?.data[0]?.branch,
+                  branchName: json1?.data[0]?.branchName || input.branchName,
+                  branch: json1?.data[0]?.branch || input.branchId,
                   recordId: json1?.data[0]?.id,
+                  empName: json1?.data[0]?.empName || input.empName,
+                
                 };
+                
                 setFilterParameters(newArr);
               }
             })
@@ -519,6 +525,7 @@ const MainParamScreen = ({ route, navigation }) => {
     };
     setUpdatedSelfParameters({ ...data });
     setMasterSelfParameters({ ...data });
+    
   };
 
   const getTargetParamValue = (param) => {
@@ -722,6 +729,7 @@ const MainParamScreen = ({ route, navigation }) => {
                   [jsonObj.empId],
                   [jsonObj.branchId]
                 );
+                // need to check  api call 
                 const response = await client.post(
                   URL.GET_TARGET_PLANNING_COUNT(),
                   payload
@@ -1391,6 +1399,33 @@ const MainParamScreen = ({ route, navigation }) => {
     };
   };
 
+  const getEmployeePayloadV2 = (employeeData, item) => {
+    const jsonObj = JSON.parse(employeeData);
+    const dateFormat = "YYYY-MM-DD";
+    const currentDate = moment().format(dateFormat);
+    const monthFirstDate = moment(currentDate, dateFormat)
+      .subtract(0, "months")
+      .startOf("month")
+      .format(dateFormat);
+    const monthLastDate = moment(currentDate, dateFormat)
+      .subtract(0, "months")
+      .endOf("month")
+      .format(dateFormat);
+   
+
+    return {
+      orgId: jsonObj.orgId,
+      selectedEmpId: item,
+      endDate: monthLastDate,
+      loggedInEmpId: jsonObj.empId,
+      empId: item,
+      startDate: monthFirstDate,
+      levelSelected: null,
+      pageNo: 0,
+      size: 100,
+    };
+  };
+
   const onEmployeeNameClick = async (item, index, lastParameter) => {
     try {
       let localData = [...allParameters];
@@ -2023,6 +2058,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                   flexDirection: "row",
                                 }}
                               >
+                                {/* todo */}
                                 <RenderLevel1NameView
                                   level={0}
                                   item={item}
