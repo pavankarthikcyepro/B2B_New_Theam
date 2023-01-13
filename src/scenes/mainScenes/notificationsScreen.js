@@ -9,9 +9,9 @@ import {
   FlatList,
   ScrollView,
 } from "react-native";
-import { Colors, GlobalStyle } from "../../styles";
+import { Colors } from "../../styles";
 import { useDispatch, useSelector } from "react-redux";
-import { NotificationItem, NotificationItemWithoutNav } from "../../pureComponents/notificationItem";
+import { NotificationItem } from "../../pureComponents/notificationItem";
 import { ActivityIndicator, Button } from "react-native-paper";
 import URL from "../../networking/endpoints";
 import { client } from "../../networking/client";
@@ -27,56 +27,133 @@ import {
   TARGET,
   TEST_DRIVE,
   WARRANTY,
+  EXCHANGE,
+  ACCESSORIES,
+  LEAD_ALLOCATION,
 } from "../../assets/icon";
+import { getNotificationList, readNotification } from "../../redux/notificationReducer";
 
 const NotificationScreen = ({ navigation }) => {
+  const dispatch = useDispatch();
   const selector = useSelector((state) => state.notificationReducer);
+
   const [notificationList, setNotificationList] = useState([]);
-  const [loading, setLoading] = useState(false);
- const [userData, setUserData] = useState({
-   role: "",
- });
-  useEffect(() => {
-    getNotifications();
+  const [loading, setLoading] = useState(selector.loading);
+  const [isInitial, setIsInitial] = useState(true);
+  const [empId, setEmpId] = useState("");
+
+  useEffect(async () => {
+    let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      dispatch(getNotificationList(jsonObj.empId));
+      setEmpId(jsonObj.empId);
+    }
+    return () => {
+      setIsInitial(true);
+    };
   }, []);
 
-  const getNotifications = async () => {
-    setLoading(true);
-    try {
-      let employeeData = await AsyncStore.getData(
-        AsyncStore.Keys.LOGIN_EMPLOYEE
-      );
-      if (employeeData) {
-        const jsonObj = JSON.parse(employeeData);
-        setUserData({ role: jsonObj.hrmsRole });
-        const response = await client.get(URL.NOTIFICATION_LIST(jsonObj.empId));
-        const json = await response.json();
-        setNotificationList(json);
-        setLoading(false);
-      }
-    } catch (error) {
+  useEffect(() => {
+    setNotificationList(selector.notificationList);
+  }, [selector.notificationList]);
+  
+  useEffect(() => {
+    if (selector.readNotificationResponseStatus == "success"){
+      dispatch(getNotificationList(empId));
+    }
+  }, [selector.readNotificationResponseStatus]);
+
+  useEffect(() => {
+    if (selector.loading && isInitial) {
+      setLoading(selector.loading);
+      setIsInitial(false);
+    } else {
       setLoading(false);
     }
+  }, [selector.loading]);
+
+  const navigateTo = (screenName, data) => {
+    if (screenName) {
+      navigation.navigate(screenName);
+      if (screenName != "Target Settings") {
+        setTimeout(() => {
+          navigation.navigate("NEW_PENDING");
+        }, 750);
+      }
+    }
+    readingNotification(data.item.id);
   };
 
-  const navigateTo = () => {
-    navigation.navigate(AppNavigator.TabStackIdentifiers.myTask);
-    setTimeout(() => {
-      navigation.navigate("NEW_PENDING");
-    }, 750);
+  const readingNotification = (notificationId) => {
+    dispatch(readNotification(notificationId));
   };
 
-  const navigateToTarget = () => {
-    navigation.navigate("Target Settings");
+  const RenderList = (props) => {
+    const { item, index } = props.item;
+    const { notificationName } = item;
+    let icon = LEAD_ALLOCATION;
+    let screenName = "";
+
+    if (notificationName == "Test Drive") {
+      icon = TEST_DRIVE;
+      screenName = AppNavigator.TabStackIdentifiers.myTask;
+    } else if (notificationName == "Home Visit") {
+      icon = HOME_VISIT;
+      screenName = AppNavigator.TabStackIdentifiers.myTask;
+    } else if (notificationName == "Enquiry Follow Up") {
+      icon = FOLLOW_UP;
+      screenName = AppNavigator.TabStackIdentifiers.myTask;
+    } else if (notificationName == "Booking Follow Up - DSE") {
+      icon = FOLLOW_UP;
+      screenName = AppNavigator.TabStackIdentifiers.myTask;
+    } else if (notificationName == "Target Setting") {
+      icon = TARGET;
+      screenName = "Target Settings";
+    } else if (notificationName == "Accessories") {
+      icon = ACCESSORIES;
+    } else if (notificationName == "Exchange") {
+      icon = EXCHANGE;
+    } else if (notificationName == "Finance") {
+      icon = FINANCE;
+    } else if (notificationName == "Insurance") {
+      icon = INSURANCE;
+    } else if (notificationName == "Warranty") {
+      icon = WARRANTY;
+    } else if (notificationName == "Lead Allocation") {
+      icon = LEAD_ALLOCATION;
+    } else if (
+      notificationName == "Zero Enquiry Sc" ||
+      notificationName == "Zero Booking Sc" ||
+      notificationName == "Zero Retail Sc"
+    ) {
+      icon = DOWN_ARROW;
+    }
+
+    let bg = Colors.WHITE;
+    if (item.isRead == "Y") {
+      bg = Colors.BORDER_COLOR;
+    }
+
+    return (
+      <View>
+        <NotificationItem
+          title={item.eventNotificationsMessage}
+          onPress={() => navigateTo(screenName, props.item)}
+          icon={icon}
+          style={{ backgroundColor: bg }}
+        />
+      </View>
+    );
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
         data={notificationList}
+        renderItem={(item) => <RenderList item={item} />}
         keyExtractor={(item, index) => index.toString()}
         showsVerticalScrollIndicator={false}
-        nestedScrollEnabled
         contentContainerStyle={{
           ...styles.listStyle,
           justifyContent: !notificationList.length ? "center" : "flex-start",
@@ -90,133 +167,6 @@ const NotificationScreen = ({ navigation }) => {
             )
           ) : null
         }
-        renderItem={({ item }) => {
-          return (
-            <ScrollView showsVerticalScrollIndicator={false} style={{}}>
-              <Text style={styles.header}>{"Follow Up"}</Text>
-              <View style={GlobalStyle.shadow}>
-                {item.bookingFollowupTaskMessage && (
-                  <NotificationItem
-                    title={item?.bookingFollowupTaskMessage}
-                    date={item?.date}
-                    onPress={navigateTo}
-                    icon={FOLLOW_UP}
-                  />
-                )}
-                {item.enqFollowupTaskMessage && (
-                  <NotificationItem
-                    title={item?.enqFollowupTaskMessage}
-                    date={item?.date}
-                    onPress={navigateTo}
-                    icon={FOLLOW_UP}
-                  />
-                )}
-              </View>
-              <Text style={styles.header}>{"Pending Task"}</Text>
-              <View style={GlobalStyle.shadow}>
-                {item.testDriveTaskMessage && (
-                  <NotificationItem
-                    title={item?.testDriveTaskMessage}
-                    date={item?.date}
-                    onPress={navigateTo}
-                    icon={TEST_DRIVE}
-                  />
-                )}
-                {item.totalPendingTasksMessage && (
-                  <NotificationItem
-                    title={item?.totalPendingTasksMessage}
-                    date={item?.date}
-                    onPress={navigateTo}
-                    icon={PENDING_TASK}
-                  />
-                )}
-                {item.homeVisitTaskMessage && (
-                  <NotificationItem
-                    title={item?.homeVisitTaskMessage}
-                    date={item?.date}
-                    onPress={navigateTo}
-                    icon={HOME_VISIT}
-                  />
-                )}
-                {item.isTarget && (
-                  <NotificationItem
-                    title={item?.isTarget}
-                    date={item?.date}
-                    onPress={navigateToTarget}
-                    icon={TARGET}
-                  />
-                )}
-                {item.zeroEnqSc && (
-                  <NotificationItem
-                    title={item?.zeroEnqSc}
-                    date={item?.date}
-                    onPress={navigateTo}
-                    icon={DOWN_ARROW}
-                  />
-                )}
-                {item.zeroBookingSc && (
-                  <NotificationItem
-                    title={item?.zeroBookingSc}
-                    date={item?.date}
-                    onPress={navigateTo}
-                    icon={DOWN_ARROW}
-                  />
-                )}
-                {item.zeroRetailSc && (
-                  <NotificationItem
-                    title={item?.zeroRetailSc}
-                    date={item?.date}
-                    onPress={navigateTo}
-                    icon={DOWN_ARROW}
-                  />
-                )}
-              </View>
-              <Text style={styles.header}>
-                {userData.role == "Sales Consulant" ||
-                userData.role == "Field DSE"
-                  ? "Performance"
-                  : "Team Performance"}
-              </Text>
-              <View style={GlobalStyle.shadow}>
-                {item.accessoriesMassage && (
-                  <NotificationItemWithoutNav
-                    title={item?.accessoriesMassage}
-                    date={item?.date}
-                    icon={TEST_DRIVE}
-                  />
-                )}
-                {item.exchangeMessage && (
-                  <NotificationItemWithoutNav
-                    title={item?.exchangeMessage}
-                    date={item?.date}
-                    icon={PENDING_TASK}
-                  />
-                )}
-                {item.insuranceMessage && (
-                  <NotificationItemWithoutNav
-                    title={item?.insuranceMessage}
-                    date={item?.date}
-                    icon={INSURANCE}
-                  />
-                )}
-                {item.warrantyMessage && (
-                  <NotificationItemWithoutNav
-                    title={item?.warrantyMessage}
-                    date={item?.date}
-                    icon={WARRANTY}
-                  />
-                )}
-                {item.finaceMessage && (
-                  <NotificationItemWithoutNav
-                    title={item?.finaceMessage}
-                    date={item?.date}
-                    icon={FINANCE}
-                  />
-                )}
-              </View>
-            </ScrollView>
-          );
-        }}
       />
     </SafeAreaView>
   );
@@ -226,7 +176,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: StatusBar.currentHeight,
-    marginHorizontal: 10,
     backgroundColor: Colors.LIGHT_GRAY,
   },
   header: {
@@ -247,7 +196,6 @@ const styles = StyleSheet.create({
   },
   listStyle: {
     justifyContent: "center",
-    flex: 1,
   },
 });
 
