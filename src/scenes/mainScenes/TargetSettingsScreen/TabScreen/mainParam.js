@@ -438,6 +438,7 @@ const MainParamScreen = ({ route, navigation }) => {
             );
           });
         }
+    
         if (ownDataArray.length > 0) {
           setAllOwnData(ownDataArray);
           let ownDataArray2 = [];
@@ -456,7 +457,9 @@ const MainParamScreen = ({ route, navigation }) => {
               );
             });
           }
+        
           if (ownDataArray2.length > 0) {
+         
             setIsNoTargetAvailable(false);
             setOwnData(ownDataArray2[0]);
             if (ownDataArray2[0]?.targetName) {
@@ -901,9 +904,11 @@ const MainParamScreen = ({ route, navigation }) => {
 
         Promise.all([dispatch(addTargetMapping(payload))]).then(() => {
           setSelectedUser(null);
+         
           setRetail("");
           setSelectedBranch(null);
           setDefaultBranch(null);
+       
           setIsNoTargetAvailable(false);
           const payload2 = {
             empId: jsonObj.empId,
@@ -950,17 +955,22 @@ const MainParamScreen = ({ route, navigation }) => {
         Promise.all([dispatch(editTargetMapping(payload))])
           .then((response) => {
             setSelectedUser(null);
+          
             setRetail("");
             setSelectedBranch(null);
             setDefaultBranch(null);
+          
             setIsNoTargetAvailable(false);
             const payload2 = {
               empId: jsonObj.empId,
               pageNo: 1,
               size: 500,
               targetType: selector.targetType,
+              startDate: selector.startDate,
+              endDate: selector.endDate,
             };
             getInitialParameters();
+           
             dispatch(getAllTargetMapping(payload2));
           })
           .catch((error) => { });
@@ -1071,6 +1081,7 @@ const MainParamScreen = ({ route, navigation }) => {
         designation: `${ownData.designation}`,
         start_date: selector.startDate,
         end_date: selector.endDate,
+        loggedInEmpId: `${empId}`
       };
       Promise.all([dispatch(saveSelfTargetParams(payload))])
         .then((x) => { })
@@ -1630,7 +1641,18 @@ const MainParamScreen = ({ route, navigation }) => {
             if (item?.targetName) {
               setTargetName(item?.targetName);
             }
-            setIsNoTargetAvailable(false);
+           
+            // if (x === "0" || x === 0) {
+            //   setIsNoTargetAvailable(true);
+            // } else {
+            //   setIsNoTargetAvailable(false);
+            // }
+            if (item.recordId) {
+              setIsNoTargetAvailable(false);
+            } else {
+              setIsNoTargetAvailable(true);
+            }
+           
             setRetail(x);
             setSelectedUser(item);
             setOpenRetail(true);
@@ -1691,7 +1713,18 @@ const MainParamScreen = ({ route, navigation }) => {
             if (item?.targetName) {
               setTargetName(item?.targetName);
             }
-            setIsNoTargetAvailable(false);
+           
+            // if (x === "0" || x === 0){
+            //   setIsNoTargetAvailable(true);
+            // }else{
+            //   setIsNoTargetAvailable(false);
+            // }
+            if (item.recordId) {
+              setIsNoTargetAvailable(false);
+            } else {
+              setIsNoTargetAvailable(true);
+            }
+           
             setRetail(x);
             setSelectedUser(item);
             setOpenRetail(true);
@@ -1916,7 +1949,10 @@ const MainParamScreen = ({ route, navigation }) => {
                           pageNo: 1,
                           size: 500,
                           targetType: selector.targetType,
+                          startDate: selector.startDate,
+                          endDate: selector.endDate,
                         };
+                        
                         Promise.all([dispatch(getAllTargetMapping(payload2))])
                           .then((x) => {})
                           .catch((y) => {});
@@ -3345,10 +3381,17 @@ const MainParamScreen = ({ route, navigation }) => {
                       selector.startDate === ownData.startDate
                         ? setRetail(ownData.retailTarget.toString())
                         : setRetail("");
+                   
                       setOpenRetail(true);
+                      if (ownData.id) {
+                        setIsNoTargetAvailable(false);
+                      } else {
+                        setIsNoTargetAvailable(true);
+                      }
                     } else showToast("Access Denied");
                   }}
                 >
+                  {/* todo */}
                   <Text style={styles.textInput}>
                     {ownData.retailTarget !== null &&
                     selector.endDate === ownData.endDate &&
@@ -3486,8 +3529,13 @@ const MainParamScreen = ({ route, navigation }) => {
                       selector.startDate === ownData.startDate
                         ? setRetail(ownData.retailTarget.toString())
                         : setRetail("");
-
+                     
                       setOpenRetail(true);
+                      if (ownData.id) {
+                        setIsNoTargetAvailable(false);
+                      } else {
+                        setIsNoTargetAvailable(true);
+                      }
                     } else showToast("Access Denied");
                   }}
                 >
@@ -3675,6 +3723,7 @@ const MainParamScreen = ({ route, navigation }) => {
                   value={retail}
                   placeholderTextColor={"#333"}
                   onChangeText={(text) => {
+                   
                     setRetail(text);
                   }}
                 />
@@ -3704,9 +3753,13 @@ const MainParamScreen = ({ route, navigation }) => {
                   // else {
                   //     editTargetData()
                   // }
+                  //todo
+                  
                   if (isNoTargetAvailable) {
+                 
                     addTargetData();
                   } else {
+                   
                     editTargetData();
                   }
                 }}
@@ -3727,6 +3780,7 @@ const MainParamScreen = ({ route, navigation }) => {
                   alignItems: "center",
                 }}
                 onPress={() => {
+                  
                   setRetail("");
                   setSelectedUser(null);
                   setOpenRetail(false);

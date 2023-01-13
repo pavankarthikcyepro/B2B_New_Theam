@@ -202,7 +202,7 @@ const GeoLocationScreen = ({ route, navigation }) => {
   };
 
   const getProfilePic = (userData) => {
-      console.log("manthanfff ")
+   
     // fetch(
     //   `http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
     // )
