@@ -191,7 +191,7 @@ const HomeScreen = ({ route, navigation }) => {
         );
         if (employeeData) {
           const jsonObj = JSON.parse(employeeData);
-          dispatch(getNotificationList(jsonObj));
+          dispatch(getNotificationList(jsonObj.empId));
            var d = new Date();
           const response = await client.get(
             URL.GET_ATTENDANCE_EMPID(
@@ -228,11 +228,11 @@ const HomeScreen = ({ route, navigation }) => {
               }
             }
           } else {
-           if (startDate <= now && now <= startBetween) {
-             setAttendance(true);
-           } else {
-             setAttendance(false);
-           }
+            if (startDate <= now && now <= startBetween) {
+              setAttendance(true);
+            } else {
+              setAttendance(false);
+            }
           }
         }
       }
@@ -335,20 +335,20 @@ const HomeScreen = ({ route, navigation }) => {
     }
   }, [selector.allGroupDealerData]);
 
-  useEffect(async () => {
-    // if (await AsyncStore.getData(AsyncStore.Keys.IS_LOGIN) === 'true'){
-    getMenuListFromServer();
-    getCustomerType();
-    checkLoginUserAndEnableReportButton();
-    // getLoginEmployeeDetailsFromAsyn();
-    // }
+useEffect(async () => {
+  // if (await AsyncStore.getData(AsyncStore.Keys.IS_LOGIN) === 'true'){
+  getMenuListFromServer();
+  getCustomerType();
+  checkLoginUserAndEnableReportButton();
+  // getLoginEmployeeDetailsFromAsyn();
+  // }
 
-    const unsubscribe = navigation.addListener("focus", () => {
-      getLoginEmployeeDetailsFromAsyn(); //Commented to resolved filter issue for Home Screen
-    });
+  const unsubscribe = navigation.addListener("focus", () => {
+    getLoginEmployeeDetailsFromAsyn(); //Commented to resolved filter issue for Home Screen
+  });
 
-    return unsubscribe;
-  }, [navigation]);
+  return unsubscribe;
+}, [navigation]);
 
   const getCustomerType = async () => {
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
@@ -1114,7 +1114,7 @@ const HomeScreen = ({ route, navigation }) => {
         branchClicked={() => moveToSelectBranch()}
         filterClicked={() => moveToFilter()}
         notification={true}
-        notificationNav={() => navigation.navigate("NOTIF_1")}
+        navigation={navigation}
       />
       <ScrollView
         showsVerticalScrollIndicator={false}

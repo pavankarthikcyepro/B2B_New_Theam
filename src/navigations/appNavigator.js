@@ -101,6 +101,7 @@ import { AttendanceTopTabNavigatorTwo, MyAttendanceTopTabNavigatorOne } from "./
 import GeoLocationScreen from "../scenes/mainScenes/Geolocation";
 import { MyGeolocationTopTabNavigatorOne } from "./geolocationNavigator";
 import TaskThreeSixtyHistory from "../scenes/mainScenes/EMS/taskThreeSixtyHistory";
+import NotificationIcon from "../components/NotificationIcon";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -298,19 +299,6 @@ const MapIcon = ({ navigation }) => {
     );
 };
 
-const NotficationIcon = ({ navigation, identifier }) => {
-  return (
-    <IconButton
-      icon="bell"
-      color={Colors.WHITE}
-      size={25}
-      onPress={() => {
-        navigation.navigate(identifier);
-      }}
-    />
-  );
-};
-
 export const DrawerStackIdentifiers = {
   home: "HOME_SCREEN",
   upcomingDeliveries: "UPCOMING_DELIVERIES",
@@ -418,23 +406,7 @@ const HomeStackNavigator = ({ navigation }) => {
           title: "Dashboard",
           headerShown: false,
           headerLeft: () => <MenuIcon navigation={navigation} />,
-          headerRight: () => {
-            return (
-              <View style={{ flexDirection: "row" }}>
-                {/* <NotficationIcon
-                  navigation={navigation}
-                  identifier={"NOTIF_1"}
-                /> */}
-              </View>
-            );
-          },
         }}
-      />
-
-      <HomeStack.Screen
-        name={"NOTIF_1"}
-        component={NotificationScreen}
-        options={{ title: "Notifications" }}
       />
       <HomeStack.Screen
         name={HomeStackIdentifiers.filter}
@@ -505,19 +477,7 @@ const EmsStackNavigator = ({ navigation }) => {
           options={{
             title: "EMS",
             headerLeft: () => <MenuIcon navigation={navigation} />,
-            headerRight: () => {
-              return (
-                <View style={{ flexDirection: "row" }}>
-                  {/*<SearchIcon />*/}
-                  {/* <RefreshIcon /> */}
-                  {/* <MapIcon /> */}
-                  <NotficationIcon
-                    navigation={navigation}
-                    identifier={"NOTIF_2"}
-                  />
-                </View>
-              );
-            },
+            headerRight: () => <NotificationIcon navigation={navigation} />,
           }}
         />
 
@@ -601,7 +561,7 @@ const EmsStackNavigator = ({ navigation }) => {
           name={EmsStackIdentifiers.task360History}
           component={TaskThreeSixtyHistory}
           options={({ route }) => ({
-            headerTitle: route?.params?.title ?? "History"
+            headerTitle: route?.params?.title ?? "History",
           })}
         />
 
@@ -661,17 +621,7 @@ const MyTaskStackNavigator = ({ navigation }) => {
         options={{
           title: "My Tasks",
           headerLeft: () => <MenuIcon navigation={navigation} />,
-          headerRight: () => {
-            return (
-              <View style={{ flexDirection: "row" }}>
-                {/* <SearchIcon /> */}
-                <NotficationIcon
-                  navigation={navigation}
-                  identifier={"NOTIF_3"}
-                />
-              </View>
-            );
-          },
+          headerRight: () => <NotificationIcon navigation={navigation} />,
         }}
       />
 
@@ -743,17 +693,6 @@ const PriceStackNavigator = ({ navigation }) => {
         options={{
           title: "Price",
           headerLeft: () => <MenuIcon navigation={navigation} />,
-          // headerRight: () => {
-          //   return (
-          //     <View style={{ flexDirection: "row" }}>
-          //       {/* <SearchIcon /> */}
-          //       <NotficationIcon
-          //         navigation={navigation}
-          //         identifier={"NOTIF_3"}
-          //       />
-          //     </View>
-          //   );
-          // },
         }}
       />
     </PriceStack.Navigator>
@@ -1280,17 +1219,6 @@ const DropLostCancelNavigator = ({ navigation }) => {
           title: "Drop/Lost/Cancel",
           headerShown: true,
           headerLeft: () => <MenuIcon navigation={navigation} />,
-        //   headerRight: () => {
-        //     return (
-        //       <View style={{ flexDirection: "row" }}>
-        //         {/* <SearchIcon /> */}
-        //         <NotficationIcon
-        //           navigation={navigation}
-        //           identifier={"NOTIF_3"}
-        //         />
-        //       </View>
-        //     );
-        //   },
         }}
       />
     </DropLostStack.Navigator>
@@ -1318,6 +1246,11 @@ const MainStackNavigator = ({ navigation }) => {
         options={{
           headerShown: false,
         }}
+      />
+      <MainStack.Screen
+        name={"NOTIF_1"}
+        component={NotificationScreen}
+        options={{ title: "Notifications" }}
       />
     </MainStack.Navigator>
   );

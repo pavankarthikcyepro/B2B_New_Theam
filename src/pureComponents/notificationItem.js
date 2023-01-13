@@ -2,9 +2,12 @@ import React from "react";
 import { StyleSheet, View, Text, TouchableOpacity, Image } from "react-native";
 import { Colors, GlobalStyle } from "../styles";
 
-export const NotificationItem = ({ title, date, onPress, icon }) => {
+export const NotificationItem = ({ title, date, onPress, icon, style }) => {
   return (
-    <TouchableOpacity onPress={onPress} style={[styles.item]}>
+    <TouchableOpacity
+      onPress={onPress}
+      style={[styles.item, style]}
+    >
       <Image
         source={icon}
         style={{ height: 35, width: 35, resizeMode: "contain" }}
@@ -17,20 +20,6 @@ export const NotificationItem = ({ title, date, onPress, icon }) => {
   );
 };
 
-export const NotificationItemWithoutNav = ({ title, date, icon }) => {
-  return (
-    <View style={[styles.item]}>
-      <Image
-        source={icon}
-        style={{ height: 35, width: 35, resizeMode: "contain" }}
-      />
-      <View style={{ margin: 5, flex: 1 }}>
-        <Text style={styles.title}>{title}</Text>
-      </View>
-      {/* <Text style={[styles.title, styles.text2]}>{date}</Text> */}
-    </View>
-  );
-};
 const styles = StyleSheet.create({
   item: {
     backgroundColor: Colors.WHITE,
@@ -39,6 +28,8 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     flexDirection: "row",
     alignItems: "center",
+    marginHorizontal: 10,
+    ...GlobalStyle.shadow,
   },
   title: {
     fontSize: 14,

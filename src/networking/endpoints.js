@@ -653,7 +653,10 @@ const URL = {
     );
   },
   NOTIFICATION_LIST: (empId) => {
-    return notification + `/notification/${empId}`;
+    return notification + `/notification/notifications/${empId}`;
+  },
+  READ_NOTIFICATION: (notificationId) => {
+    return notification + `/notification/readnotification/${notificationId}`;
   },
   SAVE_EMPLOYEE_ATTENDANCE: () => {
     return sales_url + "/employeeAttendance/saveEmployeeAttendance";
