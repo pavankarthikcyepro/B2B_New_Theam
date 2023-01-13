@@ -22,7 +22,6 @@ import * as AsyncStore from "../../../asyncStore";
 import moment from "moment";
 import { DropDownSelectionItem } from "../../../pureComponents";
 import { AttendanceTopTabNavigatorIdentifiers } from "../../../navigations/attendanceTopTabNavigator";
-import PieChart from "react-native-pie-chart";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
@@ -35,16 +34,7 @@ const screenWidth = Dimensions.get("window").width;
 const profileWidth = screenWidth / 8;
 const profileBgWidth = profileWidth + 5;
 
-const item1Width = screenWidth - 10;
-const item2Width = item1Width - 10;
-const baseItemWidth = item2Width / 3.4;
-const itemWidth = baseItemWidth - 10;
-
-const series = [60, 40];
-const sliceColor = ["#5BBD66", Colors.RED];
 const image = "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg";
-const chartHeight = itemWidth - 20;
-const overlayViewHeight = chartHeight - 10;
 
 const TeamAttendanceScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
@@ -162,11 +152,11 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
     }
   }, [selectedLocation, selectedDealerCode]);
 
-  useEffect(() => {
-    if (selector.selectedIDS.length > 0) {
-      getEmployeeList(selector.selectedIDS);
-    }
-  }, [selector.selectedIDS]);
+  // useEffect(() => {
+  //   if (selector.selectedIDS.length > 0) {
+  //     getEmployeeList(selector.selectedIDS);
+  //   }
+  // }, [selector.selectedIDS]);
 
   const getInitialParameters = async () => {
     try {
@@ -196,7 +186,7 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
         let payload =
-          data.length > 0
+          data?.length > 0
             ? data
             : [(selectedLocation.id, selectedDealerCode.id)];
         const response = await client.post(
@@ -236,56 +226,6 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
     setShowDropDownModel(true);
   };
 
-  const renderAttendance = () => {
-    return (
-      <View
-        style={{
-          width: itemWidth - 10,
-          height: 120,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <PieChart
-          widthAndHeight={chartHeight}
-          series={series}
-          sliceColor={sliceColor}
-        />
-        {/* <PIEICON width={chartHeight} height={chartHeight} /> */}
-        {/* // Overlay View */}
-        <View
-          style={{
-            position: "absolute",
-            width: overlayViewHeight,
-            height: overlayViewHeight,
-            borderRadius: overlayViewHeight / 2,
-            backgroundColor: Colors.WHITE,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 17,
-              fontWeight: "700",
-              textAlign: "center",
-            }}
-          >
-            {5}
-          </Text>
-          <Text
-            style={{
-              fontSize: 11,
-              fontWeight: "400",
-              textAlign: "center",
-            }}
-          >
-            {"WFH"}
-          </Text>
-        </View>
-      </View>
-    );
-  };
   return (
     <SafeAreaView style={styles.container}>
       <DropDownComponant
@@ -312,23 +252,8 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
           setShowDropDownModel(false);
         }}
       />
-      <View
-        style={{
-          width: "95%",
-          alignSelf: "center",
-          marginTop: 10,
-          flexDirection: "row",
-          justifyContent: "space-around",
-          ...GlobalStyle.shadow,
-        }}
-      >
-        {[9, 9, 9].map((item) => {
-          return renderAttendance();
-        })}
-      </View>
-
-      {/* <View style={{ width: "95%", alignSelf: "center", marginTop: 10 }}> */}
-      {/* <View style={{ marginVertical: 5 }}>
+      <View style={{ width: "95%", alignSelf: "center", marginTop: 10 }}>
+      <View style={{ marginVertical: 5 }}>
           <DropDownSelectionItem
             label={"Location"}
             value={selectedLocation.name}
@@ -343,7 +268,7 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
             onPress={() => dropDownItemClicked("Dealer Code")}
             takeMinHeight={true}
           />
-        </View> */}
+        </View>
       {/* <View style={{ marginVertical: 5 }}>
           <DropDownSelectionItem
             label={"Month & Years"}
@@ -352,7 +277,7 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
             takeMinHeight={true}
           />
         </View> */}
-      {/* </View> */}
+      </View>
       <ScrollView showsVerticalScrollIndicator={false}>
         {loading && (
           <View>
@@ -423,54 +348,6 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
             </View>
           );
         })}
-        {/* {data.map((item, index) => {
-          return (
-            <View style={{ flexDirection: "column", marginVertical: 10 }}>
-              <View>
-                <Text
-                  style={{ fontSize: 15, fontWeight: "700", marginLeft: 20 }}
-                >
-                  {item.role}
-                </Text>
-              </View>
-              <ScrollView showsHorizontalScrollIndicator={false} horizontal>
-                {item.employee.map((innerItem, innerIndex) => {
-                  return (
-                    <TouchableOpacity
-                      onPress={() => {
-                        navigation.jumpTo(
-                          AttendanceTopTabNavigatorIdentifiers.leave,
-                          {
-                            empId: innerItem.empId,
-                            orgID: innerItem.orgID,
-                          }
-                        );
-                      }}
-                      style={{ alignItems: "center", justifyContent: "center" }}
-                    >
-                      <View
-                        style={{
-                          ...GlobalStyle.shadow,
-                          ...styles.profilePicBG,
-                        }}
-                      >
-                        <Image
-                          style={styles.profilePic}
-                          source={{
-                            uri: innerItem.profilePic,
-                          }}
-                        />
-                      </View>
-                      <Text style={{ textAlign: "center" }}>
-                        {innerItem.empName}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                })}
-              </ScrollView>
-            </View>
-          );
-        })} */}
       </ScrollView>
     </SafeAreaView>
   );
