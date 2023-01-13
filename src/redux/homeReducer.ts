@@ -418,6 +418,12 @@ export const updateTheTeamAttendanceFilter = createAsyncThunk(
     return payload;
   }
 );
+export const updateTheTeamAttendanceFilterDate = createAsyncThunk(
+  "HOME/updateTheTeamAttendanceFilterDate",
+  async (payload: any) => {
+    return payload;
+  }
+);
 
 export const getEmployeesList = createAsyncThunk(
   "HOME/getEmployeesList",
@@ -708,7 +714,8 @@ export const homeSlice = createSlice({
     },
     receptionistModel: [],
     receptionistSource: [],
-    selectedIDS :[]
+    selectedIDS :[],
+    selectedDate : {}
   },
   reducers: {
     dateSelected: (state, action) => {
@@ -840,6 +847,9 @@ export const homeSlice = createSlice({
       })
       .addCase(updateTheTeamAttendanceFilter.fulfilled, (state, action) => {
         state.selectedIDS = action.payload;
+      })
+      .addCase(updateTheTeamAttendanceFilterDate.fulfilled, (state, action) => {
+        state.selectedDate = action.payload;
       })
       .addCase(getCustomerTypeList.fulfilled, (state, action) => {
         const data = action.payload;

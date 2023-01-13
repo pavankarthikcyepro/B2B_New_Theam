@@ -112,7 +112,7 @@ const AttendanceScreen = ({ route, navigation }) => {
     if (route?.params) {
       setFromDateState(lastMonthFirstDate);
       setToDateState(currentDate);
-      getAttendanceFilter(route?.params);
+      // getAttendanceFilter(route?.params);
     }
   }, [route.params]);
 
@@ -121,8 +121,11 @@ const AttendanceScreen = ({ route, navigation }) => {
       // getCurrentLocation();
       setFromDateState(lastMonthFirstDate);
       setToDateState(currentDate);
-      setLoading(true);
-      getAttendance();
+      GetCountByMonth(lastMonthFirstDate, currentDate);
+      getAttendanceByMonth(lastMonthFirstDate, currentDate);
+      getProfilePic();
+      // setLoading(true);
+      // getAttendance();
     });
   }, [navigation]);
 
@@ -131,8 +134,8 @@ const AttendanceScreen = ({ route, navigation }) => {
       setLoading(true);
       getAttendance(route?.params);
     } else {
-      setLoading(true);
-      getAttendance();
+      // setLoading(true);
+      // getAttendance();
     }
   }, [currentMonth]);
 
@@ -226,7 +229,7 @@ const AttendanceScreen = ({ route, navigation }) => {
       );
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
-        getProfilePic(newUser ? newUser : jsonObj);
+        // getProfilePic(newUser ? newUser : jsonObj);
         getFilterAttendanceCount(newUser ? newUser : jsonObj);
         setUserName(newUser ? newUser.empName : jsonObj.empName);
         var d = currentMonth;
@@ -302,7 +305,7 @@ const AttendanceScreen = ({ route, navigation }) => {
       );
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
-        getProfilePic(newUser ? newUser : jsonObj);
+        // getProfilePic(newUser ? newUser : jsonObj);
         getAttendanceCount(newUser ? newUser : jsonObj);
         var d = currentMonth;
         const response = await client.get(
@@ -397,27 +400,35 @@ const AttendanceScreen = ({ route, navigation }) => {
     }
   };
 
-  const getProfilePic = (userData) => {
-    client
-      .get(
-        `${baseUrl}sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
-      )
-      .then((response) => response.json())
-      .then((json) => {
-        if (json.length > 0) {
-          setImageUri(json[json.length - 1].documentPath);
-        } else {
-          setImageUri(
-            "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
-          );
-        }
-      })
-      .catch((error) => {
-        setImageUri(
-          "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
-        );
-        console.error(error);
-      });
+  const getProfilePic = async (userData) => {
+    try {
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        await client
+          .get(
+            `${baseUrl}sales/employeeprofilepic/get/${jsonObj.empId}/${jsonObj.orgId}/${jsonObj.branchId}`
+          )
+          .then((response) => response.json())
+          .then((json) => {
+            if (json.length > 0) {
+              setImageUri(json[json.length - 1].documentPath);
+            } else {
+              setImageUri(
+                "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
+              );
+            }
+          })
+          .catch((error) => {
+            setImageUri(
+              "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
+            );
+            console.error(error);
+          });
+      }
+    } catch (error) {}
   };
 
   const getAttendanceCount = async (jsonObj) => {
@@ -470,6 +481,106 @@ const AttendanceScreen = ({ route, navigation }) => {
     } catch (error) {}
   };
 
+  const GetCountByMonth = async (start, end) => {
+    try {
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        let d = currentMonth;
+        const response = await client.get(
+          URL.GET_ATTENDANCE_COUNT2(
+            jsonObj.empId,
+            jsonObj.orgId,
+            start,
+            end
+            // monthNamesCap[d.getMonth()]
+          )
+        );
+        const json = await response.json();
+        if (json) {
+          setAttendanceCount({
+            holidays: json?.holidays || 0,
+            leave: json?.leave || 0,
+            present: json?.present || 0,
+            wfh: json?.wfh || 0,
+            totalTime: json?.totalTime || "0",
+            total: json?.total || 0,
+          });
+        }
+      }
+    } catch (error) {}
+  };
+
+  const getAttendanceByMonth = async (start, end) => {
+    try {
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        // getProfilePic(jsonObj);
+        var d = currentMonth;
+        const response = await client.get(
+          URL.GET_ATTENDANCE_EMPID2(jsonObj.empId, jsonObj.orgId, start, end)
+        );
+        const json = await response.json();
+        if (json) {
+          let newArray = [];
+          let dateArray = [];
+          let weekArray = [];
+          for (let i = 0; i < json.length; i++) {
+            const element = json[i];
+            let format = {
+              customStyles: {
+                container: {
+                  backgroundColor:
+                    element.isPresent === 1
+                      ? element.wfh === 1
+                        ? Colors.SKY_LIGHT_BLUE_COLOR
+                        : Colors.GREEN
+                      : element.holiday === 1
+                      ? Colors.DARK_GRAY
+                      : element.wfh === 1
+                      ? Colors.SKY_LIGHT_BLUE_COLOR
+                      : "#ff5d68",
+                },
+                text: {
+                  color: Colors.WHITE,
+                  fontWeight: "bold",
+                },
+              },
+            };
+
+            let date = new Date(element.createdtimestamp);
+            let formatedDate = moment(date).format(dateFormat);
+            let weekReport = {
+              start: formatedDate,
+              // duration: "00:20:00",
+              note: element.comments,
+              reason: element.reason,
+              color: element.isPresent === 1 ? Colors.GREEN : "#ff5d68",
+              status: element.isPresent === 1 ? "Present" : "Absent",
+            };
+            dateArray.push(formatedDate);
+            newArray.push(format);
+            weekArray.push(weekReport);
+          }
+          var obj = {};
+          for (let i = 0; i < newArray.length; i++) {
+            const element = newArray[i];
+            obj[dateArray[i]] = element;
+          }
+          setLoading(false);
+          setWeeklyRecord(weekArray);
+          setMarker(obj);
+        }
+      }
+    } catch (error) {
+      setLoading(false);
+    }
+  };
   const downloadReport = async () => {
     try {
       const payload = {
@@ -675,8 +786,18 @@ const AttendanceScreen = ({ route, navigation }) => {
             monthFormat={"MMM yyyy"}
             onMonthChange={(month) => {
               console.log("month changed", month);
+              const startDate = moment(month.dateString, dateFormat)
+                .subtract(0, "months")
+                .startOf("month")
+                .format(dateFormat);
+              const endDate = moment(month.dateString, dateFormat)
+                .subtract(0, "months")
+                .endOf("month")
+                .format(dateFormat);
+              GetCountByMonth(startDate, endDate);
+              getAttendanceByMonth(startDate, endDate);
               if (!filterStart) {
-                setCurrentMonth(new Date(month.dateString));
+                // setCurrentMonth(new Date(month.dateString));
               }
             }}
             // dayComponent={({ date, state }) => {
