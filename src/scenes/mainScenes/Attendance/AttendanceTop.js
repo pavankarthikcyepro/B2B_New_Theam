@@ -275,7 +275,7 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
                 : item?.wfh == 1
                 ? styles.wfhShadowView
                 : styles.shadowView),
-              backgroundColor: "#c4c4c4",
+              backgroundColor: "#f4c2c2",
             }}
           >
             <View style={styles.dateDayMasterView}>

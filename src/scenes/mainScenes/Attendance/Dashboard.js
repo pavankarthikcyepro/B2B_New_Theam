@@ -80,8 +80,8 @@ const AttendanceDashboard = ({ route, navigation }) => {
   ]);
 
   useEffect(() => {
-    setFromDateState(lastMonthFirstDate);
-    setToDateState(currentDate);
+    // setFromDateState(lastMonthFirstDate);
+    // setToDateState(currentDate);
     getEmployeeList(lastMonthFirstDate, currentDate);
   }, []);
 
@@ -347,12 +347,40 @@ const AttendanceDashboard = ({ route, navigation }) => {
         }}
         onRequestClose={() => setShowDatePicker(false)}
       />
-      <DateRangeComp
-        fromDate={selectedFromDate}
-        toDate={selectedToDate}
-        fromDateClicked={() => showDatePickerMethod("FROM_DATE")}
-        toDateClicked={() => showDatePickerMethod("TO_DATE")}
-      />
+      <View
+        style={{
+          width: "90%",
+          alignSelf: "center",
+          flexDirection: "row",
+          justifyContent: "center",
+          alignItems:'center'
+        }}
+      >
+        <View style={{ width: "85%" }}>
+          <DateRangeComp
+            fromDate={selectedFromDate}
+            toDate={selectedToDate}
+            fromDateClicked={() => showDatePickerMethod("FROM_DATE")}
+            toDateClicked={() => showDatePickerMethod("TO_DATE")}
+          />
+        </View>
+        <Button
+          mode="text"
+          color={Colors.RED}
+          labelStyle={{
+            textTransform: "none",
+            fontSize: 14,
+            fontWeight: "600",
+          }}
+          onPress={() => {
+            setFromDateState("");
+            setToDateState("");
+            getEmployeeList();
+          }}
+        >
+          Clear
+        </Button>
+      </View>
       <View style={styles.chartView}>
         {chartData.length > 0 &&
           !loading &&
