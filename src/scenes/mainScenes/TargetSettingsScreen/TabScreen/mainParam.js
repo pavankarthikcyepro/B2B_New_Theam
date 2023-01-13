@@ -247,14 +247,16 @@ const MainParamScreen = ({ route, navigation }) => {
   }
   useEffect(async () => {
     try {
+   
       if (!isEmpty(selector.filterPayload)) {
         let filterData = selector.filterPayload.params;
         let employeeData = await AsyncStore.getData(
           AsyncStore.Keys.LOGIN_EMPLOYEE
         );
         if (employeeData) {
+         
           const jsonObj = JSON.parse(employeeData);
-          const payload = getEmployeePayload(
+          const payload = getEmployeePayloadV2(
             employeeData,
             filterData?.selectedID
           );
@@ -263,7 +265,7 @@ const MainParamScreen = ({ route, navigation }) => {
               let input = res[0].payload.employeeTargetAchievements[0];
               let payload1 = getEmployeePayloadTotal(
                 employeeData,
-                [filterData?.selectedID?.id],
+                [filterData?.selectedID],
                 [input.branchId],
                 filterData?.fromDate,
                 filterData?.toDate
@@ -273,6 +275,7 @@ const MainParamScreen = ({ route, navigation }) => {
                 payload1
               );
               const json1 = await response1.json();
+              //todo
               if (json1) {
                 let newArr = json1?.data;
                 newArr[0] = {
@@ -283,10 +286,13 @@ const MainParamScreen = ({ route, navigation }) => {
                   designation: json1?.data[0]?.designation,
                   targetAchievements: getDataFormat(json1?.data[0]),
                   tempTargetAchievements: getDataFormat(json1?.data[0]),
-                  branchName: json1?.data[0]?.branchName,
-                  branch: json1?.data[0]?.branch,
+                  branchName: json1?.data[0]?.branchName || input.branchName,
+                  branch: json1?.data[0]?.branch || input.branchId,
                   recordId: json1?.data[0]?.id,
+                  empName: json1?.data[0]?.empName || input.empName,
+                
                 };
+                
                 setFilterParameters(newArr);
               }
             })
@@ -432,6 +438,7 @@ const MainParamScreen = ({ route, navigation }) => {
             );
           });
         }
+    
         if (ownDataArray.length > 0) {
           setAllOwnData(ownDataArray);
           let ownDataArray2 = [];
@@ -450,7 +457,9 @@ const MainParamScreen = ({ route, navigation }) => {
               );
             });
           }
+        
           if (ownDataArray2.length > 0) {
+         
             setIsNoTargetAvailable(false);
             setOwnData(ownDataArray2[0]);
             if (ownDataArray2[0]?.targetName) {
@@ -519,6 +528,7 @@ const MainParamScreen = ({ route, navigation }) => {
     };
     setUpdatedSelfParameters({ ...data });
     setMasterSelfParameters({ ...data });
+    
   };
 
   const getTargetParamValue = (param) => {
@@ -722,6 +732,7 @@ const MainParamScreen = ({ route, navigation }) => {
                   [jsonObj.empId],
                   [jsonObj.branchId]
                 );
+                // need to check  api call 
                 const response = await client.post(
                   URL.GET_TARGET_PLANNING_COUNT(),
                   payload
@@ -893,9 +904,11 @@ const MainParamScreen = ({ route, navigation }) => {
 
         Promise.all([dispatch(addTargetMapping(payload))]).then(() => {
           setSelectedUser(null);
+         
           setRetail("");
           setSelectedBranch(null);
           setDefaultBranch(null);
+       
           setIsNoTargetAvailable(false);
           const payload2 = {
             empId: jsonObj.empId,
@@ -942,17 +955,22 @@ const MainParamScreen = ({ route, navigation }) => {
         Promise.all([dispatch(editTargetMapping(payload))])
           .then((response) => {
             setSelectedUser(null);
+          
             setRetail("");
             setSelectedBranch(null);
             setDefaultBranch(null);
+          
             setIsNoTargetAvailable(false);
             const payload2 = {
               empId: jsonObj.empId,
               pageNo: 1,
               size: 500,
               targetType: selector.targetType,
+              startDate: selector.startDate,
+              endDate: selector.endDate,
             };
             getInitialParameters();
+           
             dispatch(getAllTargetMapping(payload2));
           })
           .catch((error) => { });
@@ -1063,6 +1081,7 @@ const MainParamScreen = ({ route, navigation }) => {
         designation: `${ownData.designation}`,
         start_date: selector.startDate,
         end_date: selector.endDate,
+        loggedInEmpId: `${empId}`
       };
       Promise.all([dispatch(saveSelfTargetParams(payload))])
         .then((x) => { })
@@ -1391,6 +1410,33 @@ const MainParamScreen = ({ route, navigation }) => {
     };
   };
 
+  const getEmployeePayloadV2 = (employeeData, item) => {
+    const jsonObj = JSON.parse(employeeData);
+    const dateFormat = "YYYY-MM-DD";
+    const currentDate = moment().format(dateFormat);
+    const monthFirstDate = moment(currentDate, dateFormat)
+      .subtract(0, "months")
+      .startOf("month")
+      .format(dateFormat);
+    const monthLastDate = moment(currentDate, dateFormat)
+      .subtract(0, "months")
+      .endOf("month")
+      .format(dateFormat);
+   
+
+    return {
+      orgId: jsonObj.orgId,
+      selectedEmpId: item,
+      endDate: monthLastDate,
+      loggedInEmpId: jsonObj.empId,
+      empId: item,
+      startDate: monthFirstDate,
+      levelSelected: null,
+      pageNo: 0,
+      size: 100,
+    };
+  };
+
   const onEmployeeNameClick = async (item, index, lastParameter) => {
     try {
       let localData = [...allParameters];
@@ -1595,7 +1641,18 @@ const MainParamScreen = ({ route, navigation }) => {
             if (item?.targetName) {
               setTargetName(item?.targetName);
             }
-            setIsNoTargetAvailable(false);
+           
+            // if (x === "0" || x === 0) {
+            //   setIsNoTargetAvailable(true);
+            // } else {
+            //   setIsNoTargetAvailable(false);
+            // }
+            if (item.recordId) {
+              setIsNoTargetAvailable(false);
+            } else {
+              setIsNoTargetAvailable(true);
+            }
+           
             setRetail(x);
             setSelectedUser(item);
             setOpenRetail(true);
@@ -1656,7 +1713,18 @@ const MainParamScreen = ({ route, navigation }) => {
             if (item?.targetName) {
               setTargetName(item?.targetName);
             }
-            setIsNoTargetAvailable(false);
+           
+            // if (x === "0" || x === 0){
+            //   setIsNoTargetAvailable(true);
+            // }else{
+            //   setIsNoTargetAvailable(false);
+            // }
+            if (item.recordId) {
+              setIsNoTargetAvailable(false);
+            } else {
+              setIsNoTargetAvailable(true);
+            }
+           
             setRetail(x);
             setSelectedUser(item);
             setOpenRetail(true);
@@ -1881,7 +1949,10 @@ const MainParamScreen = ({ route, navigation }) => {
                           pageNo: 1,
                           size: 500,
                           targetType: selector.targetType,
+                          startDate: selector.startDate,
+                          endDate: selector.endDate,
                         };
+                        
                         Promise.all([dispatch(getAllTargetMapping(payload2))])
                           .then((x) => {})
                           .catch((y) => {});
@@ -2023,6 +2094,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                   flexDirection: "row",
                                 }}
                               >
+                                {/* todo */}
                                 <RenderLevel1NameView
                                   level={0}
                                   item={item}
@@ -3309,10 +3381,17 @@ const MainParamScreen = ({ route, navigation }) => {
                       selector.startDate === ownData.startDate
                         ? setRetail(ownData.retailTarget.toString())
                         : setRetail("");
+                   
                       setOpenRetail(true);
+                      if (ownData.id) {
+                        setIsNoTargetAvailable(false);
+                      } else {
+                        setIsNoTargetAvailable(true);
+                      }
                     } else showToast("Access Denied");
                   }}
                 >
+                  {/* todo */}
                   <Text style={styles.textInput}>
                     {ownData.retailTarget !== null &&
                     selector.endDate === ownData.endDate &&
@@ -3450,8 +3529,13 @@ const MainParamScreen = ({ route, navigation }) => {
                       selector.startDate === ownData.startDate
                         ? setRetail(ownData.retailTarget.toString())
                         : setRetail("");
-
+                     
                       setOpenRetail(true);
+                      if (ownData.id) {
+                        setIsNoTargetAvailable(false);
+                      } else {
+                        setIsNoTargetAvailable(true);
+                      }
                     } else showToast("Access Denied");
                   }}
                 >
@@ -3639,6 +3723,7 @@ const MainParamScreen = ({ route, navigation }) => {
                   value={retail}
                   placeholderTextColor={"#333"}
                   onChangeText={(text) => {
+                   
                     setRetail(text);
                   }}
                 />
@@ -3668,9 +3753,13 @@ const MainParamScreen = ({ route, navigation }) => {
                   // else {
                   //     editTargetData()
                   // }
+                  //todo
+                  
                   if (isNoTargetAvailable) {
+                 
                     addTargetData();
                   } else {
+                   
                     editTargetData();
                   }
                 }}
@@ -3691,6 +3780,7 @@ const MainParamScreen = ({ route, navigation }) => {
                   alignItems: "center",
                 }}
                 onPress={() => {
+                  
                   setRetail("");
                   setSelectedUser(null);
                   setOpenRetail(false);

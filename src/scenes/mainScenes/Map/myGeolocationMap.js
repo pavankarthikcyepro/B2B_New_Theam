@@ -58,7 +58,6 @@ const GeolocationMapScreen = ({ route }) => {
   }, [navigation]);
 
   useEffect(() => {
-    console.log(route.params);
     setLoading(true);
     if (route.params) {
       getLocation(route.params);
@@ -87,13 +86,6 @@ const GeolocationMapScreen = ({ route }) => {
         const latitude = newArr.reduce(
           (total, next) => total + next.latitude,
           0
-        );
-        console.log(
-          "AVERGARE LAT LOG",
-          // latitude / newArr.length,
-          // longitude / newArr.length,
-          "\n",
-          arr
         );
         setLatitude(arr[arr.length - 1].latitude);
         setLongitude(arr[arr.length - 1].longitude);
@@ -147,13 +139,6 @@ const GeolocationMapScreen = ({ route }) => {
           (total, next) => total + next.latitude,
           0
         );
-        console.log(
-          "AVERGARE LAT LOG",
-          // latitude / newArr.length,
-          // longitude / newArr.length,
-          "\n",
-          arr
-        );
         setLatitude(arr[arr.length - 1].latitude);
         setLongitude(arr[arr.length - 1].longitude);
         // setLatitude(latitude / newArr.length);
@@ -196,7 +181,6 @@ const GeolocationMapScreen = ({ route }) => {
         maximumDate={new Date()}
         value={new Date()}
         onChange={(event, selectedDate) => {
-          console.log("date: ", selectedDate);
           getLocationByDate(selectedDate);
           setShowDatePicker(false);
         }}
@@ -229,6 +213,10 @@ const GeolocationMapScreen = ({ route }) => {
               <Marker
                 key={index}
                 coordinate={marker}
+                style={{
+                  height:15,
+                  width:15
+                }}
                 image={index === coordinates.length - 1 ? CYEPRO : HISTORY_LOC}
                 // title={marker}
                 // description={}

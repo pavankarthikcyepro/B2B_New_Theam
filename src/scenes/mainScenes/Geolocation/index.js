@@ -88,7 +88,6 @@ const GeoLocationScreen = ({ route, navigation }) => {
       // }
       Geolocation.getCurrentPosition(
         (position) => {
-          console.log("Sss", position);
           const initialPosition = JSON.stringify(position);
           let json = JSON.parse(initialPosition);
           setInitialPosition(json.coords);
@@ -98,7 +97,6 @@ const GeoLocationScreen = ({ route, navigation }) => {
             json?.coords?.latitude,
             json?.coords?.longitude
           );
-          console.log("LLLLL", dist);
           if (dist > officeRadius) {
             setReason(true); ///true for reason
           } else {
@@ -204,7 +202,7 @@ const GeoLocationScreen = ({ route, navigation }) => {
   };
 
   const getProfilePic = (userData) => {
-      console.log("manthanfff ")
+   
     // fetch(
     //   `http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
     // )

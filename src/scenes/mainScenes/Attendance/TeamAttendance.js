@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -33,10 +33,12 @@ const lastMonthFirstDate = moment(currentDate, dateFormat)
 const screenWidth = Dimensions.get("window").width;
 const profileWidth = screenWidth / 8;
 const profileBgWidth = profileWidth + 5;
+
 const image = "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg";
 
 const TeamAttendanceScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
+  const selector = useSelector((state) => state.homeReducer);
   const [loading, setLoading] = useState(false);
   const [showDropDownModel, setShowDropDownModel] = useState(false);
   const [dropDownData, setDropDownData] = useState([]);
@@ -150,6 +152,12 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
     }
   }, [selectedLocation, selectedDealerCode]);
 
+  // useEffect(() => {
+  //   if (selector.selectedIDS.length > 0) {
+  //     getEmployeeList(selector.selectedIDS);
+  //   }
+  // }, [selector.selectedIDS]);
+
   const getInitialParameters = async () => {
     try {
       let employeeData = await AsyncStore.getData(
@@ -168,7 +176,7 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
     }
   };
 
-  const getEmployeeList = async () => {
+  const getEmployeeList = async (data) => {
     try {
       setLoading(true);
       setEmployeeList({});
@@ -177,7 +185,10 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
       );
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
-        let payload = [selectedLocation.id, selectedDealerCode.id];
+        let payload =
+          data?.length > 0
+            ? data
+            : [(selectedLocation.id, selectedDealerCode.id)];
         const response = await client.post(
           URL.GET_EMPLOYEES_DROP_DOWN_DATA_FOR_ATTENDANCE(
             jsonObj.orgId,
@@ -242,7 +253,7 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
         }}
       />
       <View style={{ width: "95%", alignSelf: "center", marginTop: 10 }}>
-        <View style={{ marginVertical: 5 }}>
+      <View style={{ marginVertical: 5 }}>
           <DropDownSelectionItem
             label={"Location"}
             value={selectedLocation.name}
@@ -258,7 +269,7 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
             takeMinHeight={true}
           />
         </View>
-        {/* <View style={{ marginVertical: 5 }}>
+      {/* <View style={{ marginVertical: 5 }}>
           <DropDownSelectionItem
             label={"Month & Years"}
             value={selectedMonthYear.name}
@@ -337,54 +348,6 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
             </View>
           );
         })}
-        {/* {data.map((item, index) => {
-          return (
-            <View style={{ flexDirection: "column", marginVertical: 10 }}>
-              <View>
-                <Text
-                  style={{ fontSize: 15, fontWeight: "700", marginLeft: 20 }}
-                >
-                  {item.role}
-                </Text>
-              </View>
-              <ScrollView showsHorizontalScrollIndicator={false} horizontal>
-                {item.employee.map((innerItem, innerIndex) => {
-                  return (
-                    <TouchableOpacity
-                      onPress={() => {
-                        navigation.jumpTo(
-                          AttendanceTopTabNavigatorIdentifiers.leave,
-                          {
-                            empId: innerItem.empId,
-                            orgID: innerItem.orgID,
-                          }
-                        );
-                      }}
-                      style={{ alignItems: "center", justifyContent: "center" }}
-                    >
-                      <View
-                        style={{
-                          ...GlobalStyle.shadow,
-                          ...styles.profilePicBG,
-                        }}
-                      >
-                        <Image
-                          style={styles.profilePic}
-                          source={{
-                            uri: innerItem.profilePic,
-                          }}
-                        />
-                      </View>
-                      <Text style={{ textAlign: "center" }}>
-                        {innerItem.empName}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                })}
-              </ScrollView>
-            </View>
-          );
-        })} */}
       </ScrollView>
     </SafeAreaView>
   );
