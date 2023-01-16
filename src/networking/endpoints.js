@@ -1,94 +1,94 @@
 // Production Urls:
 
-// export const hrms_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8088/hrms";
-// export const sales_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales";
-// export const roleManagement_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8089/role-management";
-// export const ops_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8084/ops"
-// export const inventory_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8087/inventory";
-// export const vehicleServices_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8083/vehicle-services";
-// export const admin_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8082/admin";
-// export const notificationServices_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8086/notification-service";
-// export const vehicleInfoService_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8090/vehicle-information-service";
-// export const customerService_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8085/customer-service";
-// export const dynamicReports_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/dynamic-reports";
-// export const dynamicForms = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/dynamic-forms";
-// export const orgnaizationHirarchy = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/oh";
-// export const dashboard = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/dashboard";
-// export const dfGetAll = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/df-get-all"
-// export const subSourceAllDetails = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Source_SubSource_AllDetails"
-// export const salesGap = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/sales-gap"
-// export const lostSubLost = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Lost_SubLost_AllDetails"
+// export const hrms_url = "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8088/hrms";
+// export const sales_url = "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8081/sales";
+// export const roleManagement_url = "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8089/role-management";
+// export const ops_url = "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8084/ops"
+// export const inventory_url = "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8087/inventory";
+// export const vehicleServices_url = "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8083/vehicle-services";
+// export const admin_url = "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8082/admin";
+// export const notificationServices_url = "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8086/notification-service";
+// export const vehicleInfoService_url = "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8090/vehicle-information-service";
+// export const customerService_url = "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8085/customer-service";
+// export const dynamicReports_url = "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8091/dynamic-reports";
+// export const dynamicForms = "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8091/dynamic-forms";
+// export const orgnaizationHirarchy = "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8091/oh";
+// export const dashboard = "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8092/dashboard";
+// export const dfGetAll = "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8091/df-get-all"
+// export const subSourceAllDetails = "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8091/Source_SubSource_AllDetails"
+// export const salesGap = "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8092/sales-gap"
+// export const lostSubLost = "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8091/Lost_SubLost_AllDetails"
 
 // Dev End Points
 export const hrms_url =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8088/hrms";
+  "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8088/hrms";
 export const sales_url =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales";
-// "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/account/enquiryAccount?allocateDse=false"
+  "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8081/sales";
+// "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8081/sales/account/enquiryAccount?allocateDse=false"
 export const roleManagement_url =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8089/role-management";
+  "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8089/role-management";
 export const vehicleInfoService_url =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8090/vehicle-information-service";
+  "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8090/vehicle-information-service";
 export const ops_url =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8084/ops";
+  "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8084/ops";
 export const inventory_url =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8087/inventory";
+  "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8087/inventory";
 export const vehicleServices_url =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8083/vehicle-services";
+  "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8083/vehicle-services";
 export const admin_url =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8082/admin";
+  "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8082/admin";
 export const notificationServices_url =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8086/notification-service";
+  "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8086/notification-service";
 export const customerService_url =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8085/customer-service";
+  "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8085/customer-service";
 export const dynamicReports_url =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/dynamic-reports";
+  "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8091/dynamic-reports";
 export const dynamicForms =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/dynamic-forms";
+  "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8091/dynamic-forms";
 export const orgnaizationHirarchy =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/oh";
+  "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8091/oh";
 export const dashboard =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/dashboard";
+  "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8092/dashboard";
 export const dfGetAll =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/df-get-all";
+  "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8091/df-get-all";
 export const subSourceAllDetails =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Source_SubSource_AllDetails";
+  "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8091/Source_SubSource_AllDetails";
 export const salesGap =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/sales-gap";
+  "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8092/sales-gap";
 export const lostSubLost =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Lost_SubLost_AllDetails";
+  "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8091/Lost_SubLost_AllDetails";
 export const getBranch =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/oh";
+  "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8092/oh";
 export const downloadFile =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8093/dynamic-reports";
+  "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8093/dynamic-reports";
 export const downloadFile1 =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8095/dynamic-reports/etvbrl_report_download";
+  "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8095/dynamic-reports/etvbrl_report_download";
 export const downloadFile2 =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8095/dynamic-reports/etvbrl_report";
+  "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8095/dynamic-reports/etvbrl_report";
 export const tasktransfer =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/sales-gap/target-dropdown";
+  "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8092/sales-gap/target-dropdown";
 export const getTaskList =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/task-delegation/get_task_list";
+  "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8081/sales/task-delegation/get_task_list";
 export const getEmployeeData =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8089/role-management/employee/dept-employees";
+  "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8089/role-management/employee/dept-employees";
 export const getEmployeeList =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employees/reporting/all/emp";
+  "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8081/sales/employees/reporting/all/emp";
 export const getReportingMangerList =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employees/all/reportingManagers/orgId";
+  "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8081/sales/employees/all/reportingManagers/orgId";
 export const updateEmployeeTaskDelegate =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employees/emp";
+  "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8081/sales/employees/emp";
 export const getLeaderBoardData =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/dashboard/v2/get_emp_target_ranking/org";
+  "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8092/dashboard/v2/get_emp_target_ranking/org";
 export const getBranchRankingData =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/dashboard/v2/get_emp_target_ranking";
+  "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8092/dashboard/v2/get_emp_target_ranking";
 export const getEnquiryVehicleModelData =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Other_Maker_AllDetails";
+  "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8091/Other_Maker_AllDetails";
 export const deleteModelCard =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/lead";
+  "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8081/sales/lead";
 export const dashboardLiveLeads =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8083";
+  "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8083";
 export const profileImageUpdate =
-  "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic";
+  "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic";
 
 const URL = {
   LOGIN: () => hrms_url + "/emplogin",
@@ -399,13 +399,13 @@ const URL = {
     return downloadFile2;
   },
   LOCATION_LIST: (orgId) => {
-    return `http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/oh/data-nodes?orgId=${orgId}&levelCode=Level4`;
+    return `http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8092/oh/data-nodes?orgId=${orgId}&levelCode=Level4`;
   },
   DEALER_CODE_LIST: (orgId) => {
-    return `http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/oh/data-nodes?orgId=1&levelCode=Level5`;
+    return `http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8092/oh/data-nodes?orgId=1&levelCode=Level5`;
   },
   DOWNLOAD_REPORT: () => {
-    return `http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8093/dynamic-reports/etvbrl_report`;
+    return `http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8093/dynamic-reports/etvbrl_report`;
   },
 
   QR: (orgId, branchId) => {
@@ -508,6 +508,9 @@ const URL = {
   },
   ENQUIRY_CONTACT: () => {
     return sales_url + `/contact/enquiryContact?allocateDse=false`;
+  },
+  CALL_DEALLOCATE: (empId) => {
+    return roleManagement_url + "/dms/emp-update/" + empId;
   },
 };
 

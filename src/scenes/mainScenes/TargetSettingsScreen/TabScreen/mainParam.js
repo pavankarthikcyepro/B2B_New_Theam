@@ -678,59 +678,143 @@ const MainParamScreen = ({ route, navigation }) => {
                         </View>
                         {selector.targetMapping.length > 0 && selector.targetMapping.map((item, index) => {
                             return (
-                                <>
-                                    { <View style={{ flexDirection: 'row', marginTop: 5 }}>
-                                        <View style={{ minHeight: 40, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', }}>
-                                            {/*// left side name section */}
-                                            <View style={{ width: 150, marginTop: 5 }}>
+                              <>
+                                {
+                                  <View
+                                    key={
+                                      item?.id ? `${item.id}${index}` : index
+                                    }
+                                    style={{
+                                      flexDirection: "row",
+                                      marginTop: 5,
+                                    }}
+                                  >
+                                    <View
+                                      style={{
+                                        minHeight: 40,
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        flexDirection: "row",
+                                      }}
+                                    >
+                                      {/*// left side name section */}
+                                      <View
+                                        style={{ width: 150, marginTop: 5 }}
+                                      >
+                                        {
+                                          <View style={styles.nameBox}>
+                                            <Text
+                                              style={styles.text}
+                                              numberOfLines={1}
+                                            >
+                                              {item?.empName}
+                                            </Text>
+                                          </View>
+                                        }
+                                      </View>
+
+                                      <View
+                                        style={{
+                                          width: 88,
+                                          alignItems: "center",
+                                        }}
+                                      >
+                                        {
+                                          <TouchableOpacity
+                                            onPress={() => {
+                                              setSelectedDropdownData([
                                                 {
-                                                    <View style={styles.nameBox}>
-                                                        <Text style={styles.text} numberOfLines={1}>{item?.empName}</Text>
-                                                    </View>
-                                                }
-                                            </View>
+                                                  label: item?.branchName,
+                                                  value: item?.branch,
+                                                },
+                                              ]);
+                                              if (
+                                                item?.retailTarget !== null &&
+                                                selector?.endDate ===
+                                                  item?.endDate &&
+                                                selector?.startDate ===
+                                                  item?.startDate
+                                              ) {
+                                                setSelectedBranch({
+                                                  label: item?.branchName,
+                                                  value: item?.branch,
+                                                });
+                                                setDefaultBranch(item?.branch);
+                                                setAddOrEdit("E");
+                                              } else {
+                                                setDefaultBranch(null);
+                                                setAddOrEdit("A");
+                                              }
+                                              if (item?.targetName) {
+                                                setTargetName(item?.targetName);
+                                              }
+                                              setIsNoTargetAvailable(false);
+                                              setRetail(
+                                                item.retailTarget !== null &&
+                                                  selector.endDate ===
+                                                    item.endDate &&
+                                                  selector.startDate ===
+                                                    item.startDate
+                                                  ? item.retailTarget
+                                                  : 0
+                                              );
+                                              setSelectedUser(item);
 
-                                            <View style={{ width: 88, alignItems: "center" }}>
-                                                {
-                                                    <TouchableOpacity onPress={() => {
-                                                        setSelectedDropdownData([{ label: item?.branchName, value: item?.branch }])
-                                                        if (item?.retailTarget !== null && selector?.endDate === item?.endDate && selector?.startDate === item?.startDate) {
-                                                            setSelectedBranch({ label: item?.branchName, value: item?.branch })
-                                                            setDefaultBranch(item?.branch)
-                                                            setAddOrEdit('E')
-                                                        }
-                                                        else {
-                                                            setDefaultBranch(null);
-                                                            setAddOrEdit('A')
-                                                        }
-                                                        if (item?.targetName) {
-                                                            setTargetName(item?.targetName)
-                                                        }
-                                                        setIsNoTargetAvailable(false)
-                                                        setRetail((item.retailTarget !== null && selector.endDate === item.endDate && selector.startDate === item.startDate) ? item.retailTarget : 0)
-                                                        setSelectedUser(item)
+                                              setOpenRetail(true);
+                                            }}
+                                            style={{
+                                              width: 80,
+                                              height: 40,
+                                              borderWidth: 1,
+                                              borderRadius: 5,
+                                              borderColor: "blue",
+                                              justifyContent: "center",
+                                              alignItems: "center",
+                                              textAlign: "center",
+                                            }}
+                                          >
+                                            <Text style={styles.textInput}>
+                                              {item?.retailTarget
+                                                ? item?.retailTarget
+                                                : 0}
+                                            </Text>
+                                          </TouchableOpacity>
+                                        }
+                                      </View>
 
-                                                        setOpenRetail(true)
-                                                    }} style={{ width: 80, height: 40, borderWidth: 1, borderRadius: 5, borderColor: 'blue', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }} >
-                                                        <Text style={styles.textInput}>{item?.retailTarget ? item?.retailTarget : 0}</Text>
-                                                    </TouchableOpacity>}
-                                            </View>
-
-                                            {
-                                                ["enquiry", "testDrive", "homeVisit", "booking", "exchange", "finance", "insurance", "exWarranty", "accessories"].map((subItem) => (
-                                                    <View key={index} style={{ width: 88, alignItems: "center" }}>
-                                                        {RenderTeamsTargetData(item, subItem, index)}
-                                                    </View>
-                                                ))}
-                                            {/* <TouchableOpacity style={{ width: 30, height: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#C62159', borderRadius: 20, marginTop: 5, marginBottom: 5 }}>
+                                      {[
+                                        "enquiry",
+                                        "testDrive",
+                                        "homeVisit",
+                                        "booking",
+                                        "exchange",
+                                        "finance",
+                                        "insurance",
+                                        "exWarranty",
+                                        "accessories",
+                                      ].map((subItem, newIndex) => (
+                                        <View
+                                          key={newIndex + subItem}
+                                          style={{
+                                            width: 88,
+                                            alignItems: "center",
+                                          }}
+                                        >
+                                          {RenderTeamsTargetData(
+                                            item,
+                                            subItem,
+                                            newIndex
+                                          )}
+                                        </View>
+                                      ))}
+                                      {/* <TouchableOpacity style={{ width: 30, height: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#C62159', borderRadius: 20, marginTop: 5, marginBottom: 5 }}>
                                     
                                 </TouchableOpacity> */}
-                                        </View>
-
-                                    </View>}
-
-                                </>
-                            )
+                                    </View>
+                                  </View>
+                                }
+                              </>
+                            );
                         })}
                         <View style={{ flexDirection: 'row', marginTop: 5 }}>
                             <View style={{ minHeight: 40, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', }}>
@@ -750,8 +834,8 @@ const MainParamScreen = ({ route, navigation }) => {
                                             </TouchableOpacity>
                                         </View>
 
-                                        {["enquiry", "testDrive", "homeVisit", "booking", "exchange", "finance", "insurance", "exWarranty", "accessories"].map((item) => (
-                                            <View style={{ width: 88, alignItems: "center" }}>
+                                        {["enquiry", "testDrive", "homeVisit", "booking", "exchange", "finance", "insurance", "exWarranty", "accessories"].map((item, index) => (
+                                            <View key={index} style={{ width: 88, alignItems: "center" }}>
                                                 <TouchableOpacity style={styles.textBoxDisabled} >
                                                     <Text style={styles.textInput}>{getTotal(item)}</Text>
                                                 </TouchableOpacity>
@@ -1071,34 +1155,46 @@ const MainParamScreen = ({ route, navigation }) => {
                         {
                             employeeDropDownDataLocal.length > 0 && employeeDropDownDataLocal.map((item, index) => {
                                 return (
-                                    <View style={[{ justifyContent: 'center', alignItems: 'center', paddingBottom: 10 }]}>
-                                        <Dropdown
-                                            style={[styles.dropdownContainer,]}
-                                            placeholderStyle={styles.placeholderStyle}
-                                            selectedTextStyle={styles.selectedTextStyle}
-                                            inputSearchStyle={styles.inputSearchStyle}
-                                            iconStyle={styles.iconStyle}
-                                            data={item.data}
-                                            search
-                                            maxHeight={300}
-                                            labelField="label"
-                                            valueField="value"
-                                            placeholder={item.title}
-                                            searchPlaceholder="Search..."
-                                            // value={value}
-                                            // onFocus={() => setIsFocus(true)}
-                                            // onBlur={() => setIsFocus(false)}
-                                            onChange={val => {
-                                                let tempVal = otherDropDownSelectedValue;
-                                                tempVal.push({
-                                                    key: item.title,
-                                                    value: val
-                                                })
-                                                setOtherDropDownSelectedValue(tempVal)
-                                            }}
-                                        />
-                                    </View>
-                                )
+                                  <View
+                                    key={index}
+                                    style={[
+                                      {
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        paddingBottom: 10,
+                                      },
+                                    ]}
+                                  >
+                                    <Dropdown
+                                      style={[styles.dropdownContainer]}
+                                      placeholderStyle={styles.placeholderStyle}
+                                      selectedTextStyle={
+                                        styles.selectedTextStyle
+                                      }
+                                      inputSearchStyle={styles.inputSearchStyle}
+                                      iconStyle={styles.iconStyle}
+                                      data={item.data}
+                                      search
+                                      maxHeight={300}
+                                      labelField="label"
+                                      valueField="value"
+                                      placeholder={item.title}
+                                      searchPlaceholder="Search..."
+                                      // value={value}
+                                      // onFocus={() => setIsFocus(true)}
+                                      // onBlur={() => setIsFocus(false)}
+                                      onChange={(val) => {
+                                        let tempVal =
+                                          otherDropDownSelectedValue;
+                                        tempVal.push({
+                                          key: item.title,
+                                          value: val,
+                                        });
+                                        setOtherDropDownSelectedValue(tempVal);
+                                      }}
+                                    />
+                                  </View>
+                                );
                             })
                         }
                         {/* } */}

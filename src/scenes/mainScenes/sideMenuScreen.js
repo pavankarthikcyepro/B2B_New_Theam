@@ -69,6 +69,7 @@ const receptionMenu = [
   // "Task Management",
   "Drop Analysis",
   "Task Transfer",
+  "QR Code",
   "Sign Out",
 ];
 const teleCollerMenu = [
@@ -78,6 +79,7 @@ const teleCollerMenu = [
   "Target Planning",
   "Helpdesk",
   // "Task Management",
+  "QR Code",
   "Drop Analysis",
   "Sign Out",
 ];
@@ -89,6 +91,7 @@ const ShowRoomMenu = [
   "Target Planning",
   "Helpdesk",
   // "Task Management",
+  "QR Code",
   "Drop Analysis",
   "Sign Out",
 ];
@@ -101,6 +104,7 @@ const MDMenu = [
   "Helpdesk",
   // "Task Management",
   "Task Transfer",
+  "QR Code",
   "Drop Analysis",
   "Sign Out",
 ];
@@ -171,7 +175,7 @@ const SideMenuScreen = ({ navigation }) => {
 
   const getProfilePic = (userData) => {
     fetch(
-      `http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
+      `http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
     )
       .then((response) => response.json())
       .then((json) => {

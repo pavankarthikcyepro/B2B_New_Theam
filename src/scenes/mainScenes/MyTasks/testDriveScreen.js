@@ -88,11 +88,12 @@ const TestDriveScreen = ({ route, navigation }) => {
     const [dropDownTitle, setDropDownTitle] = useState("Select Data");
      const [imagePath, setImagePath] = useState("");
     const [userData, setUserData] = useState({
-        orgId: "",
-        employeeId: "",
-        employeeName: "",
-        isSelfManager: "",
-        isOtp:""
+      orgId: "",
+      employeeId: "",
+      employeeName: "",
+      isSelfManager: "",
+      isOtp: "",
+      isTracker: "",
     });
     const [selectedBranchId, setSelectedBranchId] = useState("");
     const [showDatePickerModel, setShowDatePickerModel] = useState(false);
@@ -196,7 +197,8 @@ const TestDriveScreen = ({ route, navigation }) => {
                     employeeId: jsonObj.empId,
                     employeeName: jsonObj.empName,
                     isSelfManager: jsonObj.isSelfManager,
-                    isOtp: jsonObj.isOtp
+                    isOtp: jsonObj.isOtp,
+                    isTracker: jsonObj.isTracker,
                 });
 
                 // Get Branch Id
@@ -1265,6 +1267,8 @@ const TestDriveScreen = ({ route, navigation }) => {
                   label={
                     userData.isSelfManager == "Y"
                       ? "Battery Type"
+                      : userData.isTracker == "Y"
+                      ? "Clutch type"
                       : "Transmission Type"
                   }
                   value={selectedVehicleDetails.transType}

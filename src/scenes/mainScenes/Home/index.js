@@ -385,7 +385,10 @@ const HomeScreen = ({ route, navigation }) => {
         dispatch(updateIsManager(false));
       }
 
-      if (jsonObj?.hrmsRole.toLowerCase().includes("dse")) {
+      if (
+        jsonObj?.hrmsRole.toLowerCase().includes("dse") ||
+        jsonObj?.hrmsRole.toLowerCase().includes("sales consultant")
+      ) {
         dispatch(updateIsDSE(true));
       } else {
         dispatch(updateIsDSE(false));

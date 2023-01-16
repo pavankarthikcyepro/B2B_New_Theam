@@ -843,8 +843,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
         if (
           value?.model &&
-          selector?.pre_booking_details_response?.dmsLeadDto?.leadStatus !=
-            "ENQUIRYCOMPLETED" &&
+          // selector?.pre_booking_details_response?.dmsLeadDto?.leadStatus !=
+          //   "ENQUIRYCOMPLETED" &&
           modelData.model == value.model
         ) {
           if (modelData.variant == value.variant) {
@@ -855,7 +855,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
               updateOfferPriceData(selector.on_road_price_dto_list_response)
             );
             addingIsPrimary();
-          } else {
+          } else if (!value.color) {
             dispatch(updateOfferPriceData());
             clearPriceConfirmationData();
           }
@@ -923,6 +923,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       if (isPrimaryEnabled === "Y") {
         await setIsPrimaryCurrentIndex(index);
         updateVariantModelsData(item.model, true, item.variant);
+        dispatch(updateOfferPriceData());
+        clearPriceConfirmationData();
       }
       if (carModelsList && carModelsList.length > 0) {
         let arr = await [...carModelsList];
@@ -1645,7 +1647,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     let lifeTax = taxPercent !== "" ? getLifeTaxNew(Number(taxPercent)) : 0;
     setLifeTaxAmount(lifeTax);
     totalPrice += lifeTax;
-    totalPrice += priceInfomationData.registration_charges;
+    // totalPrice += priceInfomationData.registration_charges;
     totalPrice += selectedRegistrationCharges?.cost || 0;
     totalPrice += selectedInsurencePrice;
     if (selector.insurance_type !== "") {

@@ -1679,7 +1679,6 @@ const TargetScreen = ({ route }) => {
                             justifyContent: "space-around",
                             flexDirection: "row",
                             backgroundColor: Colors.RED,
-                            height: 45,
                           }}
                         >
                           <View />
@@ -1702,29 +1701,40 @@ const TargetScreen = ({ route }) => {
                             </Text>
                           </View>
                           <View style={{ alignSelf: "flex-end" }}>
-                            <Text
+                            <View
                               style={{
-                                fontSize: 10,
-                                fontWeight: "bold",
-                                paddingVertical: 6,
                                 paddingRight: 2,
-                                height: 22,
-                                color: Colors.WHITE,
+                                height: 20,
+                                justifyContent: "center",
                               }}
                             >
-                              ACH
-                            </Text>
-                            <Text
+                              <Text
+                                style={{
+                                  fontSize: 10,
+                                  fontWeight: "bold",
+                                  color: Colors.WHITE,
+                                }}
+                              >
+                                ACH
+                              </Text>
+                            </View>
+
+                            <View
                               style={{
-                                fontSize: 10,
-                                fontWeight: "bold",
-                                paddingVertical: 6,
-                                height: 25,
-                                color: Colors.WHITE,
+                                height: 20,
+                                justifyContent: "center",
                               }}
                             >
-                              TGT
-                            </Text>
+                              <Text
+                                style={{
+                                  fontSize: 10,
+                                  fontWeight: "bold",
+                                  color: Colors.WHITE,
+                                }}
+                              >
+                                TGT
+                              </Text>
+                            </View>
                           </View>
                         </View>
                         <View
