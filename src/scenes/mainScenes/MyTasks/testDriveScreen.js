@@ -162,6 +162,7 @@ const TestDriveScreen = ({ route, navigation }) => {
   const [vehicleDetails, setVehicleDetails] = useState({});
   const [isValuesEditable, setIsValuesEditable] = useState(true);
   const [isReopenSubmitVisible, setIsisReopenSubmitVisible] = useState(false);
+  const [ischangeScreen, setIschangeScreen] = useState(false);
   let date = new Date();
   date.setDate(date.getDate() + 9);
 
@@ -170,7 +171,7 @@ const TestDriveScreen = ({ route, navigation }) => {
     // getAsyncstoreData();
     // getUserToken();
     isViewMode();
-    isViewMode2();
+    isViewMode2("");
   }, []);
 
   useEffect(() => {
@@ -786,8 +787,9 @@ const TestDriveScreen = ({ route, navigation }) => {
     // navigation.goBack()
   };
 
-  const closeTask = () => {
+  const closeTask = (from) => {
     setIsSubmitPress(true);
+    setIsisReopenSubmitVisible(false)
     if (selectedVehicleDetails.model.length === 0) {
       showToast("Please select model");
       return;
@@ -853,8 +855,20 @@ const TestDriveScreen = ({ route, navigation }) => {
     }
     if (userData.isOtp == "Y") {
       generateOtpToCloseTask();
+      if (from === "reopen") {
+        setIschangeScreen(false)
+        reSubmitClick("ASSIGNED", "Test Drive Approval")
+      }else{
+        setIschangeScreen(true)
+      }
     } else {
-      submitClicked("CLOSED", "Test Drive");
+      if(from==="reopen"){
+        setIschangeScreen(true)
+        reSubmitClick("ASSIGNED", "Test Drive Approval")
+      }else{
+        submitClicked("CLOSED", "Test Drive");
+      }
+    
     }
     setIsCloseSelected(true);
   };
@@ -1067,7 +1081,7 @@ const TestDriveScreen = ({ route, navigation }) => {
   const reSubmitClick = (status,taskName)=>{
     // call API here 
     console.log("API call here")
-
+    setIsisReopenSubmitVisible(false)
     setIsSubmitPress(true);
     if (!mobileNumber || mobileNumber.length === 0) {
       showToast("Please enter mobile number");
@@ -1216,8 +1230,8 @@ const TestDriveScreen = ({ route, navigation }) => {
       dlBackUrl: "",
       dlFrontUrl: "",
       dseId: "",
-      startTime: actualStartTime,
-      endTime: actualEndTime,
+      startTime: moment.utc(startTime).format(),
+      endTime: moment.utc(endTime).format(),
       latitude: "",
       longitude: "",
       location: location,
@@ -1228,7 +1242,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       securityOutId: "",
       source: taskData.sourceType,
       status: status,
-      testDriveDatetime: prefferedTime,
+      testDriveDatetime: moment.utc(preferredTime).format(),
       varientId: varientId,
       vehicleId: vehicleId,
       driverId: selectedDriverDetails.id.toString(),
@@ -1236,10 +1250,15 @@ const TestDriveScreen = ({ route, navigation }) => {
       customerHaveingDl: customerHavingDrivingLicense === 1
     }
     dispatch(postReOpenTestDrive(reopenSubmitObj));
-    console.log("manthan---ddd ",reopenSubmitObj)
+    
   }
   useEffect(() => {
-    console.log("manthan --resoonse ", selector.reopen_test_drive_res_status)
+   
+    if (selector.reopen_test_drive_res_status ==="successs"){
+      if(ischangeScreen){
+        navigation.pop(2);
+      }
+    }
   
   }, [selector.reopen_test_drive_res_status])
   
@@ -1283,7 +1302,7 @@ const TestDriveScreen = ({ route, navigation }) => {
 
   const isViewMode2 = (from) => {
     // todo 
-    console.log("manthan-- ",from)
+   
     if(from ==="reopen"){
       setIsValuesEditable(false)
       
@@ -1832,7 +1851,7 @@ const TestDriveScreen = ({ route, navigation }) => {
               <LocalButtonComp
                 title={"Close"}
                 // disabled={selector.isLoading}
-                onPress={() => closeTask()}
+                onPress={() => closeTask("")}
               />
               <LocalButtonComp
                 title={"Reschedule"}
@@ -1911,21 +1930,31 @@ const TestDriveScreen = ({ route, navigation }) => {
               >
                 Resend
               </Button>
+              {/* <Button
+                mode="contained"
+                style={{ width: 120 }}
+                color={Colors.RED}
+                // disabled={selector.is_loading_for_task_update}
+                labelStyle={{ textTransform: "none" }}
+                onPress={()=>{ navigation.goBack()}}
+              >
+                Close
+              </Button> */}
             </View>
           ) : null}
 
-          {route?.params?.taskStatus === "CLOSED" && !isReopenSubmitVisible? (
+          {route?.params?.taskStatus === "CLOSED" && !isReopenSubmitVisible && !isCloseSelected ? (
             <View style={[styles.view1, { marginTop: 30 }]}>
               <Button
                 mode="contained"
-                style={{ width: 120 }}
+                style={{ width: '45%' }}
                 color={Colors.RED}
                 // disabled={selector.is_loading_for_task_update}
                 labelStyle={{ textTransform: "none" }}
                 onPress={reOpenTask}
               >
                 {/* todo */}
-                Re Open
+                Re Testdrive
               </Button>
             </View>
           ) : null}
@@ -1951,14 +1980,16 @@ const TestDriveScreen = ({ route, navigation }) => {
                 // disabled={selector.is_loading_for_task_update}
                 labelStyle={{ textTransform: "none" }}
                 onPress={()=>{
-                  reSubmitClick("ASSIGNED","Test Drive Approval")
-                 
+                  // reSubmitClick("ASSIGNED","Test Drive Approval")
+                  closeTask("reopen")
                 }}
               >
                 Submit
               </Button>
             </View>
           ) : null}
+
+          
         </ScrollView>
       </KeyboardAvoidingView>
 
