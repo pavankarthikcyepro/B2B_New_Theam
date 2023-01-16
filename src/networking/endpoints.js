@@ -141,8 +141,7 @@ export const downloadFile2 = baseUrl + "etv-schd/dynamic-reports/etvbrl_report";
 export const getEmployeeData =
   baseUrl + "role-management/employee/dept-employees";
 
-export const notification =
-  "http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8096/notificationMaster";
+export const notification = baseUrl + "notificationMaster";
 // not getting used anywhere so not changes and commented
 // export const admin_url =
 //   "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8082/admin";
