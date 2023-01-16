@@ -255,7 +255,7 @@ const LoginScreen = ({ navigation }) => {
               // console.log("employeeData", employeeData);
               if (employeeData) {
                 console.log("LLLLLL");
-                showToastRedAlert("LLLLLL");
+                // showToastRedAlert("LLLLLL");
 
                 const jsonObj = JSON.parse(employeeData);
                 const trackingResponse = await client.get(
@@ -291,7 +291,7 @@ const LoginScreen = ({ navigation }) => {
                 //   }
                 // }
 
-                let newArray = [...coordinates, ...[newLatLng]];
+                let newArray = [...parsedValue, ...[newLatLng]];
                 let date = new Date(
                   trackingJson[trackingJson.length - 1]?.createdtimestamp
                 );
@@ -328,7 +328,7 @@ const LoginScreen = ({ navigation }) => {
 
                     const json = await response.json();
                     console.log("KKKKsssssK", json);
-                    showToastRedAlert("json");
+                    // showToastRedAlert("json");
                   }
                 } else {
                   let payload = {
@@ -353,7 +353,7 @@ const LoginScreen = ({ navigation }) => {
                     const response = await client.post(saveLocation, payload);
                     const json = await response.json();
                     console.log("KKKKK", json);
-                    showToastRedAlert("json");
+                    // showToastRedAlert("json");
                   }
                 }
               }

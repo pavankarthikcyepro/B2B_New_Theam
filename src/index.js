@@ -161,7 +161,7 @@ const AppScreen = () => {
                   // }
                 }
 
-                let newArray = [...coordinates, ...[newLatLng]];
+                let newArray = [...parsedValue, ...[newLatLng]];
                 let date = new Date(
                   trackingJson[trackingJson.length - 1]?.createdtimestamp
                 );
@@ -183,7 +183,7 @@ const AppScreen = () => {
                     kmph: speed.toString(),
                     speed: speed.toString(),
                   };
-                  if (speed <= 0) {
+                  if (speed <= 10) {
                     // await AsyncStore.storeJsonData(
                     //   AsyncStore.Keys.COORDINATES,
                     //   newArray
@@ -203,7 +203,7 @@ const AppScreen = () => {
                       tempPayload
                     );
                     const json = await response.json();
-                    showToastRedAlert("json");
+                    // showToastRedAlert("json");
                   }
                 } else {
                   let payload = {
@@ -225,7 +225,7 @@ const AppScreen = () => {
                     );
                     const response = await client.post(saveLocation, payload);
                     const json = await response.json();
-                    showToastRedAlert("json");
+                    // showToastRedAlert("json");
                   }
                 }
               }
