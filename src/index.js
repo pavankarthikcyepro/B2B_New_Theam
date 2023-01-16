@@ -34,6 +34,7 @@ import PushNotificationIOS from "@react-native-community/push-notification-ios";
 import { Platform, AppState } from "react-native";
 import PushNotification from "react-native-push-notification";
 import { enableScreens } from "react-native-screens";
+import { showToastRedAlert } from "./utils/toast";
 
 enableScreens();
 
@@ -89,6 +90,8 @@ const AppScreen = () => {
     Object.keys(o1).every((p) => o1[p] === o2[p]);
 
   const getCoordinates = async () => {
+    console.log("corddds");
+
     try {
       let coordinates = await AsyncStore.getJsonData(
         AsyncStore.Keys.COORDINATES
@@ -97,6 +100,7 @@ const AppScreen = () => {
       if (todaysDate != new Date().getDate()) {
         initialData();
       } else {
+        console.log("CHECKKK");
         var startDate = createDateTime("8:30");
         var startBetween = createDateTime("9:30");
         var endBetween = createDateTime("20:30");
@@ -104,6 +108,8 @@ const AppScreen = () => {
         var now = new Date();
         var isBetween = startDate <= now && now <= endDate;
         if (true) {
+          console.log("ssssss");
+
           Geolocation.watchPosition(
             async (lastPosition) => {
               console.log("lastPOSTION", lastPosition);
@@ -163,6 +169,8 @@ const AppScreen = () => {
                 let condition =
                   new Date(date).getDate() == new Date().getDate();
                 if (trackingJson.length > 0 && condition) {
+                  // showToastRedAlert("Condition");
+
                   let tempPayload = {
                     id: trackingJson[trackingJson.length - 1]?.id,
                     orgId: jsonObj?.orgId,
@@ -175,17 +183,27 @@ const AppScreen = () => {
                     kmph: speed.toString(),
                     speed: speed.toString(),
                   };
-                  if (speed <= 10) {
+                  if (speed <= 0) {
                     // await AsyncStore.storeJsonData(
                     //   AsyncStore.Keys.COORDINATES,
                     //   newArray
                     // );
+                    // if (speed < 10) {
+                    //   setTimeout(async () => {
+                    //     await client.put(
+                    //       locationUpdate +
+                    //         `/${trackingJson[trackingJson.length - 1].id}`,
+                    //       tempPayload
+                    //     );
+                    //   }, 300000);
+                    // }
                     const response = await client.put(
                       locationUpdate +
                         `/${trackingJson[trackingJson.length - 1].id}`,
                       tempPayload
                     );
                     const json = await response.json();
+                    showToastRedAlert("json");
                   }
                 } else {
                   let payload = {
@@ -207,6 +225,7 @@ const AppScreen = () => {
                     );
                     const response = await client.post(saveLocation, payload);
                     const json = await response.json();
+                    showToastRedAlert("json");
                   }
                 }
               }
@@ -214,7 +233,13 @@ const AppScreen = () => {
             (error) => {
               console.error(error);
             },
-            { enableHighAccuracy: true, distanceFilter: distanceFilterValue }
+            {
+              enableHighAccuracy: true,
+              distanceFilter: distanceFilterValue,
+              timeout: 2000,
+              maximumAge: 0,
+              // useSignificantChanges: true,
+            }
           );
         }
       }
@@ -226,7 +251,7 @@ const AppScreen = () => {
     const { delay } = taskDataArguments;
     await new Promise(async (resolve) => {
       for (let i = 0; BackgroundService.isRunning(); i++) {
-        // console.log(i);
+        console.log(i);
         var startDate = createDateTime("8:30");
         var startBetween = createDateTime("9:30");
         var endBetween = createDateTime("20:30");
@@ -235,14 +260,14 @@ const AppScreen = () => {
         if (startDate <= now && now <= startBetween) {
           // sendLocalNotification();
         }
-        if (
-          AppState.currentState === "background" ||
-          AppState.currentState === "inactive"
-        ) {
-          if (now >= startBetween) {
-            MarkAbsent();
-          }
-        }
+        // if (
+        //   AppState.currentState === "background" ||
+        //   AppState.currentState === "inactive"
+        // ) {
+        //   if (now >= startBetween) {
+        //     MarkAbsent();
+        //   }
+        // }
 
         if (endBetween <= now && now <= endDate) {
           // sendLocalNotification();
