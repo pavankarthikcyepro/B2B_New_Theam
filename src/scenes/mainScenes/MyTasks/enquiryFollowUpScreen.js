@@ -360,13 +360,14 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
         newTaskObj.taskStatus = "CANCELLED";
         break;
       case "RESCHEDULE":
+        console.log("manthan")
         var momentA = moment(selector.actual_start_time, "DD/MM/YYYY");
         var momentB = moment(); // current date
-        if (momentA < momentB) {
-          setIsDateError(true)
-          showToast("Start date should not be less than current date");
-          return;
-        }
+        // if (momentA < momentB) {
+        //   setIsDateError(true)
+        //   showToast("Start date should not be less than current date");
+        //   return;
+        // }
         newTaskObj.taskStatus = "RESCHEDULED";
         break;
     }
