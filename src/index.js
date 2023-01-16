@@ -103,7 +103,7 @@ const AppScreen = () => {
         var endDate = createDateTime("21:30");
         var now = new Date();
         var isBetween = startDate <= now && now <= endDate;
-        if (isBetween) {
+        if (true) {
           Geolocation.watchPosition(
             async (lastPosition) => {
               console.log("lastPOSTION", lastPosition);
@@ -111,10 +111,13 @@ const AppScreen = () => {
                 lastPosition?.coords?.speed <= -1
                   ? 0
                   : lastPosition?.coords?.speed * 3.6;
+              console.log("KKKKKsshgshg", speed);
               const employeeData = await AsyncStore.getData(
                 AsyncStore.Keys.LOGIN_EMPLOYEE
               );
               if (employeeData) {
+                console.log("ccccc");
+
                 const jsonObj = JSON.parse(employeeData);
                 const trackingResponse = await client.get(
                   getDetailsByempIdAndorgId +

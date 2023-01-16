@@ -780,9 +780,10 @@ const AttendanceTeamMemberScreen = ({ route, navigation }) => {
                 .subtract(0, "months")
                 .endOf("month")
                 .format(dateFormat);
-              GetCountByMonth(startDate, endDate);
-              getAttendanceByMonth(startDate, endDate);
+             
               if (!filterStart) {
+                 GetCountByMonth(startDate, endDate);
+                 getAttendanceByMonth(startDate, endDate);
                 // setCurrentMonth(new Date(month.dateString));
               }
             }}

@@ -344,20 +344,20 @@ const HomeScreen = ({ route, navigation }) => {
     }
   }, [selector.allGroupDealerData]);
 
-useEffect(async () => {
-  // if (await AsyncStore.getData(AsyncStore.Keys.IS_LOGIN) === 'true'){
-  getMenuListFromServer();
-  getCustomerType();
-  checkLoginUserAndEnableReportButton();
-  // getLoginEmployeeDetailsFromAsyn();
-  // }
+  useEffect(() => {
+    // if (await AsyncStore.getData(AsyncStore.Keys.IS_LOGIN) === 'true'){
+    getMenuListFromServer();
+    getCustomerType();
+    checkLoginUserAndEnableReportButton();
+    // getLoginEmployeeDetailsFromAsyn();
+    // }
 
-  const unsubscribe = navigation.addListener("focus", () => {
-    getLoginEmployeeDetailsFromAsyn(); //Commented to resolved filter issue for Home Screen
-  });
+    const unsubscribe = navigation.addListener("focus", () => {
+      getLoginEmployeeDetailsFromAsyn(); //Commented to resolved filter issue for Home Screen
+    });
 
-  return unsubscribe;
-}, [navigation]);
+    return unsubscribe;
+  }, [navigation,selector.filterIds]);
 
   const getCustomerType = async () => {
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
@@ -515,13 +515,22 @@ useEffect(async () => {
           .subtract(0, "months")
           .endOf("month")
           .format(dateFormat);
+
         const payload = {
-          endDate: monthLastDate,
+          endDate: selector?.filterIds?.endDate
+            ? selector.filterIds.endDate
+            : monthLastDate,
           loggedInEmpId: jsonObj.empId,
-          startDate: monthFirstDate,
-          levelSelected: null,
+          startDate: selector?.filterIds?.startDate
+            ? selector.filterIds.startDate
+            : monthFirstDate,
           empId: jsonObj.empId,
         };
+        if (selector.filterIds?.empSelected?.length) {
+          payload["empSelected"] = selector.filterIds.empSelected;
+        } else {
+          payload["levelSelected"] = null;
+        }
         getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
           .then((x) => {})
           .catch((y) => {});
@@ -593,10 +602,13 @@ useEffect(async () => {
         .endOf("month")
         .format(dateFormat);
       const payload = {
-        endDate: monthLastDate,
+        endDate: selector?.filterIds?.endDate
+          ? selector.filterIds.endDate
+          : monthLastDate,
         loggedInEmpId: jsonObj.empId,
-        startDate: monthFirstDate,
-        levelSelected: null,
+        startDate: selector?.filterIds?.startDate
+          ? selector.filterIds.startDate
+          : monthFirstDate,
         empId: jsonObj.empId,
       };
       if (isTeamPresent) {
@@ -628,13 +640,21 @@ useEffect(async () => {
       .endOf("month")
       .format(dateFormat);
     const payload = {
-      endDate: monthLastDate,
+      endDate: selector?.filterIds?.endDate
+        ? selector.filterIds.endDate
+        : monthLastDate,
       loggedInEmpId: empId,
-      startDate: monthFirstDate,
-      levelSelected: null,
+      startDate: selector?.filterIds?.startDate
+        ? selector.filterIds.startDate
+        : monthFirstDate,
       empId: empId,
     };
-
+    if (selector.filterIds?.empSelected?.length) {
+      payload["empSelected"] = selector.filterIds.empSelected;
+    } else {
+      payload["levelSelected"] = null;
+    }
+   
     Promise.all([
       dispatch(getLeadSourceTableList(payload)),
       dispatch(getVehicleModelTableList(payload)),
@@ -734,10 +754,14 @@ useEffect(async () => {
       loggedInEmpId: payload.empId,
       empId: payload.empId,
       startDate: payload.startDate,
-      levelSelected: null,
       pageNo: 0,
       size: 100,
     };
+    if (selector.filterIds?.empSelected?.length) {
+      payload2["empSelected"] = selector.filterIds.empSelected;
+    } else {
+      payload2["levelSelected"] = null;
+    }
     Promise.allSettled([
       //dispatch(getTargetParametersAllData(payload1)),
       dispatch(getTotalTargetParametersData(payload2)),
