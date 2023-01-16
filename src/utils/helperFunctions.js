@@ -3,6 +3,7 @@ import { Linking, Alert, Platform, PermissionsAndroid } from "react-native";
 import moment from "moment";
 import URL from "../networking/endpoints";
 import { showToastRedAlert } from '../utils/toast';
+import { client } from "../networking/client";
 import store from "../redux/reduxStore";
 import * as AsyncStore from "../asyncStore";
 import { updateSelectedBranchId, updateSelectedBranchName } from "../redux/targetSettingsReducer";
@@ -342,14 +343,15 @@ export const PincodeDetailsNew = async (pincode) => {
 export const GetCarModelList = async (orgId, token = "") => {
   return await new Promise((resolve, reject) => {
     const url = URL.VEHICLE_MODELS(orgId);
-    fetch(url, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "auth-token": token,
-      },
-    })
+    client.get(url)
+    // fetch(url, {
+    //   method: "GET",
+    //   headers: {
+    //     Accept: "application/json",
+    //     "Content-Type": "application/json",
+    //     "auth-token": token,
+    //   },
+    // })
       .then((json) => json.json())
       .then((res) => {
         if (res != undefined && res.length > 0) {
@@ -365,14 +367,15 @@ export const GetCarModelList = async (orgId, token = "") => {
 export const GetEnquiryCarModelList = async (orgId, token = "") => {
   return await new Promise((resolve, reject) => {
     const url = URL.ENQUIRY_VEHICLE_MODELS(orgId);
-    fetch(url, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "auth-token": token,
-      },
-    })
+    client.get(url)
+    // fetch(url, {
+    //   method: "GET",
+    //   headers: {
+    //     Accept: "application/json",
+    //     "Content-Type": "application/json",
+    //     "auth-token": token,
+    //   },
+    // })
       .then((json) => json.json())
       .then((res) => {
         if (res != undefined && res.length > 0) {
@@ -388,14 +391,15 @@ export const GetEnquiryCarModelList = async (orgId, token = "") => {
 export const GetFinanceBanksList = async (orgId, token) => {
   return await new Promise((resolve, reject) => {
     const url = URL.GET_BANK_DETAILS(orgId);
-    fetch(url, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "auth-token": token,
-      },
-    })
+    client.get(url)
+    // fetch(url, {
+    //   method: "GET",
+    //   headers: {
+    //     Accept: "application/json",
+    //     "Content-Type": "application/json",
+    //     "auth-token": token,
+    //   },
+    // })
       .then((json) => json.json())
       .then((res) => {
         if (res != undefined && res.length > 0) {
@@ -412,15 +416,16 @@ export const GetPaidAccessoriesList = async (vehicleId, orgId, token) => {
   return await new Promise((resolve, reject) => {
     // const url = URL.GET_PAID_ACCESSORIES_LIST(vehicleId);
     const url = URL.GET_PAID_ACCESSORIES_LIST2(vehicleId, orgId);
-    fetch(url, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "auth-token": token,
-        // orgId: orgId,
-      },
-    })
+    client.get(url)
+    // fetch(url, {
+    //   method: "GET",
+    //   headers: {
+    //     Accept: "application/json",
+    //     "Content-Type": "application/json",
+    //     "auth-token": token,
+    //     // orgId: orgId,
+    //   },
+    // })
       .then((json) => json.json())
       .then((res) => {
         if (res != undefined) {
@@ -442,15 +447,16 @@ export const GetPaidAccessoriesList = async (vehicleId, orgId, token) => {
 export const GetPaidAccessoriesList2 = async (vehicleId, orgId, token) => {
   return await new Promise((resolve, reject) => {
     const url = URL.GET_PAID_ACCESSORIES_LIST(vehicleId);
-    fetch(url, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "auth-token": token,
-        orgId: orgId,
-      },
-    })
+    client.get(url)
+    // fetch(url, {
+    //   method: "GET",
+    //   headers: {
+    //     Accept: "application/json",
+    //     "Content-Type": "application/json",
+    //     "auth-token": token,
+    //     orgId: orgId,
+    //   },
+    // })
       .then((json) => json.json())
       .then((res) => {
         if (res.success == true) {
@@ -470,14 +476,15 @@ export const GetPaidAccessoriesList2 = async (vehicleId, orgId, token) => {
 export const GetDropList = async (orgId, token, type) => {
   return await new Promise((resolve, reject) => {
     const url = URL.GET_DROP_LIST(orgId, type);
-    fetch(url, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "auth-token": token
-      },
-    })
+    client.get(url)
+    // fetch(url, {
+    //   method: "GET",
+    //   headers: {
+    //     Accept: "application/json",
+    //     "Content-Type": "application/json",
+    //     "Authorization": token
+    //   },
+    // })
       .then((json) => json.json())
       .then((res) => {
         if (res != undefined && res.length > 0) {

@@ -51,6 +51,7 @@ import { client } from "../../../../networking/client";
 import URL from "../../../../networking/endpoints";
 import { RenderEmployeeTarget } from "../../Home/TabScreens/components/RenderEmployeeTarget";
 import { RenderGrandTargetTotal } from "../../Home/TabScreens/components/RenderGrandTargetTotal";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 const color = [
   "#9f31bf",
@@ -246,14 +247,16 @@ const MainParamScreen = ({ route, navigation }) => {
   }
   useEffect(async () => {
     try {
+   
       if (!isEmpty(selector.filterPayload)) {
         let filterData = selector.filterPayload.params;
         let employeeData = await AsyncStore.getData(
           AsyncStore.Keys.LOGIN_EMPLOYEE
         );
         if (employeeData) {
+         
           const jsonObj = JSON.parse(employeeData);
-          const payload = getEmployeePayload(
+          const payload = getEmployeePayloadV2(
             employeeData,
             filterData?.selectedID
           );
@@ -262,7 +265,7 @@ const MainParamScreen = ({ route, navigation }) => {
               let input = res[0].payload.employeeTargetAchievements[0];
               let payload1 = getEmployeePayloadTotal(
                 employeeData,
-                [filterData?.selectedID?.id],
+                [filterData?.selectedID],
                 [input.branchId],
                 filterData?.fromDate,
                 filterData?.toDate
@@ -272,6 +275,7 @@ const MainParamScreen = ({ route, navigation }) => {
                 payload1
               );
               const json1 = await response1.json();
+              //todo
               if (json1) {
                 let newArr = json1?.data;
                 newArr[0] = {
@@ -282,10 +286,13 @@ const MainParamScreen = ({ route, navigation }) => {
                   designation: json1?.data[0]?.designation,
                   targetAchievements: getDataFormat(json1?.data[0]),
                   tempTargetAchievements: getDataFormat(json1?.data[0]),
-                  branchName: json1?.data[0]?.branchName,
-                  branch: json1?.data[0]?.branch,
+                  branchName: json1?.data[0]?.branchName || input.branchName,
+                  branch: json1?.data[0]?.branch || input.branchId,
                   recordId: json1?.data[0]?.id,
+                  empName: json1?.data[0]?.empName || input.empName,
+                
                 };
+                
                 setFilterParameters(newArr);
               }
             })
@@ -374,17 +381,19 @@ const MainParamScreen = ({ route, navigation }) => {
     }
   }, [homeSelector.login_employee_details]);
 
-  const getBranchName = (branchId) => {
+  const getBranchName = (branchId, isFull = false) => {
     let branchName = "";
     if (branches.length > 0) {
       const branch = branches.find((x) => +x.branchId === +branchId);
       if (branch) {
-        branchName = branch.branchName.split(" - ")[0];
+        branchName = isFull
+          ? branch.branchName
+          : branch.branchName.split(" - ")[0];
       }
     }
     return branchName;
   };
-
+  
   const clearOwnData = () => {
     setIsNoTargetAvailable(true);
     setOwnData({
@@ -429,6 +438,7 @@ const MainParamScreen = ({ route, navigation }) => {
             );
           });
         }
+    
         if (ownDataArray.length > 0) {
           setAllOwnData(ownDataArray);
           let ownDataArray2 = [];
@@ -447,7 +457,9 @@ const MainParamScreen = ({ route, navigation }) => {
               );
             });
           }
+        
           if (ownDataArray2.length > 0) {
+         
             setIsNoTargetAvailable(false);
             setOwnData(ownDataArray2[0]);
             if (ownDataArray2[0]?.targetName) {
@@ -516,6 +528,7 @@ const MainParamScreen = ({ route, navigation }) => {
     };
     setUpdatedSelfParameters({ ...data });
     setMasterSelfParameters({ ...data });
+    
   };
 
   const getTargetParamValue = (param) => {
@@ -719,6 +732,7 @@ const MainParamScreen = ({ route, navigation }) => {
                   [jsonObj.empId],
                   [jsonObj.branchId]
                 );
+                // need to check  api call 
                 const response = await client.post(
                   URL.GET_TARGET_PLANNING_COUNT(),
                   payload
@@ -890,9 +904,11 @@ const MainParamScreen = ({ route, navigation }) => {
 
         Promise.all([dispatch(addTargetMapping(payload))]).then(() => {
           setSelectedUser(null);
+         
           setRetail("");
           setSelectedBranch(null);
           setDefaultBranch(null);
+       
           setIsNoTargetAvailable(false);
           const payload2 = {
             empId: jsonObj.empId,
@@ -939,17 +955,22 @@ const MainParamScreen = ({ route, navigation }) => {
         Promise.all([dispatch(editTargetMapping(payload))])
           .then((response) => {
             setSelectedUser(null);
+          
             setRetail("");
             setSelectedBranch(null);
             setDefaultBranch(null);
+          
             setIsNoTargetAvailable(false);
             const payload2 = {
               empId: jsonObj.empId,
               pageNo: 1,
               size: 500,
               targetType: selector.targetType,
+              startDate: selector.startDate,
+              endDate: selector.endDate,
             };
             getInitialParameters();
+           
             dispatch(getAllTargetMapping(payload2));
           })
           .catch((error) => { });
@@ -1060,6 +1081,7 @@ const MainParamScreen = ({ route, navigation }) => {
         designation: `${ownData.designation}`,
         start_date: selector.startDate,
         end_date: selector.endDate,
+        loggedInEmpId: `${empId}`
       };
       Promise.all([dispatch(saveSelfTargetParams(payload))])
         .then((x) => { })
@@ -1388,6 +1410,33 @@ const MainParamScreen = ({ route, navigation }) => {
     };
   };
 
+  const getEmployeePayloadV2 = (employeeData, item) => {
+    const jsonObj = JSON.parse(employeeData);
+    const dateFormat = "YYYY-MM-DD";
+    const currentDate = moment().format(dateFormat);
+    const monthFirstDate = moment(currentDate, dateFormat)
+      .subtract(0, "months")
+      .startOf("month")
+      .format(dateFormat);
+    const monthLastDate = moment(currentDate, dateFormat)
+      .subtract(0, "months")
+      .endOf("month")
+      .format(dateFormat);
+   
+
+    return {
+      orgId: jsonObj.orgId,
+      selectedEmpId: item,
+      endDate: monthLastDate,
+      loggedInEmpId: jsonObj.empId,
+      empId: item,
+      startDate: monthFirstDate,
+      levelSelected: null,
+      pageNo: 0,
+      size: 100,
+    };
+  };
+
   const onEmployeeNameClick = async (item, index, lastParameter) => {
     try {
       let localData = [...allParameters];
@@ -1558,10 +1607,20 @@ const MainParamScreen = ({ route, navigation }) => {
           moduleType={"home"}
           editParameters={editParameters}
           editAndUpdate={(x) => {
+            let branchName = item?.branchName;
+            let branch = item?.branch;
+
+            if (!branchName) {
+              branchName = getBranchName(item.branchId, true);
+            }
+            if (!branch) {
+              branch = item.branchId;
+            }
+
             setSelectedDropdownData([
               {
-                label: item?.branchName,
-                value: item?.branch,
+                label: branchName,
+                value: branch,
               },
             ]);
             if (
@@ -1570,10 +1629,10 @@ const MainParamScreen = ({ route, navigation }) => {
               selector?.startDate === item?.startDate
             ) {
               setSelectedBranch({
-                label: item?.branchName,
-                value: item?.branch,
+                label: branchName,
+                value: branch,
               });
-              setDefaultBranch(item?.branch);
+              setDefaultBranch(branch);
               setAddOrEdit("E");
             } else {
               setDefaultBranch(null);
@@ -1582,7 +1641,18 @@ const MainParamScreen = ({ route, navigation }) => {
             if (item?.targetName) {
               setTargetName(item?.targetName);
             }
-            setIsNoTargetAvailable(false);
+           
+            // if (x === "0" || x === 0) {
+            //   setIsNoTargetAvailable(true);
+            // } else {
+            //   setIsNoTargetAvailable(false);
+            // }
+            if (item.recordId) {
+              setIsNoTargetAvailable(false);
+            } else {
+              setIsNoTargetAvailable(true);
+            }
+           
             setRetail(x);
             setSelectedUser(item);
             setOpenRetail(true);
@@ -1608,10 +1678,20 @@ const MainParamScreen = ({ route, navigation }) => {
           moduleType={"home"}
           editParameters={editParameters}
           editAndUpdate={(x) => {
+            let branchName = item?.branchName;
+            let branch = item?.branch;
+
+            if (!branchName) {
+              branchName = getBranchName(item.branchId, true);
+            }
+            if (!branch) {
+              branch = item.branchId;
+            }
+
             setSelectedDropdownData([
               {
-                label: item?.branchName,
-                value: item?.branch,
+                label: branchName,
+                value: branch,
               },
             ]);
             if (
@@ -1621,10 +1701,10 @@ const MainParamScreen = ({ route, navigation }) => {
               item?.startDate
             ) {
               setSelectedBranch({
-                label: item?.branchName,
-                value: item?.branch,
+                label: branchName,
+                value: branch,
               });
-              setDefaultBranch(item?.branch);
+              setDefaultBranch(branch);
               setAddOrEdit("E");
             } else {
               setDefaultBranch(null);
@@ -1633,7 +1713,18 @@ const MainParamScreen = ({ route, navigation }) => {
             if (item?.targetName) {
               setTargetName(item?.targetName);
             }
-            setIsNoTargetAvailable(false);
+           
+            // if (x === "0" || x === 0){
+            //   setIsNoTargetAvailable(true);
+            // }else{
+            //   setIsNoTargetAvailable(false);
+            // }
+            if (item.recordId) {
+              setIsNoTargetAvailable(false);
+            } else {
+              setIsNoTargetAvailable(true);
+            }
+           
             setRetail(x);
             setSelectedUser(item);
             setOpenRetail(true);
@@ -1858,7 +1949,10 @@ const MainParamScreen = ({ route, navigation }) => {
                           pageNo: 1,
                           size: 500,
                           targetType: selector.targetType,
+                          startDate: selector.startDate,
+                          endDate: selector.endDate,
                         };
+                        
                         Promise.all([dispatch(getAllTargetMapping(payload2))])
                           .then((x) => {})
                           .catch((y) => {});
@@ -1898,24 +1992,14 @@ const MainParamScreen = ({ route, navigation }) => {
                 flexDirection: "column",
               }}
               horizontal={true}
-              // directionalLockEnabled={true}
               nestedScrollEnabled={true}
               showsHorizontalScrollIndicator={false}
-              // ref={scrollViewRef}
-              // onContentSizeChange={(contentWidth, contentHeight) => {
-              //   scrollViewRef?.current?.scrollTo({ y: 0, animated: true });
-              // }}
-              // onScroll={(e) => {
-              //   setSlideRight(e.nativeEvent.contentOffset.x);
-              //   // handleScroll(e)
-              // }}
               bounces={false}
               scrollEventThrottle={16}
             >
               <View>
                 {/* TOP Header view */}
                 <View
-                  // key={"headers"}
                   style={{
                     flexDirection: "row",
                     // borderBottomWidth: 0.5,
@@ -2010,6 +2094,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                   flexDirection: "row",
                                 }}
                               >
+                                {/* todo */}
                                 <RenderLevel1NameView
                                   level={0}
                                   item={item}
@@ -2053,15 +2138,40 @@ const MainParamScreen = ({ route, navigation }) => {
                               width: Dimensions.get("screen").width - 28,
                             }}
                           >
-                            <Text
-                              style={{
-                                fontSize: 12,
-                                fontWeight: "600",
-                                textTransform: "capitalize",
-                              }}
-                            >
-                              {item?.empName}
-                            </Text>
+                            <View style={{ flexDirection: "row" }}>
+                              <Text
+                                style={{
+                                  fontSize: 12,
+                                  fontWeight: "600",
+                                  textTransform: "capitalize",
+                                }}
+                              >
+                                {item?.empName}
+                                {item.childCount > 1 ? "  |" : ""}
+                              </Text>
+                              {item.childCount > 1 && (
+                                <View
+                                  style={{
+                                    backgroundColor: "lightgrey",
+                                    flexDirection: "row",
+                                    paddingHorizontal: 7,
+                                    borderRadius: 10,
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                    marginBottom: 5,
+                                    alignSelf: "flex-start",
+                                    marginLeft: 7,
+                                  }}
+                                >
+                                  <MaterialIcons
+                                    name="person"
+                                    size={15}
+                                    color={Colors.BLACK}
+                                  />
+                                  <Text>{item.childCount}</Text>
+                                </View>
+                              )}
+                            </View>
                           </View>
                           {/*Source/Model View END */}
                           <View
@@ -2167,14 +2277,47 @@ const MainParamScreen = ({ route, navigation }) => {
                                                 marginTop: 8,
                                               }}
                                             >
-                                              <Text
-                                                style={{
-                                                  fontSize: 10,
-                                                  fontWeight: "500",
-                                                }}
+                                              <View
+                                                style={{ flexDirection: "row" }}
                                               >
-                                                {innerItem1.empName}
-                                              </Text>
+                                                <Text
+                                                  style={{
+                                                    fontSize: 10,
+                                                    fontWeight: "500",
+                                                  }}
+                                                >
+                                                  {innerItem1.empName}
+                                                  {innerItem1.childCount > 1
+                                                    ? "  |"
+                                                    : ""}
+                                                </Text>
+                                                {innerItem1.childCount > 1 && (
+                                                  <View
+                                                    style={{
+                                                      backgroundColor:
+                                                        "lightgrey",
+                                                      flexDirection: "row",
+                                                      paddingHorizontal: 7,
+                                                      borderRadius: 10,
+                                                      alignItems: "center",
+                                                      justifyContent:
+                                                        "space-between",
+                                                      marginBottom: 5,
+                                                      alignSelf: "flex-start",
+                                                      marginLeft: 7,
+                                                    }}
+                                                  >
+                                                    <MaterialIcons
+                                                      name="person"
+                                                      size={15}
+                                                      color={Colors.BLACK}
+                                                    />
+                                                    <Text>
+                                                      {innerItem1.childCount}
+                                                    </Text>
+                                                  </View>
+                                                )}
+                                              </View>
                                             </View>
                                             {/*Source/Model View END */}
                                             <View
@@ -2261,14 +2404,58 @@ const MainParamScreen = ({ route, navigation }) => {
                                                             : 42),
                                                       }}
                                                     >
-                                                      <Text
+                                                      <View
                                                         style={{
-                                                          fontSize: 10,
-                                                          fontWeight: "500",
+                                                          flexDirection: "row",
                                                         }}
                                                       >
-                                                        {innerItem2.empName}
-                                                      </Text>
+                                                        <Text
+                                                          style={{
+                                                            fontSize: 10,
+                                                            fontWeight: "500",
+                                                          }}
+                                                        >
+                                                          {innerItem2.empName}
+                                                          {innerItem2.childCount >
+                                                          1
+                                                            ? "  |"
+                                                            : ""}
+                                                        </Text>
+                                                        {innerItem2.childCount >
+                                                          1 && (
+                                                          <View
+                                                            style={{
+                                                              backgroundColor:
+                                                                "lightgrey",
+                                                              flexDirection:
+                                                                "row",
+                                                              paddingHorizontal: 7,
+                                                              borderRadius: 10,
+                                                              alignItems:
+                                                                "center",
+                                                              justifyContent:
+                                                                "space-between",
+                                                              marginBottom: 5,
+                                                              alignSelf:
+                                                                "flex-start",
+                                                              marginLeft: 7,
+                                                            }}
+                                                          >
+                                                            <MaterialIcons
+                                                              name="person"
+                                                              size={15}
+                                                              color={
+                                                                Colors.BLACK
+                                                              }
+                                                            />
+                                                            <Text>
+                                                              {
+                                                                innerItem2.childCount
+                                                              }
+                                                            </Text>
+                                                          </View>
+                                                        )}
+                                                      </View>
                                                     </View>
                                                     <View
                                                       style={{
@@ -2356,17 +2543,64 @@ const MainParamScreen = ({ route, navigation }) => {
                                                                   paddingVertical: 4,
                                                                 }}
                                                               >
-                                                                <Text
+                                                                <View
                                                                   style={{
-                                                                    fontSize: 10,
-                                                                    fontWeight:
-                                                                      "500",
+                                                                    flexDirection:
+                                                                      "row",
                                                                   }}
                                                                 >
-                                                                  {
-                                                                    innerItem3.empName
-                                                                  }
-                                                                </Text>
+                                                                  <Text
+                                                                    style={{
+                                                                      fontSize: 10,
+                                                                      fontWeight:
+                                                                        "500",
+                                                                    }}
+                                                                  >
+                                                                    {
+                                                                      innerItem3.empName
+                                                                    }
+                                                                    {innerItem3.childCount >
+                                                                    1
+                                                                      ? "  |"
+                                                                      : ""}
+                                                                  </Text>
+                                                                  {innerItem3.childCount >
+                                                                    1 && (
+                                                                    <View
+                                                                      style={{
+                                                                        backgroundColor:
+                                                                          "lightgrey",
+                                                                        flexDirection:
+                                                                          "row",
+                                                                        paddingHorizontal: 7,
+                                                                        borderRadius: 10,
+                                                                        alignItems:
+                                                                          "center",
+                                                                        justifyContent:
+                                                                          "space-between",
+                                                                        marginBottom: 5,
+                                                                        alignSelf:
+                                                                          "flex-start",
+                                                                        marginLeft: 7,
+                                                                      }}
+                                                                    >
+                                                                      <MaterialIcons
+                                                                        name="person"
+                                                                        size={
+                                                                          15
+                                                                        }
+                                                                        color={
+                                                                          Colors.BLACK
+                                                                        }
+                                                                      />
+                                                                      <Text>
+                                                                        {
+                                                                          innerItem3.childCount
+                                                                        }
+                                                                      </Text>
+                                                                    </View>
+                                                                  )}
+                                                                </View>
                                                               </View>
                                                               <View
                                                                 style={{
@@ -2470,17 +2704,64 @@ const MainParamScreen = ({ route, navigation }) => {
                                                                             paddingVertical: 4,
                                                                           }}
                                                                         >
-                                                                          <Text
+                                                                          <View
                                                                             style={{
-                                                                              fontSize: 10,
-                                                                              fontWeight:
-                                                                                "500",
+                                                                              flexDirection:
+                                                                                "row",
                                                                             }}
                                                                           >
-                                                                            {
-                                                                              innerItem4.empName
-                                                                            }
-                                                                          </Text>
+                                                                            <Text
+                                                                              style={{
+                                                                                fontSize: 10,
+                                                                                fontWeight:
+                                                                                  "500",
+                                                                              }}
+                                                                            >
+                                                                              {
+                                                                                innerItem4.empName
+                                                                              }
+                                                                              {innerItem4.childCount >
+                                                                              1
+                                                                                ? "  |"
+                                                                                : ""}
+                                                                            </Text>
+                                                                            {innerItem4.childCount >
+                                                                              1 && (
+                                                                              <View
+                                                                                style={{
+                                                                                  backgroundColor:
+                                                                                    "lightgrey",
+                                                                                  flexDirection:
+                                                                                    "row",
+                                                                                  paddingHorizontal: 7,
+                                                                                  borderRadius: 10,
+                                                                                  alignItems:
+                                                                                    "center",
+                                                                                  justifyContent:
+                                                                                    "space-between",
+                                                                                  marginBottom: 5,
+                                                                                  alignSelf:
+                                                                                    "flex-start",
+                                                                                  marginLeft: 7,
+                                                                                }}
+                                                                              >
+                                                                                <MaterialIcons
+                                                                                  name="person"
+                                                                                  size={
+                                                                                    15
+                                                                                  }
+                                                                                  color={
+                                                                                    Colors.BLACK
+                                                                                  }
+                                                                                />
+                                                                                <Text>
+                                                                                  {
+                                                                                    innerItem4.childCount
+                                                                                  }
+                                                                                </Text>
+                                                                              </View>
+                                                                            )}
+                                                                          </View>
                                                                         </View>
                                                                         <View
                                                                           style={{
@@ -2590,17 +2871,64 @@ const MainParamScreen = ({ route, navigation }) => {
                                                                                       paddingVertical: 4,
                                                                                     }}
                                                                                   >
-                                                                                    <Text
+                                                                                    <View
                                                                                       style={{
-                                                                                        fontSize: 10,
-                                                                                        fontWeight:
-                                                                                          "500",
+                                                                                        flexDirection:
+                                                                                          "row",
                                                                                       }}
                                                                                     >
-                                                                                      {
-                                                                                        innerItem5.empName
-                                                                                      }
-                                                                                    </Text>
+                                                                                      <Text
+                                                                                        style={{
+                                                                                          fontSize: 10,
+                                                                                          fontWeight:
+                                                                                            "500",
+                                                                                        }}
+                                                                                      >
+                                                                                        {
+                                                                                          innerItem5.empName
+                                                                                        }
+                                                                                        {innerItem5.childCount >
+                                                                                        1
+                                                                                          ? "  |"
+                                                                                          : ""}
+                                                                                      </Text>
+                                                                                      {innerItem5.childCount >
+                                                                                        1 && (
+                                                                                        <View
+                                                                                          style={{
+                                                                                            backgroundColor:
+                                                                                              "lightgrey",
+                                                                                            flexDirection:
+                                                                                              "row",
+                                                                                            paddingHorizontal: 7,
+                                                                                            borderRadius: 10,
+                                                                                            alignItems:
+                                                                                              "center",
+                                                                                            justifyContent:
+                                                                                              "space-between",
+                                                                                            marginBottom: 5,
+                                                                                            alignSelf:
+                                                                                              "flex-start",
+                                                                                            marginLeft: 7,
+                                                                                          }}
+                                                                                        >
+                                                                                          <MaterialIcons
+                                                                                            name="person"
+                                                                                            size={
+                                                                                              15
+                                                                                            }
+                                                                                            color={
+                                                                                              Colors.BLACK
+                                                                                            }
+                                                                                          />
+                                                                                          <Text>
+                                                                                            {
+                                                                                              innerItem5.childCount
+                                                                                            }
+                                                                                          </Text>
+                                                                                        </View>
+                                                                                      )}
+                                                                                    </View>
                                                                                   </View>
                                                                                   <View
                                                                                     style={{
@@ -2713,17 +3041,64 @@ const MainParamScreen = ({ route, navigation }) => {
                                                                                                 paddingVertical: 4,
                                                                                               }}
                                                                                             >
-                                                                                              <Text
+                                                                                              <View
                                                                                                 style={{
-                                                                                                  fontSize: 10,
-                                                                                                  fontWeight:
-                                                                                                    "500",
+                                                                                                  flexDirection:
+                                                                                                    "row",
                                                                                                 }}
                                                                                               >
-                                                                                                {
-                                                                                                  innerItem6.empName
-                                                                                                }
-                                                                                              </Text>
+                                                                                                <Text
+                                                                                                  style={{
+                                                                                                    fontSize: 10,
+                                                                                                    fontWeight:
+                                                                                                      "500",
+                                                                                                  }}
+                                                                                                >
+                                                                                                  {
+                                                                                                    innerItem6.empName
+                                                                                                  }
+                                                                                                  {innerItem6.childCount >
+                                                                                                  1
+                                                                                                    ? "  |"
+                                                                                                    : ""}
+                                                                                                </Text>
+                                                                                                {innerItem6.childCount >
+                                                                                                  1 && (
+                                                                                                  <View
+                                                                                                    style={{
+                                                                                                      backgroundColor:
+                                                                                                        "lightgrey",
+                                                                                                      flexDirection:
+                                                                                                        "row",
+                                                                                                      paddingHorizontal: 7,
+                                                                                                      borderRadius: 10,
+                                                                                                      alignItems:
+                                                                                                        "center",
+                                                                                                      justifyContent:
+                                                                                                        "space-between",
+                                                                                                      marginBottom: 5,
+                                                                                                      alignSelf:
+                                                                                                        "flex-start",
+                                                                                                      marginLeft: 7,
+                                                                                                    }}
+                                                                                                  >
+                                                                                                    <MaterialIcons
+                                                                                                      name="person"
+                                                                                                      size={
+                                                                                                        15
+                                                                                                      }
+                                                                                                      color={
+                                                                                                        Colors.BLACK
+                                                                                                      }
+                                                                                                    />
+                                                                                                    <Text>
+                                                                                                      {
+                                                                                                        innerItem6.childCount
+                                                                                                      }
+                                                                                                    </Text>
+                                                                                                  </View>
+                                                                                                )}
+                                                                                              </View>
                                                                                             </View>
                                                                                             <View
                                                                                               style={{
@@ -3006,10 +3381,17 @@ const MainParamScreen = ({ route, navigation }) => {
                       selector.startDate === ownData.startDate
                         ? setRetail(ownData.retailTarget.toString())
                         : setRetail("");
+                   
                       setOpenRetail(true);
+                      if (ownData.id) {
+                        setIsNoTargetAvailable(false);
+                      } else {
+                        setIsNoTargetAvailable(true);
+                      }
                     } else showToast("Access Denied");
                   }}
                 >
+                  {/* todo */}
                   <Text style={styles.textInput}>
                     {ownData.retailTarget !== null &&
                     selector.endDate === ownData.endDate &&
@@ -3147,8 +3529,13 @@ const MainParamScreen = ({ route, navigation }) => {
                       selector.startDate === ownData.startDate
                         ? setRetail(ownData.retailTarget.toString())
                         : setRetail("");
-
+                     
                       setOpenRetail(true);
+                      if (ownData.id) {
+                        setIsNoTargetAvailable(false);
+                      } else {
+                        setIsNoTargetAvailable(true);
+                      }
                     } else showToast("Access Denied");
                   }}
                 >
@@ -3336,6 +3723,7 @@ const MainParamScreen = ({ route, navigation }) => {
                   value={retail}
                   placeholderTextColor={"#333"}
                   onChangeText={(text) => {
+                   
                     setRetail(text);
                   }}
                 />
@@ -3365,9 +3753,13 @@ const MainParamScreen = ({ route, navigation }) => {
                   // else {
                   //     editTargetData()
                   // }
+                  //todo
+                  
                   if (isNoTargetAvailable) {
+                 
                     addTargetData();
                   } else {
+                   
                     editTargetData();
                   }
                 }}
@@ -3388,6 +3780,7 @@ const MainParamScreen = ({ route, navigation }) => {
                   alignItems: "center",
                 }}
                 onPress={() => {
+                  
                   setRetail("");
                   setSelectedUser(null);
                   setOpenRetail(false);

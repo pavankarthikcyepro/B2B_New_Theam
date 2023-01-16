@@ -66,64 +66,6 @@ const RecepSourceModel = ({ route, navigation }) => {
     if (isSourceIndex !== 0) {
       setIsSourceIndex(0);
     }
-    const dateFormat = "YYYY-MM-DD";
-    const currentDate = moment().format(dateFormat);
-    const monthFirstDate = moment(currentDate, dateFormat)
-      .subtract(0, "months")
-      .startOf("month")
-      .format(dateFormat);
-    const monthLastDate = moment(currentDate, dateFormat)
-      .subtract(0, "months")
-      .endOf("month")
-      .format(dateFormat);
-
-    let payload = {
-      // endDate: monthLastDate,
-      endDate: moduleType === "live-leads" ? currentDate : monthLastDate,
-      loggedInEmpId: empId,
-      empId: empId,
-      // startDate: monthFirstDate,
-      startDate: moduleType === "live-leads" ? "2021-01-01" : monthFirstDate,
-      levelSelected: null,
-      page: 0,
-      size: 100,
-    };
-
-    const urlSelf = URL.MODEL_SOURCE_SELF();
-    const urlInsights = URL.MODEL_SOURCE_INSIGHTS();
-    const urlTeam = URL.MODEL_SOURCE_TEAM();
-    let url = "";
-    switch (type) {
-      case "SELF":
-        url = urlSelf;
-        break;
-      case "INSIGHTS":
-        url = urlInsights;
-        break;
-      case "TEAM":
-        url = urlTeam;
-        const data = {
-          // orgId: orgId,
-          // selectedEmpId: empId,
-        };
-        payload = {
-          ...payload,
-          ...data,
-        };
-        break;
-    }
-    let tempPayload = {
-      orgId: orgId,
-      endDate: moduleType === "live-leads" ? currentDate : monthLastDate,
-      loggedInEmpId: loggedInEmpId,
-      empId: empId,
-      startDate: moduleType === "live-leads" ? "2021-01-01" : monthFirstDate,
-      levelSelected: null,
-      pageNo: 0,
-      size: 100,
-    };
-    let key = moduleType !== "live-leads" ? "" : "LIVE-LEADS";
-    dispatch(getSourceModelDataForSelf({ type, payload, key }));
     let newPayload = {
       orgId: orgId,
       loggedInEmpId: loggedInEmpId,
@@ -281,6 +223,10 @@ const RecepSourceModel = ({ route, navigation }) => {
     );
   };
 
+  function getPercentage(target, total) {
+    return target > 0 ? Math.round((target / total) * 100) : 0;
+  }
+
   const renderDataView = () => {
     const keys = isSourceIndex === 0 ? leadSourceKeys : vehicleModelKeys;
     const data = isSourceIndex === 0 ? leadSource : vehicleModel;
@@ -290,8 +236,9 @@ const RecepSourceModel = ({ route, navigation }) => {
         : selector.receptionistModel;
     return (
       <>
-        {keys &&
-          keys.length > 0 &&
+        {
+          // keys &&
+          //   keys.length > 0 &&
           newData.map((x, index) => {
             return (
               <>
@@ -323,14 +270,22 @@ const RecepSourceModel = ({ route, navigation }) => {
                           justifyContent: "center",
                         }}
                       >
-                        <Text>{x[param?.initial?.toLowerCase()]}</Text>
+                        <Text>
+                          {displayType == 0
+                            ? x[param?.initial?.toLowerCase()]
+                            : `${getPercentage(
+                                x[param?.initial?.toLowerCase()],
+                                sourceModelTotals[param?.initial?.toLowerCase()]
+                              )}%`}
+                        </Text>
                       </View>
                     );
                   })}
                 </View>
               </>
             );
-          })}
+          })
+        }
       </>
     );
   };
@@ -454,7 +409,13 @@ const RecepSourceModel = ({ route, navigation }) => {
             </View>
             {renderDataView()}
             <>
-              <View style={{ flexDirection: "row", marginTop: 15, marginBottom:40 }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  marginTop: 15,
+                  marginBottom: 40,
+                }}
+              >
                 <Text
                   style={{
                     color: "darkblue",
@@ -484,7 +445,7 @@ const RecepSourceModel = ({ route, navigation }) => {
                             color: "darkblue",
                             fontSize: 16,
                             fontWeight: "500",
-                            textDecorationLine:'underline'
+                            textDecorationLine: "underline",
                           }}
                         >
                           {sourceModelTotals[param?.initial?.toLowerCase()]}

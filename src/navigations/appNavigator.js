@@ -90,12 +90,19 @@ import SourceModel from "../scenes/mainScenes/Home/TabScreens/components/Employe
 import LiveLeadsScreen from "../scenes/mainScenes/LiveLeads";
 import { EMSTopTabNavigatorTwo } from "./emsTopTabNavigator";
 import { AppNavigator } from ".";
+import MapScreen from "../scenes/mainScenes/Map";
+import AttendanceScreen from "../scenes/mainScenes/Attendance";
 import RecepSourceModel from "../scenes/mainScenes/Home/TabScreens/components/EmployeeView/RecepSourceModel";
 import DropLostCancelScreen from "../scenes/mainScenes/DropLostCancel/DropLostCancel";
 import AddNewEnquiryScreen from "../scenes/mainScenes/EMS/addNewEnquiry";
 import FilterTargetScreen from "../scenes/mainScenes/TargetSettingsScreen/TabScreen/filterTarget";
 import MyTaskFilterScreen from "../scenes/mainScenes/MyTasks/myTaskFilterScreen";
 import ReceptionistFilterScreen from "../scenes/mainScenes/Home/receptionistFilter";
+import { AttendanceTopTabNavigatorTwo, MyAttendanceTopTabNavigatorOne } from "./attendanceTopTabNavigator";
+import GeoLocationScreen from "../scenes/mainScenes/Geolocation";
+import { MyGeolocationTopTabNavigatorOne } from "./geolocationNavigator";
+import TaskThreeSixtyHistory from "../scenes/mainScenes/EMS/taskThreeSixtyHistory";
+import NotificationIcon from "../components/NotificationIcon";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -110,7 +117,7 @@ const screeOptionStyle = {
   headerBackTitleVisible: false,
 };
 
-const MenuIcon = ({ navigation }) => {
+export const MenuIcon = ({ navigation }) => {
   return (
     <IconButton
       icon="menu"
@@ -307,19 +314,6 @@ const MapIcon = ({ navigation }) => {
     );
 };
 
-const NotficationIcon = ({ navigation, identifier }) => {
-  return (
-    <IconButton
-      icon="bell"
-      color={Colors.WHITE}
-      size={25}
-      onPress={() => {
-        navigation.navigate(identifier);
-      }}
-    />
-  );
-};
-
 export const DrawerStackIdentifiers = {
   home: "HOME_SCREEN",
   upcomingDeliveries: "UPCOMING_DELIVERIES",
@@ -337,6 +331,8 @@ export const DrawerStackIdentifiers = {
   dropAnalysis: "DROP_ANALYSIS",
   liveLeads: "LIVE_LEADS",
   dropLostCancel: "DROP_LOST_CANCEL",
+  attendance: 'Attendance',
+  geolocation: "Geolocation"
 };
 
 export const TabStackIdentifiers = {
@@ -355,6 +351,7 @@ export const HomeStackIdentifiers = {
   branchRanking: "BRANCH_RANKING",
   sourceModel: "SOURCE_MODEL",
   home: "HOME_SCREEN",
+  location: "MAP_TRACKER",
   receptionistFilter : "REECEPTION_FILTER"
 };
 
@@ -366,6 +363,7 @@ export const EmsStackIdentifiers = {
 
   paidAccessories: "PAID_ACCESSORIES",
   task360: "TASK_360",
+  task360History: "TASK_360_HISTORY",
   homeVisit: "HOME_VISIT_1",
   preBookingFollowUp: "PREBOOKING_FOLLOWUP_1",
   bookingFollowUp: "PREBOOKING_FOLLOWUP_1",
@@ -424,23 +422,7 @@ const HomeStackNavigator = ({ navigation }) => {
           title: "Dashboard",
           headerShown: false,
           headerLeft: () => <MenuIcon navigation={navigation} />,
-          headerRight: () => {
-            return (
-              <View style={{ flexDirection: "row" }}>
-                {/* <NotficationIcon
-                  navigation={navigation}
-                  identifier={"NOTIF_1"}
-                /> */}
-              </View>
-            );
-          },
         }}
-      />
-
-      <HomeStack.Screen
-        name={"NOTIF_1"}
-        component={NotificationScreen}
-        options={{ title: "Notifications" }}
       />
       <HomeStack.Screen
         name={HomeStackIdentifiers.filter}
@@ -486,6 +468,13 @@ const HomeStackNavigator = ({ navigation }) => {
         component={ReceptionistFilterScreen}
         options={{ title: "Filters" }}
       />
+      <MainDrawerNavigator.Screen
+          name={HomeStackIdentifiers.location}
+          component={MapScreen}
+          options={{
+            title: "Map",
+          }}
+        />
     </HomeStack.Navigator>
   );
 };
@@ -504,19 +493,7 @@ const EmsStackNavigator = ({ navigation }) => {
           options={{
             title: "EMS",
             headerLeft: () => <MenuIcon navigation={navigation} />,
-            headerRight: () => {
-              return (
-                <View style={{ flexDirection: "row" }}>
-                  {/*<SearchIcon />*/}
-                  {/* <RefreshIcon /> */}
-                  {/* <MapIcon /> */}
-                  <NotficationIcon
-                    navigation={navigation}
-                    identifier={"NOTIF_2"}
-                  />
-                </View>
-              );
-            },
+            headerRight: () => <NotificationIcon navigation={navigation} />,
           }}
         />
 
@@ -597,6 +574,14 @@ const EmsStackNavigator = ({ navigation }) => {
         />
 
         <EmsStack.Screen
+          name={EmsStackIdentifiers.task360History}
+          component={TaskThreeSixtyHistory}
+          options={({ route }) => ({
+            headerTitle: route?.params?.title ?? "History",
+          })}
+        />
+
+        <EmsStack.Screen
           name={EmsStackIdentifiers.homeVisit}
           component={HomeVisitScreen}
           options={{ title: "Visit" }}
@@ -641,31 +626,20 @@ const EmsStackNavigator = ({ navigation }) => {
 const MyTaskStack = createStackNavigator();
 
 const MyTaskStackNavigator = ({ navigation }) => {
-    return (
-      <MyTaskStack.Navigator
-        initialRouteName={MyTasksStackIdentifiers.mytasks}
-        screenOptions={screeOptionStyle}
-      >
-        <MyTaskStack.Screen
-          name={MyTasksStackIdentifiers.mytasks}
-          component={MyTasksScreen}
-          options={{
-            title: "My Tasks",
-            headerLeft: () => <MenuIcon navigation={navigation} />,
-            headerRight: () => {
-              return (
-                <View style={{ flexDirection: "row" }}>
-                  {/* <SearchIcon /> */}
-                  <MyTaskFilter navigation={navigation} />
-                  <NotficationIcon
-                    navigation={navigation}
-                    identifier={"NOTIF_3"}
-                  />
-                </View>
-              );
-            },
-          }}
-        />
+  return (
+    <MyTaskStack.Navigator
+      initialRouteName={MyTasksStackIdentifiers.mytasks}
+      screenOptions={screeOptionStyle}
+    >
+      <MyTaskStack.Screen
+        name={MyTasksStackIdentifiers.mytasks}
+        component={MyTasksScreen}
+        options={{
+          title: "My Tasks",
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+          headerRight: () => <NotificationIcon navigation={navigation} />,
+        }}
+      />
 
         <MyTaskStack.Screen
           name={MyTasksStackIdentifiers.myTaskFilterScreen}
@@ -741,17 +715,6 @@ const PriceStackNavigator = ({ navigation }) => {
         options={{
           title: "Price",
           headerLeft: () => <MenuIcon navigation={navigation} />,
-          // headerRight: () => {
-          //   return (
-          //     <View style={{ flexDirection: "row" }}>
-          //       {/* <SearchIcon /> */}
-          //       <NotficationIcon
-          //         navigation={navigation}
-          //         identifier={"NOTIF_3"}
-          //       />
-          //     </View>
-          //   );
-          // },
         }}
       />
     </PriceStack.Navigator>
@@ -1184,6 +1147,25 @@ const MainStackDrawerNavigator = () => {
           initialParams={{ screen: DrawerStackIdentifiers.monthlyTarget }}
         />
         <MainDrawerNavigator.Screen
+          name={DrawerStackIdentifiers.attendance}
+          component={MyAttendanceTopTabNavigatorOne}
+          options={
+            {
+              // title: "My Attendance",
+              // headerLeft: () => <MenuIcon navigation={navigation} />,
+              // headerShown: true,
+              // headerStyle: screeOptionStyle.headerStyle,
+              // headerTitleStyle: screeOptionStyle.headerTitleStyle,
+              // headerTintColor: screeOptionStyle.headerTintColor,
+              // headerBackTitleVisible: screeOptionStyle.headerBackTitleVisible,
+            }
+          }
+        />
+        <MainDrawerNavigator.Screen
+          name={DrawerStackIdentifiers.geolocation}
+          component={MyGeolocationTopTabNavigatorOne}
+        />
+        <MainDrawerNavigator.Screen
           name={DrawerStackIdentifiers.dropLostCancel}
           component={DropLostCancelNavigator}
         />
@@ -1192,16 +1174,16 @@ const MainStackDrawerNavigator = () => {
           component={TaskTransferStackNavigator}
         />
         <MainDrawerNavigator.Screen
-          name={DrawerStackIdentifiers.digitalPayment}
-          component={DigitalPaymentStackNavigator}
-        />
-        <MainDrawerNavigator.Screen
           name={DrawerStackIdentifiers.helpdesk}
           component={HelpDeskStackNavigator}
         />
         <MainDrawerNavigator.Screen
           name={DrawerStackIdentifiers.settings}
           component={SettingsStackNavigator}
+        />
+        <MainDrawerNavigator.Screen
+          name={DrawerStackIdentifiers.digitalPayment}
+          component={DigitalPaymentStackNavigator}
         />
         <MainDrawerNavigator.Screen
           name={DrawerStackIdentifiers.dropAnalysis}
@@ -1259,17 +1241,6 @@ const DropLostCancelNavigator = ({ navigation }) => {
           title: "Drop/Lost/Cancel",
           headerShown: true,
           headerLeft: () => <MenuIcon navigation={navigation} />,
-        //   headerRight: () => {
-        //     return (
-        //       <View style={{ flexDirection: "row" }}>
-        //         {/* <SearchIcon /> */}
-        //         <NotficationIcon
-        //           navigation={navigation}
-        //           identifier={"NOTIF_3"}
-        //         />
-        //       </View>
-        //     );
-        //   },
         }}
       />
     </DropLostStack.Navigator>
@@ -1297,6 +1268,11 @@ const MainStackNavigator = ({ navigation }) => {
         options={{
           headerShown: false,
         }}
+      />
+      <MainStack.Screen
+        name={"NOTIF_1"}
+        component={NotificationScreen}
+        options={{ title: "Notifications" }}
       />
     </MainStack.Navigator>
   );

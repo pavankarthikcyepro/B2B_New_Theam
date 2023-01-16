@@ -212,13 +212,14 @@ const BookingFormScreen = ({ route, navigation }) => {
     const [componentAppear, setComponentAppear] = useState(false);
     const [otherPrices, setOtherPrices] = useState(0);
     const [userData, setUserData] = useState({
-        orgId: "",
-        employeeId: "",
-        employeeName: "",
-        isManager: false,
-        editEnable: false,
-        isPreBookingApprover: false,
-        isSelfManager: ""
+      orgId: "",
+      employeeId: "",
+      employeeName: "",
+      isManager: false,
+      editEnable: false,
+      isPreBookingApprover: false,
+      isSelfManager: "",
+      isTracker: "",
     });
     const [showDropDownModel, setShowDropDownModel] = useState(false);
     const [showMultipleDropDownData, setShowMultipleDropDownData] =
@@ -304,13 +305,14 @@ const BookingFormScreen = ({ route, navigation }) => {
         setOpenAccordian(0);
         setComponentAppear(false);
         setUserData({
-            orgId: "",
-            employeeId: "",
-            employeeName: "",
-            isManager: false,
-            editEnable: false,
-            isPreBookingApprover: false,
-            isSelfManager: ""
+          orgId: "",
+          employeeId: "",
+          employeeName: "",
+          isManager: false,
+          editEnable: false,
+          isPreBookingApprover: false,
+          isSelfManager: "",
+          isTracker: "",
         });
         setShowDropDownModel(false);
         setShowMultipleDropDownData(false);
@@ -541,7 +543,8 @@ const BookingFormScreen = ({ route, navigation }) => {
                 isManager: isManager,
                 editEnable: editEnable,
                 isPreBookingApprover: isPreBookingApprover,
-                isSelfManager: jsonObj.isSelfManager
+                isSelfManager: jsonObj.isSelfManager,
+                isTracker: jsonObj.isTracker,
             });
 
             const payload = {
@@ -1892,10 +1895,12 @@ const BookingFormScreen = ({ route, navigation }) => {
                 break;
         }
 
+      let tempToken1 = await AsyncStore.getData(AsyncStore.Keys.USER_TOKEN);
         await fetch(URL.UPLOAD_DOCUMENT(), {
             method: "POST",
             headers: {
                 "Content-Type": "multipart/form-data",
+              "Authorization": "Bearer " + tempToken1,
             },
             body: formData,
         })
@@ -2793,9 +2798,11 @@ const BookingFormScreen = ({ route, navigation }) => {
                     style={styles.textInputStyle}
                     value={selector.transmission_type}
                     label={
-                      userData.isSelfManager == "Y"
-                        ? "Battery Type*"
-                        : "Transmission Type*"
+                        userData.isSelfManager == "Y"
+                          ? "Battery Type*"
+                          : userData.isTracker == "Y"
+                          ? "Clutch Type*"
+                          : "Transmission Type*"
                     }
                     disabled={true}
                     editable={false}

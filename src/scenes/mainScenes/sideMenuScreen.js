@@ -27,7 +27,8 @@ import { useIsFocused, useRoute } from "@react-navigation/native";
 import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 import Entypo from "react-native-vector-icons/FontAwesome";
 import { client } from "../../networking/client";
-import URL, { profileImageUpdate } from "../../networking/endpoints";
+import URL, { baseUrl, profileImageUpdate } from "../../networking/endpoints";
+import BackgroundService from "react-native-background-actions";
 
 // import { EVENT_MANAGEMENT, CUSTOMER_RELATIONSHIP, DOCUMENT_WALLET, HOME_LINE, BOOKING_TRACKER } from "../assets/svg";
 
@@ -53,6 +54,7 @@ import { clearState } from "../../redux/homeReducer";
 import { clearEnqState } from "../../redux/enquiryReducer";
 import { clearLeadDropState } from "../../redux/leaddropReducer";
 import ReactNativeModal from "react-native-modal";
+import { EventRegister } from 'react-native-event-listeners'
 import { setBranchId, setBranchName } from "../../utils/helperFunctions";
 
 const screenWidth = Dimensions.get("window").width;
@@ -66,10 +68,12 @@ const receptionMenu = [
   "Drop/Lost/Cancel",
   "Digital Payment",
   "Target Planning",
+  "My Attendance",
   "Helpdesk",
   // "Task Management",
   "Drop Analysis",
   "Task Transfer",
+  "QR Code",
   "Sign Out",
 ];
 const teleCollerMenu = [
@@ -77,8 +81,10 @@ const teleCollerMenu = [
   "Settings",
   "Digital Payment",
   "Target Planning",
+  "My Attendance",
   "Helpdesk",
   // "Task Management",
+  "QR Code",
   "Drop Analysis",
   "Sign Out",
 ];
@@ -88,8 +94,26 @@ const ShowRoomMenu = [
   "Settings",
   "Digital Payment",
   "Target Planning",
+  "My Attendance",
+  "Geolocation",
   "Helpdesk",
   // "Task Management",
+  "QR Code",
+  "Drop Analysis",
+  "Sign Out",
+];
+
+const FieldDSEMenu = [
+  "Home",
+  "Live Leads",
+  "Settings",
+  "Digital Payment",
+  "Target Planning",
+  "My Attendance",
+  "Geolocation",
+  "Helpdesk",
+  // "Task Management",
+  "QR Code",
   "Drop Analysis",
   "Sign Out",
 ];
@@ -99,9 +123,11 @@ const MDMenu = [
   "Settings",
   "Digital Payment",
   "Target Planning",
+  "My Attendance",
   "Helpdesk",
   // "Task Management",
   "Task Transfer",
+  "QR Code",
   "Drop Analysis",
   "Sign Out",
 ];
@@ -127,12 +153,23 @@ const SideMenuScreen = ({ navigation }) => {
   const [initialData, setInitialData] = useState({});
   const [showModal, setShowModal] = useState(false);
   const [imagePath, setImagePath] = useState("");
-  const route = useRoute();
+  // const route = useRoute();
 
   useEffect(() => {
     getLoginEmployeeData();
+    EventRegister.addEventListener("ForceLogout",(res)=>{
+      
+      if(res){
+        signOutClicked()
+      }
+    })
+    return ()=>{
+      EventRegister.removeEventListener()
+    }
     // getProfilePic();
   }, []);
+
+
 
   useEffect(() => {
     navigation.addListener("focus", () => {
@@ -172,11 +209,15 @@ const SideMenuScreen = ({ navigation }) => {
   };
 
   const getProfilePic = (userData) => {
-    fetch(
-      `http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
-    )
-      .then((response) => response.json())
+    
+    if (userData.empId == undefined || userData.orgId == undefined || userData.branchId == undefined){
+      return;
+    }
+    // client.get(`http://ec2-15-207-225-163.ap-south-1.compute.amazonaws.com:8008/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`)
+    client.get(`${baseUrl}sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`)
+     .then((response) => response.json())
       .then((json) => {
+        
         setDataList(json);
         if (json.length > 0) {
           setImageUri(json[json.length - 1].documentPath);
@@ -190,6 +231,27 @@ const SideMenuScreen = ({ navigation }) => {
         }
       })
       .catch((error) => console.error(error));
+
+
+    // fetch(
+    //   `http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
+    // )
+    //   .then((response) => response.json())
+    //   .then((json) => {
+    //   
+    //     setDataList(json);
+    //     if (json.length > 0) {
+    //       setImageUri(json[json.length - 1].documentPath);
+    //       setInitialData(json[json.length - 1]);
+    //       setIsExist(true);
+    //     } else {
+    //       setIsExist(false);
+    //       setImageUri(
+    //         "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
+    //       );
+    //     }
+    //   })
+    //   .catch((error) => console.error(error));
   };
 
   const updateUserData = (jsonObj) => {
@@ -200,7 +262,6 @@ const SideMenuScreen = ({ navigation }) => {
     setUserData(jsonObj);
     // setUserData(jsonObj)
     getProfilePic(jsonObj);
-
     let newFilterData = [];
     if (jsonObj.hrmsRole === "Reception") {
       newFilterData = selector.tableData.filter((item) =>
@@ -213,6 +274,10 @@ const SideMenuScreen = ({ navigation }) => {
     } else if (jsonObj.hrmsRole === "Showroom DSE") {
       newFilterData = selector.tableData.filter((item) =>
         ShowRoomMenu.includes(item.title)
+      );
+    } else if (jsonObj.hrmsRole === "Field DSE") {
+      newFilterData = selector.tableData.filter((item) =>
+        FieldDSEMenu.includes(item.title)
       );
     } else if (jsonObj.hrmsRole === "MD") {
       newFilterData = selector.tableData.filter((item) =>
@@ -276,6 +341,12 @@ const SideMenuScreen = ({ navigation }) => {
       case 115:
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropLostCancel);
         break;
+      case 116:
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.attendance);
+        break;
+      case 117:
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.geolocation);
+        break;
       case 112:
         signOutClicked();
         break;
@@ -285,7 +356,7 @@ const SideMenuScreen = ({ navigation }) => {
     }
   };
 
-  const signOutClicked = () => {
+  const signOutClicked = async () => {
     AsyncStore.storeData(AsyncStore.Keys.USER_NAME, "");
     AsyncStore.storeData(AsyncStore.Keys.USER_TOKEN, "");
     AsyncStore.storeData(AsyncStore.Keys.EMP_ID, "");
@@ -293,6 +364,10 @@ const SideMenuScreen = ({ navigation }) => {
     AsyncStore.storeData(AsyncStore.Keys.EXTENSION_ID, "");
     AsyncStore.storeData(AsyncStore.Keys.EXTENSSION_PWD, "");
     AsyncStore.storeData(AsyncStore.Keys.IS_LOGIN, "false");
+    AsyncStore.storeJsonData(AsyncStore.Keys.TODAYSDATE, new Date().getDate());
+    AsyncStore.storeJsonData(AsyncStore.Keys.COORDINATES, []);
+    await BackgroundService.stop();
+
     navigation.closeDrawer();
     //realm.close();
     setBranchId("");
@@ -345,12 +420,43 @@ const SideMenuScreen = ({ navigation }) => {
       name: "image.jpg",
     });
 
+    // client.post(URL.UPLOAD_PROFILE(userData.empId, userData.orgId, userData.branchId))
+    //   .then((response) => response.json())
+    //   .then(async (json) => {
+    //    
+    //     const inputData = {
+    //       ownerId: userData.empId,
+    //       branchId: userData.branchId,
+    //       orgId: userData.orgId,
+    //       fileName: json.fileName,
+    //       documentPath: json.documentPath,
+    //       universalid: json.universalId,
+    //     };
+    //     const response = await client.post(URL.SAVE_PROFILE(), inputData);
+    //     const saveProfile = await response.json();
+    //     if (saveProfile.success) {
+    //       setIsExist(true);
+    //       let newInitial = {
+    //         id: saveProfile.dmsEntity.employeeProfileDtos[0].id,
+    //         universalid: json?.universalId,
+    //       };
+    //       setInitialData(newInitial);
+    //       setImageUri(
+    //         saveProfile.dmsEntity.employeeProfileDtos[0].documentPath ||
+    //         "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
+    //       );
+    //     }
+    //     // setDataList(json);
+    //   })
+    //   .catch((error) => console.error(error));
+    AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
     fetch(
       URL.UPLOAD_PROFILE(userData.empId, userData.orgId, userData.branchId),
       {
         method: "POST",
         headers: {
           "Content-Type": "multipart/form-data",
+          "Authorization": "Bearer " + token,
         },
         body: formdata,
       }
@@ -382,7 +488,8 @@ const SideMenuScreen = ({ navigation }) => {
         // setDataList(json);
       })
       .catch((error) => console.error(error));
-  };
+  })
+}
 
   const updateProfilePic = async (uri) => {
     try {
@@ -416,7 +523,7 @@ const SideMenuScreen = ({ navigation }) => {
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
-            "auth-token": token,
+            "Authorization": "Bearer " + token,
           },
           body: JSON.stringify(),
         })
@@ -616,8 +723,10 @@ const SideMenuScreen = ({ navigation }) => {
         data={newTableData}
         keyExtractor={(item, index) => index}
         renderItem={({ item, index }) => {
-          const isActive = route?.state?.index == index;
-          const textColor = isActive ? Colors.PINK : "gray"; 
+          const isActive = false;
+          const textColor = "gray"; 
+          // const isActive = route?.state?.index == index;
+          // const textColor = isActive ? Colors.PINK : "gray"; 
           return (
             <>
               {item.title === "Task Transfer" ? (
@@ -739,6 +848,7 @@ const SideMenuScreen = ({ navigation }) => {
 };
 
 export default SideMenuScreen;
+
 
 const styles = StyleSheet.create({
   container: {

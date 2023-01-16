@@ -37,6 +37,7 @@ import PercentageToggleControl from "./components/EmployeeView/PercentageToggleC
 import { ActivityIndicator, IconButton } from "react-native-paper";
 import { client } from "../../../../networking/client";
 import URL from "../../../../networking/endpoints";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 100) / 5;
@@ -936,36 +937,80 @@ const TargetScreen = ({ route }) => {
                                   width: Dimensions.get("screen").width - 28,
                                 }}
                               >
-                                <Text
-                                  style={{
-                                    fontSize: 12,
-                                    fontWeight: "600",
-                                    textTransform: "capitalize",
-                                  }}
-                                >
-                                  {item.empName}
-                                </Text>
-                                <SourceModelView
-                                  onClick={() => {
-                                    navigation.navigate(
-                                      AppNavigator.HomeStackIdentifiers
-                                        .sourceModel,
-                                      {
-                                        empId: item.empId,
-                                        headerTitle: item.empName,
-                                        loggedInEmpId:
-                                          selector.login_employee_details.empId,
-                                        orgId:
-                                          selector.login_employee_details.orgId,
-                                        type: "TEAM",
-                                        moduleType: "home",
-                                      }
-                                    );
-                                  }}
-                                  style={{
-                                    transform: [{ translateX: translation }],
-                                  }}
-                                />
+                                <View style={{ flexDirection: "row" }}>
+                                  <Text
+                                    onPress={() => {
+                                      navigation.navigate(
+                                        AppNavigator.HomeStackIdentifiers
+                                          .location,
+                                        {
+                                          empId: item.empId,
+                                          orgId: item.orgId,
+                                        }
+                                      );
+                                    }}
+                                    style={{
+                                      fontSize: 12,
+                                      fontWeight: "600",
+                                      textTransform: "capitalize",
+                                    }}
+                                  >
+                                    {item.empName}
+                                    {/* {item?.childCount > 1 ? "  |" : ""} */}
+                                  </Text>
+                                  
+                                </View>
+                                <View style={{flexDirection:"row"}}>
+                                  {item?.childCount > 1 && (
+                                    <Animated.View style={{
+                                      transform: [{ translateX: translation }],
+                                    }}>
+                                      <View
+                                        style={{
+                                          backgroundColor: "lightgrey",
+                                          flexDirection: "row",
+                                          paddingHorizontal: 7,
+                                          borderRadius: 10,
+                                          alignItems: "center",
+                                          justifyContent: "space-between",
+                                          marginBottom: 5,
+                                          alignSelf: "flex-start",
+                                          marginLeft: 7,
+                                          // transform: [{ translateX: translation }],
+                                        }}
+                                      >
+                                        <MaterialIcons
+                                          name="person"
+                                          size={15}
+                                          color={Colors.BLACK}
+                                        />
+                                        <Text>{item?.childCount}</Text>
+                                      </View>
+                                    </Animated.View>
+                                  )}
+                                  <SourceModelView
+                                    onClick={() => {
+                                      navigation.navigate(
+                                        AppNavigator.HomeStackIdentifiers
+                                          .sourceModel,
+                                        {
+                                          empId: item.empId,
+                                          headerTitle: item.empName,
+                                          loggedInEmpId:
+                                            selector.login_employee_details.empId,
+                                          orgId:
+                                            selector.login_employee_details.orgId,
+                                          type: "TEAM",
+                                          moduleType: "home",
+                                        }
+                                      );
+                                    }}
+                                    style={{
+                                      transform: [{ translateX: translation }],
+                                    }}
+                                  />
+                                </View>
+                                
                               </View>
                               {/*Source/Model View END */}
                               <View
@@ -1003,6 +1048,7 @@ const TargetScreen = ({ route }) => {
                                       item={item}
                                       branchName={getBranchName(item.branchId)}
                                       color={"#C62159"}
+                                      navigation={navigation}
                                       titleClick={async () => {
                                         let localData = [...allParameters];
                                         await onEmployeeNameClick(
@@ -1056,47 +1102,115 @@ const TargetScreen = ({ route }) => {
                                               >
                                                 <View
                                                   style={{
-                                                    paddingHorizontal: 4,
-                                                    display: "flex",
                                                     flexDirection: "row",
                                                     justifyContent:
                                                       "space-between",
-                                                    marginTop: 8,
                                                   }}
                                                 >
-                                                  <Text
+                                                  <View
                                                     style={{
-                                                      fontSize: 10,
-                                                      fontWeight: "500",
+                                                      paddingHorizontal: 4,
+                                                      display: "flex",
+                                                      flexDirection: "row",
+                                                      justifyContent:
+                                                        "space-between",
+                                                      marginTop: 8,
                                                     }}
                                                   >
-                                                    {innerItem1.empName}
-                                                  </Text>
-                                                  <SourceModelView
-                                                    onClick={() => {
-                                                      navigation.navigate(
-                                                        AppNavigator
-                                                          .HomeStackIdentifiers
-                                                          .sourceModel,
-                                                        {
-                                                          empId:
-                                                            innerItem1.empId,
-                                                          headerTitle:
-                                                            innerItem1.empName,
-                                                          type: "TEAM",
-                                                          moduleType: "home",
-                                                        }
-                                                      );
-                                                    }}
-                                                    style={{
-                                                      transform: [
-                                                        {
-                                                          translateX:
-                                                            translation,
-                                                        },
-                                                      ],
-                                                    }}
-                                                  />
+                                                    <Text
+                                                      onPress={() => {
+                                                        navigation.navigate(
+                                                          AppNavigator
+                                                            .HomeStackIdentifiers
+                                                            .location,
+                                                          {
+                                                            empId:
+                                                              innerItem1.empId,
+                                                            orgId:
+                                                              innerItem1.orgId,
+                                                          }
+                                                        );
+                                                      }}
+                                                      style={{
+                                                        fontSize: 10,
+                                                        fontWeight: "500",
+                                                      }}
+                                                    >
+                                                      {innerItem1.empName}
+                                                      {/* {innerItem1?.childCount >
+                                                      1
+                                                        ? "  |"
+                                                        : ""} */}
+                                                    </Text>
+                                                    
+                                                  </View>
+                                                  <View style={{flexDirection:"row"}}>
+                                                    {innerItem1?.childCount >
+                                                      1 && (
+                                                      <Animated.View style={{
+                                                        transform: [
+                                                          {
+                                                            translateX:
+                                                              translation,
+                                                          },
+                                                        ],
+                                                      }}>
+                                                        <View
+                                                          style={{
+                                                            backgroundColor:
+                                                              "lightgrey",
+                                                            flexDirection: "row",
+                                                            paddingHorizontal: 7,
+                                                            borderRadius: 10,
+                                                            alignItems: "center",
+                                                            justifyContent:
+                                                              "space-between",
+                                                            marginBottom: 5,
+                                                            alignSelf:
+                                                              "flex-start",
+                                                            marginLeft: 7,
+                                                          }}
+                                                        >
+                                                          <MaterialIcons
+                                                            name="person"
+                                                            size={15}
+                                                            color={Colors.BLACK}
+                                                          />
+                                                          <Text>
+                                                            {
+                                                              innerItem1?.childCount
+                                                            }
+                                                          </Text>
+                                                        </View>
+                                                      </Animated.View>
+                                                      )}
+                                                    <SourceModelView
+                                                      onClick={() => {
+                                                        navigation.navigate(
+                                                          AppNavigator
+                                                            .HomeStackIdentifiers
+                                                            .sourceModel,
+                                                          {
+                                                            empId:
+                                                              innerItem1.empId,
+                                                            headerTitle:
+                                                              innerItem1.empName,
+                                                            type: "TEAM",
+                                                            moduleType: "home",
+                                                          }
+                                                        );
+                                                      }}
+                                                      style={{
+                                                        transform: [
+                                                          {
+                                                            translateX:
+                                                              translation,
+                                                          },
+                                                        ],
+                                                      }}
+                                                    />
+                                                  </View>
+                                                  
                                                 </View>
                                                 {/*Source/Model View END */}
                                                 <View
@@ -1108,6 +1222,7 @@ const TargetScreen = ({ route }) => {
                                                     level={1}
                                                     item={innerItem1}
                                                     color={Colors.CORAL}
+                                                    navigation={navigation}
                                                     branchName={getBranchName(
                                                       innerItem1.branchId
                                                     )}
@@ -1177,40 +1292,114 @@ const TargetScreen = ({ route }) => {
                                                                 : 42),
                                                           }}
                                                         >
-                                                          <Text
+                                                          <View
                                                             style={{
-                                                              fontSize: 10,
-                                                              fontWeight: "500",
+                                                              flexDirection:
+                                                                "row",
                                                             }}
                                                           >
-                                                            {innerItem2.empName}
-                                                          </Text>
-                                                          <SourceModelView
-                                                            onClick={() => {
-                                                              navigation.navigate(
-                                                                AppNavigator
-                                                                  .HomeStackIdentifiers
-                                                                  .sourceModel,
-                                                                {
-                                                                  empId:
-                                                                    innerItem2.empId,
-                                                                  headerTitle:
-                                                                    innerItem2.empName,
-                                                                  type: "TEAM",
-                                                                  moduleType:
-                                                                    "home",
-                                                                }
-                                                              );
-                                                            }}
-                                                            style={{
-                                                              transform: [
-                                                                {
-                                                                  translateX:
-                                                                    translation,
-                                                                },
-                                                              ],
-                                                            }}
-                                                          />
+                                                            <Text
+                                                              onPress={() => {
+                                                                navigation.navigate(
+                                                                  AppNavigator
+                                                                    .HomeStackIdentifiers
+                                                                    .location,
+                                                                  {
+                                                                    empId:
+                                                                      innerItem2.empId,
+                                                                    orgId:
+                                                                      innerItem2.orgId,
+                                                                  }
+                                                                );
+                                                              }}
+                                                              style={{
+                                                                fontSize: 10,
+                                                                fontWeight:
+                                                                  "500",
+                                                              }}
+                                                            >
+                                                              {
+                                                                innerItem2.empName
+                                                              }
+                                                              {/* {innerItem2?.childCount >
+                                                              1
+                                                                ? "  |"
+                                                                : ""} */}
+                                                            </Text>
+                                                            
+                                                          </View>
+                                                            <View style={{flexDirection:"row"}}>
+                                                            {innerItem2?.childCount >
+                                                              1 && (
+                                                              <Animated.View style={{
+                                                                transform: [
+                                                                  {
+                                                                    translateX:
+                                                                      translation,
+                                                                  },
+                                                                ],
+                                                              }}>
+                                                                <View
+                                                                  style={{
+                                                                    backgroundColor:
+                                                                      "lightgrey",
+                                                                    flexDirection:
+                                                                      "row",
+                                                                    paddingHorizontal: 7,
+                                                                    borderRadius: 10,
+                                                                    alignItems:
+                                                                      "center",
+                                                                    justifyContent:
+                                                                      "space-between",
+                                                                    marginBottom: 5,
+                                                                    alignSelf:
+                                                                      "flex-start",
+                                                                    marginLeft: 7,
+                                                                  }}
+                                                                >
+                                                                  <MaterialIcons
+                                                                    name="person"
+                                                                    size={15}
+                                                                    color={
+                                                                      Colors.BLACK
+                                                                    }
+                                                                  />
+                                                                  <Text>
+                                                                    {
+                                                                      innerItem2?.childCount
+                                                                    }
+                                                                  </Text>
+                                                                </View>
+                                                              </Animated.View>
+                                                              )}
+                                                            <SourceModelView
+                                                              onClick={() => {
+                                                                navigation.navigate(
+                                                                  AppNavigator
+                                                                    .HomeStackIdentifiers
+                                                                    .sourceModel,
+                                                                  {
+                                                                    empId:
+                                                                      innerItem2.empId,
+                                                                    headerTitle:
+                                                                      innerItem2.empName,
+                                                                    type: "TEAM",
+                                                                    moduleType:
+                                                                      "home",
+                                                                  }
+                                                                );
+                                                              }}
+                                                              style={{
+                                                                transform: [
+                                                                  {
+                                                                    translateX:
+                                                                      translation,
+                                                                  },
+                                                                ],
+                                                              }}
+                                                            />
+                                                            </View>
+                                                          
                                                         </View>
                                                         <View
                                                           style={{
@@ -1222,6 +1411,9 @@ const TargetScreen = ({ route }) => {
                                                             level={2}
                                                             item={innerItem2}
                                                             color={"#2C97DE"}
+                                                            navigation={
+                                                              navigation
+                                                            }
                                                             branchName={getBranchName(
                                                               innerItem2.branchId
                                                             )}
@@ -1293,44 +1485,117 @@ const TargetScreen = ({ route }) => {
                                                                       paddingVertical: 4,
                                                                     }}
                                                                   >
-                                                                    <Text
+                                                                    <View
                                                                       style={{
-                                                                        fontSize: 10,
-                                                                        fontWeight:
-                                                                          "500",
+                                                                        flexDirection:
+                                                                          "row",
                                                                       }}
                                                                     >
-                                                                      {
-                                                                        innerItem3.empName
-                                                                      }
-                                                                    </Text>
-                                                                    <SourceModelView
-                                                                      onClick={() => {
-                                                                        navigation.navigate(
-                                                                          AppNavigator
-                                                                            .HomeStackIdentifiers
-                                                                            .sourceModel,
-                                                                          {
-                                                                            empId:
-                                                                              innerItem3.empId,
-                                                                            headerTitle:
-                                                                              innerItem3.empName,
-                                                                            type: "TEAM",
-                                                                            moduleType:
-                                                                              "home",
-                                                                          }
-                                                                        );
-                                                                      }}
-                                                                      style={{
-                                                                        transform:
-                                                                          [
+                                                                      <Text
+                                                                        onPress={() => {
+                                                                          navigation.navigate(
+                                                                            AppNavigator
+                                                                              .HomeStackIdentifiers
+                                                                              .location,
+                                                                            {
+                                                                              empId:
+                                                                                innerItem3.empId,
+                                                                              orgId:
+                                                                                innerItem3.orgId,
+                                                                            }
+                                                                          );
+                                                                        }}
+                                                                        style={{
+                                                                          fontSize: 10,
+                                                                          fontWeight:
+                                                                            "500",
+                                                                        }}
+                                                                      >
+                                                                        {
+                                                                          innerItem3.empName
+                                                                        }
+                                                                        {/* {innerItem3?.childCount >
+                                                                        1
+                                                                          ? "  |"
+                                                                          : ""} */}
+                                                                      </Text>
+                                                                    
+                                                                    </View>
+                                                                        <View style={{flexDirection:"row"}}>
+                                                                      {innerItem3?.childCount >
+                                                                        1 && (
+                                                                        <Animated.View style={{
+                                                                          transform: [
                                                                             {
                                                                               translateX:
                                                                                 translation,
                                                                             },
                                                                           ],
-                                                                      }}
-                                                                    />
+                                                                        }}>
+                                                                          <View
+                                                                            style={{
+                                                                              backgroundColor:
+                                                                                "lightgrey",
+                                                                              flexDirection:
+                                                                                "row",
+                                                                              paddingHorizontal: 7,
+                                                                              borderRadius: 10,
+                                                                              alignItems:
+                                                                                "center",
+                                                                              justifyContent:
+                                                                                "space-between",
+                                                                              marginBottom: 5,
+                                                                              alignSelf:
+                                                                                "flex-start",
+                                                                              marginLeft: 7,
+                                                                            }}
+                                                                          >
+                                                                            <MaterialIcons
+                                                                              name="person"
+                                                                              size={
+                                                                                15
+                                                                              }
+                                                                              color={
+                                                                                Colors.BLACK
+                                                                              }
+                                                                            />
+                                                                            <Text>
+                                                                              {
+                                                                                innerItem3?.childCount
+                                                                              }
+                                                                            </Text>
+                                                                          </View>
+                                                                          </Animated.View>
+                                                                        )}
+                                                                      <SourceModelView
+                                                                        onClick={() => {
+                                                                          navigation.navigate(
+                                                                            AppNavigator
+                                                                              .HomeStackIdentifiers
+                                                                              .sourceModel,
+                                                                            {
+                                                                              empId:
+                                                                                innerItem3.empId,
+                                                                              headerTitle:
+                                                                                innerItem3.empName,
+                                                                              type: "TEAM",
+                                                                              moduleType:
+                                                                                "home",
+                                                                            }
+                                                                          );
+                                                                        }}
+                                                                        style={{
+                                                                          transform:
+                                                                            [
+                                                                              {
+                                                                                translateX:
+                                                                                  translation,
+                                                                              },
+                                                                            ],
+                                                                        }}
+                                                                      />
+                                                                        </View>
+                                                                   
                                                                   </View>
                                                                   <View
                                                                     style={{
@@ -1345,6 +1610,9 @@ const TargetScreen = ({ route }) => {
                                                                       }
                                                                       color={
                                                                         "#EC3466"
+                                                                      }
+                                                                      navigation={
+                                                                        navigation
                                                                       }
                                                                       branchName={getBranchName(
                                                                         innerItem3.branchId
@@ -1414,6 +1682,43 @@ const TargetScreen = ({ route }) => {
                                                                           >
                                                                             <View
                                                                               style={{
+                                                                                paddingHorizontal: 4,
+                                                                                display:
+                                                                                  "flex",
+                                                                                flexDirection:
+                                                                                  "row",
+                                                                                justifyContent:
+                                                                                  "space-between",
+                                                                                paddingVertical: 4,
+                                                                              }}
+                                                                            >
+                                                                              <Text
+                                                                                onPress={() => {
+                                                                                  navigation.navigate(
+                                                                                    AppNavigator
+                                                                                      .HomeStackIdentifiers
+                                                                                      .location,
+                                                                                    {
+                                                                                      empId:
+                                                                                        innerItem4.empId,
+                                                                                      orgId:
+                                                                                        innerItem4.orgId,
+                                                                                    }
+                                                                                  );
+                                                                                }}
+                                                                                style={{
+                                                                                  fontSize: 10,
+                                                                                  fontWeight:
+                                                                                    "500",
+                                                                                }}
+                                                                              >
+                                                                                {
+                                                                                  innerItem4.empName
+                                                                                }
+                                                                              </Text>
+                                                                            </View>
+                                                                            <View
+                                                                              style={{
                                                                                 flexDirection:
                                                                                   "row",
                                                                               }}
@@ -1427,6 +1732,9 @@ const TargetScreen = ({ route }) => {
                                                                                 }
                                                                                 color={
                                                                                   "#1C95A6"
+                                                                                }
+                                                                                navigation={
+                                                                                  navigation
                                                                                 }
                                                                                 branchName={getBranchName(
                                                                                   innerItem4.branchId
@@ -1498,6 +1806,43 @@ const TargetScreen = ({ route }) => {
                                                                                     >
                                                                                       <View
                                                                                         style={{
+                                                                                          paddingHorizontal: 4,
+                                                                                          display:
+                                                                                            "flex",
+                                                                                          flexDirection:
+                                                                                            "row",
+                                                                                          justifyContent:
+                                                                                            "space-between",
+                                                                                          paddingVertical: 4,
+                                                                                        }}
+                                                                                      >
+                                                                                        <Text
+                                                                                          onPress={() => {
+                                                                                            navigation.navigate(
+                                                                                              AppNavigator
+                                                                                                .HomeStackIdentifiers
+                                                                                                .location,
+                                                                                              {
+                                                                                                empId:
+                                                                                                  innerItem5.empId,
+                                                                                                orgId:
+                                                                                                  innerItem5.orgId,
+                                                                                              }
+                                                                                            );
+                                                                                          }}
+                                                                                          style={{
+                                                                                            fontSize: 10,
+                                                                                            fontWeight:
+                                                                                              "500",
+                                                                                          }}
+                                                                                        >
+                                                                                          {
+                                                                                            innerItem5.empName
+                                                                                          }
+                                                                                        </Text>
+                                                                                      </View>
+                                                                                      <View
+                                                                                        style={{
                                                                                           flexDirection:
                                                                                             "row",
                                                                                         }}
@@ -1511,6 +1856,9 @@ const TargetScreen = ({ route }) => {
                                                                                           }
                                                                                           color={
                                                                                             "#C62159"
+                                                                                          }
+                                                                                          navigation={
+                                                                                            navigation
                                                                                           }
                                                                                           branchName={getBranchName(
                                                                                             innerItem5.branchId
@@ -1585,6 +1933,43 @@ const TargetScreen = ({ route }) => {
                                                                                               >
                                                                                                 <View
                                                                                                   style={{
+                                                                                                    paddingHorizontal: 4,
+                                                                                                    display:
+                                                                                                      "flex",
+                                                                                                    flexDirection:
+                                                                                                      "row",
+                                                                                                    justifyContent:
+                                                                                                      "space-between",
+                                                                                                    paddingVertical: 4,
+                                                                                                  }}
+                                                                                                >
+                                                                                                  <Text
+                                                                                                    onPress={() => {
+                                                                                                      navigation.navigate(
+                                                                                                        AppNavigator
+                                                                                                          .HomeStackIdentifiers
+                                                                                                          .location,
+                                                                                                        {
+                                                                                                          empId:
+                                                                                                            innerItem6.empId,
+                                                                                                          orgId:
+                                                                                                            innerItem6.orgId,
+                                                                                                        }
+                                                                                                      );
+                                                                                                    }}
+                                                                                                    style={{
+                                                                                                      fontSize: 10,
+                                                                                                      fontWeight:
+                                                                                                        "500",
+                                                                                                    }}
+                                                                                                  >
+                                                                                                    {
+                                                                                                      innerItem6.empName
+                                                                                                    }
+                                                                                                  </Text>
+                                                                                                </View>
+                                                                                                <View
+                                                                                                  style={{
                                                                                                     flexDirection:
                                                                                                       "row",
                                                                                                   }}
@@ -1598,6 +1983,9 @@ const TargetScreen = ({ route }) => {
                                                                                                     }
                                                                                                     color={
                                                                                                       "#C62159"
+                                                                                                    }
+                                                                                                    navigation={
+                                                                                                      navigation
                                                                                                     }
                                                                                                     branchName={getBranchName(
                                                                                                       innerItem6.branchId
@@ -1845,424 +2233,428 @@ const TargetScreen = ({ route }) => {
                   </View>
                 )}
                 <>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "flex-end",
-                      marginVertical: 10,
-                      marginRight: 10,
-                    }}
-                  >
-                    <SourceModelView
-                      style={{ alignSelf: "flex-end" }}
-                      onClick={() => {
-                        navigation.navigate("RECEP_SOURCE_MODEL", {
-                          empId: userData.empId,
-                          headerTitle: "Source/Model",
-                          loggedInEmpId: userData.empId,
-                          orgId: userData.orgId,
-                        });
-                      }}
-                    />
-                  </View>
                   {userData.hrmsRole == "Reception" && (
-                    <ScrollView showsVerticalScrollIndicator={false}>
+                    <>
                       <View
                         style={{
                           flexDirection: "row",
-                          justifyContent: "space-between",
-                          paddingHorizontal: 10,
+                          justifyContent: "flex-end",
+                          marginVertical: 10,
+                          marginRight: 10,
                         }}
                       >
-                        <View
-                          style={{
-                            justifyContent: "center",
-                            alignItems: "center",
-                            width: "35%",
+                        <SourceModelView
+                          style={{ alignSelf: "flex-end" }}
+                          onClick={() => {
+                            navigation.navigate("RECEP_SOURCE_MODEL", {
+                              empId: userData.empId,
+                              headerTitle: "Source/Model",
+                              loggedInEmpId: userData.empId,
+                              orgId: userData.orgId,
+                            });
                           }}
-                        >
-                          <Text
-                            style={{
-                              fontSize: 14,
-                              fontWeight: "400",
-                              textDecorationLine: "underline",
-                              textDecorationColor: "#00b1ff",
-                            }}
-                          >
-                            {"Consultant Name"}
-                          </Text>
-                        </View>
-
+                        />
+                      </View>
+                      <ScrollView showsVerticalScrollIndicator={false}>
                         <View
                           style={{
                             flexDirection: "row",
                             justifyContent: "space-between",
-                            width: "50%",
+                            paddingHorizontal: 10,
                           }}
                         >
-                          <Text
+                          <View
                             style={{
-                              fontSize: 13,
-                              fontWeight: "400",
-                              textDecorationLine: "underline",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              width: "35%",
                             }}
                           >
-                            {"Leads Allocated"}
-                          </Text>
-                          <Text
+                            <Text
+                              style={{
+                                fontSize: 14,
+                                fontWeight: "400",
+                                textDecorationLine: "underline",
+                                textDecorationColor: "#00b1ff",
+                              }}
+                            >
+                              {"Consultant Name"}
+                            </Text>
+                          </View>
+
+                          <View
                             style={{
-                              fontSize: 13,
-                              fontWeight: "400",
-                              textDecorationLine: "underline",
+                              flexDirection: "row",
+                              justifyContent: "space-between",
+                              width: "50%",
                             }}
                           >
-                            {"Drop Leads"}
-                          </Text>
+                            <Text
+                              style={{
+                                fontSize: 13,
+                                fontWeight: "400",
+                                textDecorationLine: "underline",
+                              }}
+                            >
+                              {"Leads Allocated"}
+                            </Text>
+                            <Text
+                              style={{
+                                fontSize: 13,
+                                fontWeight: "400",
+                                textDecorationLine: "underline",
+                              }}
+                            >
+                              {"Drop Leads"}
+                            </Text>
+                          </View>
                         </View>
-                      </View>
-                      <FlatList
-                        data={selector.receptionistData.consultantList}
-                        style={{ marginTop: 10 }}
-                        nestedScrollEnabled
-                        renderItem={({ item }) => {
-                          Array.prototype.random = function () {
-                            return this[
-                              Math.floor(Math.random() * this.length)
-                            ];
-                          };
-                          let selectedColor = color.random();
-                          return (
+                        <FlatList
+                          data={selector.receptionistData.consultantList}
+                          style={{ marginTop: 10 }}
+                          nestedScrollEnabled
+                          renderItem={({ item }) => {
+                            Array.prototype.random = function () {
+                              return this[
+                                Math.floor(Math.random() * this.length)
+                              ];
+                            };
+                            let selectedColor = color.random();
+                            return (
+                              <View
+                                style={{
+                                  flexDirection: "row",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  paddingHorizontal: 10,
+                                  marginVertical: 5,
+                                }}
+                              >
+                                <View
+                                  style={{
+                                    justifyContent: "center",
+                                    alignItems: "flex-start",
+                                    width: "50%",
+                                  }}
+                                >
+                                  <Text numberOfLines={1}>
+                                    {item?.emp_name}
+                                  </Text>
+                                </View>
+                                <View
+                                  style={{
+                                    width: "45%",
+                                    justifyContent: "space-around",
+                                    flexDirection: "row",
+                                    height: 25,
+                                    alignItems: "center",
+                                    // marginTop: 8,
+                                    marginLeft: 20,
+                                  }}
+                                >
+                                  <View
+                                    style={{
+                                      minWidth: 45,
+                                      height: 25,
+                                      borderColor: selectedColor,
+                                      borderWidth: 1,
+                                      borderRadius: 8,
+                                      justifyContent: "center",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    <Text
+                                      onPress={() => {
+                                        item?.allocatedCount > 0 &&
+                                          navigateToEMS();
+                                      }}
+                                      style={{
+                                        padding: 2,
+                                        textDecorationLine:
+                                          item?.allocatedCount > 0
+                                            ? "underline"
+                                            : "none",
+                                      }}
+                                    >
+                                      {item?.allocatedCount}
+                                    </Text>
+                                  </View>
+                                  <View
+                                    style={{
+                                      minWidth: 45,
+                                      height: 25,
+                                      borderColor: selectedColor,
+                                      borderWidth: 1,
+                                      borderRadius: 8,
+                                      justifyContent: "center",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    <Text
+                                      onPress={() => {
+                                        navigateToDropLostCancel();
+                                      }}
+                                      style={{
+                                        padding: 2,
+                                        textDecorationLine:
+                                          item?.droppedCount > 0
+                                            ? "underline"
+                                            : "none",
+                                      }}
+                                    >
+                                      {item?.droppedCount}
+                                    </Text>
+                                  </View>
+                                </View>
+                              </View>
+                            );
+                          }}
+                        />
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            paddingHorizontal: 10,
+                            marginTop: 10,
+                            marginVertical: 8,
+                          }}
+                        >
+                          <View
+                            style={{
+                              justifyContent: "center",
+                              alignItems: "center",
+                              width: "50%",
+                            }}
+                          >
+                            <Text
+                              style={{
+                                fontSize: 15,
+                                fontWeight: "600",
+                                color: "#00b1ff",
+                              }}
+                            >
+                              {"Total"}
+                            </Text>
+                          </View>
+                          <View
+                            style={{
+                              width: "45%",
+                              justifyContent: "space-around",
+                              flexDirection: "row",
+                              height: 25,
+                              alignItems: "center",
+                              // marginTop: 8,
+                              marginLeft: 20,
+                            }}
+                          >
                             <View
                               style={{
-                                flexDirection: "row",
-                                alignItems: "center",
+                                minWidth: 45,
+                                height: 25,
+                                borderColor: "#00b1ff",
+                                borderWidth: 1,
+                                borderRadius: 8,
                                 justifyContent: "center",
-                                paddingHorizontal: 10,
-                                marginVertical: 5,
+                                alignItems: "center",
                               }}
                             >
-                              <View
-                                style={{
-                                  justifyContent: "center",
-                                  alignItems: "flex-start",
-                                  width: "50%",
-                                }}
-                              >
-                                <Text numberOfLines={1}>{item?.emp_name}</Text>
-                              </View>
-                              <View
-                                style={{
-                                  width: "45%",
-                                  justifyContent: "space-around",
-                                  flexDirection: "row",
-                                  height: 25,
-                                  alignItems: "center",
-                                  // marginTop: 8,
-                                  marginLeft: 20,
-                                }}
-                              >
-                                <View
-                                  style={{
-                                    minWidth: 45,
-                                    height: 25,
-                                    borderColor: selectedColor,
-                                    borderWidth: 1,
-                                    borderRadius: 8,
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                  }}
-                                >
-                                  <Text
-                                    onPress={() => {
-                                      item?.allocatedCount > 0 &&
-                                        navigateToEMS();
-                                    }}
-                                    style={{
-                                      padding: 2,
-                                      textDecorationLine:
-                                        item?.allocatedCount > 0
-                                          ? "underline"
-                                          : "none",
-                                    }}
-                                  >
-                                    {item?.allocatedCount}
-                                  </Text>
-                                </View>
-                                <View
-                                  style={{
-                                    minWidth: 45,
-                                    height: 25,
-                                    borderColor: selectedColor,
-                                    borderWidth: 1,
-                                    borderRadius: 8,
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                  }}
-                                >
-                                  <Text
-                                    onPress={() => {
-                                      navigateToDropLostCancel();
-                                    }}
-                                    style={{
-                                      padding: 2,
-                                      textDecorationLine:
-                                        item?.droppedCount > 0
-                                          ? "underline"
-                                          : "none",
-                                    }}
-                                  >
-                                    {item?.droppedCount}
-                                  </Text>
-                                </View>
-                              </View>
-                            </View>
-                          );
-                        }}
-                      />
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                          paddingHorizontal: 10,
-                          marginTop: 10,
-                          marginVertical: 8,
-                        }}
-                      >
-                        <View
-                          style={{
-                            justifyContent: "center",
-                            alignItems: "center",
-                            width: "50%",
-                          }}
-                        >
-                          <Text
-                            style={{
-                              fontSize: 15,
-                              fontWeight: "600",
-                              color: "#00b1ff",
-                            }}
-                          >
-                            {"Total"}
-                          </Text>
-                        </View>
-                        <View
-                          style={{
-                            width: "45%",
-                            justifyContent: "space-around",
-                            flexDirection: "row",
-                            height: 25,
-                            alignItems: "center",
-                            // marginTop: 8,
-                            marginLeft: 20,
-                          }}
-                        >
-                          <View
-                            style={{
-                              minWidth: 45,
-                              height: 25,
-                              borderColor: "#00b1ff",
-                              borderWidth: 1,
-                              borderRadius: 8,
-                              justifyContent: "center",
-                              alignItems: "center",
-                            }}
-                          >
-                            <Text
-                              onPress={() => {
-                                selector.receptionistData.totalAllocatedCount >
-                                  0 && navigateToEMS();
-                              }}
-                              style={{
-                                padding: 2,
-                                textDecorationLine:
+                              <Text
+                                onPress={() => {
                                   selector.receptionistData
-                                    .totalAllocatedCount > 0
-                                    ? "underline"
-                                    : "none",
+                                    .totalAllocatedCount > 0 && navigateToEMS();
+                                }}
+                                style={{
+                                  padding: 2,
+                                  textDecorationLine:
+                                    selector.receptionistData
+                                      .totalAllocatedCount > 0
+                                      ? "underline"
+                                      : "none",
+                                }}
+                              >
+                                {selector.receptionistData.totalAllocatedCount}
+                              </Text>
+                            </View>
+                            <View
+                              style={{
+                                minWidth: 45,
+                                height: 25,
+                                borderColor: "#00b1ff",
+                                borderWidth: 1,
+                                borderRadius: 8,
+                                justifyContent: "center",
+                                alignItems: "center",
                               }}
                             >
-                              {selector.receptionistData.totalAllocatedCount}
-                            </Text>
+                              <Text
+                                onPress={() => {
+                                  navigateToDropLostCancel();
+                                }}
+                                style={{
+                                  padding: 2,
+                                  textDecorationLine:
+                                    selector.receptionistData
+                                      .totalDroppedCount > 0
+                                      ? "underline"
+                                      : "none",
+                                }}
+                              >
+                                {selector.receptionistData.totalDroppedCount}
+                              </Text>
+                            </View>
                           </View>
-                          <View
-                            style={{
-                              minWidth: 45,
-                              height: 25,
-                              borderColor: "#00b1ff",
-                              borderWidth: 1,
-                              borderRadius: 8,
-                              justifyContent: "center",
-                              alignItems: "center",
-                            }}
-                          >
+                        </View>
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            marginTop: 16,
+                            justifyContent: "space-between",
+                            marginHorizontal: 8,
+                          }}
+                        >
+                          <View style={{ ...styles.statWrap, width: "33%" }}>
                             <Text
-                              onPress={() => {
-                                navigateToDropLostCancel();
-                              }}
                               style={{
-                                padding: 2,
-                                textDecorationLine:
-                                  selector.receptionistData.totalDroppedCount >
-                                  0
-                                    ? "underline"
-                                    : "none",
+                                marginLeft: 10,
+                                fontSize: 16,
+                                fontWeight: "600",
+                                flexDirection: "row",
                               }}
                             >
-                              {selector.receptionistData.totalDroppedCount}
+                              E2B
                             </Text>
+                            {bookingData !== null && enqData !== null ? (
+                              <Text
+                                style={{
+                                  color:
+                                    Math.floor(
+                                      (parseInt(bookingData?.achievment) /
+                                        parseInt(enqData?.achievment)) *
+                                        100
+                                    ) > 40
+                                      ? "#14ce40"
+                                      : "#ff0000",
+                                  fontSize: 12,
+                                  marginRight: 4,
+                                }}
+                              >
+                                {parseInt(bookingData?.achievment) === 0 ||
+                                parseInt(enqData?.achievment) === 0
+                                  ? 0
+                                  : Math.round(
+                                      (parseInt(bookingData?.achievment) /
+                                        parseInt(enqData?.achievment)) *
+                                        100
+                                    )}
+                                %
+                              </Text>
+                            ) : (
+                              <Text
+                                style={{
+                                  color: "#ff0000",
+                                  fontSize: 12,
+                                }}
+                              >
+                                0%
+                              </Text>
+                            )}
+                          </View>
+                          <View style={{ ...styles.statWrap, width: "33%" }}>
+                            <Text
+                              style={{
+                                marginLeft: 10,
+                                fontSize: 16,
+                                fontWeight: "600",
+                              }}
+                            >
+                              E2R
+                            </Text>
+                            {enqData !== null && visitData !== null ? (
+                              <Text
+                                style={{
+                                  color:
+                                    Math.floor(
+                                      (parseInt(visitData?.achievment) /
+                                        parseInt(enqData?.achievment)) *
+                                        100
+                                    ) > 40
+                                      ? "#14ce40"
+                                      : "#ff0000",
+                                  fontSize: 12,
+                                  marginRight: 4,
+                                }}
+                              >
+                                {parseInt(enqData?.achievment) === 0 ||
+                                parseInt(visitData?.achievment) === 0
+                                  ? 0
+                                  : Math.round(
+                                      (parseInt(visitData?.achievment) /
+                                        parseInt(enqData?.achievment)) *
+                                        100
+                                    )}
+                                %
+                              </Text>
+                            ) : (
+                              <Text
+                                style={{
+                                  color: "#ff0000",
+                                  fontSize: 12,
+                                }}
+                              >
+                                0%
+                              </Text>
+                            )}
+                          </View>
+                          <View style={{ ...styles.statWrap, width: "33%" }}>
+                            <Text
+                              style={{
+                                marginLeft: 10,
+                                fontSize: 16,
+                                fontWeight: "600",
+                              }}
+                            >
+                              E2R
+                            </Text>
+                            {finData !== null && retailData !== null ? (
+                              <Text
+                                style={{
+                                  color:
+                                    Math.floor(
+                                      (parseInt(finData?.achievment) /
+                                        parseInt(retailData?.achievment)) *
+                                        100
+                                    ) > 40
+                                      ? "#14ce40"
+                                      : "#ff0000",
+                                  fontSize: 12,
+                                  marginRight: 4,
+                                }}
+                              >
+                                {parseInt(finData?.achievment) === 0 ||
+                                parseInt(retailData?.achievment) === 0
+                                  ? 0
+                                  : Math.round(
+                                      (parseInt(finData?.achievment) /
+                                        parseInt(retailData?.achievment)) *
+                                        100
+                                    )}
+                                %
+                              </Text>
+                            ) : (
+                              <Text
+                                style={{
+                                  color: "#ff0000",
+                                  fontSize: 12,
+                                }}
+                              >
+                                0%
+                              </Text>
+                            )}
                           </View>
                         </View>
-                      </View>
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          marginTop: 16,
-                          justifyContent: "space-between",
-                          marginHorizontal: 8,
-                        }}
-                      >
-                        <View style={{ ...styles.statWrap, width: "33%" }}>
-                          <Text
-                            style={{
-                              marginLeft: 10,
-                              fontSize: 16,
-                              fontWeight: "600",
-                              flexDirection: "row",
-                            }}
-                          >
-                            E2B
-                          </Text>
-                          {bookingData !== null && enqData !== null ? (
-                            <Text
-                              style={{
-                                color:
-                                  Math.floor(
-                                    (parseInt(bookingData?.achievment) /
-                                      parseInt(enqData?.achievment)) *
-                                      100
-                                  ) > 40
-                                    ? "#14ce40"
-                                    : "#ff0000",
-                                fontSize: 12,
-                                marginRight: 4,
-                              }}
-                            >
-                              {parseInt(bookingData?.achievment) === 0 ||
-                              parseInt(enqData?.achievment) === 0
-                                ? 0
-                                : Math.round(
-                                    (parseInt(bookingData?.achievment) /
-                                      parseInt(enqData?.achievment)) *
-                                      100
-                                  )}
-                              %
-                            </Text>
-                          ) : (
-                            <Text
-                              style={{
-                                color: "#ff0000",
-                                fontSize: 12,
-                              }}
-                            >
-                              0%
-                            </Text>
-                          )}
-                        </View>
-                        <View style={{ ...styles.statWrap, width: "33%" }}>
-                          <Text
-                            style={{
-                              marginLeft: 10,
-                              fontSize: 16,
-                              fontWeight: "600",
-                            }}
-                          >
-                            E2R
-                          </Text>
-                          {enqData !== null && visitData !== null ? (
-                            <Text
-                              style={{
-                                color:
-                                  Math.floor(
-                                    (parseInt(visitData?.achievment) /
-                                      parseInt(enqData?.achievment)) *
-                                      100
-                                  ) > 40
-                                    ? "#14ce40"
-                                    : "#ff0000",
-                                fontSize: 12,
-                                marginRight: 4,
-                              }}
-                            >
-                              {parseInt(enqData?.achievment) === 0 ||
-                              parseInt(visitData?.achievment) === 0
-                                ? 0
-                                : Math.round(
-                                    (parseInt(visitData?.achievment) /
-                                      parseInt(enqData?.achievment)) *
-                                      100
-                                  )}
-                              %
-                            </Text>
-                          ) : (
-                            <Text
-                              style={{
-                                color: "#ff0000",
-                                fontSize: 12,
-                              }}
-                            >
-                              0%
-                            </Text>
-                          )}
-                        </View>
-                        <View style={{ ...styles.statWrap, width: "33%" }}>
-                          <Text
-                            style={{
-                              marginLeft: 10,
-                              fontSize: 16,
-                              fontWeight: "600",
-                            }}
-                          >
-                            E2R
-                          </Text>
-                          {finData !== null && retailData !== null ? (
-                            <Text
-                              style={{
-                                color:
-                                  Math.floor(
-                                    (parseInt(finData?.achievment) /
-                                      parseInt(retailData?.achievment)) *
-                                      100
-                                  ) > 40
-                                    ? "#14ce40"
-                                    : "#ff0000",
-                                fontSize: 12,
-                                marginRight: 4,
-                              }}
-                            >
-                              {parseInt(finData?.achievment) === 0 ||
-                              parseInt(retailData?.achievment) === 0
-                                ? 0
-                                : Math.round(
-                                    (parseInt(finData?.achievment) /
-                                      parseInt(retailData?.achievment)) *
-                                      100
-                                  )}
-                              %
-                            </Text>
-                          ) : (
-                            <Text
-                              style={{
-                                color: "#ff0000",
-                                fontSize: 12,
-                              }}
-                            >
-                              0%
-                            </Text>
-                          )}
-                        </View>
-                      </View>
-                    </ScrollView>
+                      </ScrollView>
+                    </>
                   )}
                 </>
                 {/* Header view end */}
@@ -2776,6 +3168,7 @@ export const RenderLevel1NameView = ({
   branchName = "",
   color,
   titleClick,
+  navigation,
   disable = false,
 }) => {
   return (
@@ -2811,7 +3204,7 @@ export const RenderLevel1NameView = ({
               color: "#fff",
             }}
           >
-            {item.empName.charAt(0)}
+            {item?.empName?.charAt(0)}
           </Text>
         </TouchableOpacity>
         {/* {level === 0 && !!branchName && ( */}

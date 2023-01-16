@@ -52,7 +52,7 @@ const ActiveScreen = ({ navigation }) => {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        "auth-token": temptoken,
+        "Authorization": "Bearer " + temptoken,
       },
       body: JSON.stringify(payload),
     })

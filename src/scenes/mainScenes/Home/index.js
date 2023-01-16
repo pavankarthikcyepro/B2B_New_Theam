@@ -13,10 +13,11 @@ import {
   Keyboard,
   Image,
   Platform,
+  PermissionsAndroid,
   TouchableWithoutFeedback,
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
-import { IconButton, Card, Button } from "react-native-paper";
+import { IconButton, Card, Button, Portal } from "react-native-paper";
 import VectorImage from "react-native-vector-image";
 import { useDispatch, useSelector } from "react-redux";
 import { FILTER, SPEED } from "../../../assets/svg";
@@ -53,6 +54,7 @@ import {
   getTargetParametersEmpDataInsights,
   updateIsRankHide,
   getReceptionistData,
+  updateIsModalVisible,
 } from "../../../redux/homeReducer";
 import { getCallRecordingCredentials } from "../../../redux/callRecordingReducer";
 import { updateData, updateIsManager } from "../../../redux/sideMenuReducer";
@@ -81,10 +83,25 @@ import RNFetchBlob from "rn-fetch-blob";
 import empData from "../../../get_target_params_for_emp.json";
 import allData from "../../../get_target_params_for_all_emps.json";
 import targetData from "../../../get_target_params.json";
-import ReactNativeModal from "react-native-modal";
-import Carousel, { Pagination } from "react-native-snap-carousel";
+import AttendanceForm from "../../../components/AttendanceForm";
 import URL from "../../../networking/endpoints";
 import { client } from "../../../networking/client";
+import Geolocation from "@react-native-community/geolocation";
+import {
+  createDateTime,
+  getDistanceBetweenTwoPoints,
+  officeRadius,
+} from "../../../service";
+import ReactNativeModal from "react-native-modal";
+import Carousel, { Pagination } from "react-native-snap-carousel";
+import { monthNamesCap } from "../Attendance/AttendanceTop";
+import { getNotificationList } from "../../../redux/notificationReducer";
+import AttendanceFromSelf from "../../../components/AttendanceFromSelf";
+
+const officeLocation = {
+  latitude: 37.33233141,
+  longitude: -122.0312186,
+};
 
 const HomeScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
@@ -107,6 +124,9 @@ const HomeScreen = ({ route, navigation }) => {
   const [headerText, setHeaderText] = useState("");
   const [isButtonPresent, setIsButtonPresent] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [attendance, setAttendance] = useState(false);
+  const [reason, setReason] = useState(false);
+  const [initialPosition, setInitialPosition] = useState({});
   const [showModal, setShowModal] = useState(false);
   const [options, setOptions] = useState({});
   const [activeBannerIndex, setActiveBannerIndex] = useState(0);
@@ -119,9 +139,116 @@ const HomeScreen = ({ route, navigation }) => {
 
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {
-      setTargetData().then((r) => {}); //Commented to resolved filter issue for Home Screen
+      getCurrentLocation();
+      setTargetData().then(() => {}); //Commented to resolved filter issue for Home Screen
     });
   }, [navigation]);
+
+  const getCurrentLocation = async () => {
+    try {
+      if (Platform.OS === "ios") {
+        Geolocation.requestAuthorization();
+        Geolocation.setRNConfiguration({
+          skipPermissionRequests: false,
+          authorizationLevel: "whenInUse",
+        });
+      }
+      Geolocation.getCurrentPosition(
+        (position) => {
+          const initialPosition = JSON.stringify(position);
+          let json = JSON.parse(initialPosition);
+          setInitialPosition(json.coords);
+        },
+        (error) => {
+          console.log(JSON.stringify(error));
+        },
+        { enableHighAccuracy: true }
+      );
+    } catch (error) {
+      console.log("ERROR", error);
+    }
+  };
+
+  useEffect(() => {
+    if (
+      selector.isModalVisible
+      // && !isEmpty(initialPosition)
+    ) {
+      getDetails();
+    }
+  }, [selector.isModalVisible, initialPosition]);
+
+  function isEmpty(obj) {
+    return Object.keys(obj).length === 0;
+  }
+
+  const getDetails = async () => {
+    try {
+      var startDate = createDateTime("8:30");
+      var startBetween = createDateTime("11:30");
+      var endBetween = createDateTime("20:30");
+      var endDate = createDateTime("21:30");
+      var now = new Date();
+      var isBetween = startDate <= now && now <= endDate;
+      if (true) {
+        let employeeData = await AsyncStore.getData(
+          AsyncStore.Keys.LOGIN_EMPLOYEE
+        );
+        if (employeeData) {
+          const jsonObj = JSON.parse(employeeData);
+          dispatch(getNotificationList(jsonObj.empId));
+           var d = new Date();
+          const response = await client.get(
+            URL.GET_ATTENDANCE_EMPID(
+              jsonObj.empId,
+              jsonObj.orgId,
+              monthNamesCap[d.getMonth()]
+            )
+          );
+          const json = await response.json();
+          if (json.length != 0) {
+            let date = new Date(json[json.length - 1].createdtimestamp);
+            // let dist = getDistanceBetweenTwoPoints(
+            //   officeLocation.latitude,
+            //   officeLocation.longitude,
+            //   initialPosition?.latitude,
+            //   initialPosition?.longitude
+            // );
+            // if (dist > officeRadius) {
+            //   setReason(true); ///true for reason
+            // } else {
+            //   setReason(false);
+            // }
+            if (date.getDate() != new Date().getDate()) {
+              setAttendance(true);
+              // if (startDate <= now && now <= startBetween) {
+              //   setAttendance(true);
+              // } else {
+              //   setAttendance(false);
+              // }
+            } else {
+              // if (endBetween <= now && now <= endDate && json.isLogOut == 0) {
+              //   setAttendance(true);
+              // } else {
+              //   setAttendance(false);
+              // }
+            }
+          } else {
+            console.log("DDDD");
+            setAttendance(true);
+            //  if (startDate <= now && now <= startBetween) {
+            //    setAttendance(true);
+            //  } else {
+            //    setAttendance(false);
+            //  }
+          }
+        }
+      }
+      dispatch(updateIsModalVisible(false));
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(async () => {
     if (userData.hrmsRole === "Reception") {
@@ -217,7 +344,7 @@ const HomeScreen = ({ route, navigation }) => {
     }
   }, [selector.allGroupDealerData]);
 
-  useEffect(async () => {
+  useEffect(() => {
     // if (await AsyncStore.getData(AsyncStore.Keys.IS_LOGIN) === 'true'){
     getMenuListFromServer();
     getCustomerType();
@@ -230,7 +357,7 @@ const HomeScreen = ({ route, navigation }) => {
     });
 
     return unsubscribe;
-  }, [navigation]);
+  }, [navigation,selector.filterIds]);
 
   const getCustomerType = async () => {
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
@@ -388,13 +515,22 @@ const HomeScreen = ({ route, navigation }) => {
           .subtract(0, "months")
           .endOf("month")
           .format(dateFormat);
+
         const payload = {
-          endDate: monthLastDate,
+          endDate: selector?.filterIds?.endDate
+            ? selector.filterIds.endDate
+            : monthLastDate,
           loggedInEmpId: jsonObj.empId,
-          startDate: monthFirstDate,
-          levelSelected: null,
+          startDate: selector?.filterIds?.startDate
+            ? selector.filterIds.startDate
+            : monthFirstDate,
           empId: jsonObj.empId,
         };
+        if (selector.filterIds?.empSelected?.length) {
+          payload["empSelected"] = selector.filterIds.empSelected;
+        } else {
+          payload["levelSelected"] = null;
+        }
         getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
           .then((x) => {})
           .catch((y) => {});
@@ -419,7 +555,10 @@ const HomeScreen = ({ route, navigation }) => {
         dispatch(updateIsManager(false));
       }
 
-      if (jsonObj?.hrmsRole.toLowerCase().includes("dse")) {
+      if (
+        jsonObj?.hrmsRole.toLowerCase().includes("dse") ||
+        jsonObj?.hrmsRole.toLowerCase().includes("sales consultant")
+      ) {
         dispatch(updateIsDSE(true));
       } else {
         dispatch(updateIsDSE(false));
@@ -463,10 +602,13 @@ const HomeScreen = ({ route, navigation }) => {
         .endOf("month")
         .format(dateFormat);
       const payload = {
-        endDate: monthLastDate,
+        endDate: selector?.filterIds?.endDate
+          ? selector.filterIds.endDate
+          : monthLastDate,
         loggedInEmpId: jsonObj.empId,
-        startDate: monthFirstDate,
-        levelSelected: null,
+        startDate: selector?.filterIds?.startDate
+          ? selector.filterIds.startDate
+          : monthFirstDate,
         empId: jsonObj.empId,
       };
       if (isTeamPresent) {
@@ -498,13 +640,21 @@ const HomeScreen = ({ route, navigation }) => {
       .endOf("month")
       .format(dateFormat);
     const payload = {
-      endDate: monthLastDate,
+      endDate: selector?.filterIds?.endDate
+        ? selector.filterIds.endDate
+        : monthLastDate,
       loggedInEmpId: empId,
-      startDate: monthFirstDate,
-      levelSelected: null,
+      startDate: selector?.filterIds?.startDate
+        ? selector.filterIds.startDate
+        : monthFirstDate,
       empId: empId,
     };
-
+    if (selector.filterIds?.empSelected?.length) {
+      payload["empSelected"] = selector.filterIds.empSelected;
+    } else {
+      payload["levelSelected"] = null;
+    }
+   
     Promise.all([
       dispatch(getLeadSourceTableList(payload)),
       dispatch(getVehicleModelTableList(payload)),
@@ -604,10 +754,14 @@ const HomeScreen = ({ route, navigation }) => {
       loggedInEmpId: payload.empId,
       empId: payload.empId,
       startDate: payload.startDate,
-      levelSelected: null,
       pageNo: 0,
       size: 100,
     };
+    if (selector.filterIds?.empSelected?.length) {
+      payload2["empSelected"] = selector.filterIds.empSelected;
+    } else {
+      payload2["levelSelected"] = null;
+    }
     Promise.allSettled([
       //dispatch(getTargetParametersAllData(payload1)),
       dispatch(getTotalTargetParametersData(payload2)),
@@ -792,9 +946,7 @@ const HomeScreen = ({ route, navigation }) => {
         });
     }
   };
-  function isEmpty(obj) {
-    return Object.keys(obj).length === 0;
-  }
+
   const downloadInLocal = async (url) => {
     const { config, fs } = RNFetchBlob;
     let downloadDir = Platform.select({
@@ -866,6 +1018,7 @@ const HomeScreen = ({ route, navigation }) => {
     // To get the file extension
     return /[.]/.exec(fileUrl) ? /[^.]+$/.exec(fileUrl) : undefined;
   };
+
   const RenderModal = () => {
     return (
       <ReactNativeModal
@@ -965,6 +1118,13 @@ const HomeScreen = ({ route, navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <RenderModal />
+      <AttendanceFromSelf
+        visible={attendance}
+        showReason={reason}
+        inVisible={() => {
+          setAttendance(false);
+        }}
+      />
       <DropDownComponant
         visible={showDropDownModel}
         headerTitle={dropDownTitle}
@@ -972,15 +1132,22 @@ const HomeScreen = ({ route, navigation }) => {
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
           setShowDropDownModel(false);
-          setDropDownData({ key: dropDownKey, value: item.name, id: item.id });
+          setDropDownData({
+            key: dropDownKey,
+            value: item.name,
+            id: item.id,
+          });
         }}
       />
+      {/* <Button onPress={()=>{navigation.navigate(AppNavigator.HomeStackIdentifiers.location);}} /> */}
       <HeaderComp
         title={headerText}
         branchName={true}
         menuClicked={() => navigation.openDrawer()}
         branchClicked={() => moveToSelectBranch()}
         filterClicked={() => moveToFilter()}
+        notification={true}
+        navigation={navigation}
       />
       <ScrollView
         showsVerticalScrollIndicator={false}

@@ -14,7 +14,11 @@ import {
 import { Colors } from "../../../styles";
 import { IconButton } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
-import { getTargetParametersEmpDataInsights } from "../../../redux/homeReducer";
+import {
+  getOrganaizationHirarchyList,
+  updateEmpDropDown,
+  updateFilterIds,
+} from "../../../redux/homeReducer";
 import * as AsyncStore from "../../../asyncStore";
 import { DatePickerComponent, DropDownComponant } from "../../../components";
 import { DateSelectItem, DropDownSelectionItem } from "../../../pureComponents";
@@ -80,8 +84,11 @@ const FilterScreen = ({ route, navigation }) => {
     {}
   );
   const [dropDownFrom, setDropDownFrom] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-
+  const [isCall, setIsCall] = useState(true);
+  const [isFilterLoading, setIsFilterLoading] = useState(false);
+  const [isEmployeeLoading, setIsEmployeeLoading] = useState(false);
+  const [isFilter, setIsFilter] = useState(true);
+  const [isMulti, setIsMulti] = useState(false);
   useEffect(() => {
     getAsyncData();
   }, []);
@@ -103,36 +110,71 @@ const FilterScreen = ({ route, navigation }) => {
     }
   };
 
-  useEffect(() => {
-    if (selector.filter_drop_down_data) {
-      let names = [];
-      for (let key in selector.filter_drop_down_data) {
-        names.push(key);
+  useEffect(
+    () => {
+      if (selector.filter_drop_down_data && selector.filterIds) {
+        let data = selector.filter_drop_down_data;
+        let filterIds = selector.filterIds?.levelSelected;
+        let names = [];
+        for (let key in data) {
+          names.push(key);
+          let localData =
+            data[key] && data[key]?.sublevels?.length
+              ? data[key].sublevels
+              : [];
+          let newData = localData?.map((obj) => {
+            return {
+              ...obj,
+              selected: filterIds?.includes(obj?.id) ? true : false,
+            };
+          });
+          data = {
+            ...data,
+            [key]: {
+              sublevels: newData,
+            },
+          };
+        }
+        setNameKeyList([...names]);
+        setTotalDataObj(data);
       }
-      setNameKeyList(names);
-      setTotalDataObj(selector.filter_drop_down_data);
-    }
-
-    const currentDate = moment().format(dateFormat);
-    const monthFirstDate = moment(currentDate, dateFormat)
-      .subtract(0, "months")
-      .startOf("month")
-      .format(dateFormat);
-    const monthLastDate = moment(currentDate, dateFormat)
-      .subtract(0, "months")
-      .endOf("month")
-      .format(dateFormat);
-    setFromDate(monthFirstDate);
-    setToDate(monthLastDate);
-  }, [selector.filter_drop_down_data]);
+    },
+    [selector.filter_drop_down_data],
+    selector.filterIds
+  );
 
   useEffect(() => {
-    if (nameKeyList.length > 0) {
+    if (selector.filterIds) {
+      const currentDate = moment().format(dateFormat);
+      const monthFirstDate =
+        selector.filterIds?.startDate ||
+        moment(currentDate, dateFormat)
+          .subtract(0, "months")
+          .startOf("month")
+          .format(dateFormat);
+      const monthLastDate =
+        selector.filterIds?.endDate ||
+        moment(currentDate, dateFormat)
+          .subtract(0, "months")
+          .endOf("month")
+          .format(dateFormat);
+      setFromDate(monthFirstDate);
+      setToDate(monthLastDate);
+    }
+  }, [selector.filterIds]);
+
+  useEffect(() => {
+    if (
+      nameKeyList.length > 0 &&
+      isCall &&
+      selector.filterIds?.levelSelected?.length > 4
+    ) {
       dropDownItemClicked(4, true);
     }
-  }, [nameKeyList, userData]);
+  }, [nameKeyList, userData, isCall, selector.filterIds]);
 
   const dropDownItemClicked = async (index, initalCall = false) => {
+    setIsMulti(index === 4 || index === 3);
     const topRowSelectedIds = [];
     if (index > 0) {
       const topRowData = totalDataObj[nameKeyList[index - 1]].sublevels;
@@ -148,7 +190,6 @@ const FilterScreen = ({ route, navigation }) => {
       const subLevels = totalDataObj[nameKeyList[index]].sublevels;
       subLevels.forEach((subItem) => {
         const obj = { ...subItem };
-        obj.selected = false;
         if (topRowSelectedIds.includes(Number(subItem.parentId))) {
           data.push(obj);
         }
@@ -175,17 +216,16 @@ const FilterScreen = ({ route, navigation }) => {
     if (index === 4) {
       setDropDownData([...newData]);
       if (initalCall) {
+        let levelIds = selector.filterIds?.levelSelected;
         let updatedMultipleData = [...newData];
-        const obj = { ...updatedMultipleData[0] };
-        if (obj.selected != undefined) {
-          obj.selected = !obj.selected;
-        } else {
-          obj.selected = true;
-        }
-        updatedMultipleData[0] = obj;
+        let nData = updatedMultipleData.map((val) => {
+          return {
+            ...val,
+            selected: levelIds.includes(val.id) ? true : false,
+          };
+        });
+        updatedMultipleData = nData;
         updateSelectedItems(updatedMultipleData, index, true);
-      } else {
-        updateSelectedItemsForEmployeeDropDown(newData, index);
       }
     } else {
       setDropDownData([...data]);
@@ -194,8 +234,8 @@ const FilterScreen = ({ route, navigation }) => {
     !initalCall && setShowDropDownModel(true);
     setDropDownFrom("ORG_TABLE");
   };
-
   const dropDownItemClicked2 = (index) => {
+    setIsMulti(true);
     // const topRowSelectedIds = [];
     // if (index > 0) {
     //     const topRowData = employeeDropDownDataLocal[employeeTitleNameList[index]];
@@ -205,28 +245,75 @@ const FilterScreen = ({ route, navigation }) => {
     //         }
     //     })
     // }
-
-    const data = employeeDropDownDataLocal[employeeTitleNameList[index]];
-    setDropDownData([...data]);
+    let dropdownDatas = employeeDropDownDataLocal[employeeTitleNameList[index]];
+    if (index > 0) {
+      let localIndex = index - 1;
+      let selectedParentIds = [];
+      let localData =
+        employeeDropDownDataLocal[employeeTitleNameList[localIndex]];
+      localData?.length &&
+        localData.forEach((val) => {
+          if (val.selected !== undefined && val.selected === true)
+            selectedParentIds.push(val.id);
+        });
+      if (selectedParentIds?.length > 0) {
+        let data = dropdownDatas.filter((item) =>
+          selectedParentIds.includes(item.parentId)
+        );
+        dropdownDatas = [...data];
+      }
+    }
+    setDropDownData([...dropdownDatas]);
     setSelectedItemIndex(index);
     setShowDropDownModel(true);
     setDropDownFrom("EMPLOYEE_TABLE");
   };
 
   const updateSelectedItems = (data, index, initalCall = false) => {
+    !initalCall && setIsFilter(true);
+    let mainData = data;
+    let mainKey = nameKeyList[index];
     const totalDataObjLocal = { ...totalDataObj };
+    let localData = totalDataObjLocal[mainKey].sublevels;
+    if (!isMulti && localData?.length) {
+      mainData = localData.map((val) => {
+        if (val.id === data?.id) {
+          return {
+            ...data,
+            selected: true,
+          };
+        }
+        return val;
+      });
+    }
+    let isSelected = mainData.find(
+      (val) => val?.selected === true && val?.selected !== undefined
+    );
+    if (!isSelected) {
+      dispatch(updateEmpDropDown());
+      setEmloyeeTitleNameList([]);
+    }
+
+    let isChange = mainData?.find((val, j) => {
+      return val?.selected !== localData[j]?.selected;
+    });
+    if (isChange) {
+      dispatch(updateEmpDropDown());
+      setEmloyeeTitleNameList([]);
+    }
+    if (!isChange && !initalCall) return;
 
     if (index > 0) {
       let selectedParendIds = [];
       let unselectedParentIds = [];
-      data.forEach((item) => {
-        if (item.selected != undefined && item.selected == true) {
-          selectedParendIds.push(Number(item.parentId));
-        } else {
-          unselectedParentIds.push(Number(item.parentId));
-        }
-      });
-
+      mainData?.length &&
+        mainData.forEach((item) => {
+          if (item.selected != undefined && item.selected == true) {
+            selectedParendIds.push(Number(item.parentId));
+          } else {
+            unselectedParentIds.push(Number(item.parentId));
+          }
+        });
       let localIndex = index - 1;
 
       for (localIndex; localIndex >= 0; localIndex--) {
@@ -277,41 +364,113 @@ const FilterScreen = ({ route, navigation }) => {
       }
     }
 
-    let key = nameKeyList[index];
     const newOBJ = {
-      sublevels: data,
+      sublevels: mainData,
     };
-    totalDataObjLocal[key] = newOBJ;
+    totalDataObjLocal[mainKey] = newOBJ;
     setTotalDataObj({ ...totalDataObjLocal });
     initalCall && submitBtnClicked(totalDataObjLocal);
   };
 
   const updateSelectedItemsForEmployeeDropDown = (data, index) => {
-    let key = employeeTitleNameList[index];
+    setIsFilter(true);
     const newTotalDataObjLocal = { ...employeeDropDownDataLocal };
-    newTotalDataObjLocal[key] = data;
+    let key = employeeTitleNameList[index];
+    let arrayCheck = newTotalDataObjLocal[key];
+    let newData = arrayCheck?.map((val, j) => {
+      let nData = data.find((v) => v.id === val.id);
+      if (nData) return nData;
+      return val;
+    });
+    let isChange = arrayCheck?.find((val, j) => {
+      return val?.selected !== newData[j]?.selected;
+    });
+    if (!isChange) return;
+    if (isChange) {
+      if (index > 0) {
+        let selectedParendIds = [];
+        let unselectedParentIds = [];
+        newData.forEach((item) => {
+          if (item.selected != undefined && item.selected == true) {
+            selectedParendIds.push(Number(item.parentId));
+          } else {
+            unselectedParentIds.push(Number(item.parentId));
+          }
+        });
+        let localIndex = index - 1;
+
+        for (localIndex; localIndex >= 0; localIndex--) {
+          let selectedNewParentIds = [];
+          let unselectedNewParentIds = [];
+
+          let key = employeeTitleNameList[localIndex];
+          const dataArray = newTotalDataObjLocal[key];
+
+          if (dataArray.length > 0) {
+            const newDataArry = dataArray.map((subItem, index) => {
+              const obj = { ...subItem };
+              if (selectedParendIds.includes(Number(obj.id))) {
+                obj.selected = true;
+                selectedNewParentIds.push(Number(obj.parentId));
+              } else {
+                obj.selected = false;
+                unselectedNewParentIds.push(Number(obj.parentId));
+              }
+              return obj;
+            });
+            const newOBJ = newDataArry;
+            newTotalDataObjLocal[key] = newOBJ;
+          }
+          selectedParendIds = selectedNewParentIds;
+          unselectedParentIds = unselectedNewParentIds;
+        }
+      }
+
+      let localIndex2 = index + 1;
+      for (
+        localIndex2;
+        localIndex2 < employeeTitleNameList?.length;
+        localIndex2++
+      ) {
+        let newData = [];
+        let key = employeeTitleNameList[localIndex2];
+        let array = newTotalDataObjLocal[key];
+        array?.length &&
+          array.forEach((item) => {
+            newData.push({
+              ...item,
+              selected: false,
+            });
+          });
+        newTotalDataObjLocal[key] = newData;
+      }
+    }
+    newTotalDataObjLocal[key] = newData;
     setEmployeeDropDownDataLocal({ ...newTotalDataObjLocal });
   };
 
-  const clearBtnClicked = () => {
-    const totalDataObjLocal = { ...totalDataObj };
-    let i = 0;
-    for (i; i < nameKeyList.length; i++) {
-      let key = nameKeyList[i];
-      const dataArray = totalDataObjLocal[key].sublevels;
-      if (dataArray.length > 0) {
-        const newDataArry = dataArray.map((subItem, index) => {
-          const obj = { ...subItem };
-          obj.selected = false;
-          return obj;
-        });
-        const newOBJ = {
-          sublevels: newDataArry,
-        };
-        totalDataObjLocal[key] = newOBJ;
-      }
+  const getFilterDropDownData = async () => {
+    if (userData) {
+      const payload = {
+        orgId: userData.orgId,
+        branchId: userData.branchId,
+      };
+      Promise.all([dispatch(getOrganaizationHirarchyList(payload))]);
     }
-    setTotalDataObj({ ...totalDataObjLocal });
+  };
+  const clearBtnClicked = () => {
+    let payload = {
+      startDate: "",
+      endDate: "",
+      levelSelected: [],
+      empSelected: [],
+      allEmpSelected: [],
+    };
+    Promise.all([dispatch(updateFilterIds(payload))]).then(() => {
+      setEmloyeeTitleNameList([]);
+      dispatch(updateEmpDropDown());
+      getFilterDropDownData();
+    });
   };
 
   const submitBtnClicked = (initialData = null) => {
@@ -330,11 +489,15 @@ const FilterScreen = ({ route, navigation }) => {
         });
       }
     }
-    if (selectedIds.length > 0) {
-      setIsLoading(true);
+    let nData = totalDataObj["Dealer Code"].sublevels;
+    let isSelected = nData.find(
+      (val) => val.selected === true && val.selected !== undefined
+    );
+    if (selectedIds.length > 0 && isSelected) {
+      setIsFilterLoading(true);
       getDashboadTableDataFromServer(selectedIds, "LEVEL");
     } else {
-      showToast("Please select any value");
+      showToast("Please select Dealer Code");
     }
   };
 
@@ -350,62 +513,81 @@ const FilterScreen = ({ route, navigation }) => {
       payload["empSelected"] = selectedIds;
     }
 
-    const payload2 = {
-      ...payload,
-      pageNo: 0,
-      size: 5,
-    };
-
     const payload1 = {
       orgId: userData.orgId,
       empId: userData.employeeId,
       selectedIds: selectedIds,
     };
-
     Promise.all([dispatch(getEmployeesDropDownData(payload1))])
       .then(() => {
+        setIsCall(false);
+        setIsFilterLoading(false);
+        let keys = [];
+        let allEmpIds = [];
+        for (let key in employeeDropDownDataLocal) {
+          keys.push(key);
+          let localData = employeeDropDownDataLocal[key];
+          localData.forEach((obj) => {
+            if (obj.selected) {
+              allEmpIds.push(obj.code);
+            }
+          });
+        }
+        let filterPayload = {
+          ...selector.filterIds,
+          startDate: payload.startDate,
+          endDate: payload.endDate,
+        };
+        if (from == "LEVEL") {
+          filterPayload["levelSelected"] = selectedIds;
+        } else {
+          filterPayload["empSelected"] = selectedIds;
+          filterPayload["allEmpSelected"] = allEmpIds;
+        }
         Promise.all([
-          dispatch(getLeadSourceTableList(payload)),
-          dispatch(getVehicleModelTableList(payload)),
-          dispatch(getEventTableList(payload)),
-          dispatch(getLostDropChartData(payload)),
-          dispatch(updateFilterDropDownData(totalDataObj)),
+          // dispatch(getLeadSourceTableList(payload)), // h
+          // dispatch(getVehicleModelTableList(payload)), //h
+          // dispatch(getEventTableList(payload)), //h
+          dispatch(getLostDropChartData(payload)), //c in home
+          dispatch(updateFilterIds(filterPayload)),
+
+          // dispatch(updateFilterDropDownData(totalDataObj)), /// not for home
           // // Table Data
-          dispatch(getTaskTableList(payload2)),
-          dispatch(getSalesData(payload2)),
-          dispatch(getSalesComparisonData(payload2)),
+          // dispatch(getTaskTableList(payload2)), //h
+          // dispatch(getSalesData(payload2)), //h
+          // dispatch(getSalesComparisonData(payload2)), //h
           // // Target Params Data
-          dispatch(getTargetParametersData(payload2)),
-          dispatch(getTargetParametersEmpDataInsights(payload2)), // Added to filter an Home Screen's INSIGHT
+          // dispatch(getTargetParametersData(payload2)), //h
+          // dispatch(getTargetParametersEmpDataInsights(payload2)), // h // Added to filter an Home Screen's INSIGHT
         ])
-          .then(() => {})
+          .then(() => {
+            if (from == "EMPLOYEE") {
+              navigation.navigate(AppNavigator.TabStackIdentifiers.home, {
+                screen: "Home",
+                params: { from: "Filter", isFilter: true },
+              });
+            }
+            setIsEmployeeLoading(false);
+          })
           .catch(() => {
-            setIsLoading(false);
+            setIsFilterLoading(false);
+            setIsEmployeeLoading(false);
           });
       })
       .catch(() => {
-        setIsLoading(false);
+        setIsFilterLoading(false);
+        setIsEmployeeLoading(false);
       });
-    if (from == "EMPLOYEE") {
-        if (true) {
-            navigation.navigate(
-              AppNavigator.DrawerStackIdentifiers.monthlyTarget,
-              {
-                params: { from: "Filter" },
-              }
-            );
-        } else {
-                  navigation.goBack();
 
-        }
-      // navigation.navigate(AppNavigator.TabStackIdentifiers.home, { screen: "Home", params: { from: 'Filter' }, })
-    } else {
-      // navigation.goBack(); // NEED TO COMMENT FOR ASSOCIATE FILTER
-    }
+    // navigation.navigate(AppNavigator.TabStackIdentifiers.home, { screen: "Home", params: { from: 'Filter' }, })
+    // } else {
+    // navigation.goBack(); // NEED TO COMMENT FOR ASSOCIATE FILTER
+    // }
   };
 
   useEffect(() => {
-    if (selector.employees_drop_down_data) {
+    if (selector.employees_drop_down_data && selector.filterIds) {
+      let filterIds = selector.filterIds?.allEmpSelected || [];
       let names = [];
       let newDataObj = {};
       for (let key in selector.employees_drop_down_data) {
@@ -417,7 +599,7 @@ const FilterScreen = ({ route, navigation }) => {
             newArray.push({
               ...element,
               id: element.code,
-              selected: false,
+              selected: filterIds.includes(element.code) ? true : false,
             });
           });
         }
@@ -425,7 +607,7 @@ const FilterScreen = ({ route, navigation }) => {
       }
       setName(names, newDataObj);
     }
-  }, [selector.employees_drop_down_data]);
+  }, [selector.employees_drop_down_data, selector.filterIds]);
 
   const setName = useCallback(
     (names, newDataObj) => {
@@ -435,41 +617,48 @@ const FilterScreen = ({ route, navigation }) => {
       if (!isEmpty(names) && !isEmpty(newDataObj)) {
         setEmloyeeTitleNameList(names);
         setEmployeeDropDownDataLocal(newDataObj);
-        setIsLoading(false);
+        setIsFilterLoading(false);
       }
     },
     [employeeDropDownDataLocal, employeeTitleNameList]
   );
 
   const clearBtnForEmployeeData = () => {
-    let newDataObj = {};
-    for (let key in employeeDropDownDataLocal) {
-      const arrayData = employeeDropDownDataLocal[key];
-      const newArray = [];
-      if (arrayData.length > 0) {
-        arrayData.forEach((element) => {
-          newArray.push({
-            ...element,
-            selected: false,
-          });
-        });
-      }
-      newDataObj[key] = newArray;
-    }
-    setEmployeeDropDownDataLocal(newDataObj);
+    setIsFilter(false);
+    let payload = { ...selector.filterIds };
+    payload["empSelected"] = [];
+    payload["allEmpSelected"] = [];
+    Promise.all([dispatch(updateFilterIds(payload))]).then(() => {});
   };
 
-  const submitBtnForEmployeeData = () => {
+  const submitBtnForEmployeeData = async () => {
+    if (!isFilter) {
+      navigation.navigate(AppNavigator.TabStackIdentifiers.home, {
+        screen: "Home",
+        params: { from: "Filter", isFilter: false },
+      });
+      return;
+    }
     let selectedIds = [];
+    let keys = [];
     for (let key in employeeDropDownDataLocal) {
+      keys.push(key);
+    }
+    let localIndex = keys.length - 1;
+    for (let i = localIndex; i >= 0; i--) {
+      let key = keys[i];
       const arrayData = employeeDropDownDataLocal[key];
+      let back = false;
       arrayData.forEach((element) => {
         if (element.selected === true) {
+          back = true;
           selectedIds.push(element.code);
         }
       });
+      if (back) break;
     }
     if (selectedIds.length > 0) {
+      setIsEmployeeLoading(true);
       getDashboadTableDataFromServer(selectedIds, "EMPLOYEE");
     } else {
       showToast("Please select any value");
@@ -497,7 +686,7 @@ const FilterScreen = ({ route, navigation }) => {
     <SafeAreaView style={styles.container}>
       <DropDownComponant
         visible={showDropDownModel}
-        multiple={true}
+        multiple={isMulti}
         headerTitle={"Select"}
         data={dropDownData}
         onRequestClose={() => setShowDropDownModel(false)}
@@ -577,24 +766,22 @@ const FilterScreen = ({ route, navigation }) => {
                       data={nameKeyList}
                       listKey="ORG_TABLE"
                       scrollEnabled={false}
+                      extraData={employeeTitleNameList}
                       keyExtractor={(item, index) => index.toString()}
                       renderItem={({ item, index }) => {
                         const data = totalDataObj[item].sublevels;
+                        let names = [];
                         let selectedNames = "";
-                        data.forEach((obj, index) => {
-                          if (
-                            obj.selected != undefined &&
-                            obj.selected == true
-                          ) {
-                            selectedNames += obj.name + ", ";
-                          }
-                        });
-
-                        if (selectedNames.length > 0) {
-                          selectedNames = selectedNames.slice(
-                            0,
-                            selectedNames.length - 1
-                          );
+                        if (data?.length > 0) {
+                          data.forEach((obj) => {
+                            if (
+                              obj.selected != undefined &&
+                              obj.selected == true
+                            ) {
+                              names.push(obj.name);
+                            }
+                          });
+                          selectedNames = names?.join(", ");
                         }
                         if (userData.hrmsRole === "Reception") {
                           if (item === "Dealer Code") {
@@ -624,7 +811,7 @@ const FilterScreen = ({ route, navigation }) => {
                       }}
                     />
                   </View>
-                  {!isLoading ? (
+                  {!isFilterLoading ? (
                     <View style={styles.submitBtnBckVw}>
                       <Button
                         labelStyle={{
@@ -633,7 +820,7 @@ const FilterScreen = ({ route, navigation }) => {
                         }}
                         style={{ width: buttonWidth }}
                         mode="outlined"
-                        onPress={clearBtnClicked}
+                        onPress={() => clearBtnClicked()}
                       >
                         Clear
                       </Button>
@@ -645,7 +832,7 @@ const FilterScreen = ({ route, navigation }) => {
                         style={{ width: buttonWidth }}
                         contentStyle={{ backgroundColor: Colors.BLACK }}
                         mode="contained"
-                        onPress={submitBtnClicked}
+                        onPress={() => submitBtnClicked()}
                       >
                         Submit
                       </Button>
@@ -675,23 +862,19 @@ const FilterScreen = ({ route, navigation }) => {
                           scrollEnabled={false}
                           renderItem={({ item, index }) => {
                             const data = employeeDropDownDataLocal[item];
+                            let names = [];
                             let selectedNames = "";
-                            data.forEach((obj, index) => {
-                              if (
-                                obj.selected != undefined &&
-                                obj.selected == true
-                              ) {
-                                selectedNames += obj.name + ", ";
-                              }
-                            });
-
-                            if (selectedNames.length > 0) {
-                              selectedNames = selectedNames.slice(
-                                0,
-                                selectedNames.length - 1
-                              );
+                            if (data?.length > 0) {
+                              data.forEach((obj) => {
+                                if (
+                                  obj.selected != undefined &&
+                                  obj.selected == true
+                                ) {
+                                  names.push(obj.name);
+                                }
+                              });
+                              selectedNames = names?.join(", ");
                             }
-
                             return (
                               <View>
                                 <DropDownSelectionItem
@@ -705,31 +888,35 @@ const FilterScreen = ({ route, navigation }) => {
                           }}
                         />
                       </View>
-                      <View style={styles.submitBtnBckVw}>
-                        <Button
-                          labelStyle={{
-                            color: Colors.RED,
-                            textTransform: "none",
-                          }}
-                          style={{ width: buttonWidth }}
-                          mode="outlined"
-                          onPress={clearBtnForEmployeeData}
-                        >
-                          Clear
-                        </Button>
-                        <Button
-                          labelStyle={{
-                            color: Colors.WHITE,
-                            textTransform: "none",
-                          }}
-                          style={{ width: buttonWidth }}
-                          contentStyle={{ backgroundColor: Colors.BLACK }}
-                          mode="contained"
-                          onPress={submitBtnForEmployeeData}
-                        >
-                          Submit
-                        </Button>
-                      </View>
+                      {!isEmployeeLoading ? (
+                        <View style={styles.submitBtnBckVw}>
+                          <Button
+                            labelStyle={{
+                              color: Colors.RED,
+                              textTransform: "none",
+                            }}
+                            style={{ width: buttonWidth }}
+                            mode="outlined"
+                            onPress={() => clearBtnForEmployeeData()}
+                          >
+                            Clear
+                          </Button>
+                          <Button
+                            labelStyle={{
+                              color: Colors.WHITE,
+                              textTransform: "none",
+                            }}
+                            style={{ width: buttonWidth }}
+                            contentStyle={{ backgroundColor: Colors.BLACK }}
+                            mode="contained"
+                            onPress={() => submitBtnForEmployeeData()}
+                          >
+                            Submit
+                          </Button>
+                        </View>
+                      ) : (
+                        <AcitivityLoader />
+                      )}
                     </View>
                   )}
                 </View>

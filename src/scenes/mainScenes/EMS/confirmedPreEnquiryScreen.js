@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { SafeAreaView, ScrollView, View, Text, StyleSheet, Keyboard, Alert, Dimensions, KeyboardAvoidingView, BackHandler } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+
+import { SafeAreaView, ScrollView, View, Text, StyleSheet, Keyboard, Alert, Dimensions, KeyboardAvoidingView, BackHandler, Modal ,TouchableOpacity,FlatList} from 'react-native';
 import { ButtonComp } from "../../../components/buttonComp";
 import { Checkbox, Button, IconButton, Divider, List } from 'react-native-paper';
 import { Colors, GlobalStyle } from '../../../styles';
@@ -25,7 +26,54 @@ import { DropComponent } from './components/dropComp';
 import URL from '../../../networking/endpoints';
 import Geolocation from '@react-native-community/geolocation';
 import moment from 'moment';
+import Fontisto from "react-native-vector-icons/Fontisto"
+import { client } from '../../../networking/client';
+let EventListData = [
+    {
+        eventName: "omega thon",
+        eventLocation: "Ahmedabad",
+        Startdate: "10/12/2022",
+        Enddate: "10/12/2022",
+        isSelected: false,
+        id: 0
 
+
+    },
+    {
+        eventName: "omega thon22",
+        eventLocation: "Ahmedabad",
+        Startdate: "10/12/2022",
+        Enddate: "10/12/2022",
+        isSelected: false,
+        id: 1
+    },
+    {
+        eventName: "omega thon22",
+        eventLocation: "Ahmedabad",
+        Startdate: "10/12/2022",
+        Enddate: "10/12/2022",
+        isSelected: false
+        ,
+        id: 2
+    },
+    {
+        eventName: "omega thon22",
+        eventLocation: "Ahmedabad",
+        Startdate: "10/12/2022",
+        Enddate: "10/12/2022",
+        isSelected: false,
+        id: 3
+    },
+    {
+        eventName: "omega thon22",
+        eventLocation: "Ahmedabad",
+        Startdate: "10/12/2022",
+        Enddate: "10/12/2022",
+        isSelected: false,
+        id: 4
+    },
+
+]
 const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
 
     const selector = useSelector(state => state.confirmedPreEnquiryReducer);
@@ -60,6 +108,11 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     const [dropRemarks, setDropRemarks] = useState("");
     const [currentLocation, setCurrentLocation] = useState(null);
     const [leadRefIdForEnq, setleadRefIdForEnq] = useState(null);
+
+    const [isEventListModalVisible, setisEventListModalVisible] = useState(false);
+    const [eventListdata, seteventListData] = useState([])
+    const [selectedEventData, setSelectedEventData] = useState([])
+    const [eventConfigRes, setEventConfigRes] = useState([])
 
     React.useLayoutEffect(() => {
         navigation.setOptions({
@@ -131,15 +184,16 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
 
     const DropPreEnquiryLead = async (payload, enquiryDetailsObj) => {
         setIsLoading(true);
-        await fetch(URL.DROP_ENQUIRY(), {
-            method: "POST",
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-                "auth-token": userToken
-            },
-            body: JSON.stringify(payload)
-        })
+        // await fetch(URL.DROP_ENQUIRY(), {
+        //     method: "POST",
+        //     headers: {
+        //         Accept: "application/json",
+        //         "Content-Type": "application/json",
+        //         "auth-token": userToken
+        //     },
+        //     body: JSON.stringify(payload)
+        // })
+        await client.post(URL.DROP_ENQUIRY(), payload)
             .then(json => json.json())
             .then(response => {
                 if (response.status === "SUCCESS") {
@@ -160,15 +214,16 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     const UpdateRecord = async (enquiryDetailsObj) => {
 
         setIsLoading(true);
-        await fetch(URL.UPDATE_ENQUIRY_DETAILS(), {
-            method: "POST",
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-                "auth-token": userToken
-            },
-            body: JSON.stringify(enquiryDetailsObj)
-        })
+        // await fetch(URL.UPDATE_ENQUIRY_DETAILS(), {
+        //     method: "POST",
+        //     headers: {
+        //         Accept: "application/json",
+        //         "Content-Type": "application/json",
+        //         "auth-token": userToken
+        //     },
+        //     body: JSON.stringify(enquiryDetailsObj)
+        // })
+        await client.post(URL.UPDATE_ENQUIRY_DETAILS(), enquiryDetailsObj)
             .then(json => json.json())
             .then(response => {
                 if (response.success === true) {
@@ -222,7 +277,8 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     useEffect(() => {
         getAsyncStorageData();
         getBranchId();
-        getDropDownApi();
+        // commented it as its getting called multiple time and here its not in use
+        // getDropDownApi();
 
         // api calls
         dispatch(getPreEnquiryDetails(itemData.universalId));
@@ -299,25 +355,37 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
 
     // Handle Employees List Response
     useEffect(() => {
-
-        if (selector.employees_list.length === 0 && selector.employees_list_status === "success") {
-            const endUrl = `${itemData.universalId}` + '?' + 'stage=PreEnquiry';
-            dispatch(getaAllTasks(endUrl));
+      if (
+        selector.employees_list.length === 0 &&
+        selector.employees_list_status === "success"
+      ) {
+        if (userData?.employeeId) {
+          let newObj = {
+            name: userData.employeeName,
+            id: userData.employeeId,
+          };
+          updateEmployee(newObj);
+        } else {
+          const endUrl = `${itemData.universalId}` + "?" + "stage=PreEnquiry";
+          dispatch(getaAllTasks(endUrl));
         }
-        else if (selector.employees_list.length > 0 && selector.employees_list_status === "success") {
-            let newData = [];
-            selector.employees_list.forEach(element => {
-                const obj = {
-                    id: element.empId,
-                    name: element.empName,
-                    selected: false,
-                }
-                newData.push(obj);
-            });
-            setEmployeesData([...newData]);
-            setEmployeeSelectModel(true);
-        }
-    }, [selector.employees_list, selector.employees_list_status])
+      } else if (
+        selector.employees_list.length > 0 &&
+        selector.employees_list_status === "success"
+      ) {
+        let newData = [];
+        selector.employees_list.forEach((element) => {
+          const obj = {
+            id: element.empId,
+            name: element.empName,
+            selected: false,
+          };
+          newData.push(obj);
+        });
+        setEmployeesData([...newData]);
+        setEmployeeSelectModel(true);
+      }
+    }, [selector.employees_list, selector.employees_list_status]);
 
     // Handle Get All Tasks Response
     useEffect(() => {
@@ -452,15 +520,16 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
 
     const UpdateRecord007 = async (enquiryDetailsObj) => {
         setIsLoading(true);
-        await fetch(URL.UPDATE_ENQUIRY_DETAILS(), {
-            method: "POST",
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-                "auth-token": userToken
-            },
-            body: JSON.stringify(enquiryDetailsObj)
-        })
+        // await fetch(URL.UPDATE_ENQUIRY_DETAILS(), {
+        //     method: "POST",
+        //     headers: {
+        //         Accept: "application/json",
+        //         "Content-Type": "application/json",
+        //         "auth-token": userToken
+        //     },
+        //     body: JSON.stringify(enquiryDetailsObj)
+        // })
+        await client.post(URL.UPDATE_ENQUIRY_DETAILS(), enquiryDetailsObj)
             .then(json => json.json())
             .then(response => {
                 return respone;
@@ -549,15 +618,16 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     const customerLeadReference = async (enquiryDetailsObj) => {
 
         setIsLoading(true);
-        await fetch(URL.CUSTOMER_LEAD_REFERENCE(), {
-            method: "POST",
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-                "auth-token": userToken
-            },
-            body: JSON.stringify(enquiryDetailsObj)
-        })
+            // await fetch(URL.CUSTOMER_LEAD_REFERENCE(), {
+            //     method: "POST",
+            //     headers: {
+            //         Accept: "application/json",
+            //         "Content-Type": "application/json",
+            //         "auth-token": userToken
+            //     },
+        //     body: JSON.stringify(enquiryDetailsObj)
+        // })
+        await client.post(URL.CUSTOMER_LEAD_REFERENCE(), enquiryDetailsObj )
             .then(json => json.json())
             .then(response => {
                 if (response && response.dmsEntity && response.dmsEntity.leadCustomerReference) {
@@ -590,6 +660,191 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         return name;
     }
 
+    const onEventInfoPress = ()=>{
+        // todo
+        
+        let tempArr =[
+            {
+            eventName: itemData?.eventName,
+            eventLocation: itemData?.eventLocation,
+            Startdate: itemData?.eventStartDate,
+            Enddate: itemData?.eventEndDate,
+            isSelected: false,
+            id: 0
+            }
+        ]
+           
+        
+        if (itemData?.eventName !== null) {
+            seteventListData(tempArr)
+        }
+        setisEventListModalVisible(true)
+    }
+
+
+    const eventListTableRow = useCallback((txt1, txt2, txt3, txt4, isDisplayRadio, isRadioSelected, isClickable, itemMain, index) => {
+
+        return (
+            <>
+
+                <TouchableOpacity style={{
+                    flexDirection: "row",
+                    // justifyContent: "space-around",
+                    alignItems: "center",
+                    // height: '15%',
+                    alignContent: "center",
+                    width: '100%',
+                    marginTop: 5
+
+
+                }}
+                    disabled={true}
+                    onPress={() => {
+
+                        // let temp = [...eventListdata].filter(item => item.id === itemMain.id).map(i => i.isSelected = true)
+                        let temp = eventListdata.map(i =>
+                            i.id === itemMain.id ? { ...i, isSelected: true } : { ...i, isSelected: false }
+                        )
+                     
+                        seteventListData(temp);
+
+
+
+                    }}
+                >
+                    {/* todo */}
+                    {isDisplayRadio ?
+                        <Fontisto name={itemMain.isSelected ? "radio-btn-active" : "radio-btn-passive"}
+                            size={12} color={Colors.RED}
+                            style={{ marginEnd: 10 }}
+                        /> :
+                        <View style={{ marginEnd: 10, width: 12, }}  >{ }</View>}
+
+                    <Text numberOfLines={1} style={{ fontSize: 12, color: Colors.BLACK, textAlign: "left", marginEnd: 10, width: 100, }}  >{txt1}</Text>
+                    <Text numberOfLines={1} style={{ fontSize: 12, color: Colors.BLACK, textAlign: "left", marginEnd: 10, width: 100 }}>{txt2}</Text>
+                    <Text numberOfLines={1} style={{ fontSize: 12, color: Colors.BLACK, textAlign: "left", marginEnd: 10, width: 100 }}>{txt3}</Text>
+                    <Text numberOfLines={1} style={{ fontSize: 12, color: Colors.BLACK, textAlign: "left", marginEnd: 10, width: 100 }}>{txt4}</Text>
+
+                </TouchableOpacity>
+
+            </>)
+    })
+
+
+    const addEventListModal = () => {
+
+        return (
+            <Modal
+                animationType="fade"
+                visible={isEventListModalVisible}
+                onRequestClose={() => {
+
+                }}
+                transparent={true}
+            >
+                <View
+                    style={{
+                        flex: 1,
+                        justifyContent: "center",
+                        alignItems: "center",
+                        backgroundColor: "rgba(0,0,0,0.7)",
+
+
+                    }}
+                >
+                    <View style={{
+                        width: '90%',
+                        backgroundColor: Colors.WHITE,
+                        padding: 10,
+                        borderWidth: 2,
+                        borderColor: Colors.BLACK,
+                        flexDirection: "column",
+                        height: '22%',
+                    }}
+
+                    >
+                        <Text style={{ color: Colors.BLACK, fontSize: 16, fontWeight: "700", textAlign: "left", margin: 5 }}>Selected Event</Text>
+                        <ScrollView style={{
+                            width: '100%',
+
+                        }}
+                            horizontal={true}
+                        >
+                            <View style={{ flexDirection: "column" }}>
+
+                                <Text style={GlobalStyle.underline} />
+                                <View style={{
+                                    height: 30, borderBottomColor: 'rgba(208, 212, 214, 0.7)',
+                                    borderBottomWidth: 2,
+
+                                }}>
+                                    {eventListTableRow("Event Name", "Event location", "Start Date", "End Date", false, false, true, 0, 0)}
+                                    {/* <Text style={GlobalStyle.underline} /> */}
+                                </View>
+                                <View>
+                                    <FlatList
+                                        key={"EVENT_LIST"}
+                                        data={eventListdata}
+                                        style={{ height: '80%' }}
+                                        keyExtractor={(item, index) => index.toString()}
+                                        ListEmptyComponent={() => {
+                                            return (<View style={{ alignItems: 'center', marginVertical: 20 }}><Text>{"Data Not Available"}</Text></View>)
+                                        }}
+
+                                        renderItem={({ item, index }) => {
+                                           
+                                            return (
+                                                <>
+                                                    <View style={{
+                                                        height: 35, borderBottomColor: 'rgba(208, 212, 214, 0.7)',
+                                                        borderBottomWidth: 4, marginTop: 5
+                                                    }}>
+                                                        {eventListTableRow(item.eventName, item.eventLocation, moment(item.Startdate).format("DD-MM-YYYY"), moment(item.Enddate).format("DD-MM-YYYY"), false, false, false, item, index)}
+                                                        {/* {eventListTableRow(item.eventName, item.eventLocation, item.Startdate, item.Enddate, false, false, false, item, index)} */}
+                                                    </View>
+
+                                                </>
+                                            );
+                                        }}
+                                    />
+
+                                </View>
+                            </View>
+
+                        </ScrollView>
+                        <View style={{ flexDirection: "row", alignSelf: "flex-end", marginTop: 10 }}>
+                            <Button
+                                mode="contained"
+
+                                style={{ width: '30%', }}
+                                color={Colors.GRAY}
+                                labelStyle={{ textTransform: "none" }}
+                                onPress={() => {
+                                    setisEventListModalVisible(false)
+                                    // todo
+                                    seteventListData([]);
+                                }}>
+                                Close
+                            </Button>
+                            {/* <Button
+                                mode="contained"
+
+                                style={{ flex: 1 }}
+                                color={Colors.PINK}
+                                labelStyle={{ textTransform: "none" }}
+                                onPress={() => addSelectedEvent()}>
+                                Add
+                            </Button> */}
+                        </View>
+
+                    </View>
+
+                </View>
+            </Modal>
+        )
+    }
+
+
     return (
         <SafeAreaView style={styles.container}>
             {/* <LoaderComponent
@@ -605,7 +860,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                 onRequestClose={() => {setDisabled(false)
                     setEmployeeSelectModel(false);}}
             />
-
+            {addEventListModal()}
             <KeyboardAvoidingView
                 style={{ flex: 1 }}
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -659,6 +914,9 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                             value={itemData.enquirySource}
                             label={"Source of Contact"}
                             editable={false}
+                            rightIconObj={{ name: "information-outline", color: Colors.GRAY }}
+                            showRightIcon={itemData.enquirySource ==="Events" ? true: false}
+                            onRightIconPressed={onEventInfoPress}
                         />
                         <Text style={styles.devider}></Text>
 

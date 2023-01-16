@@ -305,6 +305,19 @@ export const updateRef = createAsyncThunk("ENQUIRY_FORM_SLICE/updateRef",
   }
 );
 
+export const getOtherPricesDropDown = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/getOtherPricesDropDown",
+  async (orgId, { rejectWithValue }) => {
+    const url = URL.GET_OTHER_PRICES_DROP_DOWN(orgId);
+    const response = await client.get(url);
+    const json = await response.json();
+    if (response.status != 200) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 interface CustomerDetailModel {
   key: string;
   text: string;
@@ -475,6 +488,7 @@ const prebookingFormSlice = createSlice({
     registrationCharges: 0,
     configureRulesResponse: "",
     configureRulesResponse_status:"",
+    otherPricesDropDown: [],
   },
   reducers: {
     clearState: (state, action) => {
@@ -608,6 +622,7 @@ const prebookingFormSlice = createSlice({
       state.isAddressSet = false;
       state.configureRulesResponse = "";
       state.configureRulesResponse_status = "";
+      state.otherPricesDropDown = [];
     },
     updateStatus: (state, action) => {
       state.pre_booking_payment_response_status = "";
@@ -1875,6 +1890,25 @@ const prebookingFormSlice = createSlice({
       state.configureRulesResponse = "";
       state.configureRulesResponse_status = "rejected";
       state.isLoading = false;
+    });
+    
+    //Get Other prices drop down data
+    builder.addCase(getOtherPricesDropDown.pending, (state, action) => {
+    });
+    builder.addCase(getOtherPricesDropDown.fulfilled, (state, action) => {
+      if (action.payload) {
+        let data = [];
+        for (let i = 0; i < action.payload.length; i++) {
+          let obj = {
+            id: action.payload[i].id,
+            name: action.payload[i].Name,
+          };
+          data.push(obj);
+        }
+        state.otherPricesDropDown = Object.assign([], data);
+      }
+    });
+    builder.addCase(getOtherPricesDropDown.rejected, (state, action) => {
     });
   },
 });

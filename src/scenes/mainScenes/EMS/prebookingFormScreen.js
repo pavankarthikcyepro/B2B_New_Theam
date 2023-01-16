@@ -71,7 +71,7 @@ import {
   updateRef,
   updateResponseStatus,
   clearPermanentAddr,
-  updateAddressByPincode2, getRulesConfiguration
+  updateAddressByPincode2, getRulesConfiguration, getOtherPricesDropDown
 } from "../../../redux/preBookingFormReducer";
 import {
   clearBookingState,
@@ -150,6 +150,7 @@ import { EmsTopTabNavigatorIdentifiers } from "../../../navigations/emsTopTabNav
 import Geolocation from "@react-native-community/geolocation";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons"
 import Entypo from 'react-native-vector-icons/Entypo'
+import { client } from "../../../networking/client";
 const rupeeSymbol = "\u20B9";
 
 const dmsAttachmentsObj = {
@@ -280,6 +281,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     editEnable: false,
     isPreBookingApprover: false,
     isSelfManager: "",
+    isTracker: "",
+    branchId: 0,
   });
   const [showDropDownModel, setShowDropDownModel] = useState(false);
   const [showMultipleDropDownData, setShowMultipleDropDownData] =
@@ -393,7 +396,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
   const [isMinimumAmtModalVisible, setIsMinimumAmtModalVisible] = useState(false);
   const [configureRuleData, setConfigureRuleData] = useState("")
-  const [isMiniAmountCheck, setisMiniAmountCheck] = useState(true)
+  const [isMiniAmountCheck, setisMiniAmountCheck] = useState(true);
+  const [otherPriceDropDownIndex, setOtherPriceDropDownIndex] = useState(null);
 
   // Edit buttons shows
   useEffect(() => {
@@ -620,6 +624,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       editEnable: false,
       isPreBookingApprover: false,
       isSelfManager: "",
+      isTracker: "",
+      branchId: 0,
     });
     setShowDropDownModel(false);
     setShowMultipleDropDownData(false);
@@ -801,7 +807,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        "auth-token": token,
+        "Authorization": "Bearer " + authToken,
       },
     })
       .then((json) => {
@@ -846,8 +852,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
         if (
           value?.model &&
-          selector?.pre_booking_details_response?.dmsLeadDto?.leadStatus !=
-          "ENQUIRYCOMPLETED" &&
+          // selector?.pre_booking_details_response?.dmsLeadDto?.leadStatus !=
+          // "ENQUIRYCOMPLETED" &&
           modelData.model == value.model
         ) {
           if (modelData.variant == value.variant) {
@@ -858,7 +864,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
               updateOfferPriceData(selector.on_road_price_dto_list_response)
             );
             addingIsPrimary();
-          } else {
+          } else if (!value.color) {
             dispatch(updateOfferPriceData());
             clearPriceConfirmationData();
           }
@@ -943,6 +949,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       if (isPrimaryEnabled === "Y") {
         await setIsPrimaryCurrentIndex(index);
         updateVariantModelsData(item.model, true, item.variant);
+        dispatch(updateOfferPriceData());
+        clearPriceConfirmationData();
       }
       if (carModelsList && carModelsList.length > 0) {
         let arr = await [...carModelsList];
@@ -1009,6 +1017,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         editEnable: editEnable,
         isPreBookingApprover: isPreBookingApprover,
         isSelfManager: jsonObj.isSelfManager,
+        isTracker: jsonObj.isTracker,
+        branchId: jsonObj.branchId,
       });
 
       const payload = {
@@ -1020,6 +1030,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       // Make Api calls in parallel
       Promise.all([
         dispatch(getDropDataApi(payload)),
+        dispatch(getOtherPricesDropDown(jsonObj.orgId)),
         getCarModelListFromServer(jsonObj.orgId),
       ]).then(() => { });
 
@@ -1583,6 +1594,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       case "CUSTOMER_TYPE_CATEGORY":
         setDataForDropDown([...Customer_Category_Types]);
         break;
+      case "OTHER_PRICES":
+        setDataForDropDown([...selector.otherPricesDropDown]);
+        break;
     }
     setDropDownKey(key);
     setDropDownTitle(headerText);
@@ -1804,13 +1818,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       showToast("Please select Salutation");
       return;
     }
-    if (selector.email.length === 0) {
+    if (selector.email.length === 0 && userData.isTracker == "N") {
       scrollToPos(0);
       setOpenAccordian("1");
       showToast("please enter email");
       return;
     }
-    if (!isEmail(selector.email)) {
+
+    if (!isEmail(selector.email) && userData.isTracker == "N") {
       scrollToPos(0);
       setOpenAccordian("1");
       showToast("please enter valid email");
@@ -2037,7 +2052,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     //   return;
     // }
 
-    if (selector.form_or_pan === "PAN") {
+    if (selector.form_or_pan === "PAN" && userData.isTracker === "N") {
       let error = false;
       if (selector.pan_number.length == 0) {
         error = true;
@@ -2063,7 +2078,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       return;
     }
 
-    if (taxPercent === "") {
+    if (taxPercent === "" && userData.isTracker == "N") {
       scrollToPos(5);
       setOpenAccordian("5");
       showToast("please enter Life Tax");
@@ -3076,14 +3091,15 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     };
     const url = URL.CUSTOMER_LEAD_REFERENCE();
 
-    await fetch(url, {
-      headers: {
-        "Content-Type": "application/json",
-        "auth-token": authToken,
-      },
-      method: "POST",
-      body: JSON.stringify(payload),
-    })
+    // await fetch(url, {
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     "auth-token": authToken,
+    //   },
+    //   method: "POST",
+    //   body: JSON.stringify(payload),
+    // })
+    await client.post(url,payload)
       .then((res) => res.json())
       .then((jsonRes) => {
         if (jsonRes.success === true) {
@@ -3116,7 +3132,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       selectorBooking.update_enquiry_details_response_status === "success" &&
       selectorBooking.update_enquiry_details_response
     ) {
-      displayCreateEnquiryAlert();
+      displayCreateEnquiryAlert(
+        selectorBooking.update_enquiry_details_response.dmsLeadDto
+          .referencenumber
+      );
     } else if (selectorBooking.update_enquiry_details_response_status === "failed") {
       showToastRedAlert("something went wrong");
     }
@@ -3125,10 +3144,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     selectorBooking.update_enquiry_details_response,
   ]);
 
-  displayCreateEnquiryAlert = () => {
+  displayCreateEnquiryAlert = (refNum) => {
     Alert.alert(
       "Booking Successfully Created",
-      "",
+      `Booking Successfully Created\nRef Num: ${refNum}`,
       [
         {
           text: "OK",
@@ -3358,6 +3377,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       method: "POST",
       headers: {
         "Content-Type": "multipart/form-data",
+        "Authorization": "Bearer " + authToken,
       },
       body: formData,
     })
@@ -3716,6 +3736,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             return;
           } else if (dropDownKey === "REGISTRATION_CHARGES") {
             setSelectedRegistrationCharges(item);
+          } else if (dropDownKey === "OTHER_PRICES") {
+            inputHandlerName(item.name, otherPriceDropDownIndex);
           }
 
           if (
@@ -3926,7 +3948,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   disabled={!isInputsEditable()}
                   style={{ height: 65, width: "100%" }}
                   value={selector.email}
-                  label={"Email ID*"}
+                  label={userData.isTracker == "Y" ?"Email ID" :"Email ID*"}
                   keyboardType={"email-address"}
                   onChangeText={(text) =>
                     dispatch(setCustomerDetails({ key: "EMAIL", text: text }))
@@ -4815,7 +4837,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       disabled={!isInputsEditable()}
                       style={styles.textInputStyle}
                       value={selector.pan_number}
-                      label={"PAN Number*"}
+                      label={userData.isTracker == "Y" ?"PAN Number":"PAN Number*"}
                       maxLength={10}
                       autoCapitalize={"characters"}
                       onChangeText={(text) => {
@@ -5779,7 +5801,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                 /> */}
                 <View style={styles.textAndAmountView}>
                   {/* <View style={{width: '60%', flexDirection: 'row'}}> */}
-                  <Text style={[styles.leftLabel]}>{"Life Tax*:"}</Text>
+                  <Text style={[styles.leftLabel]}>{userData.isTracker == "Y"? "Life Tax:": "Life Tax*:"}</Text>
                   {/* </View> */}
                   <View
                     style={{
@@ -6089,7 +6111,29 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             paddingHorizontal: 10,
                           }}
                         >
-                          <TextInput
+                          <View style={{ width: "33%" }}>
+                            <DropDownSelectionItem
+                              label={"Name"}
+                              disabled={!isInputsEditable()}
+                              value={item.name}
+                              style={{
+                                height: 40,
+                                borderColor: checkIsError("name", index)
+                                  ? Colors.RED
+                                  : Colors.BLACK,
+                              }}
+                              otherPrices={true}
+                              onPress={() => {
+                                showDropDownModelMethod(
+                                  "OTHER_PRICES",
+                                  "Select Name"
+                                );
+                                setOtherPriceDropDownIndex(index);
+                              }}
+                            />
+                          </View>
+
+                          {/* <TextInput
                             editable={isInputsEditable()}
                             style={[
                               styles.otherPriceInput,
@@ -6104,7 +6148,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                               inputHandlerName(name, index)
                             }
                             value={item.name}
-                          />
+                          /> */}
                           <TextInput
                             editable={isInputsEditable()}
                             style={[

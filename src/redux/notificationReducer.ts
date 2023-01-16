@@ -1,72 +1,66 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { client } from "../networking/client";
+import URL from "../networking/endpoints";
 
-const newData = [
-    {
-        title: "Today",
-        data: [
-            {
-                name: "You have been assigned a target for Aug 20",
-                date: "2 hours ago"
-            },
-            {
-                name: "General visitor request created for Aziz Khan @ 1PM",
-                date: "5 hours ago"
-            },
-            {
-                name: "You have a new missed activity under general tasks due for 3 days",
-                date: "5 hours ago"
-            },
-            {
-                name: "General visitor request created for Aziz Khan @ 1PM",
-                date: "7 hours ago"
-            }
-        ]
-    },
-    {
-        title: "Yesterday",
-        data: [
-            {
-                name: "You have been assigned a target for Aug 20",
-                date: "6 hours ago"
-            },
-            {
-                name: "General visitor request created for Aziz Khan @ 1PM",
-                date: "3 hours ago"
-            },
-            {
-                name: "You have a new missed activity under general tasks due for 3 days",
-                date: "4 hours ago"
-            },
-        ]
-    },
-    {
-        title: "July 7",
-        data: [
-            {
-                name: "You have been assigned a target for Aug 20",
-                date: "1 hours ago"
-            },
-            {
-                name: "General visitor request created for Aziz Khan @ 1PM",
-                date: "2 hours ago"
-            },
-            {
-                name: "You have a new missed activity under general tasks due for 3 days",
-                date: "3 hours ago"
-            },
-        ]
+export const getNotificationList = createAsyncThunk(
+  "Notifications/getNotificationList",
+  async (empId: any, { rejectWithValue }) => {
+    const response = await client.get(URL.NOTIFICATION_LIST(empId));
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
     }
-]
+    return json;
+  }
+);
+
+export const readNotification = createAsyncThunk(
+  "Notifications/readNotification",
+  async (notificationId: any, { rejectWithValue }) => {
+    const response = await client.get(URL.READ_NOTIFICATION(notificationId));
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
 
 export const notificationSlice = createSlice({
-    name: 'NOTIFICATIONS',
-    initialState: {
-        tableData: newData
-    },
-    reducers: {
+  name: "NOTIFICATIONS",
+  initialState: {
+    notificationList: [],
+    loading: true,
+    readNotificationResponseStatus: "",
+  },
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(getNotificationList.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getNotificationList.fulfilled, (state, action) => {
+        const dataObj = action.payload;
+        state.notificationList = dataObj;
+        state.loading = false;
+      })
+      .addCase(getNotificationList.rejected, (state, action) => {
+        state.loading = false;
+      });
+    builder
+      .addCase(readNotification.pending, (state) => {
+        state.readNotificationResponseStatus = "";
+      })
+      .addCase(readNotification.fulfilled, (state, action) => {
+        if(action?.payload == 1){
+          state.readNotificationResponseStatus = "success";
+        }
+      })
+      .addCase(readNotification.rejected, (state, action) => {
+        state.readNotificationResponseStatus = "";
+      });
+  },
+});
 
-    }
-})
-
-export const { } = notificationSlice.actions;
+export const {} = notificationSlice.actions;
 export default notificationSlice.reducer;
