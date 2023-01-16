@@ -715,7 +715,14 @@ export const homeSlice = createSlice({
     receptionistModel: [],
     receptionistSource: [],
     selectedIDS :[],
-    selectedDate : {}
+    selectedDate : {},
+    filterIds:{
+      startDate:"",
+      endDate:"",
+      levelSelected:[],
+      empSelected:[],
+      allEmpSelected:[],
+    },
   },
   reducers: {
     dateSelected: (state, action) => {
@@ -723,6 +730,12 @@ export const homeSlice = createSlice({
     },
     updateFilterDropDownData: (state, action) => {
       state.filter_drop_down_data = action.payload;
+    },
+    updateFilterIds:(state,action)=>{
+      state.filterIds = action.payload
+    },
+     updateEmpDropDown:(state,action)=>{
+      state.employees_drop_down_data = {}
     },
     updateIsTeamPresent: (state, action) => {
       state.isTeamPresent = action.payload;
@@ -759,6 +772,7 @@ export const homeSlice = createSlice({
       state.dateSelectedIndex = 0;
       state.login_employee_details = {};
       state.filter_drop_down_data = [];
+      // state.filterIds = {},
       state.lead_source_table_data = [];
       state.vehicle_model_table_data = [];
       state.events_table_data = [];
@@ -795,6 +809,13 @@ export const homeSlice = createSlice({
         totalAllocatedCount: 0,
         totalDroppedCount: 0,
       };
+      state.filterIds = {
+        startDate:"",
+        endDate:"",
+        levelSelected:[],
+        empSelected:[],
+        allEmpSelected:[],
+      }
     },
   },
   extraReducers: (builder) => {
@@ -1299,5 +1320,7 @@ export const {
   updateIsDSE,
   clearState,
   updateTargetData,
+  updateFilterIds,
+  updateEmpDropDown,
 } = homeSlice.actions;
 export default homeSlice.reducer;
