@@ -703,6 +703,9 @@ const URL = {
   GET_TASK_360_HISTORY: (universalId) => {
     return sales_url + "/workflow/universalId/" + universalId;
   },
+  CALL_DEALLOCATE: (empId) => {
+    return roleManagement_url + "/dms/emp-update/" + empId;
+  },
 };
 
 // bankFinancier, incuranceCompany, enqueryCategory, deliveryCheckList, sublostReason

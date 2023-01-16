@@ -4,16 +4,18 @@ import { Colors } from "../styles";
 import { AppNavigator } from "../navigations";
 import { useNavigation } from "@react-navigation/native";
 
-export const SettingsScreenItem = ({ name, screen }) => {
+export const SettingsScreenItem = ({
+  name,
+  isNoChildScreen = false,
+  screen,
+  onItemPress,
+}) => {
   const navigation = useNavigation();
 
   return (
-    <Pressable
-      style={styles.container}
-      onPress={() => navigation.navigate("CHANGE_PASSWORD_SCREEN")}
-    >
+    <Pressable style={styles.container} onPress={() => onItemPress(name)}>
       <Text style={styles.text1}>{name}</Text>
-      <Text style={styles.arrowIcon}>{">"}</Text>
+      {!isNoChildScreen ? <Text style={styles.arrowIcon}>{">"}</Text> : null}
     </Pressable>
   );
 };
