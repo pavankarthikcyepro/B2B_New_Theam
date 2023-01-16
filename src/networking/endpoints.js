@@ -125,7 +125,7 @@ export const dashboardLiveLeads = baseUrl + "dfdl";
 
 export const dynamicReports_url = baseUrl + "dfdg/dynamic-reports";
 export const dynamicForms = baseUrl + "dfdg/dynamic-forms";
-export const orgnaizationHirarchy = baseUrl + "dfdg/oh";
+export const orgnaizationHirarchy = baseUrl + "dfd/oh";
 export const dfGetAll = baseUrl + "dfdg/df-get-all";
 export const subSourceAllDetails = baseUrl + "dfdg/Source_SubSource_AllDetails";
 export const lostSubLost = baseUrl + "dfdg/Lost_SubLost_AllDetails";
@@ -279,6 +279,8 @@ const URL = {
     return sales_url + `/enquiry/performaDetails`;
   },
   SEND_ON_ROAD_PRICE_DETAILS: () => sales_url + "/on-road-price",
+  GET_OTHER_PRICES_DROP_DOWN: (orgId) =>
+    decodeURI(`${dfGetAll}/${orgId}/%22Active%22/${orgId}/otherCharges`),
   GET_ALL_OFFERS: (varientId, vehicleId) => {
     return (
       ops_url +
