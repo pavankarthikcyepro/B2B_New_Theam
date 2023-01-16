@@ -174,7 +174,7 @@ const FilterScreen = ({ route, navigation }) => {
   }, [nameKeyList, userData, isCall, selector.filterIds]);
 
   const dropDownItemClicked = async (index, initalCall = false) => {
-    setIsMulti(index === 4);
+    setIsMulti(index === 4 || index === 3);
     const topRowSelectedIds = [];
     if (index > 0) {
       const topRowData = totalDataObj[nameKeyList[index - 1]].sublevels;
@@ -226,7 +226,7 @@ const FilterScreen = ({ route, navigation }) => {
         });
         updatedMultipleData = nData;
         updateSelectedItems(updatedMultipleData, index, true);
-      } 
+      }
     } else {
       setDropDownData([...data]);
     }
@@ -489,7 +489,11 @@ const FilterScreen = ({ route, navigation }) => {
         });
       }
     }
-    if (selectedIds.length > 4) {
+    let nData = totalDataObj["Dealer Code"].sublevels;
+    let isSelected = nData.find(
+      (val) => val.selected === true && val.selected !== undefined
+    );
+    if (selectedIds.length > 0 && isSelected) {
       setIsFilterLoading(true);
       getDashboadTableDataFromServer(selectedIds, "LEVEL");
     } else {
@@ -624,8 +628,7 @@ const FilterScreen = ({ route, navigation }) => {
     let payload = { ...selector.filterIds };
     payload["empSelected"] = [];
     payload["allEmpSelected"] = [];
-    Promise.all([dispatch(updateFilterIds(payload))]).then(() => {
-    });
+    Promise.all([dispatch(updateFilterIds(payload))]).then(() => {});
   };
 
   const submitBtnForEmployeeData = async () => {
@@ -778,14 +781,7 @@ const FilterScreen = ({ route, navigation }) => {
                               names.push(obj.name);
                             }
                           });
-                          selectedNames = names.join(", ");
-                        }
-
-                        if (selectedNames.length > 0) {
-                          selectedNames = selectedNames.slice(
-                            0,
-                            selectedNames.length - 1
-                          );
+                          selectedNames = names?.join(", ");
                         }
                         if (userData.hrmsRole === "Reception") {
                           if (item === "Dealer Code") {
@@ -866,23 +862,19 @@ const FilterScreen = ({ route, navigation }) => {
                           scrollEnabled={false}
                           renderItem={({ item, index }) => {
                             const data = employeeDropDownDataLocal[item];
+                            let names = [];
                             let selectedNames = "";
-                            data.forEach((obj, index) => {
-                              if (
-                                obj.selected != undefined &&
-                                obj.selected == true
-                              ) {
-                                selectedNames += obj.name + ", ";
-                              }
-                            });
-
-                            if (selectedNames.length > 0) {
-                              selectedNames = selectedNames.slice(
-                                0,
-                                selectedNames.length - 1
-                              );
+                            if (data?.length > 0) {
+                              data.forEach((obj) => {
+                                if (
+                                  obj.selected != undefined &&
+                                  obj.selected == true
+                                ) {
+                                  names.push(obj.name);
+                                }
+                              });
+                              selectedNames = names?.join(", ");
                             }
-
                             return (
                               <View>
                                 <DropDownSelectionItem
