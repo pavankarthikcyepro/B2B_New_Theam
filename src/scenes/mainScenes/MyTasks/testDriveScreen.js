@@ -34,7 +34,7 @@ import {
   getTestDriveAppointmentDetailsApi,
   validateTestDriveApi,
   generateOtpApi,
-  validateOtpApi,
+  validateOtpApi,postReOpenTestDrive,
   clearOTP,
 } from "../../../redux/testDriveReducer";
 import {
@@ -160,6 +160,8 @@ const TestDriveScreen = ({ route, navigation }) => {
   });
   const [isSubmitPress, setIsSubmitPress] = useState(false);
   const [vehicleDetails, setVehicleDetails] = useState({});
+  const [isValuesEditable, setIsValuesEditable] = useState(true);
+  const [isReopenSubmitVisible, setIsisReopenSubmitVisible] = useState(false);
   let date = new Date();
   date.setDate(date.getDate() + 9);
 
@@ -167,6 +169,8 @@ const TestDriveScreen = ({ route, navigation }) => {
     //updateBasicDetails(taskData);
     // getAsyncstoreData();
     // getUserToken();
+    isViewMode();
+    isViewMode2();
   }, []);
 
   useEffect(() => {
@@ -1059,6 +1063,186 @@ const TestDriveScreen = ({ route, navigation }) => {
   const resendClicked = () => {
     generateOtpToCloseTask();
   };
+  
+  const reSubmitClick = (status,taskName)=>{
+    // call API here 
+    console.log("API call here")
+
+    setIsSubmitPress(true);
+    if (!mobileNumber || mobileNumber.length === 0) {
+      showToast("Please enter mobile number");
+      return;
+    }
+    if (selectedVehicleDetails.model.length === 0) {
+      showToast("Please select model");
+      return;
+    }
+
+    if (selectedVehicleDetails.varient.length === 0) {
+      showToast("Please select model");
+      return;
+    }
+
+    if (
+      selectedVehicleDetails.vehicleId === 0 ||
+      selectedVehicleDetails.varientId === 0
+    ) {
+      showToast("Please select model & variant");
+      return;
+    }
+    // if (selectedDriverDetails.name.length === 0) {
+    //     showToast("Please select driver");
+    //     return;
+    // }
+
+    if (selector.customer_preferred_date.length === 0) {
+      showToast("Please select customer preferred date");
+      return;
+    }
+
+    if (addressType === 0) {
+      showToast("Please select address type");
+      return;
+    }
+
+    if (customerHavingDrivingLicense === 0) {
+      showToast("Please select customer having driving license");
+      return;
+    }
+
+    if (
+      selector.customer_preferred_time.length === 0 ||
+      selector.actual_start_time.length === 0 ||
+      selector.actual_end_time.length === 0
+    ) {
+      showToast("Please select time");
+      return;
+    }
+
+    const preferredTime = moment(selector.customer_preferred_time, "HH:mm");
+    const startTime = moment(selector.actual_start_time, "HH:mm");
+    const endTime = moment(selector.actual_end_time, "HH:mm");
+
+    let preferredTimeDiff = moment(preferredTime).diff(startTime, "m");
+    let diff = moment(endTime).diff(startTime, "m");
+
+    if (0 == preferredTimeDiff) {
+      showToast(
+        "Customer Preferred Time and Actual Start Time Should not be Equal"
+      );
+      return;
+    } else if (0 > preferredTimeDiff) {
+      showToast("Customer Preferred Should not be less than Actual Start Time");
+      return;
+    } else if (0 == diff) {
+      showToast("Actual Start Time and Actual End Time Should not be Equal");
+      return;
+    } else if (0 > diff) {
+      showToast("Actual End Time Should not be less than Actual Start Time");
+      return;
+    }
+
+    if (
+      selectedVehicleDetails.vehicleId === 0 ||
+      selectedVehicleDetails.varientId === 0
+    ) {
+      showToast("Please select model & variant");
+      return;
+    }
+
+    let varientId = selectedVehicleDetails.varientId;
+    let vehicleId = selectedVehicleDetails.vehicleId;
+    // selector.test_drive_vehicle_list.forEach(element => {
+    //   if (element.vehicleInfo.vehicleId == selectedVehicleDetails.vehicleId && element.vehicleInfo.varientId == selectedVehicleDetails.varientId) {
+    //     varientId = element.vehicleInfo.varientId;
+    //     vehicleId = selectedVehicleDetails.vehicleId;
+    //   }
+    // });
+    if (!varientId || !vehicleId) return;
+
+    const location = addressType === 1 ? "showroom" : "customer";
+
+    if (customerHavingDrivingLicense === 1) {
+      if (
+        !uploadedImagesDataObj.dlFrontUrl ||
+        !uploadedImagesDataObj.dlBackUrl
+      ) {
+        showToast("Please upload driving license front & back");
+        return;
+      }
+    }
+    const date = moment(selector.customer_preferred_date, "DD/MM/YYYY").format(
+      "DD-MM-YYYY"
+    );
+    let prefferedTime ;
+    let actualStartTime ;
+    let actualEndTime ;
+
+    if (Platform.OS === "ios") {
+      const preffTime = moment(
+        selector.customer_preferred_time,
+        "HH:mm"
+      ).format("HH:mm:ss");
+      const startTime = moment(selector.actual_start_time, "HH:mm").format(
+        "HH:mm:ss"
+      );
+      const endTime = moment(selector.actual_end_time, "HH:mm").format(
+        "HH:mm:ss"
+      );
+      prefferedTime = date + " " + preffTime;
+      actualStartTime = date + " " + startTime;
+      actualEndTime = date + " " + endTime;
+    } else {
+      prefferedTime = date + " " + selector.customer_preferred_time;
+      actualStartTime = date + " " + selector.actual_start_time;
+      actualEndTime = date + " " + selector.actual_end_time;
+    }
+    setExpectedStartAndEndTime({ start: actualStartTime, end: actualEndTime });
+    setTaskStatusAndName({ status: status, name: taskName });
+
+
+    
+    let reopenSubmitObj = {
+      id: taskId,
+      address: customerAddress,
+      allotmentId: 0,
+      branchId: selectedBranchId,
+      canceledBy: "",
+      customerDropDatetime: "",
+      customerId: universalId,
+      customerPickupDatetime: "",
+      customerQuery: "",
+      datetime: "",
+      dlBackUrl: "",
+      dlFrontUrl: "",
+      dseId: "",
+      startTime: actualStartTime,
+      endTime: actualEndTime,
+      latitude: "",
+      longitude: "",
+      location: location,
+      managerApprovedDatetime: "",
+      managerId: "",
+      orgId: userData.orgId,
+      securityInId: "",
+      securityOutId: "",
+      source: taskData.sourceType,
+      status: status,
+      testDriveDatetime: prefferedTime,
+      varientId: varientId,
+      vehicleId: vehicleId,
+      driverId: selectedDriverDetails.id.toString(),
+      testdriveId: 0,
+      customerHaveingDl: customerHavingDrivingLicense === 1
+    }
+    dispatch(postReOpenTestDrive(reopenSubmitObj));
+    console.log("manthan---ddd ",reopenSubmitObj)
+  }
+  useEffect(() => {
+    console.log("manthan --resoonse ", selector.reopen_test_drive_res_status)
+  
+  }, [selector.reopen_test_drive_res_status])
+  
 
   const verifyClicked = async () => {
     if (otpValue.length != 4) {
@@ -1086,11 +1270,33 @@ const TestDriveScreen = ({ route, navigation }) => {
     }
   }, [selector.validate_otp_response_status]);
 
+  const reOpenTask = () => {
+    isViewMode2("reopen")
+    setIsisReopenSubmitVisible(true)
+  }
   const isViewMode = () => {
     if (route?.params?.taskStatus === "CLOSED") {
       return true;
     }
     return false;
+  }
+
+  const isViewMode2 = (from) => {
+    // todo 
+    console.log("manthan-- ",from)
+    if(from ==="reopen"){
+      setIsValuesEditable(false)
+      
+      
+    }else{
+      if (route?.params?.taskStatus === "CLOSED") {
+        setIsValuesEditable(true)
+        // return true;
+      } else {
+        setIsValuesEditable(false)
+      }
+    }
+    
   };
 
   return (
@@ -1190,7 +1396,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 style={styles.textInputStyle}
                 value={name}
                 label={"Name*"}
-                disabled={isViewMode()}
+                disabled={isValuesEditable}
                 onChangeText={(text) => setName(text)}
               />
               <Text
@@ -1209,7 +1415,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 value={email}
                 label={"Email ID"}
                 keyboardType={"email-address"}
-                disabled={isViewMode()}
+                disabled={isValuesEditable}
                 onChangeText={(text) => setEmail(text)}
               />
               <Text style={[GlobalStyle.underline]}></Text>
@@ -1219,7 +1425,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 label={"Mobile Number*"}
                 maxLength={10}
                 keyboardType={"phone-pad"}
-                disabled={isViewMode()}
+                disabled={isValuesEditable}
                 onChangeText={(text) => setMobileNumber(text)}
               />
               <Text
@@ -1242,7 +1448,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                     : ""
                 }
                 // disabled={!isRecordEditable}
-                disabled={isViewMode()}
+                disabled={isValuesEditable}
                 onPress={() => showDropDownModelMethod("MODEL", "Model")}
               />
               <Text
@@ -1264,7 +1470,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                     : ""
                 }
                 // disabled={!isRecordEditable}
-                disabled={isViewMode()}
+                disabled={isValuesEditable}
                 onPress={() => showDropDownModelMethod("VARIENT", "Varient")}
               />
               <Text
@@ -1310,14 +1516,14 @@ const TestDriveScreen = ({ route, navigation }) => {
                   label={"Showroom address"}
                   value={"Showroom address"}
                   status={addressType === 1}
-                  disabled={isViewMode()}
+                  disabled={isValuesEditable}
                   onPress={() => setAddressType(1)}
                 />
                 <RadioTextItem
                   label={"Customer address"}
                   value={"Customer address"}
                   status={addressType === 2}
-                  disabled={isViewMode()}
+                  disabled={isValuesEditable}
                   onPress={() => setAddressType(2)}
                 />
               </View>
@@ -1328,7 +1534,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                   <TextinputComp
                     style={{ height: 65, maxHeight: 100, width: "100%" }}
                     value={customerAddress}
-                    disabled={isViewMode()}
+                    disabled={isValuesEditable}
                     label={"Customer Address"}
                     multiline={true}
                     numberOfLines={4}
@@ -1349,14 +1555,14 @@ const TestDriveScreen = ({ route, navigation }) => {
                 }}
               >
                 <RadioTextItem
-                  disabled={isViewMode()}
+                  disabled={isValuesEditable}
                   label={"Yes"}
                   value={"Yes"}
                   status={customerHavingDrivingLicense === 1}
                   onPress={() => setCustomerHavingDrivingLicense(1)}
                 />
                 <RadioTextItem
-                  disabled={isViewMode()}
+                  disabled={isValuesEditable}
                   label={"No"}
                   value={"No"}
                   status={customerHavingDrivingLicense === 2}
@@ -1371,7 +1577,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                       onPress={() =>
                         showImagePickerMethod("DRIVING_LICENSE_FRONT")
                       }
-                      disabled={isViewMode()}
+                      disabled={isValuesEditable}
                     />
                   </View>
                   {uploadedImagesDataObj.dlFrontUrl ? (
@@ -1418,7 +1624,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                       onPress={() =>
                         showImagePickerMethod("DRIVING_LICENSE_BACK")
                       }
-                      disabled={isViewMode()}
+                      disabled={isValuesEditable}
                     />
                   </View>
                   {uploadedImagesDataObj.dlBackUrl ? (
@@ -1467,7 +1673,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 label={"Customer Preferred Date*"}
                 value={selector.customer_preferred_date}
                 // disabled={!isRecordEditable}
-                disabled={isViewMode()}
+                disabled={isValuesEditable}
                 onPress={() =>
                   showDatePickerModelMethod("PREFERRED_DATE", "date")
                 }
@@ -1492,7 +1698,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 label={"List of Drivers"}
                 value={selectedDriverDetails.name}
                 // disabled={!isRecordEditable}
-                disabled={isViewMode()}
+                disabled={isValuesEditable}
                 onPress={() =>
                   showDropDownModelMethod("LIST_OF_DRIVERS", "List of Drivers")
                 }
@@ -1501,7 +1707,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 label={"Customer Preferred Time*"}
                 value={selector.customer_preferred_time}
                 // disabled={!isRecordEditable}
-                disabled={isViewMode()}
+                disabled={isValuesEditable}
                 onPress={() =>
                   showDatePickerModelMethod("CUSTOMER_PREFERRED_TIME", "time")
                 }
@@ -1523,7 +1729,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 label={"Actual start Time*"}
                 value={selector.actual_start_time}
                 // disabled={!isRecordEditable}
-                disabled={isViewMode()}
+                disabled={isValuesEditable}
                 onPress={() =>
                   showDatePickerModelMethod("ACTUAL_START_TIME", "time")
                 }
@@ -1544,7 +1750,7 @@ const TestDriveScreen = ({ route, navigation }) => {
               <DateSelectItem
                 label={"Actual End Time*"}
                 value={selector.actual_end_time}
-                disabled={isViewMode()}
+                disabled={isValuesEditable}
                 // disabled={!isRecordEditable}
                 onPress={() =>
                   showDatePickerModelMethod("ACTUAL_END_TIME", "time")
@@ -1704,6 +1910,52 @@ const TestDriveScreen = ({ route, navigation }) => {
                 onPress={resendClicked}
               >
                 Resend
+              </Button>
+            </View>
+          ) : null}
+
+          {route?.params?.taskStatus === "CLOSED" && !isReopenSubmitVisible? (
+            <View style={[styles.view1, { marginTop: 30 }]}>
+              <Button
+                mode="contained"
+                style={{ width: 120 }}
+                color={Colors.RED}
+                // disabled={selector.is_loading_for_task_update}
+                labelStyle={{ textTransform: "none" }}
+                onPress={reOpenTask}
+              >
+                {/* todo */}
+                Re Open
+              </Button>
+            </View>
+          ) : null}
+
+          {isReopenSubmitVisible ? (
+            <View style={[styles.view1, { marginTop: 30 }]}>
+              <Button
+                mode="contained"
+                style={{ width: 120 }}
+                color={Colors.GRAY}
+                // disabled={selector.is_loading_for_task_update}
+                labelStyle={{ textTransform: "none" }}
+                onPress={()=>{
+                  navigation.goBack()
+                }}
+              >
+                Close
+              </Button>
+              <Button
+                mode="contained"
+                style={{ width: 120 }}
+                color={Colors.RED}
+                // disabled={selector.is_loading_for_task_update}
+                labelStyle={{ textTransform: "none" }}
+                onPress={()=>{
+                  reSubmitClick("ASSIGNED","Test Drive Approval")
+                 
+                }}
+              >
+                Submit
               </Button>
             </View>
           ) : null}
