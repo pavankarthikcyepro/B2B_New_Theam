@@ -8,6 +8,9 @@ const TEST_DRIVE = require("./Icons/test-drive.png");
 const INSURANCE = require("./Icons/insurance.png");
 const FINANCE = require("./Icons/finance.png");
 const WARRANTY = require("./Icons/warranty.png");
+const EXCHANGE = require("./Icons/exchange.png");
+const ACCESSORIES = require("./Icons/accessories.png");
+const LEAD_ALLOCATION = require("./Icons/lead_allocation.png");
 
 export {
   DOWN_ARROW,
@@ -20,4 +23,7 @@ export {
   INSURANCE,
   FINANCE,
   WARRANTY,
+  EXCHANGE,
+  ACCESSORIES,
+  LEAD_ALLOCATION,
 };

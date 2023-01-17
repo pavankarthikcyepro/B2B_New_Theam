@@ -42,19 +42,9 @@ const GeoLocationScreen = ({ route, navigation }) => {
   // const navigation = useNavigation();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
-  const [isWeek, setIsWeek] = useState(false);
   const [marker, setMarker] = useState({});
   const [attendance, setAttendance] = useState(false);
   const [weeklyRecord, setWeeklyRecord] = useState([]);
-  const [reason, setReason] = useState(false);
-  const [initialPosition, setInitialPosition] = useState({});
-  const [imageUri, setImageUri] = useState(null);
-  const [attendanceCount, setAttendanceCount] = useState({
-    holidays: 0,
-    leave: 0,
-    present: 0,
-    wfh: 0,
-  });
   const [userData, setUserData] = useState({});
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
@@ -66,7 +56,6 @@ const GeoLocationScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     navigation.addListener("focus", () => {
-      getCurrentLocation();
       // setLoading(true);
       // getAttendance();
     });
@@ -77,44 +66,6 @@ const GeoLocationScreen = ({ route, navigation }) => {
     getAttendance();
   }, [currentMonth]);
 
-  const getCurrentLocation = async () => {
-    try {
-      // if (Platform.OS === "ios") {
-      //   Geolocation.requestAuthorization();
-      //   Geolocation.setRNConfiguration({
-      //     skipPermissionRequests: false,
-      //     authorizationLevel: "whenInUse",
-      //   });
-      // }
-      Geolocation.getCurrentPosition(
-        (position) => {
-          console.log("Sss", position);
-          const initialPosition = JSON.stringify(position);
-          let json = JSON.parse(initialPosition);
-          setInitialPosition(json.coords);
-          let dist = getDistanceBetweenTwoPoints(
-            officeLocation.latitude,
-            officeLocation.longitude,
-            json?.coords?.latitude,
-            json?.coords?.longitude
-          );
-          console.log("LLLLL", dist);
-          if (dist > officeRadius) {
-            setReason(true); ///true for reason
-          } else {
-            setReason(false);
-          }
-        },
-        (error) => {
-          console.log(JSON.stringify(error));
-        },
-        { enableHighAccuracy: true }
-      );
-    } catch (error) {
-      console.log("ERROR", error);
-    }
-  };
-
   const getAttendance = async () => {
     try {
       let employeeData = await AsyncStore.getData(
@@ -122,8 +73,6 @@ const GeoLocationScreen = ({ route, navigation }) => {
       );
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
-        getProfilePic(jsonObj);
-        getAttendanceCount(jsonObj);
         setUserData(jsonObj);
         var d = currentMonth;
         const response = await client.get(
@@ -157,17 +106,17 @@ const GeoLocationScreen = ({ route, navigation }) => {
 
             let date = new Date(element.createdtimestamp);
             let formatedDate = moment(date).format(dateFormat);
-            let weekReport = {
-              start: formatedDate,
-              // duration: "00:20:00",
-              note: element.comments,
-              reason: element.reason,
-              color: element.isPresent === 1 ? Colors.GREEN : "#ff5d68",
-              status: element.isPresent === 1 ? "Present" : "Absent",
-            };
+            // let weekReport = {
+            //   start: formatedDate,
+            //   // duration: "00:20:00",
+            //   note: element.comments,
+            //   reason: element.reason,
+            //   color: element.isPresent === 1 ? Colors.GREEN : "#ff5d68",
+            //   status: element.isPresent === 1 ? "Present" : "Absent",
+            // };
             dateArray.push(formatedDate);
             newArray.push(format);
-            weekArray.push(weekReport);
+            // weekArray.push(weekReport);
           }
           var obj = {};
           for (let i = 0; i < newArray.length; i++) {
@@ -175,7 +124,7 @@ const GeoLocationScreen = ({ route, navigation }) => {
             obj[dateArray[i]] = element;
           }
           setLoading(false);
-          setWeeklyRecord(weekArray);
+          // setWeeklyRecord(weekArray);
           setMarker(obj);
         }
       }
@@ -196,71 +145,8 @@ const GeoLocationScreen = ({ route, navigation }) => {
     // }
   };
 
-  const isCurrentDateForWeekView = (day) => {
-    let selectedDate = moment(day).format(dateFormat);
-    if (currentDate === selectedDate) {
-      setAttendance(true);
-    }
-  };
-
-  const getProfilePic = (userData) => {
-      console.log("manthanfff ")
-    // fetch(
-    //   `http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
-    // )
-    fetch(
-      `${baseUrl}sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
-    )
-      .then((response) => response.json())
-      .then((json) => {
-        if (json.length > 0) {
-          setImageUri(json[json.length - 1].documentPath);
-        } else {
-          setImageUri(
-            "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
-          );
-        }
-      })
-      .catch((error) => {
-        setImageUri(
-          "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
-        );
-        console.error(error);
-      });
-  };
-
-  const getAttendanceCount = async (jsonObj) => {
-    try {
-      let d = currentMonth;
-      const response = await client.get(
-        URL.GET_ATTENDANCE_COUNT(
-          jsonObj.empId,
-          jsonObj.orgId,
-          monthNamesCap[d.getMonth()]
-        )
-      );
-      const json = await response.json();
-      if (json) {
-        setAttendanceCount({
-          holidays: json.holidays || 0,
-          leave: json.leave || 0,
-          present: json.present || 0,
-          wfh: json.wfh || 0,
-        });
-      }
-    } catch (error) {}
-  };
-
   return (
     <SafeAreaView style={styles.container}>
-      <AttendanceForm
-        visible={attendance}
-        showReason={reason}
-        inVisible={() => {
-          getAttendance();
-          setAttendance(false);
-        }}
-      />
       <View>
         <Calendar
           onDayPress={(day) => {
@@ -276,7 +162,7 @@ const GeoLocationScreen = ({ route, navigation }) => {
             setCurrentMonth(new Date(month.dateString));
           }}
           hideExtraDays={true}
-          firstDay={1}
+          // firstDay={1}
           onPressArrowLeft={(subtractMonth) => subtractMonth()}
           onPressArrowRight={(addMonth) => addMonth()}
           enableSwipeMonths={true}
@@ -294,48 +180,6 @@ const GeoLocationScreen = ({ route, navigation }) => {
           markedDates={marker}
         />
       </View>
-
-      {/* {isWeek && (
-        <View style={{ flex: 1, marginTop: 10 }}>
-          <WeeklyCalendar
-            events={weeklyRecord}
-            titleFormat={"MMM yyyy"}
-            titleStyle={{
-              color: Colors.RED,
-              fontSize: 15,
-              fontWeight: "500",
-              marginVertical: 10,
-            }}
-            themeColor={Colors.RED}
-            dayLabelStyle={{
-              color: Colors.RED,
-            }}
-            onDayPress={(day) => {
-              console.log("selected dayssss", day);
-              isCurrentDateForWeekView(day);
-            }}
-            renderEvent={(event, j) => {
-              return (
-                <View
-                  style={{ ...styles.eventNote, backgroundColor: event.color }}
-                >
-                  <Text style={styles.eventText}>{event.status}</Text>
-                  {event.note?.length > 0 && (
-                    <Text style={styles.eventText}>
-                      {"Comment: " + event.note}
-                    </Text>
-                  )}
-                  {event.reason?.length > 0 && (
-                    <Text style={styles.eventText}>
-                      {"Reason: " + event.reason}
-                    </Text>
-                  )}
-                </View>
-              );
-            }}
-          />
-        </View>
-      )} */}
       <LoaderComponent visible={loading} />
     </SafeAreaView>
   );

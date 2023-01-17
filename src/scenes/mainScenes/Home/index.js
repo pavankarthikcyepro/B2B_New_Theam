@@ -54,6 +54,7 @@ import {
   getTargetParametersEmpDataInsights,
   updateIsRankHide,
   getReceptionistData,
+  updateIsModalVisible,
 } from "../../../redux/homeReducer";
 import { getCallRecordingCredentials } from "../../../redux/callRecordingReducer";
 import { updateData, updateIsManager } from "../../../redux/sideMenuReducer";
@@ -95,6 +96,7 @@ import ReactNativeModal from "react-native-modal";
 import Carousel, { Pagination } from "react-native-snap-carousel";
 import { monthNamesCap } from "../Attendance/AttendanceTop";
 import { getNotificationList } from "../../../redux/notificationReducer";
+import AttendanceFromSelf from "../../../components/AttendanceFromSelf";
 
 const officeLocation = {
   latitude: 37.33233141,
@@ -138,7 +140,7 @@ const HomeScreen = ({ route, navigation }) => {
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {
       getCurrentLocation();
-      setTargetData().then(() =>{}); //Commented to resolved filter issue for Home Screen
+      setTargetData().then(() => {}); //Commented to resolved filter issue for Home Screen
     });
   }, [navigation]);
 
@@ -168,7 +170,10 @@ const HomeScreen = ({ route, navigation }) => {
   };
 
   useEffect(() => {
-    if (selector.isModalVisible && !isEmpty(initialPosition)) {
+    if (
+      selector.isModalVisible
+      // && !isEmpty(initialPosition)
+    ) {
       getDetails();
     }
   }, [selector.isModalVisible, initialPosition]);
@@ -185,13 +190,13 @@ const HomeScreen = ({ route, navigation }) => {
       var endDate = createDateTime("21:30");
       var now = new Date();
       var isBetween = startDate <= now && now <= endDate;
-      if (isBetween) {
+      if (true) {
         let employeeData = await AsyncStore.getData(
           AsyncStore.Keys.LOGIN_EMPLOYEE
         );
         if (employeeData) {
           const jsonObj = JSON.parse(employeeData);
-          dispatch(getNotificationList(jsonObj));
+          dispatch(getNotificationList(jsonObj.empId));
            var d = new Date();
           const response = await client.get(
             URL.GET_ATTENDANCE_EMPID(
@@ -203,39 +208,43 @@ const HomeScreen = ({ route, navigation }) => {
           const json = await response.json();
           if (json.length != 0) {
             let date = new Date(json[json.length - 1].createdtimestamp);
-            let dist = getDistanceBetweenTwoPoints(
-              officeLocation.latitude,
-              officeLocation.longitude,
-              initialPosition?.latitude,
-              initialPosition?.longitude
-            );
-            if (dist > officeRadius) {
-              setReason(true); ///true for reason
-            } else {
-              setReason(false);
-            }
+            // let dist = getDistanceBetweenTwoPoints(
+            //   officeLocation.latitude,
+            //   officeLocation.longitude,
+            //   initialPosition?.latitude,
+            //   initialPosition?.longitude
+            // );
+            // if (dist > officeRadius) {
+            //   setReason(true); ///true for reason
+            // } else {
+            //   setReason(false);
+            // }
             if (date.getDate() != new Date().getDate()) {
-              if (startDate <= now && now <= startBetween) {
-                setAttendance(true);
-              } else {
-                setAttendance(false);
-              }
+              setAttendance(true);
+              // if (startDate <= now && now <= startBetween) {
+              //   setAttendance(true);
+              // } else {
+              //   setAttendance(false);
+              // }
             } else {
-              if (endBetween <= now && now <= endDate && json.isLogOut == 0) {
-                setAttendance(true);
-              } else {
-                setAttendance(false);
-              }
+              // if (endBetween <= now && now <= endDate && json.isLogOut == 0) {
+              //   setAttendance(true);
+              // } else {
+              //   setAttendance(false);
+              // }
             }
           } else {
-           if (startDate <= now && now <= startBetween) {
-             setAttendance(true);
-           } else {
-             setAttendance(false);
-           }
+            console.log("DDDD");
+            setAttendance(true);
+            //  if (startDate <= now && now <= startBetween) {
+            //    setAttendance(true);
+            //  } else {
+            //    setAttendance(false);
+            //  }
           }
         }
       }
+      dispatch(updateIsModalVisible(false));
     } catch (error) {
       console.error(error);
     }
@@ -335,7 +344,7 @@ const HomeScreen = ({ route, navigation }) => {
     }
   }, [selector.allGroupDealerData]);
 
-  useEffect(async () => {
+  useEffect(() => {
     // if (await AsyncStore.getData(AsyncStore.Keys.IS_LOGIN) === 'true'){
     getMenuListFromServer();
     getCustomerType();
@@ -348,7 +357,7 @@ const HomeScreen = ({ route, navigation }) => {
     });
 
     return unsubscribe;
-  }, [navigation]);
+  }, [navigation,selector.filterIds]);
 
   const getCustomerType = async () => {
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
@@ -506,13 +515,22 @@ const HomeScreen = ({ route, navigation }) => {
           .subtract(0, "months")
           .endOf("month")
           .format(dateFormat);
+
         const payload = {
-          endDate: monthLastDate,
+          endDate: selector?.filterIds?.endDate
+            ? selector.filterIds.endDate
+            : monthLastDate,
           loggedInEmpId: jsonObj.empId,
-          startDate: monthFirstDate,
-          levelSelected: null,
+          startDate: selector?.filterIds?.startDate
+            ? selector.filterIds.startDate
+            : monthFirstDate,
           empId: jsonObj.empId,
         };
+        if (selector.filterIds?.empSelected?.length) {
+          payload["empSelected"] = selector.filterIds.empSelected;
+        } else {
+          payload["levelSelected"] = null;
+        }
         getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
           .then((x) => {})
           .catch((y) => {});
@@ -584,10 +602,13 @@ const HomeScreen = ({ route, navigation }) => {
         .endOf("month")
         .format(dateFormat);
       const payload = {
-        endDate: monthLastDate,
+        endDate: selector?.filterIds?.endDate
+          ? selector.filterIds.endDate
+          : monthLastDate,
         loggedInEmpId: jsonObj.empId,
-        startDate: monthFirstDate,
-        levelSelected: null,
+        startDate: selector?.filterIds?.startDate
+          ? selector.filterIds.startDate
+          : monthFirstDate,
         empId: jsonObj.empId,
       };
       if (isTeamPresent) {
@@ -619,13 +640,21 @@ const HomeScreen = ({ route, navigation }) => {
       .endOf("month")
       .format(dateFormat);
     const payload = {
-      endDate: monthLastDate,
+      endDate: selector?.filterIds?.endDate
+        ? selector.filterIds.endDate
+        : monthLastDate,
       loggedInEmpId: empId,
-      startDate: monthFirstDate,
-      levelSelected: null,
+      startDate: selector?.filterIds?.startDate
+        ? selector.filterIds.startDate
+        : monthFirstDate,
       empId: empId,
     };
-
+    if (selector.filterIds?.empSelected?.length) {
+      payload["empSelected"] = selector.filterIds.empSelected;
+    } else {
+      payload["levelSelected"] = null;
+    }
+   
     Promise.all([
       // dispatch(getLeadSourceTableList(payload)),
       // dispatch(getVehicleModelTableList(payload)),
@@ -725,10 +754,14 @@ const HomeScreen = ({ route, navigation }) => {
       loggedInEmpId: payload.empId,
       empId: payload.empId,
       startDate: payload.startDate,
-      levelSelected: null,
       pageNo: 0,
       size: 100,
     };
+    if (selector.filterIds?.empSelected?.length) {
+      payload2["empSelected"] = selector.filterIds.empSelected;
+    } else {
+      payload2["levelSelected"] = null;
+    }
     Promise.allSettled([
       //dispatch(getTargetParametersAllData(payload1)),
       dispatch(getTotalTargetParametersData(payload2)),
@@ -1085,7 +1118,7 @@ const HomeScreen = ({ route, navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <RenderModal />
-      <AttendanceForm
+      <AttendanceFromSelf
         visible={attendance}
         showReason={reason}
         inVisible={() => {
@@ -1114,7 +1147,7 @@ const HomeScreen = ({ route, navigation }) => {
         branchClicked={() => moveToSelectBranch()}
         filterClicked={() => moveToFilter()}
         notification={true}
-        notificationNav={() => navigation.navigate("NOTIF_1")}
+        navigation={navigation}
       />
       <ScrollView
         showsVerticalScrollIndicator={false}

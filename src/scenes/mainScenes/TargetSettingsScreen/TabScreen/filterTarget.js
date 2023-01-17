@@ -144,7 +144,7 @@ const FilterTargetScreen = ({ route, navigation }) => {
         }
       });
     }
-
+    
     let data = [];
     if (topRowSelectedIds.length > 0) {
       const subLevels = totalDataObj[nameKeyList[index]].sublevels;
@@ -174,7 +174,9 @@ const FilterTargetScreen = ({ route, navigation }) => {
         }
       }
     }
+   
     if (index === 4) {
+     
       setDropDownData([...newData]);
       if (initalCall) {
         let updatedMultipleData = [...newData];
@@ -191,6 +193,7 @@ const FilterTargetScreen = ({ route, navigation }) => {
       }
       //   submitBtnClicked(null)
     } else {
+      
       setDropDownData([...data]);
     }
     setSelectedItemIndex(index);
@@ -227,6 +230,7 @@ const FilterTargetScreen = ({ route, navigation }) => {
   };
 
   const updateSelectedItems = (data, index, initalCall = false) => {
+    
     const totalDataObjLocal = { ...totalDataObj };
     if (index > 0) {
       let selectedParendIds = [];
@@ -503,6 +507,7 @@ const FilterTargetScreen = ({ route, navigation }) => {
         });
       }
     }
+    
     let x =
       employeeDropDownDataLocal[
         Object.keys(employeeDropDownDataLocal)[
@@ -510,11 +515,12 @@ const FilterTargetScreen = ({ route, navigation }) => {
         ]
       ];
     let selectedID = x.filter((e) => e.selected == true);
+    
     // return
     navigation.navigate("MONTHLY_TARGET_SCREEN", {
       params: {
         from: "Filter",
-        selectedID: selectedID[0],
+        selectedID: selectedIds[selectedIds.length - 1],
         fromDate: fromDate,
         toDate: toDate,
       },
@@ -555,6 +561,7 @@ const FilterTargetScreen = ({ route, navigation }) => {
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
           if (dropDownFrom === "ORG_TABLE") {
+         
             updateSelectedItems(item, selectedItemIndex);
           } else {
             updateSelectedItemsForEmployeeDropDown(item, selectedItemIndex);
@@ -620,6 +627,8 @@ const FilterTargetScreen = ({ route, navigation }) => {
                 </View>
               );
             } else if (index === 1) {
+
+              // todo country list 
               return (
                 <View>
                   <View
@@ -631,14 +640,22 @@ const FilterTargetScreen = ({ route, navigation }) => {
                       scrollEnabled={false}
                       keyExtractor={(item, index) => index.toString()}
                       renderItem={({ item, index }) => {
+                       
                         const data = totalDataObj[item].sublevels;
+                     
                         let selectedNames = "";
+                        let disabletemp = false;
                         data.forEach((obj, index) => {
+                         
                           if (
                             obj.selected != undefined &&
                             obj.selected == true
                           ) {
                             selectedNames += obj.name + ", ";
+                          }
+
+                          if (obj.disabled === "Y"){
+                            disabletemp= true;
                           }
                         });
 
@@ -648,6 +665,7 @@ const FilterTargetScreen = ({ route, navigation }) => {
                             selectedNames.length - 1
                           );
                         }
+                        
                         return (
                           <View>
                             <DropDownSelectionItem
@@ -655,6 +673,7 @@ const FilterTargetScreen = ({ route, navigation }) => {
                               value={selectedNames}
                               onPress={() => dropDownItemClicked(index)}
                               takeMinHeight={true}
+                              // disabled={disabletemp}
                             />
                           </View>
                         );

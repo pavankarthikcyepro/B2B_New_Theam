@@ -405,6 +405,26 @@ export const updateIsTeam = createAsyncThunk(
   }
 );
 
+export const updateIsModalVisible = createAsyncThunk(
+  "HOME/updateIsModalVisible",
+  async (payload: any) => {
+    return payload;
+  }
+);
+
+export const updateTheTeamAttendanceFilter = createAsyncThunk(
+  "HOME/updateTheTeamAttendanceFilter",
+  async (payload: any) => {
+    return payload;
+  }
+);
+export const updateTheTeamAttendanceFilterDate = createAsyncThunk(
+  "HOME/updateTheTeamAttendanceFilterDate",
+  async (payload: any) => {
+    return payload;
+  }
+);
+
 export const getEmployeesList = createAsyncThunk(
   "HOME/getEmployeesList",
   async (payload, { rejectWithValue }) => {
@@ -694,6 +714,15 @@ export const homeSlice = createSlice({
     },
     receptionistModel: [],
     receptionistSource: [],
+    selectedIDS :[],
+    selectedDate : {},
+    filterIds:{
+      startDate:"",
+      endDate:"",
+      levelSelected:[],
+      empSelected:[],
+      allEmpSelected:[],
+    },
   },
   reducers: {
     dateSelected: (state, action) => {
@@ -701,6 +730,12 @@ export const homeSlice = createSlice({
     },
     updateFilterDropDownData: (state, action) => {
       state.filter_drop_down_data = action.payload;
+    },
+    updateFilterIds:(state,action)=>{
+      state.filterIds = action.payload
+    },
+     updateEmpDropDown:(state,action)=>{
+      state.employees_drop_down_data = {}
     },
     updateIsTeamPresent: (state, action) => {
       state.isTeamPresent = action.payload;
@@ -737,6 +772,7 @@ export const homeSlice = createSlice({
       state.dateSelectedIndex = 0;
       state.login_employee_details = {};
       state.filter_drop_down_data = [];
+      // state.filterIds = {},
       state.lead_source_table_data = [];
       state.vehicle_model_table_data = [];
       state.events_table_data = [];
@@ -773,6 +809,13 @@ export const homeSlice = createSlice({
         totalAllocatedCount: 0,
         totalDroppedCount: 0,
       };
+      state.filterIds = {
+        startDate:"",
+        endDate:"",
+        levelSelected:[],
+        empSelected:[],
+        allEmpSelected:[],
+      }
     },
   },
   extraReducers: (builder) => {
@@ -819,6 +862,15 @@ export const homeSlice = createSlice({
       })
       .addCase(updateIsTeam.fulfilled, (state, action) => {
         state.isTeam = action.payload;
+      })
+      .addCase(updateIsModalVisible.fulfilled, (state, action) => {
+        state.isModalVisible = action.payload;
+      })
+      .addCase(updateTheTeamAttendanceFilter.fulfilled, (state, action) => {
+        state.selectedIDS = action.payload;
+      })
+      .addCase(updateTheTeamAttendanceFilterDate.fulfilled, (state, action) => {
+        state.selectedDate = action.payload;
       })
       .addCase(getCustomerTypeList.fulfilled, (state, action) => {
         const data = action.payload;
@@ -1041,6 +1093,7 @@ export const homeSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(getTargetParametersEmpData.fulfilled, (state, action) => {
+        state.isModalVisible = false;
         if (action.payload) {
           state.self_target_parameters_data = action.payload;
           AsyncStore.storeData("TARGET_EMP", JSON.stringify(action.payload));
@@ -1062,6 +1115,7 @@ export const homeSlice = createSlice({
       .addCase(
         getTargetParametersEmpDataInsights.fulfilled,
         (state, action) => {
+          state.isModalVisible = false;
           if (action.payload) {
             state.insights_target_parameters_data = action.payload;
             AsyncStore.storeData("TARGET_EMP", JSON.stringify(action.payload));
@@ -1214,14 +1268,14 @@ export const homeSlice = createSlice({
       .addCase(getReceptionistSource.pending, (state) => {})
       .addCase(getReceptionistSource.fulfilled, (state, action) => {
         const dataObj = action.payload;
-        state.receptionistSource=  dataObj ;
+        state.receptionistSource = dataObj;
       })
       .addCase(getReceptionistSource.rejected, (state, action) => {})
       .addCase(getReceptionistModel.pending, (state) => {})
       .addCase(getReceptionistModel.fulfilled, (state, action) => {
         const dataObj = action.payload;
         console.log("dataObj", dataObj);
-        
+
         state.receptionistModel = dataObj;
       })
       .addCase(getReceptionistModel.rejected, (state, action) => {});
@@ -1266,5 +1320,7 @@ export const {
   updateIsDSE,
   clearState,
   updateTargetData,
+  updateFilterIds,
+  updateEmpDropDown,
 } = homeSlice.actions;
 export default homeSlice.reducer;

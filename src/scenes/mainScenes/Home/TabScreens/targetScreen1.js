@@ -935,11 +935,24 @@ const TargetScreen = ({ route }) => {
                                     }}
                                   >
                                     {item.empName}
-                                    {item?.childCount > 1 ? "  |" : ""}
+                                    {/* {item?.childCount > 1 ? "  |" : ""} */}
                                   </Text>
+                                  
+                                </View>
+                                <View style={{flexDirection:"row"}}>
                                   {item?.childCount > 1 && (
                                     <View
-                                      style={styles.view5}
+                                      style={{
+                                        backgroundColor: "lightgrey",
+                                        flexDirection: "row",
+                                        paddingHorizontal: 7,
+                                        borderRadius: 10,
+                                        alignItems: "center",
+                                        justifyContent: "space-between",
+                                        marginBottom: 5,
+                                        alignSelf: "flex-start",
+                                        marginLeft: 7,
+                                      }}
                                     >
                                       <MaterialIcons
                                         name="person"
@@ -949,28 +962,29 @@ const TargetScreen = ({ route }) => {
                                       <Text>{item?.childCount}</Text>
                                     </View>
                                   )}
+                                  <SourceModelView
+                                    onClick={() => {
+                                      navigation.navigate(
+                                        AppNavigator.HomeStackIdentifiers
+                                          .sourceModel,
+                                        {
+                                          empId: item.empId,
+                                          headerTitle: item.empName,
+                                          loggedInEmpId:
+                                            selector.login_employee_details.empId,
+                                          orgId:
+                                            selector.login_employee_details.orgId,
+                                          type: "TEAM",
+                                          moduleType: "home",
+                                        }
+                                      );
+                                    }}
+                                    style={{
+                                      transform: [{ translateX: translation }],
+                                    }}
+                                  />
                                 </View>
-                                <SourceModelView
-                                  onClick={() => {
-                                    navigation.navigate(
-                                      AppNavigator.HomeStackIdentifiers
-                                        .sourceModel,
-                                      {
-                                        empId: item.empId,
-                                        headerTitle: item.empName,
-                                        loggedInEmpId:
-                                          selector.login_employee_details.empId,
-                                        orgId:
-                                          selector.login_employee_details.orgId,
-                                        type: "TEAM",
-                                        moduleType: "home",
-                                      }
-                                    );
-                                  }}
-                                  style={{
-                                    transform: [{ translateX: translation }],
-                                  }}
-                                />
+                                
                               </View>
                               {/*Source/Model View END */}
                               <View
@@ -1073,15 +1087,31 @@ const TargetScreen = ({ route }) => {
                                                       }}
                                                     >
                                                       {innerItem1.empName}
-                                                      {innerItem1?.childCount >
+                                                      {/* {innerItem1?.childCount >
                                                       1
                                                         ? "  |"
-                                                        : ""}
+                                                        : ""} */}
                                                     </Text>
+                                                    
+                                                  </View>
+                                                  <View style={{flexDirection:"row"}}>
                                                     {innerItem1?.childCount >
                                                       1 && (
                                                       <View
-                                                        style={styles.matView}
+                                                        style={{
+                                                          backgroundColor:
+                                                            "lightgrey",
+                                                          flexDirection: "row",
+                                                          paddingHorizontal: 7,
+                                                          borderRadius: 10,
+                                                          alignItems: "center",
+                                                          justifyContent:
+                                                            "space-between",
+                                                          marginBottom: 5,
+                                                          alignSelf:
+                                                            "flex-start",
+                                                          marginLeft: 7,
+                                                        }}
                                                       >
                                                         <MaterialIcons
                                                           name="person"
@@ -1232,15 +1262,33 @@ const TargetScreen = ({ route }) => {
                                                               {
                                                                 innerItem2.empName
                                                               }
-                                                              {innerItem2?.childCount >
+                                                              {/* {innerItem2?.childCount >
                                                               1
                                                                 ? "  |"
-                                                                : ""}
+                                                                : ""} */}
                                                             </Text>
+                                                            
+                                                          </View>
+                                                            <View style={{flexDirection:"row"}}>
                                                             {innerItem2?.childCount >
                                                               1 && (
                                                               <View
-                                                                style={styles.matView}
+                                                                style={{
+                                                                  backgroundColor:
+                                                                    "lightgrey",
+                                                                  flexDirection:
+                                                                    "row",
+                                                                  paddingHorizontal: 7,
+                                                                  borderRadius: 10,
+                                                                  alignItems:
+                                                                    "center",
+                                                                  justifyContent:
+                                                                    "space-between",
+                                                                  marginBottom: 5,
+                                                                  alignSelf:
+                                                                    "flex-start",
+                                                                  marginLeft: 7,
+                                                                }}
                                                               >
                                                                 <MaterialIcons
                                                                   name="person"
@@ -1388,15 +1436,33 @@ const TargetScreen = ({ route }) => {
                                                                         {
                                                                           innerItem3.empName
                                                                         }
-                                                                        {innerItem3?.childCount >
+                                                                        {/* {innerItem3?.childCount >
                                                                         1
                                                                           ? "  |"
-                                                                          : ""}
+                                                                          : ""} */}
                                                                       </Text>
+                                                                    
+                                                                    </View>
+                                                                        <View style={{flexDirection:"row"}}>
                                                                       {innerItem3?.childCount >
                                                                         1 && (
                                                                         <View
-                                                                          style={styles.matView}
+                                                                          style={{
+                                                                            backgroundColor:
+                                                                              "lightgrey",
+                                                                            flexDirection:
+                                                                              "row",
+                                                                            paddingHorizontal: 7,
+                                                                            borderRadius: 10,
+                                                                            alignItems:
+                                                                              "center",
+                                                                            justifyContent:
+                                                                              "space-between",
+                                                                            marginBottom: 5,
+                                                                            alignSelf:
+                                                                              "flex-start",
+                                                                            marginLeft: 7,
+                                                                          }}
                                                                         >
                                                                           <MaterialIcons
                                                                             name="person"

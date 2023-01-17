@@ -71,7 +71,7 @@ import {
   updateRef,
   updateResponseStatus,
   clearPermanentAddr,
-  updateAddressByPincode2, getRulesConfiguration
+  updateAddressByPincode2, getRulesConfiguration, getOtherPricesDropDown
 } from "../../../redux/preBookingFormReducer";
 import {
   clearBookingState,
@@ -396,7 +396,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
   const [isMinimumAmtModalVisible, setIsMinimumAmtModalVisible] = useState(false);
   const [configureRuleData, setConfigureRuleData] = useState("")
-  const [isMiniAmountCheck, setisMiniAmountCheck] = useState(true)
+  const [isMiniAmountCheck, setisMiniAmountCheck] = useState(true);
+  const [otherPriceDropDownIndex, setOtherPriceDropDownIndex] = useState(null);
 
   // Edit buttons shows
   useEffect(() => {
@@ -1029,6 +1030,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       // Make Api calls in parallel
       Promise.all([
         dispatch(getDropDataApi(payload)),
+        dispatch(getOtherPricesDropDown(jsonObj.orgId)),
         getCarModelListFromServer(jsonObj.orgId),
       ]).then(() => { });
 
@@ -1477,10 +1479,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     setTotalOnRoadPrice(0);
     setTcsAmount(0);
     setTotalOnRoadPriceAfterDiscount(0);
-
-    console.log("==========================");
-    console.log("clearPriceConfirmationData");
-    console.log("==========================");
   };
 
   const showDropDownModelMethod = (key, headerText) => {
@@ -1595,6 +1593,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         break;
       case "CUSTOMER_TYPE_CATEGORY":
         setDataForDropDown([...Customer_Category_Types]);
+        break;
+      case "OTHER_PRICES":
+        setDataForDropDown([...selector.otherPricesDropDown]);
         break;
     }
     setDropDownKey(key);
@@ -3689,6 +3690,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         visible={showDropDownModel}
         headerTitle={dropDownTitle}
         data={dataForDropDown}
+        disabledData={addNewInput}
         multiple={showMultipleDropDownData}
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
@@ -3735,6 +3737,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             return;
           } else if (dropDownKey === "REGISTRATION_CHARGES") {
             setSelectedRegistrationCharges(item);
+          } else if (dropDownKey === "OTHER_PRICES") {
+            inputHandlerName(item.name, otherPriceDropDownIndex);
           }
 
           if (
@@ -6108,7 +6112,29 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             paddingHorizontal: 10,
                           }}
                         >
-                          <TextInput
+                          <View style={{ width: "33%" }}>
+                            <DropDownSelectionItem
+                              label={"Name"}
+                              disabled={!isInputsEditable()}
+                              value={item.name}
+                              style={{
+                                height: 40,
+                                borderColor: checkIsError("name", index)
+                                  ? Colors.RED
+                                  : Colors.BLACK,
+                              }}
+                              otherPrices={true}
+                              onPress={() => {
+                                showDropDownModelMethod(
+                                  "OTHER_PRICES",
+                                  "Select Name"
+                                );
+                                setOtherPriceDropDownIndex(index);
+                              }}
+                            />
+                          </View>
+
+                          {/* <TextInput
                             editable={isInputsEditable()}
                             style={[
                               styles.otherPriceInput,
@@ -6123,7 +6149,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                               inputHandlerName(name, index)
                             }
                             value={item.name}
-                          />
+                          /> */}
                           <TextInput
                             editable={isInputsEditable()}
                             style={[

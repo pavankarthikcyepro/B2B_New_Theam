@@ -125,7 +125,7 @@ export const dashboardLiveLeads = baseUrl + "dfdl";
 
 export const dynamicReports_url = baseUrl + "dfdg/dynamic-reports";
 export const dynamicForms = baseUrl + "dfdg/dynamic-forms";
-export const orgnaizationHirarchy = baseUrl + "dfdg/oh";
+export const orgnaizationHirarchy = baseUrl + "dfd/oh";
 export const dfGetAll = baseUrl + "dfdg/df-get-all";
 export const subSourceAllDetails = baseUrl + "dfdg/Source_SubSource_AllDetails";
 export const lostSubLost = baseUrl + "dfdg/Lost_SubLost_AllDetails";
@@ -141,8 +141,7 @@ export const downloadFile2 = baseUrl + "etv-schd/dynamic-reports/etvbrl_report";
 export const getEmployeeData =
   baseUrl + "role-management/employee/dept-employees";
 
-export const notification =
-  "http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8096/notificationMaster";
+export const notification = baseUrl + "notificationMaster";
 // not getting used anywhere so not changes and commented
 // export const admin_url =
 //   "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8082/admin";
@@ -157,7 +156,7 @@ export const reasonDropDown = baseUrl + "dynamic-forms/dropdown";
 export const getDetailsByempIdAndorgId =
   baseUrl + "sales/employeeTracking/getDetailsByempIdAndorgId";
 export const getLocationCoordinates =
-  baseUrl + "sales/employeeTracking/getLocationByempIdAndorgId";
+baseUrl + "sales/employeeTracking/getLocationByempIdAndorgId";
 
 const URL = {
   // LOGIN: () => hrms_url + "/emplogin",
@@ -203,6 +202,8 @@ const URL = {
     return sales_url + `/master-data/customertype/${orgId}`;
   },
   MY_TASKS: () => sales_url + "/workflow/assignedTasks?",
+  MY_TASKS_RESCHEDULED_HISTORY: (empId) =>
+    sales_url + `/task-history/resheduled-update-today?empId=${empId}`,
   CONTACT_DETAILS: (universalId) => {
     return sales_url + "/lead/id/" + universalId;
   },
@@ -277,6 +278,8 @@ const URL = {
     return sales_url + `/enquiry/performaDetails`;
   },
   SEND_ON_ROAD_PRICE_DETAILS: () => sales_url + "/on-road-price",
+  GET_OTHER_PRICES_DROP_DOWN: (orgId) =>
+    decodeURI(`${dfGetAll}/${orgId}/%22Active%22/${orgId}/otherCharges`),
   GET_ALL_OFFERS: (varientId, vehicleId) => {
     return (
       ops_url +
@@ -326,9 +329,11 @@ const URL = {
   }, // getAllServiceEventsByFilter replaced by getAllServiceEventsByFilterByStatus
 
   GET_EVENTS_NEW: (startDate, endDate, empId) => {
-    return ops_url + `/dms/getAllServiceEventsByFilter?startdate=${startDate}&enddate=${endDate}&organiserid=${empId}`;
+    return (
+      ops_url +
+      `/dms/getAllServiceEventsByFilter?startdate=${startDate}&enddate=${endDate}&organiserid=${empId}`
+    );
   },
-
 
   GET_SOURCE_OF_ENQUIRY: (orgId) => {
     return subSourceAllDetails + `?organizationId=${orgId}`;
@@ -438,23 +443,26 @@ const URL = {
   },
   GET_MAP_COORDINATES_BY_ID: (employeeId, orgId, date) => {
     // return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8081/sales/employeeTracking/getDetailsByDate/1205/22/2023-01-05`;
-    return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8081/sales/employeeTracking/getDetailsByDate/${employeeId}/${orgId}/${date}`;
+    // return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8081/sales/employeeTracking/getDetailsByDate/${employeeId}/${orgId}/${date}`;
     return (
       sales_url +
       `/employeeTracking/getDetailsByDate/${employeeId}/${orgId}/${date}`
     );
   },
   GET_EMPLOYEES_DROP_DOWN_DATA_FOR_ATTENDANCE: (orgId, employeeId) => {
-    return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8092/dfd/oh/team-attendance/${orgId}/${employeeId}`;
-    return baseUrl + `dfd/team-attendance/${orgId}/${employeeId}`;
+    // return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8092/dfd/oh/team-attendance/${orgId}/${employeeId}`;
+    return baseUrl + `dfd/oh/team-attendance/${orgId}/${employeeId}`;
   },
   GET_ATTENDANCE_REPORT: () => {
-    return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8081/sales/reports/attendance_report`;
-    return sales_url + '/reports/attendance_report';
+    // return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8081/sales/reports/attendance_report`;
+    return sales_url + "/reports/attendance_report";
   },
   GET_DOWNLOAD_URL: (file) => {
-    return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8081/sales/reports/downloadFile/${file}`;
+    // return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8081/sales/reports/downloadFile/${file}`;
     return sales_url + `reports/downloadFile/${file}`;
+  },
+  GET_TEAM_ATTENDANCE_COUNT: () => {
+    return sales_url + `/employeeAttendance/userAttendance`;
   },
   GET_EMPLOYEES_ACTIVE_BRANCHES: (orgId, employeeId) => {
     return orgnaizationHirarchy + `/active-branches/${orgId}/${employeeId}`;
@@ -649,7 +657,10 @@ const URL = {
     );
   },
   NOTIFICATION_LIST: (empId) => {
-    return notification + `/notification/${empId}`;
+    return notification + `/notification/notifications/${empId}`;
+  },
+  READ_NOTIFICATION: (notificationId) => {
+    return notification + `/notification/readnotification/${notificationId}`;
   },
   SAVE_EMPLOYEE_ATTENDANCE: () => {
     return sales_url + "/employeeAttendance/saveEmployeeAttendance";
@@ -691,6 +702,9 @@ const URL = {
   },
   GET_TASK_360_HISTORY: (universalId) => {
     return sales_url + "/workflow/universalId/" + universalId;
+  },
+  CALL_DEALLOCATE: (empId) => {
+    return roleManagement_url + "/dms/emp-update/" + empId;
   },
 };
 

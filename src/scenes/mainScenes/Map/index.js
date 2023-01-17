@@ -58,7 +58,6 @@ const MapScreen = ({ route }) => {
   }, [navigation]);
 
   useEffect(() => {
-    console.log(route.params);
     setLoading(true);
     if (route.params) {
       getLocation(route.params);
@@ -91,13 +90,6 @@ const MapScreen = ({ route }) => {
         const latitude = newArr.reduce(
           (total, next) => total + next.latitude,
           0
-        );
-        console.log(
-          "AVERGARE LAT LOG",
-          // latitude / newArr.length,
-          // longitude / newArr.length,
-          "\n",
-          arr
         );
         setLatitude(arr[arr.length - 1].latitude);
         setLongitude(arr[arr.length - 1].longitude);
@@ -151,13 +143,6 @@ const MapScreen = ({ route }) => {
           (total, next) => total + next.latitude,
           0
         );
-        console.log(
-          "AVERGARE LAT LOG",
-          // latitude / newArr.length,
-          // longitude / newArr.length,
-          "\n",
-          arr
-        );
         setLatitude(arr[arr.length - 1].latitude);
         setLongitude(arr[arr.length - 1].longitude);
         // setLatitude(latitude / newArr.length);
@@ -200,7 +185,6 @@ const MapScreen = ({ route }) => {
         maximumDate={new Date()}
         value={new Date()}
         onChange={(event, selectedDate) => {
-          console.log("date: ", selectedDate);
           getLocationByDate(selectedDate);
           setShowDatePicker(false);
         }}
