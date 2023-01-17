@@ -1130,13 +1130,9 @@ const ListComponent = ({ route, navigation }) => {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: Colors.LIGHT_GRAY, padding: 5 }}>
+    <View style={styles.mainView}>
       <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "center",
-          paddingVertical: 10,
-        }}
+        style={styles.view2}
       >
         {/* <View style={{ width: "75%" }}>
                     <SegmentedControl
@@ -1234,17 +1230,7 @@ const ListComponent = ({ route, navigation }) => {
               {route.params.from !== "TODAY" && (
                 <View>
                   <TouchableOpacity
-                    style={{
-                      width: 80,
-                      height: 40,
-                      justifyContent: "center",
-                      alignItems: "center",
-                      flexDirection: "row",
-                      backgroundColor: Colors.RED,
-                      borderRadius: 5,
-                      marginTop: 10,
-                      marginLeft: 10,
-                    }}
+                    style={styles.touchable}
                     onPress={() => setIsOpenFilter(true)}
                   >
                     <Image
@@ -1322,21 +1308,10 @@ const ListComponent = ({ route, navigation }) => {
             <View style={{ flexDirection: "row" }}>
               <View style={[styles.selfBtnWrap, { width: "75%" }]}>
                 <View
-                  style={{
-                    width: "100%",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    backgroundColor: Colors.RED,
-                    borderTopLeftRadius: 5,
-                    borderBottomLeftRadius: 5,
-                  }}
+                  style={styles.selfbtn}
                 >
                   <Text
-                    style={{
-                      fontSize: 16,
-                      color: Colors.WHITE,
-                      fontWeight: "600",
-                    }}
+                    style={styles.txt1}
                   >
                     Self
                   </Text>
@@ -1345,17 +1320,7 @@ const ListComponent = ({ route, navigation }) => {
               {route.params.from !== "TODAY" && (
                 <View>
                   <TouchableOpacity
-                    style={{
-                      width: 80,
-                      height: 40,
-                      justifyContent: "center",
-                      alignItems: "center",
-                      flexDirection: "row",
-                      backgroundColor: Colors.RED,
-                      borderRadius: 5,
-                      marginTop: 10,
-                      marginLeft: 10,
-                    }}
+                    style={styles.touchable}
                     onPress={() => setIsOpenFilter(true)}
                   >
                     <Image
@@ -1363,12 +1328,7 @@ const ListComponent = ({ route, navigation }) => {
                       source={require("../../../../assets/images/more_new.png")}
                     />
                     <Text
-                      style={{
-                        fontSize: 16,
-                        fontWeight: "600",
-                        color: "#fff",
-                        marginLeft: 10,
-                      }}
+                      style={styles.txt5}
                     >
                       Filter
                     </Text>
@@ -1379,21 +1339,10 @@ const ListComponent = ({ route, navigation }) => {
           ) : (
             <View style={[styles.selfBtnWrap]}>
               <View
-                style={{
-                  width: "100%",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  backgroundColor: Colors.RED,
-                  borderTopLeftRadius: 5,
-                  borderBottomLeftRadius: 5,
-                }}
+                style={styles.view3}
               >
                 <Text
-                  style={{
-                    fontSize: 16,
-                    color: Colors.WHITE,
-                    fontWeight: "600",
-                  }}
+                  style={styles.txt2}
                 >
                   Self
                 </Text>
@@ -1463,46 +1412,25 @@ const ListComponent = ({ route, navigation }) => {
                         }}
                       >
                         <Text
-                          style={{
-                            fontSize: 17,
-                            fontWeight: "700",
-                            textAlign: "center",
-                          }}
+                          style={styles.txt3}
                         >
                           {item.taskCnt}
                         </Text>
                         <Text
-                          style={{
-                            fontSize: 11,
-                            fontWeight: "400",
-                            textAlign: "center",
-                          }}
+                          style={styles.txt4}
                         >
                           {"follow up"}
                         </Text>
                       </View>
                     </View>
                     <View
-                      style={{
-                        width: "100%",
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
+                      style={styles.view4}
                     >
                       <View
-                        style={{
-                          width: "75%",
-                          backgroundColor: Colors.DARK_GRAY,
-                          height: 2,
-                          marginBottom: 13,
-                        }}
+                        style={styles.emptyView}
                       ></View>
                       <Text
-                        style={{
-                          fontSize: 12,
-                          fontWeight: "700",
-                          textAlign: "center",
-                        }}
+                        style={styles.txt6}
                         numberOfLines={3}
                       >
                         {checkForTaskNames(item.taskName)}
@@ -1570,46 +1498,25 @@ const ListComponent = ({ route, navigation }) => {
                         }}
                       >
                         <Text
-                          style={{
-                            fontSize: 17,
-                            fontWeight: "700",
-                            textAlign: "center",
-                          }}
+                          style={styles.txt3}
                         >
                           {item.taskCnt}
                         </Text>
                         <Text
-                          style={{
-                            fontSize: 11,
-                            fontWeight: "400",
-                            textAlign: "center",
-                          }}
+                          style={styles.txt4}
                         >
                           {"follow up"}
                         </Text>
                       </View>
                     </View>
                     <View
-                      style={{
-                        width: "100%",
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
+                      style={styles.view4}
                     >
                       <View
-                        style={{
-                          width: "75%",
-                          backgroundColor: Colors.DARK_GRAY,
-                          height: 2,
-                          marginBottom: 13,
-                        }}
+                        style={styles.emptyView}
                       ></View>
                       <Text
-                        style={{
-                          fontSize: 12,
-                          fontWeight: "700",
-                          textAlign: "center",
-                        }}
+                        style={styles.txt6}
                         numberOfLines={2}
                       >
                         {checkForTaskNames(item.taskName)}
@@ -1811,4 +1718,79 @@ const styles = StyleSheet.create({
   },
   selectBtnWrap: { backgroundColor: Colors.RED },
   selectText: { color: "#fff" },
+  mainView: { flex: 1, backgroundColor: Colors.LIGHT_GRAY, padding: 5 },
+  view2: {
+    flexDirection: "row",
+    justifyContent: "center",
+    paddingVertical: 10,
+  },
+  touchable: {
+    width: 80,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
+    backgroundColor: Colors.RED,
+    borderRadius: 5,
+    marginTop: 10,
+    marginLeft: 10,
+  },
+  selfbtn: {
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: Colors.RED,
+    borderTopLeftRadius: 5,
+    borderBottomLeftRadius: 5,
+  },
+  txt1: {
+    fontSize: 16,
+    color: Colors.WHITE,
+    fontWeight: "600",
+  },
+  view3: {
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: Colors.RED,
+    borderTopLeftRadius: 5,
+    borderBottomLeftRadius: 5,
+  },
+  txt2: {
+    fontSize: 16,
+    color: Colors.WHITE,
+    fontWeight: "600",
+  },
+  txt3: {
+    fontSize: 17,
+    fontWeight: "700",
+    textAlign: "center",
+  },
+  txt4: {
+    fontSize: 11,
+    fontWeight: "400",
+    textAlign: "center",
+  },
+  view4: {
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+ emptyView: {
+    width: "75%",
+    backgroundColor: Colors.DARK_GRAY,
+    height: 2,
+    marginBottom: 13,
+  },
+   txt5: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#fff",
+    marginLeft: 10,
+  },
+  txt6: {
+    fontSize: 12,
+    fontWeight: "700",
+    textAlign: "center",
+  }
 });

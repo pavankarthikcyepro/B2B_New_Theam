@@ -998,17 +998,7 @@ const LeadsScreen = ({ route, navigation }) => {
         </View>
         <Pressable onPress={() => setSortAndFilterVisible(true)}>
           <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              borderColor: Colors.BORDER_COLOR,
-              borderWidth: 1,
-              borderRadius: 4,
-              backgroundColor: Colors.WHITE,
-              paddingLeft: 8,
-              height: 50,
-              justifyContent: "center",
-            }}
+            style={styles.filterView}
           >
             <Text style={styles.text1}>{"Filter"}</Text>
             <IconButton
@@ -1021,15 +1011,7 @@ const LeadsScreen = ({ route, navigation }) => {
         </Pressable>
       </View>
       <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          borderColor: Colors.LIGHT_GRAY,
-          paddingHorizontal: 6,
-          paddingBottom: 4,
-          backgroundColor: Colors.WHITE,
-          marginTop: -6,
-        }}
+        style={styles.view3}
       >
         <View style={{ width: subMenu?.length > 1 ? "45%" : "100%" }}>
           <Pressable
@@ -1038,23 +1020,10 @@ const LeadsScreen = ({ route, navigation }) => {
             }}
           >
             <View
-              style={{
-                borderWidth: 0.5,
-                borderColor: Colors.BORDER_COLOR,
-                borderRadius: 4,
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
+              style={styles.view4}
             >
               <Text
-                style={{
-                  width: "80%",
-                  paddingHorizontal: 5,
-                  paddingVertical: 2,
-                  fontSize: 12,
-                  fontWeight: "600",
-                }}
+                style={styles.txt1}
                 numberOfLines={2}
               >
                 {leadsFilterDropDownText}
@@ -1135,7 +1104,7 @@ const LeadsScreen = ({ route, navigation }) => {
       ) : (
         <View
           style={[
-            { backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10 },
+           styles.flatlistView,
           ]}
         >
           <FlatList
@@ -1346,4 +1315,41 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255,21,107,6)",
     borderRadius: 100,
   },
+
+ filterView: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderColor: Colors.BORDER_COLOR,
+    borderWidth: 1,
+    borderRadius: 4,
+    backgroundColor: Colors.WHITE,
+    paddingLeft: 8,
+    height: 50,
+    justifyContent: "center",
+  },
+  view3: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    borderColor: Colors.LIGHT_GRAY,
+    paddingHorizontal: 6,
+    paddingBottom: 4,
+    backgroundColor: Colors.WHITE,
+    marginTop: -6,
+  },
+  view4: {
+    borderWidth: 0.5,
+    borderColor: Colors.BORDER_COLOR,
+    borderRadius: 4,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  txt1: {
+    width: "80%",
+    paddingHorizontal: 5,
+    paddingVertical: 2,
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  flatlistView: { backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10 }
 });
