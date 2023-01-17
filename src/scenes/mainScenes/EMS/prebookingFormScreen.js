@@ -3690,6 +3690,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         visible={showDropDownModel}
         headerTitle={dropDownTitle}
         data={dataForDropDown}
+        disabledData={addNewInput}
         multiple={showMultipleDropDownData}
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
