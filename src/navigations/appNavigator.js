@@ -1164,10 +1164,6 @@ const MainStackDrawerNavigator = () => {
           component={DigitalPaymentStackNavigator}
         />
         <MainDrawerNavigator.Screen
-          name={DrawerStackIdentifiers.digitalPayment}
-          component={DigitalPaymentStackNavigator}
-        />
-        <MainDrawerNavigator.Screen
           name={DrawerStackIdentifiers.dropAnalysis}
           component={DropAnalysisStackNavigator}
         />
