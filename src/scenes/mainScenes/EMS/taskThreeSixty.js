@@ -272,16 +272,10 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                             {item.taskName === "Test Drive Approval" ? (
                               isApprovar ? (
                                 <View
-                                  style={{
-                                    width: "100%",
-                                    flexDirection: "row",
-                                  }}
+                                  style={styles.view2}
                                 >
                                   <View
-                                    style={{
-                                      width: "25%",
-                                      justifyContent: "center",
-                                    }}
+                                    style={styles.view3}
                                   >
                                     <View
                                       style={{
@@ -317,18 +311,12 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                       ></Text>
                                       <View style={{ marginLeft: 5 }}>
                                         <Text
-                                          style={{
-                                            fontSize: 12,
-                                            fontWeight: "400",
-                                          }}
+                                          style={styles.txt2}
                                         >
                                           {date[0]}
                                         </Text>
                                         <Text
-                                          style={{
-                                            fontSize: 12,
-                                            fontWeight: "400",
-                                          }}
+                                          style={styles.txt2}
                                         >
                                           {date[1] + " " + date[2]}
                                         </Text>
@@ -347,11 +335,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                       >
                                         <View
                                           style={[
-                                            {
-                                              paddingVertical: 5,
-                                              paddingLeft: 10,
-                                              backgroundColor: Colors.WHITE,
-                                            },
+                                            styles.view1,
                                           ]}
                                         >
                                           <View
@@ -361,27 +345,13 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                             }}
                                           >
                                             <Text
-                                              style={{
-                                                fontSize: 16,
-                                                fontWeight: "700",
-                                                marginBottom: 5,
-                                                width: "75%"
-                                              }}
+                                              style={styles.txt1}
                                             >
                                               {item.taskName}
                                             </Text>
                                             {item.lat && item.lon && (
                                               <TouchableOpacity
-                                                style={{
-                                                  width: 35,
-                                                  height: 35,
-                                                  justifyContent: "center",
-                                                  alignItems: "center",
-                                                  borderWidth: 1,
-                                                  borderColor: "#d1d1d1",
-                                                  borderRadius: 5,
-                                                  marginTop: -5
-                                                }}
+                                                style={styles.btn1}
                                                 onPress={() =>
                                                   openMap(item.lat, item.lon)
                                                 }
@@ -398,10 +368,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                             )}
                                           </View>
                                           <Text
-                                            style={{
-                                              fontSize: 14,
-                                              fontWeight: "400",
-                                            }}
+                                            style={styles.txt3}
                                           >
                                             {"Assignee: " +
                                               item.assignee?.empName}
@@ -432,17 +399,10 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                               ) : null
                             ) : (
                               <View
-                                style={{
-                                  width: "100%",
-                                  flexDirection: "row",
-                                  alignItems: "center",
-                                }}
+                                style={styles.view4}
                               >
                                 <View
-                                  style={{
-                                    width: "25%",
-                                    justifyContent: "center",
-                                  }}
+                                  style={styles.view3}
                                 >
                                   <View
                                     style={{
@@ -462,11 +422,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                   ></View>
 
                                   <View
-                                    style={{
-                                      alignItems: "center",
-                                      flexDirection: "row",
-                                      position: "absolute",
-                                    }}
+                                    style={styles.view5}
                                   >
                                     <Text
                                       style={{
@@ -478,18 +434,12 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                     ></Text>
                                     <View style={{ marginLeft: 5 }}>
                                       <Text
-                                        style={{
-                                          fontSize: 12,
-                                          fontWeight: "400",
-                                        }}
+                                          style={styles.txt2}
                                       >
                                         {date[0]}
                                       </Text>
                                       <Text
-                                        style={{
-                                          fontSize: 12,
-                                          fontWeight: "400",
-                                        }}
+                                        style={styles.txt2}
                                       >
                                         {date[1] + " " + date[2]}
                                       </Text>
@@ -513,11 +463,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                     >
                                       <View
                                         style={[
-                                          {
-                                            paddingVertical: 5,
-                                            paddingLeft: 10,
-                                            backgroundColor: Colors.WHITE,
-                                          },
+                                          styles.view1,
                                         ]}
                                       >
                                         <View
@@ -529,17 +475,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                           {TaskNameView(item.taskName)}
                                           {item.lat && item.lon && (
                                             <TouchableOpacity
-                                              style={{
-                                                alignSelf: "flex-start",
-                                                marginTop: -5,
-                                                width: 35,
-                                                height: 35,
-                                                justifyContent: "center",
-                                                alignItems: "center",
-                                                borderWidth: 1,
-                                                borderColor: "#d1d1d1",
-                                                borderRadius: 5,
-                                              }}
+                                              style={styles.btn2}
                                               onPress={() =>
                                                 openMap(item.lat, item.lon)
                                               }
@@ -556,10 +492,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                           )}
                                         </View>
                                         <Text
-                                          style={{
-                                            fontSize: 14,
-                                            fontWeight: "400",
-                                          }}
+                                          style={styles.txt3}
                                         >
                                           {"Assignee: " +
                                             item.assignee?.empName}
@@ -616,7 +549,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                     }}
                     renderSectionHeader={({ section: { title } }) => (
                         <View style={{ height: 50, justifyContent: "center" }}>
-                            <Text style={{ fontSize: 18, fontWeight: "700", marginBottom: 5 }}>{title}</Text>
+                            <Text style={styles.txt4}>{title}</Text>
                         </View>
                     )}
                 />
@@ -647,5 +580,64 @@ const styles = StyleSheet.create({
   dotContainer:{
     height: 45,
     width: 25,
-  }
+  },
+  view1:{
+    paddingVertical: 5,
+    paddingLeft: 10,
+    backgroundColor: Colors.WHITE,
+  },
+  txt1:{
+    fontSize: 16,
+    fontWeight: "700",
+    marginBottom: 5,
+    width: "75%"
+  },
+  btn1:{
+    width: 35,
+    height: 35,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#d1d1d1",
+    borderRadius: 5,
+    marginTop: -5,
+  },
+  view2:{
+    width: "100%",
+    flexDirection: "row",
+  },
+  view3:{
+    width: "25%",
+    justifyContent: "center",
+  },
+  txt2:{
+    fontSize: 12,
+    fontWeight: "400",
+  },
+  txt3:{
+    fontSize: 14,
+    fontWeight: "400",
+  },
+  view4:{
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  view5:{
+    alignItems: "center",
+    flexDirection: "row",
+    position: "absolute",
+  },
+  btn2:{
+    alignSelf: "flex-start",
+    marginTop: -5,
+    width: 35,
+    height: 35,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#d1d1d1",
+    borderRadius: 5,
+  },
+  txt4:{ fontSize: 18, fontWeight: "700", marginBottom: 5 }
 });
