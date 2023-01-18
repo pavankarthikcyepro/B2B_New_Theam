@@ -1638,6 +1638,10 @@ const prebookingFormSlice = createSlice({
             commercialTypes.push(obj);
           } else if (customer.customerType === "Institution") {
             companyTypes.push(obj);
+          } else if (customer.enquirySegment === "Personal") {
+            personalTypes.push(obj);
+          } else if (customer.enquirySegment === "Company") {
+            companyTypes.push(obj);
           } else {
             personalTypes.push(obj);
           }
@@ -1648,6 +1652,8 @@ const prebookingFormSlice = createSlice({
           company: companyTypes,
           handicapped: companyTypes,
         };
+        console.log("obj", obj);
+        
         state.customer_types_response = obj;
       }
       state.isLoading = false;

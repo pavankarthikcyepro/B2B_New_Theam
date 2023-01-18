@@ -235,14 +235,14 @@ export const addPreEnquirySlice = createSlice({
             state.customerType = "";
           } else if (orgId == "26") {
             let tmpArr = [];
-            if (value == "Personal") {
+            if (value == "Personal" || value == "Individual") {
               tmpArr = Object.assign(
                 [],
                 state.customer_types_response?.personal
                   ? state.customer_types_response.personal
                   : CustomerTypesObj22[value.toLowerCase()]
               );
-            } else if (value == "Company") {
+            } else if (value == "Company"||value == "Institutional") {
               tmpArr = Object.assign(
                 [],
                 state.customer_types_response?.company
@@ -388,6 +388,10 @@ export const addPreEnquirySlice = createSlice({
           CustomerTypesObj21[preEnquiryDetails.enquirySegment.toLowerCase()];
         state.customerType = "";
       } else if (orgId == "22") {
+        state.customer_type_list =
+          CustomerTypesObj22[preEnquiryDetails.enquirySegment.toLowerCase()];
+        state.customerType = "";
+      } else if (orgId == "26") {
         state.customer_type_list =
           CustomerTypesObj22[preEnquiryDetails.enquirySegment.toLowerCase()];
         state.customerType = "";

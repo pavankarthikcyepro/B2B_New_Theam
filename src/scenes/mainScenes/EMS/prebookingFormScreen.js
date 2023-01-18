@@ -1435,7 +1435,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const showDropDownModelMethod = (key, headerText) => {
     Keyboard.dismiss();
     const orgId = +userData.orgId;
-
     switch (key) {
       case "SALUTATION":
         setDataForDropDown([...Salutation_Types]);
@@ -1444,7 +1443,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         let segments = [...Enquiry_Segment_Data];
         if (orgId === 21) {
           segments = [...EnquiryTypes21];
-        } else if (orgId === 22) {
+        } else if (orgId === 22 || orgId === 26) {
           segments = [...EnquiryTypes22];
         }
         setDataForDropDown(segments);
@@ -1463,7 +1462,15 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           customerTypes =
             CustomerTypesObj21[selector.enquiry_segment.toLowerCase()];
           selector.customerType = "";
-        } else if (orgId === 22) {
+        } else if (selector.enquiry_segment == "Individual") {
+          customerTypes = Object.assign(
+            [],
+            selector.customer_types_response?.personal
+              ? selector.customer_types_response.personal
+              : CustomerTypesObj[selector.enquiry_segment.toLowerCase()]
+          );
+        }
+         else if (orgId === 22 || orgId === 26) {
           customerTypes =
             CustomerTypesObj22[selector.enquiry_segment.toLowerCase()];
           selector.customerType = "";
