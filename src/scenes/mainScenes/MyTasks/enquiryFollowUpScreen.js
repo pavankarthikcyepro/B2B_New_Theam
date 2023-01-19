@@ -360,7 +360,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
         newTaskObj.taskStatus = "CANCELLED";
         break;
       case "RESCHEDULE":
-        console.log("manthan")
+       
         var momentA = moment(selector.actual_start_time, "DD/MM/YYYY");
         var momentB = moment(); // current date
         // if (momentA < momentB) {
