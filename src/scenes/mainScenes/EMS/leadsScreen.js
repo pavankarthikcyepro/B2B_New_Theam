@@ -891,6 +891,75 @@ const LeadsScreen = ({ route, navigation }) => {
       });
   };
 
+
+  const renderItem = ({item,index}) => {
+    return (
+      <>
+        <View>
+          <MyTaskNewItem
+            from={item.leadStage}
+            name={
+              getFirstLetterUpperCase(item.firstName) +
+              " " +
+              getFirstLetterUpperCase(item.lastName)
+            }
+            navigator={navigation}
+            uniqueId={item.leadId}
+            type={
+              item.leadStage === "ENQUIRY"
+                ? "Enq"
+                : item.leadStage === "BOOKING"
+                  ? "Book"
+                  : "PreBook"
+            }
+            status={""}
+            created={item.modifiedDate}
+            dmsLead={item.salesConsultant}
+            phone={item.phone}
+            source={item.enquirySource}
+            model={item.model}
+            leadStatus={item.leadStatus}
+            leadStage={item.leadStage}
+            needStatus={"YES"}
+            enqCat={item.enquiryCategory}
+            onItemPress={() => {
+              navigation.navigate(
+                AppNavigator.EmsStackIdentifiers.task360,
+                {
+                  universalId: item.universalId,
+                  mobileNo: item.phone,
+                  leadStatus: item.leadStatus,
+                }
+              );
+            }}
+            onDocPress={() => {
+              let route =
+                AppNavigator.EmsStackIdentifiers.detailsOverview;
+              switch (item.leadStage) {
+                case "BOOKING":
+                  route =
+                    AppNavigator.EmsStackIdentifiers.bookingForm;
+                  break;
+                case "PRE_BOOKING":
+                case "PREBOOKING":
+                  route =
+                    AppNavigator.EmsStackIdentifiers.preBookingForm;
+                  break;
+              }
+              console.log(route);
+              navigation.navigate(route, {
+                universalId: item.universalId,
+                enqDetails: item,
+                leadStatus: item.leadStatus,
+                leadStage: item.leadStage,
+              });
+            }}
+          />
+        </View>
+      </>
+    );
+}
+
   // const liveLeadsStartDate = route?.params?.moduleType === 'live-leads' ? '2021-01-01' : lastMonthFirstDate;
   const liveLeadsEndDate =
     route?.params?.moduleType === "live-leads"
@@ -1108,6 +1177,7 @@ const LeadsScreen = ({ route, navigation }) => {
           ]}
         >
           <FlatList
+              initialNumToRender={searchedData.length}
             data={searchedData}
             extraData={searchedData}
             keyExtractor={(item, index) => index.toString()}
@@ -1126,77 +1196,7 @@ const LeadsScreen = ({ route, navigation }) => {
             //     }
             // }}
             ListFooterComponent={renderFooter}
-            renderItem={({ item, index }) => {
-              let color = Colors.WHITE;
-              if (index % 2 !== 0) {
-                color = Colors.LIGHT_GRAY;
-              }
-              return (
-                <>
-                  <View>
-                    <MyTaskNewItem
-                      from={item.leadStage}
-                      name={
-                        getFirstLetterUpperCase(item.firstName) +
-                        " " +
-                        getFirstLetterUpperCase(item.lastName)
-                      }
-                      navigator={navigation}
-                      uniqueId={item.leadId}
-                      type={
-                        item.leadStage === "ENQUIRY"
-                          ? "Enq"
-                          : item.leadStage === "BOOKING"
-                          ? "Book"
-                          : "PreBook"
-                      }
-                      status={""}
-                      created={item.modifiedDate}
-                      dmsLead={item.salesConsultant}
-                      phone={item.phone}
-                      source={item.enquirySource}
-                      model={item.model}
-                      leadStatus={item.leadStatus}
-                      leadStage={item.leadStage}
-                      needStatus={"YES"}
-                      enqCat={item.enquiryCategory}
-                      onItemPress={() => {
-                        navigation.navigate(
-                          AppNavigator.EmsStackIdentifiers.task360,
-                          {
-                            universalId: item.universalId,
-                            mobileNo: item.phone,
-                            leadStatus: item.leadStatus,
-                          }
-                        );
-                      }}
-                      onDocPress={() => {
-                        let route =
-                          AppNavigator.EmsStackIdentifiers.detailsOverview;
-                        switch (item.leadStage) {
-                          case "BOOKING":
-                            route =
-                              AppNavigator.EmsStackIdentifiers.bookingForm;
-                            break;
-                          case "PRE_BOOKING":
-                          case "PREBOOKING":
-                            route =
-                              AppNavigator.EmsStackIdentifiers.preBookingForm;
-                            break;
-                        }
-                        console.log(route);
-                        navigation.navigate(route, {
-                          universalId: item.universalId,
-                          enqDetails: item,
-                          leadStatus: item.leadStatus,
-                          leadStage: item.leadStage,
-                        });
-                      }}
-                    />
-                  </View>
-                </>
-              );
-            }}
+            renderItem={renderItem}
           />
         </View>
       )}

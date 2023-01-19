@@ -175,7 +175,7 @@ const DropDownComponant = ({
                             titleStyle={{
                               fontSize: 16,
                               fontWeight: "400",
-                              color: disabledItem ? Colors.TARGET_GRAY : null,
+                              color: disabledItem ? Colors.TARGET_GRAY : Colors.BLACK,
                             }}
                             title={item.name}
                             titleNumberOfLines={1}
