@@ -105,8 +105,8 @@ const TaskListScreen = ({ route, navigation }) => {
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.view1}>
-                <View style={{justifyContent: 'center', alignItems: 'center'}}>
-                    <View style={{ width: '90%', height: 40, borderWidth: 1, borderColor: '#333', borderRadius: 5, justifyContent: 'center', paddingHorizontal: 15, marginBottom: 10, marginTop: 5 }}>
+                <View style={styles.view2}>
+                    <View style={styles.view3}>
                         <TextInput
                             style={{ color: '#333', fontSize: 15, fontWeight: '500' }}
                             placeholder={"Search"}
@@ -216,4 +216,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginBottom: 5
     },
+    view2: { justifyContent: 'center', alignItems: 'center' },
+    view3: { width: '90%', height: 40, borderWidth: 1, borderColor: '#333', borderRadius: 5, justifyContent: 'center', paddingHorizontal: 15, marginBottom: 10, marginTop: 5 }
 });

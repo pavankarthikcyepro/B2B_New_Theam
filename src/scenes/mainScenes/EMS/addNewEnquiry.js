@@ -3204,17 +3204,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     return (
       <>
 
-        <TouchableOpacity style={{
-          flexDirection: "row",
-          // justifyContent: "space-around",
-          alignItems: "center",
-          // height: '15%',
-          alignContent: "center",
-          width: '100%',
-          marginTop: 5
-
-
-        }}
+        <TouchableOpacity style={styles.eventTouchable}
           disabled={isClickable}
           onPress={() => {
 
@@ -3235,10 +3225,10 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
             /> :
             <View style={{ marginEnd: 10, width: 12, }}  >{ }</View>}
 
-          <Text numberOfLines={1} style={{ fontSize: 12, color: Colors.BLACK, textAlign: "left", marginEnd: 10, width: 100, }}  >{txt1}</Text>
-          <Text numberOfLines={1} style={{ fontSize: 12, color: Colors.BLACK, textAlign: "left", marginEnd: 10, width: 100 }}>{txt2}</Text>
-          <Text numberOfLines={1} style={{ fontSize: 12, color: Colors.BLACK, textAlign: "left", marginEnd: 10, width: 100 }}>{txt3}</Text>
-          <Text numberOfLines={1} style={{ fontSize: 12, color: Colors.BLACK, textAlign: "left", marginEnd: 10, width: 100 }}>{txt4}</Text>
+          <Text numberOfLines={1} style={styles.eventText}  >{txt1}</Text>
+          <Text numberOfLines={1} style={styles.eventText} >{txt2}</Text>
+          <Text numberOfLines={1} style={styles.eventText} >{txt3}</Text>
+          <Text numberOfLines={1} style={styles.eventText} >{txt4}</Text>
 
         </TouchableOpacity>
 
@@ -3266,18 +3256,10 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
           }}
         >
-          <View style={{
-            width: '90%',
-            backgroundColor: Colors.WHITE,
-            padding: 10,
-            borderWidth: 2,
-            borderColor: Colors.BLACK,
-            flexDirection: "column",
-            height: '40%',
-          }}
+          <View style={styles.modelView}
 
           >
-            <Text style={{ color: Colors.BLACK, fontSize: 16, fontWeight: "700", textAlign: "left", margin: 5 }}>Select Event</Text>
+            <Text style={styles.selectTitle}>Select Event</Text>
             <ScrollView style={{
               width: '100%',
 
@@ -3584,12 +3566,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                 ]}
               >
                 <View
-                  style={{
-                    flexDirection: "row",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    backgroundColor: Colors.WHITE,
-                  }}
+                  style={styles.view3}
                 >
                   <View
                     style={{
@@ -3685,12 +3662,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                 ></Text>
 
                 <View
-                  style={{
-                    flexDirection: "row",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    backgroundColor: Colors.WHITE,
-                  }}
+                  style={styles.view3}
                 >
                   <View style={{ width: "45%" }}>
                     <DropDownSelectionItem
@@ -4699,24 +4671,10 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     setCarModelsList(arr);
                     //selector.dmsLeadProducts = [...selector.dmsLeadProducts, carmodeldata]
                   }}
-                  style={{
-                    width: "40%",
-                    margin: 5,
-                    borderRadius: 5,
-                    backgroundColor: Colors.PINK,
-                    height: 40,
-                    alignSelf: "flex-end",
-                    alignContent: "flex-end",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
+                  style={styles.addmodelView}
                 >
                   <Text
-                    style={{
-                      fontSize: 16,
-                      textAlign: "center",
-                      color: Colors.WHITE,
-                    }}
+                    style={styles.addmodelTxt}
                   >
                     Add Model
                   </Text>
@@ -5067,14 +5025,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                 {uploadedImagesDataObj?.pan?.fileName ? (
                   <View style={{ flexDirection: "row" }}>
                     <TouchableOpacity
-                      style={{
-                        width: "20%",
-                        height: 30,
-                        backgroundColor: Colors.SKY_BLUE,
-                        borderRadius: 4,
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
+                      style={styles.preViewBtn}
                       onPress={() => {
                         if (uploadedImagesDataObj.pan?.documentPath) {
                           setImagePath(uploadedImagesDataObj.pan?.documentPath);
@@ -5082,11 +5033,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                       }}
                     >
                       <Text
-                        style={{
-                          color: Colors.WHITE,
-                          fontSize: 14,
-                          fontWeight: "600",
-                        }}
+                        style={styles.previewTxt}
                       >
                         Preview
                       </Text>
@@ -5128,14 +5075,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj?.aadhar?.fileName ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                          style={styles.preViewBtn}
                           onPress={() => {
                             if (uploadedImagesDataObj.aadhar?.documentPath) {
                               setImagePath(
@@ -5145,11 +5085,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                            style={styles.previewTxt}
                           >
                             Preview
                           </Text>
@@ -5197,14 +5133,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj?.employeeId?.fileName ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                            style={styles.preViewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.employeeId?.documentPath
@@ -5216,11 +5145,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                              style={styles.previewTxt}
                           >
                             Preview
                           </Text>
@@ -5252,14 +5177,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj?.payslips ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                            style={styles.preViewBtn}
                           onPress={() => {
                             if (uploadedImagesDataObj?.payslips?.documentPath) {
                               setImagePath(
@@ -5269,11 +5187,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                              style={styles.previewTxt}
                           >
                             Preview
                           </Text>
@@ -5304,14 +5218,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj.pattaPassBook ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                            style={styles.preViewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.pattaPassBook?.documentPath
@@ -5324,11 +5231,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                              style={styles.previewTxt}
                           >
                             Preview
                           </Text>
@@ -5345,14 +5248,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     ) : uploadedImagesDataObj.pattaPassBook ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                              style={styles.preViewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.pattaPassBook?.documentPath
@@ -5365,11 +5261,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                                style={styles.previewTxt}
                           >
                             Preview
                           </Text>
@@ -5402,14 +5294,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj.pensionLetter ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                            style={styles.preViewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.pensionLetter?.documentPath
@@ -5422,11 +5307,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                              style={styles.previewTxt}
                           >
                             Preview
                           </Text>
@@ -5459,14 +5340,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj.imaCertificate ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                            style={styles.preViewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.imaCertificate?.documentPath
@@ -5479,11 +5353,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                              style={styles.previewTxt}
                           >
                             Preview
                           </Text>
@@ -5518,14 +5388,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj.leasingConfirmationLetter ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                            style={styles.preViewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.leasingConfirmationLetter
@@ -5539,11 +5402,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                              style={styles.previewTxt}
                           >
                             Preview
                           </Text>
@@ -5561,14 +5420,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     ) : uploadedImagesDataObj.leasingConfirmationLetter ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                              style={styles.preViewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.leasingConfirmationLetter
@@ -5582,11 +5434,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                                style={styles.previewTxt}
                           >
                             Preview
                           </Text>
@@ -5620,14 +5468,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj.address ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                            style={styles.preViewBtn}
                           onPress={() => {
                             if (uploadedImagesDataObj.address?.documentPath) {
                               setImagePath(
@@ -5637,11 +5478,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                              style={styles.previewTxt}
                           >
                             Preview
                           </Text>
@@ -5656,14 +5493,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     ) : uploadedImagesDataObj.addressProof?.fileName ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                              style={styles.preViewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.addressProof?.documentPath
@@ -5675,11 +5505,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                                style={styles.previewTxt}
                           >
                             Preview
                           </Text>
@@ -6162,14 +5988,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                   {selector.regDocumentPath ? (
                     <View style={{ flexDirection: "row" }}>
                       <TouchableOpacity
-                        style={{
-                          width: "20%",
-                          height: 30,
-                          backgroundColor: Colors.SKY_BLUE,
-                          borderRadius: 4,
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
+                          style={styles.preViewBtn}
                         onPress={() => {
                           if (selector.regDocumentPath) {
                             setImagePath(selector.regDocumentPath);
@@ -6177,11 +5996,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                         }}
                       >
                         <Text
-                          style={{
-                            color: Colors.WHITE,
-                            fontSize: 14,
-                            fontWeight: "600",
-                          }}
+                            style={styles.previewTxt}
                         >
                           Preview
                         </Text>
@@ -6492,14 +6307,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                       {selector.insuranceDocumentPath ? (
                         <View style={{ flexDirection: "row" }}>
                           <TouchableOpacity
-                            style={{
-                              width: "20%",
-                              height: 30,
-                              backgroundColor: Colors.SKY_BLUE,
-                              borderRadius: 4,
-                              justifyContent: "center",
-                              alignItems: "center",
-                            }}
+                              style={styles.preViewBtn}
                             onPress={() => {
                               if (selector.insuranceDocumentPath) {
                                 setImagePath(selector.insuranceDocumentPath);
@@ -6507,11 +6315,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                             }}
                           >
                             <Text
-                              style={{
-                                color: Colors.WHITE,
-                                fontSize: 14,
-                                fontWeight: "600",
-                              }}
+                                style={styles.previewTxt}
                             >
                               Preview
                             </Text>
@@ -6919,4 +6723,61 @@ const styles = StyleSheet.create({
     height: 40,
     fontSize: 16,
   },
+  eventTouchable: {
+    flexDirection: "row",
+    // justifyContent: "space-around",
+    alignItems: "center",
+    // height: '15%',
+    alignContent: "center",
+    width: '100%',
+    marginTop: 5
+
+
+  },
+  eventText: { fontSize: 12, color: Colors.BLACK, textAlign: "left", marginEnd: 10, width: 100, },
+  modelView: {
+    width: '90%',
+    backgroundColor: Colors.WHITE,
+    padding: 10,
+    borderWidth: 2,
+    borderColor: Colors.BLACK,
+    flexDirection: "column",
+    height: '40%',
+  },
+  selectTitle: { color: Colors.BLACK, fontSize: 16, fontWeight: "700", textAlign: "left", margin: 5 },
+  view3: {
+    flexDirection: "row",
+    display: "flex",
+    justifyContent: "space-between",
+    backgroundColor: Colors.WHITE,
+  },
+  addmodelView:{
+    width: "40%",
+    margin: 5,
+    borderRadius: 5,
+    backgroundColor: Colors.PINK,
+    height: 40,
+    alignSelf: "flex-end",
+    alignContent: "flex-end",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  addmodelTxt:{
+    fontSize: 16,
+    textAlign: "center",
+    color: Colors.WHITE,
+  },
+  preViewBtn:{
+    width: "20%",
+    height: 30,
+    backgroundColor: Colors.SKY_BLUE,
+    borderRadius: 4,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  previewTxt: {
+    color: Colors.WHITE,
+    fontSize: 14,
+    fontWeight: "600",
+  }
 });

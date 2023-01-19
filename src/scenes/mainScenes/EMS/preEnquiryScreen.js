@@ -490,7 +490,7 @@ const PreEnquiryScreen = ({ route, navigation }) => {
           }}
         />
 
-        <View style={{ flex: 1, paddingHorizontal: 10, paddingTop: 5 }}>
+        <View style={styles.viewmain}>
           <View style={styles.view1}>
             <View style={{ width: "80%" }}>
               <DateRangeComp
@@ -501,7 +501,7 @@ const PreEnquiryScreen = ({ route, navigation }) => {
               />
             </View>
             <Pressable onPress={() => setSortAndFilterVisible(true)}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', borderColor: Colors.BORDER_COLOR, borderWidth: 1, borderRadius: 4, backgroundColor: Colors.WHITE, paddingLeft: 8, height: 50, justifyContent: 'center' }}>
+              <View style={styles.filterView}>
                 <Text style={styles.text1}>{"Filter"}</Text>
                 <IconButton
                   icon={"filter-outline"}
@@ -531,11 +531,7 @@ const PreEnquiryScreen = ({ route, navigation }) => {
           ) : (
             <View
               style={[
-                {
-                  backgroundColor: Colors.LIGHT_GRAY,
-                  flex: 1,
-                  marginBottom: 10,
-                },
+               styles.flatlistView
               ]}
             >
               <FlatList
@@ -689,6 +685,13 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginBottom: 5
     },
-    searchBar: { height: 40 }
+    searchBar: { height: 40 },
+  viewmain: { flex: 1, paddingHorizontal: 10, paddingTop: 5 },
+  filterView:{ flexDirection: 'row', alignItems: 'center', borderColor: Colors.BORDER_COLOR, borderWidth: 1, borderRadius: 4, backgroundColor: Colors.WHITE, paddingLeft: 8, height: 50, justifyContent: 'center' },
+  flatlistView: {
+    backgroundColor: Colors.LIGHT_GRAY,
+    flex: 1,
+    marginBottom: 10,
+  },
 
 })

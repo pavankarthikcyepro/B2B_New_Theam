@@ -1117,17 +1117,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     return (
       <>
 
-        <TouchableOpacity style={{
-          flexDirection: "row",
-          // justifyContent: "space-around",
-          alignItems: "center",
-          // height: '15%',
-          alignContent: "center",
-          width: '100%',
-          marginTop: 5
-
-
-        }}
+        <TouchableOpacity style={styles.eventTouchable}
           disabled={isClickable}
           onPress={  ()=>{
            
@@ -1150,10 +1140,10 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             /> :
             <View style={{ marginEnd: 10, width: 12, }}  >{ }</View>}
 
-          <Text numberOfLines={1} style={{ fontSize: 12, color: Colors.BLACK, textAlign: "left", marginEnd: 10, width: 100, }}  >{txt1}</Text>
-          <Text numberOfLines={1} style={{ fontSize: 12, color: Colors.BLACK, textAlign: "left", marginEnd: 10, width: 100 }}>{txt2}</Text>
-          <Text numberOfLines={1} style={{ fontSize: 12, color: Colors.BLACK, textAlign: "left", marginEnd: 10, width: 100 }}>{txt3}</Text>
-          <Text numberOfLines={1} style={{ fontSize: 12, color: Colors.BLACK, textAlign: "left", marginEnd: 10, width: 100 }}>{txt4}</Text>
+          <Text numberOfLines={1} style={styles.eventText}  >{txt1}</Text>
+          <Text numberOfLines={1} style={styles.eventText} >{txt2}</Text>
+          <Text numberOfLines={1} style={styles.eventText} >{txt3}</Text>
+          <Text numberOfLines={1} style={styles.eventText} >{txt4}</Text>
 
         </TouchableOpacity>
 
@@ -1181,18 +1171,10 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
 
           }}
         >
-          <View style={{
-            width: '90%',
-            backgroundColor: Colors.WHITE,
-            padding: 10,
-            borderWidth: 2,
-            borderColor: Colors.BLACK,
-            flexDirection: "column",
-            height: '40%',
-          }}
+          <View style={styles.modelView}
 
           >
-            <Text style={{ color: Colors.BLACK, fontSize: 16, fontWeight: "700", textAlign: "left", margin: 5 }}>Select Event</Text>
+            <Text style={styles.selectTitle}>Select Event</Text>
             <ScrollView style={{
               width: '100%',
 
@@ -1787,4 +1769,26 @@ const styles = StyleSheet.create({
     color: Colors.RED,
     paddingVertical: 5,
   },
+  eventTouchable: {
+    flexDirection: "row",
+    // justifyContent: "space-around",
+    alignItems: "center",
+    // height: '15%',
+    alignContent: "center",
+    width: '100%',
+    marginTop: 5
+
+
+  },
+  eventText:{ fontSize: 12, color: Colors.BLACK, textAlign: "left", marginEnd: 10, width: 100, },
+  modelView:{
+    width: '90%',
+    backgroundColor: Colors.WHITE,
+    padding: 10,
+    borderWidth: 2,
+    borderColor: Colors.BLACK,
+    flexDirection: "column",
+    height: '40%',
+  },
+  selectTitle:{ color: Colors.BLACK, fontSize: 16, fontWeight: "700", textAlign: "left", margin: 5 }
 });

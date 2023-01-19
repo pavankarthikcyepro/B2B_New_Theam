@@ -4,9 +4,54 @@ import URL from './endpoints';
 import { Alert, } from 'react-native';
 import RNRestart from 'react-native-restart';
 let isdiloadopen = false
+let isNetworkDialogopen = false
+import NetInfo, {  } from "@react-native-community/netinfo";
+import Snackbar from 'react-native-snackbar';
+import { Colors } from '../styles';
 export const client = async (authToken, url, methodType, body, customConfig,isValidate) => {
 
-    
+
+    NetInfo.fetch().then(netState => {
+        
+        // console.log("Is connected?", netState.isConnected);
+        if(netState.isConnected !== true){
+            if (!isNetworkDialogopen) {
+                isNetworkDialogopen = true;
+                return Alert.alert(
+                    "Network Error",
+                    "Please try again later",
+                    [
+                        {
+                            text: "OK", onPress: () => {
+                                isNetworkDialogopen = false;
+
+                            }
+                        }
+                    ]
+                );
+            }
+
+            
+        }else{
+            // console.log("Connection type", netState.details);
+            if (netState.type =="cellular"){
+                // console.log("Connection type 22", netState.details.cellularGeneration);
+                if (netState.details.cellularGeneration === "2g"){
+                    EventRegister.emit("poorNetwork", true)
+                //   return  Snackbar.show({
+                //         text: "Poor network Please check your internet connection",
+                //         textColor: Colors.WHITE,
+                //         backgroundColor: Colors.GRAY,
+                //         duration: Snackbar.LENGTH_LONG,
+
+                //     });
+                  
+                }
+            }
+        }
+
+    });
+
     const headers = {
         'Accept': "application/json",
         'Content-Type': 'application/json',
