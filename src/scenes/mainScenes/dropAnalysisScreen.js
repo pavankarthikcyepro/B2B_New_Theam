@@ -631,6 +631,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                         </View>}
                     
                         <FlatList
+                            initialNumToRender={droppedData.length}
                             data={droppedData}
                             extraData={droppedData}
                             keyExtractor={(item, index) => index.toString()}
@@ -693,6 +694,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                 {approvedData.length === 0 ? <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} /> :
                     <View style={[{ backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10, marginTop: 10 }]}>
                         <FlatList
+                            initialNumToRender={approvedData.length}
                             data={approvedData}
                             extraData={approvedData}
                             keyExtractor={(item, index) => index.toString()}
@@ -753,6 +755,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                 {rejectedData.length === 0 ? <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} /> :
                     <View style={[{ backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10,marginTop:10 }]}>
                         <FlatList
+                            initialNumToRender={rejectedData.length}
                             data={rejectedData}
                             extraData={rejectedData}
                             keyExtractor={(item, index) => index.toString()}
