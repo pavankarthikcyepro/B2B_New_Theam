@@ -482,13 +482,17 @@ const MainParamScreen = ({ route, navigation }) => {
   const getTotal = (key) => {
     let total = 0;
     for (let i = 0; i < selector.targetMapping.length; i++) {
-      if (
-        selector.targetMapping[i][key] !== null &&
-        selector.endDate === selector.targetMapping[i].endDate &&
-        selector.startDate === selector.targetMapping[i].startDate &&
-        selector.targetMapping[i].targetType === selector.targetType
+      if (true
+        // selector.targetMapping[i][key] !== null &&
+        // selector.endDate === selector.targetMapping[i].endDate &&
+        // selector.startDate === selector.targetMapping[i].startDate &&
+        // selector.targetMapping[i].targetType === selector.targetType
       ) {
-        total += parseInt(selector.targetMapping[i][key]);
+        total += parseInt(
+          selector.targetMapping[i][key]
+            ? parseInt(selector.targetMapping[i][key])
+            : 0
+        );
       }
       if (i === selector.targetMapping.length - 1) {
         return total;
