@@ -90,8 +90,6 @@ const AppScreen = () => {
     Object.keys(o1).every((p) => o1[p] === o2[p]);
 
   const getCoordinates = async () => {
-    console.log("corddds");
-
     try {
       let coordinates = await AsyncStore.getJsonData(
         AsyncStore.Keys.COORDINATES
@@ -100,7 +98,6 @@ const AppScreen = () => {
       if (todaysDate != new Date().getDate()) {
         initialData();
       } else {
-        console.log("CHECKKK");
         var startDate = createDateTime("8:30");
         var startBetween = createDateTime("9:30");
         var endBetween = createDateTime("20:30");
@@ -108,22 +105,16 @@ const AppScreen = () => {
         var now = new Date();
         var isBetween = startDate <= now && now <= endDate;
         if (true) {
-          console.log("ssssss");
-
           Geolocation.watchPosition(
             async (lastPosition) => {
-              console.log("lastPOSTION", lastPosition);
               let speed =
                 lastPosition?.coords?.speed <= -1
                   ? 0
                   : lastPosition?.coords?.speed * 3.6;
-              console.log("KKKKKsshgshg", speed);
               const employeeData = await AsyncStore.getData(
                 AsyncStore.Keys.LOGIN_EMPLOYEE
               );
               if (employeeData) {
-                console.log("ccccc");
-
                 const jsonObj = JSON.parse(employeeData);
                 const trackingResponse = await client.get(
                   getDetailsByempIdAndorgId +
@@ -251,7 +242,6 @@ const AppScreen = () => {
     const { delay } = taskDataArguments;
     await new Promise(async (resolve) => {
       for (let i = 0; BackgroundService.isRunning(); i++) {
-        console.log(i);
         var startDate = createDateTime("8:30");
         var startBetween = createDateTime("9:30");
         var endBetween = createDateTime("20:30");
