@@ -1,15 +1,37 @@
 import React, { useEffect, useState } from "react";
-import { SafeAreaView, View, Text, StyleSheet, Dimensions, FlatList } from "react-native";
-import { GlobalStyle, Colors, } from "../../../styles"
+import {
+  SafeAreaView,
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  FlatList,
+} from "react-native";
+import { GlobalStyle, Colors } from "../../../styles";
 import { MyTaskTopTabNavigator } from "../../../navigations/myTasksTopTabNavigator";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import ListComponent from "./components/ListComponent";
 import URL from "../../../networking/endpoints";
 import * as AsyncStore from "../../../asyncStore";
-import { getMyTasksListApi, getMyTeamsTasksListApi, role, getPendingMyTasksListApi, getRescheduleMyTasksListApi, getUpcomingMyTasksListApi, getTodayMyTasksListApi, getTodayTeamTasksListApi, getUpcomingTeamTasksListApi, getPendingTeamTasksListApi, getRescheduleTeamTasksListApi, updateIndex, getRescheduled } from "../../../redux/mytaskReducer";
+import {
+  getMyTasksListApi,
+  getMyTeamsTasksListApi,
+  role,
+  getPendingMyTasksListApi,
+  getRescheduleMyTasksListApi,
+  getUpcomingMyTasksListApi,
+  getTodayMyTasksListApi,
+  getTodayTeamTasksListApi,
+  getUpcomingTeamTasksListApi,
+  getPendingTeamTasksListApi,
+  getRescheduleTeamTasksListApi,
+  updateIndex,
+  getRescheduled,
+  getOrganizationHierarchyList,
+} from "../../../redux/mytaskReducer";
 import { useDispatch, useSelector } from "react-redux";
 import { client } from "../../../networking/client";
-
+import { getMenuList } from "../../../redux/homeReducer";
 
 const tabBarOptions = {
   activeTintColor: Colors.RED,
@@ -26,10 +48,15 @@ const tabBarOptions = {
   },
 };
 
-const SecondTopTab = createMaterialTopTabNavigator()
+const SecondTopTab = createMaterialTopTabNavigator();
 
-const SecondTopTabNavigator = ({ todaysData = [], upcomingData = [], pendingData = [], reScheduleData = [], completedData = [] }) => {
-
+const SecondTopTabNavigator = ({
+  todaysData = [],
+  upcomingData = [],
+  pendingData = [],
+  reScheduleData = [],
+  completedData = [],
+}) => {
   return (
     <SecondTopTab.Navigator
       initialRouteName={"NEW_TODAY_TOP_TAB"}
@@ -69,39 +96,79 @@ const SecondTopTabNavigator = ({ todaysData = [], upcomingData = [], pendingData
   );
 };
 
-
-
 const MyTasksScreen = ({ navigation }) => {
-
   const [response, setResponse] = useState({});
   const [isDataLoaded, setIsDataLoaded] = useState(false);
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.mytaskReducer);
   const homeSelector = useSelector((state) => state.homeReducer);
+  const [userData, setUserData] = useState({
+    branchId: "",
+    orgId: "",
+    employeeId: "",
+    employeeName: "",
+    primaryDesignation: "",
+    hrmsRole: "",
+  });
 
   useEffect(() => {
-    // dispatch(getOrganizationHierarchyList());
-  }, [])
-  
-
-  useEffect(() => {
-    navigation.addListener('focus', () => {
-      setIsDataLoaded(false)
+    navigation.addListener("focus", () => {
+      setIsDataLoaded(false);
       getAsyncstoreData();
-      dispatch(updateIndex(0))
+      dispatch(updateIndex(0));
+      getMenuListFromServer();
     });
-  }, [navigation])
+  }, [navigation]);
+
+  const getMenuListFromServer = async () => {
+    let name = await AsyncStore.getData(AsyncStore.Keys.USER_NAME);
+    if (name) {
+      dispatch(getMenuList(name));
+    }
+  };
+
+  useEffect(() => {
+    let unSubscribe = navigation.addListener("focus", async () => {
+      const employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        setUserData({
+          empId: jsonObj.empId,
+          empName: jsonObj.empName,
+          hrmsRole: jsonObj.hrmsRole,
+          orgId: jsonObj.orgId,
+        });
+        const payload = {
+          orgId: jsonObj.orgId,
+          branchId: jsonObj.branchId,
+        };
+        dispatch(getOrganizationHierarchyList(payload))
+          .then((res) => {
+          })
+          .catch((err) => {
+            console.log("Err -> Api -> ", err);
+          });
+      }
+    });
+    return unSubscribe
+  }, [navigation]);
 
   const getAsyncstoreData = async () => {
-    const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    const employeeData = await AsyncStore.getData(
+      AsyncStore.Keys.LOGIN_EMPLOYEE
+    );
 
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
+
       // const payload = { empId: jsonObj.empId, role: jsonObj.hrmsRole}
       const payload = {
-        "loggedInEmpId": jsonObj.empId,
-        "onlyForEmp": true
-      }
+        loggedInEmpId: jsonObj.empId,
+        onlyForEmp: true,
+      };
       // dispatch(getMyTasksListApi(jsonObj.empId));
       // dispatch(getMyTeamsTasksListApi(jsonObj.empId));
       dispatch(role(jsonObj.hrmsRole));
@@ -187,11 +254,10 @@ const MyTasksScreen = ({ navigation }) => {
   };
 
   const getTableDataFromServer = async (userId, token) => {
-
     const payload = {
-      "loggedInEmpId": userId,
-      "onlyForEmp": true
-    }
+      loggedInEmpId: userId,
+      onlyForEmp: true,
+    };
 
     // await fetch(URL.GET_MY_TASKS_NEW_DATA(), {
     //   method: "POST",
@@ -202,30 +268,31 @@ const MyTasksScreen = ({ navigation }) => {
     //   },
     //   body: JSON.stringify(payload),
     // })
-    await client.post(URL.GET_MY_TASKS_NEW_DATA(),payload)
-      .then(json => json.json())
-      .then(resp => {
+    await client
+      .post(URL.GET_MY_TASKS_NEW_DATA(), payload)
+      .then((json) => json.json())
+      .then((resp) => {
         setResponse(resp);
       })
-      .catch(err => {
+      .catch((err) => {
         console.error("While fetching table data: ", err);
-      })
-  }
+      });
+  };
 
   return (
     <SafeAreaView style={styles.container}>
-
-      <View style={[{ flex: 1, backgroundColor: Colors.WHITE }, GlobalStyle.shadow]}>
+      <View
+        style={[{ flex: 1, backgroundColor: Colors.WHITE }, GlobalStyle.shadow]}
+      >
         <View style={[{ flex: 1, backgroundColor: Colors.WHITE }]}>
           {/* {isDataLoaded && */}
-            <SecondTopTabNavigator />
+          <SecondTopTabNavigator />
           {/* } */}
         </View>
       </View>
     </SafeAreaView>
-  )
+  );
 };
-
 
 // const MyTasksScreen = ({ navigation }) => {
 //   return (
@@ -240,6 +307,6 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     padding: 5,
-    backgroundColor: Colors.LIGHT_GRAY
-  }
-})
+    backgroundColor: Colors.LIGHT_GRAY,
+  },
+});

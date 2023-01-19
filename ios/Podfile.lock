@@ -263,7 +263,7 @@ PODS:
     - React-Core
   - react-native-html-to-pdf (0.12.0):
     - React-Core
-  - react-native-image-picker (4.10.3):
+  - react-native-image-picker (4.10.1):
     - React-Core
   - react-native-mail (6.1.1):
     - React-Core
@@ -280,7 +280,7 @@ PODS:
     - Toast (~> 4.0.0)
   - react-native-switch-audio-output (1.1.2):
     - React
-  - react-native-webview (11.26.0):
+  - react-native-webview (11.25.0):
     - React-Core
   - React-perflogger (0.64.4)
   - React-RCTActionSheet (0.64.4):
@@ -593,7 +593,7 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
   FBLazyVector: fa8275d5086566e22a26ddc385ab5772e7f9b1bd
-  FBReactNativeSpec: 31da7dbb2452fbc9427dc5ed832e8d4ebcf45b2f
+  FBReactNativeSpec: 170a86fa6f1ea18a00ba4e4580591403a5b796bd
   Flipper: d3da1aa199aad94455ae725e9f3aa43f3ec17021
   Flipper-DoubleConversion: 38631e41ef4f9b12861c67d17cb5518d06badc41
   Flipper-Folly: 755929a4f851b2fb2c347d533a23f191b008554c
@@ -620,7 +620,7 @@ SPEC CHECKSUMS:
   react-native-flipper: 4bfe0a324e663f1ae2f76ad0da75673de6895efe
   react-native-geolocation: 69f4fd37650b8e7fee91816d395e62dd16f5ab8d
   react-native-html-to-pdf: 4c5c6e26819fe202971061594058877aa9b25265
-  react-native-image-picker: 60f4246eb5bb7187fc15638a8c1f13abd3820695
+  react-native-image-picker: f2ab1215d17bcfe27b0eb6417cc236fd1f4775e7
   react-native-mail: 8fdcd3aef007c33a6877a18eb4cf7447a1d4ce4a
   react-native-maps: 085f614cf14d3637b2048bb9752da5b1c27c2886
   react-native-restart: 45c8dca02491980f2958595333cbccd6877cb57e
@@ -628,7 +628,7 @@ SPEC CHECKSUMS:
   react-native-segmented-control: 06607462630512ff8eef652ec560e6235a30cc3e
   react-native-simple-toast: 8ee5d23f0b92b935ab7434cdb65159ce12dfb4b7
   react-native-switch-audio-output: d435f857bfe73f9b6263c7101432ea2785b854d7
-  react-native-webview: 994b9f8fbb504d6314dc40d83f94f27c6831b3bf
+  react-native-webview: a71da846ed2e9085440e1d6659c04e285528834b
   React-perflogger: 5a890ca0911669421b7611661e9b58f91c805f5c
   React-RCTActionSheet: bd180e0879f8424a73650c5c28fbef4f3b5b27fb
   React-RCTAnimation: 1004d2b4be1f2cedfdc4cb2326adc95b989e6c6b
@@ -661,4 +661,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: abda061a32d6dc466d07876a719f798e64b99e17
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.10.2

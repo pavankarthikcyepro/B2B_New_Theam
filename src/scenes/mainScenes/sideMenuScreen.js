@@ -56,6 +56,7 @@ import { clearLeadDropState } from "../../redux/leaddropReducer";
 import ReactNativeModal from "react-native-modal";
 import { EventRegister } from 'react-native-event-listeners'
 import { setBranchId, setBranchName } from "../../utils/helperFunctions";
+import { myTaskClearState } from "../../redux/mytaskReducer";
 
 const screenWidth = Dimensions.get("window").width;
 const profileWidth = screenWidth / 6;
@@ -374,6 +375,7 @@ const SideMenuScreen = ({ navigation }) => {
     setBranchName("");
     dispatch(clearState());
     dispatch(clearState());
+    dispatch(myTaskClearState())
     dispatch(clearEnqState());
     dispatch(clearLeadDropState());
     signOut();

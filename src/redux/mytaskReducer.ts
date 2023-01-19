@@ -96,6 +96,7 @@ export const getTodayMyTasksListApi = createAsyncThunk(
     const url = URL.GET_MY_TASKS_NEW_DATA();
     const response = await client.post(url, payload);
     const json = await response.json();
+    console.log(json, "json ======= ");
     if (!response.ok) {
       return rejectWithValue(json);
     }
@@ -119,9 +120,13 @@ export const getUpcomingMyTasksListApi = createAsyncThunk(
 export const getPendingMyTasksListApi = createAsyncThunk(
   "MY_TASKS/getPendingMyTasksListApi",
   async (payload, { rejectWithValue }) => {
+    console.log("getPendingMyTasksListApi Payload",payload);
+    
     const url = URL.GET_MY_TASKS_NEW_DATA();
     const response = await client.post(url, payload);
     const json = await response.json();
+    console.log("getPendingMyTasksListApi res",json);
+
     if (!response.ok) {
       return rejectWithValue(json);
     }
@@ -184,9 +189,12 @@ export const getUpcomingTeamTasksListApi = createAsyncThunk(
 export const getPendingTeamTasksListApi = createAsyncThunk(
   "MY_TASKS/getPendingTeamTasksListApi",
   async (payload, { rejectWithValue }) => {
+    console.log("getPendingTeamTasksListApi Payload ",payload);
+    
     const url = URL.GET_MY_TASKS_NEW_DATA();
     const response = await client.post(url, payload);
     const json = await response.json();
+    console.log("getPendingTeamTasksListApi Res ",json);
     if (!response.ok) {
       return rejectWithValue(json);
     }
@@ -233,6 +241,23 @@ export const getOrganizationHierarchyList = createAsyncThunk(
     return json;
   }
 );
+
+export const getEmployeesDropDownData = createAsyncThunk(
+  "HOME/getEmployeesDropDownData",
+  async (payload: any, { rejectWithValue }) => {
+    const response = await client.post(
+      URL.GET_EMPLOYEES_DROP_DOWN_DATA(payload.orgId, payload.empId),
+      payload.selectedIds
+    );
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 export const getRescheduled = createAsyncThunk(
   "MY_TASKS/getRescheduled",
   async (empId, { rejectWithValue }) => {
@@ -281,7 +306,14 @@ export const mytaskSlice = createSlice({
     teamPendingData: [],
     teamReData: [],
     index: 0,
-    filter_drop_down_data: [],
+    currentScreen: "",
+    filter_drop_down_data: {},
+    employees_drop_down_data: {},
+    filterIds: {
+      dealerCodes:[],
+      levelSelectedIds: [],
+      empSelectedIds: [],
+    },
   },
   reducers: {
     updateIndex: (state, action) => {
@@ -290,8 +322,24 @@ export const mytaskSlice = createSlice({
     updateFilterDropDownData: (state, action) => {
       state.filter_drop_down_data = action.payload;
     },
-    clearState: (state, action) => {
-      state.filter_drop_down_data = [];
+    updateFilterIds: (state, action) => {
+      state.filterIds = action.payload;
+    },
+    updateCurrentScreen: (state, action) => {
+      state.currentScreen = action.payload;
+    },
+    updateEmpDropDown: (state, action) => {
+      state.employees_drop_down_data = {};
+    },
+    myTaskClearState: (state, action) => {
+      state.filter_drop_down_data = {};
+      state.employees_drop_down_data = {};
+      state.filterIds = {
+        dealerCodes:[],
+        levelSelectedIds: [],
+        empSelectedIds: [],
+      };
+      state.currentScreen = "";
     },
   },
   extraReducers: (builder) => {
@@ -542,6 +590,21 @@ export const mytaskSlice = createSlice({
         }
       })
       .addCase(getOrganizationHierarchyList.rejected, (state, action) => {});
+
+    // Get Employees Drop Down Data
+    builder
+      .addCase(getEmployeesDropDownData.pending, (state, action) => {
+        state.employees_drop_down_data = {};
+      })
+      .addCase(getEmployeesDropDownData.fulfilled, (state, action) => {
+        if (action.payload) {
+          state.employees_drop_down_data = action.payload;
+        }
+      })
+      .addCase(getEmployeesDropDownData.rejected, (state, action) => {
+        state.employees_drop_down_data = {};
+      });
+
     // Task History rescheduled today
     builder.addCase(getRescheduled.pending, (state) => {});
     builder.addCase(getRescheduled.fulfilled, (state, action) => {});
@@ -549,5 +612,11 @@ export const mytaskSlice = createSlice({
   },
 });
 
-export const { updateIndex } = mytaskSlice.actions;
+export const {
+  updateIndex,
+  updateFilterIds,
+  updateCurrentScreen,
+  updateEmpDropDown,
+  myTaskClearState,
+} = mytaskSlice.actions;
 export default mytaskSlice.reducer;

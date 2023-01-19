@@ -38,6 +38,7 @@ import {
 } from "../../../redux/homeReducer";
 import { showAlertMessage, showToast } from "../../../utils/toast";
 import { AppNavigator } from "../../../navigations";
+import { useIsFocused } from "@react-navigation/native";
 
 const screenWidth = Dimensions.get("window").width;
 const buttonWidth = (screenWidth - 100) / 2;
@@ -61,7 +62,7 @@ const AcitivityLoader = () => {
 const FilterScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
-
+  const isFocused = useIsFocused();
   const [totalDataObj, setTotalDataObj] = useState([]);
   const [showDropDownModel, setShowDropDownModel] = useState(false);
   const [dropDownData, setDropDownData] = useState([]);
@@ -79,12 +80,11 @@ const FilterScreen = ({ route, navigation }) => {
     primaryDesignation: "",
     hrmsRole: "",
   });
-  const [employeeTitleNameList, setEmloyeeTitleNameList] = useState([]);
+  const [employeeTitleNameList, setEmployeeTitleNameList] = useState([]);
   const [employeeDropDownDataLocal, setEmployeeDropDownDataLocal] = useState(
     {}
   );
   const [dropDownFrom, setDropDownFrom] = useState("");
-  const [isCall, setIsCall] = useState(true);
   const [isFilterLoading, setIsFilterLoading] = useState(false);
   const [isEmployeeLoading, setIsEmployeeLoading] = useState(false);
   const [isFilter, setIsFilter] = useState(true);
@@ -109,39 +109,40 @@ const FilterScreen = ({ route, navigation }) => {
       });
     }
   };
-
-  useEffect(
-    () => {
-      if (selector.filter_drop_down_data && selector.filterIds) {
-        let data = selector.filter_drop_down_data;
-        let filterIds = selector.filterIds?.levelSelected;
-        let names = [];
-        for (let key in data) {
-          names.push(key);
-          let localData =
-            data[key] && data[key]?.sublevels?.length
-              ? data[key].sublevels
-              : [];
-          let newData = localData?.map((obj) => {
-            return {
-              ...obj,
-              selected: filterIds?.includes(obj?.id) ? true : false,
-            };
-          });
-          data = {
-            ...data,
-            [key]: {
-              sublevels: newData,
-            },
+  useEffect(() => {
+    if (selector.filter_drop_down_data && selector.filterIds) {
+      let data = selector.filter_drop_down_data;
+      let filterIds = selector.filterIds?.levelSelected;
+      let names = [];
+      let dealerIds = [];
+      for (let key in data) {
+        names.push(key);
+        let localData =
+          data[key] && data[key]?.sublevels?.length ? data[key].sublevels : [];
+        let newData = localData?.map((obj) => {
+          if (key === "Dealer Code" && filterIds.includes(obj?.id)) {
+            dealerIds.push(obj?.id);
+          }
+          return {
+            ...obj,
+            selected: filterIds?.includes(obj?.id) ? true : false,
           };
-        }
-        setNameKeyList([...names]);
-        setTotalDataObj(data);
+        });
+        data = {
+          ...data,
+          [key]: {
+            sublevels: newData,
+          },
+        };
       }
-    },
-    [selector.filter_drop_down_data],
-    selector.filterIds
-  );
+      if (!dealerIds?.length) {
+        dispatch(updateEmpDropDown());
+        setEmployeeTitleNameList([]);
+      }
+      setNameKeyList([...names]);
+      setTotalDataObj(data);
+    }
+  }, [selector.filter_drop_down_data]);
 
   useEffect(() => {
     if (selector.filterIds) {
@@ -166,12 +167,17 @@ const FilterScreen = ({ route, navigation }) => {
   useEffect(() => {
     if (
       nameKeyList.length > 0 &&
-      isCall &&
+      isFocused &&
       selector.filterIds?.levelSelected?.length > 4
     ) {
+      dispatch(updateEmpDropDown());
+      setEmployeeTitleNameList([]);
       dropDownItemClicked(4, true);
+    } else {
+      dispatch(updateEmpDropDown());
+      setEmployeeTitleNameList([]);
     }
-  }, [nameKeyList, userData, isCall, selector.filterIds]);
+  }, [nameKeyList, userData, isFocused]);
 
   const dropDownItemClicked = async (index, initalCall = false) => {
     setIsMulti(index === 4 || index === 3);
@@ -289,18 +295,14 @@ const FilterScreen = ({ route, navigation }) => {
     let isSelected = mainData.find(
       (val) => val?.selected === true && val?.selected !== undefined
     );
-    if (!isSelected) {
-      dispatch(updateEmpDropDown());
-      setEmloyeeTitleNameList([]);
-    }
-
     let isChange = mainData?.find((val, j) => {
       return val?.selected !== localData[j]?.selected;
     });
-    if (isChange) {
+    if (!isSelected || isChange || initalCall) {
       dispatch(updateEmpDropDown());
-      setEmloyeeTitleNameList([]);
+      setEmployeeTitleNameList([]);
     }
+
     if (!isChange && !initalCall) return;
 
     if (index > 0) {
@@ -467,7 +469,7 @@ const FilterScreen = ({ route, navigation }) => {
       allEmpSelected: [],
     };
     Promise.all([dispatch(updateFilterIds(payload))]).then(() => {
-      setEmloyeeTitleNameList([]);
+      setEmployeeTitleNameList([]);
       dispatch(updateEmpDropDown());
       getFilterDropDownData();
     });
@@ -476,7 +478,7 @@ const FilterScreen = ({ route, navigation }) => {
   const submitBtnClicked = (initialData = null) => {
     let i = 0;
     const selectedIds = [];
-    let dealerIds = []
+    let dealerIds = [];
     for (i; i < nameKeyList.length; i++) {
       let key = nameKeyList[i];
       const dataArray = initialData
@@ -485,8 +487,8 @@ const FilterScreen = ({ route, navigation }) => {
       if (dataArray.length > 0) {
         dataArray.forEach((item, index) => {
           if (item.selected != undefined && item.selected == true) {
-            if(key === 'Dealer Code'){
-              dealerIds.push(item.id)
+            if (key === "Dealer Code") {
+              dealerIds.push(item.id);
             }
             selectedIds.push(item.id);
           }
@@ -495,13 +497,21 @@ const FilterScreen = ({ route, navigation }) => {
     }
     if (dealerIds.length > 0) {
       setIsFilterLoading(true);
-      getDashboadTableDataFromServer(selectedIds, "LEVEL");
+      if (!!!initialData) {
+        setEmployeeTitleNameList([]);
+        dispatch(updateEmpDropDown());
+      }
+      getDashboadTableDataFromServer(selectedIds, "LEVEL", !!initialData);
     } else {
       showToast("Please select Dealer Code");
     }
   };
 
-  const getDashboadTableDataFromServer = (selectedIds, from) => {
+  const getDashboadTableDataFromServer = (
+    selectedIds,
+    from,
+    initalCall = false
+  ) => {
     const payload = {
       startDate: fromDate,
       endDate: toDate,
@@ -520,8 +530,7 @@ const FilterScreen = ({ route, navigation }) => {
     };
     Promise.all([dispatch(getEmployeesDropDownData(payload1))])
       .then(() => {
-        setIsCall(false);
-        setIsFilterLoading(false);
+        !initalCall && setIsFilterLoading(false);
         let keys = [];
         let allEmpIds = [];
         for (let key in employeeDropDownDataLocal) {
@@ -540,6 +549,10 @@ const FilterScreen = ({ route, navigation }) => {
         };
         if (from == "LEVEL") {
           filterPayload["levelSelected"] = selectedIds;
+          if (!initalCall) {
+            filterPayload["empSelected"] = [];
+            filterPayload["allEmpSelected"] = [];
+          }
         } else {
           filterPayload["empSelected"] = selectedIds;
           filterPayload["allEmpSelected"] = allEmpIds;
@@ -570,13 +583,14 @@ const FilterScreen = ({ route, navigation }) => {
             setIsEmployeeLoading(false);
           })
           .catch(() => {
-            setIsFilterLoading(false);
             setIsEmployeeLoading(false);
+            showToast("Something Went Wrong!");
           });
       })
       .catch(() => {
         setIsFilterLoading(false);
         setIsEmployeeLoading(false);
+        showToast("Something Went Wrong!");
       });
 
     // navigation.navigate(AppNavigator.TabStackIdentifiers.home, { screen: "Home", params: { from: 'Filter' }, })
@@ -607,7 +621,7 @@ const FilterScreen = ({ route, navigation }) => {
       }
       setName(names, newDataObj);
     }
-  }, [selector.employees_drop_down_data, selector.filterIds]);
+  }, [selector.employees_drop_down_data]);
 
   const setName = useCallback(
     (names, newDataObj) => {
@@ -615,10 +629,10 @@ const FilterScreen = ({ route, navigation }) => {
         return Object.keys(obj).length === 0;
       }
       if (!isEmpty(names) && !isEmpty(newDataObj)) {
-        setEmloyeeTitleNameList(names);
+        setEmployeeTitleNameList(names);
         setEmployeeDropDownDataLocal(newDataObj);
-        setIsFilterLoading(false);
       }
+      setIsFilterLoading(false);
     },
     [employeeDropDownDataLocal, employeeTitleNameList]
   );
@@ -628,7 +642,9 @@ const FilterScreen = ({ route, navigation }) => {
     let payload = { ...selector.filterIds };
     payload["empSelected"] = [];
     payload["allEmpSelected"] = [];
-    Promise.all([dispatch(updateFilterIds(payload))]).then(() => {});
+    Promise.all([dispatch(updateFilterIds(payload))]).then(() => {
+      getFilterDropDownData()
+    });
   };
 
   const submitBtnForEmployeeData = async () => {
