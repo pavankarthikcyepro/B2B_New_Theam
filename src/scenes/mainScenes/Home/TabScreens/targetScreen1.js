@@ -748,7 +748,8 @@ const TargetScreen = ({ route }) => {
                 if (i === tempRawData.length - 1) {
                   lastParameter[index].employeeTargetAchievements = tempRawData;
                   let newIds = tempRawData.map((emp) => emp.empId);
-                  if (newIds.length >= 2) {
+                  if (true) {
+                    // if (newIds.length >= 2) {
                     for (let i = 0; i < newIds.length; i++) {
                       const element = newIds[i].toString();
                       let tempPayload = getTotalPayload(employeeData, element);
@@ -958,13 +959,16 @@ const TargetScreen = ({ route }) => {
                                     {item.empName}
                                     {/* {item?.childCount > 1 ? "  |" : ""} */}
                                   </Text>
-                                  
                                 </View>
-                                <View style={{flexDirection:"row"}}>
+                                <View style={{ flexDirection: "row" }}>
                                   {item?.childCount > 1 && (
-                                    <Animated.View style={{
-                                      transform: [{ translateX: translation }],
-                                    }}>
+                                    <Animated.View
+                                      style={{
+                                        transform: [
+                                          { translateX: translation },
+                                        ],
+                                      }}
+                                    >
                                       <View
                                         style={{
                                           backgroundColor: "lightgrey",
@@ -997,9 +1001,11 @@ const TargetScreen = ({ route }) => {
                                           empId: item.empId,
                                           headerTitle: item.empName,
                                           loggedInEmpId:
-                                            selector.login_employee_details.empId,
+                                            selector.login_employee_details
+                                              .empId,
                                           orgId:
-                                            selector.login_employee_details.orgId,
+                                            selector.login_employee_details
+                                              .orgId,
                                           type: "TEAM",
                                           moduleType: "home",
                                         }
@@ -1010,7 +1016,6 @@ const TargetScreen = ({ route }) => {
                                     }}
                                   />
                                 </View>
-                                
                               </View>
                               {/*Source/Model View END */}
                               <View
@@ -1142,27 +1147,34 @@ const TargetScreen = ({ route }) => {
                                                         ? "  |"
                                                         : ""} */}
                                                     </Text>
-                                                    
                                                   </View>
-                                                  <View style={{flexDirection:"row"}}>
+                                                  <View
+                                                    style={{
+                                                      flexDirection: "row",
+                                                    }}
+                                                  >
                                                     {innerItem1?.childCount >
                                                       1 && (
-                                                      <Animated.View style={{
-                                                        transform: [
-                                                          {
-                                                            translateX:
-                                                              translation,
-                                                          },
-                                                        ],
-                                                      }}>
+                                                      <Animated.View
+                                                        style={{
+                                                          transform: [
+                                                            {
+                                                              translateX:
+                                                                translation,
+                                                            },
+                                                          ],
+                                                        }}
+                                                      >
                                                         <View
                                                           style={{
                                                             backgroundColor:
                                                               "lightgrey",
-                                                            flexDirection: "row",
+                                                            flexDirection:
+                                                              "row",
                                                             paddingHorizontal: 7,
                                                             borderRadius: 10,
-                                                            alignItems: "center",
+                                                            alignItems:
+                                                              "center",
                                                             justifyContent:
                                                               "space-between",
                                                             marginBottom: 5,
@@ -1183,7 +1195,7 @@ const TargetScreen = ({ route }) => {
                                                           </Text>
                                                         </View>
                                                       </Animated.View>
-                                                      )}
+                                                    )}
                                                     <SourceModelView
                                                       onClick={() => {
                                                         navigation.navigate(
@@ -1210,7 +1222,6 @@ const TargetScreen = ({ route }) => {
                                                       }}
                                                     />
                                                   </View>
-                                                  
                                                 </View>
                                                 {/*Source/Model View END */}
                                                 <View
@@ -1326,19 +1337,25 @@ const TargetScreen = ({ route }) => {
                                                                 ? "  |"
                                                                 : ""} */}
                                                             </Text>
-                                                            
                                                           </View>
-                                                            <View style={{flexDirection:"row"}}>
+                                                          <View
+                                                            style={{
+                                                              flexDirection:
+                                                                "row",
+                                                            }}
+                                                          >
                                                             {innerItem2?.childCount >
                                                               1 && (
-                                                              <Animated.View style={{
-                                                                transform: [
-                                                                  {
-                                                                    translateX:
-                                                                      translation,
-                                                                  },
-                                                                ],
-                                                              }}>
+                                                              <Animated.View
+                                                                style={{
+                                                                  transform: [
+                                                                    {
+                                                                      translateX:
+                                                                        translation,
+                                                                    },
+                                                                  ],
+                                                                }}
+                                                              >
                                                                 <View
                                                                   style={{
                                                                     backgroundColor:
@@ -1371,7 +1388,7 @@ const TargetScreen = ({ route }) => {
                                                                   </Text>
                                                                 </View>
                                                               </Animated.View>
-                                                              )}
+                                                            )}
                                                             <SourceModelView
                                                               onClick={() => {
                                                                 navigation.navigate(
@@ -1398,8 +1415,7 @@ const TargetScreen = ({ route }) => {
                                                                 ],
                                                               }}
                                                             />
-                                                            </View>
-                                                          
+                                                          </View>
                                                         </View>
                                                         <View
                                                           style={{
@@ -1519,19 +1535,26 @@ const TargetScreen = ({ route }) => {
                                                                           ? "  |"
                                                                           : ""} */}
                                                                       </Text>
-                                                                    
                                                                     </View>
-                                                                        <View style={{flexDirection:"row"}}>
+                                                                    <View
+                                                                      style={{
+                                                                        flexDirection:
+                                                                          "row",
+                                                                      }}
+                                                                    >
                                                                       {innerItem3?.childCount >
                                                                         1 && (
-                                                                        <Animated.View style={{
-                                                                          transform: [
-                                                                            {
-                                                                              translateX:
-                                                                                translation,
-                                                                            },
-                                                                          ],
-                                                                        }}>
+                                                                        <Animated.View
+                                                                          style={{
+                                                                            transform:
+                                                                              [
+                                                                                {
+                                                                                  translateX:
+                                                                                    translation,
+                                                                                },
+                                                                              ],
+                                                                          }}
+                                                                        >
                                                                           <View
                                                                             style={{
                                                                               backgroundColor:
@@ -1565,8 +1588,8 @@ const TargetScreen = ({ route }) => {
                                                                               }
                                                                             </Text>
                                                                           </View>
-                                                                          </Animated.View>
-                                                                        )}
+                                                                        </Animated.View>
+                                                                      )}
                                                                       <SourceModelView
                                                                         onClick={() => {
                                                                           navigation.navigate(
@@ -1594,8 +1617,7 @@ const TargetScreen = ({ route }) => {
                                                                             ],
                                                                         }}
                                                                       />
-                                                                        </View>
-                                                                   
+                                                                    </View>
                                                                   </View>
                                                                   <View
                                                                     style={{
