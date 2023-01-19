@@ -55,7 +55,13 @@ const NotificationScreen = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    setNotificationList(selector.notificationList);
+    const nonReadData = selector.notificationList.filter((item, index) => {
+      return item.isRead == "N";
+    });
+    const readData = selector.notificationList.filter((item, index) => {
+      return item.isRead == "Y";
+    });
+    setNotificationList([...nonReadData, ...readData]);
   }, [selector.notificationList]);
   
   useEffect(() => {
@@ -130,9 +136,9 @@ const NotificationScreen = ({ navigation }) => {
       icon = DOWN_ARROW;
     }
 
-    let bg = Colors.WHITE;
+    let bg = "#e5f4fe";
     if (item.isRead == "Y") {
-      bg = Colors.BORDER_COLOR;
+      bg = Colors.WHITE;
     }
 
     return (
@@ -142,6 +148,9 @@ const NotificationScreen = ({ navigation }) => {
           onPress={() => navigateTo(screenName, props.item)}
           icon={icon}
           style={{ backgroundColor: bg }}
+          flagColor={
+            item.notificationType == "SCHEDULED" ? Colors.RED : Colors.GRAY
+          }
         />
       </View>
     );

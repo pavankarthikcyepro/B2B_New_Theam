@@ -605,13 +605,7 @@ const AttendanceFilter = ({ route, navigation }) => {
             if (index === 0) {
               return (
                 <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-evenly",
-                    paddingBottom: 5,
-                    borderColor: Colors.BORDER_COLOR,
-                    borderWidth: 1,
-                  }}
+                  style={styles.view1}
                 >
                   <View style={{ width: "48%" }}>
                     <DateSelectItem
@@ -809,4 +803,11 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
     alignItems: "center",
   },
+  view1:{
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    paddingBottom: 5,
+    borderColor: Colors.BORDER_COLOR,
+    borderWidth: 1,
+  }
 });

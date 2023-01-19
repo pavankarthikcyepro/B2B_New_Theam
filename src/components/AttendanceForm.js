@@ -350,7 +350,7 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
           {showReason ||
             ((workFromHome || !present) && (
               <>
-                <View style={{ flexDirection: "row", marginTop: 10 }}>
+                <View style={styles.view2}>
                   {/* <Dropdown
                     disable={false}
                     style={[styles.dropdownContainer]}
@@ -385,17 +385,13 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
                   />
                 </View>
                 <View
-                  style={{
-                    flexDirection: "row",
-                    width: "100%",
-                    alignSelf: "flex-start",
-                  }}
+                  style={styles.view3}
                 >
                   {reasonError.length > 0 && (
                     <Text style={styles.errorText}>{reasonError}</Text>
                   )}
                 </View>
-                <View style={{ flexDirection: "row", marginTop: 10 }}>
+              <View style={styles.view2}>
                   <TextinputComp
                     disabled={false}
                     style={styles.textInputStyle}
@@ -410,11 +406,7 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
                   />
                 </View>
                 <View
-                  style={{
-                    flexDirection: "row",
-                    width: "100%",
-                    alignSelf: "flex-start",
-                  }}
+                style={styles.view3}
                 >
                   {commentError.length > 0 && (
                     <Text style={styles.errorText}>{commentError}</Text>
@@ -449,11 +441,7 @@ const AttendanceForm = ({ visible, onRequestClose, inVisible, showReason }) => {
             )}
           </View>
           <View
-            style={{
-              flexDirection: "row",
-              width: "100%",
-              alignSelf: "flex-start",
-            }}
+            style={styles.view3}
           >
             {!isEmpty(reason) && reason.id == 1265 && (
               <Text style={{ ...styles.errorText, fontSize: 12, marginTop: 5 }}>
@@ -557,4 +545,10 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     color: Colors.DARK_GRAY,
   },
+  view2:{ flexDirection: "row", marginTop: 10 },
+  view3:{
+    flexDirection: "row",
+    width: "100%",
+    alignSelf: "flex-start",
+  }
 });

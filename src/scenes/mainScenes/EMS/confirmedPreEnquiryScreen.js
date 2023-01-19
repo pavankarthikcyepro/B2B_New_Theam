@@ -571,14 +571,14 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     }
 
     const getDropDownApi = () => {
-        return fetch('http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Lost_SubLost_AllDetails?organizationId=1&stageName=Pre%20Enquiry')
-            .then((response) => response.json())
-            .then((json) => {
-                return json.Drop;
-            })
-            .catch((error) => {
-                console.error(error);
-            });
+                return fetch('http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8091/Lost_SubLost_AllDetails?organizationId=1&stageName=Pre%20Enquiry')
+          .then((response) => response.json())
+          .then((json) => {
+            return json.Drop;
+          })
+          .catch((error) => {
+            console.error(error);
+          });
     }
 
     const createEnquiryClicked = () => {
@@ -687,17 +687,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         return (
             <>
 
-                <TouchableOpacity style={{
-                    flexDirection: "row",
-                    // justifyContent: "space-around",
-                    alignItems: "center",
-                    // height: '15%',
-                    alignContent: "center",
-                    width: '100%',
-                    marginTop: 5
-
-
-                }}
+                <TouchableOpacity style={styles.eventTouchable}
                     disabled={true}
                     onPress={() => {
 
@@ -720,10 +710,10 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                         /> :
                         <View style={{ marginEnd: 10, width: 12, }}  >{ }</View>}
 
-                    <Text numberOfLines={1} style={{ fontSize: 12, color: Colors.BLACK, textAlign: "left", marginEnd: 10, width: 100, }}  >{txt1}</Text>
-                    <Text numberOfLines={1} style={{ fontSize: 12, color: Colors.BLACK, textAlign: "left", marginEnd: 10, width: 100 }}>{txt2}</Text>
-                    <Text numberOfLines={1} style={{ fontSize: 12, color: Colors.BLACK, textAlign: "left", marginEnd: 10, width: 100 }}>{txt3}</Text>
-                    <Text numberOfLines={1} style={{ fontSize: 12, color: Colors.BLACK, textAlign: "left", marginEnd: 10, width: 100 }}>{txt4}</Text>
+                    <Text numberOfLines={1} style={styles.eventText} >{txt1}</Text>
+                    <Text numberOfLines={1} style={styles.eventText} >{txt2}</Text>
+                    <Text numberOfLines={1} style={styles.eventText} >{txt3}</Text>
+                    <Text numberOfLines={1} style={styles.eventText} >{txt4}</Text>
 
                 </TouchableOpacity>
 
@@ -752,18 +742,10 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
 
                     }}
                 >
-                    <View style={{
-                        width: '90%',
-                        backgroundColor: Colors.WHITE,
-                        padding: 10,
-                        borderWidth: 2,
-                        borderColor: Colors.BLACK,
-                        flexDirection: "column",
-                        height: '22%',
-                    }}
+                    <View style={styles.modelView}
 
                     >
-                        <Text style={{ color: Colors.BLACK, fontSize: 16, fontWeight: "700", textAlign: "left", margin: 5 }}>Selected Event</Text>
+                        <Text style={styles.selectTitle}>Selected Event</Text>
                         <ScrollView style={{
                             width: '100%',
 
@@ -983,7 +965,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                                             textTransform: 'none',
                                             color: Colors.WHITE,
                                         }}
-                                        onPress={createEnquiryClicked}
+                                        onPress={() => createEnquiryClicked()}
                                     >
                                         Create Enquiry
                                     </Button>
@@ -1052,7 +1034,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         flexDirection: 'column',
-        padding: 10
+        padding: 10,
     },
     text1: {
         fontSize: 16,
@@ -1105,5 +1087,27 @@ const styles = StyleSheet.create({
         justifyContent: "space-evenly",
         alignItems: 'center',
         backgroundColor: Colors.WHITE,
-    }
+    },
+    eventTouchable: {
+        flexDirection: "row",
+        // justifyContent: "space-around",
+        alignItems: "center",
+        // height: '15%',
+        alignContent: "center",
+        width: '100%',
+        marginTop: 5
+
+
+    },
+    eventText: { fontSize: 12, color: Colors.BLACK, textAlign: "left", marginEnd: 10, width: 100, },
+    modelView: {
+        width: '90%',
+        backgroundColor: Colors.WHITE,
+        padding: 10,
+        borderWidth: 2,
+        borderColor: Colors.BLACK,
+        flexDirection: "column",
+        height: '22%',
+    },
+    selectTitle: { color: Colors.BLACK, fontSize: 16, fontWeight: "700", textAlign: "left", margin: 5 }
 })

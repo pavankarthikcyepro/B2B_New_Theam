@@ -42,9 +42,19 @@ const GeoLocationScreen = ({ route, navigation }) => {
   // const navigation = useNavigation();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+  const [isWeek, setIsWeek] = useState(false);
   const [marker, setMarker] = useState({});
   const [attendance, setAttendance] = useState(false);
   const [weeklyRecord, setWeeklyRecord] = useState([]);
+  const [reason, setReason] = useState(false);
+  const [initialPosition, setInitialPosition] = useState({});
+  const [imageUri, setImageUri] = useState(null);
+  const [attendanceCount, setAttendanceCount] = useState({
+    holidays: 0,
+    leave: 0,
+    present: 0,
+    wfh: 0,
+  });
   const [userData, setUserData] = useState({});
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
@@ -56,6 +66,7 @@ const GeoLocationScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     navigation.addListener("focus", () => {
+      getCurrentLocation();
       // setLoading(true);
       // getAttendance();
     });
@@ -66,6 +77,44 @@ const GeoLocationScreen = ({ route, navigation }) => {
     getAttendance();
   }, [currentMonth]);
 
+  const getCurrentLocation = async () => {
+    try {
+      // if (Platform.OS === "ios") {
+      //   Geolocation.requestAuthorization();
+      //   Geolocation.setRNConfiguration({
+      //     skipPermissionRequests: false,
+      //     authorizationLevel: "whenInUse",
+      //   });
+      // }
+      Geolocation.getCurrentPosition(
+        (position) => {
+          console.log("Sss", position);
+          const initialPosition = JSON.stringify(position);
+          let json = JSON.parse(initialPosition);
+          setInitialPosition(json.coords);
+          let dist = getDistanceBetweenTwoPoints(
+            officeLocation.latitude,
+            officeLocation.longitude,
+            json?.coords?.latitude,
+            json?.coords?.longitude
+          );
+          console.log("LLLLL", dist);
+          if (dist > officeRadius) {
+            setReason(true); ///true for reason
+          } else {
+            setReason(false);
+          }
+        },
+        (error) => {
+          console.log(JSON.stringify(error));
+        },
+        { enableHighAccuracy: true }
+      );
+    } catch (error) {
+      console.log("ERROR", error);
+    }
+  };
+
   const getAttendance = async () => {
     try {
       let employeeData = await AsyncStore.getData(
@@ -73,6 +122,8 @@ const GeoLocationScreen = ({ route, navigation }) => {
       );
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
+        getProfilePic(jsonObj);
+        getAttendanceCount(jsonObj);
         setUserData(jsonObj);
         var d = currentMonth;
         const response = await client.get(
@@ -145,8 +196,71 @@ const GeoLocationScreen = ({ route, navigation }) => {
     // }
   };
 
+  const isCurrentDateForWeekView = (day) => {
+    let selectedDate = moment(day).format(dateFormat);
+    if (currentDate === selectedDate) {
+      setAttendance(true);
+    }
+  };
+
+  const getProfilePic = (userData) => {
+      console.log("manthanfff ")
+    // fetch(
+    //   `http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
+    // )
+    fetch(
+      `${baseUrl}sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
+    )
+      .then((response) => response.json())
+      .then((json) => {
+        if (json.length > 0) {
+          setImageUri(json[json.length - 1].documentPath);
+        } else {
+          setImageUri(
+            "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
+          );
+        }
+      })
+      .catch((error) => {
+        setImageUri(
+          "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
+        );
+        console.error(error);
+      });
+  };
+
+  const getAttendanceCount = async (jsonObj) => {
+    try {
+      let d = currentMonth;
+      const response = await client.get(
+        URL.GET_ATTENDANCE_COUNT(
+          jsonObj.empId,
+          jsonObj.orgId,
+          monthNamesCap[d.getMonth()]
+        )
+      );
+      const json = await response.json();
+      if (json) {
+        setAttendanceCount({
+          holidays: json.holidays || 0,
+          leave: json.leave || 0,
+          present: json.present || 0,
+          wfh: json.wfh || 0,
+        });
+      }
+    } catch (error) {}
+  };
+
   return (
     <SafeAreaView style={styles.container}>
+      <AttendanceForm
+        visible={attendance}
+        showReason={reason}
+        inVisible={() => {
+          getAttendance();
+          setAttendance(false);
+        }}
+      />
       <View>
         <Calendar
           onDayPress={(day) => {

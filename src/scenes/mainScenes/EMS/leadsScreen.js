@@ -43,22 +43,7 @@ import {
 } from "../../../redux/leaddropReducer";
 import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 import Entypo from "react-native-vector-icons/FontAwesome";
-import { client } from "../../../networking/client";
-import URL from "../../../networking/endpoints";
 
-const EmployeesRoles = [
-  "Reception".toLowerCase(),
-  "Tele Caller".toLowerCase(),
-  "CRM".toLowerCase(),
-  "Sales Consultant".toLowerCase(),
-  "TL".toLowerCase(),
-  "Manager".toLowerCase(),
-  "Sales Manager".toLowerCase(),
-  "branch manager".toLowerCase(),
-  "MD".toLowerCase(),
-  "EDP".toLowerCase(),
-  "Field DSE".toLowerCase(),
-];
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().add(0, "day").endOf("month").format(dateFormat);
 const lastMonthFirstDate = moment(currentDate, dateFormat)
@@ -113,13 +98,6 @@ const LeadsScreen = ({ route, navigation }) => {
   const [defualtLeadStage, setDefualtLeadStage] = useState([]);
   const [defualtLeadStatus, setdefualtLeadStatus] = useState([]);
   const [refreshed, setRefreshed] = useState(false);
-  const [userData, setUserData] = useState({
-    empId: 0,
-    empName: "",
-    hrmsRole: "",
-    orgId: 0,
-  });
-  const [stageAccess, setStageAccess] = useState([]);
 
   const orgIdStateRef = React.useRef(orgId);
   const empIdStateRef = React.useRef(employeeId);
@@ -187,26 +165,8 @@ const LeadsScreen = ({ route, navigation }) => {
       const jsonObj = JSON.parse(employeeData);
       setEmployeeId(jsonObj.empId);
       setOrgId(jsonObj.orgId);
-      setUserData({
-        empId: jsonObj.empId,
-        empName: jsonObj.empName,
-        hrmsRole: jsonObj.hrmsRole,
-        orgId: jsonObj.orgId,
-      });
     }
   }, []);
-
-  useEffect(async () => {
-    try {
-      if (userData.hrmsRole) {
-        const response = await client.get(
-          URL.ROLE_STAGE_ACCESS(userData.hrmsRole)
-        );
-        const json = await response.json();
-        setStageAccess(json);
-      }
-    } catch (error) {}
-  }, [userData]);
 
   const managerFilter = useCallback(
     (newArr) => {
@@ -429,9 +389,7 @@ const LeadsScreen = ({ route, navigation }) => {
           formatDate,
           selectedToDate,
           tempLeadStage,
-          tempLeadStatus,
-          false,
-          (isDateChange = true)
+          tempLeadStatus
         );
         break;
       case "TO_DATE":
@@ -446,9 +404,7 @@ const LeadsScreen = ({ route, navigation }) => {
           selectedFromDate,
           formatDate,
           tempLeadStage,
-          tempLeadStatus,
-          false,
-          (isDateChange = true)
+          tempLeadStatus
         );
         break;
     }
@@ -651,11 +607,11 @@ const LeadsScreen = ({ route, navigation }) => {
           // setTempFilterPayload(newArr);
           // onTempFliter(newArr, employeeDetail,);
           // setSubMenu(newArr);
-          //   setLeadsSubMenuFilterDropDownText("ALL");
+        //   setLeadsSubMenuFilterDropDownText("ALL");
           const x =
             item === "Delivery"
               ? path.map((object) => {
-                  return { ...object, checked: true };
+                   return { ...object, checked: true };
                 })
               : path.map((object) => {
                   if (object.subMenu === condition) {
@@ -721,11 +677,11 @@ const LeadsScreen = ({ route, navigation }) => {
     to,
     defLeadStage,
     defLeadStatus,
-    isRefresh = false,
-    isDateChange = false
+    isRefresh = false
   ) => {
     setSearchedData([]);
     setLeadsList([]);
+    setSelectedToDate(moment().add(0, "day").endOf("month").format(dateFormat));
     setLoader(true);
     const employeeData = await AsyncStore.getData(
       AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -818,11 +774,6 @@ const LeadsScreen = ({ route, navigation }) => {
         }
       }
 
-      const monthLastDate = moment()
-        .add(0, "day")
-        .endOf("month")
-        .format(dateFormat);
-
       let isLive = false;
       if (
         route?.params?.param &&
@@ -831,19 +782,9 @@ const LeadsScreen = ({ route, navigation }) => {
       ) {
         isLive = true;
         from = "2021-01-01";
-        setSelectedToDate(monthLastDate);
-      } else if (
-        route?.params?.param &&
-        route?.params?.moduleType == "home" &&
-        !isDateChange
-      ) {
+      } else if (route?.params?.param && route?.params?.moduleType == "home") {
         from = lastMonthFirstDate;
-        setSelectedToDate(monthLastDate);
-      } else if (isRefresh) {
-        from = lastMonthFirstDate;
-        setSelectedFromDate(lastMonthFirstDate);
-        to = monthLastDate;
-        setSelectedToDate(monthLastDate);
+      } else {
       }
       let newPayload = {
         startdate: from ? from : selectedFromDate,
@@ -950,81 +891,81 @@ const LeadsScreen = ({ route, navigation }) => {
       });
   };
 
+
+  const renderItem = ({item,index}) => {
+    return (
+      <>
+        <View>
+          <MyTaskNewItem
+            from={item.leadStage}
+            name={
+              getFirstLetterUpperCase(item.firstName) +
+              " " +
+              getFirstLetterUpperCase(item.lastName)
+            }
+            navigator={navigation}
+            uniqueId={item.leadId}
+            type={
+              item.leadStage === "ENQUIRY"
+                ? "Enq"
+                : item.leadStage === "BOOKING"
+                  ? "Book"
+                  : "PreBook"
+            }
+            status={""}
+            created={item.modifiedDate}
+            dmsLead={item.salesConsultant}
+            phone={item.phone}
+            source={item.enquirySource}
+            model={item.model}
+            leadStatus={item.leadStatus}
+            leadStage={item.leadStage}
+            needStatus={"YES"}
+            enqCat={item.enquiryCategory}
+            onItemPress={() => {
+              navigation.navigate(
+                AppNavigator.EmsStackIdentifiers.task360,
+                {
+                  universalId: item.universalId,
+                  mobileNo: item.phone,
+                  leadStatus: item.leadStatus,
+                }
+              );
+            }}
+            onDocPress={() => {
+              let route =
+                AppNavigator.EmsStackIdentifiers.detailsOverview;
+              switch (item.leadStage) {
+                case "BOOKING":
+                  route =
+                    AppNavigator.EmsStackIdentifiers.bookingForm;
+                  break;
+                case "PRE_BOOKING":
+                case "PREBOOKING":
+                  route =
+                    AppNavigator.EmsStackIdentifiers.preBookingForm;
+                  break;
+              }
+              console.log(route);
+              navigation.navigate(route, {
+                universalId: item.universalId,
+                enqDetails: item,
+                leadStatus: item.leadStatus,
+                leadStage: item.leadStage,
+              });
+            }}
+          />
+        </View>
+      </>
+    );
+}
+
   // const liveLeadsStartDate = route?.params?.moduleType === 'live-leads' ? '2021-01-01' : lastMonthFirstDate;
   const liveLeadsEndDate =
     route?.params?.moduleType === "live-leads"
       ? moment().format(dateFormat)
       : currentDate;
 
-function navigateTo(params) {
-   let navigationId = "";
-   let taskNameNew = "";
-   switch (params) {
-     case "testdrive":
-       navigationId = AppNavigator.EmsStackIdentifiers.testDrive;
-       taskNameNew = "Test Drive";
-       break;
-     case "testdriveapproval":
-       navigationId = AppNavigator.EmsStackIdentifiers.testDrive;
-       taskNameNew = "Test Drive";
-       break;
-     case "proceedtoprebooking":
-       if (leadStatus === "ENQUIRYCOMPLETED")
-         navigationId = AppNavigator.EmsStackIdentifiers.proceedToPreBooking;
-       else showToast("Please submit the enquiry form");
-       taskNameNew = "";
-       break;
-     case "proceedtobooking":
-       if (leadStatus === "PREBOOKINGCOMPLETED")
-         navigationId = AppNavigator.EmsStackIdentifiers.proceedToPreBooking;
-       else showToast("Please complete the booking approval process");
-       taskNameNew = "";
-       break;
-     case "homevisit":
-       navigationId = AppNavigator.EmsStackIdentifiers.homeVisit;
-       taskNameNew = "Home Visit";
-       break;
-     case "ENQUIRY":
-       navigationId = AppNavigator.EmsStackIdentifiers.enquiryFollowUp;
-       taskNameNew = "Enquiry followup";
-       break;
-     case "ENQUIRY":
-       navigationId = AppNavigator.EmsStackIdentifiers.enquiryFollowUp;
-       taskNameNew = "Contacts followup";
-       break;
-     case "BOOKING":
-       navigationId = AppNavigator.EmsStackIdentifiers.bookingFollowUp;
-       taskNameNew = "Booking Followup -DSE";
-       break;
-     case "prebookingfollowup":
-       navigationId = AppNavigator.EmsStackIdentifiers.enquiryFollowUp;
-       taskNameNew = "Booking approval task";
-       break;
-     case "createenquiry":
-       navigationId = AppNavigator.EmsStackIdentifiers.confirmedPreEnq;
-       taskNameNew = "";
-       break;
-   }
-     if (!navigationId) {
-       return;
-     }
-     if (navigationId === AppNavigator.EmsStackIdentifiers.confirmedPreEnq) {
-       navigation.navigate(navigationId, {
-         itemData: itemData,
-         fromCreatePreEnquiry: false,
-       });
-     } else {
-       navigation.navigate(navigationId, {
-        //  identifier: mytasksIdentifires[finalTaskName],
-        //  taskId,
-        //  universalId,
-        //  taskStatus,
-        //  taskData: item,
-        //  mobile: mobileNo,
-         reasonTaskName: taskNameNew,
-       });
-     }
-}
   return (
     <SafeAreaView style={styles.container}>
       <DatePickerComponent
@@ -1126,17 +1067,7 @@ function navigateTo(params) {
         </View>
         <Pressable onPress={() => setSortAndFilterVisible(true)}>
           <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              borderColor: Colors.BORDER_COLOR,
-              borderWidth: 1,
-              borderRadius: 4,
-              backgroundColor: Colors.WHITE,
-              paddingLeft: 8,
-              height: 50,
-              justifyContent: "center",
-            }}
+            style={styles.filterView}
           >
             <Text style={styles.text1}>{"Filter"}</Text>
             <IconButton
@@ -1149,15 +1080,7 @@ function navigateTo(params) {
         </Pressable>
       </View>
       <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          borderColor: Colors.LIGHT_GRAY,
-          paddingHorizontal: 6,
-          paddingBottom: 4,
-          backgroundColor: Colors.WHITE,
-          marginTop: -6,
-        }}
+        style={styles.view3}
       >
         <View style={{ width: subMenu?.length > 1 ? "45%" : "100%" }}>
           <Pressable
@@ -1166,23 +1089,10 @@ function navigateTo(params) {
             }}
           >
             <View
-              style={{
-                borderWidth: 0.5,
-                borderColor: Colors.BORDER_COLOR,
-                borderRadius: 4,
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
+              style={styles.view4}
             >
               <Text
-                style={{
-                  width: "80%",
-                  paddingHorizontal: 5,
-                  paddingVertical: 2,
-                  fontSize: 12,
-                  fontWeight: "600",
-                }}
+                style={styles.txt1}
                 numberOfLines={2}
               >
                 {leadsFilterDropDownText}
@@ -1263,10 +1173,11 @@ function navigateTo(params) {
       ) : (
         <View
           style={[
-            { backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10 },
+           styles.flatlistView,
           ]}
         >
           <FlatList
+              initialNumToRender={searchedData.length}
             data={searchedData}
             extraData={searchedData}
             keyExtractor={(item, index) => index.toString()}
@@ -1285,140 +1196,7 @@ function navigateTo(params) {
             //     }
             // }}
             ListFooterComponent={renderFooter}
-            renderItem={({ item, index }) => {
-              let color = Colors.WHITE;
-              if (index % 2 !== 0) {
-                color = Colors.LIGHT_GRAY;
-              }
-              return (
-                <>
-                  <View>
-                    <MyTaskNewItem
-                      from={item.leadStage}
-                      name={
-                        getFirstLetterUpperCase(item.firstName) +
-                        " " +
-                        getFirstLetterUpperCase(item.lastName)
-                      }
-                      navigator={navigation}
-                      uniqueId={item.leadId}
-                      type={
-                        item.leadStage === "ENQUIRY"
-                          ? "Enq"
-                          : item.leadStage === "BOOKING"
-                          ? "Book"
-                          : "PreBook"
-                      }
-                      status={""}
-                      created={item.modifiedDate}
-                      dmsLead={item.salesConsultant}
-                      phone={item.phone}
-                      source={item.enquirySource}
-                      model={item.model}
-                      leadStatus={item.leadStatus}
-                      leadStage={item.leadStage}
-                      needStatus={"YES"}
-                      enqCat={item.enquiryCategory}
-                      stageAccess={stageAccess}
-                      onlylead={true}
-                      userData={userData.hrmsRole}
-                      EmployeesRoles={EmployeesRoles}
-                      onItemPress={() => {
-                        // console.log(item.leadStage);
-                        // navigateTo(item.leadStage);
-                        // return
-                        navigation.navigate(
-                          AppNavigator.EmsStackIdentifiers.task360,
-                          {
-                            universalId: item.universalId,
-                            mobileNo: item.phone,
-                            leadStatus: item.leadStatus,
-                          }
-                        );
-                        return
-                        let user = userData.hrmsRole.toLowerCase();
-                        if (EmployeesRoles.includes(user)) {
-                          if (
-                            stageAccess[0]?.viewStage?.includes(item.leadStage)
-                          ) {
-                            navigation.navigate(
-                              AppNavigator.EmsStackIdentifiers.task360,
-                              {
-                                universalId: item.universalId,
-                                mobileNo: item.phone,
-                                leadStatus: item.leadStatus,
-                              }
-                            );
-                          } else {
-                            alert("No Access");
-                          }
-                        } else {
-                          navigation.navigate(
-                            AppNavigator.EmsStackIdentifiers.task360,
-                            {
-                              universalId: item.universalId,
-                              mobileNo: item.phone,
-                              leadStatus: item.leadStatus,
-                            }
-                          );
-                        }
-                      }}
-                      onDocPress={() => {
-                        let user = userData.hrmsRole.toLowerCase();
-                        if (EmployeesRoles.includes(user)) {
-                          if (
-                            stageAccess[0]?.viewStage?.includes(item.leadStage)
-                          ) {
-                            let route =
-                              AppNavigator.EmsStackIdentifiers.detailsOverview;
-                            switch (item.leadStage) {
-                              case "BOOKING":
-                                route =
-                                  AppNavigator.EmsStackIdentifiers.bookingForm;
-                                break;
-                              case "PRE_BOOKING":
-                              case "PREBOOKING":
-                                route =
-                                  AppNavigator.EmsStackIdentifiers
-                                    .preBookingForm;
-                                break;
-                            }
-                            navigation.navigate(route, {
-                              universalId: item.universalId,
-                              enqDetails: item,
-                              leadStatus: item.leadStatus,
-                              leadStage: item.leadStage,
-                            });
-                          } else {
-                            alert("No Access");
-                          }
-                        } else {
-                          let route =
-                            AppNavigator.EmsStackIdentifiers.detailsOverview;
-                          switch (item.leadStage) {
-                            case "BOOKING":
-                              route =
-                                AppNavigator.EmsStackIdentifiers.bookingForm;
-                              break;
-                            case "PRE_BOOKING":
-                            case "PREBOOKING":
-                              route =
-                                AppNavigator.EmsStackIdentifiers.preBookingForm;
-                              break;
-                          }
-                          navigation.navigate(route, {
-                            universalId: item.universalId,
-                            enqDetails: item,
-                            leadStatus: item.leadStatus,
-                            leadStage: item.leadStage,
-                          });
-                        }
-                      }}
-                    />
-                  </View>
-                </>
-              );
-            }}
+            renderItem={renderItem}
           />
         </View>
       )}
@@ -1537,4 +1315,41 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255,21,107,6)",
     borderRadius: 100,
   },
+
+ filterView: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderColor: Colors.BORDER_COLOR,
+    borderWidth: 1,
+    borderRadius: 4,
+    backgroundColor: Colors.WHITE,
+    paddingLeft: 8,
+    height: 50,
+    justifyContent: "center",
+  },
+  view3: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    borderColor: Colors.LIGHT_GRAY,
+    paddingHorizontal: 6,
+    paddingBottom: 4,
+    backgroundColor: Colors.WHITE,
+    marginTop: -6,
+  },
+  view4: {
+    borderWidth: 0.5,
+    borderColor: Colors.BORDER_COLOR,
+    borderRadius: 4,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  txt1: {
+    width: "80%",
+    paddingHorizontal: 5,
+    paddingVertical: 2,
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  flatlistView: { backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10 }
 });

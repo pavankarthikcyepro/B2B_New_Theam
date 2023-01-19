@@ -674,7 +674,7 @@ export const PreBookingModelListitemCom = ({
             userData.isSelfManager == "Y"
               ? "Battery Type*"
               : userData.isTracker == "Y"
-              ? "Clutch Type*"
+              ? "Clutch type*"
               : "Transmission Type*"
           }
           editable={false}
