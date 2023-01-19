@@ -1699,7 +1699,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     let lifeTax = taxPercent !== "" ? getLifeTaxNew(Number(taxPercent)) : 0;
     setLifeTaxAmount(lifeTax);
     totalPrice += lifeTax;
-    totalPrice += priceInfomationData.registration_charges;
+    // totalPrice += priceInfomationData.registration_charges;
     totalPrice += selectedRegistrationCharges?.cost || 0;
     totalPrice += selectedInsurencePrice;
     if (selector.insurance_type !== "") {
@@ -3144,32 +3144,32 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     selectorBooking.update_enquiry_details_response,
   ]);
 
-  displayCreateEnquiryAlert = (refNum) => {
-    Alert.alert(
-      "Booking Successfully Created",
-      `Booking Successfully Created\nRef Num: ${refNum}`,
-      [
-        {
-          text: "OK",
-          onPress: () => goToParentScreen(),
-        },
-      ],
-      {
-        cancelable: false,
-      }
-    );
-  };
+   displayCreateEnquiryAlert = (refNum) => {
+     Alert.alert(
+       `Booking Successfully Created\nRef Num: ${refNum}`,
+       "",
+       [
+         {
+           text: "OK",
+           onPress: () => goToParentScreen(),
+         },
+       ],
+       {
+         cancelable: false,
+       }
+     );
+   };
 
-  const goToParentScreen = () => {
-    navigation.popToTop();
-    navigation.navigate("EMS_TAB");
-    navigation.navigate(EmsTopTabNavigatorIdentifiers.leads, {
-      fromScreen: "booking",
-    });
-    dispatch(clearState());
-    clearLocalData();
-    dispatch(clearBookingState());
-  };
+   const goToParentScreen = () => {
+     navigation.popToTop();
+     navigation.navigate("EMS_TAB");
+     navigation.navigate(EmsTopTabNavigatorIdentifiers.leads, {
+       fromScreen: "booking",
+     });
+     dispatch(clearState());
+     clearLocalData();
+     dispatch(clearBookingState());
+   };
 
   // ========================== //
   // ========================== //
@@ -3690,6 +3690,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         visible={showDropDownModel}
         headerTitle={dropDownTitle}
         data={dataForDropDown}
+        disabledData={addNewInput}
         multiple={showMultipleDropDownData}
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
@@ -4720,26 +4721,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       setCarModelsList(arr);
                       // selector.dmsLeadProducts = [...selector.dmsLeadProducts, carmodeldata]
                     }}
-                    style={{
-                      width: "40%",
-                      margin: 5,
-                      borderRadius: 5,
-                      backgroundColor: Colors.PINK,
-                      height: 40,
-                      alignSelf: "flex-end",
-                      alignContent: "flex-end",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
+                    style={styles.addmodelView}
                   >
                     <Text
-                      style={{
-                        fontSize: 16,
-                        textAlign: "center",
-                        textAlignVertical: "center",
-                        color: Colors.WHITE,
-                        width: "100%",
-                      }}
+                      style={styles.addmodeltxt}
                     >
                       Add Model
                     </Text>
@@ -4872,14 +4857,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
                           disabled={!isInputsEditable()}
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                          style={styles.previewBtn}
                           onPress={() => {
                             if (uploadedImagesDataObj.pan?.documentPath) {
                               setImagePath(
@@ -4889,11 +4867,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                            style={styles.previetxt}
                           >
                             Preview
                           </Text>
@@ -4926,14 +4900,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
                           disabled={!isInputsEditable()}
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                          style={styles.previewBtn}
                           onPress={() => {
                             if (uploadedImagesDataObj.form60?.documentPath) {
                               setImagePath(
@@ -4943,11 +4910,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                            style={styles.previetxt}
                           >
                             Preview
                           </Text>
@@ -4995,14 +4958,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         <View style={{ flexDirection: "row" }}>
                           <TouchableOpacity
                             disabled={!isInputsEditable()}
-                            style={{
-                              width: "20%",
-                              height: 30,
-                              backgroundColor: Colors.SKY_BLUE,
-                              borderRadius: 4,
-                              justifyContent: "center",
-                              alignItems: "center",
-                            }}
+                            style={styles.previewBtn}
                             onPress={() => {
                               if (uploadedImagesDataObj.aadhar?.documentPath) {
                                 setImagePath(
@@ -5012,11 +4968,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             }}
                           >
                             <Text
-                              style={{
-                                color: Colors.WHITE,
-                                fontSize: 14,
-                                fontWeight: "600",
-                              }}
+                              style={styles.previetxt}
                             >
                               Preview
                             </Text>
@@ -5069,14 +5021,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
                           disabled={!isInputsEditable()}
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                            style={styles.previewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.employeeId?.documentPath
@@ -5088,11 +5033,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                              style={styles.previetxt}
                           >
                             Preview
                           </Text>
@@ -5127,14 +5068,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
                           disabled={!isInputsEditable()}
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                            style={styles.previewBtn}
                           onPress={() => {
                             if (uploadedImagesDataObj.payslips?.documentPath) {
                               setImagePath(
@@ -5144,11 +5078,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                              style={styles.previetxt}
                           >
                             Preview
                           </Text>
@@ -5182,14 +5112,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
                           disabled={!isInputsEditable()}
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                            style={styles.previewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.pattaPassBook?.documentPath
@@ -5202,11 +5125,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                              style={styles.previetxt}
                           >
                             Preview
                           </Text>
@@ -5227,14 +5146,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           disabled={
                             userData.isManager ? (isEdit ? false : true) : false
                           }
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                              style={styles.previewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj?.pattaPassBook?.documentPath
@@ -5247,11 +5159,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                                style={styles.previetxt}
                           >
                             Preview
                           </Text>
@@ -5293,14 +5201,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
                           disabled={!isInputsEditable()}
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                            style={styles.previewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.pensionLetter?.documentPath
@@ -5313,11 +5214,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                              style={styles.previetxt}
                           >
                             Preview
                           </Text>
@@ -5353,14 +5250,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
                           disabled={!isInputsEditable()}
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                            style={styles.previewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.imaCertificate?.documentPath
@@ -5373,11 +5263,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                              style={styles.previetxt}
                           >
                             Preview
                           </Text>
@@ -5416,14 +5302,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
                           disabled={!isInputsEditable()}
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                              style={styles.previewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.leasingConfirmationLetter
@@ -5437,11 +5316,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                                style={styles.previetxt}
                           >
                             Preview
                           </Text>
@@ -5460,14 +5335,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ) : uploadedImagesDataObj.leasingConfirmationLetter ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                              style={styles.previewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.leasingConfirmationLetter
@@ -5481,11 +5349,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                                style={styles.previetxt}
                           >
                             Preview
                           </Text>
@@ -5520,14 +5384,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj.address?.fileName ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                            style={styles.previewBtn}
                           onPress={() => {
                             if (uploadedImagesDataObj.address?.documentPath) {
                               setImagePath(
@@ -5537,11 +5394,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                              style={styles.previetxt}
                           >
                             Preview
                           </Text>
@@ -5556,14 +5409,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ) : uploadedImagesDataObj.addressProof?.fileName ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                              style={styles.previewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.addressProof?.documentPath
@@ -5575,11 +5421,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                                style={styles.previetxt}
                           >
                             Preview
                           </Text>
@@ -5671,14 +5513,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   {uploadedImagesDataObj.relationshipProof?.fileName ? (
                     <View style={{ flexDirection: "row" }}>
                       <TouchableOpacity
-                        style={{
-                          width: "20%",
-                          height: 30,
-                          backgroundColor: Colors.SKY_BLUE,
-                          borderRadius: 4,
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
+                        style={styles.previewBtn}
                         disabled={!isInputsEditable()}
                         onPress={() => {
                           if (
@@ -5693,11 +5528,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         }}
                       >
                         <Text
-                          style={{
-                            color: Colors.WHITE,
-                            fontSize: 14,
-                            fontWeight: "600",
-                          }}
+                          style={styles.previetxt}
                         >
                           Preview
                         </Text>
@@ -6938,14 +6769,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj.receipt?.fileName ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                          style={styles.previewBtn}
                           onPress={() => {
                             if (uploadedImagesDataObj.receipt?.documentPath) {
                               setImagePath(
@@ -6955,11 +6779,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                            style={styles.previetxt}
                           >
                             Preview
                           </Text>
@@ -7606,4 +7426,35 @@ const styles = StyleSheet.create({
     color: Colors.GRAY,
     paddingLeft: 12,
   },
+ addmodelView: {
+    width: "40%",
+    margin: 5,
+    borderRadius: 5,
+    backgroundColor: Colors.PINK,
+    height: 40,
+    alignSelf: "flex-end",
+    alignContent: "flex-end",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+ addmodeltxt: {
+    fontSize: 16,
+    textAlign: "center",
+    textAlignVertical: "center",
+    color: Colors.WHITE,
+    width: "100%",
+  },
+  previewBtn:{
+    width: "20%",
+    height: 30,
+    backgroundColor: Colors.SKY_BLUE,
+    borderRadius: 4,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+previetxt:  {
+    color: Colors.WHITE,
+    fontSize: 14,
+    fontWeight: "600",
+  }
 });

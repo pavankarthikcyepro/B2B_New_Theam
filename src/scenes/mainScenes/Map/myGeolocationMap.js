@@ -6,6 +6,7 @@ import {
   SafeAreaView,
   StyleSheet,
   Alert,
+  Image,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -133,7 +134,6 @@ const GeolocationMapScreen = ({ route }) => {
     return sum;
   }
 
-
   const getLocationByDate = async (params) => {
     try {
       setLatitude(0);
@@ -249,18 +249,31 @@ const GeolocationMapScreen = ({ route }) => {
               strokeWidth={4}
             />
             {coordinates.map((marker, index) => (
-              <Marker
-                key={index}
+              <Marker.Animated
+                key={`marker-${index}`}
                 coordinate={marker}
                 tracksViewChanges={false}
                 style={{
                   height: 15,
                   width: 15,
+                  // padding:5,
+                  // flex:1
                 }}
                 image={index === coordinates.length - 1 ? CYEPRO : HISTORY_LOC}
                 // title={marker}
                 // description={}
-              />
+              >
+                  {/* <Image
+                    source={
+                      index === coordinates.length - 1 ? CYEPRO : HISTORY_LOC
+                    }
+                    style={{
+                      height: 20,
+                      width: 20,
+                    }}
+                    resizeMode="contain"
+                  /> */}
+              </Marker.Animated>
             ))}
           </MapView>
         )}

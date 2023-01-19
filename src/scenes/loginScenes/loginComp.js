@@ -39,7 +39,11 @@ import { IconButton } from "react-native-paper";
 import { AuthContext } from "../../utils/authContext";
 import { LoaderComponent } from "../../components";
 import * as AsyncStore from "../../asyncStore";
-import { showAlertMessage, showToast } from "../../utils/toast";
+import {
+  showAlertMessage,
+  showToast,
+  showToastRedAlert,
+} from "../../utils/toast";
 import BackgroundService from "react-native-background-actions";
 import Geolocation from "@react-native-community/geolocation";
 import {
@@ -251,6 +255,8 @@ const LoginScreen = ({ navigation }) => {
               // console.log("employeeData", employeeData);
               if (employeeData) {
                 console.log("LLLLLL");
+                // showToastRedAlert("LLLLLL");
+
                 const jsonObj = JSON.parse(employeeData);
                 const trackingResponse = await client.get(
                   getDetailsByempIdAndorgId +
@@ -285,7 +291,7 @@ const LoginScreen = ({ navigation }) => {
                 //   }
                 // }
 
-                let newArray = [...coordinates, ...[newLatLng]];
+                let newArray = [...parsedValue, ...[newLatLng]];
                 let date = new Date(
                   trackingJson[trackingJson.length - 1]?.createdtimestamp
                 );
@@ -293,6 +299,7 @@ const LoginScreen = ({ navigation }) => {
                 let condition =
                   new Date(date).getDate() == new Date().getDate();
                 if (trackingJson.length > 0 && condition) {
+                  // showToastRedAlert("Condition");
                   let tempPayload = {
                     id: trackingJson[trackingJson.length - 1]?.id,
                     orgId: jsonObj?.orgId,
@@ -321,6 +328,7 @@ const LoginScreen = ({ navigation }) => {
 
                     const json = await response.json();
                     console.log("KKKKsssssK", json);
+                    // showToastRedAlert("json");
                   }
                 } else {
                   let payload = {
@@ -345,6 +353,7 @@ const LoginScreen = ({ navigation }) => {
                     const response = await client.post(saveLocation, payload);
                     const json = await response.json();
                     console.log("KKKKK", json);
+                    // showToastRedAlert("json");
                   }
                 }
               }
@@ -352,7 +361,13 @@ const LoginScreen = ({ navigation }) => {
             (error) => {
               console.error(error);
             },
-            { enableHighAccuracy: true, distanceFilter: distanceFilterValue }
+            {
+              enableHighAccuracy: true,
+              distanceFilter: distanceFilterValue,
+              timeout: 2000,
+              maximumAge: 0,
+              // useSignificantChanges :true,
+            }
           );
         }
       }

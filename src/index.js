@@ -34,6 +34,7 @@ import PushNotificationIOS from "@react-native-community/push-notification-ios";
 import { Platform, AppState } from "react-native";
 import PushNotification from "react-native-push-notification";
 import { enableScreens } from "react-native-screens";
+import { showToastRedAlert } from "./utils/toast";
 
 enableScreens();
 
@@ -106,18 +107,14 @@ const AppScreen = () => {
         if (true) {
           Geolocation.watchPosition(
             async (lastPosition) => {
-              console.log("lastPOSTION", lastPosition);
               let speed =
                 lastPosition?.coords?.speed <= -1
                   ? 0
                   : lastPosition?.coords?.speed * 3.6;
-              console.log("KKKKKsshgshg", speed);
               const employeeData = await AsyncStore.getData(
                 AsyncStore.Keys.LOGIN_EMPLOYEE
               );
               if (employeeData) {
-                console.log("ccccc");
-
                 const jsonObj = JSON.parse(employeeData);
                 const trackingResponse = await client.get(
                   getDetailsByempIdAndorgId +
@@ -155,7 +152,7 @@ const AppScreen = () => {
                   // }
                 }
 
-                let newArray = [...coordinates, ...[newLatLng]];
+                let newArray = [...parsedValue, ...[newLatLng]];
                 let date = new Date(
                   trackingJson[trackingJson.length - 1]?.createdtimestamp
                 );
@@ -163,6 +160,8 @@ const AppScreen = () => {
                 let condition =
                   new Date(date).getDate() == new Date().getDate();
                 if (trackingJson.length > 0 && condition) {
+                  // showToastRedAlert("Condition");
+
                   let tempPayload = {
                     id: trackingJson[trackingJson.length - 1]?.id,
                     orgId: jsonObj?.orgId,
@@ -180,12 +179,22 @@ const AppScreen = () => {
                     //   AsyncStore.Keys.COORDINATES,
                     //   newArray
                     // );
+                    // if (speed < 10) {
+                    //   setTimeout(async () => {
+                    //     await client.put(
+                    //       locationUpdate +
+                    //         `/${trackingJson[trackingJson.length - 1].id}`,
+                    //       tempPayload
+                    //     );
+                    //   }, 300000);
+                    // }
                     const response = await client.put(
                       locationUpdate +
                         `/${trackingJson[trackingJson.length - 1].id}`,
                       tempPayload
                     );
                     const json = await response.json();
+                    // showToastRedAlert("json");
                   }
                 } else {
                   let payload = {
@@ -207,6 +216,7 @@ const AppScreen = () => {
                     );
                     const response = await client.post(saveLocation, payload);
                     const json = await response.json();
+                    // showToastRedAlert("json");
                   }
                 }
               }
@@ -214,7 +224,13 @@ const AppScreen = () => {
             (error) => {
               console.error(error);
             },
-            { enableHighAccuracy: true, distanceFilter: distanceFilterValue }
+            {
+              enableHighAccuracy: true,
+              distanceFilter: distanceFilterValue,
+              timeout: 2000,
+              maximumAge: 0,
+              // useSignificantChanges: true,
+            }
           );
         }
       }
@@ -226,7 +242,6 @@ const AppScreen = () => {
     const { delay } = taskDataArguments;
     await new Promise(async (resolve) => {
       for (let i = 0; BackgroundService.isRunning(); i++) {
-        // console.log(i);
         var startDate = createDateTime("8:30");
         var startBetween = createDateTime("9:30");
         var endBetween = createDateTime("20:30");
@@ -235,14 +250,14 @@ const AppScreen = () => {
         if (startDate <= now && now <= startBetween) {
           // sendLocalNotification();
         }
-        if (
-          AppState.currentState === "background" ||
-          AppState.currentState === "inactive"
-        ) {
-          if (now >= startBetween) {
-            MarkAbsent();
-          }
-        }
+        // if (
+        //   AppState.currentState === "background" ||
+        //   AppState.currentState === "inactive"
+        // ) {
+        //   if (now >= startBetween) {
+        //     MarkAbsent();
+        //   }
+        // }
 
         if (endBetween <= now && now <= endDate) {
           // sendLocalNotification();

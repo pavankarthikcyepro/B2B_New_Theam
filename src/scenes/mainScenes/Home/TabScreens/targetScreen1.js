@@ -264,7 +264,7 @@ const TargetScreen = ({ route }) => {
             Promise.allSettled([
               dispatch(getNewTargetParametersAllData(payload2)),
               dispatch(getTotalTargetParametersData(payload2)),
-            ]).then(() => {});
+            ]).then(() => { });
           }
         }
       );
@@ -280,7 +280,7 @@ const TargetScreen = ({ route }) => {
       .format(dateFormat);
     setDateDiff(
       (new Date(monthLastDate).getTime() - new Date(currentDate).getTime()) /
-        (1000 * 60 * 60 * 24)
+      (1000 * 60 * 60 * 24)
     );
 
     const isInsights = selector.isTeamPresent && !selector.isDSE;
@@ -402,7 +402,7 @@ const TargetScreen = ({ route }) => {
         .format(dateFormat);
       setDateDiff(
         (new Date(monthLastDate).getTime() - new Date(currentDate).getTime()) /
-          (1000 * 60 * 60 * 24)
+        (1000 * 60 * 60 * 24)
       );
     });
 
@@ -748,7 +748,8 @@ const TargetScreen = ({ route }) => {
                 if (i === tempRawData.length - 1) {
                   lastParameter[index].employeeTargetAchievements = tempRawData;
                   let newIds = tempRawData.map((emp) => emp.empId);
-                  if (newIds.length >= 2) {
+                  if (true) {
+                    // if (newIds.length >= 2) {
                     for (let i = 0; i < newIds.length; i++) {
                       const element = newIds[i].toString();
                       let tempPayload = getTotalPayload(employeeData, element);
@@ -921,7 +922,7 @@ const TargetScreen = ({ route }) => {
                     {/* Employee params section */}
                     <ScrollView
                       style={{ height: Dimensions.get("screen").height / 2.2 }}
-                      // style={{ height: selector.isMD ? "81%" : "80%" }}
+                    // style={{ height: selector.isMD ? "81%" : "80%" }}
                     >
                       {allParameters.length > 0 &&
                         allParameters.map((item, index) => {
@@ -958,13 +959,16 @@ const TargetScreen = ({ route }) => {
                                     {item.empName}
                                     {/* {item?.childCount > 1 ? "  |" : ""} */}
                                   </Text>
-                                  
                                 </View>
-                                <View style={{flexDirection:"row"}}>
+                                <View style={{ flexDirection: "row" }}>
                                   {item?.childCount > 1 && (
-                                    <Animated.View style={{
-                                      transform: [{ translateX: translation }],
-                                    }}>
+                                    <Animated.View
+                                      style={{
+                                        transform: [
+                                          { translateX: translation },
+                                        ],
+                                      }}
+                                    >
                                       <View
                                         style={{
                                           backgroundColor: "lightgrey",
@@ -997,9 +1001,11 @@ const TargetScreen = ({ route }) => {
                                           empId: item.empId,
                                           headerTitle: item.empName,
                                           loggedInEmpId:
-                                            selector.login_employee_details.empId,
+                                            selector.login_employee_details
+                                              .empId,
                                           orgId:
-                                            selector.login_employee_details.orgId,
+                                            selector.login_employee_details
+                                              .orgId,
                                           type: "TEAM",
                                           moduleType: "home",
                                         }
@@ -1010,7 +1016,6 @@ const TargetScreen = ({ route }) => {
                                     }}
                                   />
                                 </View>
-                                
                               </View>
                               {/*Source/Model View END */}
                               <View
@@ -1063,7 +1068,7 @@ const TargetScreen = ({ route }) => {
 
                                   {item.isOpenInner &&
                                     item.employeeTargetAchievements.length >
-                                      0 &&
+                                    0 &&
                                     item.employeeTargetAchievements.map(
                                       (innerItem1, innerIndex1) => {
                                         return (
@@ -1142,47 +1147,54 @@ const TargetScreen = ({ route }) => {
                                                         ? "  |"
                                                         : ""} */}
                                                     </Text>
-                                                    
                                                   </View>
-                                                  <View style={{flexDirection:"row"}}>
+                                                  <View
+                                                    style={{
+                                                      flexDirection: "row",
+                                                    }}
+                                                  >
                                                     {innerItem1?.childCount >
                                                       1 && (
-                                                      <Animated.View style={{
-                                                        transform: [
-                                                          {
-                                                            translateX:
-                                                              translation,
-                                                          },
-                                                        ],
-                                                      }}>
-                                                        <View
+                                                        <Animated.View
                                                           style={{
-                                                            backgroundColor:
-                                                              "lightgrey",
-                                                            flexDirection: "row",
-                                                            paddingHorizontal: 7,
-                                                            borderRadius: 10,
-                                                            alignItems: "center",
-                                                            justifyContent:
-                                                              "space-between",
-                                                            marginBottom: 5,
-                                                            alignSelf:
-                                                              "flex-start",
-                                                            marginLeft: 7,
+                                                            transform: [
+                                                              {
+                                                                translateX:
+                                                                  translation,
+                                                              },
+                                                            ],
                                                           }}
                                                         >
-                                                          <MaterialIcons
-                                                            name="person"
-                                                            size={15}
-                                                            color={Colors.BLACK}
-                                                          />
-                                                          <Text>
-                                                            {
-                                                              innerItem1?.childCount
-                                                            }
-                                                          </Text>
-                                                        </View>
-                                                      </Animated.View>
+                                                          <View
+                                                            style={{
+                                                              backgroundColor:
+                                                                "lightgrey",
+                                                              flexDirection:
+                                                                "row",
+                                                              paddingHorizontal: 7,
+                                                              borderRadius: 10,
+                                                              alignItems:
+                                                                "center",
+                                                              justifyContent:
+                                                                "space-between",
+                                                              marginBottom: 5,
+                                                              alignSelf:
+                                                                "flex-start",
+                                                              marginLeft: 7,
+                                                            }}
+                                                          >
+                                                            <MaterialIcons
+                                                              name="person"
+                                                              size={15}
+                                                              color={Colors.BLACK}
+                                                            />
+                                                            <Text>
+                                                              {
+                                                                innerItem1?.childCount
+                                                              }
+                                                            </Text>
+                                                          </View>
+                                                        </Animated.View>
                                                       )}
                                                     <SourceModelView
                                                       onClick={() => {
@@ -1210,7 +1222,6 @@ const TargetScreen = ({ route }) => {
                                                       }}
                                                     />
                                                   </View>
-                                                  
                                                 </View>
                                                 {/*Source/Model View END */}
                                                 <View
@@ -1326,51 +1337,57 @@ const TargetScreen = ({ route }) => {
                                                                 ? "  |"
                                                                 : ""} */}
                                                             </Text>
-                                                            
                                                           </View>
-                                                            <View style={{flexDirection:"row"}}>
+                                                          <View
+                                                            style={{
+                                                              flexDirection:
+                                                                "row",
+                                                            }}
+                                                          >
                                                             {innerItem2?.childCount >
                                                               1 && (
-                                                              <Animated.View style={{
-                                                                transform: [
-                                                                  {
-                                                                    translateX:
-                                                                      translation,
-                                                                  },
-                                                                ],
-                                                              }}>
-                                                                <View
+                                                                <Animated.View
                                                                   style={{
-                                                                    backgroundColor:
-                                                                      "lightgrey",
-                                                                    flexDirection:
-                                                                      "row",
-                                                                    paddingHorizontal: 7,
-                                                                    borderRadius: 10,
-                                                                    alignItems:
-                                                                      "center",
-                                                                    justifyContent:
-                                                                      "space-between",
-                                                                    marginBottom: 5,
-                                                                    alignSelf:
-                                                                      "flex-start",
-                                                                    marginLeft: 7,
+                                                                    transform: [
+                                                                      {
+                                                                        translateX:
+                                                                          translation,
+                                                                      },
+                                                                    ],
                                                                   }}
                                                                 >
-                                                                  <MaterialIcons
-                                                                    name="person"
-                                                                    size={15}
-                                                                    color={
-                                                                      Colors.BLACK
-                                                                    }
-                                                                  />
-                                                                  <Text>
-                                                                    {
-                                                                      innerItem2?.childCount
-                                                                    }
-                                                                  </Text>
-                                                                </View>
-                                                              </Animated.View>
+                                                                  <View
+                                                                    style={{
+                                                                      backgroundColor:
+                                                                        "lightgrey",
+                                                                      flexDirection:
+                                                                        "row",
+                                                                      paddingHorizontal: 7,
+                                                                      borderRadius: 10,
+                                                                      alignItems:
+                                                                        "center",
+                                                                      justifyContent:
+                                                                        "space-between",
+                                                                      marginBottom: 5,
+                                                                      alignSelf:
+                                                                        "flex-start",
+                                                                      marginLeft: 7,
+                                                                    }}
+                                                                  >
+                                                                    <MaterialIcons
+                                                                      name="person"
+                                                                      size={15}
+                                                                      color={
+                                                                        Colors.BLACK
+                                                                      }
+                                                                    />
+                                                                    <Text>
+                                                                      {
+                                                                        innerItem2?.childCount
+                                                                      }
+                                                                    </Text>
+                                                                  </View>
+                                                                </Animated.View>
                                                               )}
                                                             <SourceModelView
                                                               onClick={() => {
@@ -1398,8 +1415,7 @@ const TargetScreen = ({ route }) => {
                                                                 ],
                                                               }}
                                                             />
-                                                            </View>
-                                                          
+                                                          </View>
                                                         </View>
                                                         <View
                                                           style={{
@@ -1519,52 +1535,59 @@ const TargetScreen = ({ route }) => {
                                                                           ? "  |"
                                                                           : ""} */}
                                                                       </Text>
-                                                                    
                                                                     </View>
-                                                                        <View style={{flexDirection:"row"}}>
+                                                                    <View
+                                                                      style={{
+                                                                        flexDirection:
+                                                                          "row",
+                                                                      }}
+                                                                    >
                                                                       {innerItem3?.childCount >
                                                                         1 && (
-                                                                        <Animated.View style={{
-                                                                          transform: [
-                                                                            {
-                                                                              translateX:
-                                                                                translation,
-                                                                            },
-                                                                          ],
-                                                                        }}>
-                                                                          <View
+                                                                          <Animated.View
                                                                             style={{
-                                                                              backgroundColor:
-                                                                                "lightgrey",
-                                                                              flexDirection:
-                                                                                "row",
-                                                                              paddingHorizontal: 7,
-                                                                              borderRadius: 10,
-                                                                              alignItems:
-                                                                                "center",
-                                                                              justifyContent:
-                                                                                "space-between",
-                                                                              marginBottom: 5,
-                                                                              alignSelf:
-                                                                                "flex-start",
-                                                                              marginLeft: 7,
+                                                                              transform:
+                                                                                [
+                                                                                  {
+                                                                                    translateX:
+                                                                                      translation,
+                                                                                  },
+                                                                                ],
                                                                             }}
                                                                           >
-                                                                            <MaterialIcons
-                                                                              name="person"
-                                                                              size={
-                                                                                15
-                                                                              }
-                                                                              color={
-                                                                                Colors.BLACK
-                                                                              }
-                                                                            />
-                                                                            <Text>
-                                                                              {
-                                                                                innerItem3?.childCount
-                                                                              }
-                                                                            </Text>
-                                                                          </View>
+                                                                            <View
+                                                                              style={{
+                                                                                backgroundColor:
+                                                                                  "lightgrey",
+                                                                                flexDirection:
+                                                                                  "row",
+                                                                                paddingHorizontal: 7,
+                                                                                borderRadius: 10,
+                                                                                alignItems:
+                                                                                  "center",
+                                                                                justifyContent:
+                                                                                  "space-between",
+                                                                                marginBottom: 5,
+                                                                                alignSelf:
+                                                                                  "flex-start",
+                                                                                marginLeft: 7,
+                                                                              }}
+                                                                            >
+                                                                              <MaterialIcons
+                                                                                name="person"
+                                                                                size={
+                                                                                  15
+                                                                                }
+                                                                                color={
+                                                                                  Colors.BLACK
+                                                                                }
+                                                                              />
+                                                                              <Text>
+                                                                                {
+                                                                                  innerItem3?.childCount
+                                                                                }
+                                                                              </Text>
+                                                                            </View>
                                                                           </Animated.View>
                                                                         )}
                                                                       <SourceModelView
@@ -1594,8 +1617,7 @@ const TargetScreen = ({ route }) => {
                                                                             ],
                                                                         }}
                                                                       />
-                                                                        </View>
-                                                                   
+                                                                    </View>
                                                                   </View>
                                                                   <View
                                                                     style={{
@@ -1650,7 +1672,7 @@ const TargetScreen = ({ route }) => {
                                                                     innerItem3
                                                                       .employeeTargetAchievements
                                                                       .length >
-                                                                      0 &&
+                                                                    0 &&
                                                                     innerItem3.employeeTargetAchievements.map(
                                                                       (
                                                                         innerItem4,
@@ -1774,7 +1796,7 @@ const TargetScreen = ({ route }) => {
                                                                               innerItem4
                                                                                 .employeeTargetAchievements
                                                                                 .length >
-                                                                                0 &&
+                                                                              0 &&
                                                                               innerItem4.employeeTargetAchievements.map(
                                                                                 (
                                                                                   innerItem5,
@@ -1901,7 +1923,7 @@ const TargetScreen = ({ route }) => {
                                                                                         innerItem5
                                                                                           .employeeTargetAchievements
                                                                                           .length >
-                                                                                          0 &&
+                                                                                        0 &&
                                                                                         innerItem5.employeeTargetAchievements.map(
                                                                                           (
                                                                                             innerItem6,
@@ -2104,7 +2126,6 @@ const TargetScreen = ({ route }) => {
                             justifyContent: "space-around",
                             flexDirection: "row",
                             backgroundColor: Colors.RED,
-                            height: 45,
                           }}
                         >
                           <View />
@@ -2127,29 +2148,40 @@ const TargetScreen = ({ route }) => {
                             </Text>
                           </View>
                           <View style={{ alignSelf: "flex-end" }}>
-                            <Text
+                            <View
                               style={{
-                                fontSize: 10,
-                                fontWeight: "bold",
-                                paddingVertical: 6,
                                 paddingRight: 2,
-                                height: 22,
-                                color: Colors.WHITE,
+                                height: 20,
+                                justifyContent: "center",
                               }}
                             >
-                              ACH
-                            </Text>
-                            <Text
+                              <Text
+                                style={{
+                                  fontSize: 10,
+                                  fontWeight: "bold",
+                                  color: Colors.WHITE,
+                                }}
+                              >
+                                ACH
+                              </Text>
+                            </View>
+
+                            <View
                               style={{
-                                fontSize: 10,
-                                fontWeight: "bold",
-                                paddingVertical: 6,
-                                height: 25,
-                                color: Colors.WHITE,
+                                height: 20,
+                                justifyContent: "center",
                               }}
                             >
-                              TGT
-                            </Text>
+                              <Text
+                                style={{
+                                  fontSize: 10,
+                                  fontWeight: "bold",
+                                  color: Colors.WHITE,
+                                }}
+                              >
+                                TGT
+                              </Text>
+                            </View>
                           </View>
                         </View>
                         <View
@@ -2531,7 +2563,7 @@ const TargetScreen = ({ route }) => {
                                     Math.floor(
                                       (parseInt(bookingData?.achievment) /
                                         parseInt(enqData?.achievment)) *
-                                        100
+                                      100
                                     ) > 40
                                       ? "#14ce40"
                                       : "#ff0000",
@@ -2540,13 +2572,13 @@ const TargetScreen = ({ route }) => {
                                 }}
                               >
                                 {parseInt(bookingData?.achievment) === 0 ||
-                                parseInt(enqData?.achievment) === 0
+                                  parseInt(enqData?.achievment) === 0
                                   ? 0
                                   : Math.round(
-                                      (parseInt(bookingData?.achievment) /
-                                        parseInt(enqData?.achievment)) *
-                                        100
-                                    )}
+                                    (parseInt(bookingData?.achievment) /
+                                      parseInt(enqData?.achievment)) *
+                                    100
+                                  )}
                                 %
                               </Text>
                             ) : (
@@ -2577,7 +2609,7 @@ const TargetScreen = ({ route }) => {
                                     Math.floor(
                                       (parseInt(visitData?.achievment) /
                                         parseInt(enqData?.achievment)) *
-                                        100
+                                      100
                                     ) > 40
                                       ? "#14ce40"
                                       : "#ff0000",
@@ -2586,13 +2618,13 @@ const TargetScreen = ({ route }) => {
                                 }}
                               >
                                 {parseInt(enqData?.achievment) === 0 ||
-                                parseInt(visitData?.achievment) === 0
+                                  parseInt(visitData?.achievment) === 0
                                   ? 0
                                   : Math.round(
-                                      (parseInt(visitData?.achievment) /
-                                        parseInt(enqData?.achievment)) *
-                                        100
-                                    )}
+                                    (parseInt(visitData?.achievment) /
+                                      parseInt(enqData?.achievment)) *
+                                    100
+                                  )}
                                 %
                               </Text>
                             ) : (
@@ -2623,7 +2655,7 @@ const TargetScreen = ({ route }) => {
                                     Math.floor(
                                       (parseInt(finData?.achievment) /
                                         parseInt(retailData?.achievment)) *
-                                        100
+                                      100
                                     ) > 40
                                       ? "#14ce40"
                                       : "#ff0000",
@@ -2632,13 +2664,13 @@ const TargetScreen = ({ route }) => {
                                 }}
                               >
                                 {parseInt(finData?.achievment) === 0 ||
-                                parseInt(retailData?.achievment) === 0
+                                  parseInt(retailData?.achievment) === 0
                                   ? 0
                                   : Math.round(
-                                      (parseInt(finData?.achievment) /
-                                        parseInt(retailData?.achievment)) *
-                                        100
-                                    )}
+                                    (parseInt(finData?.achievment) /
+                                      parseInt(retailData?.achievment)) *
+                                    100
+                                  )}
                                 %
                               </Text>
                             ) : (
@@ -2711,7 +2743,7 @@ const TargetScreen = ({ route }) => {
                                   Math.round(
                                     (parseInt(bookingData?.achievment) /
                                       parseInt(enqData?.achievment)) *
-                                      100
+                                    100
                                   ) > 40
                                     ? "#14ce40"
                                     : "#ff0000",
@@ -2720,13 +2752,13 @@ const TargetScreen = ({ route }) => {
                               }}
                             >
                               {parseInt(bookingData?.achievment) === 0 ||
-                              parseInt(enqData?.achievment) === 0
+                                parseInt(enqData?.achievment) === 0
                                 ? 0
                                 : Math.round(
-                                    (parseInt(bookingData?.achievment) /
-                                      parseInt(enqData?.achievment)) *
-                                      100
-                                  )}
+                                  (parseInt(bookingData?.achievment) /
+                                    parseInt(enqData?.achievment)) *
+                                  100
+                                )}
                               %
                             </Text>
                           ) : (
@@ -2759,7 +2791,7 @@ const TargetScreen = ({ route }) => {
                                   Math.round(
                                     (parseInt(visitData?.achievment) /
                                       parseInt(enqData?.achievment)) *
-                                      100
+                                    100
                                   ) > 40
                                     ? "#14ce40"
                                     : "#ff0000",
@@ -2768,13 +2800,13 @@ const TargetScreen = ({ route }) => {
                               }}
                             >
                               {parseInt(enqData?.achievment) === 0 ||
-                              parseInt(visitData?.achievment) === 0
+                                parseInt(visitData?.achievment) === 0
                                 ? 0
                                 : Math.round(
-                                    (parseInt(visitData?.achievment) /
-                                      parseInt(enqData?.achievment)) *
-                                      100
-                                  )}
+                                  (parseInt(visitData?.achievment) /
+                                    parseInt(enqData?.achievment)) *
+                                  100
+                                )}
                               %
                             </Text>
                           ) : (
@@ -2807,7 +2839,7 @@ const TargetScreen = ({ route }) => {
                                   Math.round(
                                     (parseInt(finData?.achievment) /
                                       parseInt(retailData?.achievment)) *
-                                      100
+                                    100
                                   ) > 40
                                     ? "#14ce40"
                                     : "#ff0000",
@@ -2816,13 +2848,13 @@ const TargetScreen = ({ route }) => {
                               }}
                             >
                               {parseInt(finData?.achievment) === 0 ||
-                              parseInt(retailData?.achievment) === 0
+                                parseInt(retailData?.achievment) === 0
                                 ? 0
                                 : Math.round(
-                                    (parseInt(finData?.achievment) /
-                                      parseInt(retailData?.achievment)) *
-                                      100
-                                  )}
+                                  (parseInt(finData?.achievment) /
+                                    parseInt(retailData?.achievment)) *
+                                  100
+                                )}
                               %
                             </Text>
                           ) : (
@@ -2857,7 +2889,7 @@ const TargetScreen = ({ route }) => {
                                   Math.round(
                                     (parseInt(retailData?.achievment) /
                                       parseInt(bookingData?.achievment)) *
-                                      100
+                                    100
                                   ) > 40
                                     ? "#14ce40"
                                     : "#ff0000",
@@ -2866,13 +2898,13 @@ const TargetScreen = ({ route }) => {
                               }}
                             >
                               {parseInt(bookingData?.achievment) === 0 ||
-                              parseInt(retailData?.achievment) === 0
+                                parseInt(retailData?.achievment) === 0
                                 ? 0
                                 : Math.round(
-                                    (parseInt(retailData?.achievment) /
-                                      parseInt(bookingData?.achievment)) *
-                                      100
-                                  )}
+                                  (parseInt(retailData?.achievment) /
+                                    parseInt(bookingData?.achievment)) *
+                                  100
+                                )}
                               %
                             </Text>
                           )}
@@ -2896,7 +2928,7 @@ const TargetScreen = ({ route }) => {
                                   Math.round(
                                     (parseInt(TDData?.achievment) /
                                       parseInt(enqData?.achievment)) *
-                                      100
+                                    100
                                   ) > 40
                                     ? "#14ce40"
                                     : "#ff0000",
@@ -2905,13 +2937,13 @@ const TargetScreen = ({ route }) => {
                               }}
                             >
                               {parseInt(TDData?.achievment) === 0 ||
-                              parseInt(enqData?.achievment) === 0
+                                parseInt(enqData?.achievment) === 0
                                 ? 0
                                 : Math.round(
-                                    (parseInt(TDData?.achievment) /
-                                      parseInt(enqData?.achievment)) *
-                                      100
-                                  )}
+                                  (parseInt(TDData?.achievment) /
+                                    parseInt(enqData?.achievment)) *
+                                  100
+                                )}
                               %
                             </Text>
                           )}
@@ -2935,7 +2967,7 @@ const TargetScreen = ({ route }) => {
                                   Math.round(
                                     (parseInt(insData?.achievment) /
                                       parseInt(retailData?.achievment)) *
-                                      100
+                                    100
                                   ) > 40
                                     ? "#14ce40"
                                     : "#ff0000",
@@ -2944,13 +2976,13 @@ const TargetScreen = ({ route }) => {
                               }}
                             >
                               {parseInt(insData?.achievment) === 0 ||
-                              parseInt(retailData?.achievment) === 0
+                                parseInt(retailData?.achievment) === 0
                                 ? 0
                                 : Math.round(
-                                    (parseInt(insData?.achievment) /
-                                      parseInt(retailData?.achievment)) *
-                                      100
-                                  )}
+                                  (parseInt(insData?.achievment) /
+                                    parseInt(retailData?.achievment)) *
+                                  100
+                                )}
                               %
                             </Text>
                           )}
@@ -2976,7 +3008,7 @@ const TargetScreen = ({ route }) => {
                                   Math.round(
                                     (parseInt(retailData?.achievment) /
                                       parseInt(enqData?.achievment)) *
-                                      100
+                                    100
                                   ) > 40
                                     ? "#14ce40"
                                     : "#ff0000",
@@ -2985,13 +3017,13 @@ const TargetScreen = ({ route }) => {
                               }}
                             >
                               {parseInt(retailData?.achievment) === 0 ||
-                              parseInt(enqData?.achievment) === 0
+                                parseInt(enqData?.achievment) === 0
                                 ? 0
                                 : Math.round(
-                                    (parseInt(retailData?.achievment) /
-                                      parseInt(enqData?.achievment)) *
-                                      100
-                                  )}
+                                  (parseInt(retailData?.achievment) /
+                                    parseInt(enqData?.achievment)) *
+                                  100
+                                )}
                               %
                             </Text>
                           )}
@@ -3015,7 +3047,7 @@ const TargetScreen = ({ route }) => {
                                   Math.round(
                                     (parseInt(exgData?.achievment) /
                                       parseInt(retailData?.achievment)) *
-                                      100
+                                    100
                                   ) > 40
                                     ? "#14ce40"
                                     : "#ff0000",
@@ -3024,13 +3056,13 @@ const TargetScreen = ({ route }) => {
                               }}
                             >
                               {parseInt(exgData?.achievment) === 0 ||
-                              parseInt(retailData?.achievment) === 0
+                                parseInt(retailData?.achievment) === 0
                                 ? 0
                                 : Math.round(
-                                    (parseInt(exgData?.achievment) /
-                                      parseInt(retailData?.achievment)) *
-                                      100
-                                  )}
+                                  (parseInt(exgData?.achievment) /
+                                    parseInt(retailData?.achievment)) *
+                                  100
+                                )}
                               %
                             </Text>
                           )}
@@ -3054,7 +3086,7 @@ const TargetScreen = ({ route }) => {
                                   Math.round(
                                     (parseInt(exwData?.achievment) /
                                       parseInt(retailData?.achievment)) *
-                                      100
+                                    100
                                   ) > 40
                                     ? "#14ce40"
                                     : "#ff0000",
@@ -3063,13 +3095,13 @@ const TargetScreen = ({ route }) => {
                               }}
                             >
                               {parseInt(exwData?.achievment) === 0 ||
-                              parseInt(retailData?.achievment) === 0
+                                parseInt(retailData?.achievment) === 0
                                 ? 0
                                 : Math.round(
-                                    (parseInt(exwData?.achievment) /
-                                      parseInt(retailData?.achievment)) *
-                                      100
-                                  )}
+                                  (parseInt(exwData?.achievment) /
+                                    parseInt(retailData?.achievment)) *
+                                  100
+                                )}
                               %
                             </Text>
                           ) : (
@@ -3104,7 +3136,7 @@ const TargetScreen = ({ route }) => {
                                 Math.round(
                                   (parseInt(accData?.achievment) /
                                     parseInt(retailData?.achievment)) *
-                                    100
+                                  100
                                 ) > 40
                                   ? "#14ce40"
                                   : "#ff0000",
@@ -3113,12 +3145,12 @@ const TargetScreen = ({ route }) => {
                             }}
                           >
                             {parseInt(accData?.achievment) === 0 ||
-                            parseInt(retailData?.achievment) === 0
+                              parseInt(retailData?.achievment) === 0
                               ? 0
                               : Math.round(
-                                  parseInt(accData?.achievment) /
-                                    parseInt(retailData?.achievment)
-                                )}
+                                parseInt(accData?.achievment) /
+                                parseInt(retailData?.achievment)
+                              )}
                           </Text>
                         )}
                       </View>
@@ -3133,7 +3165,7 @@ const TargetScreen = ({ route }) => {
       ) : (
         <LoaderComponent
           visible={selector.isLoading}
-          onRequestClose={() => {}}
+          onRequestClose={() => { }}
         />
       )}
     </React.Fragment>

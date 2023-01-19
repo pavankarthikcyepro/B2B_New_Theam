@@ -656,9 +656,9 @@ const HomeScreen = ({ route, navigation }) => {
     }
    
     Promise.all([
-      dispatch(getLeadSourceTableList(payload)),
-      dispatch(getVehicleModelTableList(payload)),
-      dispatch(getEventTableList(payload)),
+      // dispatch(getLeadSourceTableList(payload)),
+      // dispatch(getVehicleModelTableList(payload)),
+      // dispatch(getEventTableList(payload)),
       // dispatch(getLostDropChartData(payload))
     ]).then(() => {});
 
@@ -1157,22 +1157,10 @@ const HomeScreen = ({ route, navigation }) => {
         <View>
           {isButtonPresent && (
             <View
-              style={{
-                width: "100%",
-                alignItems: "flex-end",
-                marginVertical: 6,
-              }}
+              style={styles.view1}
             >
               <TouchableOpacity
-                style={{
-                  width: 140,
-                  height: 30,
-                  borderColor: Colors.RED,
-                  borderWidth: 1,
-                  borderRadius: 4,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
+                style={styles.tochable1}
                 onPress={downloadFileFromServer1}
               >
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -1183,11 +1171,7 @@ const HomeScreen = ({ route, navigation }) => {
                     style={{ margin: 0, padding: 0 }}
                   />
                   <Text
-                    style={{
-                      fontSize: 14,
-                      fontWeight: "600",
-                      color: Colors.RED,
-                    }}
+                    style={styles.etvbrlTxt}
                   >
                     ETVBRL Report
                   </Text>
@@ -1244,12 +1228,9 @@ const HomeScreen = ({ route, navigation }) => {
                       />
                     </View>
                     <View
-                      style={{
-                        marginTop: 5,
-                        marginLeft: 5,
-                      }}
+                      style={styles.view2}
                     >
-                      <View style={{ flexDirection: "row" }}>
+                      <View style={styles.view3}>
                         <Text style={[styles.rankText, { color: Colors.RED }]}>
                           {retailData?.achievment}
                         </Text>
@@ -1258,9 +1239,7 @@ const HomeScreen = ({ route, navigation }) => {
                         </Text>
                       </View>
                       <View
-                        style={{
-                          marginTop: 5,
-                        }}
+                        style={styles.view4}
                       >
                         <Text style={styles.baseText}>Ach v/s Tar</Text>
                       </View>
@@ -1273,9 +1252,7 @@ const HomeScreen = ({ route, navigation }) => {
                 <View style={styles.rankBox}>
                   <Text style={styles.rankHeadingText}>Dealer Ranking</Text>
                   <View
-                    style={{
-                      flexDirection: "row",
-                    }}
+                    style={styles.view5}
                   >
                     <TouchableOpacity
                       style={styles.rankIconBox}
@@ -1325,13 +1302,10 @@ const HomeScreen = ({ route, navigation }) => {
                       />
                     </TouchableOpacity>
                     <View
-                      style={{
-                        marginTop: 5,
-                        marginLeft: 3,
-                      }}
+                      style={styles.view6}
                     >
                       {dealerRank !== null && (
-                        <View style={{ flexDirection: "row" }}>
+                        <View style={styles.view3}>
                           <Text style={[styles.rankText]}>{dealerRank}</Text>
                           <Text style={[styles.rankText]}>/{dealerCount}</Text>
                         </View>
@@ -1342,9 +1316,7 @@ const HomeScreen = ({ route, navigation }) => {
                 <View style={styles.rankBox}>
                   <Text style={styles.rankHeadingText}>Retails</Text>
                   <View
-                    style={{
-                      flexDirection: "row",
-                    }}
+                      style={styles.view3}
                   >
                     <View style={styles.rankIconBox}>
                       <Image
@@ -1353,12 +1325,9 @@ const HomeScreen = ({ route, navigation }) => {
                       />
                     </View>
                     <View
-                      style={{
-                        marginTop: 5,
-                        marginLeft: 5,
-                      }}
+                      style={styles.view2}
                     >
-                      <View style={{ flexDirection: "row" }}>
+                      <View style={styles.view3}>
                         <Text style={[styles.rankText, { color: Colors.RED }]}>
                           {retailData?.achievment}
                         </Text>
@@ -1381,13 +1350,9 @@ const HomeScreen = ({ route, navigation }) => {
           ) : null}
           {userData.hrmsRole == "Reception" && (
             <View
-              style={{
-                justifyContent: "space-around",
-                flexDirection: "row",
-                marginTop: 20,
-              }}
+              style={styles.view7}
             >
-              <View style={{ flexDirection: "column", alignItems: "center" }}>
+              <View style={styles.view8}>
                 <Text style={styles.rankHeadingText}>{"Leads Allocated"}</Text>
                 <View style={styles.cardView}>
                   <Text style={{ ...styles.rankText, color: "blue" }}>
@@ -1396,7 +1361,7 @@ const HomeScreen = ({ route, navigation }) => {
                 </View>
               </View>
 
-              <View style={{ flexDirection: "column", alignItems: "center" }}>
+              <View style={styles.view8}>
                 <Text style={styles.rankHeadingText}>{"Bookings"}</Text>
                 <View style={styles.cardView}>
                   <Text style={{ ...styles.rankText, color: "red" }}>
@@ -1404,7 +1369,7 @@ const HomeScreen = ({ route, navigation }) => {
                   </Text>
                 </View>
               </View>
-              <View style={{ flexDirection: "column", alignItems: "center" }}>
+              <View style={styles.view8}>
                 <Text style={styles.rankHeadingText}>{"Retails"}</Text>
                 <View style={styles.cardView}>
                   <Text style={{ ...styles.rankText, color: "green" }}>
@@ -1422,24 +1387,10 @@ const HomeScreen = ({ route, navigation }) => {
         <View>
           {isTeamPresent && !selector.isDSE && (
             <View
-              style={{
-                flexDirection: "row",
-                marginBottom: 2,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
+              style={styles.view9}
             >
               <View
-                style={{
-                  flexDirection: "row",
-                  borderColor: Colors.RED,
-                  borderWidth: 1,
-                  borderRadius: 5,
-                  height: 28,
-                  marginTop: 2,
-                  justifyContent: "center",
-                  width: "80%",
-                }}
+                style={styles.view10}
               >
                 <TouchableOpacity
                   onPress={() => {
@@ -1498,44 +1449,20 @@ const HomeScreen = ({ route, navigation }) => {
           )}
           {selector.isDSE && (
             <View
-              style={{
-                flexDirection: "row",
-                marginBottom: 2,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
+              style={styles.view9}
             >
               <View
-                style={{
-                  flexDirection: "row",
-                  borderColor: Colors.RED,
-                  borderWidth: 1,
-                  borderRadius: 5,
-                  height: 28,
-                  justifyContent: "center",
-                  width: "80%",
-                }}
+                style={styles.view10}
               >
                 <TouchableOpacity
                   onPress={() => {
                     // setIsTeam(true)
                     dispatch(updateIsTeam(false));
                   }}
-                  style={{
-                    width: "100%",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    backgroundColor: Colors.RED,
-                    borderTopLeftRadius: 5,
-                    borderBottomLeftRadius: 5,
-                  }}
+                  style={styles.touchable2}
                 >
                   <Text
-                    style={{
-                      fontSize: 16,
-                      color: Colors.WHITE,
-                      fontWeight: "600",
-                    }}
+                    style={styles.txt4}
                   >
                     Dashboard
                   </Text>
@@ -1789,4 +1716,76 @@ const styles = StyleSheet.create({
     height: 80,
     alignItems: "center",
   },
+  view1: {
+    width: "100%",
+    alignItems: "flex-end",
+    marginVertical: 6,
+  },
+  tochable1:{
+    width: 140,
+    height: 30,
+    borderColor: Colors.RED,
+    borderWidth: 1,
+    borderRadius: 4,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  etvbrlTxt: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: Colors.RED,
+  },
+  view2:{
+    marginTop: 5,
+    marginLeft: 5,
+  },
+  view3:{
+     flexDirection: "row" 
+    },
+    view4:{
+    marginTop: 5,
+  },
+  view5:{
+    flexDirection: "row",
+  },
+ view6: {
+    marginTop: 5,
+    marginLeft: 3,
+  },
+ view7: {
+    justifyContent: "space-around",
+    flexDirection: "row",
+    marginTop: 20,
+  },
+  view8: { flexDirection: "column", alignItems: "center" },
+  view9: {
+    flexDirection: "row",
+    marginBottom: 2,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  view10: {
+    flexDirection: "row",
+    borderColor: Colors.RED,
+    borderWidth: 1,
+    borderRadius: 5,
+    height: 28,
+    marginTop: 2,
+    justifyContent: "center",
+    width: "80%",
+  },
+ touchable2: {
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: Colors.RED,
+    borderTopLeftRadius: 5,
+    borderBottomLeftRadius: 5,
+  },
+
+ txt4:{
+    fontSize: 16,
+    color: Colors.WHITE,
+    fontWeight: "600",
+  }
 });
