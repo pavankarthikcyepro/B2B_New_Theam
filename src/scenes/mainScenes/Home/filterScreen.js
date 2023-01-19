@@ -476,6 +476,7 @@ const FilterScreen = ({ route, navigation }) => {
   const submitBtnClicked = (initialData = null) => {
     let i = 0;
     const selectedIds = [];
+    let dealerIds = []
     for (i; i < nameKeyList.length; i++) {
       let key = nameKeyList[i];
       const dataArray = initialData
@@ -484,16 +485,15 @@ const FilterScreen = ({ route, navigation }) => {
       if (dataArray.length > 0) {
         dataArray.forEach((item, index) => {
           if (item.selected != undefined && item.selected == true) {
+            if(key === 'Dealer Code'){
+              dealerIds.push(item.id)
+            }
             selectedIds.push(item.id);
           }
         });
       }
     }
-    let nData = totalDataObj["Dealer Code"].sublevels;
-    let isSelected = nData.find(
-      (val) => val.selected === true && val.selected !== undefined
-    );
-    if (selectedIds.length > 0 && isSelected) {
+    if (dealerIds.length > 0) {
       setIsFilterLoading(true);
       getDashboadTableDataFromServer(selectedIds, "LEVEL");
     } else {
@@ -743,7 +743,10 @@ const FilterScreen = ({ route, navigation }) => {
                     <DateSelectItem
                       label={"From Date"}
                       value={fromDate}
-                      onPress={() => showDatePickerMethod("FROM_DATE")}
+                      onPress={() => {
+                        setIsFilter(true);
+                        showDatePickerMethod("FROM_DATE");
+                      }}
                     />
                   </View>
 
@@ -751,7 +754,10 @@ const FilterScreen = ({ route, navigation }) => {
                     <DateSelectItem
                       label={"To Date"}
                       value={toDate}
-                      onPress={() => showDatePickerMethod("TO_DATE")}
+                      onPress={() => {
+                        setIsFilter(true);
+                        showDatePickerMethod("TO_DATE");
+                      }}
                     />
                   </View>
                 </View>
