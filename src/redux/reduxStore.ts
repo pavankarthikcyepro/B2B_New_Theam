@@ -60,7 +60,12 @@ const reducer = combineReducers({
   targetSettingsReducer,
   taskThreeSixtyReducer,
   leaddropReducer,
-  bookingReducer, bookingFormReducer, proceedToBookingReducer, appReducer, callRecordingReducer, taskTransferReducer,
+  bookingReducer,
+  bookingFormReducer,
+  proceedToBookingReducer,
+  appReducer,
+  callRecordingReducer,
+  taskTransferReducer,
   liveLeadsReducer,
   settingReducer,
 });

@@ -35,7 +35,9 @@ import {
   getEventListApi,
   updateSelectedDate,
   updateEnqStatus,
-  getPreEnquiryDetails,getEventConfigList
+  getEventConfigList,
+  getPreEnquiryDetails,
+  getCustomerTypesApi,
 } from "../../../redux/addPreEnquiryReducer";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -204,6 +206,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       setOrganizationId(jsonObj.orgId);
       setEmployeeName(jsonObj.empName);
       getCarModelListFromServer(jsonObj.orgId);
+      dispatch(getCustomerTypesApi(jsonObj.orgId));
 
       if (jsonObj.hrmsRole === "Reception") {
         const resultAry = homeSelector.source_of_enquiry_list.filter(
@@ -1299,7 +1302,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               key: dropDownKey,
               value: item.name,
               id: item.id,
-              orgId: item.orgId,
+              orgId: userData.orgId,
             })
           );
         }}

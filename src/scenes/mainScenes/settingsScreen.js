@@ -31,6 +31,9 @@ const datalist = [
     name: "Deallocate",
     isNoChildScreen: true
   },
+  {
+    name: "Deallocate",
+  },
 ];
 
 const SettingsScreen = ({ navigation }) => {

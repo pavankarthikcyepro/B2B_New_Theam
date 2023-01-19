@@ -275,7 +275,7 @@ const ParametersScreen = ({ route }) => {
       setToggleParamsMetaData([...data]);
     }
   }, [selector.isTeam]);
-  
+
   useEffect(() => {
     allParameters[0] = {
       ...allParameters[0],
@@ -474,7 +474,7 @@ const ParametersScreen = ({ route }) => {
                 if (i === tempRawData.length - 1) {
                   localData[index].employeeTargetAchievements = tempRawData;
                   let newIds = tempRawData.map((emp) => emp.empId);
-                  if (newIds.length >= 2) {
+                  if (newIds.length >= 2 || true) {
                     for (let i = 0; i < newIds.length; i++) {
                       const element = newIds[i].toString();
                       let tempPayload = getTotalPayload(employeeData, element);
@@ -1239,7 +1239,7 @@ const ParametersScreen = ({ route }) => {
                                                               endDate:
                                                                 currentDate,
                                                               loggedInEmpId:
-                                                                jsonObj.empId,
+                                                                innerItem2.empId,
                                                               empId:
                                                                 innerItem2.empId,
                                                               startDate:
@@ -1255,55 +1255,113 @@ const ParametersScreen = ({ route }) => {
                                                                   payload
                                                                 )
                                                               ),
-                                                            ]).then((res) => {
-                                                              let tempRawData =
-                                                                [];
-                                                              tempRawData =
-                                                                res[0]?.payload?.employeeTargetAchievements.filter(
-                                                                  (item) =>
-                                                                    item.empId !==
-                                                                    innerItem2.empId
-                                                                );
-                                                              if (
-                                                                tempRawData.length >
-                                                                0
-                                                              ) {
-                                                                for (
-                                                                  let i = 0;
-                                                                  i <
-                                                                  tempRawData.length;
-                                                                  i++
+                                                            ]).then(
+                                                              async (res) => {
+                                                                let tempRawData =
+                                                                  [];
+                                                                tempRawData =
+                                                                  res[0]?.payload?.employeeTargetAchievements.filter(
+                                                                    (item) =>
+                                                                      item.empId !==
+                                                                      innerItem2.empId
+                                                                  );
+                                                                if (
+                                                                  tempRawData.length >
+                                                                  0
                                                                 ) {
-                                                                  tempRawData[
-                                                                    i
-                                                                  ] = {
-                                                                    ...tempRawData[
-                                                                      i
-                                                                    ],
-                                                                    isOpenInner: false,
-                                                                    employeeTargetAchievements:
-                                                                      [],
-                                                                  };
-                                                                  if (
-                                                                    i ===
-                                                                    tempRawData.length -
-                                                                      1
+                                                                  for (
+                                                                    let i = 0;
+                                                                    i <
+                                                                    tempRawData.length;
+                                                                    i++
                                                                   ) {
-                                                                    localData[
-                                                                      index
-                                                                    ].employeeTargetAchievements[
-                                                                      innerIndex1
-                                                                    ].employeeTargetAchievements[
-                                                                      innerIndex2
-                                                                    ].employeeTargetAchievements =
-                                                                      tempRawData;
+                                                                    tempRawData[
+                                                                      i
+                                                                    ] = {
+                                                                      ...tempRawData[
+                                                                        i
+                                                                      ],
+                                                                      isOpenInner: false,
+                                                                      employeeTargetAchievements:
+                                                                        [],
+                                                                      tempTargetAchievements:
+                                                                        tempRawData[
+                                                                          i
+                                                                        ]
+                                                                          ?.targetAchievements,
+                                                                    };
+                                                                    if (
+                                                                      i ===
+                                                                      tempRawData.length -
+                                                                        1
+                                                                    ) {
+                                                                      localData[
+                                                                        index
+                                                                      ].employeeTargetAchievements[
+                                                                        innerIndex1
+                                                                      ].employeeTargetAchievements[
+                                                                        innerIndex2
+                                                                      ].employeeTargetAchievements =
+                                                                        tempRawData;
+                                                                      let newIds =
+                                                                        tempRawData.map(
+                                                                          (
+                                                                            emp
+                                                                          ) =>
+                                                                            emp.empId
+                                                                        );
+                                                                      if (
+                                                                        newIds.length >=
+                                                                        2
+                                                                      ) {
+                                                                        for (
+                                                                          let i = 0;
+                                                                          i <
+                                                                          newIds.length;
+                                                                          i++
+                                                                        ) {
+                                                                          const element =
+                                                                            newIds[
+                                                                              i
+                                                                            ].toString();
+                                                                          let tempPayload =
+                                                                            getTotalPayload(
+                                                                              employeeData,
+                                                                              element
+                                                                            );
+                                                                          const response =
+                                                                            await client.post(
+                                                                              URL.GET_LIVE_LEADS_INSIGHTS(),
+                                                                              tempPayload
+                                                                            );
+                                                                          const json =
+                                                                            await response.json();
+                                                                          if (
+                                                                            Array.isArray(
+                                                                              json
+                                                                            )
+                                                                          ) {
+                                                                            localData[
+                                                                              index
+                                                                            ].employeeTargetAchievements[
+                                                                              innerIndex1
+                                                                            ].employeeTargetAchievements[
+                                                                              innerIndex2
+                                                                            ].employeeTargetAchievements[
+                                                                              i
+                                                                            ].targetAchievements =
+                                                                              json;
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
                                                                   }
                                                                 }
+                                                                setAllParameters(
+                                                                  [...localData]
+                                                                );
                                                               }
-                                                              setAllParameters([
-                                                                ...localData,
-                                                              ]);
-                                                            });
+                                                            );
 
                                                             // if (localData[index].employeeTargetAchievements.length > 0) {
                                                             //   for (let j = 0; j < localData[index].employeeTargetAchievements.length; j++) {
@@ -1567,7 +1625,7 @@ const ParametersScreen = ({ route }) => {
                                                                           endDate:
                                                                             currentDate,
                                                                           loggedInEmpId:
-                                                                            jsonObj.empId,
+                                                                            innerItem3.empId,
                                                                           empId:
                                                                             innerItem3.empId,
                                                                           startDate:
@@ -1586,7 +1644,7 @@ const ParametersScreen = ({ route }) => {
                                                                           ),
                                                                         ]
                                                                       ).then(
-                                                                        (
+                                                                        async (
                                                                           res
                                                                         ) => {
                                                                           let tempRawData =
@@ -1619,6 +1677,11 @@ const ParametersScreen = ({ route }) => {
                                                                                   isOpenInner: false,
                                                                                   employeeTargetAchievements:
                                                                                     [],
+                                                                                  tempTargetAchievements:
+                                                                                    tempRawData[
+                                                                                      i
+                                                                                    ]
+                                                                                      ?.targetAchievements,
                                                                                 };
                                                                               if (
                                                                                 i ===
@@ -1635,6 +1698,59 @@ const ParametersScreen = ({ route }) => {
                                                                                   innerIndex3
                                                                                 ].employeeTargetAchievements =
                                                                                   tempRawData;
+                                                                                let newIds =
+                                                                                  tempRawData.map(
+                                                                                    (
+                                                                                      emp
+                                                                                    ) =>
+                                                                                      emp.empId
+                                                                                  );
+                                                                                if (
+                                                                                  newIds.length >=
+                                                                                  2
+                                                                                ) {
+                                                                                  for (
+                                                                                    let i = 0;
+                                                                                    i <
+                                                                                    newIds.length;
+                                                                                    i++
+                                                                                  ) {
+                                                                                    const element =
+                                                                                      newIds[
+                                                                                        i
+                                                                                      ].toString();
+                                                                                    let tempPayload =
+                                                                                      getTotalPayload(
+                                                                                        employeeData,
+                                                                                        element
+                                                                                      );
+                                                                                    const response =
+                                                                                      await client.post(
+                                                                                        URL.GET_LIVE_LEADS_INSIGHTS(),
+                                                                                        tempPayload
+                                                                                      );
+                                                                                    const json =
+                                                                                      await response.json();
+                                                                                    if (
+                                                                                      Array.isArray(
+                                                                                        json
+                                                                                      )
+                                                                                    ) {
+                                                                                      localData[
+                                                                                        index
+                                                                                      ].employeeTargetAchievements[
+                                                                                        innerIndex1
+                                                                                      ].employeeTargetAchievements[
+                                                                                        innerIndex2
+                                                                                      ].employeeTargetAchievements[
+                                                                                        innerIndex3
+                                                                                      ].employeeTargetAchievements[
+                                                                                        i
+                                                                                      ].targetAchievements =
+                                                                                        json;
+                                                                                    }
+                                                                                  }
+                                                                                }
                                                                               }
                                                                             }
                                                                           }
@@ -1868,7 +1984,7 @@ const ParametersScreen = ({ route }) => {
                                                                                     endDate:
                                                                                       currentDate,
                                                                                     loggedInEmpId:
-                                                                                      jsonObj.empId,
+                                                                                      innerItem4.empId,
                                                                                     empId:
                                                                                       innerItem4.empId,
                                                                                     startDate:
@@ -1887,7 +2003,7 @@ const ParametersScreen = ({ route }) => {
                                                                                     ),
                                                                                   ]
                                                                                 ).then(
-                                                                                  (
+                                                                                  async (
                                                                                     res
                                                                                   ) => {
                                                                                     let tempRawData =
@@ -1920,6 +2036,11 @@ const ParametersScreen = ({ route }) => {
                                                                                             isOpenInner: false,
                                                                                             employeeTargetAchievements:
                                                                                               [],
+                                                                                            tempTargetAchievements:
+                                                                                              tempRawData[
+                                                                                                i
+                                                                                              ]
+                                                                                                ?.targetAchievements,
                                                                                           };
                                                                                         if (
                                                                                           i ===
@@ -1938,6 +2059,61 @@ const ParametersScreen = ({ route }) => {
                                                                                             innerIndex4
                                                                                           ].employeeTargetAchievements =
                                                                                             tempRawData;
+                                                                                          let newIds =
+                                                                                            tempRawData.map(
+                                                                                              (
+                                                                                                emp
+                                                                                              ) =>
+                                                                                                emp.empId
+                                                                                            );
+                                                                                          if (
+                                                                                            newIds.length >=
+                                                                                            2
+                                                                                          ) {
+                                                                                            for (
+                                                                                              let i = 0;
+                                                                                              i <
+                                                                                              newIds.length;
+                                                                                              i++
+                                                                                            ) {
+                                                                                              const element =
+                                                                                                newIds[
+                                                                                                  i
+                                                                                                ].toString();
+                                                                                              let tempPayload =
+                                                                                                getTotalPayload(
+                                                                                                  employeeData,
+                                                                                                  element
+                                                                                                );
+                                                                                              const response =
+                                                                                                await client.post(
+                                                                                                  URL.GET_LIVE_LEADS_INSIGHTS(),
+                                                                                                  tempPayload
+                                                                                                );
+                                                                                              const json =
+                                                                                                await response.json();
+                                                                                              if (
+                                                                                                Array.isArray(
+                                                                                                  json
+                                                                                                )
+                                                                                              ) {
+                                                                                                localData[
+                                                                                                  index
+                                                                                                ].employeeTargetAchievements[
+                                                                                                  innerIndex1
+                                                                                                ].employeeTargetAchievements[
+                                                                                                  innerIndex2
+                                                                                                ].employeeTargetAchievements[
+                                                                                                  innerIndex3
+                                                                                                ].employeeTargetAchievements[
+                                                                                                  innerIndex4
+                                                                                                ].employeeTargetAchievements[
+                                                                                                  i
+                                                                                                ].targetAchievements =
+                                                                                                  json;
+                                                                                              }
+                                                                                            }
+                                                                                          }
                                                                                         }
                                                                                       }
                                                                                     }
@@ -2184,7 +2360,7 @@ const ParametersScreen = ({ route }) => {
                                                                                               endDate:
                                                                                                 currentDate,
                                                                                               loggedInEmpId:
-                                                                                                jsonObj.empId,
+                                                                                                innerItem5.empId,
                                                                                               empId:
                                                                                                 innerItem5.empId,
                                                                                               startDate:
@@ -2203,7 +2379,7 @@ const ParametersScreen = ({ route }) => {
                                                                                               ),
                                                                                             ]
                                                                                           ).then(
-                                                                                            (
+                                                                                            async (
                                                                                               res
                                                                                             ) => {
                                                                                               let tempRawData =
@@ -2236,6 +2412,11 @@ const ParametersScreen = ({ route }) => {
                                                                                                       isOpenInner: false,
                                                                                                       employeeTargetAchievements:
                                                                                                         [],
+                                                                                                      tempTargetAchievements:
+                                                                                                        tempRawData[
+                                                                                                          i
+                                                                                                        ]
+                                                                                                          ?.targetAchievements,
                                                                                                     };
                                                                                                   if (
                                                                                                     i ===
@@ -2256,6 +2437,63 @@ const ParametersScreen = ({ route }) => {
                                                                                                       innerIndex5
                                                                                                     ].employeeTargetAchievements =
                                                                                                       tempRawData;
+                                                                                                    let newIds =
+                                                                                                      tempRawData.map(
+                                                                                                        (
+                                                                                                          emp
+                                                                                                        ) =>
+                                                                                                          emp.empId
+                                                                                                      );
+                                                                                                    if (
+                                                                                                      newIds.length >=
+                                                                                                      2
+                                                                                                    ) {
+                                                                                                      for (
+                                                                                                        let i = 0;
+                                                                                                        i <
+                                                                                                        newIds.length;
+                                                                                                        i++
+                                                                                                      ) {
+                                                                                                        const element =
+                                                                                                          newIds[
+                                                                                                            i
+                                                                                                          ].toString();
+                                                                                                        let tempPayload =
+                                                                                                          getTotalPayload(
+                                                                                                            employeeData,
+                                                                                                            element
+                                                                                                          );
+                                                                                                        const response =
+                                                                                                          await client.post(
+                                                                                                            URL.GET_LIVE_LEADS_INSIGHTS(),
+                                                                                                            tempPayload
+                                                                                                          );
+                                                                                                        const json =
+                                                                                                          await response.json();
+                                                                                                        if (
+                                                                                                          Array.isArray(
+                                                                                                            json
+                                                                                                          )
+                                                                                                        ) {
+                                                                                                          localData[
+                                                                                                            index
+                                                                                                          ].employeeTargetAchievements[
+                                                                                                            innerIndex1
+                                                                                                          ].employeeTargetAchievements[
+                                                                                                            innerIndex2
+                                                                                                          ].employeeTargetAchievements[
+                                                                                                            innerIndex3
+                                                                                                          ].employeeTargetAchievements[
+                                                                                                            innerIndex4
+                                                                                                          ].employeeTargetAchievements[
+                                                                                                            innerIndex5
+                                                                                                          ].employeeTargetAchievements[
+                                                                                                            i
+                                                                                                          ].targetAchievements =
+                                                                                                            json;
+                                                                                                        }
+                                                                                                      }
+                                                                                                    }
                                                                                                   }
                                                                                                 }
                                                                                               }
@@ -2515,7 +2753,7 @@ const ParametersScreen = ({ route }) => {
                                                                                                         endDate:
                                                                                                           currentDate,
                                                                                                         loggedInEmpId:
-                                                                                                          jsonObj.empId,
+                                                                                                          innerItem6.empId,
                                                                                                         empId:
                                                                                                           innerItem6.empId,
                                                                                                         startDate:
@@ -2534,7 +2772,7 @@ const ParametersScreen = ({ route }) => {
                                                                                                         ),
                                                                                                       ]
                                                                                                     ).then(
-                                                                                                      (
+                                                                                                      async (
                                                                                                         res
                                                                                                       ) => {
                                                                                                         let tempRawData =
@@ -2567,6 +2805,11 @@ const ParametersScreen = ({ route }) => {
                                                                                                                 isOpenInner: false,
                                                                                                                 employeeTargetAchievements:
                                                                                                                   [],
+                                                                                                                tempTargetAchievements:
+                                                                                                                  tempRawData[
+                                                                                                                    i
+                                                                                                                  ]
+                                                                                                                    ?.targetAchievements,
                                                                                                               };
                                                                                                             if (
                                                                                                               i ===
@@ -2589,6 +2832,65 @@ const ParametersScreen = ({ route }) => {
                                                                                                                 innerIndex6
                                                                                                               ].employeeTargetAchievements =
                                                                                                                 tempRawData;
+                                                                                                              let newIds =
+                                                                                                                tempRawData.map(
+                                                                                                                  (
+                                                                                                                    emp
+                                                                                                                  ) =>
+                                                                                                                    emp.empId
+                                                                                                                );
+                                                                                                              if (
+                                                                                                                newIds.length >=
+                                                                                                                2
+                                                                                                              ) {
+                                                                                                                for (
+                                                                                                                  let i = 0;
+                                                                                                                  i <
+                                                                                                                  newIds.length;
+                                                                                                                  i++
+                                                                                                                ) {
+                                                                                                                  const element =
+                                                                                                                    newIds[
+                                                                                                                      i
+                                                                                                                    ].toString();
+                                                                                                                  let tempPayload =
+                                                                                                                    getTotalPayload(
+                                                                                                                      employeeData,
+                                                                                                                      element
+                                                                                                                    );
+                                                                                                                  const response =
+                                                                                                                    await client.post(
+                                                                                                                      URL.GET_LIVE_LEADS_INSIGHTS(),
+                                                                                                                      tempPayload
+                                                                                                                    );
+                                                                                                                  const json =
+                                                                                                                    await response.json();
+                                                                                                                  if (
+                                                                                                                    Array.isArray(
+                                                                                                                      json
+                                                                                                                    )
+                                                                                                                  ) {
+                                                                                                                    localData[
+                                                                                                                      index
+                                                                                                                    ].employeeTargetAchievements[
+                                                                                                                      innerIndex1
+                                                                                                                    ].employeeTargetAchievements[
+                                                                                                                      innerIndex2
+                                                                                                                    ].employeeTargetAchievements[
+                                                                                                                      innerIndex3
+                                                                                                                    ].employeeTargetAchievements[
+                                                                                                                      innerIndex4
+                                                                                                                    ].employeeTargetAchievements[
+                                                                                                                      innerIndex5
+                                                                                                                    ].employeeTargetAchievements[
+                                                                                                                      innerIndex6
+                                                                                                                    ].employeeTargetAchievements[
+                                                                                                                      i
+                                                                                                                    ].targetAchievements =
+                                                                                                                      json;
+                                                                                                                  }
+                                                                                                                }
+                                                                                                              }
                                                                                                             }
                                                                                                           }
                                                                                                         }
@@ -2864,7 +3166,7 @@ export const RenderLevel1NameView = ({
               color={Colors.RED}
               size={8}
             />
-            <Text style={{ fontSize: 8 , width:'70%'}} numberOfLines={1}>
+            <Text style={{ fontSize: 8, width: "70%" }} numberOfLines={1}>
               {branchName}
             </Text>
           </View>

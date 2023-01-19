@@ -146,6 +146,18 @@ export const getEventConfigList = createAsyncThunk(
 );
 
 
+export const getCustomerTypesApi = createAsyncThunk(
+  "ADD_PRE_ENQUIRY_SLICE/getCustomerTypesApi",
+  async (orgId, { rejectWithValue }) => {
+    const response = await client.get(URL.GET_CUSTOMER_TYPES(orgId));
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
  const getAsyncstoreData = async () => {
         const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
  }
@@ -197,6 +209,7 @@ export const addPreEnquirySlice = createSlice({
     event_list_response_status: "",
     event_list_Config: [],
     event_list_response_Config_status: "",
+    customer_types_response: [],
   },
   reducers: {
     clearState: (state) => {
@@ -230,6 +243,7 @@ export const addPreEnquirySlice = createSlice({
       state.event_list_Config = [];
       state.event_list_response_status = "";
       state.event_list_response_Config_status = "";
+      state.customer_types_response = [];
     },
     setCreateEnquiryCheckbox: (state, action) => {
       state.create_enquiry_checked = !state.create_enquiry_checked;
@@ -244,20 +258,42 @@ export const addPreEnquirySlice = createSlice({
         case "ENQUIRY_SEGMENT":
           state.enquiryType = value;
 
-
-          state.customer_type_list = CustomerTypesObj21[value.toLowerCase()]
-if(orgId == '21'){
- state.customer_type_list = CustomerTypesObj21[value.toLowerCase()];
- state.customerType = "";
-}
-else if( orgId == '22'){
-state.customer_type_list = CustomerTypesObj22[value.toLowerCase()];
-state.customerType = "";
-}
-else{
-state.customer_type_list = CustomerTypesObj[value.toLowerCase()];
-state.customerType = "";
-}
+          if (orgId == "21") {
+            state.customer_type_list = CustomerTypesObj21[value.toLowerCase()];
+            state.customerType = "";
+          } else if (orgId == "22") {
+            state.customer_type_list = CustomerTypesObj22[value.toLowerCase()];
+            state.customerType = "";
+          } else if (orgId == "26") {
+            let tmpArr = [];
+            if (value == "Personal") {
+              tmpArr = Object.assign(
+                [],
+                state.customer_types_response?.personal
+                  ? state.customer_types_response.personal
+                  : CustomerTypesObj22[value.toLowerCase()]
+              );
+            } else if (value == "Company") {
+              tmpArr = Object.assign(
+                [],
+                state.customer_types_response?.company
+                  ? state.customer_types_response.company
+                  : CustomerTypesObj22[value.toLowerCase()]
+              );
+            } else {
+              tmpArr = Object.assign(
+                [],
+                state.customer_types_response?.commercial
+                  ? state.customer_types_response.commercial
+                  : CustomerTypesObj22[value.toLowerCase()]
+              );
+            }
+            state.customer_type_list = tmpArr;
+            state.customerType = "";
+          } else {
+            state.customer_type_list = CustomerTypesObj[value.toLowerCase()];
+            state.customerType = "";
+          }
 
           //state.customer_type_list = CustomerTypesObj22[value.toLowerCase()];
 
@@ -325,7 +361,7 @@ state.customerType = "";
         case "COMPANY_NAME":
           state.companyName = text;
           break;
-        case "OTHER":          
+        case "OTHER":
           state.other = text;
           break;
         case "OTHER_COMPANY_NAME":
@@ -341,21 +377,22 @@ state.customerType = "";
       //state.customer_type_list21 = JSON.parse(action.payload);
     },
     setExistingDetails: (state, action) => {
-      let orgId = '0';
+      let orgId = "0";
       const preEnquiryDetails = action.payload.dmsLeadDto;
-      const preDetails = action.payload.dmsAccountDto
-      orgId = preEnquiryDetails?.organizationId ? `${preEnquiryDetails?.organizationId}` : '0';
+      const preDetails = action.payload.dmsAccountDto;
+      orgId = preEnquiryDetails?.organizationId
+        ? `${preEnquiryDetails?.organizationId}`
+        : "0";
       let dmsAccountOrContactObj = {};
       if (action.payload.dmsAccountDto) {
         dmsAccountOrContactObj = action.payload.dmsAccountDto;
         if (!orgId) {
-          orgId = `${dmsAccountOrContactObj['orgId']}`;
-
+          orgId = `${dmsAccountOrContactObj["orgId"]}`;
         }
       } else {
         dmsAccountOrContactObj = action.payload.dmsContactDto;
         if (!orgId) {
-          orgId = `${dmsAccountOrContactObj['orgId']}`;
+          orgId = `${dmsAccountOrContactObj["orgId"]}`;
         }
       }
 
@@ -377,16 +414,17 @@ state.customerType = "";
       //   CustomerTypesObj21[preEnquiryDetails.enquirySegment.toLowerCase()];
       // state.customer_type_list =
       //   CustomerTypesObj22[preEnquiryDetails.enquirySegment.toLowerCase()];
-      if(orgId === '21'){
-        state.customer_type_list = CustomerTypesObj21[preEnquiryDetails.enquirySegment.toLowerCase()];
+      if (orgId === "21") {
+        state.customer_type_list =
+          CustomerTypesObj21[preEnquiryDetails.enquirySegment.toLowerCase()];
         state.customerType = "";
-      }
-      else if( orgId == '22'){
-        state.customer_type_list = CustomerTypesObj22[preEnquiryDetails.enquirySegment.toLowerCase()];
+      } else if (orgId == "22") {
+        state.customer_type_list =
+          CustomerTypesObj22[preEnquiryDetails.enquirySegment.toLowerCase()];
         state.customerType = "";
-      }
-      else{
-        state.customer_type_list = CustomerTypesObj[preEnquiryDetails.enquirySegment.toLowerCase()];
+      } else {
+        state.customer_type_list =
+          CustomerTypesObj[preEnquiryDetails.enquirySegment.toLowerCase()];
         state.customerType = "";
       }
 
@@ -487,6 +525,44 @@ state.customerType = "";
       .addCase(getPreEnquiryDetails.pending, (state, action) => {})
       .addCase(getPreEnquiryDetails.fulfilled, (state, action) => {})
       .addCase(getPreEnquiryDetails.rejected, (state, action) => {});
+
+    // Get Customer Types
+    builder.addCase(getCustomerTypesApi.pending, (state, action) => {
+      state.customer_types_response = [];
+      state.isLoading = true;
+    });
+    builder.addCase(getCustomerTypesApi.fulfilled, (state, action) => {
+      if (action.payload) {
+        const customerTypes = action.payload;
+        let personalTypes = [];
+        let commercialTypes = [];
+        let companyTypes = [];
+
+        customerTypes.forEach((customer) => {
+          const obj = { id: customer.id, name: customer.customerType };
+          if (customer.enquirySegment === "Personal") {
+            personalTypes.push(obj);
+          } else if (customer.enquirySegment === "Company") {
+            companyTypes.push(obj);
+          } else {
+            commercialTypes.push(obj);
+          }
+        });
+        const obj = {
+          personal: personalTypes,
+          commercial: commercialTypes,
+          company: companyTypes,
+          handicapped: companyTypes,
+        };
+
+        state.customer_types_response = obj;
+      }
+      state.isLoading = false;
+    });
+    builder.addCase(getCustomerTypesApi.rejected, (state, action) => {
+      state.customer_types_response = [];
+      state.isLoading = false;
+    });
   },
 });
 

@@ -1699,7 +1699,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     let lifeTax = taxPercent !== "" ? getLifeTaxNew(Number(taxPercent)) : 0;
     setLifeTaxAmount(lifeTax);
     totalPrice += lifeTax;
-    totalPrice += priceInfomationData.registration_charges;
+    // totalPrice += priceInfomationData.registration_charges;
     totalPrice += selectedRegistrationCharges?.cost || 0;
     totalPrice += selectedInsurencePrice;
     if (selector.insurance_type !== "") {
@@ -3144,32 +3144,32 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     selectorBooking.update_enquiry_details_response,
   ]);
 
-  displayCreateEnquiryAlert = (refNum) => {
-    Alert.alert(
-      "Booking Successfully Created",
-      `Booking Successfully Created\nRef Num: ${refNum}`,
-      [
-        {
-          text: "OK",
-          onPress: () => goToParentScreen(),
-        },
-      ],
-      {
-        cancelable: false,
-      }
-    );
-  };
+   displayCreateEnquiryAlert = (refNum) => {
+     Alert.alert(
+       `Booking Successfully Created\nRef Num: ${refNum}`,
+       "",
+       [
+         {
+           text: "OK",
+           onPress: () => goToParentScreen(),
+         },
+       ],
+       {
+         cancelable: false,
+       }
+     );
+   };
 
-  const goToParentScreen = () => {
-    navigation.popToTop();
-    navigation.navigate("EMS_TAB");
-    navigation.navigate(EmsTopTabNavigatorIdentifiers.leads, {
-      fromScreen: "booking",
-    });
-    dispatch(clearState());
-    clearLocalData();
-    dispatch(clearBookingState());
-  };
+   const goToParentScreen = () => {
+     navigation.popToTop();
+     navigation.navigate("EMS_TAB");
+     navigation.navigate(EmsTopTabNavigatorIdentifiers.leads, {
+       fromScreen: "booking",
+     });
+     dispatch(clearState());
+     clearLocalData();
+     dispatch(clearBookingState());
+   };
 
   // ========================== //
   // ========================== //
