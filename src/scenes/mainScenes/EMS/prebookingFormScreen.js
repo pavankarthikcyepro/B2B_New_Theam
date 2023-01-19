@@ -3144,7 +3144,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     selectorBooking.update_enquiry_details_response,
   ]);
 
-   displayCreateEnquiryAlert = (refNum) => {
+  const  displayCreateEnquiryAlert = (refNum) => {
      Alert.alert(
        `Booking Successfully Created\nRef Num: ${refNum}`,
        "",

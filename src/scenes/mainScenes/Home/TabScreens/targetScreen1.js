@@ -810,15 +810,7 @@ const TargetScreen = ({ route }) => {
           {selector.isTeam ? (
             <View>
               <View
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  borderBottomWidth: 2,
-                  borderBottomColor: Colors.RED,
-                  paddingBottom: 8,
-                }}
+                style={styles.view1}
               >
                 <SegmentedControl
                   style={{
@@ -837,7 +829,7 @@ const TargetScreen = ({ route }) => {
                   activeFontStyle={{ color: Colors.WHITE, fontSize: 10 }}
                   onChange={(event) => toggleParamsView(event)}
                 />
-                <View style={{ height: 24, width: "20%", marginLeft: 4 }}>
+                <View style={styles.view2}>
                   <View style={styles.percentageToggleView}>
                     <PercentageToggleControl
                       toggleChange={(x) => setTogglePercentage(x)}
@@ -853,10 +845,7 @@ const TargetScreen = ({ route }) => {
                 />
               ) : (
                 <ScrollView
-                  contentContainerStyle={{
-                    paddingRight: 0,
-                    flexDirection: "column",
-                  }}
+                    contentContainerStyle={styles.scrollview}
                   horizontal={true}
                   directionalLockEnabled={true}
                   showsHorizontalScrollIndicator={false}
@@ -875,23 +864,13 @@ const TargetScreen = ({ route }) => {
                     {/* TOP Header view */}
                     <View
                       key={"headers"}
-                      style={{
-                        flexDirection: "row",
-                        borderBottomWidth: 0.5,
-                        paddingBottom: 4,
-                        borderBottomColor: Colors.GRAY,
-                        marginLeft: 0,
-                      }}
+                        style={styles.view3}
                     >
                       <View
                         style={{ width: 100, height: 20, marginRight: 5 }}
                       ></View>
                       <View
-                        style={{
-                          width: "100%",
-                          height: 20,
-                          flexDirection: "row",
-                        }}
+                          style={styles.view4}
                       >
                         {toggleParamsMetaData.map((param) => {
                           return (
@@ -1033,20 +1012,11 @@ const TargetScreen = ({ route }) => {
                                 {/*RIGHT SIDE VIEW*/}
                                 <View
                                   style={[
-                                    {
-                                      width: "100%",
-                                      minHeight: 40,
-                                      flexDirection: "column",
-                                      paddingHorizontal: 2,
-                                    },
+                                    styles.view6,
                                   ]}
                                 >
                                   <View
-                                    style={{
-                                      width: "100%",
-                                      minHeight: 40,
-                                      flexDirection: "row",
-                                    }}
+                                    style={styles.view7}
                                   >
                                     <RenderLevel1NameView
                                       level={0}
@@ -1091,11 +1061,7 @@ const TargetScreen = ({ route }) => {
                                           >
                                             <View
                                               style={[
-                                                {
-                                                  minHeight: 40,
-                                                  flexDirection: "column",
-                                                  width: "98%",
-                                                },
+                                                styles.view8,
                                               ]}
                                             >
                                               <View
@@ -1106,21 +1072,10 @@ const TargetScreen = ({ route }) => {
                                                 }}
                                               >
                                                 <View
-                                                  style={{
-                                                    flexDirection: "row",
-                                                    justifyContent:
-                                                      "space-between",
-                                                  }}
+                                                  style={styles.view9}
                                                 >
                                                   <View
-                                                    style={{
-                                                      paddingHorizontal: 4,
-                                                      display: "flex",
-                                                      flexDirection: "row",
-                                                      justifyContent:
-                                                        "space-between",
-                                                      marginTop: 8,
-                                                    }}
+                                                    style={styles.view10}
                                                   >
                                                     <Text
                                                       onPress={() => {
@@ -1490,16 +1445,7 @@ const TargetScreen = ({ route }) => {
                                                                   ]}
                                                                 >
                                                                   <View
-                                                                    style={{
-                                                                      paddingHorizontal: 4,
-                                                                      display:
-                                                                        "flex",
-                                                                      flexDirection:
-                                                                        "row",
-                                                                      justifyContent:
-                                                                        "space-between",
-                                                                      paddingVertical: 4,
-                                                                    }}
+                                                                    style={styles.view11}
                                                                   >
                                                                     <View
                                                                       style={{
@@ -1703,16 +1649,7 @@ const TargetScreen = ({ route }) => {
                                                                             ]}
                                                                           >
                                                                             <View
-                                                                              style={{
-                                                                                paddingHorizontal: 4,
-                                                                                display:
-                                                                                  "flex",
-                                                                                flexDirection:
-                                                                                  "row",
-                                                                                justifyContent:
-                                                                                  "space-between",
-                                                                                paddingVertical: 4,
-                                                                              }}
+                                                                              style={styles.view11}
                                                                             >
                                                                               <Text
                                                                                 onPress={() => {
@@ -1827,16 +1764,7 @@ const TargetScreen = ({ route }) => {
                                                                                       ]}
                                                                                     >
                                                                                       <View
-                                                                                        style={{
-                                                                                          paddingHorizontal: 4,
-                                                                                          display:
-                                                                                            "flex",
-                                                                                          flexDirection:
-                                                                                            "row",
-                                                                                          justifyContent:
-                                                                                            "space-between",
-                                                                                          paddingVertical: 4,
-                                                                                        }}
+                                                                                        style={styles.view11}
                                                                                       >
                                                                                         <Text
                                                                                           onPress={() => {
@@ -1954,16 +1882,7 @@ const TargetScreen = ({ route }) => {
                                                                                                 ]}
                                                                                               >
                                                                                                 <View
-                                                                                                  style={{
-                                                                                                    paddingHorizontal: 4,
-                                                                                                    display:
-                                                                                                      "flex",
-                                                                                                    flexDirection:
-                                                                                                      "row",
-                                                                                                    justifyContent:
-                                                                                                      "space-between",
-                                                                                                    paddingVertical: 4,
-                                                                                                  }}
+                                                                                                  style={styles.view11}
                                                                                                 >
                                                                                                   <Text
                                                                                                     onPress={() => {
@@ -2114,11 +2033,7 @@ const TargetScreen = ({ route }) => {
                       />
 
                       <View
-                        style={{
-                          flexDirection: "row",
-                          height: 40,
-                          backgroundColor: Colors.CORAL,
-                        }}
+                          style={styles.view12}
                       >
                         <View
                           style={{
@@ -2156,11 +2071,7 @@ const TargetScreen = ({ route }) => {
                               }}
                             >
                               <Text
-                                style={{
-                                  fontSize: 10,
-                                  fontWeight: "bold",
-                                  color: Colors.WHITE,
-                                }}
+                                style={styles.txt7}
                               >
                                 ACH
                               </Text>
@@ -2173,11 +2084,7 @@ const TargetScreen = ({ route }) => {
                               }}
                             >
                               <Text
-                                style={{
-                                  fontSize: 10,
-                                  fontWeight: "bold",
-                                  color: Colors.WHITE,
-                                }}
+                                  style={styles.txt7}
                               >
                                 TGT
                               </Text>
@@ -2217,14 +2124,7 @@ const TargetScreen = ({ route }) => {
                 {userData.hrmsRole !== "Reception" && (
                   <View style={{ flexDirection: "row", marginVertical: 8 }}>
                     <View
-                      style={{
-                        width: "62%",
-                        justifyContent: "flex-start",
-                        alignItems: "center",
-                        height: 15,
-                        flexDirection: "row",
-                        paddingRight: 16,
-                      }}
+                        style={styles.view13}
                     >
                       <View
                         style={[
@@ -2254,11 +2154,11 @@ const TargetScreen = ({ route }) => {
                       />
                     </View>
                     <View style={{ width: "30%", flexDirection: "row" }}>
-                      <Text style={{ fontSize: 14, fontWeight: "600" }}>
+                        <Text style={styles.txt3}>
                         Balance
                       </Text>
                       <View style={{ marginRight: 15 }}></View>
-                      <Text style={{ fontSize: 14, fontWeight: "600" }}>
+                        <Text style={styles.txt3}>
                         AR/Day
                       </Text>
                     </View>
@@ -2268,12 +2168,7 @@ const TargetScreen = ({ route }) => {
                   {userData.hrmsRole == "Reception" && (
                     <>
                       <View
-                        style={{
-                          flexDirection: "row",
-                          justifyContent: "flex-end",
-                          marginVertical: 10,
-                          marginRight: 10,
-                        }}
+                          style={styles.view14}
                       >
                         <SourceModelView
                           style={{ alignSelf: "flex-end" }}
@@ -2289,11 +2184,7 @@ const TargetScreen = ({ route }) => {
                       </View>
                       <ScrollView showsVerticalScrollIndicator={false}>
                         <View
-                          style={{
-                            flexDirection: "row",
-                            justifyContent: "space-between",
-                            paddingHorizontal: 10,
-                          }}
+                            style={styles.view15}
                         >
                           <View
                             style={{
@@ -2322,20 +2213,12 @@ const TargetScreen = ({ route }) => {
                             }}
                           >
                             <Text
-                              style={{
-                                fontSize: 13,
-                                fontWeight: "400",
-                                textDecorationLine: "underline",
-                              }}
+                                style={styles.txt4}
                             >
                               {"Leads Allocated"}
                             </Text>
                             <Text
-                              style={{
-                                fontSize: 13,
-                                fontWeight: "400",
-                                textDecorationLine: "underline",
-                              }}
+                                style={styles.txt4}
                             >
                               {"Drop Leads"}
                             </Text>
@@ -2354,35 +2237,17 @@ const TargetScreen = ({ route }) => {
                             let selectedColor = color.random();
                             return (
                               <View
-                                style={{
-                                  flexDirection: "row",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  paddingHorizontal: 10,
-                                  marginVertical: 5,
-                                }}
+                                style={styles.view16}
                               >
                                 <View
-                                  style={{
-                                    justifyContent: "center",
-                                    alignItems: "flex-start",
-                                    width: "50%",
-                                  }}
+                                  style={styles.view17}
                                 >
                                   <Text numberOfLines={1}>
                                     {item?.emp_name}
                                   </Text>
                                 </View>
                                 <View
-                                  style={{
-                                    width: "45%",
-                                    justifyContent: "space-around",
-                                    flexDirection: "row",
-                                    height: 25,
-                                    alignItems: "center",
-                                    // marginTop: 8,
-                                    marginLeft: 20,
-                                  }}
+                                    style={styles.view18}
                                 >
                                   <View
                                     style={{
@@ -2443,14 +2308,7 @@ const TargetScreen = ({ route }) => {
                           }}
                         />
                         <View
-                          style={{
-                            flexDirection: "row",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                            paddingHorizontal: 10,
-                            marginTop: 10,
-                            marginVertical: 8,
-                          }}
+                            style={styles.view19}
                         >
                           <View
                             style={{
@@ -2481,15 +2339,7 @@ const TargetScreen = ({ route }) => {
                             }}
                           >
                             <View
-                              style={{
-                                minWidth: 45,
-                                height: 25,
-                                borderColor: "#00b1ff",
-                                borderWidth: 1,
-                                borderRadius: 8,
-                                justifyContent: "center",
-                                alignItems: "center",
-                              }}
+                                style={styles.view20}
                             >
                               <Text
                                 onPress={() => {
@@ -2509,15 +2359,7 @@ const TargetScreen = ({ route }) => {
                               </Text>
                             </View>
                             <View
-                              style={{
-                                minWidth: 45,
-                                height: 25,
-                                borderColor: "#00b1ff",
-                                borderWidth: 1,
-                                borderRadius: 8,
-                                justifyContent: "center",
-                                alignItems: "center",
-                              }}
+                                style={styles.view20}
                             >
                               <Text
                                 onPress={() => {
@@ -2538,21 +2380,11 @@ const TargetScreen = ({ route }) => {
                           </View>
                         </View>
                         <View
-                          style={{
-                            flexDirection: "row",
-                            marginTop: 16,
-                            justifyContent: "space-between",
-                            marginHorizontal: 8,
-                          }}
+                            style={styles.view21}
                         >
                           <View style={{ ...styles.statWrap, width: "33%" }}>
                             <Text
-                              style={{
-                                marginLeft: 10,
-                                fontSize: 16,
-                                fontWeight: "600",
-                                flexDirection: "row",
-                              }}
+                                style={styles.txt5}
                             >
                               E2B
                             </Text>
@@ -2594,11 +2426,7 @@ const TargetScreen = ({ route }) => {
                           </View>
                           <View style={{ ...styles.statWrap, width: "33%" }}>
                             <Text
-                              style={{
-                                marginLeft: 10,
-                                fontSize: 16,
-                                fontWeight: "600",
-                              }}
+                                style={styles.txt6}
                             >
                               E2R
                             </Text>
@@ -2640,11 +2468,7 @@ const TargetScreen = ({ route }) => {
                           </View>
                           <View style={{ ...styles.statWrap, width: "33%" }}>
                             <Text
-                              style={{
-                                marginLeft: 10,
-                                fontSize: 16,
-                                fontWeight: "600",
-                              }}
+                                style={styles.txt6}
                             >
                               E2R
                             </Text>
@@ -2727,12 +2551,7 @@ const TargetScreen = ({ route }) => {
                         <View style={{ height: 4 }}></View>
                         <View style={styles.statWrap}>
                           <Text
-                            style={{
-                              marginLeft: 10,
-                              fontSize: 16,
-                              fontWeight: "600",
-                              flexDirection: "row",
-                            }}
+                              style={styles.txt5}
                           >
                             E2B
                           </Text>
@@ -2776,11 +2595,7 @@ const TargetScreen = ({ route }) => {
                         <View style={{ height: 4 }}></View>
                         <View style={styles.statWrap}>
                           <Text
-                            style={{
-                              marginLeft: 10,
-                              fontSize: 16,
-                              fontWeight: "600",
-                            }}
+                              style={styles.txt6}
                           >
                             E2V
                           </Text>
@@ -2824,11 +2639,7 @@ const TargetScreen = ({ route }) => {
                         <View style={{ height: 4 }}></View>
                         <View style={styles.statWrap}>
                           <Text
-                            style={{
-                              marginLeft: 10,
-                              fontSize: 16,
-                              fontWeight: "600",
-                            }}
+                              style={styles.txt6}
                           >
                             FIN
                           </Text>
@@ -2874,11 +2685,7 @@ const TargetScreen = ({ route }) => {
                         <View style={{ height: 4 }}></View>
                         <View style={styles.statWrap}>
                           <Text
-                            style={{
-                              marginLeft: 10,
-                              fontSize: 16,
-                              fontWeight: "600",
-                            }}
+                              style={styles.txt6}
                           >
                             B2R
                           </Text>
@@ -2913,11 +2720,7 @@ const TargetScreen = ({ route }) => {
                         <View style={{ height: 4 }}></View>
                         <View style={styles.statWrap}>
                           <Text
-                            style={{
-                              marginLeft: 10,
-                              fontSize: 16,
-                              fontWeight: "600",
-                            }}
+                              style={styles.txt6}
                           >
                             E2TD
                           </Text>
@@ -2952,11 +2755,7 @@ const TargetScreen = ({ route }) => {
                         <View style={{ height: 4 }}></View>
                         <View style={styles.statWrap}>
                           <Text
-                            style={{
-                              marginLeft: 10,
-                              fontSize: 16,
-                              fontWeight: "600",
-                            }}
+                              style={styles.txt6}
                           >
                             INS
                           </Text>
@@ -2993,11 +2792,7 @@ const TargetScreen = ({ route }) => {
                         <View style={{ height: 4 }}></View>
                         <View style={styles.statWrap}>
                           <Text
-                            style={{
-                              marginLeft: 10,
-                              fontSize: 16,
-                              fontWeight: "600",
-                            }}
+                              style={styles.txt6}
                           >
                             E2R
                           </Text>
@@ -3032,11 +2827,7 @@ const TargetScreen = ({ route }) => {
                         <View style={{ height: 4 }}></View>
                         <View style={styles.statWrap}>
                           <Text
-                            style={{
-                              marginLeft: 10,
-                              fontSize: 16,
-                              fontWeight: "600",
-                            }}
+                              style={styles.txt6}
                           >
                             EXG
                           </Text>
@@ -3071,11 +2862,7 @@ const TargetScreen = ({ route }) => {
                         <View style={{ height: 4 }}></View>
                         <View style={styles.statWrap}>
                           <Text
-                            style={{
-                              marginLeft: 10,
-                              fontSize: 16,
-                              fontWeight: "600",
-                            }}
+                              style={styles.txt6}
                           >
                             EXW
                           </Text>
@@ -3121,11 +2908,7 @@ const TargetScreen = ({ route }) => {
                       <View style={{ height: 4 }}></View>
                       <View style={styles.statWrap}>
                         <Text
-                          style={{
-                            marginLeft: 10,
-                            fontSize: 16,
-                            fontWeight: "600",
-                          }}
+                            style={styles.txt6}
                         >
                           Accessories/Car
                         </Text>
@@ -3354,4 +3137,200 @@ const styles = StyleSheet.create({
     marginTop: 8,
     width: "75%",
   },
+   view1: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    borderBottomWidth: 2,
+    borderBottomColor: Colors.RED,
+    paddingBottom: 8,
+  },
+
+  view2: { height: 24, width: "20%", marginLeft: 4 },
+  scrollview: {
+    paddingRight: 0,
+    flexDirection: "column",
+  },
+  view3: {
+    flexDirection: "row",
+    borderBottomWidth: 0.5,
+    paddingBottom: 4,
+    borderBottomColor: Colors.GRAY,
+    marginLeft: 0,
+  },
+  view4: {
+    width: "100%",
+    height: 20,
+    flexDirection: "row",
+  },
+  view5: {
+    backgroundColor: "lightgrey",
+    flexDirection: "row",
+    paddingHorizontal: 7,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 5,
+    alignSelf: "flex-start",
+    marginLeft: 7,
+  },
+  view6: {
+    width: "100%",
+    minHeight: 40,
+    flexDirection: "column",
+    paddingHorizontal: 2,
+  },
+  view7: {
+    width: "100%",
+    minHeight: 40,
+    flexDirection: "row",
+  },
+  view8: {
+    minHeight: 40,
+    flexDirection: "column",
+    width: "98%",
+  },
+  view9: {
+    flexDirection: "row",
+    justifyContent:
+      "space-between",
+  },
+  view10: {
+    paddingHorizontal: 4,
+    display: "flex",
+    flexDirection: "row",
+    justifyContent:
+      "space-between",
+    marginTop: 8,
+  },
+  matView: {
+    backgroundColor:
+      "lightgrey",
+    flexDirection: "row",
+    paddingHorizontal: 7,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent:
+      "space-between",
+    marginBottom: 5,
+    alignSelf:
+      "flex-start",
+    marginLeft: 7,
+  },
+  view11: {
+    paddingHorizontal: 4,
+    display:
+      "flex",
+    flexDirection:
+      "row",
+    justifyContent:
+      "space-between",
+    paddingVertical: 4,
+  },
+  view12: {
+    flexDirection: "row",
+    height: 40,
+    backgroundColor: Colors.CORAL,
+  },
+  txt1: {
+    fontSize: 10,
+    fontWeight: "bold",
+    paddingVertical: 6,
+    paddingRight: 2,
+    height: 22,
+    color: Colors.WHITE,
+  },
+  txt2: {
+    fontSize: 10,
+    fontWeight: "bold",
+    paddingVertical: 6,
+    height: 25,
+    color: Colors.WHITE,
+  },
+  view13: {
+    width: "62%",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    height: 15,
+    flexDirection: "row",
+    paddingRight: 16,
+  },
+  txt3: { fontSize: 14, fontWeight: "600" },
+  view14: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    marginVertical: 10,
+    marginRight: 10,
+  },
+  view15: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 10,
+  },
+  txt4: {
+    fontSize: 13,
+    fontWeight: "400",
+    textDecorationLine: "underline",
+  },
+  view16: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 10,
+    marginVertical: 5,
+  },
+  view17: {
+    justifyContent: "center",
+    alignItems: "flex-start",
+    width: "50%",
+  },
+  view18: {
+    width: "45%",
+    justifyContent: "space-around",
+    flexDirection: "row",
+    height: 25,
+    alignItems: "center",
+    // marginTop: 8,
+    marginLeft: 20,
+  },
+  view19: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 10,
+    marginTop: 10,
+    marginVertical: 8,
+  },
+  view20: {
+    minWidth: 45,
+    height: 25,
+    borderColor: "#00b1ff",
+    borderWidth: 1,
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  view21: {
+    flexDirection: "row",
+    marginTop: 16,
+    justifyContent: "space-between",
+    marginHorizontal: 8,
+  },
+  txt5: {
+    marginLeft: 10,
+    fontSize: 16,
+    fontWeight: "600",
+    flexDirection: "row",
+  },
+  txt6: {
+    marginLeft: 10,
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  txt7: {
+    fontSize: 10,
+    fontWeight: "bold",
+    color: Colors.WHITE,
+  }
 });
