@@ -30,6 +30,7 @@ import { DropDownSelectionItem } from "../../../pureComponents";
 import { AttendanceTopTabNavigatorIdentifiers } from "../../../navigations/attendanceTopTabNavigator";
 import PieChart from "react-native-pie-chart";
 import { SceneMap, TabBar, TabView } from "react-native-tab-view";
+import { DateRangeCompOne } from "../../../components/dateRangeComp";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
@@ -62,7 +63,7 @@ const AttendanceDashboard = ({ route, navigation }) => {
   const [todaysPresent, setTodaysPresent] = useState([]);
   const [todaysWFH, setTodaysWFH] = useState([]);
   const [todaysNoLogged, setTodaysNoLogged] = useState([]);
-  const [selectedFromDate, setSelectedFromDate] = useState("");
+  const [selectedFromDate, setSelectedFromDate] = useState(currentDate);
   const [selectedToDate, setSelectedToDate] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [datePickerId, setDatePickerId] = useState("");
@@ -86,8 +87,24 @@ const AttendanceDashboard = ({ route, navigation }) => {
   }, []);
 
   useEffect(() => {
+    // setFromDateState(lastMonthFirstDate);
+    // setToDateState(currentDate);
+    // getEmployeeList(lastMonthFirstDate, currentDate);
+    console.log(route.params);
+    if (route?.params?.params) {
+      setFromDateState(route?.params?.params?.fromDate);
+      getChartData(
+        route?.params?.params?.fromDate,
+        route?.params?.params?.fromDate,
+        route?.params?.params?.selectedID,
+        route?.params?.params?.orgId
+      );
+    }
+  }, [route.params]);
+
+  useEffect(() => {
     if (selector.selectedIDS.length > 0) {
-      getEmployeeList(selector.selectedIDS);
+      // getEmployeeList(selector.selectedIDS);
     }
   }, [selector.selectedIDS]);
 
@@ -106,7 +123,7 @@ const AttendanceDashboard = ({ route, navigation }) => {
     setDatePickerId(key);
   };
 
-  const getChartData = async (start, end) => {
+  const getChartData = async (start, end, id, orgId) => {
     try {
       setLoading(true);
       let employeeData = await AsyncStore.getData(
@@ -115,8 +132,8 @@ const AttendanceDashboard = ({ route, navigation }) => {
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
         let newPayload = {
-          userId: jsonObj.empId,
-          orgId: jsonObj.orgId,
+          userId: id ? id : jsonObj.empId,
+          orgId: orgId ? orgId : jsonObj.orgId,
           startDate: start,
           endDate: end,
         };
@@ -127,15 +144,31 @@ const AttendanceDashboard = ({ route, navigation }) => {
         const json = await response2.json();
         if (json) {
           let newData = [
-            { label: "Present", value: json?.totalData?.totalPresent || 0 },
-            { label: "Leave", value: json?.totalData?.totalAbsent || 0 },
-            { label: "WFH", value: json?.totalData?.totalWFH || 0 },
+            { label: "Present", value: json?.todayData?.totalPresent || 0 },
+            { label: "Leave", value: json?.todayData?.totalAbsent || 0 },
+            { label: "WFH", value: json?.todayData?.totalWFH || 0 },
             {
               label: "No Logged",
-              value: json?.totalData?.totalNotLoggedIn || 0,
+              value: json?.todayData?.totalNotLoggedIn || 0,
             },
           ];
           setChartData(newData);
+          let todaysPresent = json.todayData.users.filter(
+            (e) => e.status == "PRESENT"
+          );
+          let todaysLeave = json.todayData.users.filter(
+            (e) => e.status == "ABSENT"
+          );
+          let todaysNoLogged = json.todayData.users.filter(
+            (e) => e.status == "NOT LOGGED IN"
+          );
+          let todaysWFH = json.todayData.users.filter(
+            (e) => e.status == "WORK FROM HOME"
+          );
+          setTodaysPresent(todaysPresent);
+          setTodaysLeave(todaysLeave);
+          setTodaysNoLogged(todaysNoLogged);
+          setTodaysWFH(todaysWFH);
         }
         setLoading(false);
       }
@@ -205,7 +238,7 @@ const AttendanceDashboard = ({ route, navigation }) => {
     switch (key) {
       case "FROM_DATE":
         setFromDateState(formatDate);
-        getChartData(formatDate, selectedToDate);
+        getChartData(formatDate, formatDate);
         break;
       case "TO_DATE":
         setToDateState(formatDate);
@@ -352,19 +385,32 @@ const AttendanceDashboard = ({ route, navigation }) => {
           width: "90%",
           alignSelf: "center",
           flexDirection: "row",
-          justifyContent: "center",
-          alignItems:'center'
+          justifyContent: "space-between",
+          alignItems: "center",
         }}
       >
-        <View style={{ width: "85%" }}>
-          <DateRangeComp
+        <View style={{ width: "85%", alignSelf: "flex-start" }}>
+          <DateRangeCompOne
             fromDate={selectedFromDate}
             toDate={selectedToDate}
             fromDateClicked={() => showDatePickerMethod("FROM_DATE")}
             toDateClicked={() => showDatePickerMethod("TO_DATE")}
           />
         </View>
-        <Button
+        <View>
+          <IconButton
+            icon="filter-outline"
+            style={{ padding: 0, margin: 0 }}
+            color={Colors.BLACK}
+            size={35}
+            onPress={() =>
+              navigation.navigate(
+                AttendanceTopTabNavigatorIdentifiers.dashboardFilter
+              )
+            }
+          />
+        </View>
+        {/* <Button
           mode="text"
           color={Colors.RED}
           labelStyle={{
@@ -379,7 +425,7 @@ const AttendanceDashboard = ({ route, navigation }) => {
           }}
         >
           Clear
-        </Button>
+        </Button> */}
       </View>
       <View style={styles.chartView}>
         {chartData.length > 0 &&

@@ -14,6 +14,7 @@ import { IconButton } from "react-native-paper";
 import { AppNavigator } from ".";
 import AttendanceFilter from "../scenes/mainScenes/Attendance/AttendanceFilter";
 import AttendanceDashboard from "../scenes/mainScenes/Attendance/Dashboard";
+import FilterAttendanceDashBoardScreen from "../scenes/mainScenes/Attendance/DashboardFilter";
 
 export const AttendanceTopTabNavigatorIdentifiers = {
   myattendance: "MY_ATTENDANCE",
@@ -23,6 +24,7 @@ export const AttendanceTopTabNavigatorIdentifiers = {
   team_attendance: "TEAM_ATTENDANCE",
   filter: "FILTER",
   dashboard: "DASHBOARD",
+  dashboardFilter: "DASHBOARD FILTER",
 };
 
 const screeOptionStyle = {
@@ -116,6 +118,18 @@ const MyAttendanceTopTabNavigatorOne = ({ navigation }) => {
       <MyAttendanceTopTab.Screen
         name={AttendanceTopTabNavigatorIdentifiers.filter}
         component={AttendanceFilter}
+        options={{
+          title: "Filter",
+          headerShown: true,
+          headerStyle: screeOptionStyle.headerStyle,
+          headerTitleStyle: screeOptionStyle.headerTitleStyle,
+          headerTintColor: screeOptionStyle.headerTintColor,
+          headerBackTitleVisible: screeOptionStyle.headerBackTitleVisible,
+        }}
+      />
+      <MyDashboardTeamTab.Screen
+        name={AttendanceTopTabNavigatorIdentifiers.dashboardFilter}
+        component={FilterAttendanceDashBoardScreen}
         options={{
           title: "Filter",
           headerShown: true,
@@ -238,6 +252,35 @@ const AttendanceTopTabNavigatorTeamsNav = () => {
         }}
       />
     </MyAttendanceTeamTab.Navigator>
+  );
+};
+
+const MyDashboardTeamTab = createStackNavigator();
+
+const DAshboardTopTabNavigatorTeamsNav = () => {
+  return (
+    <MyDashboardTeamTab.Navigator
+      initialRouteName={AttendanceTopTabNavigatorIdentifiers.team}
+      tabBarOptions={tabBarOptions}
+      screenOptions={{ headerShown: false }}
+    >
+      <MyDashboardTeamTab.Screen
+        name={AttendanceTopTabNavigatorIdentifiers.dashboard}
+        component={AttendanceDashboard}
+        options={{
+          headerShown: false,
+          // title: ({ focused }) => <Badge title={"Team"} focused={focused} />,
+        }}
+      />
+      {/* <MyDashboardTeamTab.Screen
+        name={AttendanceTopTabNavigatorIdentifiers.dashboardFilter}
+        component={FilterAttendanceDashBoardScreen}
+        options={{
+          headerShown: false,
+          // title: ({ focused }) => <Badge title={"Leaves"} focused={focused} />,
+        }}
+      /> */}
+    </MyDashboardTeamTab.Navigator>
   );
 };
 const styles = StyleSheet.create({

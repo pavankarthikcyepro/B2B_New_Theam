@@ -14,6 +14,7 @@ export const TRANSFER_STR = "TRANSFER";
 export const ATTENDANCE = "ATTENDANCE";
 export const DROP_LOST_CANCEL = "DROP_LOST_CANCEL";
 export const GEOLOCATION = "GEOLOCATION";
+export const DIGITAL_DASHBOARD = "DIGITAL_DASHBOARD";
 
 const data = [
   {
@@ -32,6 +33,12 @@ const data = [
     title: "Target Planning",
     icon: CUSTOMER_RELATIONSHIP_STR,
     screen: 106,
+    pngIcon: require("../assets/images/Target_Planning-01.png"),
+  },
+  {
+    title: "Digital Dashboard",
+    icon: DIGITAL_DASHBOARD,
+    screen: 118,
     pngIcon: require("../assets/images/Target_Planning-01.png"),
   },
   {
