@@ -863,49 +863,75 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             dispatch(
               updateOfferPriceData(selector.on_road_price_dto_list_response)
             );
-            addingIsPrimary();
+            // if (
+            //   selector?.pre_booking_details_response?.dmsLeadDto?.leadStatus ==
+            //   "PREBOOKINGCOMPLETED"
+            // ) {
+              setCarModelDataList(value, index);
+            // } else {
+            //   addingIsPrimary();
+            // }
           } else if (!value.color) {
             dispatch(updateOfferPriceData());
             clearPriceConfirmationData();
+          } else if (
+            selector?.pre_booking_details_response?.dmsLeadDto?.leadStatus ==
+            "PREBOOKINGCOMPLETED"
+          ) {
+            setCarModelDataList(value, index);
           }
         } else {
-          let arr = await [...carModelsList];
-          arr[index] = value;
-          // arr.splice(carModelsList, index, value);
-          let primaryModel = [];
-          primaryModel = arr.filter((item) => item.isPrimary === "Y");
-          if (primaryModel.length > 0) {
-            if (
-              primaryModel[0].variant !== "" &&
-              primaryModel[0].model !== ""
-            ) {
-              updateVariantModelsData(
-                primaryModel[0].model,
-                true,
-                primaryModel[0].variant
-              );
-            }
-          }
-          let findPrimaryData = [...arr].filter(item => item.isPrimary === "Y")
-          
-          
-          getConfigureRulesDetails(findPrimaryData[0].model, findPrimaryData[0].variant, findPrimaryData[0].fuel, userData.orgId)
-          await setCarModelsList([...arr]);
+          setCarModelDataList(value, index);
         }
       } else {
         if (type == "delete") {
           let arr = await [...carModelsList];
           arr.splice(index, 1);
           deleteModalFromServer({ value });
-          let findPrimaryData = [...arr].filter(item => item.isPrimary === "Y")
-          
-          getConfigureRulesDetails(findPrimaryData[0].model, findPrimaryData[0].variant, findPrimaryData[0].fuel, userData.orgId)
+          let findPrimaryData = [...arr].filter(
+            (item) => item.isPrimary === "Y"
+          );
+
+          getConfigureRulesDetails(
+            findPrimaryData[0].model,
+            findPrimaryData[0].variant,
+            findPrimaryData[0].fuel,
+            userData.orgId
+          );
           await setCarModelsList([...arr]);
         }
       }
     } catch (error) {
       // alert(error)
     }
+  };
+
+  const setCarModelDataList = async (value, index) => {
+    let arr = Object.assign([], carModelsList);
+    if (arr[index] && value) {
+      arr[index] = value;
+    }
+    let primaryModel = [];
+    primaryModel = arr.filter((item) => item.isPrimary === "Y");
+
+    if (primaryModel.length > 0) {
+      if (primaryModel[0].variant !== "" && primaryModel[0].model !== "") {
+        updateVariantModelsData(
+          primaryModel[0].model,
+          true,
+          primaryModel[0].variant
+        );
+      }
+    }
+
+    let findPrimaryData = [...arr].filter((item) => item.isPrimary === "Y");
+    getConfigureRulesDetails(
+      findPrimaryData[0].model,
+      findPrimaryData[0].variant,
+      findPrimaryData[0].fuel,
+      userData.orgId
+    );
+    await setCarModelsList(Object.assign([], arr));
   };
 
   useEffect(() => {
