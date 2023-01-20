@@ -33,6 +33,7 @@ import {
   getRescheduleTeamTasksListApi,
   getCompletedMyTasksListApi,
   getCompletedTeamTasksListApi,
+  updateCurrentScreen,
 } from "../../../../redux/mytaskReducer";
 import moment from "moment";
 import { showToast } from "../../../../utils/toast";
@@ -93,6 +94,9 @@ const ListComponent = ({ route, navigation }) => {
   useEffect(() => {
     if (isFocused) {
       if (route.params) {
+        if (route.params?.from) {
+          dispatch(updateCurrentScreen(route.params.from));
+        }
         if (homeSelector.isTeamPresent && !homeSelector.isDSE) {
           setIndex(1);
           changeTab(1);
@@ -104,7 +108,7 @@ const ListComponent = ({ route, navigation }) => {
         initialTask(selectedFilter);
       }
     }
-  }, [isFocused]);
+  }, [isFocused,selector.filterIds]);
 
   const defaultData = [
     {
@@ -144,6 +148,7 @@ const ListComponent = ({ route, navigation }) => {
     },
   ];
   useEffect(() => {
+    console.log("Use Efect");
     setSelectedFilter("TODAY");
     setIndex(0);
     initialTask("TODAY");
@@ -160,12 +165,14 @@ const ListComponent = ({ route, navigation }) => {
   // }, [navigation]);
 
   useEffect(() => {
+    console.log("Index Change");
     setMyTasksData([...defaultData]);
     setMyTeamsData([...defaultData]);
     initialTask(selectedFilter);
   }, [index]);
 
   const initialTask = async (selectedFilterLocal) => {
+    console.log("Called",selectedFilterLocal);
     try {
       const employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -222,13 +229,13 @@ const ListComponent = ({ route, navigation }) => {
             Promise.all([dispatch(getTodayMyTasksListApi(payload))]).then(
               (res) => {
                 let tempData = [...defaultData];
-                const todaysData = res[0].payload.todaysData[0];
+                const todaysData = res[0].payload?.todaysData[0];
                 const filteredData = todaysData.tasksList.filter((element) => {
                   const trimName = element.taskName.toLowerCase().trim();
                   const finalTaskName = trimName.replace(/ /g, "");
                   return taskNames.includes(finalTaskName);
                 });
-                if (filteredData.length > 0) {
+                if (filteredData?.length > 0) {
                   for (let i = 0; i < filteredData.length; i++) {
                     let index = -1;
                     index = tempData.findIndex(
@@ -357,6 +364,8 @@ const ListComponent = ({ route, navigation }) => {
                 startDate: startDate,
                 endDate: endDate,
                 ignoreDateFilter: false,
+                salesConsultantId: selector.filterIds?.empSelectedIds || [],
+                branchCodes: selector.filterIds?.dealerCodes || [],
               };
             } else {
               payload = {
@@ -365,18 +374,20 @@ const ListComponent = ({ route, navigation }) => {
                 onlyForEmp: true,
                 dataType: "upcomingData",
                 ignoreDateFilter: true,
+                salesConsultantId: selector.filterIds?.empSelectedIds || [],
+                branchCodes: selector.filterIds?.dealerCodes || [],
               };
             }
             Promise.all([dispatch(getUpcomingMyTasksListApi(payload))]).then(
               (res) => {
-                const todaysData = res[0].payload.upcomingData[0];
+                const todaysData = res[0].payload?.upcomingData[0];
                 let tempData = [...defaultData];
                 const filteredData = todaysData.tasksList.filter((element) => {
                   const trimName = element.taskName.toLowerCase().trim();
                   const finalTaskName = trimName.replace(/ /g, "");
                   return taskNames.includes(finalTaskName);
                 });
-                if (filteredData.length > 0) {
+                if (filteredData?.length > 0) {
                   for (let i = 0; i < filteredData.length; i++) {
                     let index = -1;
                     index = tempData.findIndex(
@@ -404,6 +415,8 @@ const ListComponent = ({ route, navigation }) => {
                 startDate: startDate,
                 endDate: endDate,
                 ignoreDateFilter: false,
+                salesConsultantId: selector.filterIds?.empSelectedIds || [],
+                branchCodes: selector.filterIds?.dealerCodes || [],
               };
             } else {
               payload = {
@@ -412,6 +425,8 @@ const ListComponent = ({ route, navigation }) => {
                 onlyForEmp: false,
                 dataType: "upcomingData",
                 ignoreDateFilter: true,
+                salesConsultantId: selector.filterIds?.empSelectedIds || [],
+                branchCodes: selector.filterIds?.dealerCodes || [],
               };
             }
             Promise.all([dispatch(getUpcomingTeamTasksListApi(payload))]).then(
@@ -425,8 +440,8 @@ const ListComponent = ({ route, navigation }) => {
                 // setMyTeamsData(filteredData);
                 let tempArr = [];
                 let tempTaskName = "";
-                let allData = res[0].payload.upcomingData;
-                if (allData.length > 0) {
+                let allData = res[0].payload?.upcomingData;
+                if (allData?.length > 0) {
                   for (
                     let nameIndex = 0;
                     nameIndex < taskNames.length;
@@ -509,6 +524,8 @@ const ListComponent = ({ route, navigation }) => {
                 startDate: startDate,
                 endDate: endDate,
                 ignoreDateFilter: false,
+                salesConsultantId: selector.filterIds?.empSelectedIds || [],
+                branchCodes: selector.filterIds?.dealerCodes || [],
               };
             } else {
               payload = {
@@ -517,18 +534,20 @@ const ListComponent = ({ route, navigation }) => {
                 onlyForEmp: true,
                 dataType: "pendingData",
                 ignoreDateFilter: true,
+                salesConsultantId: selector.filterIds?.empSelectedIds || [],
+                branchCodes: selector.filterIds?.dealerCodes || [],
               };
             }
             Promise.all([dispatch(getPendingMyTasksListApi(payload))]).then(
               (res) => {
-                const todaysData = res[0].payload.pendingData[0];
+                const todaysData = res[0].payload?.pendingData[0];
                 let tempData = [...defaultData];
                 const filteredData = todaysData.tasksList.filter((element) => {
                   const trimName = element.taskName.toLowerCase().trim();
                   const finalTaskName = trimName.replace(/ /g, "");
                   return taskNames.includes(finalTaskName);
                 });
-                if (filteredData.length > 0) {
+                if (filteredData?.length > 0) {
                   for (let i = 0; i < filteredData.length; i++) {
                     let index = -1;
                     index = tempData.findIndex(
@@ -556,6 +575,8 @@ const ListComponent = ({ route, navigation }) => {
                 startDate: startDate,
                 endDate: endDate,
                 ignoreDateFilter: false,
+                salesConsultantId: selector.filterIds?.empSelectedIds || [],
+                branchCodes: selector.filterIds?.dealerCodes || [],
               };
             } else {
               payload = {
@@ -564,6 +585,8 @@ const ListComponent = ({ route, navigation }) => {
                 onlyForEmp: false,
                 dataType: "pendingData",
                 ignoreDateFilter: true,
+                salesConsultantId: selector.filterIds?.empSelectedIds || [],
+                branchCodes: selector.filterIds?.dealerCodes || [],
               };
             }
             Promise.all([dispatch(getPendingTeamTasksListApi(payload))]).then(
@@ -578,8 +601,8 @@ const ListComponent = ({ route, navigation }) => {
 
                 let tempArr = [];
                 let tempTaskName = "";
-                let allData = res[0].payload.pendingData;
-                if (allData.length > 0) {
+                let allData = res[0].payload?.pendingData;
+                if (allData?.length > 0) {
                   for (
                     let nameIndex = 0;
                     nameIndex < taskNames.length;
@@ -662,6 +685,8 @@ const ListComponent = ({ route, navigation }) => {
                 startDate: startDate,
                 endDate: endDate,
                 ignoreDateFilter: false,
+                salesConsultantId: selector.filterIds?.empSelectedIds || [],
+                branchCodes: selector.filterIds?.dealerCodes || [],
               };
             } else {
               payload = {
@@ -670,18 +695,20 @@ const ListComponent = ({ route, navigation }) => {
                 onlyForEmp: true,
                 dataType: "rescheduledData",
                 ignoreDateFilter: true,
+                salesConsultantId: selector.filterIds?.empSelectedIds || [],
+                branchCodes: selector.filterIds?.dealerCodes || [],
               };
             }
             Promise.all([dispatch(getRescheduleMyTasksListApi(payload))]).then(
               (res) => {
-                const todaysData = res[0].payload.rescheduledData[0];
+                const todaysData = res[0].payload?.rescheduledData[0];
                 let tempData = [...defaultData];
                 const filteredData = todaysData.tasksList.filter((element) => {
                   const trimName = element.taskName.toLowerCase().trim();
                   const finalTaskName = trimName.replace(/ /g, "");
                   return taskNames.includes(finalTaskName);
                 });
-                if (filteredData.length > 0) {
+                if (filteredData?.length > 0) {
                   for (let i = 0; i < filteredData.length; i++) {
                     let index = -1;
                     index = tempData.findIndex(
@@ -709,6 +736,8 @@ const ListComponent = ({ route, navigation }) => {
                 startDate: startDate,
                 endDate: endDate,
                 ignoreDateFilter: false,
+                salesConsultantId: selector.filterIds?.empSelectedIds || [],
+                branchCodes: selector.filterIds?.dealerCodes || [],
               };
             } else {
               payload = {
@@ -717,6 +746,8 @@ const ListComponent = ({ route, navigation }) => {
                 onlyForEmp: false,
                 dataType: "rescheduledData",
                 ignoreDateFilter: true,
+                salesConsultantId: selector.filterIds?.empSelectedIds || [],
+                branchCodes: selector.filterIds?.dealerCodes || [],
               };
             }
             Promise.all([
@@ -806,6 +837,8 @@ const ListComponent = ({ route, navigation }) => {
                 startDate: startDate,
                 endDate: endDate,
                 ignoreDateFilter: false,
+                salesConsultantId: selector.filterIds?.empSelectedIds || [],
+                branchCodes: selector.filterIds?.dealerCodes || [],
               };
             } else {
               payload = {
@@ -814,18 +847,20 @@ const ListComponent = ({ route, navigation }) => {
                 onlyForEmp: true,
                 dataType: "completedData",
                 ignoreDateFilter: true,
+                salesConsultantId: selector.filterIds?.empSelectedIds || [],
+                branchCodes: selector.filterIds?.dealerCodes || [],
               };
             }
             Promise.all([dispatch(getCompletedMyTasksListApi(payload))]).then(
               (res) => {
-                const todaysData = res[0].payload.completedData[0];
+                const todaysData = res[0].payload?.completedData[0];
                 let tempData = [...defaultData];
                 const filteredData = todaysData.tasksList.filter((element) => {
                   const trimName = element.taskName.toLowerCase().trim();
                   const finalTaskName = trimName.replace(/ /g, "");
                   return taskNames.includes(finalTaskName);
                 });
-                if (filteredData.length > 0) {
+                if (filteredData?.length > 0) {
                   for (let i = 0; i < filteredData.length; i++) {
                     let index = -1;
                     index = tempData.findIndex(
@@ -853,6 +888,8 @@ const ListComponent = ({ route, navigation }) => {
                 startDate: route.params.from ? globalStartDate : startDate,
                 endDate: route.params.from ? globalEndDate : endDate,
                 ignoreDateFilter: false,
+                salesConsultantId: selector.filterIds?.empSelectedIds || [],
+                branchCodes: selector.filterIds?.dealerCodes || [],
               };
             } else {
               payload = {
@@ -861,14 +898,16 @@ const ListComponent = ({ route, navigation }) => {
                 onlyForEmp: false,
                 dataType: "completedData",
                 ignoreDateFilter: true,
+                salesConsultantId: selector.filterIds?.empSelectedIds || [],
+                branchCodes: selector.filterIds?.dealerCodes || [],
               };
             }
             Promise.all([dispatch(getCompletedTeamTasksListApi(payload))]).then(
               (res) => {
                 let tempArr = [];
                 let tempTaskName = "";
-                let allData = res[0].payload.completedData;
-                if (allData.length > 0) {
+                let allData = res[0].payload?.completedData;
+                if (allData?.length > 0) {
                   for (
                     let nameIndex = 0;
                     nameIndex < taskNames.length;
