@@ -1353,7 +1353,7 @@ const HomeScreen = ({ route, navigation }) => {
               style={styles.view7}
             >
               <View style={styles.view8}>
-                <Text style={styles.rankHeadingText}>{"Leads Allocated"}</Text>
+                <Text numberOfLines={2} style={styles.rankHeadingText}>{"Leads Allocated"}</Text>
                 <View style={styles.cardView}>
                   <Text style={{ ...styles.rankText, color: "blue" }}>
                     {selector.receptionistData?.totalAllocatedCount}

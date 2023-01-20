@@ -54,11 +54,10 @@ import { clearState } from "../../redux/homeReducer";
 import { clearEnqState } from "../../redux/enquiryReducer";
 import { clearLeadDropState } from "../../redux/leaddropReducer";
 import ReactNativeModal from "react-native-modal";
-import { EventRegister } from 'react-native-event-listeners'
+import { EventRegister } from "react-native-event-listeners";
 import { setBranchId, setBranchName } from "../../utils/helperFunctions";
 import Snackbar from "react-native-snackbar";
-import NetInfo, { } from "@react-native-community/netinfo";
-
+import NetInfo from "@react-native-community/netinfo";
 
 const screenWidth = Dimensions.get("window").width;
 const profileWidth = screenWidth / 6;
@@ -125,11 +124,27 @@ const MDMenu = [
   "Live Leads",
   "Settings",
   "Digital Payment",
+  "Digital Dashboard",
   "Target Planning",
   "My Attendance",
   "Helpdesk",
   // "Task Management",
   "Task Transfer",
+  "QR Code",
+  "Drop Analysis",
+  "Sign Out",
+];
+
+const SalesConsultant = [
+  "Home",
+  "Live Leads",
+  "Target Planning",
+  "My Attendance",
+  "Geolocation",
+  "Drop/Lost/Cancel",
+  "Task Transfer",
+  "Helpdesk",
+  "Settings",
   "QR Code",
   "Drop Analysis",
   "Sign Out",
@@ -161,45 +176,36 @@ const SideMenuScreen = ({ navigation }) => {
 
   useEffect(() => {
     getLoginEmployeeData();
-   
-    
-    EventRegister.addEventListener("ForceLogout",(res)=>{
-      
-      if(res){
-        signOutClicked()
+
+    EventRegister.addEventListener("ForceLogout", (res) => {
+      if (res) {
+        signOutClicked();
       }
-    })
-   
-  
+    });
+
     let isdiloadopen = false;
     EventRegister.addEventListener("poorNetwork", (res) => {
-     
-     
       if (res) {
-       // todo
-        
+        // todo
+
         if (!isdiloadopen) {
           isdiloadopen = true;
-          
-            RenderPoorNetWorkError();
+
+          RenderPoorNetWorkError();
           // console.log("manthan000d ", isdiloadopen)
           setTimeout(() => {
             isdiloadopen = false;
-          
-              Snackbar.dismiss();
-         
+
+            Snackbar.dismiss();
           }, 4000);
         }
-       
       }
-    })
-    return ()=>{
-      EventRegister.removeEventListener()
-    }
+    });
+    return () => {
+      EventRegister.removeEventListener();
+    };
     // getProfilePic();
   }, []);
-
-
 
   useEffect(() => {
     navigation.addListener("focus", () => {
@@ -239,15 +245,20 @@ const SideMenuScreen = ({ navigation }) => {
   };
 
   const getProfilePic = (userData) => {
-    
-    if (userData.empId == undefined || userData.orgId == undefined || userData.branchId == undefined){
+    if (
+      userData.empId == undefined ||
+      userData.orgId == undefined ||
+      userData.branchId == undefined
+    ) {
       return;
     }
     // client.get(`http://ec2-15-207-225-163.ap-south-1.compute.amazonaws.com:8008/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`)
-    client.get(`${baseUrl}sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`)
-     .then((response) => response.json())
+    client
+      .get(
+        `${baseUrl}sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
+      )
+      .then((response) => response.json())
       .then((json) => {
-        
         setDataList(json);
         if (json.length > 0) {
           setImageUri(json[json.length - 1].documentPath);
@@ -262,13 +273,12 @@ const SideMenuScreen = ({ navigation }) => {
       })
       .catch((error) => console.error(error));
 
-
     // fetch(
     //   `http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
     // )
     //   .then((response) => response.json())
     //   .then((json) => {
-    //   
+    //
     //     setDataList(json);
     //     if (json.length > 0) {
     //       setImageUri(json[json.length - 1].documentPath);
@@ -308,6 +318,10 @@ const SideMenuScreen = ({ navigation }) => {
     } else if (jsonObj.hrmsRole === "Field DSE") {
       newFilterData = selector.tableData.filter((item) =>
         FieldDSEMenu.includes(item.title)
+      );
+    } else if (jsonObj.hrmsRole === "Walkin DSE") {
+      newFilterData = selector.tableData.filter((item) =>
+        SalesConsultant.includes(item.title)
       );
     } else if (jsonObj.hrmsRole === "MD") {
       newFilterData = selector.tableData.filter((item) =>
@@ -453,7 +467,7 @@ const SideMenuScreen = ({ navigation }) => {
     // client.post(URL.UPLOAD_PROFILE(userData.empId, userData.orgId, userData.branchId))
     //   .then((response) => response.json())
     //   .then(async (json) => {
-    //    
+    //
     //     const inputData = {
     //       ownerId: userData.empId,
     //       branchId: userData.branchId,
@@ -480,46 +494,46 @@ const SideMenuScreen = ({ navigation }) => {
     //   })
     //   .catch((error) => console.error(error));
     AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
-    fetch(
-      URL.UPLOAD_PROFILE(userData.empId, userData.orgId, userData.branchId),
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "multipart/form-data",
-          "Authorization": "Bearer " + token,
-        },
-        body: formdata,
-      }
-    )
-      .then((response) => response.json())
-      .then(async (json) => {
-        const inputData = {
-          ownerId: userData.empId,
-          branchId: userData.branchId,
-          orgId: userData.orgId,
-          fileName: json.fileName,
-          documentPath: json.documentPath,
-          universalid: json.universalId,
-        };
-        const response = await client.post(URL.SAVE_PROFILE(), inputData);
-        const saveProfile = await response.json();
-        if (saveProfile.success) {
-          setIsExist(true);
-          let newInitial = {
-            id: saveProfile.dmsEntity.employeeProfileDtos[0].id,
-            universalid: json?.universalId,
-          };
-          setInitialData(newInitial);
-          setImageUri(
-            saveProfile.dmsEntity.employeeProfileDtos[0].documentPath ||
-              "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
-          );
+      fetch(
+        URL.UPLOAD_PROFILE(userData.empId, userData.orgId, userData.branchId),
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: "Bearer " + token,
+          },
+          body: formdata,
         }
-        // setDataList(json);
-      })
-      .catch((error) => console.error(error));
-  })
-}
+      )
+        .then((response) => response.json())
+        .then(async (json) => {
+          const inputData = {
+            ownerId: userData.empId,
+            branchId: userData.branchId,
+            orgId: userData.orgId,
+            fileName: json.fileName,
+            documentPath: json.documentPath,
+            universalid: json.universalId,
+          };
+          const response = await client.post(URL.SAVE_PROFILE(), inputData);
+          const saveProfile = await response.json();
+          if (saveProfile.success) {
+            setIsExist(true);
+            let newInitial = {
+              id: saveProfile.dmsEntity.employeeProfileDtos[0].id,
+              universalid: json?.universalId,
+            };
+            setInitialData(newInitial);
+            setImageUri(
+              saveProfile.dmsEntity.employeeProfileDtos[0].documentPath ||
+                "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
+            );
+          }
+          // setDataList(json);
+        })
+        .catch((error) => console.error(error));
+    });
+  };
 
   const updateProfilePic = async (uri) => {
     try {
@@ -541,8 +555,7 @@ const SideMenuScreen = ({ navigation }) => {
         saveProfile.dmsEntity.employeeProfileDtos[0].documentPath ||
           "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
       );
-    } catch (err) {
-    }
+    } catch (err) {}
   };
 
   const deleteProfilePic = async () => {
@@ -553,7 +566,7 @@ const SideMenuScreen = ({ navigation }) => {
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
-            "Authorization": "Bearer " + token,
+            Authorization: "Bearer " + token,
           },
           body: JSON.stringify(),
         })
@@ -594,15 +607,14 @@ const SideMenuScreen = ({ navigation }) => {
     // }
   };
 
-  const RenderPoorNetWorkError=()=>{
-        return  Snackbar.show({
-                        text: "Poor network Please check your internet connection",
-                        textColor: Colors.WHITE,
-                        backgroundColor: Colors.GRAY,
-          duration: Snackbar.LENGTH_INDEFINITE,
-                        position:"top"
-
-                    });
+  const RenderPoorNetWorkError = () => {
+    return Snackbar.show({
+      text: "Poor network Please check your internet connection",
+      textColor: Colors.WHITE,
+      backgroundColor: Colors.GRAY,
+      duration: Snackbar.LENGTH_INDEFINITE,
+      position: "top",
+    });
     // return Alert.alert(
     //   "Poor Network",
     //   "Please check your internet connection",
@@ -615,7 +627,7 @@ const SideMenuScreen = ({ navigation }) => {
     //     }
     //   ]
     // );
-  }
+  };
 
   const RenderModal = () => {
     return (
@@ -777,9 +789,9 @@ const SideMenuScreen = ({ navigation }) => {
         keyExtractor={(item, index) => index}
         renderItem={({ item, index }) => {
           const isActive = false;
-          const textColor = "gray"; 
+          const textColor = "gray";
           // const isActive = route?.state?.index == index;
-          // const textColor = isActive ? Colors.PINK : "gray"; 
+          // const textColor = isActive ? Colors.PINK : "gray";
           return (
             <>
               {item.title === "Task Transfer" ? (
@@ -829,8 +841,10 @@ const SideMenuScreen = ({ navigation }) => {
                       paddingLeft: 10,
                       height: 55,
                       justifyContent: "center",
-                      backgroundColor: isActive ? Colors.PINK + 15 : Colors.WHITE,
-                      borderRadius: 10
+                      backgroundColor: isActive
+                        ? Colors.PINK + 15
+                        : Colors.WHITE,
+                      borderRadius: 10,
                     }}
                   >
                     {/* <List.Item
@@ -901,7 +915,6 @@ const SideMenuScreen = ({ navigation }) => {
 };
 
 export default SideMenuScreen;
-
 
 const styles = StyleSheet.create({
   container: {
