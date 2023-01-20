@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { Colors } from "../../../../styles";
 import {
   convertTimeStampToDateString,
@@ -111,6 +111,7 @@ export const MyTaskNewItem = ({
   onlylead = false,
   EmployeesRoles,
   userData,
+  tdflage = "",
 }) => {
   let date = "";
   if (from == "MY_TASKS") {
@@ -195,6 +196,13 @@ export const MyTaskNewItem = ({
                   alignItems: "center",
                 }}
               >
+                {tdflage == "CLOSED" ? (
+                  <Image
+                    source={require("./../../../../assets/images/test_drive_icon.jpg")}
+                    style={styles.testDriveIconImage}
+                    resizeMode="contain"
+                  />
+                ) : null}
                 <>
                   {leadStage == "ENQUIRY" &&
                     enqCat !== "" &&
@@ -224,6 +232,7 @@ export const MyTaskNewItem = ({
                       </View>
                     )}
                 </>
+
                 <Text
                   style={[
                     styles.text3,
@@ -406,4 +415,10 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     textTransform: "uppercase",
   },
+  testDriveIconImage: {
+    height: 30,
+    width: 30,
+    marginRight: 5,
+    borderRadius: 15
+  }
 });
