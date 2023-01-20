@@ -289,7 +289,7 @@ export const targetSettingsSlice = createSlice({
         state.roles = [];
       })
       .addCase(getAllTargetMapping.pending, (state, action) => {
-        state.isLoading = true;
+        state.isLoading = false;
         state.isDataLoaded = false;
         state.targetMapping = [];
       })

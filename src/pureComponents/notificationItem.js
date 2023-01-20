@@ -1,33 +1,46 @@
-import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
-import { Colors, GlobalStyle } from '../styles';
+import React from "react";
+import { StyleSheet, View, Text, TouchableOpacity, Image } from "react-native";
+import { IconButton } from "react-native-paper";
+import { Colors, GlobalStyle } from "../styles";
 
-
-export const NotificationItem = ({ title, date }) => {
-
-    return (
-        <View style={[styles.item]}>
-            <Text style={styles.title}>{title}</Text>
-            <Text style={[styles.title, styles.text2]}>{date}</Text>
+export const NotificationItem = ({ title, date, onPress, icon, style, flagColor }) => {
+  return (
+    <TouchableOpacity style={[styles.itemContainer, style]} onPress={onPress}>
+      <View style={styles.subRow}>
+        <Image source={icon} style={styles.iconContainer} />
+        <View style={{ margin: 5, flex: 1 }}>
+          <Text style={styles.title}>{title}</Text>
         </View>
-    )
+      </View>
+      <IconButton
+        icon="flag"
+        color={flagColor ? flagColor : Colors.GRAY}
+        size={20}
+        rippleColor={style?.backgroundColor}
+        onPress={() => {}}
+      />
+    </TouchableOpacity>
+  );
 };
 
 const styles = StyleSheet.create({
-    item: {
-        backgroundColor: Colors.WHITE,
-        padding: 10,
-        marginVertical: 10,
-        borderRadius: 6,
-    },
-    title: {
-        fontSize: 14,
-        fontWeight: '400',
-    },
-    text2: {
-        fontSize: 12,
-        marginTop: 5,
-        textAlign: 'right',
-        color: Colors.GRAY
-    }
-})
+  itemContainer: {
+    borderRadius: 6,
+    marginVertical: 10,
+    flexDirection: "row",
+    marginHorizontal: 10,
+    justifyContent: "space-between",
+    ...GlobalStyle.shadow,
+  },
+  subRow: {
+    flex: 1,
+    padding: 10,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  iconContainer: { height: 35, width: 35, resizeMode: "contain" },
+  title: {
+    fontSize: 14,
+    fontWeight: "400",
+  },
+});

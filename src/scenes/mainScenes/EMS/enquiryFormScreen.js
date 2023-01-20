@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
+import React, { useState, useEffect, useLayoutEffect, useRef, useCallback } from "react";
 import {
   SafeAreaView,
   FlatList,
@@ -165,6 +165,8 @@ import {
   EnquiryTypes21,
   EnquiryTypes22
 } from "../../../jsonData/preEnquiryScreenJsonData";
+import Fontisto from "react-native-vector-icons/Fontisto"
+import { client } from "../../../networking/client";
 
 const theme = {
   ...DefaultTheme,
@@ -200,6 +202,52 @@ const dmsAttachmentsObj = {
   tinNumber: null,
 };
 
+let EventListData = [
+  {
+    eventName: "omega thon",
+    eventLocation: "Ahmedabad",
+    Startdate: "10/12/2022",
+    Enddate: "10/12/2022",
+    isSelected: false,
+    id: 0
+
+  },
+  {
+    eventName: "omega thon22",
+    eventLocation: "Ahmedabad",
+    Startdate: "10/12/2022",
+    Enddate: "10/12/2022",
+    isSelected: false,
+    id: 1
+  },
+  {
+    eventName: "omega thon22",
+    eventLocation: "Ahmedabad",
+    Startdate: "10/12/2022",
+    Enddate: "10/12/2022",
+    isSelected: false
+    ,
+    id: 2
+  },
+  {
+    eventName: "omega thon22",
+    eventLocation: "Ahmedabad",
+    Startdate: "10/12/2022",
+    Enddate: "10/12/2022",
+    isSelected: false,
+    id: 3
+  },
+  {
+    eventName: "omega thon22",
+    eventLocation: "Ahmedabad",
+    Startdate: "10/12/2022",
+    Enddate: "10/12/2022",
+    isSelected: false,
+    id: 4
+  },
+
+]
+
 const DetailsOverviewScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const headNavigation = useNavigation();
@@ -233,7 +281,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     orgId: "",
     employeeId: "",
     employeeName: "",
-    isSelfManager: ""
+    isSelfManager: "",
+    isTracker: "",
   });
   const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
   const [modelsList, setModelsList] = useState([]);
@@ -268,7 +317,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const [authToken, setAuthToken] = useState("");
   
   const [makerData, setMakerData] = useState([]);
+  const [isEventListModalVisible, setisEventListModalVisible] = useState(false);
+  const [eventListdata, seteventListData] = useState([])
+  const [selectedEventData, setSelectedEventData] = useState([])
+  const [eventConfigRes, setEventConfigRes] = useState([])
 
+
+  // todo
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
@@ -362,7 +417,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       orgId: "",
       employeeId: "",
       employeeName: "",
-      isSelfManager: ""
+      isSelfManager: "",
+      isTracker: "",
     });
     setUploadedImagesDataObj({});
     setTypeOfActionDispatched("");
@@ -486,7 +542,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         orgId: jsonObj.orgId,
         employeeId: jsonObj.empId,
         employeeName: jsonObj.empName,
-        isSelfManager: jsonObj.isSelfManager
+        isSelfManager: jsonObj.isSelfManager,
+        isTracker: jsonObj.isTracker,
       });
       getCarMakeListFromServer(jsonObj.orgId);
       getCarModelListFromServer(jsonObj.orgId);
@@ -577,14 +634,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   };
 
   const getInsurenceCompanyNamesFromServer = async (token, orgId) => {
-    await fetch(URL.GET_INSURENCE_COMPANY_NAMES(orgId), {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "auth-token": token,
-      },
-    })
+    // await fetch(URL.GET_INSURENCE_COMPANY_NAMES(orgId), {
+    //   method: "GET",
+    //   headers: {
+    //     Accept: "application/json",
+    //     "Content-Type": "application/json",
+    //     "Authorization": "Bearer " + authToken,
+    //   },
+    // })
+    await client.get(URL.GET_INSURENCE_COMPANY_NAMES(orgId))
       .then((json) => json.json())
       .then((res) => {
         if (res != null && res.length > 0) {
@@ -606,7 +664,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        "auth-token": token,
+        "Authorization": "Bearer " + authToken,
       },
     })
       .then((json) => {
@@ -2008,14 +2066,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       universalId: universalId,
     };
     const url = URL.CUSTOMER_LEAD_REFERENCE();
-    await fetch(url, {
-      headers: {
-        "Content-Type": "application/json",
-        "auth-token": authToken,
-      },
-      method: "POST",
-      body: JSON.stringify(payload),
-    })
+    // await fetch(url, {
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     "Authorization": authToken,
+    //   },
+    //   method: "POST",
+    //   body: JSON.stringify(payload),
+    // })
+    await client.post(url, payload)
       .then((res) => res.json())
       .then((jsonRes) => {
         if (jsonRes.success === true) {
@@ -2318,6 +2377,34 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           customerTypes = CustomerTypesObj22[selector.enquiry_segment.toLowerCase()];
           selector.customerType = "";
         }
+        else if (orgId == 26) {
+          let tmpArr = [];
+          if (selector.enquiry_segment == "Personal") {
+            tmpArr = Object.assign(
+              [],
+              selector.customer_types?.personal
+                ? selector.customer_types.personal
+                : CustomerTypesObj[selector.enquiry_segment.toLowerCase()]
+            );
+          } else if (selector.enquiry_segment == "Company") {
+            tmpArr = Object.assign(
+              [],
+              selector.customer_types?.company
+                ? selector.customer_types.company
+                : CustomerTypesObj[selector.enquiry_segment.toLowerCase()]
+            );
+          } else {
+            tmpArr = Object.assign(
+              [],
+              selector.customer_types?.commercial
+                ? selector.customer_types.commercial
+                : CustomerTypesObj[selector.enquiry_segment.toLowerCase()]
+            );
+          }
+
+          customerTypes = [...tmpArr];
+          selector.customerType = "";
+        }
         else {
           customerTypes = CustomerTypesObj[selector.enquiry_segment.toLowerCase()];
           selector.customerType = "";
@@ -2578,6 +2665,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       method: "POST",
       headers: {
         "Content-Type": "multipart/form-data",
+        "Authorization": "Bearer " + authToken,
       },
       body: formData,
     })
@@ -2795,6 +2883,174 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
   }
 
+  const onEventInfoPress = () => {
+    // todo
+    
+    let tempArr = [
+      {
+        eventName: enqDetails?.eventName,
+        eventLocation: enqDetails?.eventLocation,
+        Startdate: enqDetails?.eventStartDate,
+        Enddate: enqDetails?.eventEndDate,
+        isSelected: false,
+        id: 0
+      }
+    ]
+
+    
+    if(enqDetails.eventName !== null ){
+      seteventListData(tempArr)
+    }
+   
+    setisEventListModalVisible(true)
+  }
+
+
+  const eventListTableRow = (txt1, txt2, txt3, txt4, isDisplayRadio, isRadioSelected, isClickable, itemMain, index) => {
+
+    return (
+      <>
+
+        <TouchableOpacity style={styles.eventTouchable}
+          disabled={true}
+          onPress={() => {
+
+            // let temp = [...eventListdata].filter(item => item.id === itemMain.id).map(i => i.isSelected = true)
+            let temp = eventListdata.map(i =>
+              i.id === itemMain.id ? { ...i, isSelected: true } : { ...i, isSelected: false }
+            )
+           
+            seteventListData(temp);
+
+
+
+          }}
+        >
+          {/* todo */}
+          {isDisplayRadio ?
+            <Fontisto name={itemMain.isSelected ? "radio-btn-active" : "radio-btn-passive"}
+              size={12} color={Colors.RED}
+              style={{ marginEnd: 10 }}
+            /> :
+            <View style={{ marginEnd: 10, width: 12, }}  >{ }</View>}
+
+          <Text numberOfLines={1} style={styles.eventText} >{txt1}</Text>
+          <Text numberOfLines={1} style={styles.eventText} >{txt2}</Text>
+          <Text numberOfLines={1} style={styles.eventText} >{txt3}</Text>
+          <Text numberOfLines={1} style={styles.eventText} >{txt4}</Text>
+
+        </TouchableOpacity>
+
+      </>)
+  }
+
+
+  const addEventListModal = () => {
+
+    return (
+      <Modal
+        animationType="fade"
+        visible={isEventListModalVisible}
+        onRequestClose={() => {
+
+        }}
+        transparent={true}
+      >
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgba(0,0,0,0.7)",
+
+
+          }}
+        >
+          <View style={styles.modelView}
+
+          >
+            <Text style={styles.selectTitle} >Selected Event</Text>
+            <ScrollView style={{
+              width: '100%',
+
+            }}
+              horizontal={true}
+            >
+              <View style={{ flexDirection: "column" }}>
+
+                <Text style={GlobalStyle.underline} />
+                <View style={{
+                  height: 30, borderBottomColor: 'rgba(208, 212, 214, 0.7)',
+                  borderBottomWidth: 2,
+
+                }}>
+                  {eventListTableRow("Event Name", "Event location", "Start Date", "End Date", false, false, true, 0, 0)}
+                  {/* <Text style={GlobalStyle.underline} /> */}
+                </View>
+                <View>
+                  <FlatList
+                    key={"EVENT_LIST"}
+                    data={eventListdata}
+                    style={{ height: '80%' }}
+                    keyExtractor={(item, index) => index.toString()}
+                    ListEmptyComponent={() => {
+                      return (<View style={{ alignItems: 'center', marginVertical: 20 }}><Text>{"Data Not Available"}</Text></View>)
+                    }}
+
+                    renderItem={({ item, index }) => {
+
+                      return (
+                        <>
+                          <View style={{
+                            height: 35, borderBottomColor: 'rgba(208, 212, 214, 0.7)',
+                            borderBottomWidth: 4, marginTop: 5
+                          }}>
+                            {eventListTableRow(item.eventName, item.eventLocation, moment(item.Startdate).format("DD-MM-YYYY"), moment(item.Enddate).format("DD-MM-YYYY"), false, false, false, item, index)}
+                            {/* {eventListTableRow(item.eventName, item.eventLocation, item.Startdate, item.Enddate, false, false, false, item, index)} */}
+                          </View>
+
+                        </>
+                      );
+                    }}
+                  />
+
+                </View>
+              </View>
+
+            </ScrollView>
+            <View style={{ flexDirection: "row", alignSelf: "flex-end", marginTop: 10 }}>
+              <Button
+                mode="contained"
+
+                style={{ width:'30%',   }}
+                color={Colors.GRAY}
+                labelStyle={{ textTransform: "none" }}
+                onPress={() => {
+                  setisEventListModalVisible(false)
+                  // todo
+                  seteventListData([]);
+                }}>
+                Close
+              </Button>
+              {/* <Button
+                mode="contained"
+
+                style={{ flex: 1 }}
+                color={Colors.PINK}
+                labelStyle={{ textTransform: "none" }}
+                onPress={() => addSelectedEvent()}>
+                Add
+              </Button> */}
+            </View>
+
+          </View>
+
+        </View>
+      </Modal>
+    )
+  }
+
+
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
       <ImagePickerComponent
@@ -2805,6 +3061,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         }}
         onDismiss={() => dispatch(setImagePicker(""))}
       />
+      {addEventListModal()}
 
       <DropDownComponant
         visible={showDropDownModel}
@@ -2938,13 +3195,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               labelStyle={{ textTransform: "none", fontSize: 16, color: Colors.WHITE }}
                 onPress={() => navigateToProforma()}><Text>Proforma Invoice</Text></Button> : null}
 
-{/* 
+            {/* 
            {(leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY' && carModelsList && carModelsList.length > 0) ?
             <Button style={{height:40, width:200,marginBottom:15, alignSelf:'flex-end', alignContent:'center', backgroundColor:Colors.PINK, color: Colors.WHITE}}
               labelStyle={{ textTransform: "none",fontSize:16, color: Colors.WHITE }}
                 onPress={() => navigateToProforma()}><Text>Proforma Invoice</Text></Button> : null} */}
-        
-        
 
             <List.AccordionGroup
               expandedId={openAccordian}
@@ -2999,12 +3254,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 ]}
               >
                 <View
-                  style={{
-                    flexDirection: "row",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    backgroundColor: Colors.WHITE,
-                  }}
+                  style={styles.view3}
                 >
                   <View
                     style={{
@@ -3100,12 +3350,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 ></Text>
 
                 <View
-                  style={{
-                    flexDirection: "row",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    backgroundColor: Colors.WHITE,
-                  }}
+                  style={styles.view3}
                 >
                   <View style={{ width: "45%" }}>
                     <DropDownSelectionItem
@@ -3185,12 +3430,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 {selector.enquiry_segment.toLowerCase() == "personal" ? (
                   <View>
                     <View
-                      style={{
-                        flexDirection: "row",
-                        display: "flex",
-                        justifyContent: "space-between",
-                        backgroundColor: Colors.WHITE,
-                      }}
+                      style={styles.view3}
                     >
                       <View style={{ width: "45%" }}>
                         <DateSelectItem
@@ -3333,6 +3573,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   value={selector.source_of_enquiry}
                   label={"Source Of Enquiry*"}
                   editable={false}
+                  rightIconObj={{ name: "information-outline", color: Colors.GRAY }}
+                  showRightIcon={selector.source_of_enquiry === "Events" ? true : false}
+                  onRightIconPressed={onEventInfoPress}
                 />
                 <Text style={GlobalStyle.underline}></Text>
 
@@ -4057,24 +4300,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     setCarModelsList(arr);
                     //selector.dmsLeadProducts = [...selector.dmsLeadProducts, carmodeldata]
                   }}
-                  style={{
-                    width: "40%",
-                    margin: 5,
-                    borderRadius: 5,
-                    backgroundColor: Colors.PINK,
-                    height: 40,
-                    alignSelf: "flex-end",
-                    alignContent: "flex-end",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
+                  style={styles.addmodelbtn}
                 >
                   <Text
-                    style={{
-                      fontSize: 16,
-                      textAlign: "center",
-                      color: Colors.WHITE,
-                    }}
+                    style={styles.addmodeltxt}
                   >
                     Add Model
                   </Text>
@@ -4425,14 +4654,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 {uploadedImagesDataObj?.pan?.fileName ? (
                   <View style={{ flexDirection: "row" }}>
                     <TouchableOpacity
-                      style={{
-                        width: "20%",
-                        height: 30,
-                        backgroundColor: Colors.SKY_BLUE,
-                        borderRadius: 4,
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
+                      style={styles.previewbtn}
                       onPress={() => {
                         if (uploadedImagesDataObj.pan?.documentPath) {
                           setImagePath(uploadedImagesDataObj.pan?.documentPath);
@@ -4440,11 +4662,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       }}
                     >
                       <Text
-                        style={{
-                          color: Colors.WHITE,
-                          fontSize: 14,
-                          fontWeight: "600",
-                        }}
+                        style={styles.previewtxt}
                       >
                         Preview
                       </Text>
@@ -4486,14 +4704,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj?.aadhar?.fileName ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                          style={styles.previewbtn}
                           onPress={() => {
                             if (uploadedImagesDataObj.aadhar?.documentPath) {
                               setImagePath(
@@ -4503,11 +4714,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                            style={styles.previewtxt}
                           >
                             Preview
                           </Text>
@@ -4555,14 +4762,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj?.employeeId?.fileName ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                            style={styles.previewbtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.employeeId?.documentPath
@@ -4574,11 +4774,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                              style={styles.previewtxt}
+
                           >
                             Preview
                           </Text>
@@ -4610,14 +4807,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj?.payslips ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                            style={styles.previewbtn}
                           onPress={() => {
                             if (uploadedImagesDataObj?.payslips?.documentPath) {
                               setImagePath(
@@ -4627,11 +4817,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                              style={styles.previewtxt}
                           >
                             Preview
                           </Text>
@@ -4662,14 +4848,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj.pattaPassBook ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                            style={styles.previewbtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.pattaPassBook?.documentPath
@@ -4682,11 +4861,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                              style={styles.previewtxt}
                           >
                             Preview
                           </Text>
@@ -4703,14 +4878,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     ) : uploadedImagesDataObj.pattaPassBook ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                              style={styles.previewbtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.pattaPassBook?.documentPath
@@ -4723,11 +4891,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                                style={styles.previewtxt}
                           >
                             Preview
                           </Text>
@@ -4760,14 +4924,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj.pensionLetter ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                            style={styles.previewbtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.pensionLetter?.documentPath
@@ -4780,11 +4937,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                            style={styles.previewtxt}
                           >
                             Preview
                           </Text>
@@ -4817,14 +4970,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj.imaCertificate ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                            style={styles.previewbtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.imaCertificate?.documentPath
@@ -4837,11 +4983,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                              style={styles.previewtxt}
                           >
                             Preview
                           </Text>
@@ -4876,14 +5018,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj.leasingConfirmationLetter ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                            style={styles.previewbtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.leasingConfirmationLetter
@@ -4897,11 +5032,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                              style={styles.previewtxt}
                           >
                             Preview
                           </Text>
@@ -4919,14 +5050,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     ) : uploadedImagesDataObj.leasingConfirmationLetter ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                            style={styles.previewbtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.leasingConfirmationLetter
@@ -4940,11 +5064,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                                style={styles.previewtxt}
                           >
                             Preview
                           </Text>
@@ -4978,14 +5098,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj.address ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                            style={styles.previewbtn}
                           onPress={() => {
                             if (uploadedImagesDataObj.address?.documentPath) {
                               setImagePath(
@@ -4995,11 +5108,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                              style={styles.previewtxt}
                           >
                             Preview
                           </Text>
@@ -5014,14 +5123,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     ) : uploadedImagesDataObj.addressProof?.fileName ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                              style={styles.previewbtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.addressProof?.documentPath
@@ -5033,11 +5135,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                                style={styles.previewtxt}
                           >
                             Preview
                           </Text>
@@ -5222,6 +5320,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       label={
                         userData.isSelfManager == "Y"
                           ? "Battery Type"
+                          : userData.isTracker == "Y"
+                          ? "Clutch Type"
                           : "Transmission Type"
                       }
                       value={selector.c_transmission_type}
@@ -5518,14 +5618,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   {selector.regDocumentPath ? (
                     <View style={{ flexDirection: "row" }}>
                       <TouchableOpacity
-                        style={{
-                          width: "20%",
-                          height: 30,
-                          backgroundColor: Colors.SKY_BLUE,
-                          borderRadius: 4,
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
+                          style={styles.previewbtn}
                         onPress={() => {
                           if (selector.regDocumentPath) {
                             setImagePath(selector.regDocumentPath);
@@ -5533,11 +5626,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         }}
                       >
                         <Text
-                          style={{
-                            color: Colors.WHITE,
-                            fontSize: 14,
-                            fontWeight: "600",
-                          }}
+                            style={styles.previewtxt}
                         >
                           Preview
                         </Text>
@@ -5650,6 +5739,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     label={
                       userData.isSelfManager == "Y"
                         ? "Battery Type"
+                        : userData.isTracker == "Y"
+                        ? "Clutch Type"
                         : "Transmission Type"
                     }
                     value={selector.r_transmission_type}
@@ -5846,14 +5937,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       {selector.insuranceDocumentPath ? (
                         <View style={{ flexDirection: "row" }}>
                           <TouchableOpacity
-                            style={{
-                              width: "20%",
-                              height: 30,
-                              backgroundColor: Colors.SKY_BLUE,
-                              borderRadius: 4,
-                              justifyContent: "center",
-                              alignItems: "center",
-                            }}
+                              style={styles.previewbtn}
                             onPress={() => {
                               if (selector.insuranceDocumentPath) {
                                 setImagePath(selector.insuranceDocumentPath);
@@ -5861,11 +5945,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                             }}
                           >
                             <Text
-                              style={{
-                                color: Colors.WHITE,
-                                fontSize: 14,
-                                fontWeight: "600",
-                              }}
+                                style={styles.previewtxt}
                             >
                               Preview
                             </Text>
@@ -6260,4 +6340,61 @@ const styles = StyleSheet.create({
     height: 40,
     fontSize: 16,
   },
+  eventTouchable: {
+    flexDirection: "row",
+    // justifyContent: "space-around",
+    alignItems: "center",
+    // height: '15%',
+    alignContent: "center",
+    width: '100%',
+    marginTop: 5
+
+
+  },
+  eventText: { fontSize: 12, color: Colors.BLACK, textAlign: "left", marginEnd: 10, width: 100, },
+  modelView: {
+    width: '90%',
+    backgroundColor: Colors.WHITE,
+    padding: 10,
+    borderWidth: 2,
+    borderColor: Colors.BLACK,
+    flexDirection: "column",
+    height: '22%',
+  },
+  selectTitle: { color: Colors.BLACK, fontSize: 16, fontWeight: "700", textAlign: "left", margin: 5 },
+  view3: {
+    flexDirection: "row",
+    display: "flex",
+    justifyContent: "space-between",
+    backgroundColor: Colors.WHITE,
+  },
+  addmodelbtn:{
+    width: "40%",
+    margin: 5,
+    borderRadius: 5,
+    backgroundColor: Colors.PINK,
+    height: 40,
+    alignSelf: "flex-end",
+    alignContent: "flex-end",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  addmodeltxt: {
+    fontSize: 16,
+    textAlign: "center",
+    color: Colors.WHITE,
+  },
+  previewbtn:{
+    width: "20%",
+    height: 30,
+    backgroundColor: Colors.SKY_BLUE,
+    borderRadius: 4,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  previewtxt: {
+    color: Colors.WHITE,
+    fontSize: 14,
+    fontWeight: "600",
+  }
 });

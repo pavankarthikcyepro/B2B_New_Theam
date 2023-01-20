@@ -30,150 +30,184 @@ const multipleTestData = [
 ]
 
 
-const DropDownComponant = ({ visible = false, multiple = false, headerTitle = "Select Data", data = [], selectedItems, keyId = "", onRequestClose }) => {
+const DropDownComponant = ({
+  visible = false,
+  multiple = false,
+  headerTitle = "Select Data",
+  data = [],
+  selectedItems,
+  keyId = "",
+  onRequestClose,
+  disabledData = [],
+}) => {
+  const [multipleData, setMultipleData] = useState([]);
 
-    const [multipleData, setMultipleData] = useState([]);
+  useEffect(() => {
+    setMultipleData([...data]);
+  }, [data]);
 
-    useEffect(() => {
-        setMultipleData([...data])
-    }, [data])
-
-    const itemSelected = (index) => {
-        let updatedMultipleData = [...multipleData];
-        const obj = { ...updatedMultipleData[index] };
-        if (obj.selected != undefined) {
-            obj.selected = !obj.selected;
-        } else {
-            obj.selected = true;
-        }
-        updatedMultipleData[index] = obj;
-        setMultipleData(updatedMultipleData);
+  const itemSelected = (index) => {
+    let updatedMultipleData = [...multipleData];
+    const obj = { ...updatedMultipleData[index] };
+    if (obj.selected != undefined) {
+      obj.selected = !obj.selected;
+    } else {
+      obj.selected = true;
     }
+    updatedMultipleData[index] = obj;
+    setMultipleData(updatedMultipleData);
+  };
 
-    const closeModalWithSelectedItem = (item) => {
-
-        if (multiple) {
-            // let itemsSelected = [];
-            // multipleData.forEach((value, index) => {
-            //     if (value.selected) {
-            //         itemsSelected.push(value);
-            //     }
-            // })
-            selectedItems(multipleData, keyId)
-        } else {
-            selectedItems(item, keyId)
-        }
+  const closeModalWithSelectedItem = (item) => {
+    if (multiple) {
+      // let itemsSelected = [];
+      // multipleData.forEach((value, index) => {
+      //     if (value.selected) {
+      //         itemsSelected.push(value);
+      //     }
+      // })
+      selectedItems(multipleData, keyId);
+    } else {
+      selectedItems(item, keyId);
     }
+  };
 
-    let estimateTableHeight = data.length * 50;
-    let faltListHeight = tableHeight;
-    if (estimateTableHeight < tableHeight) {
-        faltListHeight = null;
-    }
+  let estimateTableHeight = data.length * 50;
+  let faltListHeight = tableHeight;
+  if (estimateTableHeight < tableHeight) {
+    faltListHeight = null;
+  }
 
-    return (
-        <Modal
-            animationType={Platform.OS === "ios" ? 'slide' : 'fade'}
-            transparent={true}
-            visible={visible}
-            onRequestClose={() => { }}
-        >
-            <View style={styles.conatiner}>
-                <View style={{ backgroundColor: Colors.WHITE }}>
-                    <SafeAreaView>
-                        <View style={styles.view1}>
-                            <View style={styles.view2}>
-                                <Text style={styles.text1}>{headerTitle}</Text>
-                                {multiple ? <Button
-                                    labelStyle={{ fontSize: 14, fontWeight: '400', color: Colors.RED, textTransform: 'none' }}
-                                    onPress={() => closeModalWithSelectedItem({})}
-                                >
-                                    Done
-                                </Button> : <IconButton
-                                    icon="close-circle-outline"
-                                    color={Colors.WHITE}
-                                    size={25}
-                                    onPress={onRequestClose}
-                                />}
+  return (
+    <Modal
+      animationType={Platform.OS === "ios" ? "slide" : "fade"}
+      transparent={true}
+      visible={visible}
+      onRequestClose={() => {}}
+    >
+      <View style={styles.conatiner}>
+        <View style={{ backgroundColor: Colors.WHITE }}>
+          <SafeAreaView>
+            <View style={styles.view1}>
+              <View style={styles.view2}>
+                <Text style={styles.text1}>{headerTitle}</Text>
+                {multiple ? (
+                  <Button
+                    labelStyle={{
+                      fontSize: 14,
+                      fontWeight: "400",
+                      color: Colors.RED,
+                      textTransform: "none",
+                    }}
+                    onPress={() => closeModalWithSelectedItem({})}
+                  >
+                    Done
+                  </Button>
+                ) : (
+                  <IconButton
+                    icon="close-circle-outline"
+                    color={Colors.WHITE}
+                    size={25}
+                    onPress={onRequestClose}
+                  />
+                )}
+              </View>
 
-                            </View>
-
-                            {multiple ? <FlatList
-                                data={multipleData}
-                                style={{ height: faltListHeight }}
-                                keyExtractor={(item, index) => index.toString()}
-                                renderItem={({ item, index }) => {
-                                    return (
-                                      <Pressable
-                                        onPress={() => itemSelected(index)}
-                                        >
-                                        <View>
-                                          <List.Item
-                                            titleStyle={{
-                                              fontSize: 14,
-                                              fontWeight: "400",
-                                            }}
-                                            title={item.name}
-                                            style={{ height: 40 }}
-                                            description={""}
-                                            titleNumberOfLines={1}
-                                            descriptionEllipsizeMode={"tail"}
-                                            left={(props) => (
-                                              <List.Icon
-                                                {...props}
-                                                icon={
-                                                  item.selected
-                                                    ? "checkbox-marked"
-                                                    : "checkbox-blank-outline"
-                                                }
-                                                color={
-                                                  item.selected
-                                                    ? Colors.RED
-                                                    : Colors.GRAY
-                                                }
-                                                style={{ margin: 0 }}
-                                              />
-                                            )}
-                                          />
-                                          {/* <Divider /> */}
-                                        </View>
-                                      </Pressable>
-                                    );
-                                }}
-                            /> : (data.length > 0 ?
-                                    <FlatList
-                                        style={{ height: faltListHeight }}
-                                        data={data}
-                                        keyExtractor={(item, index) => index.toString()}
-                                        renderItem={({ item, index }) => {
-                                            return (
-                                                <Pressable onPress={() => closeModalWithSelectedItem(item)}>
-                                                    <View>
-                                                        <List.Item
-                                                            titleStyle={{ fontSize: 16, fontWeight: '400' }}
-                                                            title={item.name}
-                                                            titleNumberOfLines={1}
-                                                            descriptionEllipsizeMode={'tail'}
-                                                            description={""}
-                                                        />
-                                                        <View style={GlobalStyle.underline}></View>
-                                                    </View>
-                                                </Pressable>
-                                            )
-                                        }}
-                                    />
-                                    :
-                                    <View style={{marginTop: 10, marginLeft: 10}}>
-                                        <Text style={{ fontSize: 16, fontWeight: '400' }}>No data found</Text>
-                                    </View>
-                                )}
+              {multiple ? (
+                <FlatList
+                  data={multipleData}
+                  style={{ height: faltListHeight }}
+                  keyExtractor={(item, index) => index.toString()}
+                  renderItem={({ item, index }) => {
+                    return (
+                      <Pressable onPress={() => itemSelected(index)}>
+                        <View>
+                          <List.Item
+                            titleStyle={{
+                              fontSize: 14,
+                              fontWeight: "400",
+                            }}
+                            title={item.name}
+                            style={{ height: 40 }}
+                            description={""}
+                            titleNumberOfLines={1}
+                            descriptionEllipsizeMode={"tail"}
+                            left={(props) => (
+                              <List.Icon
+                                {...props}
+                                icon={
+                                  item.selected
+                                    ? "checkbox-marked"
+                                    : "checkbox-blank-outline"
+                                }
+                                color={item.selected ? Colors.RED : Colors.GRAY}
+                                style={{ margin: 0 }}
+                              />
+                            )}
+                          />
+                          {/* <Divider /> */}
                         </View>
-                    </SafeAreaView>
+                      </Pressable>
+                    );
+                  }}
+                />
+              ) : data.length > 0 ? (
+                <FlatList
+                  style={{ height: faltListHeight }}
+                  data={data}
+                  keyExtractor={(item, index) => index.toString()}
+                  renderItem={({ item, index }) => {
+                    let disabledItem = false;
+                    if (disabledData.length > 0) {
+                      disabledData.forEach((element) => {
+                        if (element.name == item.name) {
+                          disabledItem = true;
+                        }
+                      });
+                    }
+                    return (
+                      <Pressable
+                        disabled={disabledItem}
+                        onPress={() => closeModalWithSelectedItem(item)}
+                      >
+                        <View>
+                          <List.Item
+                            titleStyle={{
+                              fontSize: 16,
+                              fontWeight: "400",
+                              color: disabledItem ? Colors.TARGET_GRAY : Colors.BLACK,
+                            }}
+                            title={item.name}
+                            titleNumberOfLines={1}
+                            descriptionEllipsizeMode={"tail"}
+                            description={""}
+                            disabled={disabledItem}
+                            style={
+                              disabledItem
+                                ? { backgroundColor: Colors.LIGHT_GRAY }
+                                : null
+                            }
+                          />
+                          <View style={GlobalStyle.underline}></View>
+                        </View>
+                      </Pressable>
+                    );
+                  }}
+                />
+              ) : (
+                <View style={{ marginTop: 10, marginLeft: 10 }}>
+                  <Text style={{ fontSize: 16, fontWeight: "400" }}>
+                    No data found
+                  </Text>
                 </View>
+              )}
             </View>
-        </Modal>
-    )
-}
+          </SafeAreaView>
+        </View>
+      </View>
+    </Modal>
+  );
+};
 
 export { DropDownComponant };
 

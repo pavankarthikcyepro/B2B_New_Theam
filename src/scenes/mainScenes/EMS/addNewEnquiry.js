@@ -82,6 +82,7 @@ import {
   autoSaveEnquiryDetailsApi,
   updatedmsLeadProduct,
   clearState2,
+  getEventConfigList,
 } from "../../../redux/enquiryFormReducer";
 import {
   RadioTextItem,
@@ -172,7 +173,7 @@ import {
 } from "../../../jsonData/preEnquiryScreenJsonData";
 import { getEmployeesListApi } from "../../../redux/confirmedPreEnquiryReducer";
 import { client } from "../../../networking/client";
-
+import Fontisto from "react-native-vector-icons/Fontisto"
 const theme = {
   ...DefaultTheme,
   // Specify custom property
@@ -183,7 +184,51 @@ const theme = {
     background: Colors.WHITE,
   },
 };
+let EventListData = [
+  {
+    eventName: "omega thon",
+    eventLocation: "Ahmedabad",
+    Startdate: "10/12/2022",
+    Enddate: "10/12/2022",
+    isSelected: false,
+    id: 0
 
+  },
+  {
+    eventName: "omega thon22",
+    eventLocation: "Ahmedabad",
+    Startdate: "10/12/2022",
+    Enddate: "10/12/2022",
+    isSelected: false,
+    id: 1
+  },
+  {
+    eventName: "omega thon22",
+    eventLocation: "Ahmedabad",
+    Startdate: "10/12/2022",
+    Enddate: "10/12/2022",
+    isSelected: false
+    ,
+    id: 2
+  },
+  {
+    eventName: "omega thon22",
+    eventLocation: "Ahmedabad",
+    Startdate: "10/12/2022",
+    Enddate: "10/12/2022",
+    isSelected: false,
+    id: 3
+  },
+  {
+    eventName: "omega thon22",
+    eventLocation: "Ahmedabad",
+    Startdate: "10/12/2022",
+    Enddate: "10/12/2022",
+    isSelected: false,
+    id: 4
+  },
+
+]
 const dmsAttachmentsObj = {
   branchId: null,
   contentSize: 0,
@@ -245,6 +290,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     employeeId: "",
     employeeName: "",
     isSelfManager: "",
+    isTracker: "",
   });
   const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
   const [modelsList, setModelsList] = useState([]);
@@ -286,7 +332,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
   const [employeesData, setEmployeesData] = useState([]);
   const [disabled, setDisabled] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState("");
-
+  const [isEventListModalVisible, setisEventListModalVisible] = useState(false);
+  const [eventListdata, seteventListData] = useState([])
+  const [selectedEventData, setSelectedEventData] = useState([])
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
@@ -346,6 +394,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       employeeId: "",
       employeeName: "",
       isSelfManager: "",
+      isTracker: "",
     });
     setUploadedImagesDataObj({});
     setTypeOfActionDispatched("");
@@ -434,7 +483,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       // if (selector.source_of_enquiry) {
       //   setEmployeeSelectModel(true);
       // }
-    }else{
+    } else {
       setEmployeesData([]);
       setSelectedEmployee("");
     }
@@ -495,6 +544,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
         employeeId: jsonObj.empId,
         employeeName: jsonObj.empName,
         isSelfManager: jsonObj.isSelfManager,
+        isTracker: jsonObj.isTracker,
       });
       getCarMakeListFromServer(jsonObj.orgId);
       getCarModelListFromServer(jsonObj.orgId);
@@ -580,20 +630,21 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
             setMakerData([...makeList]);
           }
         },
-        (rejected) => {}
+        (rejected) => { }
       )
-      .finally(() => {});
+      .finally(() => { });
   };
 
   const getInsurenceCompanyNamesFromServer = async (token, orgId) => {
-    await fetch(URL.GET_INSURENCE_COMPANY_NAMES(orgId), {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "auth-token": token,
-      },
-    })
+    // await fetch(URL.GET_INSURENCE_COMPANY_NAMES(orgId), {
+    //   method: "GET",
+    //   headers: {
+    //     Accept: "application/json",
+    //     "Content-Type": "application/json",
+    //     "auth-token": token,
+    //   },
+    // })
+    await client.get(URL.GET_INSURENCE_COMPANY_NAMES(orgId))
       .then((json) => json.json())
       .then((res) => {
         if (res != null && res.length > 0) {
@@ -615,7 +666,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        "auth-token": token,
+        "Authorization": "Bearer " + authToken,
       },
     })
       .then((json) => {
@@ -751,6 +802,24 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     }
   }, [selector.enquiry_details_response]); //selector.enquiry_details_response
 
+  useEffect(() => {
+    if (selector.event_list_response_Config_status === "success") {
+      //todo
+   
+      let data = selector.event_list_Config;
+      if (data) {
+        let addSelectedFlag = data.content.map(i => ({ ...i, isSelected: false }));
+
+
+      
+        seteventListData(addSelectedFlag)
+        setisEventListModalVisible(true)
+      }
+
+
+    }
+  }, [selector.event_list_response_Config_status])
+
   function isEmpty(obj) {
     return Object.keys(obj).length === 0;
   }
@@ -880,7 +949,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       }
 
       await setCarModelsList(array);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const checkModelSelection = () => {
@@ -1217,6 +1286,15 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       return;
     }
 
+    // check if events are selected 
+    if (selector.source_of_enquiry === "Events") {
+      if (selectedEventData.length <= 0) {
+        showToast("Please select event details");
+        return;
+      }
+    }
+
+
     // if (!selector.enquiry_details_response) {
     //   return;
     // }
@@ -1255,6 +1333,21 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
           orgId: jsonObj.orgId,
           ownerName: jsonObj.empName,
         };
+
+        let dmsLeadEventDto;
+        if (selectedEventData.length > 0) {
+          dmsLeadEventDto = {
+            eventId: selectedEventData[0].eventId,
+            eventName: selectedEventData[0].name,
+            eventLocation: selectedEventData[0].location,
+            startDate: selectedEventData[0].startdate,
+            endDate: selectedEventData[0].enddate
+          }
+        } else {
+          dmsLeadEventDto = {
+
+          }
+        }
         let payloadx = {
           dmsAccountDto: {
             branchId: jsonObj.branchs[0]?.branchId,
@@ -1275,8 +1368,8 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
             age: selector.age,
             anniversaryDate: selector.anniversaryDate
               ? convertDateStringToMillisecondsUsingMoment(
-                  selector.anniversaryDate
-                )
+                selector.anniversaryDate
+              )
               : "",
             annualRevenue: selector.approx_annual_income,
             dateOfBirth: selector.dateOfBirth
@@ -1466,6 +1559,8 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
             ],
             subSource: selector.sub_source_of_enquiry,
           },
+
+          dmsLeadEventDto: dmsLeadEventDto
         };
 
         let tempAttachments = Object.assign(
@@ -1568,6 +1663,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
         let payloady = {
           dmsContactDto: payloadx.dmsAccountDto,
           dmsLeadDto: payloadx.dmsLeadDto,
+          dmsLeadEventDto: payloadx.dmsLeadEventDto
         };
         try {
           if (
@@ -1575,6 +1671,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
             selector.enquiry_segment === "Personal"
           ) {
             const response = await client.post(URL.ENQUIRY_CONTACT(), payloady);
+         
             const json = await response.json();
             if (json.success) {
               displayCreateEnquiryLeadAlert(
@@ -1590,6 +1687,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
               URL.ENQURIY_ACCOUNT(),
               payloadx
             );
+            
             const json1 = await response1.json();
             if (json1.success) {
               displayCreateEnquiryLeadAlert(
@@ -2168,14 +2266,15 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       // universalId: universalId,
     };
     const url = URL.CUSTOMER_LEAD_REFERENCE();
-    await fetch(url, {
-      headers: {
-        "Content-Type": "application/json",
-        "auth-token": authToken,
-      },
-      method: "POST",
-      body: JSON.stringify(payload),
-    })
+    // await fetch(url, {
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     "Authorization": authToken,
+    //   },
+    //   method: "POST",
+    //   body: JSON.stringify(payload),
+    // })
+   await client.post(url,payload)
       .then((res) => res.json())
       .then((jsonRes) => {
         if (jsonRes.success === true) {
@@ -2212,7 +2311,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     if (typeOfActionDispatched === "PROCEED_TO_PREBOOKING") {
       if (
         proceedToPreSelector.update_enquiry_details_response_status ===
-          "success" &&
+        "success" &&
         proceedToPreSelector.update_enquiry_details_response
       ) {
         if (typeOfActionDispatched === "PROCEED_TO_PREBOOKING") {
@@ -2305,13 +2404,13 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
           (selector.enquiry_details_response.dmsLeadDto.buyerType ===
             "Replacement Buyer" ||
             selector.enquiry_details_response.dmsLeadDto.buyerType ===
-              "Exchange Buyer")
+            "Exchange Buyer")
         ) {
           pendingTaskNames.push("Evaluation : Pending \n");
         }
         if (
           element.taskName === "Proceed to Pre Booking" &&
-          element.assignee.empId === userData.employeeId 
+          element.assignee.empId === userData.employeeId
           // element.universalId === universalId
         ) {
           pendingTaskNames.push("Proceed to Pre Booking");
@@ -2333,9 +2432,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       const jsonObj = JSON.parse(employeeData);
       if (
         selector.enquiry_details_response.dmsLeadDto.salesConsultant ==
-          jsonObj.empName ||
+        jsonObj.empName ||
         selector.enquiry_details_response.dmsLeadDto.createdBy ==
-          jsonObj.empName
+        jsonObj.empName
       ) {
         // if (universalId) {
         //   const endUrl = universalId + "?" + "stage=Enquiry";
@@ -2478,11 +2577,39 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
           customerTypes =
             CustomerTypesObj22[selector.enquiry_segment.toLowerCase()];
           selector.customerType = "";
+        } else if (orgId == 26) {
+          let tmpArr = [];
+          if (selector.enquiry_segment == "Personal") {
+            tmpArr = Object.assign(
+              [],
+              selector.customer_types?.personal
+                ? selector.customer_types.personal
+                : CustomerTypesObj[selector.enquiry_segment.toLowerCase()]
+            );
+          } else if (selector.enquiry_segment == "Company") {
+            tmpArr = Object.assign(
+              [],
+              selector.customer_types?.company
+                ? selector.customer_types.company
+                : CustomerTypesObj[selector.enquiry_segment.toLowerCase()]
+            );
+          } else {
+            tmpArr = Object.assign(
+              [],
+              selector.customer_types?.commercial
+                ? selector.customer_types.commercial
+                : CustomerTypesObj[selector.enquiry_segment.toLowerCase()]
+            );
+          }
+
+          customerTypes = [...tmpArr];
+          selector.customerType = "";
         } else {
           customerTypes =
             CustomerTypesObj[selector.enquiry_segment.toLowerCase()];
           selector.customerType = "";
         }
+
         setDataForDropDown([...customerTypes]);
         break;
       case "SOURCE_OF_ENQUIRY":
@@ -2747,6 +2874,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       method: "POST",
       headers: {
         "Content-Type": "multipart/form-data",
+        "Authorization": "Bearer " + authToken,
       },
       body: formData,
     })
@@ -2985,6 +3113,27 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     dispatch(getEventListApi(payload));
   };
 
+
+  const getEventConfigListFromServer = (startDate, endDate) => {
+    if (
+      startDate === undefined ||
+      startDate === null ||
+      endDate === undefined ||
+      endDate === null
+    ) {
+      return;
+    }
+
+    const payload = {
+      startDate: startDate,
+      endDate: endDate,
+      empId: userData.employeeId,
+      branchId: userData.branchId,
+      orgId: userData.orgId,
+    };
+    dispatch(getEventConfigList(payload));
+  };
+
   updateSubSourceData = (item) => {
     if (item.subsource && item.subsource.length > 0) {
       const updatedData = [];
@@ -3007,7 +3156,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       orgId: userData.orgId,
       branchId: userData.branchId,
     };
-    Promise.all([dispatch(getEmployeesListApi(data))]).then(async (res) => {});
+    Promise.all([dispatch(getEmployeesListApi(data))]).then(async (res) => { });
   };
 
   const updateEmployee = (employeeObj) => {
@@ -3030,8 +3179,166 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       { cancelable: false }
     );
   };
+
+  const addSelectedEvent = () => {
+    // todo add api call 
+
+    let findSelected = eventListdata.filter(item => {
+      if (item.isSelected === true) {
+        return item;
+      }
+    })
+    if (findSelected.length > 0) {
+      setSelectedEventData(findSelected);
+      setisEventListModalVisible(false);
+    } else {
+      showToast("Please select event");
+    }
+    
+   
+
+  }
+
+  const eventListTableRow = (txt1, txt2, txt3, txt4, isDisplayRadio, isRadioSelected, isClickable, itemMain, index) => {
+
+    return (
+      <>
+
+        <TouchableOpacity style={styles.eventTouchable}
+          disabled={isClickable}
+          onPress={() => {
+
+            // let temp = [...eventListdata].filter(item => item.id === itemMain.id).map(i => i.isSelected = true)
+            let temp = eventListdata.map(i =>
+              i.id === itemMain.id ? { ...i, isSelected: true } : { ...i, isSelected: false }
+            )
+          
+            seteventListData(temp);
+
+          }}
+        >
+          {/* todo */}
+          {isDisplayRadio ?
+            <Fontisto name={itemMain.isSelected ? "radio-btn-active" : "radio-btn-passive"}
+              size={12} color={Colors.RED}
+              style={{ marginEnd: 10 }}
+            /> :
+            <View style={{ marginEnd: 10, width: 12, }}  >{ }</View>}
+
+          <Text numberOfLines={1} style={styles.eventText}  >{txt1}</Text>
+          <Text numberOfLines={1} style={styles.eventText} >{txt2}</Text>
+          <Text numberOfLines={1} style={styles.eventText} >{txt3}</Text>
+          <Text numberOfLines={1} style={styles.eventText} >{txt4}</Text>
+
+        </TouchableOpacity>
+
+      </>)
+  }
+
+  const addEventListModal = () => {
+
+    return (
+      <Modal
+        animationType="fade"
+        visible={isEventListModalVisible}
+        onRequestClose={() => {
+
+        }}
+        transparent={true}
+      >
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgba(0,0,0,0.7)",
+
+
+          }}
+        >
+          <View style={styles.modelView}
+
+          >
+            <Text style={styles.selectTitle}>Select Event</Text>
+            <ScrollView style={{
+              width: '100%',
+
+            }}
+              horizontal={true}
+            >
+              <View style={{ flexDirection: "column" }}>
+
+                <Text style={GlobalStyle.underline} />
+                <View style={{
+                  height: 30, borderBottomColor: 'rgba(208, 212, 214, 0.7)',
+                  borderBottomWidth: 2,
+
+                }}>
+                  {eventListTableRow("Event Name", "Event location", "Start Date", "End Date", false, false, true, 0, 0)}
+                  {/* <Text style={GlobalStyle.underline} /> */}
+                </View>
+                <View>
+                  <FlatList
+                    key={"CATEGORY_LIST"}
+                    data={eventListdata}
+                    style={{ height: '80%' }}
+                    keyExtractor={(item, index) => index.toString()}
+                    ListEmptyComponent={() => {
+                      return (<View style={{ alignItems: 'center', marginVertical: 20 }}><Text>{"Data Not Available"}</Text></View>)
+                    }}
+
+                    renderItem={({ item, index }) => {
+                      return (
+                        <>
+                          <View style={{
+                            height: 35, borderBottomColor: 'rgba(208, 212, 214, 0.7)',
+                            borderBottomWidth: 4, marginTop: 5
+                          }}>
+                            {/* {eventListTableRow(item.eventName, item.eventLocation, item.Startdate, item.Enddate, true, false, false, item, index)} */}
+                            {eventListTableRow(item.name, item.location, moment(item.startdate).format("DD-MM-YYYY"), moment(item.enddate).format("DD-MM-YYYY"), true, false, false, item, index)}
+                          </View>
+
+                        </>
+                      );
+                    }}
+                  />
+
+                </View>
+
+
+              </View>
+
+            </ScrollView>
+            <View style={{ flexDirection: "row", alignSelf: "flex-end", marginTop: 10 }}>
+              <Button
+                mode="contained"
+
+                style={{ flex: 1, marginRight: 10 }}
+                color={Colors.GRAY}
+                labelStyle={{ textTransform: "none" }}
+                onPress={() => setisEventListModalVisible(false)}>
+                Cancel
+              </Button>
+              <Button
+                mode="contained"
+
+                style={{ flex: 1 }}
+                color={Colors.PINK}
+                labelStyle={{ textTransform: "none" }}
+                onPress={() => addSelectedEvent()}>
+                Add
+              </Button>
+            </View>
+
+          </View>
+
+        </View>
+      </Modal>
+    )
+  }
+
   return (
-    <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
+    <SafeAreaView style={[styles.container, { flexDirection: "column", }]}>
       <SelectEmployeeComponant
         visible={showEmployeeSelectModel}
         headerTitle={"Select Employee"}
@@ -3085,6 +3392,12 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
             );
           }
           if (dropDownKey === "SOURCE_OF_ENQUIRY") {
+            setSelectedEventData([])
+            if (item.name === "Events") {
+              const startOfMonth = moment().startOf('month').format('YYYY-MM-DD');
+              const endOfMonth = moment().endOf('month').format('YYYY-MM-DD');
+              getEventConfigListFromServer(startOfMonth, endOfMonth);
+            }
             if (item.name === "Event") {
               getEventListFromServer();
             }
@@ -3106,6 +3419,8 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
           );
         }}
       />
+
+      {addEventListModal()}
 
       {/* {selector.showDatepicker && (
         <DatePickerComponent
@@ -3251,12 +3566,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                 ]}
               >
                 <View
-                  style={{
-                    flexDirection: "row",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    backgroundColor: Colors.WHITE,
-                  }}
+                  style={styles.view3}
                 >
                   <View
                     style={{
@@ -3352,12 +3662,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                 ></Text>
 
                 <View
-                  style={{
-                    flexDirection: "row",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    backgroundColor: Colors.WHITE,
-                  }}
+                  style={styles.view3}
                 >
                   <View style={{ width: "45%" }}>
                     <DropDownSelectionItem
@@ -3574,11 +3879,11 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                   ]}
                 ></Text>
                 {selector.customer_type.toLowerCase() === "fleet" ||
-                selector.customer_type.toLowerCase() === "institution" ||
-                selector.customer_type.toLowerCase() === "corporate" ||
-                selector.customer_type.toLowerCase() === "government" ||
-                selector.customer_type.toLowerCase() === "retired" ||
-                selector.customer_type.toLowerCase() === "other" ? (
+                  selector.customer_type.toLowerCase() === "institution" ||
+                  selector.customer_type.toLowerCase() === "corporate" ||
+                  selector.customer_type.toLowerCase() === "government" ||
+                  selector.customer_type.toLowerCase() === "retired" ||
+                  selector.customer_type.toLowerCase() === "other" ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -3650,31 +3955,33 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     .toLowerCase()
                     .trim()
                     .replace(/ /g, "") === "socialnetwork") && ( */}
-              {selector.source_of_enquiry.length !==0 &&
-                <View>
-                  <DropDownSelectionItem
-                    label={"Sub Source Of Enquiry*"}
-                    disabled={false}
-                    value={selector.sub_source_of_enquiry}
-                    onPress={() =>
-                      showDropDownModelMethod(
-                        "SUB_SOURCE_OF_ENQUIRY",
-                        "Sub Source Of Enquiry"
-                      )
-                    }
-                  />
-                  <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress && selector.sub_source_of_enquiry === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
-                </View>}
+                {selector.source_of_enquiry.length !== 0 && (
+                  <View>
+                    <DropDownSelectionItem
+                      label={"Sub Source Of Enquiry*"}
+                      disabled={false}
+                      value={selector.sub_source_of_enquiry}
+                      onPress={() =>
+                        showDropDownModelMethod(
+                          "SUB_SOURCE_OF_ENQUIRY",
+                          "Sub Source Of Enquiry"
+                        )
+                      }
+                    />
+                    <Text
+                      style={[
+                        GlobalStyle.underline,
+                        {
+                          backgroundColor:
+                            isSubmitPress &&
+                              selector.sub_source_of_enquiry === ""
+                              ? "red"
+                              : "rgba(208, 212, 214, 0.7)",
+                        },
+                      ]}
+                    ></Text>
+                  </View>
+                )}
                 {/* )} */}
 
                 {selector.source_of_enquiry.toLowerCase() === "reference" && (
@@ -3755,8 +4062,8 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                   value={
                     selector.expected_delivery_date
                       ? moment(
-                          new Date(Number(selector.expected_delivery_date))
-                        ).format("DD/MM/YYYY")
+                        new Date(Number(selector.expected_delivery_date))
+                      ).format("DD/MM/YYYY")
                       : moment().format("DD/MM/YYYY")
                   }
                   onPress={() =>
@@ -4078,7 +4385,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     value={"yes"}
                     status={
                       selector.is_permanent_address_same === "YES" ||
-                      isPermanent() === "YES"
+                        isPermanent() === "YES"
                         ? true
                         : false
                     }
@@ -4364,24 +4671,10 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     setCarModelsList(arr);
                     //selector.dmsLeadProducts = [...selector.dmsLeadProducts, carmodeldata]
                   }}
-                  style={{
-                    width: "40%",
-                    margin: 5,
-                    borderRadius: 5,
-                    backgroundColor: Colors.PINK,
-                    height: 40,
-                    alignSelf: "flex-end",
-                    alignContent: "flex-end",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
+                  style={styles.addmodelView}
                 >
                   <Text
-                    style={{
-                      fontSize: 16,
-                      textAlign: "center",
-                      color: Colors.WHITE,
-                    }}
+                    style={styles.addmodelTxt}
                   >
                     Add Model
                   </Text>
@@ -4583,51 +4876,51 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
                 {(selector.retail_finance === "In House" ||
                   selector.retail_finance === "Out House") && (
-                  <View>
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Loan Amount"}
-                      keyboardType={"numeric"}
-                      maxLength={10}
-                      value={selector.loan_amount}
-                      onChangeText={(text) => {
-                        emiCal(
-                          text,
-                          selector.loan_of_tenure,
-                          selector.rate_of_interest
-                        );
-                        dispatch(
-                          setFinancialDetails({
-                            key: "LOAN_AMOUNT",
-                            text: text,
-                          })
-                        );
-                      }}
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Rate of Interest"}
-                      keyboardType={"numeric"}
-                      maxLength={10}
-                      value={selector.rate_of_interest?.toString()}
-                      onChangeText={(text) => {
-                        emiCal(
-                          selector.loan_amount,
-                          selector.loan_of_tenure,
-                          text
-                        );
-                        dispatch(
-                          setFinancialDetails({
-                            key: "RATE_OF_INTEREST",
-                            text: text,
-                          })
-                        );
-                      }}
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                  </View>
-                )}
+                    <View>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Loan Amount"}
+                        keyboardType={"numeric"}
+                        maxLength={10}
+                        value={selector.loan_amount}
+                        onChangeText={(text) => {
+                          emiCal(
+                            text,
+                            selector.loan_of_tenure,
+                            selector.rate_of_interest
+                          );
+                          dispatch(
+                            setFinancialDetails({
+                              key: "LOAN_AMOUNT",
+                              text: text,
+                            })
+                          );
+                        }}
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Rate of Interest"}
+                        keyboardType={"numeric"}
+                        maxLength={10}
+                        value={selector.rate_of_interest?.toString()}
+                        onChangeText={(text) => {
+                          emiCal(
+                            selector.loan_amount,
+                            selector.loan_of_tenure,
+                            text
+                          );
+                          dispatch(
+                            setFinancialDetails({
+                              key: "RATE_OF_INTEREST",
+                              text: text,
+                            })
+                          );
+                        }}
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
 
                 {selector.retail_finance === "In House" && (
                   <View>
@@ -4732,14 +5025,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                 {uploadedImagesDataObj?.pan?.fileName ? (
                   <View style={{ flexDirection: "row" }}>
                     <TouchableOpacity
-                      style={{
-                        width: "20%",
-                        height: 30,
-                        backgroundColor: Colors.SKY_BLUE,
-                        borderRadius: 4,
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
+                      style={styles.preViewBtn}
                       onPress={() => {
                         if (uploadedImagesDataObj.pan?.documentPath) {
                           setImagePath(uploadedImagesDataObj.pan?.documentPath);
@@ -4747,11 +5033,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                       }}
                     >
                       <Text
-                        style={{
-                          color: Colors.WHITE,
-                          fontSize: 14,
-                          fontWeight: "600",
-                        }}
+                        style={styles.previewTxt}
                       >
                         Preview
                       </Text>
@@ -4793,14 +5075,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj?.aadhar?.fileName ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                          style={styles.preViewBtn}
                           onPress={() => {
                             if (uploadedImagesDataObj.aadhar?.documentPath) {
                               setImagePath(
@@ -4810,11 +5085,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                            style={styles.previewTxt}
                           >
                             Preview
                           </Text>
@@ -4832,9 +5103,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
                 {/* // Employeed ID */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                (selector.customer_type.toLowerCase() === "corporate" ||
-                  selector.customer_type.toLowerCase() === "government" ||
-                  selector.customer_type.toLowerCase() === "retired") ? (
+                  (selector.customer_type.toLowerCase() === "corporate" ||
+                    selector.customer_type.toLowerCase() === "government" ||
+                    selector.customer_type.toLowerCase() === "retired") ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -4862,14 +5133,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj?.employeeId?.fileName ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                            style={styles.preViewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.employeeId?.documentPath
@@ -4881,11 +5145,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                              style={styles.previewTxt}
                           >
                             Preview
                           </Text>
@@ -4903,8 +5163,8 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
                 {/* Last 3 month payslip */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                (selector.customer_type.toLowerCase() === "corporate" ||
-                  selector.customer_type.toLowerCase() === "government") ? (
+                  (selector.customer_type.toLowerCase() === "corporate" ||
+                    selector.customer_type.toLowerCase() === "government") ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -4917,14 +5177,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj?.payslips ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                            style={styles.preViewBtn}
                           onPress={() => {
                             if (uploadedImagesDataObj?.payslips?.documentPath) {
                               setImagePath(
@@ -4934,11 +5187,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                              style={styles.previewTxt}
                           >
                             Preview
                           </Text>
@@ -4956,7 +5205,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
                 {/* Patta Pass book */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                selector.customer_type.toLowerCase() === "farmer" ? (
+                  selector.customer_type.toLowerCase() === "farmer" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -4969,14 +5218,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj.pattaPassBook ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                            style={styles.preViewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.pattaPassBook?.documentPath
@@ -4989,11 +5231,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                              style={styles.previewTxt}
                           >
                             Preview
                           </Text>
@@ -5010,14 +5248,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     ) : uploadedImagesDataObj.pattaPassBook ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                              style={styles.preViewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.pattaPassBook?.documentPath
@@ -5030,11 +5261,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                                style={styles.previewTxt}
                           >
                             Preview
                           </Text>
@@ -5054,7 +5281,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
                 {/* Pension Letter */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                selector.customer_type.toLowerCase() === "retired" ? (
+                  selector.customer_type.toLowerCase() === "retired" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -5067,14 +5294,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj.pensionLetter ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                            style={styles.preViewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.pensionLetter?.documentPath
@@ -5087,11 +5307,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                              style={styles.previewTxt}
                           >
                             Preview
                           </Text>
@@ -5111,7 +5327,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
                 {/* IMA Certificate */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                selector.customer_type.toLowerCase() === "doctor" ? (
+                  selector.customer_type.toLowerCase() === "doctor" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -5124,14 +5340,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj.imaCertificate ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                            style={styles.preViewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.imaCertificate?.documentPath
@@ -5144,11 +5353,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                              style={styles.previewTxt}
                           >
                             Preview
                           </Text>
@@ -5168,7 +5373,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
                 {/* Leasing Confirmation */}
                 {selector.enquiry_segment.toLowerCase() === "commercial" &&
-                selector.customer_type.toLowerCase() === "fleet" ? (
+                  selector.customer_type.toLowerCase() === "fleet" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -5183,14 +5388,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj.leasingConfirmationLetter ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                            style={styles.preViewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.leasingConfirmationLetter
@@ -5204,11 +5402,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                              style={styles.previewTxt}
                           >
                             Preview
                           </Text>
@@ -5226,14 +5420,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     ) : uploadedImagesDataObj.leasingConfirmationLetter ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                              style={styles.preViewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.leasingConfirmationLetter
@@ -5247,11 +5434,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                                style={styles.previewTxt}
                           >
                             Preview
                           </Text>
@@ -5272,7 +5455,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
                 {/* Address Proof */}
                 {selector.enquiry_segment.toLowerCase() === "company" &&
-                selector.customer_type.toLowerCase() === "institution" ? (
+                  selector.customer_type.toLowerCase() === "institution" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -5285,14 +5468,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj.address ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                            style={styles.preViewBtn}
                           onPress={() => {
                             if (uploadedImagesDataObj.address?.documentPath) {
                               setImagePath(
@@ -5302,11 +5478,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                              style={styles.previewTxt}
                           >
                             Preview
                           </Text>
@@ -5321,14 +5493,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     ) : uploadedImagesDataObj.addressProof?.fileName ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                          style={{
-                            width: "20%",
-                            height: 30,
-                            backgroundColor: Colors.SKY_BLUE,
-                            borderRadius: 4,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
+                              style={styles.preViewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.addressProof?.documentPath
@@ -5340,11 +5505,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text
-                            style={{
-                              color: Colors.WHITE,
-                              fontSize: 14,
-                              fontWeight: "600",
-                            }}
+                                style={styles.previewTxt}
                           >
                             Preview
                           </Text>
@@ -5364,7 +5525,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
                 {/* GSTIN Number */}
                 {selector.enquiry_segment.toLowerCase() === "company" &&
-                selector.customer_type.toLowerCase() === "institution" ? (
+                  selector.customer_type.toLowerCase() === "institution" ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -5529,7 +5690,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                       label={
                         userData.isSelfManager == "Y"
                           ? "Battery Type"
-                          : "Transmission Type"
+                          : userData.isTracker == "Y"
+                            ? "Clutch Type"
+                            : "Transmission Type"
                       }
                       value={selector.c_transmission_type}
                       onPress={() =>
@@ -5643,8 +5806,8 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                 <Text style={GlobalStyle.underline}></Text>
               </List.Accordion>
               {selector.buyer_type == "Additional Buyer" ||
-              selector.buyer_type == "Replacement Buyer" ||
-              selector.buyer_type == "Exchange Buyer" ? (
+                selector.buyer_type == "Replacement Buyer" ||
+                selector.buyer_type == "Exchange Buyer" ? (
                 <View style={styles.space}></View>
               ) : null}
               {/* // 8.Additional Buyer */}
@@ -5771,7 +5934,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
               {/* // 9.Replacement Buyer */}
               {selector.buyer_type == "Replacement Buyer" ||
-              selector.buyer_type == "Exchange Buyer" ? (
+                selector.buyer_type == "Exchange Buyer" ? (
                 <List.Accordion
                   id={"9"}
                   title={"Exchange Buyer"}
@@ -5825,14 +5988,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                   {selector.regDocumentPath ? (
                     <View style={{ flexDirection: "row" }}>
                       <TouchableOpacity
-                        style={{
-                          width: "20%",
-                          height: 30,
-                          backgroundColor: Colors.SKY_BLUE,
-                          borderRadius: 4,
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
+                          style={styles.preViewBtn}
                         onPress={() => {
                           if (selector.regDocumentPath) {
                             setImagePath(selector.regDocumentPath);
@@ -5840,11 +5996,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                         }}
                       >
                         <Text
-                          style={{
-                            color: Colors.WHITE,
-                            fontSize: 14,
-                            fontWeight: "600",
-                          }}
+                            style={styles.previewTxt}
                         >
                           Preview
                         </Text>
@@ -5957,7 +6109,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     label={
                       userData.isSelfManager == "Y"
                         ? "Battery Type"
-                        : "Transmission Type"
+                        : userData.isTracker == "Y"
+                          ? "Clutch Type"
+                          : "Transmission Type"
                     }
                     value={selector.r_transmission_type}
                     onPress={() =>
@@ -6153,14 +6307,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                       {selector.insuranceDocumentPath ? (
                         <View style={{ flexDirection: "row" }}>
                           <TouchableOpacity
-                            style={{
-                              width: "20%",
-                              height: 30,
-                              backgroundColor: Colors.SKY_BLUE,
-                              borderRadius: 4,
-                              justifyContent: "center",
-                              alignItems: "center",
-                            }}
+                              style={styles.preViewBtn}
                             onPress={() => {
                               if (selector.insuranceDocumentPath) {
                                 setImagePath(selector.insuranceDocumentPath);
@@ -6168,11 +6315,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                             }}
                           >
                             <Text
-                              style={{
-                                color: Colors.WHITE,
-                                fontSize: 14,
-                                fontWeight: "600",
-                              }}
+                                style={styles.previewTxt}
                             >
                               Preview
                             </Text>
@@ -6331,15 +6474,15 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                   Allocate
                 </Button>
               )}
-                <Button
-                  mode="contained"
-                  style={{ width: 120 }}
-                  color={Colors.PINK}
-                  labelStyle={{ textTransform: "none" }}
-                  onPress={submitClicked}
-                >
-                  Submit
-                </Button>
+              <Button
+                mode="contained"
+                style={{ width: 120 }}
+                color={Colors.PINK}
+                labelStyle={{ textTransform: "none" }}
+                onPress={submitClicked}
+              >
+                Submit
+              </Button>
             </View>
           )}
           {showPreBookingBtn && !isDropSelected && (
@@ -6580,4 +6723,61 @@ const styles = StyleSheet.create({
     height: 40,
     fontSize: 16,
   },
+  eventTouchable: {
+    flexDirection: "row",
+    // justifyContent: "space-around",
+    alignItems: "center",
+    // height: '15%',
+    alignContent: "center",
+    width: '100%',
+    marginTop: 5
+
+
+  },
+  eventText: { fontSize: 12, color: Colors.BLACK, textAlign: "left", marginEnd: 10, width: 100, },
+  modelView: {
+    width: '90%',
+    backgroundColor: Colors.WHITE,
+    padding: 10,
+    borderWidth: 2,
+    borderColor: Colors.BLACK,
+    flexDirection: "column",
+    height: '40%',
+  },
+  selectTitle: { color: Colors.BLACK, fontSize: 16, fontWeight: "700", textAlign: "left", margin: 5 },
+  view3: {
+    flexDirection: "row",
+    display: "flex",
+    justifyContent: "space-between",
+    backgroundColor: Colors.WHITE,
+  },
+  addmodelView:{
+    width: "40%",
+    margin: 5,
+    borderRadius: 5,
+    backgroundColor: Colors.PINK,
+    height: 40,
+    alignSelf: "flex-end",
+    alignContent: "flex-end",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  addmodelTxt:{
+    fontSize: 16,
+    textAlign: "center",
+    color: Colors.WHITE,
+  },
+  preViewBtn:{
+    width: "20%",
+    height: 30,
+    backgroundColor: Colors.SKY_BLUE,
+    borderRadius: 4,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  previewTxt: {
+    color: Colors.WHITE,
+    fontSize: 14,
+    fontWeight: "600",
+  }
 });

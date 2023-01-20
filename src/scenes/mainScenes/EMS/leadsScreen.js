@@ -222,6 +222,7 @@ const LeadsScreen = ({ route, navigation }) => {
         route.params.fromScreen === "enquiry" ||
         route.params.fromScreen === "proceedToBookingApproval" ||
         route.params.fromScreen === "booking" ||
+        route.params.fromScreen === "testDrive" ||
         route.params.fromScreen === "bookingApproval")
     ) {
       setLoader(true);
@@ -389,9 +390,7 @@ const LeadsScreen = ({ route, navigation }) => {
           formatDate,
           selectedToDate,
           tempLeadStage,
-          tempLeadStatus,
-          false,
-          isDateChange = true,
+          tempLeadStatus
         );
         break;
       case "TO_DATE":
@@ -406,9 +405,7 @@ const LeadsScreen = ({ route, navigation }) => {
           selectedFromDate,
           formatDate,
           tempLeadStage,
-          tempLeadStatus,
-          false,
-          isDateChange = true,
+          tempLeadStatus
         );
         break;
     }
@@ -681,11 +678,11 @@ const LeadsScreen = ({ route, navigation }) => {
     to,
     defLeadStage,
     defLeadStatus,
-    isRefresh = false,
-    isDateChange = false
+    isRefresh = false
   ) => {
     setSearchedData([]);
     setLeadsList([]);
+    setSelectedToDate(moment().add(0, "day").endOf("month").format(dateFormat));
     setLoader(true);
     const employeeData = await AsyncStore.getData(
       AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -778,11 +775,6 @@ const LeadsScreen = ({ route, navigation }) => {
         }
       }
 
-      const monthLastDate = moment()
-        .add(0, "day")
-        .endOf("month")
-        .format(dateFormat);
-
       let isLive = false;
       if (
         route?.params?.param &&
@@ -791,19 +783,9 @@ const LeadsScreen = ({ route, navigation }) => {
       ) {
         isLive = true;
         from = "2021-01-01";
-        setSelectedToDate(monthLastDate);
-      } else if (
-        route?.params?.param &&
-        route?.params?.moduleType == "home" &&
-        !isDateChange
-      ) {
+      } else if (route?.params?.param && route?.params?.moduleType == "home") {
         from = lastMonthFirstDate;
-        setSelectedToDate(monthLastDate);
-      } else if (isRefresh){
-        from = lastMonthFirstDate;
-        setSelectedFromDate(lastMonthFirstDate);
-        to = monthLastDate;
-        setSelectedToDate(monthLastDate);
+      } else {
       }
       let newPayload = {
         startdate: from ? from : selectedFromDate,
@@ -909,6 +891,70 @@ const LeadsScreen = ({ route, navigation }) => {
         setSubMenu([]);
       });
   };
+
+
+  const renderItem = ({item,index}) => {
+    return (
+      <>
+        <View>
+          <MyTaskNewItem
+            tdflage={item?.tdflage ? item.tdflage : ""}
+            from={item.leadStage}
+            name={
+              getFirstLetterUpperCase(item.firstName) +
+              " " +
+              getFirstLetterUpperCase(item.lastName)
+            }
+            navigator={navigation}
+            uniqueId={item.leadId}
+            type={
+              item.leadStage === "ENQUIRY"
+                ? "Enq"
+                : item.leadStage === "BOOKING"
+                ? "Book"
+                : "PreBook"
+            }
+            status={""}
+            created={item.modifiedDate}
+            dmsLead={item.salesConsultant}
+            phone={item.phone}
+            source={item.enquirySource}
+            model={item.model}
+            leadStatus={item.leadStatus}
+            leadStage={item.leadStage}
+            needStatus={"YES"}
+            enqCat={item.enquiryCategory}
+            onItemPress={() => {
+              navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, {
+                universalId: item.universalId,
+                mobileNo: item.phone,
+                leadStatus: item.leadStatus,
+              });
+            }}
+            onDocPress={() => {
+              let route = AppNavigator.EmsStackIdentifiers.detailsOverview;
+              switch (item.leadStage) {
+                case "BOOKING":
+                  route = AppNavigator.EmsStackIdentifiers.bookingForm;
+                  break;
+                case "PRE_BOOKING":
+                case "PREBOOKING":
+                  route = AppNavigator.EmsStackIdentifiers.preBookingForm;
+                  break;
+              }
+              console.log(route);
+              navigation.navigate(route, {
+                universalId: item.universalId,
+                enqDetails: item,
+                leadStatus: item.leadStatus,
+                leadStage: item.leadStage,
+              });
+            }}
+          />
+        </View>
+      </>
+    );
+}
 
   // const liveLeadsStartDate = route?.params?.moduleType === 'live-leads' ? '2021-01-01' : lastMonthFirstDate;
   const liveLeadsEndDate =
@@ -1017,17 +1063,7 @@ const LeadsScreen = ({ route, navigation }) => {
         </View>
         <Pressable onPress={() => setSortAndFilterVisible(true)}>
           <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              borderColor: Colors.BORDER_COLOR,
-              borderWidth: 1,
-              borderRadius: 4,
-              backgroundColor: Colors.WHITE,
-              paddingLeft: 8,
-              height: 50,
-              justifyContent: "center",
-            }}
+            style={styles.filterView}
           >
             <Text style={styles.text1}>{"Filter"}</Text>
             <IconButton
@@ -1040,15 +1076,7 @@ const LeadsScreen = ({ route, navigation }) => {
         </Pressable>
       </View>
       <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          borderColor: Colors.LIGHT_GRAY,
-          paddingHorizontal: 6,
-          paddingBottom: 4,
-          backgroundColor: Colors.WHITE,
-          marginTop: -6,
-        }}
+        style={styles.view3}
       >
         <View style={{ width: subMenu?.length > 1 ? "45%" : "100%" }}>
           <Pressable
@@ -1057,23 +1085,10 @@ const LeadsScreen = ({ route, navigation }) => {
             }}
           >
             <View
-              style={{
-                borderWidth: 0.5,
-                borderColor: Colors.BORDER_COLOR,
-                borderRadius: 4,
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
+              style={styles.view4}
             >
               <Text
-                style={{
-                  width: "80%",
-                  paddingHorizontal: 5,
-                  paddingVertical: 2,
-                  fontSize: 12,
-                  fontWeight: "600",
-                }}
+                style={styles.txt1}
                 numberOfLines={2}
               >
                 {leadsFilterDropDownText}
@@ -1154,10 +1169,11 @@ const LeadsScreen = ({ route, navigation }) => {
       ) : (
         <View
           style={[
-            { backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10 },
+           styles.flatlistView,
           ]}
         >
           <FlatList
+              initialNumToRender={searchedData.length}
             data={searchedData}
             extraData={searchedData}
             keyExtractor={(item, index) => index.toString()}
@@ -1176,76 +1192,7 @@ const LeadsScreen = ({ route, navigation }) => {
             //     }
             // }}
             ListFooterComponent={renderFooter}
-            renderItem={({ item, index }) => {
-              let color = Colors.WHITE;
-              if (index % 2 !== 0) {
-                color = Colors.LIGHT_GRAY;
-              }
-              return (
-                <>
-                  <View>
-                    <MyTaskNewItem
-                      from={item.leadStage}
-                      name={
-                        getFirstLetterUpperCase(item.firstName) +
-                        " " +
-                        getFirstLetterUpperCase(item.lastName)
-                      }
-                      navigator={navigation}
-                      uniqueId={item.leadId}
-                      type={
-                        item.leadStage === "ENQUIRY"
-                          ? "Enq"
-                          : item.leadStage === "BOOKING"
-                          ? "Book"
-                          : "PreBook"
-                      }
-                      status={""}
-                      created={item.modifiedDate}
-                      dmsLead={item.salesConsultant}
-                      phone={item.phone}
-                      source={item.enquirySource}
-                      model={item.model}
-                      leadStatus={item.leadStatus}
-                      leadStage={item.leadStage}
-                      needStatus={"YES"}
-                      enqCat={item.enquiryCategory}
-                      onItemPress={() => {
-                        navigation.navigate(
-                          AppNavigator.EmsStackIdentifiers.task360,
-                          {
-                            universalId: item.universalId,
-                            mobileNo: item.phone,
-                            leadStatus: item.leadStatus,
-                          }
-                        );
-                      }}
-                      onDocPress={() => {
-                        let route =
-                          AppNavigator.EmsStackIdentifiers.detailsOverview;
-                        switch (item.leadStage) {
-                          case "BOOKING":
-                            route =
-                              AppNavigator.EmsStackIdentifiers.bookingForm;
-                            break;
-                          case "PRE_BOOKING":
-                          case "PREBOOKING":
-                            route =
-                              AppNavigator.EmsStackIdentifiers.preBookingForm;
-                            break;
-                        }
-                        navigation.navigate(route, {
-                          universalId: item.universalId,
-                          enqDetails: item,
-                          leadStatus: item.leadStatus,
-                          leadStage: item.leadStage,
-                        });
-                      }}
-                    />
-                  </View>
-                </>
-              );
-            }}
+            renderItem={renderItem}
           />
         </View>
       )}
@@ -1364,4 +1311,41 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255,21,107,6)",
     borderRadius: 100,
   },
+
+ filterView: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderColor: Colors.BORDER_COLOR,
+    borderWidth: 1,
+    borderRadius: 4,
+    backgroundColor: Colors.WHITE,
+    paddingLeft: 8,
+    height: 50,
+    justifyContent: "center",
+  },
+  view3: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    borderColor: Colors.LIGHT_GRAY,
+    paddingHorizontal: 6,
+    paddingBottom: 4,
+    backgroundColor: Colors.WHITE,
+    marginTop: -6,
+  },
+  view4: {
+    borderWidth: 0.5,
+    borderColor: Colors.BORDER_COLOR,
+    borderRadius: 4,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  txt1: {
+    width: "80%",
+    paddingHorizontal: 5,
+    paddingVertical: 2,
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  flatlistView: { backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10 }
 });

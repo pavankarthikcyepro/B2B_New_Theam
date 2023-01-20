@@ -81,10 +81,10 @@ const LiveLeadsScreen = ({ route, navigation }) => {
     const setTargetData = async () => {
         numk++;
         let obj = {
-            empData: await AsyncStore.getData('TARGET_EMP') ? JSON.parse(await AsyncStore.getData('TARGET_EMP')) : empData,
-            allEmpData: await AsyncStore.getData('TARGET_EMP_ALL') ? JSON.parse(await AsyncStore.getData('TARGET_EMP_ALL')) : allData.employeeTargetAchievements,
-            allTargetData: await AsyncStore.getData('TARGET_ALL') ? JSON.parse(await AsyncStore.getData('TARGET_ALL')) : allData.overallTargetAchivements,
-            targetData: await AsyncStore.getData('TARGET_DATA') ? JSON.parse(await AsyncStore.getData('TARGET_DATA')) : targetData,
+            empData: await AsyncStore.getData('TARGET_EMP_LIVE_LEADS') ? JSON.parse(await AsyncStore.getData('TARGET_EMP_LIVE_LEADS')) : empData,
+            allEmpData: await AsyncStore.getData('TARGET_EMP_ALL_LIVE_LEADS') ? JSON.parse(await AsyncStore.getData('TARGET_EMP_ALL_LIVE_LEADS')) : allData.employeeTargetAchievements,
+            allTargetData: await AsyncStore.getData('TARGET_ALL_LIVE_LEADS') ? JSON.parse(await AsyncStore.getData('TARGET_ALL_LIVE_LEADS')) : allData.overallTargetAchivements,
+            targetData: await AsyncStore.getData('TARGET_DATA_LIVE_LEADS') ? JSON.parse(await AsyncStore.getData('TARGET_DATA_LIVE_LEADS')) : targetData,
         }
         dispatch(updateTargetData(obj))
     }
@@ -316,12 +316,14 @@ const LiveLeadsScreen = ({ route, navigation }) => {
                 dispatch(updateIsManager(false))
             }
 
-            if (jsonObj?.hrmsRole.toLowerCase().includes('dse')) {
-                dispatch(updateIsDSE(true))
-                dispatch(updateIsTeam(false))
-            }
-            else {
-                dispatch(updateIsDSE(false))
+            if (
+              jsonObj?.hrmsRole.toLowerCase().includes("dse") ||
+              jsonObj?.hrmsRole.toLowerCase().includes("sales consultant")
+            ) {
+              dispatch(updateIsDSE(true));
+              dispatch(updateIsTeam(false));
+            } else {
+              dispatch(updateIsDSE(false));
             }
 
             if (jsonObj?.roles.length > 0) {

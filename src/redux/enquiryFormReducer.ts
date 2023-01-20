@@ -391,6 +391,32 @@ export const getTermsAndConditionsOrgwise = createAsyncThunk(
   }
 );
 
+
+export const getEventConfigList = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/getEventConfigList",
+  async (payload: any, { rejectWithValue }) => {
+
+    const customConfig = {
+      branchid: payload.branchId,
+      orgid: payload.orgId,
+    };
+    const response = await client.get(
+      URL.GET_EVENTS_NEW(payload.startDate, payload.endDate, payload.empId),
+      customConfig
+    );
+
+    try {
+      const json = await response.json();
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      return rejectWithValue({ message: "Json parse error: " + response });
+    }
+  }
+);
+
 interface PersonalIntroModel {
   key: string;
   text: string;
@@ -592,6 +618,7 @@ const initialState = {
   enquiry_details_response: null,
   update_enquiry_details_response: null,
   customer_types_response: null,
+  customer_types: null,
   isAddressSet: false,
   isOpened: false,
   refNo: "",
@@ -608,6 +635,8 @@ const initialState = {
   accessories_discount:"",
   insurance_discount:"",
   foc_accessoriesFromServer :"",
+  event_list_Config: [],
+  event_list_response_Config_status: "",
 };
 
 const enquiryDetailsOverViewSlice = createSlice({
@@ -629,6 +658,7 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.enquiry_details_response = null;
       state.update_enquiry_details_response = null;
       state.customer_types_response = null;
+      state.customer_types = null;
       state.employee_id = "";
       state.gstin_number = "";
       state.expected_delivery_date = "";
@@ -681,7 +711,9 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.additional_offer_2 = "";
       state.accessories_discount = "",
       state.insurance_discount = "",
-        state.foc_accessoriesFromServer = ""
+        state.foc_accessoriesFromServer = "",
+        state.event_list_Config = [];
+      state.event_list_response_Config_status = "";
     },
     clearState2: (state, action) => {
       state.enableEdit = false;
@@ -697,6 +729,7 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.enquiry_details_response = null;
       state.update_enquiry_details_response = null;
       state.customer_types_response = null;
+      state.customer_types = null;
       state.employee_id = "";
       state.gstin_number = "";
       state.expected_delivery_date = "";
@@ -769,6 +802,32 @@ const enquiryDetailsOverViewSlice = createSlice({
             state.customer_types_data = CustomerTypesObj21[value.toLowerCase()];
           } else if (+orgId == 22) {
             state.customer_types_data = CustomerTypesObj22[value.toLowerCase()];
+          } else if (+orgId == 26) {
+            let tmpArr = [];
+            if (value == "Personal") {
+              tmpArr = Object.assign(
+                [],
+                state.customer_types?.personal
+                  ? state.customer_types.personal
+                  : CustomerTypesObj22[value.toLowerCase()]
+              );
+            } else if (value == "Company") {
+              tmpArr = Object.assign(
+                [],
+                state.customer_types?.company
+                  ? state.customer_types.company
+                  : CustomerTypesObj22[value.toLowerCase()]
+              );
+            } else {
+              tmpArr = Object.assign(
+                [],
+                state.customer_types?.commercial
+                  ? state.customer_types.commercial
+                  : CustomerTypesObj22[value.toLowerCase()]
+              );
+            }
+
+            state.customer_types_data = tmpArr;
           } else {
             state.customer_types_data = CustomerTypesObj[value.toLowerCase()];
           }
@@ -2381,6 +2440,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     // Get Customer Types
     builder.addCase(getCustomerTypesApi.pending, (state, action) => {
       state.customer_types_response = null;
+      state.customer_types = null;
       state.isLoading = true;
     });
     builder.addCase(getCustomerTypesApi.fulfilled, (state, action) => {
@@ -2389,6 +2449,9 @@ const enquiryDetailsOverViewSlice = createSlice({
         let personalTypes = [];
         let commercialTypes = [];
         let companyTypes = [];
+        let personalTypes2 = [];
+        let commercialTypes2 = [];
+        let companyTypes2 = [];
         customerTypes.forEach((customer) => {
           const obj = { id: customer.id, name: customer.customerType };
           if (customer.customerType === "Fleet") {
@@ -2398,6 +2461,14 @@ const enquiryDetailsOverViewSlice = createSlice({
           } else {
             personalTypes.push(obj);
           }
+
+          if (customer.enquirySegment === "Personal") {
+            personalTypes2.push(obj);
+          } else if (customer.enquirySegment === "Company") {
+            companyTypes2.push(obj);
+          } else {
+            commercialTypes2.push(obj);
+          }
         });
         const obj = {
           personal: personalTypes,
@@ -2405,12 +2476,20 @@ const enquiryDetailsOverViewSlice = createSlice({
           company: companyTypes,
           handicapped: companyTypes,
         };
+        const obj2 = {
+          personal: personalTypes2,
+          commercial: commercialTypes2,
+          company: companyTypes2,
+          handicapped: companyTypes2,
+        };
         state.customer_types_response = obj;
+        state.customer_types = obj2;
       }
       state.isLoading = false;
     });
     builder.addCase(getCustomerTypesApi.rejected, (state, action) => {
       state.customer_types_response = null;
+      state.customer_types = null;
       state.isLoading = false;
     });
     //update ref number
@@ -2449,6 +2528,26 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.getTermsNConditions_res_status = "failed";
       state.getTermsNConditions_res = [];
       state.isLoading = false;
+    });
+
+
+    // Get event config list 
+    builder.addCase(getEventConfigList.pending, (state, action) => {
+      state.event_list_Config = [];
+      state.event_list_response_Config_status = "pending";
+      state.isLoading = true;
+    });
+    builder.addCase(getEventConfigList.fulfilled, (state, action) => {
+      if (action.payload) {
+        state.event_list_Config = action.payload;
+      }
+      state.event_list_response_Config_status = "success";
+      state.isLoading = false;
+    });
+    builder.addCase(getEventConfigList.rejected, (state, action) => {
+      state.event_list_response_Config_status = "failed";
+      state.isLoading = false;
+      state.event_list_Config = [];
     });
   },
 });

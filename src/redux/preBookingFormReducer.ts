@@ -54,6 +54,21 @@ export const getPrebookingDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/
   }
 })
 
+export const getRulesConfiguration = createAsyncThunk("PREBOONING_FORMS_SLICE/getRulesConfiguration", async (payload, { rejectWithValue }) => {
+  const response = await client.get(URL.GET_RULES_CONFIG(payload["model"], payload["variant"], payload["fuel"], payload["orgId"]));
+  try {
+    const json = await response.json();
+  
+    if (response.status != 200) {
+      return rejectWithValue(json);
+    }
+    return json;
+  } catch (error) {
+    console.error("getRulesConfiguration JSON parse error: ", error + " : " + JSON.stringify(response));
+    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
+  }
+})
+
 export const updatePrebookingDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/updatePrebookingDetailsApi", async (payload, { rejectWithValue }) => {
   const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
   try {
@@ -290,6 +305,19 @@ export const updateRef = createAsyncThunk("ENQUIRY_FORM_SLICE/updateRef",
   }
 );
 
+export const getOtherPricesDropDown = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/getOtherPricesDropDown",
+  async (orgId, { rejectWithValue }) => {
+    const url = URL.GET_OTHER_PRICES_DROP_DOWN(orgId);
+    const response = await client.get(url);
+    const json = await response.json();
+    if (response.status != 200) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 interface CustomerDetailModel {
   key: string;
   text: string;
@@ -458,6 +486,9 @@ const prebookingFormSlice = createSlice({
     insurance_discount: "",
     isAddressSet: false,
     registrationCharges: 0,
+    configureRulesResponse: "",
+    configureRulesResponse_status:"",
+    otherPricesDropDown: [],
   },
   reducers: {
     clearState: (state, action) => {
@@ -589,6 +620,9 @@ const prebookingFormSlice = createSlice({
       state.accessories_discount = "";
       state.insurance_discount = "";
       state.isAddressSet = false;
+      state.configureRulesResponse = "";
+      state.configureRulesResponse_status = "";
+      state.otherPricesDropDown = [];
     },
     updateStatus: (state, action) => {
       state.pre_booking_payment_response_status = "";
@@ -1835,6 +1869,47 @@ const prebookingFormSlice = createSlice({
     builder.addCase(updateRef.pending, (state, action) => {});
     builder.addCase(updateRef.fulfilled, (state, action) => {});
     builder.addCase(updateRef.rejected, (state, action) => {});
+
+    //Get configured rulles api
+    builder.addCase(getRulesConfiguration.pending, (state, action) => {
+      state.configureRulesResponse = "";
+      state.configureRulesResponse_status = "pending";
+      state.isLoading = true;
+    });
+    builder.addCase(getRulesConfiguration.fulfilled, (state, action) => {
+    
+      state.isLoading = false;
+      
+      if(action.payload){
+        state.configureRulesResponse = action.payload;
+        state.configureRulesResponse_status = "fulfilled";
+      }
+      
+    });
+    builder.addCase(getRulesConfiguration.rejected, (state, action) => {
+      state.configureRulesResponse = "";
+      state.configureRulesResponse_status = "rejected";
+      state.isLoading = false;
+    });
+    
+    //Get Other prices drop down data
+    builder.addCase(getOtherPricesDropDown.pending, (state, action) => {
+    });
+    builder.addCase(getOtherPricesDropDown.fulfilled, (state, action) => {
+      if (action.payload) {
+        let data = [];
+        for (let i = 0; i < action.payload.length; i++) {
+          let obj = {
+            id: action.payload[i].id,
+            name: action.payload[i].Name,
+          };
+          data.push(obj);
+        }
+        state.otherPricesDropDown = Object.assign([], data);
+      }
+    });
+    builder.addCase(getOtherPricesDropDown.rejected, (state, action) => {
+    });
   },
 });
 

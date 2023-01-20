@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, StyleSheet, View, Text, FlatList, Pressable, Alert, ActivityIndicator, RefreshControl } from 'react-native';
+import { SafeAreaView, StyleSheet, View, Text, FlatList, Pressable, Alert, ActivityIndicator, RefreshControl, Platform } from 'react-native';
 import { PreEnquiryItem, PageControlItem, EmptyListView } from '../../../pureComponents';
 import { Colors, GlobalStyle } from '../../../styles';
 import { useSelector, useDispatch } from 'react-redux';
@@ -450,6 +450,46 @@ const PreEnquiryScreen = ({ route, navigation }) => {
         dispatch(updateIsSearch(true));
     };
 
+    const renderItem=({item,index})=>{
+      return (
+        <>
+          <View>
+            <MyTaskNewItem
+              from="PRE_ENQUIRY"
+              name={
+                getFirstLetterUpperCase(item.firstName) +
+                " " +
+                getFirstLetterUpperCase(item.lastName)
+              }
+              navigator={navigation}
+              uniqueId={item.leadId}
+              type="PreEnq"
+              status={""}
+              created={item.createdDate}
+              dmsLead={item.createdBy}
+              phone={item.phone}
+              source={item.enquirySource}
+              model={item.model}
+              leadStatus={item.leadStatus}
+              needStatus={"YES"}
+              onItemPress={() => {
+                navigation.navigate(
+                  AppNavigator.EmsStackIdentifiers.task360,
+                  { universalId: item.universalId, itemData: item }
+                );
+              }}
+              onDocPress={() => {
+                navigation.navigate(
+                  AppNavigator.EmsStackIdentifiers.confirmedPreEnq,
+                  { itemData: item, fromCreatePreEnquiry: false }
+                );
+              }}
+            />
+          </View>
+        </>
+      );
+    }
+
     const liveLeadsEndDate = route?.params?.moduleType === 'live-leads' ? moment().format(dateFormat) : currentDate;
     return (
       <SafeAreaView style={styles.conatiner}>
@@ -490,7 +530,7 @@ const PreEnquiryScreen = ({ route, navigation }) => {
           }}
         />
 
-        <View style={{ flex: 1, paddingHorizontal: 10, paddingTop: 5 }}>
+        <View style={styles.viewmain}>
           <View style={styles.view1}>
             <View style={{ width: "80%" }}>
               <DateRangeComp
@@ -501,7 +541,7 @@ const PreEnquiryScreen = ({ route, navigation }) => {
               />
             </View>
             <Pressable onPress={() => setSortAndFilterVisible(true)}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', borderColor: Colors.BORDER_COLOR, borderWidth: 1, borderRadius: 4, backgroundColor: Colors.WHITE, paddingLeft: 8, height: 50, justifyContent: 'center' }}>
+              <View style={styles.filterView}>
                 <Text style={styles.text1}>{"Filter"}</Text>
                 <IconButton
                   icon={"filter-outline"}
@@ -531,14 +571,11 @@ const PreEnquiryScreen = ({ route, navigation }) => {
           ) : (
             <View
               style={[
-                {
-                  backgroundColor: Colors.LIGHT_GRAY,
-                  flex: 1,
-                  marginBottom: 10,
-                },
+               styles.flatlistView
               ]}
             >
               <FlatList
+                  initialNumToRender={searchedData.length}
                 data={searchedData}
                 extraData={searchedData}
                 keyExtractor={(item, index) => index.toString()}
@@ -564,50 +601,7 @@ const PreEnquiryScreen = ({ route, navigation }) => {
                 //     }
                 // }}
                 ListFooterComponent={renderFooter}
-                renderItem={({ item, index }) => {
-                  let color = Colors.WHITE;
-                  if (index % 2 != 0) {
-                    color = Colors.LIGHT_GRAY;
-                  }
-
-                  return (
-                    <>
-                      <View>
-                        <MyTaskNewItem
-                          from="PRE_ENQUIRY"
-                          name={
-                            getFirstLetterUpperCase(item.firstName) +
-                            " " +
-                            getFirstLetterUpperCase(item.lastName)
-                          }
-                          navigator={navigation}
-                          uniqueId={item.leadId}
-                          type="PreEnq"
-                          status={""}
-                          created={item.createdDate}
-                          dmsLead={item.createdBy}
-                          phone={item.phone}
-                          source={item.enquirySource}
-                          model={item.model}
-                          leadStatus={item.leadStatus}
-                          needStatus={"YES"}
-                          onItemPress={() => {
-                            navigation.navigate(
-                              AppNavigator.EmsStackIdentifiers.task360,
-                              { universalId: item.universalId, itemData: item }
-                            );
-                          }}
-                          onDocPress={() => {
-                            navigation.navigate(
-                              AppNavigator.EmsStackIdentifiers.confirmedPreEnq,
-                              { itemData: item, fromCreatePreEnquiry: false }
-                            );
-                          }}
-                        />
-                      </View>
-                    </>
-                  );
-                }}
+                renderItem={renderItem}
               />
             </View>
           )}
@@ -689,6 +683,13 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginBottom: 5
     },
-    searchBar: { height: 40 }
+    searchBar: { height: 40 },
+  viewmain: { flex: 1, paddingHorizontal: 10, paddingTop: 5 },
+  filterView:{ flexDirection: 'row', alignItems: 'center', borderColor: Colors.BORDER_COLOR, borderWidth: 1, borderRadius: 4, backgroundColor: Colors.WHITE, paddingLeft: 8, height: 50, justifyContent: 'center' },
+  flatlistView: {
+    backgroundColor: Colors.LIGHT_GRAY,
+    flex: 1,
+    marginBottom: 10,
+  },
 
 })

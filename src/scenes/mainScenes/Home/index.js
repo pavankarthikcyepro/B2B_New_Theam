@@ -13,10 +13,11 @@ import {
   Keyboard,
   Image,
   Platform,
+  PermissionsAndroid,
   TouchableWithoutFeedback,
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
-import { IconButton, Card, Button } from "react-native-paper";
+import { IconButton, Card, Button, Portal } from "react-native-paper";
 import VectorImage from "react-native-vector-image";
 import { useDispatch, useSelector } from "react-redux";
 import { FILTER, SPEED } from "../../../assets/svg";
@@ -52,6 +53,8 @@ import {
   getTotalTargetParametersData,
   getTargetParametersEmpDataInsights,
   updateIsRankHide,
+  getReceptionistData,
+  updateIsModalVisible,
 } from "../../../redux/homeReducer";
 import { getCallRecordingCredentials } from "../../../redux/callRecordingReducer";
 import { updateData, updateIsManager } from "../../../redux/sideMenuReducer";
@@ -80,8 +83,25 @@ import RNFetchBlob from "rn-fetch-blob";
 import empData from "../../../get_target_params_for_emp.json";
 import allData from "../../../get_target_params_for_all_emps.json";
 import targetData from "../../../get_target_params.json";
+import AttendanceForm from "../../../components/AttendanceForm";
+import URL from "../../../networking/endpoints";
+import { client } from "../../../networking/client";
+import Geolocation from "@react-native-community/geolocation";
+import {
+  createDateTime,
+  getDistanceBetweenTwoPoints,
+  officeRadius,
+} from "../../../service";
 import ReactNativeModal from "react-native-modal";
 import Carousel, { Pagination } from "react-native-snap-carousel";
+import { monthNamesCap } from "../Attendance/AttendanceTop";
+import { getNotificationList } from "../../../redux/notificationReducer";
+import AttendanceFromSelf from "../../../components/AttendanceFromSelf";
+
+const officeLocation = {
+  latitude: 37.33233141,
+  longitude: -122.0312186,
+};
 
 const HomeScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
@@ -104,15 +124,141 @@ const HomeScreen = ({ route, navigation }) => {
   const [headerText, setHeaderText] = useState("");
   const [isButtonPresent, setIsButtonPresent] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [attendance, setAttendance] = useState(false);
+  const [reason, setReason] = useState(false);
+  const [initialPosition, setInitialPosition] = useState({});
   const [showModal, setShowModal] = useState(false);
   const [options, setOptions] = useState({});
   const [activeBannerIndex, setActiveBannerIndex] = useState(0);
+  const [userData, setUserData] = useState({
+    empId: 0,
+    empName: "",
+    hrmsRole: "",
+    orgId: 0,
+  });
 
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {
-      setTargetData().then((r) => {}); //Commented to resolved filter issue for Home Screen
+      getCurrentLocation();
+      setTargetData().then(() => {}); //Commented to resolved filter issue for Home Screen
     });
   }, [navigation]);
+
+  const getCurrentLocation = async () => {
+    try {
+      if (Platform.OS === "ios") {
+        Geolocation.requestAuthorization();
+        Geolocation.setRNConfiguration({
+          skipPermissionRequests: false,
+          authorizationLevel: "whenInUse",
+        });
+      }
+      Geolocation.getCurrentPosition(
+        (position) => {
+          const initialPosition = JSON.stringify(position);
+          let json = JSON.parse(initialPosition);
+          setInitialPosition(json.coords);
+        },
+        (error) => {
+          console.log(JSON.stringify(error));
+        },
+        { enableHighAccuracy: true }
+      );
+    } catch (error) {
+      console.log("ERROR", error);
+    }
+  };
+
+  useEffect(() => {
+    if (
+      selector.isModalVisible
+      // && !isEmpty(initialPosition)
+    ) {
+      getDetails();
+    }
+  }, [selector.isModalVisible, initialPosition]);
+
+  function isEmpty(obj) {
+    return Object.keys(obj).length === 0;
+  }
+
+  const getDetails = async () => {
+    try {
+      var startDate = createDateTime("8:30");
+      var startBetween = createDateTime("11:30");
+      var endBetween = createDateTime("20:30");
+      var endDate = createDateTime("21:30");
+      var now = new Date();
+      var isBetween = startDate <= now && now <= endDate;
+      if (true) {
+        let employeeData = await AsyncStore.getData(
+          AsyncStore.Keys.LOGIN_EMPLOYEE
+        );
+        if (employeeData) {
+          const jsonObj = JSON.parse(employeeData);
+          dispatch(getNotificationList(jsonObj.empId));
+           var d = new Date();
+          const response = await client.get(
+            URL.GET_ATTENDANCE_EMPID(
+              jsonObj.empId,
+              jsonObj.orgId,
+              monthNamesCap[d.getMonth()]
+            )
+          );
+          const json = await response.json();
+          if (json.length != 0) {
+            let date = new Date(json[json.length - 1].createdtimestamp);
+            // let dist = getDistanceBetweenTwoPoints(
+            //   officeLocation.latitude,
+            //   officeLocation.longitude,
+            //   initialPosition?.latitude,
+            //   initialPosition?.longitude
+            // );
+            // if (dist > officeRadius) {
+            //   setReason(true); ///true for reason
+            // } else {
+            //   setReason(false);
+            // }
+            if (date.getDate() != new Date().getDate()) {
+              setAttendance(true);
+              // if (startDate <= now && now <= startBetween) {
+              //   setAttendance(true);
+              // } else {
+              //   setAttendance(false);
+              // }
+            } else {
+              // if (endBetween <= now && now <= endDate && json.isLogOut == 0) {
+              //   setAttendance(true);
+              // } else {
+              //   setAttendance(false);
+              // }
+            }
+          } else {
+            console.log("DDDD");
+            setAttendance(true);
+            //  if (startDate <= now && now <= startBetween) {
+            //    setAttendance(true);
+            //  } else {
+            //    setAttendance(false);
+            //  }
+          }
+        }
+      }
+      dispatch(updateIsModalVisible(false));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(async () => {
+    if (userData.hrmsRole === "Reception") {
+      let payload = {
+        orgId: userData.orgId,
+        loggedInEmpId: userData.empId,
+      };
+      dispatch(getReceptionistData(payload));
+    }
+  }, [userData]);
 
   const setTargetData = async () => {
     let obj = {
@@ -198,7 +344,7 @@ const HomeScreen = ({ route, navigation }) => {
     }
   }, [selector.allGroupDealerData]);
 
-  useEffect(async () => {
+  useEffect(() => {
     // if (await AsyncStore.getData(AsyncStore.Keys.IS_LOGIN) === 'true'){
     getMenuListFromServer();
     getCustomerType();
@@ -211,7 +357,7 @@ const HomeScreen = ({ route, navigation }) => {
     });
 
     return unsubscribe;
-  }, [navigation]);
+  }, [navigation,selector.filterIds]);
 
   const getCustomerType = async () => {
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
@@ -227,9 +373,18 @@ const HomeScreen = ({ route, navigation }) => {
     });
   };
   const moveToFilter = () => {
-    navigation.navigate(AppNavigator.HomeStackIdentifiers.filter, {
-      isFromLogin: false,
-    });
+    if (userData.hrmsRole == "Reception") {
+      navigation.navigate(
+        AppNavigator.HomeStackIdentifiers.receptionistFilter,
+        {
+          isFromLogin: false,
+        }
+      );
+    } else {
+      navigation.navigate(AppNavigator.HomeStackIdentifiers.filter, {
+        isFromLogin: false,
+      });
+    }
   };
   const getMenuListFromServer = async () => {
     let name = await AsyncStore.getData(AsyncStore.Keys.USER_NAME);
@@ -266,6 +421,12 @@ const HomeScreen = ({ route, navigation }) => {
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
+      setUserData({
+        empId: jsonObj.empId,
+        empName: jsonObj.empName,
+        hrmsRole: jsonObj.hrmsRole,
+        orgId: jsonObj.orgId,
+      });
       const payload = {
         orgId: jsonObj.orgId,
         branchId: jsonObj.branchId,
@@ -354,13 +515,22 @@ const HomeScreen = ({ route, navigation }) => {
           .subtract(0, "months")
           .endOf("month")
           .format(dateFormat);
+
         const payload = {
-          endDate: monthLastDate,
+          endDate: selector?.filterIds?.endDate
+            ? selector.filterIds.endDate
+            : monthLastDate,
           loggedInEmpId: jsonObj.empId,
-          startDate: monthFirstDate,
-          levelSelected: null,
+          startDate: selector?.filterIds?.startDate
+            ? selector.filterIds.startDate
+            : monthFirstDate,
           empId: jsonObj.empId,
         };
+        if (selector.filterIds?.empSelected?.length) {
+          payload["empSelected"] = selector.filterIds.empSelected;
+        } else {
+          payload["levelSelected"] = null;
+        }
         getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
           .then((x) => {})
           .catch((y) => {});
@@ -385,7 +555,10 @@ const HomeScreen = ({ route, navigation }) => {
         dispatch(updateIsManager(false));
       }
 
-      if (jsonObj?.hrmsRole.toLowerCase().includes("dse")) {
+      if (
+        jsonObj?.hrmsRole.toLowerCase().includes("dse") ||
+        jsonObj?.hrmsRole.toLowerCase().includes("sales consultant")
+      ) {
         dispatch(updateIsDSE(true));
       } else {
         dispatch(updateIsDSE(false));
@@ -429,10 +602,13 @@ const HomeScreen = ({ route, navigation }) => {
         .endOf("month")
         .format(dateFormat);
       const payload = {
-        endDate: monthLastDate,
+        endDate: selector?.filterIds?.endDate
+          ? selector.filterIds.endDate
+          : monthLastDate,
         loggedInEmpId: jsonObj.empId,
-        startDate: monthFirstDate,
-        levelSelected: null,
+        startDate: selector?.filterIds?.startDate
+          ? selector.filterIds.startDate
+          : monthFirstDate,
         empId: jsonObj.empId,
       };
       if (isTeamPresent) {
@@ -464,17 +640,25 @@ const HomeScreen = ({ route, navigation }) => {
       .endOf("month")
       .format(dateFormat);
     const payload = {
-      endDate: monthLastDate,
+      endDate: selector?.filterIds?.endDate
+        ? selector.filterIds.endDate
+        : monthLastDate,
       loggedInEmpId: empId,
-      startDate: monthFirstDate,
-      levelSelected: null,
+      startDate: selector?.filterIds?.startDate
+        ? selector.filterIds.startDate
+        : monthFirstDate,
       empId: empId,
     };
-
+    if (selector.filterIds?.empSelected?.length) {
+      payload["empSelected"] = selector.filterIds.empSelected;
+    } else {
+      payload["levelSelected"] = null;
+    }
+   
     Promise.all([
-      dispatch(getLeadSourceTableList(payload)),
-      dispatch(getVehicleModelTableList(payload)),
-      dispatch(getEventTableList(payload)),
+      // dispatch(getLeadSourceTableList(payload)),
+      // dispatch(getVehicleModelTableList(payload)),
+      // dispatch(getEventTableList(payload)),
       // dispatch(getLostDropChartData(payload))
     ]).then(() => {});
 
@@ -570,10 +754,14 @@ const HomeScreen = ({ route, navigation }) => {
       loggedInEmpId: payload.empId,
       empId: payload.empId,
       startDate: payload.startDate,
-      levelSelected: null,
       pageNo: 0,
       size: 100,
     };
+    if (selector.filterIds?.empSelected?.length) {
+      payload2["empSelected"] = selector.filterIds.empSelected;
+    } else {
+      payload2["levelSelected"] = null;
+    }
     Promise.allSettled([
       //dispatch(getTargetParametersAllData(payload1)),
       dispatch(getTotalTargetParametersData(payload2)),
@@ -758,9 +946,7 @@ const HomeScreen = ({ route, navigation }) => {
         });
     }
   };
-  function isEmpty(obj) {
-    return Object.keys(obj).length === 0;
-  }
+
   const downloadInLocal = async (url) => {
     const { config, fs } = RNFetchBlob;
     let downloadDir = Platform.select({
@@ -832,6 +1018,7 @@ const HomeScreen = ({ route, navigation }) => {
     // To get the file extension
     return /[.]/.exec(fileUrl) ? /[^.]+$/.exec(fileUrl) : undefined;
   };
+
   const RenderModal = () => {
     return (
       <ReactNativeModal
@@ -920,13 +1107,24 @@ const HomeScreen = ({ route, navigation }) => {
 
   const renderBanner = ({ item, index }) => {
     return (
-      <Image source={{ uri: item.fileUrl }} style={styles.bannerImage} resizeMode="contain" />
+      <Image
+        source={{ uri: item.fileUrl }}
+        style={styles.bannerImage}
+        resizeMode="contain"
+      />
     );
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <RenderModal />
+      <AttendanceFromSelf
+        visible={attendance}
+        showReason={reason}
+        inVisible={() => {
+          setAttendance(false);
+        }}
+      />
       <DropDownComponant
         visible={showDropDownModel}
         headerTitle={dropDownTitle}
@@ -934,15 +1132,22 @@ const HomeScreen = ({ route, navigation }) => {
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
           setShowDropDownModel(false);
-          setDropDownData({ key: dropDownKey, value: item.name, id: item.id });
+          setDropDownData({
+            key: dropDownKey,
+            value: item.name,
+            id: item.id,
+          });
         }}
       />
+      {/* <Button onPress={()=>{navigation.navigate(AppNavigator.HomeStackIdentifiers.location);}} /> */}
       <HeaderComp
         title={headerText}
         branchName={true}
         menuClicked={() => navigation.openDrawer()}
         branchClicked={() => moveToSelectBranch()}
         filterClicked={() => moveToFilter()}
+        notification={true}
+        navigation={navigation}
       />
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -952,22 +1157,10 @@ const HomeScreen = ({ route, navigation }) => {
         <View>
           {isButtonPresent && (
             <View
-              style={{
-                width: "100%",
-                alignItems: "flex-end",
-                marginVertical: 6,
-              }}
+              style={styles.view1}
             >
               <TouchableOpacity
-                style={{
-                  width: 140,
-                  height: 30,
-                  borderColor: Colors.RED,
-                  borderWidth: 1,
-                  borderRadius: 4,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
+                style={styles.tochable1}
                 onPress={downloadFileFromServer1}
               >
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -978,11 +1171,7 @@ const HomeScreen = ({ route, navigation }) => {
                     style={{ margin: 0, padding: 0 }}
                   />
                   <Text
-                    style={{
-                      fontSize: 14,
-                      fontWeight: "600",
-                      color: Colors.RED,
-                    }}
+                    style={styles.etvbrlTxt}
                   >
                     ETVBRL Report
                   </Text>
@@ -990,87 +1179,11 @@ const HomeScreen = ({ route, navigation }) => {
               </TouchableOpacity>
             </View>
           )}
-          {selector.isRankHide ? (
-            <View style={styles.hideRankRow}>
-              <View style={styles.hideRankBox}>
-                <Text style={styles.rankHeadingText}>Dealer Ranking</Text>
-                <TouchableOpacity
-                  style={styles.rankIconBox}
-                  onPress={() => {
-                    navigation.navigate(
-                      AppNavigator.HomeStackIdentifiers.leaderboard
-                    );
-                  }}
-                >
-                  <Image
-                    style={styles.rankIcon}
-                    source={require("../../../assets/images/perform_rank.png")}
-                  />
-                </TouchableOpacity>
-              </View>
-              <View style={styles.hideRankBox}>
-                <Text style={styles.rankHeadingText}>Branch Ranking</Text>
-                <TouchableOpacity
-                  style={styles.rankIconBox}
-                  onPress={() => {
-                    navigation.navigate(
-                      AppNavigator.HomeStackIdentifiers.branchRanking
-                    );
-                  }}
-                >
-                  <Image
-                    style={styles.rankIcon}
-                    source={require("../../../assets/images/perform_rank.png")}
-                  />
-                </TouchableOpacity>
-              </View>
-              <View style={styles.hideRankBox}>
-                <Text style={styles.rankHeadingText}>Retails</Text>
-                <View
-                  style={{
-                    flexDirection: "row",
-                  }}
-                >
-                  <View style={styles.rankIconBox}>
-                    <Image
-                      style={styles.rankIcon}
-                      source={require("../../../assets/images/retail.png")}
-                    />
-                  </View>
-                  <View
-                    style={{
-                      marginTop: 5,
-                      marginLeft: 5,
-                    }}
-                  >
-                    <View style={{ flexDirection: "row" }}>
-                      <Text style={[styles.rankText, { color: Colors.RED }]}>
-                        {retailData?.achievment}
-                      </Text>
-                      <Text style={[styles.rankText]}>
-                        /{retailData?.target}
-                      </Text>
-                    </View>
-                    <View
-                      style={{
-                        marginTop: 5,
-                      }}
-                    >
-                      <Text style={styles.baseText}>Ach v/s Tar</Text>
-                    </View>
-                  </View>
-                </View>
-              </View>
-            </View>
-          ) : (
-            <View style={styles.rankView}>
-              <View style={styles.rankBox}>
-                <Text style={styles.rankHeadingText}>Dealer Ranking</Text>
-                <View
-                  style={{
-                    flexDirection: "row",
-                  }}
-                >
+          {userData.hrmsRole !== "Reception" ? (
+            selector.isRankHide ? (
+              <View style={styles.hideRankRow}>
+                <View style={styles.hideRankBox}>
+                  <Text style={styles.rankHeadingText}>Dealer Ranking</Text>
                   <TouchableOpacity
                     style={styles.rankIconBox}
                     onPress={() => {
@@ -1084,27 +1197,9 @@ const HomeScreen = ({ route, navigation }) => {
                       source={require("../../../assets/images/perform_rank.png")}
                     />
                   </TouchableOpacity>
-                  <View
-                    style={{
-                      marginTop: 5,
-                      marginLeft: 3,
-                    }}
-                  >
-                    {groupDealerRank !== null && (
-                      <Text style={styles.rankText}>
-                        {groupDealerRank}/{groupDealerCount}
-                      </Text>
-                    )}
-                  </View>
                 </View>
-              </View>
-              <View style={styles.rankBox}>
-                <Text style={styles.rankHeadingText}>Branch Ranking</Text>
-                <View
-                  style={{
-                    flexDirection: "row",
-                  }}
-                >
+                <View style={styles.hideRankBox}>
+                  <Text style={styles.rankHeadingText}>Branch Ranking</Text>
                   <TouchableOpacity
                     style={styles.rankIconBox}
                     onPress={() => {
@@ -1118,56 +1213,168 @@ const HomeScreen = ({ route, navigation }) => {
                       source={require("../../../assets/images/perform_rank.png")}
                     />
                   </TouchableOpacity>
+                </View>
+                <View style={styles.hideRankBox}>
+                  <Text style={styles.rankHeadingText}>Retails</Text>
                   <View
                     style={{
-                      marginTop: 5,
-                      marginLeft: 3,
+                      flexDirection: "row",
                     }}
                   >
-                    {dealerRank !== null && (
-                      <View style={{ flexDirection: "row" }}>
-                        <Text style={[styles.rankText]}>{dealerRank}</Text>
-                        <Text style={[styles.rankText]}>/{dealerCount}</Text>
+                    <View style={styles.rankIconBox}>
+                      <Image
+                        style={styles.rankIcon}
+                        source={require("../../../assets/images/retail.png")}
+                      />
+                    </View>
+                    <View
+                      style={styles.view2}
+                    >
+                      <View style={styles.view3}>
+                        <Text style={[styles.rankText, { color: Colors.RED }]}>
+                          {retailData?.achievment}
+                        </Text>
+                        <Text style={[styles.rankText]}>
+                          /{retailData?.target}
+                        </Text>
                       </View>
-                    )}
+                      <View
+                        style={styles.view4}
+                      >
+                        <Text style={styles.baseText}>Ach v/s Tar</Text>
+                      </View>
+                    </View>
                   </View>
                 </View>
               </View>
-              <View style={styles.rankBox}>
-                <Text style={styles.rankHeadingText}>Retails</Text>
-                <View
-                  style={{
-                    flexDirection: "row",
-                  }}
-                >
-                  <View style={styles.rankIconBox}>
-                    <Image
-                      style={styles.rankIcon}
-                      source={require("../../../assets/images/retail.png")}
-                    />
-                  </View>
+            ) : (
+              <View style={styles.rankView}>
+                <View style={styles.rankBox}>
+                  <Text style={styles.rankHeadingText}>Dealer Ranking</Text>
                   <View
-                    style={{
-                      marginTop: 5,
-                      marginLeft: 5,
-                    }}
+                    style={styles.view5}
                   >
-                    <View style={{ flexDirection: "row" }}>
-                      <Text style={[styles.rankText, { color: Colors.RED }]}>
-                        {retailData?.achievment}
-                      </Text>
-                      <Text style={[styles.rankText]}>
-                        /{retailData?.target}
-                      </Text>
-                    </View>
+                    <TouchableOpacity
+                      style={styles.rankIconBox}
+                      onPress={() => {
+                        navigation.navigate(
+                          AppNavigator.HomeStackIdentifiers.leaderboard
+                        );
+                      }}
+                    >
+                      <Image
+                        style={styles.rankIcon}
+                        source={require("../../../assets/images/perform_rank.png")}
+                      />
+                    </TouchableOpacity>
                     <View
                       style={{
                         marginTop: 5,
+                        marginLeft: 3,
                       }}
                     >
-                      <Text style={styles.baseText}>Ach v/s Tar</Text>
+                      {groupDealerRank !== null && (
+                        <Text style={styles.rankText}>
+                          {groupDealerRank}/{groupDealerCount}
+                        </Text>
+                      )}
                     </View>
                   </View>
+                </View>
+                <View style={styles.rankBox}>
+                  <Text style={styles.rankHeadingText}>Branch Ranking</Text>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                    }}
+                  >
+                    <TouchableOpacity
+                      style={styles.rankIconBox}
+                      onPress={() => {
+                        navigation.navigate(
+                          AppNavigator.HomeStackIdentifiers.branchRanking
+                        );
+                      }}
+                    >
+                      <Image
+                        style={styles.rankIcon}
+                        source={require("../../../assets/images/perform_rank.png")}
+                      />
+                    </TouchableOpacity>
+                    <View
+                      style={styles.view6}
+                    >
+                      {dealerRank !== null && (
+                        <View style={styles.view3}>
+                          <Text style={[styles.rankText]}>{dealerRank}</Text>
+                          <Text style={[styles.rankText]}>/{dealerCount}</Text>
+                        </View>
+                      )}
+                    </View>
+                  </View>
+                </View>
+                <View style={styles.rankBox}>
+                  <Text style={styles.rankHeadingText}>Retails</Text>
+                  <View
+                      style={styles.view3}
+                  >
+                    <View style={styles.rankIconBox}>
+                      <Image
+                        style={styles.rankIcon}
+                        source={require("../../../assets/images/retail.png")}
+                      />
+                    </View>
+                    <View
+                      style={styles.view2}
+                    >
+                      <View style={styles.view3}>
+                        <Text style={[styles.rankText, { color: Colors.RED }]}>
+                          {retailData?.achievment}
+                        </Text>
+                        <Text style={[styles.rankText]}>
+                          /{retailData?.target}
+                        </Text>
+                      </View>
+                      <View
+                        style={{
+                          marginTop: 5,
+                        }}
+                      >
+                        <Text style={styles.baseText}>Ach v/s Tar</Text>
+                      </View>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            )
+          ) : null}
+          {userData.hrmsRole == "Reception" && (
+            <View
+              style={styles.view7}
+            >
+              <View style={styles.view8}>
+                <Text style={styles.rankHeadingText}>{"Leads Allocated"}</Text>
+                <View style={styles.cardView}>
+                  <Text style={{ ...styles.rankText, color: "blue" }}>
+                    {selector.receptionistData?.totalAllocatedCount}
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.view8}>
+                <Text style={styles.rankHeadingText}>{"Bookings"}</Text>
+                <View style={styles.cardView}>
+                  <Text style={{ ...styles.rankText, color: "red" }}>
+                    {selector.receptionistData?.bookingCount}
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.view8}>
+                <Text style={styles.rankHeadingText}>{"Retails"}</Text>
+                <View style={styles.cardView}>
+                  <Text style={{ ...styles.rankText, color: "green" }}>
+                    {selector.receptionistData?.RetailCount}
+                  </Text>
                 </View>
               </View>
             </View>
@@ -1180,24 +1387,10 @@ const HomeScreen = ({ route, navigation }) => {
         <View>
           {isTeamPresent && !selector.isDSE && (
             <View
-              style={{
-                flexDirection: "row",
-                marginBottom: 2,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
+              style={styles.view9}
             >
               <View
-                style={{
-                  flexDirection: "row",
-                  borderColor: Colors.RED,
-                  borderWidth: 1,
-                  borderRadius: 5,
-                  height: 28,
-                  marginTop: 2,
-                  justifyContent: "center",
-                  width: "80%",
-                }}
+                style={styles.view10}
               >
                 <TouchableOpacity
                   onPress={() => {
@@ -1256,44 +1449,20 @@ const HomeScreen = ({ route, navigation }) => {
           )}
           {selector.isDSE && (
             <View
-              style={{
-                flexDirection: "row",
-                marginBottom: 2,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
+              style={styles.view9}
             >
               <View
-                style={{
-                  flexDirection: "row",
-                  borderColor: Colors.RED,
-                  borderWidth: 1,
-                  borderRadius: 5,
-                  height: 28,
-                  justifyContent: "center",
-                  width: "80%",
-                }}
+                style={styles.view10}
               >
                 <TouchableOpacity
                   onPress={() => {
                     // setIsTeam(true)
                     dispatch(updateIsTeam(false));
                   }}
-                  style={{
-                    width: "100%",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    backgroundColor: Colors.RED,
-                    borderTopLeftRadius: 5,
-                    borderBottomLeftRadius: 5,
-                  }}
+                  style={styles.touchable2}
                 >
                   <Text
-                    style={{
-                      fontSize: 16,
-                      color: Colors.WHITE,
-                      fontWeight: "600",
-                    }}
+                    style={styles.txt4}
                   >
                     Dashboard
                   </Text>
@@ -1467,6 +1636,16 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
   },
   rankIcon: { width: 25, height: 25 },
+  cardView: {
+    width: 45,
+    height: 45,
+    borderWidth: 2,
+    borderColor: "#D3D3D3",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 10,
+    backgroundColor: "#fff",
+  },
   newModalContainer: {
     justifyContent: "center",
     alignItems: "center",
@@ -1535,6 +1714,78 @@ const styles = StyleSheet.create({
   hideRankBox: {
     paddingTop: 5,
     height: 80,
-    alignItems: "center"
+    alignItems: "center",
   },
+  view1: {
+    width: "100%",
+    alignItems: "flex-end",
+    marginVertical: 6,
+  },
+  tochable1:{
+    width: 140,
+    height: 30,
+    borderColor: Colors.RED,
+    borderWidth: 1,
+    borderRadius: 4,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  etvbrlTxt: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: Colors.RED,
+  },
+  view2:{
+    marginTop: 5,
+    marginLeft: 5,
+  },
+  view3:{
+     flexDirection: "row" 
+    },
+    view4:{
+    marginTop: 5,
+  },
+  view5:{
+    flexDirection: "row",
+  },
+ view6: {
+    marginTop: 5,
+    marginLeft: 3,
+  },
+ view7: {
+    justifyContent: "space-around",
+    flexDirection: "row",
+    marginTop: 20,
+  },
+  view8: { flexDirection: "column", alignItems: "center" },
+  view9: {
+    flexDirection: "row",
+    marginBottom: 2,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  view10: {
+    flexDirection: "row",
+    borderColor: Colors.RED,
+    borderWidth: 1,
+    borderRadius: 5,
+    height: 28,
+    marginTop: 2,
+    justifyContent: "center",
+    width: "80%",
+  },
+ touchable2: {
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: Colors.RED,
+    borderTopLeftRadius: 5,
+    borderBottomLeftRadius: 5,
+  },
+
+ txt4:{
+    fontSize: 16,
+    color: Colors.WHITE,
+    fontWeight: "600",
+  }
 });

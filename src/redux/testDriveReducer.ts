@@ -128,6 +128,18 @@ export const validateOtpApi = createAsyncThunk("HOME_VISIT_SLICE/validateOtpApi"
   return json;
 })
 
+
+
+export const postReOpenTestDrive = createAsyncThunk("HOME_VISIT_SLICE/postReOpenTestDrive", async (payload, { rejectWithValue }) => {
+
+  const response = await client.post(URL.SAVETESTDRIVE(), payload);
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
 const testDriveSlice = createSlice({
   name: "TEST_DRIVE_SLICE",
   initialState: {
@@ -152,6 +164,7 @@ const testDriveSlice = createSlice({
     generate_otp_response_status: "",
     otp_session_key: "",
     validate_otp_response_status: "",
+    reopen_test_drive_res_status:"",
   },
   reducers: {
     clearState: (state, action) => {
@@ -173,6 +186,7 @@ const testDriveSlice = createSlice({
       state.generate_otp_response_status = "";
       state.otp_session_key = "";
       state.validate_otp_response_status = "";
+      state.reopen_test_drive_res_status ="";
     },
     updateSelectedDate: (state, action: PayloadAction<CustomerDetailModel>) => {
       const { key, text } = action.payload;
@@ -409,6 +423,29 @@ const testDriveSlice = createSlice({
       }
       state.isLoading = false;
       state.validate_otp_response_status = "failed";
+    })
+
+    // reopen test drive
+    builder.addCase(postReOpenTestDrive.pending, (state, action) => {
+      state.isLoading = true;
+      state.reopen_test_drive_res_status = "pending";
+    })
+    builder.addCase(postReOpenTestDrive.fulfilled, (state, action) => {
+      if (action.payload) {
+        state.reopen_test_drive_res_status = "successs";
+      }
+      // else if (action.payload["reason"]) {
+      //   showToastRedAlert(action.payload["reason"]);
+      //   state.reopen_test_drive_res_status = "failed";
+      // }
+      state.isLoading = false;
+    })
+    builder.addCase(postReOpenTestDrive.rejected, (state, action) => {
+      // if (action.payload["reason"]) {
+      //   showToastRedAlert(action.payload["reason"]);
+      // }
+      state.isLoading = false;
+      state.reopen_test_drive_res_status = "failed";
     })
   }
 });

@@ -8,6 +8,7 @@ import moment from "moment";
 import { AppNavigator } from "../../../navigations";
 import { showToast } from "../../../utils/toast";
 import * as AsyncStore from "../../../asyncStore";
+import { EmsStackIdentifiers } from "../../../navigations/appNavigator";
 
 const mytasksIdentifires = {
   testdrive: "TEST_DRIVE",
@@ -20,6 +21,7 @@ const mytasksIdentifires = {
   preenquiryfollowup: "PRE_ENQUIRY_FOLLOW_UP",
   createenquiry: "CREATE_ENQUIRY",
   bookingfollowupdse: "BOOKING_FOLLOW_UP",
+  task360History: "TASK_360_HISTORY",
 };
 
 const TaskThreeSixtyScreen = ({ route, navigation }) => {
@@ -179,7 +181,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
             navigation.navigate(navigationId, { itemData: itemData, fromCreatePreEnquiry: false })
         }
         else {
-            navigation.navigate(navigationId, { identifier: mytasksIdentifires[finalTaskName], taskId, universalId, taskStatus, taskData: item, mobile: mobileNo, reasonTaskName: taskNameNew });
+            navigation.navigate(navigationId, { identifier: mytasksIdentifires[finalTaskName], taskId, universalId, taskStatus, taskData: item, mobile: mobileNo, reasonTaskName: taskNameNew , fromScreen: "taskThreeSixty"});
         }
     };
 
@@ -230,7 +232,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                     sections={dataForSectionList}
                     keyExtractor={(item, index) => item + index}
                     renderItem={({ item, index, section }) => {
-                        const date = moment(item.taskUpdatedTime).format("ddd MM/YY h:mm a").split(" ");
+                        const date = moment(item.taskUpdatedTime).format("DD/MM/YY h:mm a").split(" ");
 
                         let topBcgColor = Colors.LIGHT_GRAY;
                         let bottomBcgColor = Colors.LIGHT_GRAY;
@@ -250,6 +252,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                   fontSize: 16,
                                   fontWeight: "700",
                                   marginBottom: 5,
+                                  width: "80%",
                                 }}
                               >
                                 {name}
@@ -262,21 +265,17 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                             );
                         }
 
+                        let isHistory = section.title == "Planned Tasks";
+
                         return (
                           <>
                             {item.taskName === "Test Drive Approval" ? (
                               isApprovar ? (
                                 <View
-                                  style={{
-                                    width: "100%",
-                                    flexDirection: "row",
-                                  }}
+                                  style={styles.view2}
                                 >
                                   <View
-                                    style={{
-                                      width: "25%",
-                                      justifyContent: "center",
-                                    }}
+                                    style={styles.view3}
                                   >
                                     <View
                                       style={{
@@ -312,20 +311,14 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                       ></Text>
                                       <View style={{ marginLeft: 5 }}>
                                         <Text
-                                          style={{
-                                            fontSize: 12,
-                                            fontWeight: "400",
-                                          }}
+                                          style={styles.txt2}
                                         >
-                                          {date[0] + " " + date[1]}
+                                          {date[0]}
                                         </Text>
                                         <Text
-                                          style={{
-                                            fontSize: 12,
-                                            fontWeight: "400",
-                                          }}
+                                          style={styles.txt2}
                                         >
-                                          {date[2] + " " + date[3]}
+                                          {date[1] + " " + date[2]}
                                         </Text>
                                       </View>
                                     </View>
@@ -342,27 +335,40 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                       >
                                         <View
                                           style={[
-                                            {
-                                              paddingVertical: 5,
-                                              paddingLeft: 10,
-                                              backgroundColor: Colors.WHITE,
-                                            },
+                                            styles.view1,
                                           ]}
                                         >
-                                          <Text
+                                          <View
                                             style={{
-                                              fontSize: 16,
-                                              fontWeight: "700",
-                                              marginBottom: 5,
+                                              flexDirection: "row",
+                                              justifyContent: "space-between",
                                             }}
                                           >
-                                            {item.taskName}
-                                          </Text>
+                                            <Text
+                                              style={styles.txt1}
+                                            >
+                                              {item.taskName}
+                                            </Text>
+                                            {item.lat && item.lon && (
+                                              <TouchableOpacity
+                                                style={styles.btn1}
+                                                onPress={() =>
+                                                  openMap(item.lat, item.lon)
+                                                }
+                                              >
+                                                <Image
+                                                  style={{
+                                                    height: 25,
+                                                    width: 15,
+                                                  }}
+                                                  source={require("../../../assets/images/location-pin.png")}
+                                                  tintColor={Colors.PINK}
+                                                />
+                                              </TouchableOpacity>
+                                            )}
+                                          </View>
                                           <Text
-                                            style={{
-                                              fontSize: 14,
-                                              fontWeight: "400",
-                                            }}
+                                            style={styles.txt3}
                                           >
                                             {"Assignee: " +
                                               item.assignee?.empName}
@@ -387,49 +393,16 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                           </Text>
                                         </View>
                                       </TouchableOpacity>
-                                      {item.lat && item.lon && (
-                                        <TouchableOpacity
-                                          style={{
-                                            position: "absolute",
-                                            top: 0,
-                                            right: 0,
-                                          }}
-                                          onPress={() =>
-                                            openMap(item.lat, item.lon)
-                                          }
-                                        >
-                                          <View
-                                            style={{
-                                              width: 35,
-                                              height: 35,
-                                              justifyContent: "center",
-                                              alignItems: "center",
-                                              borderWidth: 1,
-                                              borderColor: "#d1d1d1",
-                                              borderRadius: 5,
-                                            }}
-                                          >
-                                            <Image
-                                              style={{ height: 25, width: 15 }}
-                                              source={require("../../../assets/images/location-pin.png")}
-                                              tintColor={Colors.PINK}
-                                            />
-                                          </View>
-                                        </TouchableOpacity>
-                                      )}
                                     </View>
                                   </View>
                                 </View>
                               ) : null
                             ) : (
                               <View
-                                style={{ width: "100%", flexDirection: "row" }}
+                                style={styles.view4}
                               >
                                 <View
-                                  style={{
-                                    width: "25%",
-                                    justifyContent: "center",
-                                  }}
+                                  style={styles.view3}
                                 >
                                   <View
                                     style={{
@@ -449,11 +422,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                   ></View>
 
                                   <View
-                                    style={{
-                                      alignItems: "center",
-                                      flexDirection: "row",
-                                      position: "absolute",
-                                    }}
+                                    style={styles.view5}
                                   >
                                     <Text
                                       style={{
@@ -465,25 +434,24 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                     ></Text>
                                     <View style={{ marginLeft: 5 }}>
                                       <Text
-                                        style={{
-                                          fontSize: 12,
-                                          fontWeight: "400",
-                                        }}
+                                          style={styles.txt2}
                                       >
-                                        {date[0] + " " + date[1]}
+                                        {date[0]}
                                       </Text>
                                       <Text
-                                        style={{
-                                          fontSize: 12,
-                                          fontWeight: "400",
-                                        }}
+                                        style={styles.txt2}
                                       >
-                                        {date[2] + " " + date[3]}
+                                        {date[1] + " " + date[2]}
                                       </Text>
                                     </View>
                                   </View>
                                 </View>
-                                <View style={{ width: "75%", padding: 5 }}>
+                                <View
+                                  style={{
+                                    width: isHistory ? "67%" : "75%",
+                                    padding: 5,
+                                  }}
+                                >
                                   <View
                                     style={[
                                       { backgroundColor: Colors.WHITE },
@@ -495,19 +463,36 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                     >
                                       <View
                                         style={[
-                                          {
-                                            paddingVertical: 5,
-                                            paddingLeft: 10,
-                                            backgroundColor: Colors.WHITE,
-                                          },
+                                          styles.view1,
                                         ]}
                                       >
-                                        {TaskNameView(item.taskName)}
-                                        <Text
+                                        <View
                                           style={{
-                                            fontSize: 14,
-                                            fontWeight: "400",
+                                            flexDirection: "row",
+                                            justifyContent: "space-between",
                                           }}
+                                        >
+                                          {TaskNameView(item.taskName)}
+                                          {item.lat && item.lon && (
+                                            <TouchableOpacity
+                                              style={styles.btn2}
+                                              onPress={() =>
+                                                openMap(item.lat, item.lon)
+                                              }
+                                            >
+                                              <Image
+                                                style={{
+                                                  height: 25,
+                                                  width: 15,
+                                                }}
+                                                source={require("../../../assets/images/location-pin.png")}
+                                                tintColor={Colors.PINK}
+                                              />
+                                            </TouchableOpacity>
+                                          )}
+                                        </View>
+                                        <Text
+                                          style={styles.txt3}
                                         >
                                           {"Assignee: " +
                                             item.assignee?.empName}
@@ -532,38 +517,31 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                         </Text>
                                       </View>
                                     </TouchableOpacity>
-                                    {item.lat && item.lon && (
-                                      <TouchableOpacity
-                                        style={{
-                                          position: "absolute",
-                                          top: 0,
-                                          right: 0,
-                                        }}
-                                        onPress={() =>
-                                          openMap(item.lat, item.lon)
-                                        }
-                                      >
-                                        <View
-                                          style={{
-                                            width: 35,
-                                            height: 35,
-                                            justifyContent: "center",
-                                            alignItems: "center",
-                                            borderWidth: 1,
-                                            borderColor: "#d1d1d1",
-                                            borderRadius: 5,
-                                          }}
-                                        >
-                                          <Image
-                                            style={{ height: 25, width: 15 }}
-                                            source={require("../../../assets/images/location-pin.png")}
-                                            tintColor={Colors.PINK}
-                                          />
-                                        </View>
-                                      </TouchableOpacity>
-                                    )}
                                   </View>
                                 </View>
+                                {isHistory ? (
+                                  <TouchableOpacity
+                                    onPress={() =>
+                                      navigation.navigate(
+                                        EmsStackIdentifiers.task360History,
+                                        {
+                                          identifier:
+                                            mytasksIdentifires.task360History,
+                                          title: checkForTaskNames(
+                                            item.taskName
+                                          ),
+                                          universalId: item.universalId,
+                                        }
+                                      )
+                                    }
+                                  >
+                                    <Image
+                                      source={require("./../../../assets/images/dots.png")}
+                                      resizeMode="contain"
+                                      style={styles.dotContainer}
+                                    />
+                                  </TouchableOpacity>
+                                ) : null}
                               </View>
                             )}
                           </>
@@ -571,7 +549,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                     }}
                     renderSectionHeader={({ section: { title } }) => (
                         <View style={{ height: 50, justifyContent: "center" }}>
-                            <Text style={{ fontSize: 18, fontWeight: "700", marginBottom: 5 }}>{title}</Text>
+                            <Text style={styles.txt4}>{title}</Text>
                         </View>
                     )}
                 />
@@ -596,6 +574,70 @@ const styles = StyleSheet.create({
   followUpText: {
     fontSize: 14,
     fontWeight: "400",
-    marginVertical:3
+    marginVertical: 3,
   },
+
+  dotContainer:{
+    height: 45,
+    width: 25,
+  },
+  view1:{
+    paddingVertical: 5,
+    paddingLeft: 10,
+    backgroundColor: Colors.WHITE,
+  },
+  txt1:{
+    fontSize: 16,
+    fontWeight: "700",
+    marginBottom: 5,
+    width: "75%"
+  },
+  btn1:{
+    width: 35,
+    height: 35,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#d1d1d1",
+    borderRadius: 5,
+    marginTop: -5,
+  },
+  view2:{
+    width: "100%",
+    flexDirection: "row",
+  },
+  view3:{
+    width: "25%",
+    justifyContent: "center",
+  },
+  txt2:{
+    fontSize: 12,
+    fontWeight: "400",
+  },
+  txt3:{
+    fontSize: 14,
+    fontWeight: "400",
+  },
+  view4:{
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  view5:{
+    alignItems: "center",
+    flexDirection: "row",
+    position: "absolute",
+  },
+  btn2:{
+    alignSelf: "flex-start",
+    marginTop: -5,
+    width: 35,
+    height: 35,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#d1d1d1",
+    borderRadius: 5,
+  },
+  txt4:{ fontSize: 18, fontWeight: "700", marginBottom: 5 }
 });

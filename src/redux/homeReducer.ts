@@ -178,7 +178,6 @@ export const getTargetParametersData = createAsyncThunk(
     const response = await client.post(URL.GET_TARGET_PARAMS(), payload);
     const json = await response.json();
 
-
     if (!response.ok) {
       return rejectWithValue(json);
     }
@@ -189,10 +188,8 @@ export const getTargetParametersData = createAsyncThunk(
 export const getTargetParametersAllData = createAsyncThunk(
   "HOME/getTargetParametersAllData",
   async (payload: any, { rejectWithValue }) => {
-
     const response = await client.post(URL.GET_TARGET_PARAMS_ALL(), payload);
     const json = await response.json();
-
 
     if (!response.ok) {
       return rejectWithValue(json);
@@ -204,10 +201,8 @@ export const getTargetParametersAllData = createAsyncThunk(
 export const getNewTargetParametersAllData = createAsyncThunk(
   "HOME/getNewTargetParametersAllData",
   async (payload: any, { rejectWithValue }) => {
-
     const response = await client.post(URL.GET_TEAMS_TARGET_PARAMS(), payload);
     const json = await response.json();
-
 
     if (!response.ok) {
       return rejectWithValue(json);
@@ -222,7 +217,6 @@ export const getTotalTargetParametersData = createAsyncThunk(
     const response = await client.post(URL.GET_TARGET_PARAMS(), payload);
     const json = await response.json();
 
-
     if (!response.ok) {
       return rejectWithValue(json);
     }
@@ -233,10 +227,8 @@ export const getTotalTargetParametersData = createAsyncThunk(
 export const getUserWiseTargetParameters = createAsyncThunk(
   "HOME/getUserWiseTargetParameters",
   async (payload: any, { rejectWithValue }) => {
-
     const response = await client.post(URL.GET_TEAMS_TARGET_PARAMS(), payload);
     const json = await response.json();
-
 
     if (!response.ok) {
       return rejectWithValue(json);
@@ -248,10 +240,8 @@ export const getUserWiseTargetParameters = createAsyncThunk(
 export const getTotalOftheTeam = createAsyncThunk(
   "HOME/getTotalOftheTeam",
   async (payload: any, { rejectWithValue }) => {
-
     const response = await client.post(URL.GET_TOTAL_OF_TEAM(), payload);
     const json = await response.json();
-
 
     if (!response.ok) {
       return rejectWithValue(json);
@@ -304,14 +294,12 @@ export const getTargetParametersEmpData = createAsyncThunk(
     //  }
     //  return json;
     // }
-
   }
 );
 
 export const getGroupDealerRanking = createAsyncThunk(
   "HOME/getGroupDealerRanking",
   async (payload: any, { rejectWithValue }) => {
-
     const response = await client.post(
       URL.GET_TARGET_GROUP_RANKING(payload.orgId),
       payload.payload
@@ -387,7 +375,6 @@ export const getSalesComparisonData = createAsyncThunk(
 export const getBranchIds = createAsyncThunk(
   "HOME/getBranchIds",
   async (payload: any, { rejectWithValue }) => {
-
     const response = await client.get(URL.GET_BRANCH());
     const json = await response.json();
 
@@ -414,7 +401,26 @@ export const downloadFile = createAsyncThunk(
 export const updateIsTeam = createAsyncThunk(
   "HOME/updateIsTeam",
   async (payload: any) => {
+    return payload;
+  }
+);
 
+export const updateIsModalVisible = createAsyncThunk(
+  "HOME/updateIsModalVisible",
+  async (payload: any) => {
+    return payload;
+  }
+);
+
+export const updateTheTeamAttendanceFilter = createAsyncThunk(
+  "HOME/updateTheTeamAttendanceFilter",
+  async (payload: any) => {
+    return payload;
+  }
+);
+export const updateTheTeamAttendanceFilterDate = createAsyncThunk(
+  "HOME/updateTheTeamAttendanceFilterDate",
+  async (payload: any) => {
     return payload;
   }
 );
@@ -484,7 +490,6 @@ export const getReportingManagerList = createAsyncThunk(
 export const delegateTask = createAsyncThunk(
   "HOME/delegateTask",
   async (payload, { rejectWithValue }) => {
-
     const response = await client.post(
       URL.TRANSFER_TASK(payload["fromUserId"], payload["toUserId"]),
       {
@@ -564,7 +569,6 @@ export const getSourceModelDataForSelf = createAsyncThunk(
     const response = await client.post(url, payload);
     const json = await response.json();
 
-
     if (!response.ok) {
       return rejectWithValue(json);
     }
@@ -579,7 +583,6 @@ export const getSourceModelDataForInsights = createAsyncThunk(
 
     const response = await client.post(URL.MODEL_SOURCE_INSIGHTS(), payload);
     const json = await response.json();
-
 
     if (!response.ok) {
       return rejectWithValue(json);
@@ -596,7 +599,45 @@ export const getSourceModelDataForTeam = createAsyncThunk(
     const response = await client.post(URL.MODEL_SOURCE_TEAM(), payload);
     const json = await response.json();
 
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
 
+export const getReceptionistData = createAsyncThunk(
+  "HOME/getReceptionistData",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(
+      URL.RECEPTIONIST_DASHBOARD(),
+      payload
+    );
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+export const getReceptionistSource = createAsyncThunk(
+  "HOME/getReceptionistSource",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.RECEPTIONIST_SOURCE(), payload);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+export const getReceptionistModel = createAsyncThunk(
+  "HOME/getReceptionistModel",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.RECEPTIONIST_MODEL(), payload);
+    const json = await response.json();
     if (!response.ok) {
       return rejectWithValue(json);
     }
@@ -662,7 +703,26 @@ export const homeSlice = createSlice({
     designationList: [],
     deptList: [],
     sourceModelData: [],
+    isModalVisible: false,
     bannerList: [],
+    receptionistData: {
+      RetailCount: 0,
+      bookingCount: 0,
+      consultantList: [],
+      totalAllocatedCount: 0,
+      totalDroppedCount: 0,
+    },
+    receptionistModel: [],
+    receptionistSource: [],
+    selectedIDS :[],
+    selectedDate : {},
+    filterIds:{
+      startDate:"",
+      endDate:"",
+      levelSelected:[],
+      empSelected:[],
+      allEmpSelected:[],
+    },
   },
   reducers: {
     dateSelected: (state, action) => {
@@ -670,6 +730,12 @@ export const homeSlice = createSlice({
     },
     updateFilterDropDownData: (state, action) => {
       state.filter_drop_down_data = action.payload;
+    },
+    updateFilterIds:(state,action)=>{
+      state.filterIds = action.payload
+    },
+     updateEmpDropDown:(state,action)=>{
+      state.employees_drop_down_data = {}
     },
     updateIsTeamPresent: (state, action) => {
       state.isTeamPresent = action.payload;
@@ -706,6 +772,7 @@ export const homeSlice = createSlice({
       state.dateSelectedIndex = 0;
       state.login_employee_details = {};
       state.filter_drop_down_data = [];
+      // state.filterIds = {},
       state.lead_source_table_data = [];
       state.vehicle_model_table_data = [];
       state.events_table_data = [];
@@ -735,6 +802,20 @@ export const homeSlice = createSlice({
       state.branchrank_list = [];
       state.self_target_parameters_data = empData;
       state.insights_target_parameters_data = empData;
+      state.receptionistData = {
+        RetailCount: 0,
+        bookingCount: 0,
+        consultantList: [],
+        totalAllocatedCount: 0,
+        totalDroppedCount: 0,
+      };
+      state.filterIds = {
+        startDate:"",
+        endDate:"",
+        levelSelected:[],
+        empSelected:[],
+        allEmpSelected:[],
+      }
     },
   },
   extraReducers: (builder) => {
@@ -781,6 +862,15 @@ export const homeSlice = createSlice({
       })
       .addCase(updateIsTeam.fulfilled, (state, action) => {
         state.isTeam = action.payload;
+      })
+      .addCase(updateIsModalVisible.fulfilled, (state, action) => {
+        state.isModalVisible = action.payload;
+      })
+      .addCase(updateTheTeamAttendanceFilter.fulfilled, (state, action) => {
+        state.selectedIDS = action.payload;
+      })
+      .addCase(updateTheTeamAttendanceFilterDate.fulfilled, (state, action) => {
+        state.selectedDate = action.payload;
       })
       .addCase(getCustomerTypeList.fulfilled, (state, action) => {
         const data = action.payload;
@@ -1003,6 +1093,7 @@ export const homeSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(getTargetParametersEmpData.fulfilled, (state, action) => {
+        state.isModalVisible = false;
         if (action.payload) {
           state.self_target_parameters_data = action.payload;
           AsyncStore.storeData("TARGET_EMP", JSON.stringify(action.payload));
@@ -1010,10 +1101,12 @@ export const homeSlice = createSlice({
           state.self_target_parameters_data = empData;
         }
         state.isLoading = false;
+        state.isModalVisible = true;
       })
       .addCase(getTargetParametersEmpData.rejected, (state, action) => {
         //state.self_target_parameters_data = [];
         state.isLoading = false;
+        state.isModalVisible = false;
       })
       .addCase(getTargetParametersEmpDataInsights.pending, (state, action) => {
         //state.self_target_parameters_data = [];
@@ -1022,16 +1115,19 @@ export const homeSlice = createSlice({
       .addCase(
         getTargetParametersEmpDataInsights.fulfilled,
         (state, action) => {
+          state.isModalVisible = false;
           if (action.payload) {
             state.insights_target_parameters_data = action.payload;
             AsyncStore.storeData("TARGET_EMP", JSON.stringify(action.payload));
           }
           state.isLoading = false;
+          state.isModalVisible = true;
         }
       )
       .addCase(getTargetParametersEmpDataInsights.rejected, (state, action) => {
         //state.self_target_parameters_data = [];
         state.isLoading = false;
+        state.isModalVisible = false;
       })
 
       .addCase(getNewTargetParametersAllData.pending, (state, action) => {
@@ -1078,6 +1174,7 @@ export const homeSlice = createSlice({
       .addCase(getEmployeesList.pending, (state, action) => {
         // state.employee_list = [];
         state.isLoading = true;
+        state.isModalVisible = false;
       })
       .addCase(getEmployeesList.fulfilled, (state, action) => {
         if (action.payload) {
@@ -1155,7 +1252,33 @@ export const homeSlice = createSlice({
       })
       .addCase(getSourceModelDataForSelf.rejected, (state, action) => {
         state.isLoading = false;
-      });
+      })
+      .addCase(getReceptionistData.pending, (state) => {})
+      .addCase(getReceptionistData.fulfilled, (state, action) => {
+        const dataObj = action.payload;
+        state.receptionistData = {
+          RetailCount: dataObj.RetailCount,
+          bookingCount: dataObj.bookingCount,
+          consultantList: dataObj.consultantList,
+          totalAllocatedCount: dataObj.totalAllocatedCount,
+          totalDroppedCount: dataObj.totalDroppedCount,
+        };
+      })
+      .addCase(getReceptionistData.rejected, (state, action) => {})
+      .addCase(getReceptionistSource.pending, (state) => {})
+      .addCase(getReceptionistSource.fulfilled, (state, action) => {
+        const dataObj = action.payload;
+        state.receptionistSource = dataObj;
+      })
+      .addCase(getReceptionistSource.rejected, (state, action) => {})
+      .addCase(getReceptionistModel.pending, (state) => {})
+      .addCase(getReceptionistModel.fulfilled, (state, action) => {
+        const dataObj = action.payload;
+        console.log("dataObj", dataObj);
+
+        state.receptionistModel = dataObj;
+      })
+      .addCase(getReceptionistModel.rejected, (state, action) => {});
 
     builder.addCase(getDeptDropdown.pending, (state, action) => {
       state.isLoading = true;
@@ -1165,7 +1288,7 @@ export const homeSlice = createSlice({
         const dataObj = action.payload;
         state.deptList = dataObj ? dataObj : [];
       }
-      state.isLoading = false; 
+      state.isLoading = false;
     });
     builder.addCase(getDeptDropdown.rejected, (state, action) => {
       state.isLoading = false;
@@ -1197,5 +1320,7 @@ export const {
   updateIsDSE,
   clearState,
   updateTargetData,
+  updateFilterIds,
+  updateEmpDropDown,
 } = homeSlice.actions;
 export default homeSlice.reducer;
