@@ -369,8 +369,8 @@ const URL = {
   VALIDATE_OTP: () => {
     return notificationServices_url + "/validateOTP";
   },
-   SAVETESTDRIVE: () => {
-     return sales_url + "/task-history/savetestDrive";
+  SAVETESTDRIVE: () => {
+    return sales_url + "/task-history/savetestDrive";
   },
   ORG_HIRARCHY: (orgId, branchId) => {
     return orgnaizationHirarchy + `/active-levels/${orgId}/${branchId}`;
@@ -694,11 +694,23 @@ const URL = {
   RECEPTIONIST_DASHBOARD: () => {
     return dashboard + "/receptionist";
   },
+  RECEPTIONIST_MANAGER_DASHBOARD: () => {
+    return dashboard + "/receptionistManager";
+  },
+  RECEPTIONIST_MANAGER_TEAM: () => {
+    return dashboard + "/receptionistTeam";
+  },
   RECEPTIONIST_SOURCE: () => {
     return dashboard + "/receptionist/source";
   },
   RECEPTIONIST_MODEL: () => {
     return dashboard + "/receptionist/model";
+  },
+  RECEPTIONIST_MANAGER_SOURCE: () => {
+    return dashboard + "/receptionistManager/source";
+  },
+  RECEPTIONIST_MANAGER_MODEL: () => {
+    return dashboard + "/receptionistManager/model";
   },
   ROLE_STAGE_ACCESS: (role) => {
     return sales_url + "/lead/roleStageAccess/" + role;

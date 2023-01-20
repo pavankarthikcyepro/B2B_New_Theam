@@ -14,6 +14,8 @@ import PercentageToggleControl from "./PercentageToggleControl";
 import URL from "../../../../../../networking/endpoints";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  getReceptionistManagerModel,
+  getReceptionistManagerSource,
   getReceptionistModel,
   getReceptionistSource,
   getSourceModelDataForSelf,
@@ -70,7 +72,7 @@ const RecepSourceModel = ({ route, navigation }) => {
   ];
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.homeReducer);
-  const { empId, loggedInEmpId, headerTitle, orgId, type, moduleType } =
+  const { empId, loggedInEmpId, headerTitle, orgId, type, moduleType, role } =
     route.params;
   const [leadSource, setLeadSource] = useState([]);
   const [vehicleModel, setVehicleModel] = useState([]);
@@ -84,6 +86,7 @@ const RecepSourceModel = ({ route, navigation }) => {
     useState(paramsMetadata);
   const [isLoading, setIsLoading] = useState(false);
   const scrollViewRef = useRef();
+
   useEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
@@ -115,8 +118,13 @@ const RecepSourceModel = ({ route, navigation }) => {
       orgId: orgId,
       loggedInEmpId: loggedInEmpId,
     };
-    dispatch(getReceptionistSource(newPayload));
-    dispatch(getReceptionistModel(newPayload));
+    if (role == "Reception") {
+      dispatch(getReceptionistSource(newPayload));
+      dispatch(getReceptionistModel(newPayload));
+    } else if (role == "CRM") {
+      dispatch(getReceptionistManagerSource(newPayload));
+      dispatch(getReceptionistManagerModel(newPayload));
+    }
   }, [empId, navigation]);
 
   useEffect(() => {
@@ -420,8 +428,8 @@ const RecepSourceModel = ({ route, navigation }) => {
                   flexDirection: "row",
                   marginTop: 15,
                   marginBottom: 40,
-                  backgroundColor:Colors.RED,
-                  paddingVertical:10
+                  backgroundColor: Colors.RED,
+                  paddingVertical: 10,
                 }}
               >
                 <Text
