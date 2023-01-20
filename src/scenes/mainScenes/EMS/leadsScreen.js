@@ -222,6 +222,7 @@ const LeadsScreen = ({ route, navigation }) => {
         route.params.fromScreen === "enquiry" ||
         route.params.fromScreen === "proceedToBookingApproval" ||
         route.params.fromScreen === "booking" ||
+        route.params.fromScreen === "testDrive" ||
         route.params.fromScreen === "bookingApproval")
     ) {
       setLoader(true);
@@ -897,6 +898,7 @@ const LeadsScreen = ({ route, navigation }) => {
       <>
         <View>
           <MyTaskNewItem
+            tdflage={item?.tdflage ? item.tdflage : ""}
             from={item.leadStage}
             name={
               getFirstLetterUpperCase(item.firstName) +
@@ -909,8 +911,8 @@ const LeadsScreen = ({ route, navigation }) => {
               item.leadStage === "ENQUIRY"
                 ? "Enq"
                 : item.leadStage === "BOOKING"
-                  ? "Book"
-                  : "PreBook"
+                ? "Book"
+                : "PreBook"
             }
             status={""}
             created={item.modifiedDate}
@@ -923,27 +925,21 @@ const LeadsScreen = ({ route, navigation }) => {
             needStatus={"YES"}
             enqCat={item.enquiryCategory}
             onItemPress={() => {
-              navigation.navigate(
-                AppNavigator.EmsStackIdentifiers.task360,
-                {
-                  universalId: item.universalId,
-                  mobileNo: item.phone,
-                  leadStatus: item.leadStatus,
-                }
-              );
+              navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, {
+                universalId: item.universalId,
+                mobileNo: item.phone,
+                leadStatus: item.leadStatus,
+              });
             }}
             onDocPress={() => {
-              let route =
-                AppNavigator.EmsStackIdentifiers.detailsOverview;
+              let route = AppNavigator.EmsStackIdentifiers.detailsOverview;
               switch (item.leadStage) {
                 case "BOOKING":
-                  route =
-                    AppNavigator.EmsStackIdentifiers.bookingForm;
+                  route = AppNavigator.EmsStackIdentifiers.bookingForm;
                   break;
                 case "PRE_BOOKING":
                 case "PREBOOKING":
-                  route =
-                    AppNavigator.EmsStackIdentifiers.preBookingForm;
+                  route = AppNavigator.EmsStackIdentifiers.preBookingForm;
                   break;
               }
               console.log(route);

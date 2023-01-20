@@ -65,6 +65,7 @@ import {
   useClearByFocusCell,
 } from "react-native-confirmation-code-field";
 import { client } from "../../../networking/client";
+import { EmsTopTabNavigatorIdentifiers } from "../../../navigations/emsTopTabNavigator";
 
 const LocalButtonComp = ({
   title,
@@ -87,7 +88,15 @@ const LocalButtonComp = ({
 };
 
 const TestDriveScreen = ({ route, navigation }) => {
-  const { taskId, identifier, universalId, taskData, mobile } = route.params;
+  const {
+    taskId,
+    identifier,
+    universalId,
+    taskData,
+    mobile,
+    fromScreen = "",
+  } = route.params;
+
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.testDriveReducer);
   const [showDropDownModel, setShowDropDownModel] = useState(false);
@@ -945,7 +954,13 @@ const TestDriveScreen = ({ route, navigation }) => {
           text: "OK",
           onPress: () => {
             dispatch(clearState());
-            navigation.popToTop();
+            if (fromScreen == "taskThreeSixty") {
+              navigation.navigate(EmsTopTabNavigatorIdentifiers.leads, {
+                fromScreen: "testDrive",
+              });
+            } else {
+              navigation.popToTop();
+            }
           },
         },
       ],

@@ -181,7 +181,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
             navigation.navigate(navigationId, { itemData: itemData, fromCreatePreEnquiry: false })
         }
         else {
-            navigation.navigate(navigationId, { identifier: mytasksIdentifires[finalTaskName], taskId, universalId, taskStatus, taskData: item, mobile: mobileNo, reasonTaskName: taskNameNew });
+            navigation.navigate(navigationId, { identifier: mytasksIdentifires[finalTaskName], taskId, universalId, taskStatus, taskData: item, mobile: mobileNo, reasonTaskName: taskNameNew , fromScreen: "taskThreeSixty"});
         }
     };
 
