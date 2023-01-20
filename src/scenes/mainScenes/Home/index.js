@@ -160,12 +160,10 @@ const HomeScreen = ({ route, navigation }) => {
           setInitialPosition(json.coords);
         },
         (error) => {
-          console.log(JSON.stringify(error));
         },
         { enableHighAccuracy: true }
       );
     } catch (error) {
-      console.log("ERROR", error);
     }
   };
 
@@ -234,7 +232,6 @@ const HomeScreen = ({ route, navigation }) => {
               // }
             }
           } else {
-            console.log("DDDD");
             setAttendance(true);
             //  if (startDate <= now && now <= startBetween) {
             //    setAttendance(true);

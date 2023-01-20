@@ -96,7 +96,6 @@ export const getTodayMyTasksListApi = createAsyncThunk(
     const url = URL.GET_MY_TASKS_NEW_DATA();
     const response = await client.post(url, payload);
     const json = await response.json();
-    console.log(json, "json ======= ");
     if (!response.ok) {
       return rejectWithValue(json);
     }
@@ -120,13 +119,9 @@ export const getUpcomingMyTasksListApi = createAsyncThunk(
 export const getPendingMyTasksListApi = createAsyncThunk(
   "MY_TASKS/getPendingMyTasksListApi",
   async (payload, { rejectWithValue }) => {
-    console.log("getPendingMyTasksListApi Payload",payload);
-    
     const url = URL.GET_MY_TASKS_NEW_DATA();
     const response = await client.post(url, payload);
     const json = await response.json();
-    console.log("getPendingMyTasksListApi res",json);
-
     if (!response.ok) {
       return rejectWithValue(json);
     }
@@ -189,12 +184,9 @@ export const getUpcomingTeamTasksListApi = createAsyncThunk(
 export const getPendingTeamTasksListApi = createAsyncThunk(
   "MY_TASKS/getPendingTeamTasksListApi",
   async (payload, { rejectWithValue }) => {
-    console.log("getPendingTeamTasksListApi Payload ",payload);
-    
     const url = URL.GET_MY_TASKS_NEW_DATA();
     const response = await client.post(url, payload);
     const json = await response.json();
-    console.log("getPendingTeamTasksListApi Res ",json);
     if (!response.ok) {
       return rejectWithValue(json);
     }

@@ -49,7 +49,6 @@ const MyTaskFilterScreen = ({ navigation }) => {
   const isFocused = useIsFocused();
   const [showDropDownModel, setShowDropDownModel] = useState(false);
   const [dropDownData, setDropDownData] = useState([]);
-  const [isMulti, setIsMulti] = useState(true);
   const [selectedItemIndex, setSelectedItemIndex] = useState();
   const [isSalesConsultant, setIsSalesConsultant] = useState(false);
   const [isFilter, setIsFilter] = useState(true);
@@ -87,21 +86,25 @@ const MyTaskFilterScreen = ({ navigation }) => {
     );
     if (employeeData) {
       const jsonObj = await JSON.parse(employeeData);
-      setIsSalesConsultant(jsonObj?.hrmsRole == "Sales Consultant");
+      setIsSalesConsultant(
+        jsonObj?.hrmsRole == "Sales Consultant" ||
+          jsonObj?.hrmsRole == "Walkin DSE"
+      );
     }
   }, []);
 
   useEffect(async () => {
     if (selector.filter_drop_down_data && selector.filterIds) {
-      console.log("selector.filterIds", selector.filterIds);
       let data = selector.filter_drop_down_data;
       const employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
       );
       if (employeeData) {
         const jsonObj = await JSON.parse(employeeData);
-        console.log("hrms", jsonObj.hrmsRole, "======");
-        if (jsonObj.hrmsRole == "Sales Consultant") {
+        if (
+          jsonObj.hrmsRole == "Sales Consultant" ||
+          jsonObj?.hrmsRole == "Walkin DSE"
+        ) {
           let newData = {};
           newData["Dealer Code"] = {
             sublevels: selector.filter_drop_down_data["Dealer Code"]?.sublevels
@@ -146,7 +149,6 @@ const MyTaskFilterScreen = ({ navigation }) => {
 
   useEffect(() => {
     if (selector.employees_drop_down_data && selector.filterIds) {
-      console.log("Emp Drop Call");
       let filterIds = selector.filterIds?.empSelectedIds || [];
       let names = [];
       let newDataObj = {};
@@ -177,8 +179,8 @@ const MyTaskFilterScreen = ({ navigation }) => {
       if (!isEmpty(names) && !isEmpty(newDataObj)) {
         setEmployeeTitleNameList(names);
         setEmployeeDropDownDataLocal(newDataObj);
-      } 
-      setIsFilterLoading(false);
+        setIsFilterLoading(false);
+      }
     },
     [employeeDropDownDataLocal, employeeTitleNameList]
   );
@@ -200,7 +202,6 @@ const MyTaskFilterScreen = ({ navigation }) => {
   }, [nameKeyList, isSalesConsultant, isFocused]);
 
   const dropDownItemClicked = async (item, index, initalCall = false) => {
-    setIsMulti(item === "Location" || item === "Dealer Code");
     setIsFilter(true);
     const topRowSelectedIds = [];
     if (index > 0) {
@@ -224,23 +225,6 @@ const MyTaskFilterScreen = ({ navigation }) => {
     } else {
       data = totalData[nameKeyList[index]]?.sublevels;
     }
-    // let newData = [];
-    // const employeeData = await AsyncStore.getData(
-    //   AsyncStore.Keys.LOGIN_EMPLOYEE
-    // );
-    // if (employeeData) {
-    //   const jsonObj = JSON.parse(employeeData);
-    //   for (let i = 0; i < data.length; i++) {
-    //     const id = data[i];
-    //     for (let j = 0; j < jsonObj.branchs.length; j++) {
-    //       const id2 = jsonObj.branchs[j];
-    //       if (id2.branchName === id.name) {
-    //         newData.push(id);
-    //       }
-    //     }
-    //   }
-    // }
-
     if (index === 4) {
       setDropDownData([...data]);
       if (initalCall) {
@@ -263,7 +247,6 @@ const MyTaskFilterScreen = ({ navigation }) => {
     setDropDownFrom("ORG_TABLE");
   };
   const dropDownItemClicked2 = (item, index) => {
-    setIsMulti(true);
     let dropdownDatas =
       employeeDropDownDataLocal[employeeTitleNameList[index]] || [];
 
@@ -296,17 +279,6 @@ const MyTaskFilterScreen = ({ navigation }) => {
     let mainKey = nameKeyList[index];
     const totalDataObjLocal = { ...totalData };
     let localData = totalDataObjLocal[mainKey].sublevels;
-    if (!isMulti && localData?.length) {
-      mainData = localData.map((val) => {
-        if (val.id === data?.id) {
-          return {
-            ...data,
-            selected: true,
-          };
-        }
-        return val;
-      });
-    }
     let isSelected = mainData.find(
       (val) => val?.selected === true && val?.selected !== undefined
     );
@@ -619,7 +591,22 @@ const MyTaskFilterScreen = ({ navigation }) => {
     let payload = { ...selector.filterIds };
     payload["empSelectedIds"] = [];
     Promise.all([dispatch(updateFilterIds(payload))]).then(() => {
-      getFilterDropDownData();
+      let data = employeeDropDownDataLocal;
+      let newDataObj = {};
+      for (let key in data) {
+        const arrayData = data[key];
+        const newArray = [];
+        if (arrayData.length > 0) {
+          arrayData.forEach((element) => {
+            newArray.push({
+              ...element,
+              selected: false,
+            });
+          });
+        }
+        newDataObj[key] = newArray;
+      }
+      setEmployeeDropDownDataLocal(newDataObj);
     });
   };
 
@@ -627,7 +614,7 @@ const MyTaskFilterScreen = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <DropDownComponant
         visible={showDropDownModel}
-        multiple={isMulti}
+        multiple={true}
         headerTitle={"Select"}
         data={dropDownData}
         onRequestClose={() => setShowDropDownModel(false)}

@@ -149,7 +149,6 @@ const MyTasksScreen = ({ navigation }) => {
           .then((res) => {
           })
           .catch((err) => {
-            console.log("Err -> Api -> ", err);
           });
       }
     });
