@@ -222,6 +222,7 @@ const LeadsScreen = ({ route, navigation }) => {
         route.params.fromScreen === "enquiry" ||
         route.params.fromScreen === "proceedToBookingApproval" ||
         route.params.fromScreen === "booking" ||
+        route.params.fromScreen === "testDrive" ||
         route.params.fromScreen === "bookingApproval")
     ) {
       setLoader(true);
@@ -1135,6 +1136,7 @@ const LeadsScreen = ({ route, navigation }) => {
                 <>
                   <View>
                     <MyTaskNewItem
+                      tdflage={item?.tdflage ? item.tdflage : ""}
                       from={item.leadStage}
                       name={
                         getFirstLetterUpperCase(item.firstName) +
