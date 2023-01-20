@@ -51,7 +51,7 @@ const color = [
   "#1f93ab",
   "#ec3466",
 ];
-
+const receptionistRole = ["Reception", "CRM"];
 const TargetScreen = ({ route }) => {
   const navigation = useNavigation();
   const selector = useSelector((state) => state.homeReducer);
@@ -81,6 +81,10 @@ const TargetScreen = ({ route }) => {
   );
   const [dropDownPlaceHolder, setDropDownPlaceHolder] = useState("Employees");
   const [allParameters, setAllParameters] = useState([]);
+  const [receptionistTeamParameters, setReceptionistTeamParameters] = useState(
+    []
+  );
+  const [totalOfTeam, setTotalofTeam] = useState(0);
   const [myParameters, setMyParameters] = useState([]);
 
   const [selectedName, setSelectedName] = useState("");
@@ -264,7 +268,7 @@ const TargetScreen = ({ route }) => {
             Promise.allSettled([
               dispatch(getNewTargetParametersAllData(payload2)),
               dispatch(getTotalTargetParametersData(payload2)),
-            ]).then(() => { });
+            ]).then(() => {});
           }
         }
       );
@@ -280,7 +284,7 @@ const TargetScreen = ({ route }) => {
       .format(dateFormat);
     setDateDiff(
       (new Date(monthLastDate).getTime() - new Date(currentDate).getTime()) /
-      (1000 * 60 * 60 * 24)
+        (1000 * 60 * 60 * 24)
     );
 
     const isInsights = selector.isTeamPresent && !selector.isDSE;
@@ -402,7 +406,7 @@ const TargetScreen = ({ route }) => {
         .format(dateFormat);
       setDateDiff(
         (new Date(monthLastDate).getTime() - new Date(currentDate).getTime()) /
-        (1000 * 60 * 60 * 24)
+          (1000 * 60 * 60 * 24)
       );
     });
 
@@ -422,6 +426,9 @@ const TargetScreen = ({ route }) => {
         hrmsRole: jsonObj.hrmsRole,
         orgId: jsonObj.orgId,
       });
+      if (jsonObj.hrmsRole == "CRM") {
+        getReceptionManagerTeam(jsonObj);
+      }
       if (
         selector.login_employee_details.hasOwnProperty("roles") &&
         selector.login_employee_details.roles.length > 0
@@ -592,6 +599,28 @@ const TargetScreen = ({ route }) => {
     }).start();
   }, [slideRight]);
 
+  const getReceptionManagerTeam = async (userData) => {
+    try {
+      let payload = {
+        orgId: userData.orgId,
+        loggedInEmpId: userData.empId,
+      };
+      const response = await client.post(
+        URL.RECEPTIONIST_MANAGER_TEAM(),
+        payload
+      );
+      const json = await response.json();
+      if (json.empName) {
+        setReceptionistTeamParameters(json.empName);
+        var val = json.empName.reduce(function (previousValue, currentValue) {
+          return (
+            previousValue.totalAllocatedCount + currentValue.totalAllocatedCount
+          );
+        });
+        setTotalofTeam(val);
+      }
+    } catch (error) {}
+  };
   const getColor = (ach, tar) => {
     if (ach > 0 && tar === 0) {
       return "#1C95A6";
@@ -807,11 +836,241 @@ const TargetScreen = ({ route }) => {
     <React.Fragment>
       {!selector.isLoading ? (
         <View style={styles.container}>
-          {selector.isTeam ? (
+          {receptionistRole.includes(userData.hrmsRole) ? (
+            selector.isTeam ? (
+              <View>
+                <View style={styles.view1}>
+                  <View style={styles.view2}>
+                    <View style={styles.percentageToggleView}></View>
+                  </View>
+                </View>
+                {isLoading ? (
+                  <ActivityIndicator
+                    color={Colors.RED}
+                    size={"large"}
+                    style={{ marginTop: 15 }}
+                  />
+                ) : (
+                  <ScrollView
+                    contentContainerStyle={styles.scrollview}
+                    horizontal={true}
+                    directionalLockEnabled={true}
+                    showsHorizontalScrollIndicator={false}
+                    ref={scrollViewRef}
+                    onContentSizeChange={(contentWidth, contentHeight) => {
+                      scrollViewRef?.current?.scrollTo({
+                        y: 0,
+                        animated: true,
+                      });
+                    }}
+                    onScroll={(e) => {
+                      setSlideRight(e.nativeEvent.contentOffset.x);
+                    }}
+                    bounces={false}
+                    scrollEventThrottle={16}
+                  >
+                    <View>
+                      <ScrollView
+                        style={{
+                          height: Dimensions.get("screen").height / 2.2,
+                        }}
+                        // style={{ height: selector.isMD ? "81%" : "80%" }}
+                      >
+                        {receptionistTeamParameters.length > 0 &&
+                          receptionistTeamParameters.map((item, index) => {
+                            return (
+                              <View key={`${item.empName} ${index}`}>
+                                <View
+                                  style={{
+                                    paddingHorizontal: 8,
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    justifyContent: "space-between",
+                                    marginTop: 12,
+                                    width: Dimensions.get("screen").width - 28,
+                                  }}
+                                >
+                                  <View style={{ flexDirection: "row" }}>
+                                    <Text
+                                      onPress={() => {
+                                        navigation.navigate(
+                                          AppNavigator.HomeStackIdentifiers
+                                            .location,
+                                          {
+                                            empId: item.empId,
+                                            orgId: item.orgId,
+                                          }
+                                        );
+                                      }}
+                                      style={{
+                                        fontSize: 12,
+                                        fontWeight: "600",
+                                        textTransform: "capitalize",
+                                      }}
+                                    >
+                                      {item.empName}
+                                      {/* {item?.childCount > 1 ? "  |" : ""} */}
+                                    </Text>
+                                  </View>
+                                  <View style={{ flexDirection: "row" }}></View>
+                                </View>
+                                {/*Source/Model View END */}
+                                <View
+                                  style={[
+                                    { flexDirection: "row" },
+                                    item.isOpenInner && {
+                                      borderRadius: 10,
+                                      borderWidth: 2,
+                                      borderColor: "#C62159",
+                                      marginHorizontal: 6,
+                                      overflow: "hidden",
+                                    },
+                                  ]}
+                                >
+                                  {/*RIGHT SIDE VIEW*/}
+                                  <View style={[styles.view6]}>
+                                    <View style={styles.view7}>
+                                      <RenderLevel1NameView
+                                        level={0}
+                                        item={item}
+                                        branchName={getBranchName(
+                                          item.branchId
+                                        )}
+                                        color={"#C62159"}
+                                        receptionManager={true}
+                                        navigation={navigation}
+                                        titleClick={async () => {}}
+                                      />
+                                      <View
+                                        style={{
+                                          flex: 1,
+                                          backgroundColor:
+                                            "rgba(223,228,231,0.67)",
+                                          alignContent: "center",
+                                          justifyContent: "center",
+                                        }}
+                                      >
+                                        <Text
+                                          style={{
+                                            fontSize: 16,
+                                            fontWeight: "700",
+                                            marginLeft: 50,
+                                          }}
+                                        >
+                                          {item.totalAllocatedCount}
+                                        </Text>
+                                      </View>
+                                    </View>
+                                    {/* GET EMPLOYEE TOTAL MAIN ITEM */}
+                                  </View>
+                                </View>
+                              </View>
+                            );
+                          })}
+                      </ScrollView>
+                    </View>
+                    {/* Grand Total Section */}
+                    {totalOfTeam && (
+                      <View
+                        style={{ width: Dimensions.get("screen").width - 35 }}
+                      >
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            height: 40,
+                            backgroundColor: Colors.RED,
+                          }}
+                        >
+                          <View
+                            style={{
+                              width: 100,
+                              justifyContent: "space-around",
+                              flexDirection: "row",
+                              backgroundColor: Colors.RED,
+                            }}
+                          >
+                            <View />
+                            <View
+                              style={{
+                                justifyContent: "center",
+                                alignItems: "center",
+                              }}
+                            >
+                              <Text
+                                style={[
+                                  styles.grandTotalText,
+                                  {
+                                    color: Colors.WHITE,
+                                    fontSize: 12,
+                                  },
+                                ]}
+                              >
+                                Total
+                              </Text>
+                            </View>
+                            <View style={{ alignSelf: "flex-end" }}>
+                              <View
+                                style={{
+                                  paddingRight: 2,
+                                  height: 20,
+                                  justifyContent: "center",
+                                }}
+                              >
+                                <Text style={styles.txt7}></Text>
+                              </View>
+
+                              <View
+                                style={{
+                                  height: 20,
+                                  justifyContent: "center",
+                                }}
+                              >
+                                <Text style={styles.txt7}></Text>
+                              </View>
+                            </View>
+                          </View>
+                          <View
+                            style={{
+                              minHeight: 40,
+                              flexDirection: "column",
+                            }}
+                          >
+                            <View
+                              style={{
+                                minHeight: 40,
+                                flexDirection: "row",
+                              }}
+                            >
+                              <View
+                                style={{
+                                  alignContent: "center",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                <Text
+                                  style={{
+                                    fontSize: 16,
+                                    fontWeight: "700",
+                                    marginLeft: 50,
+                                    color: Colors.WHITE,
+                                  }}
+                                >
+                                  {totalOfTeam}
+                                </Text>
+                              </View>
+                            </View>
+                          </View>
+                        </View>
+                      </View>
+                    )}
+                  </ScrollView>
+                )}
+              </View>
+            ) : null
+          ) : null}
+          {selector.isTeam && !receptionistRole.includes(userData.hrmsRole) ? (
             <View>
-              <View
-                style={styles.view1}
-              >
+              <View style={styles.view1}>
                 <SegmentedControl
                   style={{
                     marginHorizontal: 4,
@@ -845,7 +1104,7 @@ const TargetScreen = ({ route }) => {
                 />
               ) : (
                 <ScrollView
-                    contentContainerStyle={styles.scrollview}
+                  contentContainerStyle={styles.scrollview}
                   horizontal={true}
                   directionalLockEnabled={true}
                   showsHorizontalScrollIndicator={false}
@@ -862,16 +1121,11 @@ const TargetScreen = ({ route }) => {
                 >
                   <View>
                     {/* TOP Header view */}
-                    <View
-                      key={"headers"}
-                        style={styles.view3}
-                    >
+                    <View key={"headers"} style={styles.view3}>
                       <View
                         style={{ width: 100, height: 20, marginRight: 5 }}
                       ></View>
-                      <View
-                          style={styles.view4}
-                      >
+                      <View style={styles.view4}>
                         {toggleParamsMetaData.map((param) => {
                           return (
                             <View
@@ -901,7 +1155,7 @@ const TargetScreen = ({ route }) => {
                     {/* Employee params section */}
                     <ScrollView
                       style={{ height: Dimensions.get("screen").height / 2.2 }}
-                    // style={{ height: selector.isMD ? "81%" : "80%" }}
+                      // style={{ height: selector.isMD ? "81%" : "80%" }}
                     >
                       {allParameters.length > 0 &&
                         allParameters.map((item, index) => {
@@ -1010,14 +1264,8 @@ const TargetScreen = ({ route }) => {
                                 ]}
                               >
                                 {/*RIGHT SIDE VIEW*/}
-                                <View
-                                  style={[
-                                    styles.view6,
-                                  ]}
-                                >
-                                  <View
-                                    style={styles.view7}
-                                  >
+                                <View style={[styles.view6]}>
+                                  <View style={styles.view7}>
                                     <RenderLevel1NameView
                                       level={0}
                                       item={item}
@@ -1038,7 +1286,7 @@ const TargetScreen = ({ route }) => {
 
                                   {item.isOpenInner &&
                                     item.employeeTargetAchievements.length >
-                                    0 &&
+                                      0 &&
                                     item.employeeTargetAchievements.map(
                                       (innerItem1, innerIndex1) => {
                                         return (
@@ -1059,11 +1307,7 @@ const TargetScreen = ({ route }) => {
                                               },
                                             ]}
                                           >
-                                            <View
-                                              style={[
-                                                styles.view8,
-                                              ]}
-                                            >
+                                            <View style={[styles.view8]}>
                                               <View
                                                 style={{
                                                   width:
@@ -1071,12 +1315,8 @@ const TargetScreen = ({ route }) => {
                                                       .width - 40,
                                                 }}
                                               >
-                                                <View
-                                                  style={styles.view9}
-                                                >
-                                                  <View
-                                                    style={styles.view10}
-                                                  >
+                                                <View style={styles.view9}>
+                                                  <View style={styles.view10}>
                                                     <Text
                                                       onPress={() => {
                                                         navigation.navigate(
@@ -1110,47 +1350,47 @@ const TargetScreen = ({ route }) => {
                                                   >
                                                     {innerItem1?.childCount >
                                                       1 && (
-                                                        <Animated.View
+                                                      <Animated.View
+                                                        style={{
+                                                          transform: [
+                                                            {
+                                                              translateX:
+                                                                translation,
+                                                            },
+                                                          ],
+                                                        }}
+                                                      >
+                                                        <View
                                                           style={{
-                                                            transform: [
-                                                              {
-                                                                translateX:
-                                                                  translation,
-                                                              },
-                                                            ],
+                                                            backgroundColor:
+                                                              "lightgrey",
+                                                            flexDirection:
+                                                              "row",
+                                                            paddingHorizontal: 7,
+                                                            borderRadius: 10,
+                                                            alignItems:
+                                                              "center",
+                                                            justifyContent:
+                                                              "space-between",
+                                                            marginBottom: 5,
+                                                            alignSelf:
+                                                              "flex-start",
+                                                            marginLeft: 7,
                                                           }}
                                                         >
-                                                          <View
-                                                            style={{
-                                                              backgroundColor:
-                                                                "lightgrey",
-                                                              flexDirection:
-                                                                "row",
-                                                              paddingHorizontal: 7,
-                                                              borderRadius: 10,
-                                                              alignItems:
-                                                                "center",
-                                                              justifyContent:
-                                                                "space-between",
-                                                              marginBottom: 5,
-                                                              alignSelf:
-                                                                "flex-start",
-                                                              marginLeft: 7,
-                                                            }}
-                                                          >
-                                                            <MaterialIcons
-                                                              name="person"
-                                                              size={15}
-                                                              color={Colors.BLACK}
-                                                            />
-                                                            <Text>
-                                                              {
-                                                                innerItem1?.childCount
-                                                              }
-                                                            </Text>
-                                                          </View>
-                                                        </Animated.View>
-                                                      )}
+                                                          <MaterialIcons
+                                                            name="person"
+                                                            size={15}
+                                                            color={Colors.BLACK}
+                                                          />
+                                                          <Text>
+                                                            {
+                                                              innerItem1?.childCount
+                                                            }
+                                                          </Text>
+                                                        </View>
+                                                      </Animated.View>
+                                                    )}
                                                     <SourceModelView
                                                       onClick={() => {
                                                         navigation.navigate(
@@ -1301,49 +1541,49 @@ const TargetScreen = ({ route }) => {
                                                           >
                                                             {innerItem2?.childCount >
                                                               1 && (
-                                                                <Animated.View
+                                                              <Animated.View
+                                                                style={{
+                                                                  transform: [
+                                                                    {
+                                                                      translateX:
+                                                                        translation,
+                                                                    },
+                                                                  ],
+                                                                }}
+                                                              >
+                                                                <View
                                                                   style={{
-                                                                    transform: [
-                                                                      {
-                                                                        translateX:
-                                                                          translation,
-                                                                      },
-                                                                    ],
+                                                                    backgroundColor:
+                                                                      "lightgrey",
+                                                                    flexDirection:
+                                                                      "row",
+                                                                    paddingHorizontal: 7,
+                                                                    borderRadius: 10,
+                                                                    alignItems:
+                                                                      "center",
+                                                                    justifyContent:
+                                                                      "space-between",
+                                                                    marginBottom: 5,
+                                                                    alignSelf:
+                                                                      "flex-start",
+                                                                    marginLeft: 7,
                                                                   }}
                                                                 >
-                                                                  <View
-                                                                    style={{
-                                                                      backgroundColor:
-                                                                        "lightgrey",
-                                                                      flexDirection:
-                                                                        "row",
-                                                                      paddingHorizontal: 7,
-                                                                      borderRadius: 10,
-                                                                      alignItems:
-                                                                        "center",
-                                                                      justifyContent:
-                                                                        "space-between",
-                                                                      marginBottom: 5,
-                                                                      alignSelf:
-                                                                        "flex-start",
-                                                                      marginLeft: 7,
-                                                                    }}
-                                                                  >
-                                                                    <MaterialIcons
-                                                                      name="person"
-                                                                      size={15}
-                                                                      color={
-                                                                        Colors.BLACK
-                                                                      }
-                                                                    />
-                                                                    <Text>
-                                                                      {
-                                                                        innerItem2?.childCount
-                                                                      }
-                                                                    </Text>
-                                                                  </View>
-                                                                </Animated.View>
-                                                              )}
+                                                                  <MaterialIcons
+                                                                    name="person"
+                                                                    size={15}
+                                                                    color={
+                                                                      Colors.BLACK
+                                                                    }
+                                                                  />
+                                                                  <Text>
+                                                                    {
+                                                                      innerItem2?.childCount
+                                                                    }
+                                                                  </Text>
+                                                                </View>
+                                                              </Animated.View>
+                                                            )}
                                                             <SourceModelView
                                                               onClick={() => {
                                                                 navigation.navigate(
@@ -1445,7 +1685,9 @@ const TargetScreen = ({ route }) => {
                                                                   ]}
                                                                 >
                                                                   <View
-                                                                    style={styles.view11}
+                                                                    style={
+                                                                      styles.view11
+                                                                    }
                                                                   >
                                                                     <View
                                                                       style={{
@@ -1490,52 +1732,52 @@ const TargetScreen = ({ route }) => {
                                                                     >
                                                                       {innerItem3?.childCount >
                                                                         1 && (
-                                                                          <Animated.View
+                                                                        <Animated.View
+                                                                          style={{
+                                                                            transform:
+                                                                              [
+                                                                                {
+                                                                                  translateX:
+                                                                                    translation,
+                                                                                },
+                                                                              ],
+                                                                          }}
+                                                                        >
+                                                                          <View
                                                                             style={{
-                                                                              transform:
-                                                                                [
-                                                                                  {
-                                                                                    translateX:
-                                                                                      translation,
-                                                                                  },
-                                                                                ],
+                                                                              backgroundColor:
+                                                                                "lightgrey",
+                                                                              flexDirection:
+                                                                                "row",
+                                                                              paddingHorizontal: 7,
+                                                                              borderRadius: 10,
+                                                                              alignItems:
+                                                                                "center",
+                                                                              justifyContent:
+                                                                                "space-between",
+                                                                              marginBottom: 5,
+                                                                              alignSelf:
+                                                                                "flex-start",
+                                                                              marginLeft: 7,
                                                                             }}
                                                                           >
-                                                                            <View
-                                                                              style={{
-                                                                                backgroundColor:
-                                                                                  "lightgrey",
-                                                                                flexDirection:
-                                                                                  "row",
-                                                                                paddingHorizontal: 7,
-                                                                                borderRadius: 10,
-                                                                                alignItems:
-                                                                                  "center",
-                                                                                justifyContent:
-                                                                                  "space-between",
-                                                                                marginBottom: 5,
-                                                                                alignSelf:
-                                                                                  "flex-start",
-                                                                                marginLeft: 7,
-                                                                              }}
-                                                                            >
-                                                                              <MaterialIcons
-                                                                                name="person"
-                                                                                size={
-                                                                                  15
-                                                                                }
-                                                                                color={
-                                                                                  Colors.BLACK
-                                                                                }
-                                                                              />
-                                                                              <Text>
-                                                                                {
-                                                                                  innerItem3?.childCount
-                                                                                }
-                                                                              </Text>
-                                                                            </View>
-                                                                          </Animated.View>
-                                                                        )}
+                                                                            <MaterialIcons
+                                                                              name="person"
+                                                                              size={
+                                                                                15
+                                                                              }
+                                                                              color={
+                                                                                Colors.BLACK
+                                                                              }
+                                                                            />
+                                                                            <Text>
+                                                                              {
+                                                                                innerItem3?.childCount
+                                                                              }
+                                                                            </Text>
+                                                                          </View>
+                                                                        </Animated.View>
+                                                                      )}
                                                                       <SourceModelView
                                                                         onClick={() => {
                                                                           navigation.navigate(
@@ -1618,7 +1860,7 @@ const TargetScreen = ({ route }) => {
                                                                     innerItem3
                                                                       .employeeTargetAchievements
                                                                       .length >
-                                                                    0 &&
+                                                                      0 &&
                                                                     innerItem3.employeeTargetAchievements.map(
                                                                       (
                                                                         innerItem4,
@@ -1649,7 +1891,9 @@ const TargetScreen = ({ route }) => {
                                                                             ]}
                                                                           >
                                                                             <View
-                                                                              style={styles.view11}
+                                                                              style={
+                                                                                styles.view11
+                                                                              }
                                                                             >
                                                                               <Text
                                                                                 onPress={() => {
@@ -1733,7 +1977,7 @@ const TargetScreen = ({ route }) => {
                                                                               innerItem4
                                                                                 .employeeTargetAchievements
                                                                                 .length >
-                                                                              0 &&
+                                                                                0 &&
                                                                               innerItem4.employeeTargetAchievements.map(
                                                                                 (
                                                                                   innerItem5,
@@ -1764,7 +2008,9 @@ const TargetScreen = ({ route }) => {
                                                                                       ]}
                                                                                     >
                                                                                       <View
-                                                                                        style={styles.view11}
+                                                                                        style={
+                                                                                          styles.view11
+                                                                                        }
                                                                                       >
                                                                                         <Text
                                                                                           onPress={() => {
@@ -1851,7 +2097,7 @@ const TargetScreen = ({ route }) => {
                                                                                         innerItem5
                                                                                           .employeeTargetAchievements
                                                                                           .length >
-                                                                                        0 &&
+                                                                                          0 &&
                                                                                         innerItem5.employeeTargetAchievements.map(
                                                                                           (
                                                                                             innerItem6,
@@ -1882,7 +2128,9 @@ const TargetScreen = ({ route }) => {
                                                                                                 ]}
                                                                                               >
                                                                                                 <View
-                                                                                                  style={styles.view11}
+                                                                                                  style={
+                                                                                                    styles.view11
+                                                                                                  }
                                                                                                 >
                                                                                                   <Text
                                                                                                     onPress={() => {
@@ -2032,9 +2280,7 @@ const TargetScreen = ({ route }) => {
                         }}
                       />
 
-                      <View
-                          style={styles.view12}
-                      >
+                      <View style={styles.view12}>
                         <View
                           style={{
                             width: 100,
@@ -2070,11 +2316,7 @@ const TargetScreen = ({ route }) => {
                                 justifyContent: "center",
                               }}
                             >
-                              <Text
-                                style={styles.txt7}
-                              >
-                                ACH
-                              </Text>
+                              <Text style={styles.txt7}>ACH</Text>
                             </View>
 
                             <View
@@ -2083,11 +2325,7 @@ const TargetScreen = ({ route }) => {
                                 justifyContent: "center",
                               }}
                             >
-                              <Text
-                                  style={styles.txt7}
-                              >
-                                TGT
-                              </Text>
+                              <Text style={styles.txt7}>TGT</Text>
                             </View>
                           </View>
                         </View>
@@ -2121,11 +2359,9 @@ const TargetScreen = ({ route }) => {
             !selector.isLoading &&
             selfInsightsData.length > 0 && (
               <>
-                {userData.hrmsRole !== "Reception" && (
+                {!receptionistRole.includes(userData.hrmsRole) && (
                   <View style={{ flexDirection: "row", marginVertical: 8 }}>
-                    <View
-                        style={styles.view13}
-                    >
+                    <View style={styles.view13}>
                       <View
                         style={[
                           styles.percentageToggleView,
@@ -2154,22 +2390,17 @@ const TargetScreen = ({ route }) => {
                       />
                     </View>
                     <View style={{ width: "30%", flexDirection: "row" }}>
-                        <Text style={styles.txt3}>
-                        Balance
-                      </Text>
+                      <Text style={styles.txt3}>Balance</Text>
                       <View style={{ marginRight: 15 }}></View>
-                        <Text style={styles.txt3}>
-                        AR/Day
-                      </Text>
+                      <Text style={styles.txt3}>AR/Day</Text>
                     </View>
                   </View>
                 )}
                 <>
-                  {userData.hrmsRole == "Reception" && (
+                  {receptionistRole.includes(userData.hrmsRole) &&
+                  !selector.isTeam ? (
                     <>
-                      <View
-                          style={styles.view14}
-                      >
+                      <View style={styles.view14}>
                         <SourceModelView
                           style={{ alignSelf: "flex-end" }}
                           onClick={() => {
@@ -2178,14 +2409,13 @@ const TargetScreen = ({ route }) => {
                               headerTitle: "Source/Model",
                               loggedInEmpId: userData.empId,
                               orgId: userData.orgId,
+                              role: userData.hrmsRole,
                             });
                           }}
                         />
                       </View>
                       <ScrollView showsVerticalScrollIndicator={false}>
-                        <View
-                            style={styles.view15}
-                        >
+                        <View style={styles.view15}>
                           <View
                             style={{
                               justifyContent: "center",
@@ -2213,12 +2443,14 @@ const TargetScreen = ({ route }) => {
                             }}
                           >
                             <Text
-                                style={styles.txt4}
+                              style={{ ...styles.txt4, width: "50%" }}
+                              numberOfLines={2}
                             >
                               {"Leads Allocated"}
                             </Text>
                             <Text
-                                style={styles.txt4}
+                              style={{ ...styles.txt4, width: "50%" }}
+                              numberOfLines={2}
                             >
                               {"Drop Leads"}
                             </Text>
@@ -2236,24 +2468,18 @@ const TargetScreen = ({ route }) => {
                             };
                             let selectedColor = color.random();
                             return (
-                              <View
-                                style={styles.view16}
-                              >
-                                <View
-                                  style={styles.view17}
-                                >
+                              <View style={styles.view16}>
+                                <View style={styles.view17}>
                                   <Text numberOfLines={1}>
                                     {item?.emp_name}
                                   </Text>
                                 </View>
-                                <View
-                                    style={styles.view18}
-                                >
+                                <View style={styles.view18}>
                                   <View
                                     style={{
                                       minWidth: 45,
                                       height: 25,
-                                      borderColor: selectedColor,
+                                      borderColor: Colors.RED,
                                       borderWidth: 1,
                                       borderRadius: 8,
                                       justifyContent: "center",
@@ -2280,7 +2506,7 @@ const TargetScreen = ({ route }) => {
                                     style={{
                                       minWidth: 45,
                                       height: 25,
-                                      borderColor: selectedColor,
+                                      borderColor: Colors.RED,
                                       borderWidth: 1,
                                       borderRadius: 8,
                                       justifyContent: "center",
@@ -2307,14 +2533,12 @@ const TargetScreen = ({ route }) => {
                             );
                           }}
                         />
-                        <View
-                            style={styles.view19}
-                        >
+                        <View style={styles.view16}>
                           <View
                             style={{
                               justifyContent: "center",
                               alignItems: "center",
-                              width: "50%",
+                              width: "35%",
                             }}
                           >
                             <Text
@@ -2324,23 +2548,11 @@ const TargetScreen = ({ route }) => {
                                 color: "#00b1ff",
                               }}
                             >
-                              {"Total"}
+                              {"          Total"}
                             </Text>
                           </View>
-                          <View
-                            style={{
-                              width: "45%",
-                              justifyContent: "space-around",
-                              flexDirection: "row",
-                              height: 25,
-                              alignItems: "center",
-                              // marginTop: 8,
-                              marginLeft: 20,
-                            }}
-                          >
-                            <View
-                                style={styles.view20}
-                            >
+                          <View style={styles.view18}>
+                            <View style={styles.view20}>
                               <Text
                                 onPress={() => {
                                   selector.receptionistData
@@ -2358,9 +2570,7 @@ const TargetScreen = ({ route }) => {
                                 {selector.receptionistData.totalAllocatedCount}
                               </Text>
                             </View>
-                            <View
-                                style={styles.view20}
-                            >
+                            <View style={styles.view20}>
                               <Text
                                 onPress={() => {
                                   navigateToDropLostCancel();
@@ -2379,15 +2589,9 @@ const TargetScreen = ({ route }) => {
                             </View>
                           </View>
                         </View>
-                        <View
-                            style={styles.view21}
-                        >
+                        <View style={styles.view21}>
                           <View style={{ ...styles.statWrap, width: "33%" }}>
-                            <Text
-                                style={styles.txt5}
-                            >
-                              E2B
-                            </Text>
+                            <Text style={styles.txt5}>E2B</Text>
                             {bookingData !== null && enqData !== null ? (
                               <Text
                                 style={{
@@ -2395,7 +2599,7 @@ const TargetScreen = ({ route }) => {
                                     Math.floor(
                                       (parseInt(bookingData?.achievment) /
                                         parseInt(enqData?.achievment)) *
-                                      100
+                                        100
                                     ) > 40
                                       ? "#14ce40"
                                       : "#ff0000",
@@ -2404,13 +2608,13 @@ const TargetScreen = ({ route }) => {
                                 }}
                               >
                                 {parseInt(bookingData?.achievment) === 0 ||
-                                  parseInt(enqData?.achievment) === 0
+                                parseInt(enqData?.achievment) === 0
                                   ? 0
                                   : Math.round(
-                                    (parseInt(bookingData?.achievment) /
-                                      parseInt(enqData?.achievment)) *
-                                    100
-                                  )}
+                                      (parseInt(bookingData?.achievment) /
+                                        parseInt(enqData?.achievment)) *
+                                        100
+                                    )}
                                 %
                               </Text>
                             ) : (
@@ -2425,11 +2629,7 @@ const TargetScreen = ({ route }) => {
                             )}
                           </View>
                           <View style={{ ...styles.statWrap, width: "33%" }}>
-                            <Text
-                                style={styles.txt6}
-                            >
-                              E2R
-                            </Text>
+                            <Text style={styles.txt6}>B2R</Text>
                             {enqData !== null && visitData !== null ? (
                               <Text
                                 style={{
@@ -2437,7 +2637,7 @@ const TargetScreen = ({ route }) => {
                                     Math.floor(
                                       (parseInt(visitData?.achievment) /
                                         parseInt(enqData?.achievment)) *
-                                      100
+                                        100
                                     ) > 40
                                       ? "#14ce40"
                                       : "#ff0000",
@@ -2446,13 +2646,13 @@ const TargetScreen = ({ route }) => {
                                 }}
                               >
                                 {parseInt(enqData?.achievment) === 0 ||
-                                  parseInt(visitData?.achievment) === 0
+                                parseInt(visitData?.achievment) === 0
                                   ? 0
                                   : Math.round(
-                                    (parseInt(visitData?.achievment) /
-                                      parseInt(enqData?.achievment)) *
-                                    100
-                                  )}
+                                      (parseInt(visitData?.achievment) /
+                                        parseInt(enqData?.achievment)) *
+                                        100
+                                    )}
                                 %
                               </Text>
                             ) : (
@@ -2467,11 +2667,7 @@ const TargetScreen = ({ route }) => {
                             )}
                           </View>
                           <View style={{ ...styles.statWrap, width: "33%" }}>
-                            <Text
-                                style={styles.txt6}
-                            >
-                              E2R
-                            </Text>
+                            <Text style={styles.txt6}>E2R</Text>
                             {finData !== null && retailData !== null ? (
                               <Text
                                 style={{
@@ -2479,7 +2675,7 @@ const TargetScreen = ({ route }) => {
                                     Math.floor(
                                       (parseInt(finData?.achievment) /
                                         parseInt(retailData?.achievment)) *
-                                      100
+                                        100
                                     ) > 40
                                       ? "#14ce40"
                                       : "#ff0000",
@@ -2488,13 +2684,13 @@ const TargetScreen = ({ route }) => {
                                 }}
                               >
                                 {parseInt(finData?.achievment) === 0 ||
-                                  parseInt(retailData?.achievment) === 0
+                                parseInt(retailData?.achievment) === 0
                                   ? 0
                                   : Math.round(
-                                    (parseInt(finData?.achievment) /
-                                      parseInt(retailData?.achievment)) *
-                                    100
-                                  )}
+                                      (parseInt(finData?.achievment) /
+                                        parseInt(retailData?.achievment)) *
+                                        100
+                                    )}
                                 %
                               </Text>
                             ) : (
@@ -2511,10 +2707,10 @@ const TargetScreen = ({ route }) => {
                         </View>
                       </ScrollView>
                     </>
-                  )}
+                  ) : null}
                 </>
                 {/* Header view end */}
-                {userData.hrmsRole !== "Reception" && (
+                {!receptionistRole.includes(userData.hrmsRole) && (
                   <ScrollView showsVerticalScrollIndicator={false}>
                     <>
                       <View style={{ paddingRight: 10 }}>
@@ -2550,11 +2746,7 @@ const TargetScreen = ({ route }) => {
                       <View style={{ flexGrow: 1 }}>
                         <View style={{ height: 4 }}></View>
                         <View style={styles.statWrap}>
-                          <Text
-                              style={styles.txt5}
-                          >
-                            E2B
-                          </Text>
+                          <Text style={styles.txt5}>E2B</Text>
                           {bookingData !== null && enqData !== null ? (
                             <Text
                               style={{
@@ -2562,7 +2754,7 @@ const TargetScreen = ({ route }) => {
                                   Math.round(
                                     (parseInt(bookingData?.achievment) /
                                       parseInt(enqData?.achievment)) *
-                                    100
+                                      100
                                   ) > 40
                                     ? "#14ce40"
                                     : "#ff0000",
@@ -2571,13 +2763,13 @@ const TargetScreen = ({ route }) => {
                               }}
                             >
                               {parseInt(bookingData?.achievment) === 0 ||
-                                parseInt(enqData?.achievment) === 0
+                              parseInt(enqData?.achievment) === 0
                                 ? 0
                                 : Math.round(
-                                  (parseInt(bookingData?.achievment) /
-                                    parseInt(enqData?.achievment)) *
-                                  100
-                                )}
+                                    (parseInt(bookingData?.achievment) /
+                                      parseInt(enqData?.achievment)) *
+                                      100
+                                  )}
                               %
                             </Text>
                           ) : (
@@ -2594,11 +2786,7 @@ const TargetScreen = ({ route }) => {
 
                         <View style={{ height: 4 }}></View>
                         <View style={styles.statWrap}>
-                          <Text
-                              style={styles.txt6}
-                          >
-                            E2V
-                          </Text>
+                          <Text style={styles.txt6}>E2V</Text>
                           {enqData !== null && visitData !== null ? (
                             <Text
                               style={{
@@ -2606,7 +2794,7 @@ const TargetScreen = ({ route }) => {
                                   Math.round(
                                     (parseInt(visitData?.achievment) /
                                       parseInt(enqData?.achievment)) *
-                                    100
+                                      100
                                   ) > 40
                                     ? "#14ce40"
                                     : "#ff0000",
@@ -2615,13 +2803,13 @@ const TargetScreen = ({ route }) => {
                               }}
                             >
                               {parseInt(enqData?.achievment) === 0 ||
-                                parseInt(visitData?.achievment) === 0
+                              parseInt(visitData?.achievment) === 0
                                 ? 0
                                 : Math.round(
-                                  (parseInt(visitData?.achievment) /
-                                    parseInt(enqData?.achievment)) *
-                                  100
-                                )}
+                                    (parseInt(visitData?.achievment) /
+                                      parseInt(enqData?.achievment)) *
+                                      100
+                                  )}
                               %
                             </Text>
                           ) : (
@@ -2638,11 +2826,7 @@ const TargetScreen = ({ route }) => {
 
                         <View style={{ height: 4 }}></View>
                         <View style={styles.statWrap}>
-                          <Text
-                              style={styles.txt6}
-                          >
-                            FIN
-                          </Text>
+                          <Text style={styles.txt6}>FIN</Text>
                           {finData !== null && retailData !== null ? (
                             <Text
                               style={{
@@ -2650,7 +2834,7 @@ const TargetScreen = ({ route }) => {
                                   Math.round(
                                     (parseInt(finData?.achievment) /
                                       parseInt(retailData?.achievment)) *
-                                    100
+                                      100
                                   ) > 40
                                     ? "#14ce40"
                                     : "#ff0000",
@@ -2659,13 +2843,13 @@ const TargetScreen = ({ route }) => {
                               }}
                             >
                               {parseInt(finData?.achievment) === 0 ||
-                                parseInt(retailData?.achievment) === 0
+                              parseInt(retailData?.achievment) === 0
                                 ? 0
                                 : Math.round(
-                                  (parseInt(finData?.achievment) /
-                                    parseInt(retailData?.achievment)) *
-                                  100
-                                )}
+                                    (parseInt(finData?.achievment) /
+                                      parseInt(retailData?.achievment)) *
+                                      100
+                                  )}
                               %
                             </Text>
                           ) : (
@@ -2684,11 +2868,7 @@ const TargetScreen = ({ route }) => {
                       <View style={{ flexGrow: 1, marginHorizontal: 2 }}>
                         <View style={{ height: 4 }}></View>
                         <View style={styles.statWrap}>
-                          <Text
-                              style={styles.txt6}
-                          >
-                            B2R
-                          </Text>
+                          <Text style={styles.txt6}>B2R</Text>
                           {bookingData !== null && retailData !== null && (
                             <Text
                               style={{
@@ -2696,7 +2876,7 @@ const TargetScreen = ({ route }) => {
                                   Math.round(
                                     (parseInt(retailData?.achievment) /
                                       parseInt(bookingData?.achievment)) *
-                                    100
+                                      100
                                   ) > 40
                                     ? "#14ce40"
                                     : "#ff0000",
@@ -2705,13 +2885,13 @@ const TargetScreen = ({ route }) => {
                               }}
                             >
                               {parseInt(bookingData?.achievment) === 0 ||
-                                parseInt(retailData?.achievment) === 0
+                              parseInt(retailData?.achievment) === 0
                                 ? 0
                                 : Math.round(
-                                  (parseInt(retailData?.achievment) /
-                                    parseInt(bookingData?.achievment)) *
-                                  100
-                                )}
+                                    (parseInt(retailData?.achievment) /
+                                      parseInt(bookingData?.achievment)) *
+                                      100
+                                  )}
                               %
                             </Text>
                           )}
@@ -2719,11 +2899,7 @@ const TargetScreen = ({ route }) => {
 
                         <View style={{ height: 4 }}></View>
                         <View style={styles.statWrap}>
-                          <Text
-                              style={styles.txt6}
-                          >
-                            E2TD
-                          </Text>
+                          <Text style={styles.txt6}>E2TD</Text>
                           {TDData !== null && enqData !== null && (
                             <Text
                               style={{
@@ -2731,7 +2907,7 @@ const TargetScreen = ({ route }) => {
                                   Math.round(
                                     (parseInt(TDData?.achievment) /
                                       parseInt(enqData?.achievment)) *
-                                    100
+                                      100
                                   ) > 40
                                     ? "#14ce40"
                                     : "#ff0000",
@@ -2740,13 +2916,13 @@ const TargetScreen = ({ route }) => {
                               }}
                             >
                               {parseInt(TDData?.achievment) === 0 ||
-                                parseInt(enqData?.achievment) === 0
+                              parseInt(enqData?.achievment) === 0
                                 ? 0
                                 : Math.round(
-                                  (parseInt(TDData?.achievment) /
-                                    parseInt(enqData?.achievment)) *
-                                  100
-                                )}
+                                    (parseInt(TDData?.achievment) /
+                                      parseInt(enqData?.achievment)) *
+                                      100
+                                  )}
                               %
                             </Text>
                           )}
@@ -2754,11 +2930,7 @@ const TargetScreen = ({ route }) => {
 
                         <View style={{ height: 4 }}></View>
                         <View style={styles.statWrap}>
-                          <Text
-                              style={styles.txt6}
-                          >
-                            INS
-                          </Text>
+                          <Text style={styles.txt6}>INS</Text>
                           {insData !== null && retailData !== null && (
                             <Text
                               style={{
@@ -2766,7 +2938,7 @@ const TargetScreen = ({ route }) => {
                                   Math.round(
                                     (parseInt(insData?.achievment) /
                                       parseInt(retailData?.achievment)) *
-                                    100
+                                      100
                                   ) > 40
                                     ? "#14ce40"
                                     : "#ff0000",
@@ -2775,13 +2947,13 @@ const TargetScreen = ({ route }) => {
                               }}
                             >
                               {parseInt(insData?.achievment) === 0 ||
-                                parseInt(retailData?.achievment) === 0
+                              parseInt(retailData?.achievment) === 0
                                 ? 0
                                 : Math.round(
-                                  (parseInt(insData?.achievment) /
-                                    parseInt(retailData?.achievment)) *
-                                  100
-                                )}
+                                    (parseInt(insData?.achievment) /
+                                      parseInt(retailData?.achievment)) *
+                                      100
+                                  )}
                               %
                             </Text>
                           )}
@@ -2791,11 +2963,7 @@ const TargetScreen = ({ route }) => {
                       <View style={{ flexGrow: 1 }}>
                         <View style={{ height: 4 }}></View>
                         <View style={styles.statWrap}>
-                          <Text
-                              style={styles.txt6}
-                          >
-                            E2R
-                          </Text>
+                          <Text style={styles.txt6}>E2R</Text>
                           {retailData !== null && enqData !== null && (
                             <Text
                               style={{
@@ -2803,7 +2971,7 @@ const TargetScreen = ({ route }) => {
                                   Math.round(
                                     (parseInt(retailData?.achievment) /
                                       parseInt(enqData?.achievment)) *
-                                    100
+                                      100
                                   ) > 40
                                     ? "#14ce40"
                                     : "#ff0000",
@@ -2812,13 +2980,13 @@ const TargetScreen = ({ route }) => {
                               }}
                             >
                               {parseInt(retailData?.achievment) === 0 ||
-                                parseInt(enqData?.achievment) === 0
+                              parseInt(enqData?.achievment) === 0
                                 ? 0
                                 : Math.round(
-                                  (parseInt(retailData?.achievment) /
-                                    parseInt(enqData?.achievment)) *
-                                  100
-                                )}
+                                    (parseInt(retailData?.achievment) /
+                                      parseInt(enqData?.achievment)) *
+                                      100
+                                  )}
                               %
                             </Text>
                           )}
@@ -2826,11 +2994,7 @@ const TargetScreen = ({ route }) => {
 
                         <View style={{ height: 4 }}></View>
                         <View style={styles.statWrap}>
-                          <Text
-                              style={styles.txt6}
-                          >
-                            EXG
-                          </Text>
+                          <Text style={styles.txt6}>EXG</Text>
                           {exgData !== null && retailData !== null && (
                             <Text
                               style={{
@@ -2838,7 +3002,7 @@ const TargetScreen = ({ route }) => {
                                   Math.round(
                                     (parseInt(exgData?.achievment) /
                                       parseInt(retailData?.achievment)) *
-                                    100
+                                      100
                                   ) > 40
                                     ? "#14ce40"
                                     : "#ff0000",
@@ -2847,13 +3011,13 @@ const TargetScreen = ({ route }) => {
                               }}
                             >
                               {parseInt(exgData?.achievment) === 0 ||
-                                parseInt(retailData?.achievment) === 0
+                              parseInt(retailData?.achievment) === 0
                                 ? 0
                                 : Math.round(
-                                  (parseInt(exgData?.achievment) /
-                                    parseInt(retailData?.achievment)) *
-                                  100
-                                )}
+                                    (parseInt(exgData?.achievment) /
+                                      parseInt(retailData?.achievment)) *
+                                      100
+                                  )}
                               %
                             </Text>
                           )}
@@ -2861,11 +3025,7 @@ const TargetScreen = ({ route }) => {
 
                         <View style={{ height: 4 }}></View>
                         <View style={styles.statWrap}>
-                          <Text
-                              style={styles.txt6}
-                          >
-                            EXW
-                          </Text>
+                          <Text style={styles.txt6}>EXW</Text>
                           {exwData !== null && retailData !== null ? (
                             <Text
                               style={{
@@ -2873,7 +3033,7 @@ const TargetScreen = ({ route }) => {
                                   Math.round(
                                     (parseInt(exwData?.achievment) /
                                       parseInt(retailData?.achievment)) *
-                                    100
+                                      100
                                   ) > 40
                                     ? "#14ce40"
                                     : "#ff0000",
@@ -2882,13 +3042,13 @@ const TargetScreen = ({ route }) => {
                               }}
                             >
                               {parseInt(exwData?.achievment) === 0 ||
-                                parseInt(retailData?.achievment) === 0
+                              parseInt(retailData?.achievment) === 0
                                 ? 0
                                 : Math.round(
-                                  (parseInt(exwData?.achievment) /
-                                    parseInt(retailData?.achievment)) *
-                                  100
-                                )}
+                                    (parseInt(exwData?.achievment) /
+                                      parseInt(retailData?.achievment)) *
+                                      100
+                                  )}
                               %
                             </Text>
                           ) : (
@@ -2907,11 +3067,7 @@ const TargetScreen = ({ route }) => {
                     <View style={{ marginHorizontal: 8 }}>
                       <View style={{ height: 4 }}></View>
                       <View style={styles.statWrap}>
-                        <Text
-                            style={styles.txt6}
-                        >
-                          Accessories/Car
-                        </Text>
+                        <Text style={styles.txt6}>Accessories/Car</Text>
                         {accData !== null && retailData !== null && (
                           <Text
                             style={{
@@ -2919,7 +3075,7 @@ const TargetScreen = ({ route }) => {
                                 Math.round(
                                   (parseInt(accData?.achievment) /
                                     parseInt(retailData?.achievment)) *
-                                  100
+                                    100
                                 ) > 40
                                   ? "#14ce40"
                                   : "#ff0000",
@@ -2928,12 +3084,12 @@ const TargetScreen = ({ route }) => {
                             }}
                           >
                             {parseInt(accData?.achievment) === 0 ||
-                              parseInt(retailData?.achievment) === 0
+                            parseInt(retailData?.achievment) === 0
                               ? 0
                               : Math.round(
-                                parseInt(accData?.achievment) /
-                                parseInt(retailData?.achievment)
-                              )}
+                                  parseInt(accData?.achievment) /
+                                    parseInt(retailData?.achievment)
+                                )}
                           </Text>
                         )}
                       </View>
@@ -2948,7 +3104,7 @@ const TargetScreen = ({ route }) => {
       ) : (
         <LoaderComponent
           visible={selector.isLoading}
-          onRequestClose={() => { }}
+          onRequestClose={() => {}}
         />
       )}
     </React.Fragment>
@@ -2985,6 +3141,7 @@ export const RenderLevel1NameView = ({
   titleClick,
   navigation,
   disable = false,
+  receptionManager = false,
 }) => {
   return (
     <View
@@ -3023,17 +3180,19 @@ export const RenderLevel1NameView = ({
           </Text>
         </TouchableOpacity>
         {/* {level === 0 && !!branchName && ( */}
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <IconButton
-            icon="map-marker"
-            style={{ padding: 0, margin: 0 }}
-            color={Colors.RED}
-            size={8}
-          />
-          <Text style={{ fontSize: 8 }} numberOfLines={2}>
-            {branchName}
-          </Text>
-        </View>
+        {branchName ? (
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <IconButton
+              icon="map-marker"
+              style={{ padding: 0, margin: 0 }}
+              color={Colors.RED}
+              size={8}
+            />
+            <Text style={{ fontSize: 8 }} numberOfLines={2}>
+              {branchName}
+            </Text>
+          </View>
+        ) : null}
         {/* )} */}
       </View>
       <View
@@ -3045,8 +3204,12 @@ export const RenderLevel1NameView = ({
           flex: 1,
         }}
       >
-        <Text style={{ fontSize: 10, fontWeight: "bold" }}>ACH</Text>
-        <Text style={{ fontSize: 10, fontWeight: "bold" }}>TGT</Text>
+        <Text style={{ fontSize: 10, fontWeight: "bold" }}>
+          {receptionManager ? "" : "ACH"}
+        </Text>
+        <Text style={{ fontSize: 10, fontWeight: "bold" }}>
+          {receptionManager ? "" : "TGT"}
+        </Text>
       </View>
     </View>
   );
@@ -3137,7 +3300,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
     width: "75%",
   },
-   view1: {
+  view1: {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
@@ -3193,39 +3356,31 @@ const styles = StyleSheet.create({
   },
   view9: {
     flexDirection: "row",
-    justifyContent:
-      "space-between",
+    justifyContent: "space-between",
   },
   view10: {
     paddingHorizontal: 4,
     display: "flex",
     flexDirection: "row",
-    justifyContent:
-      "space-between",
+    justifyContent: "space-between",
     marginTop: 8,
   },
   matView: {
-    backgroundColor:
-      "lightgrey",
+    backgroundColor: "lightgrey",
     flexDirection: "row",
     paddingHorizontal: 7,
     borderRadius: 10,
     alignItems: "center",
-    justifyContent:
-      "space-between",
+    justifyContent: "space-between",
     marginBottom: 5,
-    alignSelf:
-      "flex-start",
+    alignSelf: "flex-start",
     marginLeft: 7,
   },
   view11: {
     paddingHorizontal: 4,
-    display:
-      "flex",
-    flexDirection:
-      "row",
-    justifyContent:
-      "space-between",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
     paddingVertical: 4,
   },
   view12: {
@@ -3283,7 +3438,7 @@ const styles = StyleSheet.create({
   view17: {
     justifyContent: "center",
     alignItems: "flex-start",
-    width: "50%",
+    width: "35%",
   },
   view18: {
     width: "45%",
@@ -3332,5 +3487,5 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: "bold",
     color: Colors.WHITE,
-  }
+  },
 });

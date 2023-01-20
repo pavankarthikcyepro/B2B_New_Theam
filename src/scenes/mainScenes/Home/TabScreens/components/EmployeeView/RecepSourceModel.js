@@ -14,6 +14,8 @@ import PercentageToggleControl from "./PercentageToggleControl";
 import URL from "../../../../../../networking/endpoints";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  getReceptionistManagerModel,
+  getReceptionistManagerSource,
   getReceptionistModel,
   getReceptionistSource,
   getSourceModelDataForSelf,
@@ -24,9 +26,53 @@ import { AppNavigator } from "../../../../../../navigations";
 import { achievementPercentage } from "../../../../../../utils/helperFunctions";
 
 const RecepSourceModel = ({ route, navigation }) => {
+  const paramsMetadata = [
+    {
+      color: "#FA03B9",
+      paramName: "Enquiry",
+      shortName: "Enq",
+      initial: "E",
+      toggleIndex: 0,
+    },
+    {
+      color: "#FA03B9",
+      paramName: "Test Drive",
+      shortName: "TD",
+      initial: "T",
+      toggleIndex: 0,
+    },
+    {
+      color: "#9E31BE",
+      paramName: "Home Visit",
+      shortName: "Visit",
+      initial: "V",
+      toggleIndex: 0,
+    },
+    {
+      color: "#1C95A6",
+      paramName: "Booking",
+      shortName: "Bkg",
+      initial: "B",
+      toggleIndex: 0,
+    },
+    {
+      color: "#C62159",
+      paramName: "INVOICE",
+      shortName: "Retail",
+      initial: "R",
+      toggleIndex: 0,
+    },
+    {
+      color: "#9E31BE",
+      paramName: "Lost",
+      shortName: "Lost",
+      initial: "L",
+      toggleIndex: 0,
+    },
+  ];
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.homeReducer);
-  const { empId, loggedInEmpId, headerTitle, orgId, type, moduleType } =
+  const { empId, loggedInEmpId, headerTitle, orgId, type, moduleType, role } =
     route.params;
   const [leadSource, setLeadSource] = useState([]);
   const [vehicleModel, setVehicleModel] = useState([]);
@@ -36,9 +82,11 @@ const RecepSourceModel = ({ route, navigation }) => {
   const [displayType, setDisplayType] = useState(0);
   const [sourceModelTotals, setSourceModelTotals] = useState({});
   const [toggleParamsIndex, setToggleParamsIndex] = useState(0);
-  const [toggleParamsMetaData, setToggleParamsMetaData] = useState([]);
+  const [toggleParamsMetaData, setToggleParamsMetaData] =
+    useState(paramsMetadata);
   const [isLoading, setIsLoading] = useState(false);
   const scrollViewRef = useRef();
+
   useEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
@@ -70,9 +118,18 @@ const RecepSourceModel = ({ route, navigation }) => {
       orgId: orgId,
       loggedInEmpId: loggedInEmpId,
     };
-    dispatch(getReceptionistSource(newPayload));
-    dispatch(getReceptionistModel(newPayload));
+    if (role == "Reception") {
+      dispatch(getReceptionistSource(newPayload));
+      dispatch(getReceptionistModel(newPayload));
+    } else if (role == "CRM") {
+      dispatch(getReceptionistManagerSource(newPayload));
+      dispatch(getReceptionistManagerModel(newPayload));
+    }
   }, [empId, navigation]);
+
+  useEffect(() => {
+    getTotal(0);
+  }, [selector.receptionistSource]);
 
   useEffect(() => {
     setToggleParamsIndex(0);
@@ -166,51 +223,6 @@ const RecepSourceModel = ({ route, navigation }) => {
     setSourceModelTotals({ ...result });
   };
 
-  const paramsMetadata = [
-    {
-      color: "#FA03B9",
-      paramName: "Enquiry",
-      shortName: "Enq",
-      initial: "E",
-      toggleIndex: 0,
-    },
-    {
-      color: "#FA03B9",
-      paramName: "Test Drive",
-      shortName: "TD",
-      initial: "T",
-      toggleIndex: 0,
-    },
-    {
-      color: "#9E31BE",
-      paramName: "Home Visit",
-      shortName: "Visit",
-      initial: "V",
-      toggleIndex: 0,
-    },
-    {
-      color: "#1C95A6",
-      paramName: "Booking",
-      shortName: "Bkg",
-      initial: "B",
-      toggleIndex: 0,
-    },
-    {
-      color: "#C62159",
-      paramName: "INVOICE",
-      shortName: "Retail",
-      initial: "R",
-      toggleIndex: 0,
-    },
-    {
-      color: "#9E31BE",
-      paramName: "Lost",
-      shortName: "Lost",
-      initial: "L",
-      toggleIndex: 0,
-    },
-  ];
-
   const getData = (data, type) => {
     return (
       data &&
@@ -242,25 +254,27 @@ const RecepSourceModel = ({ route, navigation }) => {
           newData.map((x, index) => {
             return (
               <>
-                <View style={{ flexDirection: "row", marginTop: 10 }}>
-                  <Text
-                    style={{
-                      color: "darkblue",
-                      fontSize: 16,
-                      fontWeight: "500",
-                    }}
-                  >
-                    {x?.source || x?.model}
-                  </Text>
-                </View>
+                <View style={{ flexDirection: "row", marginTop: 10 }}></View>
                 <View
                   style={{
                     flexDirection: "row",
-                    backgroundColor: "#D7EAF9",
+                    // backgroundColor: "#D7EAF9",
+                    // backgroundColor: "#FAAFBA",
+                    backgroundColor: "rgba(223,228,231,0.67)",
                     paddingVertical: 6,
                   }}
                 >
-                  <View style={{ width: 100 }} />
+                  <View style={{ width: 100 }}>
+                    <Text
+                      style={{
+                        color: Colors.BLACK,
+                        fontSize: 13,
+                        fontWeight: "500",
+                      }}
+                    >
+                      {x?.source || x?.model}
+                    </Text>
+                  </View>
                   {toggleParamsMetaData.map((param, i) => {
                     return (
                       <View
@@ -270,7 +284,7 @@ const RecepSourceModel = ({ route, navigation }) => {
                           justifyContent: "center",
                         }}
                       >
-                        <Text>
+                        <Text style={{ color: Colors.RED }}>
                           {displayType == 0
                             ? x[param?.initial?.toLowerCase()]
                             : `${getPercentage(
@@ -395,12 +409,12 @@ const RecepSourceModel = ({ route, navigation }) => {
                     >
                       <Text
                         style={{
-                          color: "darkblue",
-                          fontSize: 16,
+                          color: item.color,
+                          fontSize: 14,
                           fontWeight: "500",
                         }}
                       >
-                        {item.initial}
+                        {item.shortName}
                       </Text>
                     </View>
                   );
@@ -414,16 +428,18 @@ const RecepSourceModel = ({ route, navigation }) => {
                   flexDirection: "row",
                   marginTop: 15,
                   marginBottom: 40,
+                  backgroundColor: Colors.RED,
+                  paddingVertical: 10,
                 }}
               >
                 <Text
                   style={{
-                    color: "darkblue",
-                    fontSize: 16,
+                    color: Colors.WHITE,
+                    fontSize: 13,
                     fontWeight: "500",
                   }}
                 >
-                  {"Total"}
+                  {" Total"}
                 </Text>
                 <View
                   style={{
@@ -442,9 +458,9 @@ const RecepSourceModel = ({ route, navigation }) => {
                       >
                         <Text
                           style={{
-                            color: "darkblue",
-                            fontSize: 16,
-                            fontWeight: "500",
+                            color: Colors.WHITE,
+                            fontSize: 14,
+                            fontWeight: "600",
                             textDecorationLine: "underline",
                           }}
                         >

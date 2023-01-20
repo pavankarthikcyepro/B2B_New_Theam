@@ -1,4 +1,9 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useLayoutEffect,
+} from "react";
 import {
   SafeAreaView,
   View,
@@ -14,11 +19,7 @@ import {
 import { Colors } from "../../../styles";
 import { IconButton } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  getTargetParametersEmpDataInsights,
-  updateTheTeamAttendanceFilter,
-  updateTheTeamAttendanceFilterDate,
-} from "../../../redux/homeReducer";
+import { getTargetParametersEmpDataInsights } from "../../../redux/homeReducer";
 import * as AsyncStore from "../../../asyncStore";
 import { DatePickerComponent, DropDownComponant } from "../../../components";
 import { DateSelectItem, DropDownSelectionItem } from "../../../pureComponents";
@@ -60,7 +61,7 @@ const AcitivityLoader = () => {
   );
 };
 
-const AttendanceFilter = ({ route, navigation }) => {
+const FilterAttendanceDashBoardScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
 
@@ -90,6 +91,12 @@ const AttendanceFilter = ({ route, navigation }) => {
   useEffect(() => {
     getAsyncData();
   }, []);
+
+  useLayoutEffect(() => {
+    navigation.addListener("focus", () => {
+      setEmloyeeTitleNameList([]);
+    });
+  }, [navigation]);
 
   const getAsyncData = async (startDate, endDate) => {
     const employeeData = await AsyncStore.getData(
@@ -176,6 +183,7 @@ const AttendanceFilter = ({ route, navigation }) => {
         }
       }
     }
+
     if (index === 4) {
       setDropDownData([...newData]);
       if (initalCall) {
@@ -310,7 +318,7 @@ const AttendanceFilter = ({ route, navigation }) => {
     };
     totalDataObjLocal[key] = newOBJ;
     setTotalDataObj({ ...totalDataObjLocal });
-    // index == 4 && submitBtnClicked(totalDataObjLocal);
+    index == 4 && submitBtnClicked(totalDataObjLocal);
   };
 
   const updateSelectedItemsForEmployeeDropDown = (data, index) => {
@@ -368,16 +376,7 @@ const AttendanceFilter = ({ route, navigation }) => {
     }
     if (selectedIds.length > 0) {
       setIsLoading(true);
-      dispatch(updateTheTeamAttendanceFilter(selectedIds));
-      dispatch(
-        updateTheTeamAttendanceFilterDate({
-          startDate: fromDate,
-          endDate: toDate,
-        })
-      );
-
-      navigation.navigate(AttendanceTopTabNavigatorIdentifiers.team);
-      //   getDashboadTableDataFromServer(selectedIds, "LEVEL");
+      getDashboadTableDataFromServer(selectedIds, "LEVEL");
     } else {
       showToast("Please select any value");
     }
@@ -408,37 +407,18 @@ const AttendanceFilter = ({ route, navigation }) => {
     };
 
     Promise.all([dispatch(getEmployeesDropDownData(payload1))])
-      .then(() => {
-        // Promise.all([
-        // //   dispatch(getLeadSourceTableList(payload)),
-        // //   dispatch(getVehicleModelTableList(payload)),
-        // //   dispatch(getEventTableList(payload)),
-        // //   dispatch(getLostDropChartData(payload)),
-        // //   dispatch(updateFilterDropDownData(totalDataObj)),
-        //   // // Table Data
-        // //   dispatch(getTaskTableList(payload2)),
-        // //   dispatch(getSalesData(payload2)),
-        // //   dispatch(getSalesComparisonData(payload2)),
-        //   // // Target Params Data
-        // //   dispatch(getTargetParametersData(payload2)),
-        // //   dispatch(getTargetParametersEmpDataInsights(payload2)), // Added to filter an Home Screen's INSIGHT
-        // ])
-        //   .then(() => {})
-        //   .catch(() => {
-        //     setIsLoading(false);
-        //   });
-      })
+      .then(() => {})
       .catch(() => {
         setIsLoading(false);
       });
     if (from == "EMPLOYEE") {
-      if (true) {
-        navigation.navigate(AppNavigator.DrawerStackIdentifiers.monthlyTarget, {
-          params: { from: "Filter" },
-        });
-      } else {
-        navigation.goBack();
-      }
+      // if (true) {
+      //   navigation.navigate(AppNavigator.DrawerStackIdentifiers.monthlyTarget, {
+      //     params: { from: "Filter" },
+      //   });
+      // } else {
+      //   navigation.goBack();
+      // }
       // navigation.navigate(AppNavigator.TabStackIdentifiers.home, { screen: "Home", params: { from: 'Filter' }, })
     } else {
       // navigation.goBack(); // NEED TO COMMENT FOR ASSOCIATE FILTER
@@ -509,11 +489,13 @@ const AttendanceFilter = ({ route, navigation }) => {
       if (arrayData.length != 0) {
         arrayData.forEach((element) => {
           if (element.selected === true) {
+            console.log(element);
             selectedIds.push(element.code);
           }
         });
       }
     }
+
     let x =
       employeeDropDownDataLocal[
         Object.keys(employeeDropDownDataLocal)[
@@ -521,11 +503,17 @@ const AttendanceFilter = ({ route, navigation }) => {
         ]
       ];
     let selectedID = x.filter((e) => e.selected == true);
+
+    let orgID = totalDataObj["Dealer Code"].sublevels.filter(
+      (e) => e.selected == true
+    );
     // return
-    navigation.navigate("MONTHLY_TARGET_SCREEN", {
+    // navigation.goBack()
+    navigation.navigate(AttendanceTopTabNavigatorIdentifiers.dashboard, {
       params: {
         from: "Filter",
-        selectedID: selectedID[0],
+        selectedID: selectedIds[selectedIds.length - 1],
+        orgId: orgID[0]?.orgId,
         fromDate: fromDate,
         toDate: toDate,
       },
@@ -599,32 +587,39 @@ const AttendanceFilter = ({ route, navigation }) => {
         }}
       >
         <FlatList
-          data={employeeTitleNameList.length > 0 ? [1, 2] : [1, 2]}
+          data={employeeTitleNameList.length > 0 ? [1, 2, 3] : [1, 2]}
           keyExtractor={(item, index) => "MAIN" + index.toString()}
           renderItem={({ item, index }) => {
             if (index === 0) {
               return (
                 <View
-                  style={styles.view1}
+                  style={{
+                    flexDirection: "row",
+                    // justifyContent: "space-evenly",
+                    paddingBottom: 5,
+                    borderColor: Colors.BORDER_COLOR,
+                    borderWidth: 1,
+                  }}
                 >
-                  <View style={{ width: "48%" }}>
+                  <View style={{ width: "48%", alignSelf: "flex-start" }}>
                     <DateSelectItem
-                      label={"From Date"}
+                      label={"Select Date"}
                       value={fromDate}
                       onPress={() => showDatePickerMethod("FROM_DATE")}
                     />
                   </View>
 
-                  <View style={{ width: "48%" }}>
+                  {/* <View style={{ width: "48%" }}>
                     <DateSelectItem
                       label={"To Date"}
                       value={toDate}
                       onPress={() => showDatePickerMethod("TO_DATE")}
                     />
-                  </View>
+                  </View> */}
                 </View>
               );
             } else if (index === 1) {
+              // todo country list
               return (
                 <View>
                   <View
@@ -637,13 +632,19 @@ const AttendanceFilter = ({ route, navigation }) => {
                       keyExtractor={(item, index) => index.toString()}
                       renderItem={({ item, index }) => {
                         const data = totalDataObj[item].sublevels;
+
                         let selectedNames = "";
+                        let disabletemp = false;
                         data.forEach((obj, index) => {
                           if (
                             obj.selected != undefined &&
                             obj.selected == true
                           ) {
                             selectedNames += obj.name + ", ";
+                          }
+
+                          if (obj.disabled === "Y") {
+                            disabletemp = true;
                           }
                         });
 
@@ -653,6 +654,7 @@ const AttendanceFilter = ({ route, navigation }) => {
                             selectedNames.length - 1
                           );
                         }
+
                         return (
                           <View>
                             <DropDownSelectionItem
@@ -660,37 +662,42 @@ const AttendanceFilter = ({ route, navigation }) => {
                               value={selectedNames}
                               onPress={() => dropDownItemClicked(index)}
                               takeMinHeight={true}
+                              // disabled={disabletemp}
                             />
                           </View>
                         );
                       }}
                     />
                   </View>
-                  <View style={styles.submitBtnBckVw}>
-                    <Button
-                      labelStyle={{
-                        color: Colors.RED,
-                        textTransform: "none",
-                      }}
-                      style={{ width: buttonWidth }}
-                      mode="outlined"
-                      onPress={clearBtnClicked}
-                    >
-                      Clear
-                    </Button>
-                    <Button
-                      labelStyle={{
-                        color: Colors.WHITE,
-                        textTransform: "none",
-                      }}
-                      style={{ width: buttonWidth }}
-                      contentStyle={{ backgroundColor: Colors.BLACK }}
-                      mode="contained"
-                      onPress={() => submitBtnClicked(null)}
-                    >
-                      Submit
-                    </Button>
-                  </View>
+                  {/* {!isLoading ? (
+                    <View style={styles.submitBtnBckVw}>
+                      <Button
+                        labelStyle={{
+                          color: Colors.RED,
+                          textTransform: "none",
+                        }}
+                        style={{ width: buttonWidth }}
+                        mode="outlined"
+                        onPress={clearBtnClicked}
+                      >
+                        Clear
+                      </Button>
+                      <Button
+                        labelStyle={{
+                          color: Colors.WHITE,
+                          textTransform: "none",
+                        }}
+                        style={{ width: buttonWidth }}
+                        contentStyle={{ backgroundColor: Colors.BLACK }}
+                        mode="contained"
+                        onPress={()=>submitBtnClicked(null)}
+                      >
+                        Submit
+                      </Button>
+                    </View>
+                  ) : (
+                    <AcitivityLoader />
+                  )} */}
                 </View>
               );
             } else if (index === 2) {
@@ -713,6 +720,9 @@ const AttendanceFilter = ({ route, navigation }) => {
                           scrollEnabled={false}
                           renderItem={({ item, index }) => {
                             const data = employeeDropDownDataLocal[item];
+                            if (item === "Sales Consultant") {
+                              return;
+                            }
                             let selectedNames = "";
                             data.forEach((obj, index) => {
                               if (
@@ -751,7 +761,10 @@ const AttendanceFilter = ({ route, navigation }) => {
                           }}
                           style={{ width: buttonWidth }}
                           mode="outlined"
-                          onPress={clearBtnForEmployeeData}
+                          onPress={() => {
+                            clearBtnForEmployeeData();
+                            clearBtnClicked();
+                          }}
                         >
                           Clear
                         </Button>
@@ -780,7 +793,7 @@ const AttendanceFilter = ({ route, navigation }) => {
   );
 };
 
-export default AttendanceFilter;
+export default FilterAttendanceDashBoardScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -803,11 +816,4 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
     alignItems: "center",
   },
-  view1:{
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-    paddingBottom: 5,
-    borderColor: Colors.BORDER_COLOR,
-    borderWidth: 1,
-  }
 });

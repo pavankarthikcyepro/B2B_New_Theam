@@ -22,6 +22,7 @@ import * as AsyncStore from "../../../asyncStore";
 import moment from "moment";
 import { DropDownSelectionItem } from "../../../pureComponents";
 import { AttendanceTopTabNavigatorIdentifiers } from "../../../navigations/attendanceTopTabNavigator";
+import { updateTheTeamAttendanceFilter } from "../../../redux/homeReducer";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
@@ -152,11 +153,11 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
     }
   }, [selectedLocation, selectedDealerCode]);
 
-  // useEffect(() => {
-  //   if (selector.selectedIDS.length > 0) {
-  //     getEmployeeList(selector.selectedIDS);
-  //   }
-  // }, [selector.selectedIDS]);
+  useEffect(() => {
+    if (selector.selectedIDS.length > 0) {
+      getEmployeeList(selector.selectedIDS);
+    }
+  }, [selector.selectedIDS]);
 
   const getInitialParameters = async () => {
     try {
@@ -199,6 +200,7 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
         const json = await response.json();
         if (!json.status) {
           setEmployeeList(json);
+          dispatch(updateTheTeamAttendanceFilter([]));
         }
         setLoading(false);
       }
@@ -252,24 +254,33 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
           setShowDropDownModel(false);
         }}
       />
-      <View style={{ width: "95%", alignSelf: "center", marginTop: 10 }}>
-      <View style={{ marginVertical: 5 }}>
-          <DropDownSelectionItem
-            label={"Location"}
-            value={selectedLocation.name}
-            onPress={() => dropDownItemClicked("Location")}
-            takeMinHeight={true}
-          />
+      <View
+        style={{
+          justifyContent: "space-around",
+          marginTop: 10,
+          flexDirection: "row",
+        }}
+      >
+        <View style={{ flexDirection: "column", width: "80%" }}>
+          <View style={{ marginVertical: 5 }}>
+            <DropDownSelectionItem
+              label={"Location"}
+              value={selectedLocation.name}
+              onPress={() => dropDownItemClicked("Location")}
+              takeMinHeight={true}
+            />
+          </View>
+          <View style={{ marginVertical: 5 }}>
+            <DropDownSelectionItem
+              label={"Dealer Code"}
+              value={selectedDealerCode.name}
+              onPress={() => dropDownItemClicked("Dealer Code")}
+              takeMinHeight={true}
+            />
+          </View>
         </View>
-        <View style={{ marginVertical: 5 }}>
-          <DropDownSelectionItem
-            label={"Dealer Code"}
-            value={selectedDealerCode.name}
-            onPress={() => dropDownItemClicked("Dealer Code")}
-            takeMinHeight={true}
-          />
-        </View>
-      {/* <View style={{ marginVertical: 5 }}>
+
+        {/* <View style={{ marginVertical: 5 }}>
           <DropDownSelectionItem
             label={"Month & Years"}
             value={selectedMonthYear.name}
@@ -277,7 +288,19 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
             takeMinHeight={true}
           />
         </View> */}
+        <View>
+          <IconButton
+            icon="filter-outline"
+            style={{ padding: 0, margin: 0 }}
+            color={Colors.BLACK}
+            size={35}
+            onPress={() =>
+              navigation.navigate(AttendanceTopTabNavigatorIdentifiers.filter)
+            }
+          />
+        </View>
       </View>
+
       <ScrollView showsVerticalScrollIndicator={false}>
         {loading && (
           <View>

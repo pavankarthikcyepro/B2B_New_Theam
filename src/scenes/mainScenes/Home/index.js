@@ -55,6 +55,7 @@ import {
   updateIsRankHide,
   getReceptionistData,
   updateIsModalVisible,
+  getReceptionistManagerData,
 } from "../../../redux/homeReducer";
 import { getCallRecordingCredentials } from "../../../redux/callRecordingReducer";
 import { updateData, updateIsManager } from "../../../redux/sideMenuReducer";
@@ -102,6 +103,7 @@ const officeLocation = {
   latitude: 37.33233141,
   longitude: -122.0312186,
 };
+const receptionistRole = ["Reception", "CRM"];
 
 const HomeScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
@@ -254,6 +256,12 @@ const HomeScreen = ({ route, navigation }) => {
         loggedInEmpId: userData.empId,
       };
       dispatch(getReceptionistData(payload));
+    }else if (userData.hrmsRole === "CRM") {
+       let payload = {
+         orgId: userData.orgId,
+         loggedInEmpId: userData.empId,
+       };
+       dispatch(getReceptionistManagerData(payload));
     }
   }, [userData]);
 
@@ -370,7 +378,7 @@ const HomeScreen = ({ route, navigation }) => {
     });
   };
   const moveToFilter = () => {
-    if (userData.hrmsRole == "Reception") {
+    if (userData.hrmsRole == "Reception" || userData.hrmsRole == "CRM") {
       navigation.navigate(
         AppNavigator.HomeStackIdentifiers.receptionistFilter,
         {
@@ -490,7 +498,8 @@ const HomeScreen = ({ route, navigation }) => {
         jsonObj?.hrmsRole === "MD" ||
         jsonObj?.hrmsRole === "Business Head" ||
         jsonObj?.hrmsRole === "Sales Manager" ||
-        jsonObj?.hrmsRole === "Sales Head"
+        jsonObj?.hrmsRole === "Sales Head" ||
+        jsonObj?.hrmsRole === "CRM"
       ) {
         dispatch(updateIsTeamPresent(true));
         setIsTeamPresent(true);
@@ -1153,9 +1162,7 @@ const HomeScreen = ({ route, navigation }) => {
         {/* 0000 */}
         <View>
           {isButtonPresent && (
-            <View
-              style={styles.view1}
-            >
+            <View style={styles.view1}>
               <TouchableOpacity
                 style={styles.tochable1}
                 onPress={downloadFileFromServer1}
@@ -1167,16 +1174,12 @@ const HomeScreen = ({ route, navigation }) => {
                     color={Colors.RED}
                     style={{ margin: 0, padding: 0 }}
                   />
-                  <Text
-                    style={styles.etvbrlTxt}
-                  >
-                    ETVBRL Report
-                  </Text>
+                  <Text style={styles.etvbrlTxt}>ETVBRL Report</Text>
                 </View>
               </TouchableOpacity>
             </View>
           )}
-          {userData.hrmsRole !== "Reception" ? (
+          {!receptionistRole.includes(userData.hrmsRole) ? (
             selector.isRankHide ? (
               <View style={styles.hideRankRow}>
                 <View style={styles.hideRankBox}>
@@ -1224,9 +1227,7 @@ const HomeScreen = ({ route, navigation }) => {
                         source={require("../../../assets/images/retail.png")}
                       />
                     </View>
-                    <View
-                      style={styles.view2}
-                    >
+                    <View style={styles.view2}>
                       <View style={styles.view3}>
                         <Text style={[styles.rankText, { color: Colors.RED }]}>
                           {retailData?.achievment}
@@ -1235,9 +1236,7 @@ const HomeScreen = ({ route, navigation }) => {
                           /{retailData?.target}
                         </Text>
                       </View>
-                      <View
-                        style={styles.view4}
-                      >
+                      <View style={styles.view4}>
                         <Text style={styles.baseText}>Ach v/s Tar</Text>
                       </View>
                     </View>
@@ -1248,9 +1247,7 @@ const HomeScreen = ({ route, navigation }) => {
               <View style={styles.rankView}>
                 <View style={styles.rankBox}>
                   <Text style={styles.rankHeadingText}>Dealer Ranking</Text>
-                  <View
-                    style={styles.view5}
-                  >
+                  <View style={styles.view5}>
                     <TouchableOpacity
                       style={styles.rankIconBox}
                       onPress={() => {
@@ -1298,9 +1295,7 @@ const HomeScreen = ({ route, navigation }) => {
                         source={require("../../../assets/images/perform_rank.png")}
                       />
                     </TouchableOpacity>
-                    <View
-                      style={styles.view6}
-                    >
+                    <View style={styles.view6}>
                       {dealerRank !== null && (
                         <View style={styles.view3}>
                           <Text style={[styles.rankText]}>{dealerRank}</Text>
@@ -1312,18 +1307,14 @@ const HomeScreen = ({ route, navigation }) => {
                 </View>
                 <View style={styles.rankBox}>
                   <Text style={styles.rankHeadingText}>Retails</Text>
-                  <View
-                      style={styles.view3}
-                  >
+                  <View style={styles.view3}>
                     <View style={styles.rankIconBox}>
                       <Image
                         style={styles.rankIcon}
                         source={require("../../../assets/images/retail.png")}
                       />
                     </View>
-                    <View
-                      style={styles.view2}
-                    >
+                    <View style={styles.view2}>
                       <View style={styles.view3}>
                         <Text style={[styles.rankText, { color: Colors.RED }]}>
                           {retailData?.achievment}
@@ -1345,12 +1336,12 @@ const HomeScreen = ({ route, navigation }) => {
               </View>
             )
           ) : null}
-          {userData.hrmsRole == "Reception" && (
-            <View
-              style={styles.view7}
-            >
+          {receptionistRole.includes(userData.hrmsRole) && (
+            <View style={styles.view7}>
               <View style={styles.view8}>
-                <Text style={styles.rankHeadingText}>{"Leads Allocated"}</Text>
+                <Text numberOfLines={2} style={styles.rankHeadingText}>
+                  {"Leads Allocated"}
+                </Text>
                 <View style={styles.cardView}>
                   <Text style={{ ...styles.rankText, color: "blue" }}>
                     {selector.receptionistData?.totalAllocatedCount}
@@ -1383,12 +1374,8 @@ const HomeScreen = ({ route, navigation }) => {
         {/* 1111 */}
         <View>
           {isTeamPresent && !selector.isDSE && (
-            <View
-              style={styles.view9}
-            >
-              <View
-                style={styles.view10}
-              >
+            <View style={styles.view9}>
+              <View style={styles.view10}>
                 <TouchableOpacity
                   onPress={() => {
                     // setIsTeam(true)
@@ -1445,12 +1432,8 @@ const HomeScreen = ({ route, navigation }) => {
             </View>
           )}
           {selector.isDSE && (
-            <View
-              style={styles.view9}
-            >
-              <View
-                style={styles.view10}
-              >
+            <View style={styles.view9}>
+              <View style={styles.view10}>
                 <TouchableOpacity
                   onPress={() => {
                     // setIsTeam(true)
@@ -1458,11 +1441,7 @@ const HomeScreen = ({ route, navigation }) => {
                   }}
                   style={styles.touchable2}
                 >
-                  <Text
-                    style={styles.txt4}
-                  >
-                    Dashboard
-                  </Text>
+                  <Text style={styles.txt4}>Dashboard</Text>
                 </TouchableOpacity>
               </View>
             </View>

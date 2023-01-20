@@ -621,6 +621,21 @@ export const getReceptionistData = createAsyncThunk(
   }
 );
 
+export const getReceptionistManagerData = createAsyncThunk(
+  "HOME/getReceptionistManagerData",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(
+      URL.RECEPTIONIST_MANAGER_DASHBOARD(),
+      payload
+    );
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 export const getReceptionistSource = createAsyncThunk(
   "HOME/getReceptionistSource",
   async (payload, { rejectWithValue }) => {
@@ -637,6 +652,36 @@ export const getReceptionistModel = createAsyncThunk(
   "HOME/getReceptionistModel",
   async (payload, { rejectWithValue }) => {
     const response = await client.post(URL.RECEPTIONIST_MODEL(), payload);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+export const getReceptionistManagerSource = createAsyncThunk(
+  "HOME/getReceptionistManagerSource",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(
+      URL.RECEPTIONIST_MANAGER_SOURCE(),
+      payload
+    );
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+export const getReceptionistManagerModel = createAsyncThunk(
+  "HOME/getReceptionistManagerModel",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(
+      URL.RECEPTIONIST_MANAGER_MODEL(),
+      payload
+    );
     const json = await response.json();
     if (!response.ok) {
       return rejectWithValue(json);
@@ -1265,20 +1310,42 @@ export const homeSlice = createSlice({
         };
       })
       .addCase(getReceptionistData.rejected, (state, action) => {})
+      .addCase(getReceptionistManagerData.pending, (state) => {})
+      .addCase(getReceptionistManagerData.fulfilled, (state, action) => {
+        const dataObj = action.payload;
+        state.receptionistData = {
+          RetailCount: dataObj.RetailCount,
+          bookingCount: dataObj.bookingCount,
+          consultantList: dataObj.consultantList,
+          totalAllocatedCount: dataObj.totalAllocatedCount,
+          totalDroppedCount: dataObj.totalDroppedCount,
+        };
+      })
+      .addCase(getReceptionistManagerData.rejected, (state, action) => {})
       .addCase(getReceptionistSource.pending, (state) => {})
       .addCase(getReceptionistSource.fulfilled, (state, action) => {
         const dataObj = action.payload;
         state.receptionistSource = dataObj;
       })
       .addCase(getReceptionistSource.rejected, (state, action) => {})
+      .addCase(getReceptionistManagerSource.pending, (state) => {})
+      .addCase(getReceptionistManagerSource.fulfilled, (state, action) => {
+        const dataObj = action.payload;
+        state.receptionistSource = dataObj;
+      })
+      .addCase(getReceptionistManagerSource.rejected, (state, action) => {})
       .addCase(getReceptionistModel.pending, (state) => {})
       .addCase(getReceptionistModel.fulfilled, (state, action) => {
         const dataObj = action.payload;
-        console.log("dataObj", dataObj);
-
         state.receptionistModel = dataObj;
       })
-      .addCase(getReceptionistModel.rejected, (state, action) => {});
+      .addCase(getReceptionistModel.rejected, (state, action) => {})
+      .addCase(getReceptionistManagerModel.pending, (state) => {})
+      .addCase(getReceptionistManagerModel.fulfilled, (state, action) => {
+        const dataObj = action.payload;
+        state.receptionistModel = dataObj;
+      })
+      .addCase(getReceptionistManagerModel.rejected, (state, action) => {});;
 
     builder.addCase(getDeptDropdown.pending, (state, action) => {
       state.isLoading = true;

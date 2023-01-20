@@ -108,16 +108,39 @@ const AttendanceTeamMemberScreen = ({ route, navigation }) => {
   }, [navigation]);
 
   useEffect(() => {
-    console.log(route?.params);
     if (route?.params) {
       // setFromDateState(lastMonthFirstDate);
       // setToDateState(currentDate);
       setLoading(true);
       // getAttendanceFilter(route?.params, selector.selectedDate);
-      setFromDateState(lastMonthFirstDate);
-      setToDateState(currentDate);
-      GetCountByMonth(lastMonthFirstDate, currentDate);
-      getAttendanceByMonth(lastMonthFirstDate, currentDate);
+      setFromDateState(
+        selector.selectedDate.startDate
+          ? selector.selectedDate.startDate
+          : lastMonthFirstDate
+      );
+      setToDateState(
+        selector.selectedDate.endDate
+          ? selector.selectedDate.endDate
+          : currentDate
+      );
+      GetCountByMonth(
+        selector.selectedDate.startDate
+          ? selector.selectedDate.startDate
+          : lastMonthFirstDate,
+        selector.selectedDate.endDate
+          ? selector.selectedDate.endDate
+          : currentDate
+      );
+      getAttendanceByMonth(
+        selector.selectedDate.startDate
+          ? selector.selectedDate.startDate
+          : lastMonthFirstDate,
+        selector.selectedDate.endDate
+          ? selector.selectedDate.endDate
+          : currentDate
+      );
+      selector.selectedDate.startDate && SetFilterStart(true);
+
       // setFromDateState(
       //   selector.selectedDate.startDate
       //     ? selector.selectedDate.startDate
@@ -577,7 +600,6 @@ const AttendanceTeamMemberScreen = ({ route, navigation }) => {
       const response = await client.post(URL.GET_ATTENDANCE_REPORT(), payload);
       const json = await response.json();
       if (json.downloadUrl) {
-        // console.log(json);
         downloadInLocal(URL.GET_DOWNLOAD_URL(json.downloadUrl));
       }
     } catch (error) {
@@ -706,9 +728,7 @@ const AttendanceTeamMemberScreen = ({ route, navigation }) => {
         userName={route?.params?.empName ? route?.params?.empName : userName}
       />
       <ScrollView showsVerticalScrollIndicator={false}>
-        <View
-          style={{ width: "90%", alignSelf: "center", flexDirection: "column" }}
-        >
+        <View style={styles.DatePickerView}>
           <DateRangeComp
             fromDate={selectedFromDate}
             toDate={selectedToDate}
@@ -717,7 +737,7 @@ const AttendanceTeamMemberScreen = ({ route, navigation }) => {
           />
         </View>
         <View style={styles.profilePicView}>
-          <View style={{ justifyContent: "center", alignItems: "center" }}>
+          <View style={styles.profileView}>
             <View
               style={{
                 ...GlobalStyle.shadow,
@@ -756,7 +776,6 @@ const AttendanceTeamMemberScreen = ({ route, navigation }) => {
               }
             }}
             onDayLongPress={(day) => {
-              console.log("selected day", day);
               // let newData = weeklyRecord.filter(
               //   (e) => e.start === day.dateString
               // )[0];
@@ -771,7 +790,6 @@ const AttendanceTeamMemberScreen = ({ route, navigation }) => {
             }}
             monthFormat={"MMM yyyy"}
             onMonthChange={(month) => {
-              console.log("month changed", month);
               const startDate = moment(month.dateString, dateFormat)
                 .subtract(0, "months")
                 .startOf("month")
@@ -780,10 +798,10 @@ const AttendanceTeamMemberScreen = ({ route, navigation }) => {
                 .subtract(0, "months")
                 .endOf("month")
                 .format(dateFormat);
-             
+
               if (!filterStart) {
-                 GetCountByMonth(startDate, endDate);
-                 getAttendanceByMonth(startDate, endDate);
+                GetCountByMonth(startDate, endDate);
+                getAttendanceByMonth(startDate, endDate);
                 // setCurrentMonth(new Date(month.dateString));
               }
             }}
@@ -1207,5 +1225,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "700",
     marginTop: 5,
+  },
+  DatePickerView: {
+    width: "90%",
+    alignSelf: "center",
+    flexDirection: "column",
+  },
+  profileView: {
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
