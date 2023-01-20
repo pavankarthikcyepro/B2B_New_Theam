@@ -51,7 +51,7 @@ const color = [
   "#1f93ab",
   "#ec3466",
 ];
-
+const receptionistRole = ["Reception", "CRM"];
 const TargetScreen = ({ route }) => {
   const navigation = useNavigation();
   const selector = useSelector((state) => state.homeReducer);
@@ -81,6 +81,10 @@ const TargetScreen = ({ route }) => {
   );
   const [dropDownPlaceHolder, setDropDownPlaceHolder] = useState("Employees");
   const [allParameters, setAllParameters] = useState([]);
+  const [receptionistTeamParameters, setReceptionistTeamParameters] = useState(
+    []
+  );
+  const [totalOfTeam, setTotalofTeam] = useState(0);
   const [myParameters, setMyParameters] = useState([]);
 
   const [selectedName, setSelectedName] = useState("");
@@ -264,7 +268,7 @@ const TargetScreen = ({ route }) => {
             Promise.allSettled([
               dispatch(getNewTargetParametersAllData(payload2)),
               dispatch(getTotalTargetParametersData(payload2)),
-            ]).then(() => { });
+            ]).then(() => {});
           }
         }
       );
@@ -280,7 +284,7 @@ const TargetScreen = ({ route }) => {
       .format(dateFormat);
     setDateDiff(
       (new Date(monthLastDate).getTime() - new Date(currentDate).getTime()) /
-      (1000 * 60 * 60 * 24)
+        (1000 * 60 * 60 * 24)
     );
 
     const isInsights = selector.isTeamPresent && !selector.isDSE;
@@ -402,7 +406,7 @@ const TargetScreen = ({ route }) => {
         .format(dateFormat);
       setDateDiff(
         (new Date(monthLastDate).getTime() - new Date(currentDate).getTime()) /
-        (1000 * 60 * 60 * 24)
+          (1000 * 60 * 60 * 24)
       );
     });
 
@@ -422,6 +426,9 @@ const TargetScreen = ({ route }) => {
         hrmsRole: jsonObj.hrmsRole,
         orgId: jsonObj.orgId,
       });
+      if (jsonObj.hrmsRole == "CRM") {
+        getReceptionManagerTeam(jsonObj);
+      }
       if (
         selector.login_employee_details.hasOwnProperty("roles") &&
         selector.login_employee_details.roles.length > 0
@@ -592,6 +599,28 @@ const TargetScreen = ({ route }) => {
     }).start();
   }, [slideRight]);
 
+  const getReceptionManagerTeam = async (userData) => {
+    try {
+      let payload = {
+        orgId: userData.orgId,
+        loggedInEmpId: userData.empId,
+      };
+      const response = await client.post(
+        URL.RECEPTIONIST_MANAGER_TEAM(),
+        payload
+      );
+      const json = await response.json();
+      if (json.empName) {
+        setReceptionistTeamParameters(json.empName);
+        var val = json.empName.reduce(function (previousValue, currentValue) {
+          return (
+            previousValue.totalAllocatedCount + currentValue.totalAllocatedCount
+          );
+        });
+        setTotalofTeam(val);
+      }
+    } catch (error) {}
+  };
   const getColor = (ach, tar) => {
     if (ach > 0 && tar === 0) {
       return "#1C95A6";
@@ -807,7 +836,239 @@ const TargetScreen = ({ route }) => {
     <React.Fragment>
       {!selector.isLoading ? (
         <View style={styles.container}>
-          {selector.isTeam ? (
+          {receptionistRole.includes(userData.hrmsRole) ? (
+            selector.isTeam ? (
+              <View>
+                <View style={styles.view1}>
+                  <View style={styles.view2}>
+                    <View style={styles.percentageToggleView}></View>
+                  </View>
+                </View>
+                {isLoading ? (
+                  <ActivityIndicator
+                    color={Colors.RED}
+                    size={"large"}
+                    style={{ marginTop: 15 }}
+                  />
+                ) : (
+                  <ScrollView
+                    contentContainerStyle={styles.scrollview}
+                    horizontal={true}
+                    directionalLockEnabled={true}
+                    showsHorizontalScrollIndicator={false}
+                    ref={scrollViewRef}
+                    onContentSizeChange={(contentWidth, contentHeight) => {
+                      scrollViewRef?.current?.scrollTo({
+                        y: 0,
+                        animated: true,
+                      });
+                    }}
+                    onScroll={(e) => {
+                      setSlideRight(e.nativeEvent.contentOffset.x);
+                    }}
+                    bounces={false}
+                    scrollEventThrottle={16}
+                  >
+                    <View>
+                      <ScrollView
+                        style={{
+                          height: Dimensions.get("screen").height / 2.2,
+                        }}
+                        // style={{ height: selector.isMD ? "81%" : "80%" }}
+                      >
+                        {receptionistTeamParameters.length > 0 &&
+                          receptionistTeamParameters.map((item, index) => {
+                            return (
+                              <View key={`${item.empName} ${index}`}>
+                                <View
+                                  style={{
+                                    paddingHorizontal: 8,
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    justifyContent: "space-between",
+                                    marginTop: 12,
+                                    width: Dimensions.get("screen").width - 28,
+                                  }}
+                                >
+                                  <View style={{ flexDirection: "row" }}>
+                                    <Text
+                                      onPress={() => {
+                                        navigation.navigate(
+                                          AppNavigator.HomeStackIdentifiers
+                                            .location,
+                                          {
+                                            empId: item.empId,
+                                            orgId: item.orgId,
+                                          }
+                                        );
+                                      }}
+                                      style={{
+                                        fontSize: 12,
+                                        fontWeight: "600",
+                                        textTransform: "capitalize",
+                                      }}
+                                    >
+                                      {item.empName}
+                                      {/* {item?.childCount > 1 ? "  |" : ""} */}
+                                    </Text>
+                                  </View>
+                                  <View style={{ flexDirection: "row" }}></View>
+                                </View>
+                                {/*Source/Model View END */}
+                                <View
+                                  style={[
+                                    { flexDirection: "row" },
+                                    item.isOpenInner && {
+                                      borderRadius: 10,
+                                      borderWidth: 2,
+                                      borderColor: "#C62159",
+                                      marginHorizontal: 6,
+                                      overflow: "hidden",
+                                    },
+                                  ]}
+                                >
+                                  {/*RIGHT SIDE VIEW*/}
+                                  <View style={[styles.view6]}>
+                                    <View style={styles.view7}>
+                                      <RenderLevel1NameView
+                                        level={0}
+                                        item={item}
+                                        branchName={getBranchName(
+                                          item.branchId
+                                        )}
+                                        color={"#C62159"}
+                                        receptionManager={true}
+                                        navigation={navigation}
+                                        titleClick={async () => {}}
+                                      />
+                                      <View
+                                        style={{
+                                          flex: 1,
+                                          backgroundColor:
+                                            "rgba(223,228,231,0.67)",
+                                          alignContent: "center",
+                                          justifyContent: "center",
+                                        }}
+                                      >
+                                        <Text
+                                          style={{
+                                            fontSize: 16,
+                                            fontWeight: "700",
+                                            marginLeft: 50,
+                                          }}
+                                        >
+                                          {item.totalAllocatedCount}
+                                        </Text>
+                                      </View>
+                                    </View>
+                                    {/* GET EMPLOYEE TOTAL MAIN ITEM */}
+                                  </View>
+                                </View>
+                              </View>
+                            );
+                          })}
+                      </ScrollView>
+                    </View>
+                    {/* Grand Total Section */}
+                    {totalOfTeam && (
+                      <View
+                        style={{ width: Dimensions.get("screen").width - 35 }}
+                      >
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            height: 40,
+                            backgroundColor: Colors.RED,
+                          }}
+                        >
+                          <View
+                            style={{
+                              width: 100,
+                              justifyContent: "space-around",
+                              flexDirection: "row",
+                              backgroundColor: Colors.RED,
+                            }}
+                          >
+                            <View />
+                            <View
+                              style={{
+                                justifyContent: "center",
+                                alignItems: "center",
+                              }}
+                            >
+                              <Text
+                                style={[
+                                  styles.grandTotalText,
+                                  {
+                                    color: Colors.WHITE,
+                                    fontSize: 12,
+                                  },
+                                ]}
+                              >
+                                Total
+                              </Text>
+                            </View>
+                            <View style={{ alignSelf: "flex-end" }}>
+                              <View
+                                style={{
+                                  paddingRight: 2,
+                                  height: 20,
+                                  justifyContent: "center",
+                                }}
+                              >
+                                <Text style={styles.txt7}></Text>
+                              </View>
+
+                              <View
+                                style={{
+                                  height: 20,
+                                  justifyContent: "center",
+                                }}
+                              >
+                                <Text style={styles.txt7}></Text>
+                              </View>
+                            </View>
+                          </View>
+                          <View
+                            style={{
+                              minHeight: 40,
+                              flexDirection: "column",
+                            }}
+                          >
+                            <View
+                              style={{
+                                minHeight: 40,
+                                flexDirection: "row",
+                              }}
+                            >
+                              <View
+                                style={{
+                                  alignContent: "center",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                <Text
+                                  style={{
+                                    fontSize: 16,
+                                    fontWeight: "700",
+                                    marginLeft: 50,
+                                    color: Colors.WHITE,
+                                  }}
+                                >
+                                  {totalOfTeam}
+                                </Text>
+                              </View>
+                            </View>
+                          </View>
+                        </View>
+                      </View>
+                    )}
+                  </ScrollView>
+                )}
+              </View>
+            ) : null
+          ) : null}
+          {selector.isTeam && !receptionistRole.includes(userData.hrmsRole) ? (
             <View>
               <View style={styles.view1}>
                 <SegmentedControl
@@ -2098,7 +2359,7 @@ const TargetScreen = ({ route }) => {
             !selector.isLoading &&
             selfInsightsData.length > 0 && (
               <>
-                {userData.hrmsRole !== "Reception" && (
+                {!receptionistRole.includes(userData.hrmsRole) && (
                   <View style={{ flexDirection: "row", marginVertical: 8 }}>
                     <View style={styles.view13}>
                       <View
@@ -2136,7 +2397,8 @@ const TargetScreen = ({ route }) => {
                   </View>
                 )}
                 <>
-                  {userData.hrmsRole == "Reception" && (
+                  {receptionistRole.includes(userData.hrmsRole) &&
+                  !selector.isTeam ? (
                     <>
                       <View style={styles.view14}>
                         <SourceModelView
@@ -2147,6 +2409,7 @@ const TargetScreen = ({ route }) => {
                               headerTitle: "Source/Model",
                               loggedInEmpId: userData.empId,
                               orgId: userData.orgId,
+                              role: userData.hrmsRole,
                             });
                           }}
                         />
@@ -2444,10 +2707,10 @@ const TargetScreen = ({ route }) => {
                         </View>
                       </ScrollView>
                     </>
-                  )}
+                  ) : null}
                 </>
                 {/* Header view end */}
-                {userData.hrmsRole !== "Reception" && (
+                {!receptionistRole.includes(userData.hrmsRole) && (
                   <ScrollView showsVerticalScrollIndicator={false}>
                     <>
                       <View style={{ paddingRight: 10 }}>
@@ -2878,6 +3141,7 @@ export const RenderLevel1NameView = ({
   titleClick,
   navigation,
   disable = false,
+  receptionManager = false,
 }) => {
   return (
     <View
@@ -2916,17 +3180,19 @@ export const RenderLevel1NameView = ({
           </Text>
         </TouchableOpacity>
         {/* {level === 0 && !!branchName && ( */}
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <IconButton
-            icon="map-marker"
-            style={{ padding: 0, margin: 0 }}
-            color={Colors.RED}
-            size={8}
-          />
-          <Text style={{ fontSize: 8 }} numberOfLines={2}>
-            {branchName}
-          </Text>
-        </View>
+        {branchName ? (
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <IconButton
+              icon="map-marker"
+              style={{ padding: 0, margin: 0 }}
+              color={Colors.RED}
+              size={8}
+            />
+            <Text style={{ fontSize: 8 }} numberOfLines={2}>
+              {branchName}
+            </Text>
+          </View>
+        ) : null}
         {/* )} */}
       </View>
       <View
@@ -2938,8 +3204,12 @@ export const RenderLevel1NameView = ({
           flex: 1,
         }}
       >
-        <Text style={{ fontSize: 10, fontWeight: "bold" }}>ACH</Text>
-        <Text style={{ fontSize: 10, fontWeight: "bold" }}>TGT</Text>
+        <Text style={{ fontSize: 10, fontWeight: "bold" }}>
+          {receptionManager ? "" : "ACH"}
+        </Text>
+        <Text style={{ fontSize: 10, fontWeight: "bold" }}>
+          {receptionManager ? "" : "TGT"}
+        </Text>
       </View>
     </View>
   );
@@ -3030,7 +3300,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
     width: "75%",
   },
-   view1: {
+  view1: {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
@@ -3086,39 +3356,31 @@ const styles = StyleSheet.create({
   },
   view9: {
     flexDirection: "row",
-    justifyContent:
-      "space-between",
+    justifyContent: "space-between",
   },
   view10: {
     paddingHorizontal: 4,
     display: "flex",
     flexDirection: "row",
-    justifyContent:
-      "space-between",
+    justifyContent: "space-between",
     marginTop: 8,
   },
   matView: {
-    backgroundColor:
-      "lightgrey",
+    backgroundColor: "lightgrey",
     flexDirection: "row",
     paddingHorizontal: 7,
     borderRadius: 10,
     alignItems: "center",
-    justifyContent:
-      "space-between",
+    justifyContent: "space-between",
     marginBottom: 5,
-    alignSelf:
-      "flex-start",
+    alignSelf: "flex-start",
     marginLeft: 7,
   },
   view11: {
     paddingHorizontal: 4,
-    display:
-      "flex",
-    flexDirection:
-      "row",
-    justifyContent:
-      "space-between",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
     paddingVertical: 4,
   },
   view12: {
@@ -3225,5 +3487,5 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: "bold",
     color: Colors.WHITE,
-  }
+  },
 });

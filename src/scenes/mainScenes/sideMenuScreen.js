@@ -66,18 +66,18 @@ const profileBgWidth = profileWidth + 5;
 const receptionMenu = [
   "Home",
   "Upcoming Deliveries",
+  "Live Leads",
   "Settings",
   "Drop/Lost/Cancel",
   "Digital Payment",
-  "Target Planning",
   "My Attendance",
   "Helpdesk",
   // "Task Management",
   "Drop Analysis",
-  "Task Transfer",
   "QR Code",
   "Sign Out",
 ];
+
 const teleCollerMenu = [
   "Home",
   "Settings",
@@ -90,6 +90,7 @@ const teleCollerMenu = [
   "Drop Analysis",
   "Sign Out",
 ];
+
 const ShowRoomMenu = [
   "Home",
   "Live Leads",
@@ -303,7 +304,7 @@ const SideMenuScreen = ({ navigation }) => {
     // setUserData(jsonObj)
     getProfilePic(jsonObj);
     let newFilterData = [];
-    if (jsonObj.hrmsRole === "Reception") {
+    if (jsonObj.hrmsRole === "Reception" || jsonObj.hrmsRole === "CRM") {
       newFilterData = selector.tableData.filter((item) =>
         receptionMenu.includes(item.title)
       );
