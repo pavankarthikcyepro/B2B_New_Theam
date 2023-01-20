@@ -224,7 +224,7 @@ const AttendanceScreen = ({ route, navigation }) => {
                       ? Colors.DARK_GRAY
                       : element.wfh === 1
                       ? Colors.SKY_LIGHT_BLUE_COLOR
-                      : "#ff5d68",
+                      : Colors.RED,
                 },
                 text: {
                   color: Colors.WHITE,
@@ -240,7 +240,7 @@ const AttendanceScreen = ({ route, navigation }) => {
               // duration: "00:20:00",
               note: element.comments,
               reason: element.reason,
-              color: element.isPresent === 1 ? Colors.GREEN : "#ff5d68",
+              color: element.isPresent === 1 ? Colors.GREEN : Colors.RED,
               status: element.isPresent === 1 ? "Present" : "Absent",
             };
             dateArray.push(formatedDate);
@@ -305,7 +305,7 @@ const AttendanceScreen = ({ route, navigation }) => {
                       ? Colors.DARK_GRAY
                       : element.wfh === 1
                       ? Colors.SKY_LIGHT_BLUE_COLOR
-                      : "#ff5d68",
+                      : Colors.RED,
                 },
                 text: {
                   color: Colors.WHITE,
@@ -321,7 +321,7 @@ const AttendanceScreen = ({ route, navigation }) => {
               // duration: "00:20:00",
               note: element.comments,
               reason: element.reason,
-              color: element.isPresent === 1 ? Colors.GREEN : "#ff5d68",
+              color: element.isPresent === 1 ? Colors.GREEN : Colors.RED,
               status:
                 element.isPresent === 1
                   ? "Present"
@@ -508,7 +508,7 @@ const AttendanceScreen = ({ route, navigation }) => {
                       ? Colors.DARK_GRAY
                       : element.wfh === 1
                       ? Colors.SKY_LIGHT_BLUE_COLOR
-                      : "#ff5d68",
+                      : Colors.RED,
                 },
                 text: {
                   color: Colors.WHITE,
@@ -524,7 +524,7 @@ const AttendanceScreen = ({ route, navigation }) => {
               // duration: "00:20:00",
               note: element.comments,
               reason: element.reason,
-              color: element.isPresent === 1 ? Colors.GREEN : "#ff5d68",
+              color: element.isPresent === 1 ? Colors.GREEN : Colors.RED,
               status: element.isPresent === 1 ? "Present" : "Absent",
             };
             dateArray.push(formatedDate);
@@ -686,11 +686,7 @@ const AttendanceScreen = ({ route, navigation }) => {
       />
       <ScrollView showsVerticalScrollIndicator={false}>
         <View
-          style={{
-            width: "90%",
-            alignSelf: "center",
-            flexDirection: "column",
-          }}
+          style={styles.DatePickerView}
         >
           <DateRangeComp
             fromDate={selectedFromDate}
@@ -700,7 +696,7 @@ const AttendanceScreen = ({ route, navigation }) => {
           />
         </View>
         <View style={styles.profilePicView}>
-          <View style={{ justifyContent: "center", alignItems: "center" }}>
+          <View style={styles.profileView}>
             <View
               style={{
                 ...GlobalStyle.shadow,
@@ -739,7 +735,6 @@ const AttendanceScreen = ({ route, navigation }) => {
               }
             }}
             onDayLongPress={(day) => {
-              console.log("selected day", day);
               // let newData = weeklyRecord.filter(
               //   (e) => e.start === day.dateString
               // )[0];
@@ -754,7 +749,6 @@ const AttendanceScreen = ({ route, navigation }) => {
             }}
             monthFormat={"MMM yyyy"}
             onMonthChange={(month) => {
-              console.log("month changed", month);
               const startDate = moment(month.dateString, dateFormat)
                 .subtract(0, "months")
                 .startOf("month")
@@ -1202,5 +1196,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "700",
     marginTop: 5,
+  },
+  DatePickerView: {
+    width: "90%",
+    alignSelf: "center",
+    flexDirection: "column",
+  },
+  profileView: {
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

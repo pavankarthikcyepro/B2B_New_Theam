@@ -51,4 +51,32 @@ const DateRangeComp = ({ fromDate, fromDateClicked, toDate, toDateClicked }) => 
   );
 };
 
-export { DateRangeComp };
+const DateRangeCompOne = ({
+  fromDate,
+  fromDateClicked,
+  toDate,
+  toDateClicked,
+}) => {
+  return (
+    <View
+      style={{
+        flexDirection: "row",
+        // justifyContent: "space-around",
+        paddingVertical: 10,
+      }}
+    >
+      <View style={{ width: "50%" }}>
+        <Pressable onPress={fromDateClicked}>
+          <DateComp label={"Select Date"} date={fromDate} />
+        </Pressable>
+      </View>
+
+      {/* <View style={{ width: "48%" }}>
+        <Pressable onPress={toDateClicked}>
+          <DateComp label={"To Date"} date={toDate} />
+        </Pressable>
+      </View> */}
+    </View>
+  );
+};
+export { DateRangeComp, DateRangeCompOne };
