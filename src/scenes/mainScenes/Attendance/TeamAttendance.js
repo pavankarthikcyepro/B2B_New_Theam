@@ -262,7 +262,7 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
         }}
       >
         <View style={{ flexDirection: "column", width: "80%" }}>
-          <View style={{ marginVertical: 5 }}>
+          {/* <View style={{ marginVertical: 5 }}>
             <DropDownSelectionItem
               label={"Location"}
               value={selectedLocation.name}
@@ -277,7 +277,7 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
               onPress={() => dropDownItemClicked("Dealer Code")}
               takeMinHeight={true}
             />
-          </View>
+          </View> */}
         </View>
 
         {/* <View style={{ marginVertical: 5 }}>

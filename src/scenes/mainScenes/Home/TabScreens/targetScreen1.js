@@ -2401,7 +2401,7 @@ const TargetScreen = ({ route }) => {
                   !selector.isTeam ? (
                     <>
                       <View style={styles.view14}>
-                        <SourceModelView
+                        {/* <SourceModelView
                           style={{ alignSelf: "flex-end" }}
                           onClick={() => {
                             navigation.navigate("RECEP_SOURCE_MODEL", {
@@ -2412,7 +2412,7 @@ const TargetScreen = ({ route }) => {
                               role: userData.hrmsRole,
                             });
                           }}
-                        />
+                        /> */}
                       </View>
                       <ScrollView showsVerticalScrollIndicator={false}>
                         <View style={styles.view15}>
