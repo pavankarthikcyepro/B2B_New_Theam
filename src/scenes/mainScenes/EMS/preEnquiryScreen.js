@@ -450,6 +450,46 @@ const PreEnquiryScreen = ({ route, navigation }) => {
         dispatch(updateIsSearch(true));
     };
 
+    const renderItem=({item,index})=>{
+      return (
+        <>
+          <View>
+            <MyTaskNewItem
+              from="PRE_ENQUIRY"
+              name={
+                getFirstLetterUpperCase(item.firstName) +
+                " " +
+                getFirstLetterUpperCase(item.lastName)
+              }
+              navigator={navigation}
+              uniqueId={item.leadId}
+              type="PreEnq"
+              status={""}
+              created={item.createdDate}
+              dmsLead={item.createdBy}
+              phone={item.phone}
+              source={item.enquirySource}
+              model={item.model}
+              leadStatus={item.leadStatus}
+              needStatus={"YES"}
+              onItemPress={() => {
+                navigation.navigate(
+                  AppNavigator.EmsStackIdentifiers.task360,
+                  { universalId: item.universalId, itemData: item }
+                );
+              }}
+              onDocPress={() => {
+                navigation.navigate(
+                  AppNavigator.EmsStackIdentifiers.confirmedPreEnq,
+                  { itemData: item, fromCreatePreEnquiry: false }
+                );
+              }}
+            />
+          </View>
+        </>
+      );
+    }
+
     const liveLeadsEndDate = route?.params?.moduleType === 'live-leads' ? moment().format(dateFormat) : currentDate;
     return (
       <SafeAreaView style={styles.conatiner}>
@@ -535,6 +575,7 @@ const PreEnquiryScreen = ({ route, navigation }) => {
               ]}
             >
               <FlatList
+                  initialNumToRender={searchedData.length}
                 data={searchedData}
                 extraData={searchedData}
                 keyExtractor={(item, index) => index.toString()}
@@ -560,50 +601,7 @@ const PreEnquiryScreen = ({ route, navigation }) => {
                 //     }
                 // }}
                 ListFooterComponent={renderFooter}
-                renderItem={({ item, index }) => {
-                  let color = Colors.WHITE;
-                  if (index % 2 != 0) {
-                    color = Colors.LIGHT_GRAY;
-                  }
-
-                  return (
-                    <>
-                      <View>
-                        <MyTaskNewItem
-                          from="PRE_ENQUIRY"
-                          name={
-                            getFirstLetterUpperCase(item.firstName) +
-                            " " +
-                            getFirstLetterUpperCase(item.lastName)
-                          }
-                          navigator={navigation}
-                          uniqueId={item.leadId}
-                          type="PreEnq"
-                          status={""}
-                          created={item.createdDate}
-                          dmsLead={item.createdBy}
-                          phone={item.phone}
-                          source={item.enquirySource}
-                          model={item.model}
-                          leadStatus={item.leadStatus}
-                          needStatus={"YES"}
-                          onItemPress={() => {
-                            navigation.navigate(
-                              AppNavigator.EmsStackIdentifiers.task360,
-                              { universalId: item.universalId, itemData: item }
-                            );
-                          }}
-                          onDocPress={() => {
-                            navigation.navigate(
-                              AppNavigator.EmsStackIdentifiers.confirmedPreEnq,
-                              { itemData: item, fromCreatePreEnquiry: false }
-                            );
-                          }}
-                        />
-                      </View>
-                    </>
-                  );
-                }}
+                renderItem={renderItem}
               />
             </View>
           )}
