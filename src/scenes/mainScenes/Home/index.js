@@ -1148,7 +1148,7 @@ const HomeScreen = ({ route, navigation }) => {
       {/* <Button onPress={()=>{navigation.navigate(AppNavigator.HomeStackIdentifiers.location);}} /> */}
       <HeaderComp
         title={headerText}
-        branchName={true}
+        branchName={false}
         menuClicked={() => navigation.openDrawer()}
         branchClicked={() => moveToSelectBranch()}
         filterClicked={() => moveToFilter()}
