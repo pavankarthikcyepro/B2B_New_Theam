@@ -255,7 +255,7 @@ const LoginScreen = ({ navigation }) => {
               // console.log("employeeData", employeeData);
               if (employeeData) {
                 console.log("LLLLLL");
-                // showToastRedAlert("LLLLLL");
+                showToastRedAlert("LLLLLL");
 
                 const jsonObj = JSON.parse(employeeData);
                 const trackingResponse = await client.get(
@@ -299,7 +299,7 @@ const LoginScreen = ({ navigation }) => {
                 let condition =
                   new Date(date).getDate() == new Date().getDate();
                 if (trackingJson.length > 0 && condition) {
-                  // showToastRedAlert("Condition");
+                  showToastRedAlert("Condition");
                   let tempPayload = {
                     id: trackingJson[trackingJson.length - 1]?.id,
                     orgId: jsonObj?.orgId,
@@ -314,10 +314,10 @@ const LoginScreen = ({ navigation }) => {
                   };
 
                   if (speed <= 10) {
-                    await AsyncStore.storeJsonData(
-                      AsyncStore.Keys.COORDINATES,
-                      newArray
-                    );
+                    // await AsyncStore.storeJsonData(
+                    //   AsyncStore.Keys.COORDINATES,
+                    //   newArray
+                    // );
                     console.log("tempPayload", tempPayload);
 
                     const response = await client.put(
@@ -325,10 +325,10 @@ const LoginScreen = ({ navigation }) => {
                         `/${trackingJson[trackingJson.length - 1].id}`,
                       tempPayload
                     );
-
+                    sendAlertLocalNotification();
                     const json = await response.json();
                     console.log("KKKKsssssK", json);
-                    // showToastRedAlert("json");
+                    showToastRedAlert("json");
                   }
                 } else {
                   let payload = {
@@ -345,15 +345,16 @@ const LoginScreen = ({ navigation }) => {
                   };
 
                   if (speed <= 10) {
-                    await AsyncStore.storeJsonData(
-                      AsyncStore.Keys.COORDINATES,
-                      newArray
-                    );
+                    // await AsyncStore.storeJsonData(
+                    //   AsyncStore.Keys.COORDINATES,
+                    //   newArray
+                    // );
                     console.log("KKKKK");
                     const response = await client.post(saveLocation, payload);
+                    sendAlertLocalNotification();
                     const json = await response.json();
                     console.log("KKKKK", json);
-                    // showToastRedAlert("json");
+                    showToastRedAlert("json");
                   }
                 }
               }

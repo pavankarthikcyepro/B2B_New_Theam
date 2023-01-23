@@ -160,7 +160,7 @@ const AppScreen = () => {
                 let condition =
                   new Date(date).getDate() == new Date().getDate();
                 if (trackingJson.length > 0 && condition) {
-                  // showToastRedAlert("Condition");
+                  showToastRedAlert("Condition");
 
                   let tempPayload = {
                     id: trackingJson[trackingJson.length - 1]?.id,
@@ -188,13 +188,14 @@ const AppScreen = () => {
                     //     );
                     //   }, 300000);
                     // }
+                    sendAlertLocalNotification();
                     const response = await client.put(
                       locationUpdate +
                         `/${trackingJson[trackingJson.length - 1].id}`,
                       tempPayload
                     );
                     const json = await response.json();
-                    // showToastRedAlert("json");
+                    showToastRedAlert("json");
                   }
                 } else {
                   let payload = {
@@ -210,13 +211,14 @@ const AppScreen = () => {
                     speed: speed.toString(),
                   };
                   if (speed <= 10) {
-                    await AsyncStore.storeJsonData(
-                      AsyncStore.Keys.COORDINATES,
-                      newArray
-                    );
+                    // await AsyncStore.storeJsonData(
+                    //   AsyncStore.Keys.COORDINATES,
+                    //   newArray
+                    // );
+                    sendAlertLocalNotification();
                     const response = await client.post(saveLocation, payload);
                     const json = await response.json();
-                    // showToastRedAlert("json");
+                    showToastRedAlert("json");
                   }
                 }
               }
