@@ -161,12 +161,10 @@ const HomeScreen = ({ route, navigation }) => {
           let json = JSON.parse(initialPosition);
           setInitialPosition(json.coords);
         },
-        (error) => {
-        },
+        (error) => {},
         { enableHighAccuracy: true }
       );
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -197,7 +195,7 @@ const HomeScreen = ({ route, navigation }) => {
         if (employeeData) {
           const jsonObj = JSON.parse(employeeData);
           dispatch(getNotificationList(jsonObj.empId));
-           var d = new Date();
+          var d = new Date();
           const response = await client.get(
             URL.GET_ATTENDANCE_EMPID(
               jsonObj.empId,
@@ -256,12 +254,12 @@ const HomeScreen = ({ route, navigation }) => {
         loggedInEmpId: userData.empId,
       };
       dispatch(getReceptionistData(payload));
-    }else if (userData.hrmsRole === "CRM") {
-       let payload = {
-         orgId: userData.orgId,
-         loggedInEmpId: userData.empId,
-       };
-       dispatch(getReceptionistManagerData(payload));
+    } else if (userData.hrmsRole === "CRM") {
+      let payload = {
+        orgId: userData.orgId,
+        loggedInEmpId: userData.empId,
+      };
+      dispatch(getReceptionistManagerData(payload));
     }
   }, [userData]);
 
@@ -362,7 +360,7 @@ const HomeScreen = ({ route, navigation }) => {
     });
 
     return unsubscribe;
-  }, [navigation,selector.filterIds]);
+  }, [navigation, selector.filterIds]);
 
   const getCustomerType = async () => {
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
@@ -535,7 +533,9 @@ const HomeScreen = ({ route, navigation }) => {
         if (selector.filterIds?.empSelected?.length) {
           payload["empSelected"] = selector.filterIds.empSelected;
         } else {
-          payload["levelSelected"] = null;
+          payload["levelSelected"] = selector.filterIds?.levelSelected?.length
+            ? selector.filterIds.levelSelected
+            : null;
         }
         getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
           .then((x) => {})
@@ -658,9 +658,11 @@ const HomeScreen = ({ route, navigation }) => {
     if (selector.filterIds?.empSelected?.length) {
       payload["empSelected"] = selector.filterIds.empSelected;
     } else {
-      payload["levelSelected"] = null;
+      payload["levelSelected"] = selector.filterIds?.levelSelected?.length
+        ? selector.filterIds.levelSelected
+        : null;
     }
-   
+
     Promise.all([
       // dispatch(getLeadSourceTableList(payload)),
       // dispatch(getVehicleModelTableList(payload)),
@@ -766,7 +768,9 @@ const HomeScreen = ({ route, navigation }) => {
     if (selector.filterIds?.empSelected?.length) {
       payload2["empSelected"] = selector.filterIds.empSelected;
     } else {
-      payload2["levelSelected"] = null;
+      payload2["levelSelected"] = selector.filterIds?.levelSelected?.length
+        ? selector.filterIds.levelSelected
+        : null;
     }
     Promise.allSettled([
       //dispatch(getTargetParametersAllData(payload1)),
@@ -1697,7 +1701,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
     marginVertical: 6,
   },
-  tochable1:{
+  tochable1: {
     width: 140,
     height: 30,
     borderColor: Colors.RED,
@@ -1711,24 +1715,24 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: Colors.RED,
   },
-  view2:{
+  view2: {
     marginTop: 5,
     marginLeft: 5,
   },
-  view3:{
-     flexDirection: "row" 
-    },
-    view4:{
-    marginTop: 5,
-  },
-  view5:{
+  view3: {
     flexDirection: "row",
   },
- view6: {
+  view4: {
+    marginTop: 5,
+  },
+  view5: {
+    flexDirection: "row",
+  },
+  view6: {
     marginTop: 5,
     marginLeft: 3,
   },
- view7: {
+  view7: {
     justifyContent: "space-around",
     flexDirection: "row",
     marginTop: 20,
@@ -1750,7 +1754,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: "80%",
   },
- touchable2: {
+  touchable2: {
     width: "100%",
     justifyContent: "center",
     alignItems: "center",
@@ -1759,9 +1763,9 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 5,
   },
 
- txt4:{
+  txt4: {
     fontSize: 16,
     color: Colors.WHITE,
     fontWeight: "600",
-  }
+  },
 });
