@@ -5,7 +5,7 @@ import {achievementPercentage} from "../../../../../utils/helperFunctions";
 
 export const RenderGrandTotal = (parameter) => {
   // const paramsData = ['Enquiry', 'Test Drive', 'Home Visit', 'Booking', 'INVOICE', 'Finance', 'Insurance', 'Exchange', 'EXTENDEDWARRANTY', 'Accessories'];
-  const { params, totalParams, displayType, moduleType } = parameter;
+  const { params, totalParams, displayType = 0, moduleType } = parameter;
   const paramsData = params.map(({ paramName }) => paramName);
   return (
     <>
@@ -46,10 +46,16 @@ export const RenderGrandTotal = (parameter) => {
               ]}
             >
               {displayType === 0
-                ? Number(selectedParameter.achievment)
+                ? Number(
+                    selectedParameter?.achievment
+                      ? selectedParameter.achievment
+                      : 0
+                  )
                 : `${achievementPercentage(
-                    selectedParameter.achievment,
-                    selectedParameter.target,
+                    selectedParameter?.achievment
+                      ? selectedParameter.achievment
+                      : 0,
+                    selectedParameter?.target ? selectedParameter.target : 0,
                     param,
                     enq,
                     ret,
@@ -57,25 +63,26 @@ export const RenderGrandTotal = (parameter) => {
                   )}%`}
             </Text>
             {moduleType !== "live-leads" &&
-              selectedParameter?.paramName !== "DROPPED" ? (
-                <Text
-                  style={[
-                    styles.totalText,
-                    {
-                      width:
-                        moduleType === "live-leads"
-                          ? 70
-                          : param === "Accessories"
-                          ? 65
-                          : 56,
-                      color: Colors.WHITE,
-                      backgroundColor: Colors.MAROON + "30",
-                    },
-                  ]}
-                >
-                  {Number(selectedParameter.target)}
-                </Text>
-              ) : null}
+            selectedParameter &&
+            selectedParameter?.paramName !== "DROPPED" ? (
+              <Text
+                style={[
+                  styles.totalText,
+                  {
+                    width:
+                      moduleType === "live-leads"
+                        ? 70
+                        : param === "Accessories"
+                        ? 65
+                        : 56,
+                    color: Colors.WHITE,
+                    backgroundColor: Colors.MAROON + "30",
+                  },
+                ]}
+              >
+                {Number(selectedParameter.target)}
+              </Text>
+            ) : null}
           </View>
         );
       })}

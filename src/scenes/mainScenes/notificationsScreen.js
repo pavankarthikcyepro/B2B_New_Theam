@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: StatusBar.currentHeight,
-    backgroundColor: Colors.LIGHT_GRAY,
+    backgroundColor: Colors.WHITE,
   },
   header: {
     fontSize: 20,
