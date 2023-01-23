@@ -105,7 +105,7 @@ const GeolocationMapScreen = ({ route }) => {
             )
           );
         }
-        // console.log(result, sumArray(result));
+        
         setDistance(result);
         setLoading(false);
       } else {
@@ -202,7 +202,7 @@ const GeolocationMapScreen = ({ route }) => {
   function diff_minutes(dt2, dt1) {
     var diff = (dt2.getTime() - dt1.getTime()) / 1000;
     diff /= 60;
-    // console.log(parseFloat(diff).toFixed(2));
+    
     return Math.abs(parseFloat(diff).toFixed(2));
   }
 

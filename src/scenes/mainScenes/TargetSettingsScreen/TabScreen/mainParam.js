@@ -929,7 +929,7 @@ const MainParamScreen = ({ route, navigation }) => {
     } else if (retail === "") {
       showToast("Please enter retail value");
     } else {
-      console.log("selectedUser", ownData);
+     
       setOpenRetail(false);
       let employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE

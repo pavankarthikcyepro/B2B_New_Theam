@@ -489,7 +489,7 @@ const FilterAttendanceDashBoardScreen = ({ route, navigation }) => {
       if (arrayData.length != 0) {
         arrayData.forEach((element) => {
           if (element.selected === true) {
-            console.log(element);
+            
             selectedIds.push(element.code);
           }
         });

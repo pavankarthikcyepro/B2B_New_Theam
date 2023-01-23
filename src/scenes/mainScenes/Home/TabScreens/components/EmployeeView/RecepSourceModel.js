@@ -191,7 +191,7 @@ const RecepSourceModel = ({ route, navigation }) => {
       setLeadSourceKeys([...sourceUnique]);
       setVehicleModelKeys([...modelUnique]);
       const groupedSources = getData([...newSourceData], 0);
-      // console.log(groupedSources);
+     
 
       setLeadSource(groupedSources);
       const groupedModels = getData([...newModelData], 1);

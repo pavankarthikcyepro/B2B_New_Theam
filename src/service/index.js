@@ -47,7 +47,7 @@ export const MarkAbsent = async (absentRequest = false) => {
             )
           );
           const json = await response.json();
-          // console.log("OKOKOKOK", json[json?.length - 1]);
+         
           let latestDate = new Date(
             json[json?.length - 1]?.createdtimestamp
           )?.getDate();
@@ -72,7 +72,7 @@ const saveData = async (payload, absentRequest = false) => {
   try {
     const saveData = await client.post(URL.SAVE_EMPLOYEE_ATTENDANCE(), payload);
     const savedJson = await saveData.json();
-    console.log("savedJson", savedJson, absentRequest);
+   
   } catch (error) {
     console.error("savedJsonERROR", error);
   }
@@ -87,11 +87,11 @@ export const veryIntensiveTask = async (taskDataArguments) => {
   const { delay } = taskDataArguments;
   await new Promise(async (resolve) => {
     for (let i = 0; BackgroundService.isRunning(); i++) {
-      console.log(i);
+      
       try {
         await Geolocation.watchPosition(
           (lastPosition) => {
-            console.log(lastPosition);
+           
             var newLatLng = {
               latitude: lastPosition.coords.latitude,
               longitude: lastPosition.coords.longitude,
@@ -101,7 +101,7 @@ export const veryIntensiveTask = async (taskDataArguments) => {
           { enableHighAccuracy: true, distanceFilter: 100 }
         );
         Geolocation.watchPosition((data) => {
-          console.log("LOCATION", data);
+         
         });
       } catch (error) {}
 

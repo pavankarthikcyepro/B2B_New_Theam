@@ -90,7 +90,7 @@ const AttendanceDashboard = ({ route, navigation }) => {
     // setFromDateState(lastMonthFirstDate);
     // setToDateState(currentDate);
     // getEmployeeList(lastMonthFirstDate, currentDate);
-    console.log(route.params);
+    
     if (route?.params?.params) {
       setFromDateState(route?.params?.params?.fromDate);
       getChartData(
