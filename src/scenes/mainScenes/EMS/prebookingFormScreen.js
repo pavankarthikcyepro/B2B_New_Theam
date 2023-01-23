@@ -874,10 +874,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           } else if (!value.color) {
             dispatch(updateOfferPriceData());
             clearPriceConfirmationData();
-          } else if (
-            selector?.pre_booking_details_response?.dmsLeadDto?.leadStatus ==
-            "PREBOOKINGCOMPLETED"
-          ) {
+          } else {
             setCarModelDataList(value, index);
           }
         } else {
@@ -3172,8 +3169,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
   const  displayCreateEnquiryAlert = (refNum) => {
      Alert.alert(
-       `Booking Successfully Created\nRef Num: ${refNum}`,
-       "",
+       `Booking Successfully Created`,
+       `Ref Num: ${refNum}`,
        [
          {
            text: "OK",
