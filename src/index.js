@@ -101,7 +101,6 @@ const AppScreen = () => {
     Object.keys(o1).every((p) => o1[p] === o2[p]);
 
   const getCoordinates = async () => {
-    // showToastRedAlert("getCoordinates");
     try {
       let coordinates = await AsyncStore.getJsonData(
         AsyncStore.Keys.COORDINATES
@@ -110,7 +109,6 @@ const AppScreen = () => {
       if (todaysDate != new Date().getDate()) {
         initialData();
       } else {
-        // showToastRedAlert("INNNER");
         var startDate = createDateTime("8:30");
         var startBetween = createDateTime("9:30");
         var endBetween = createDateTime("20:30");
@@ -118,11 +116,9 @@ const AppScreen = () => {
         var now = new Date();
         var isBetween = startDate <= now && now <= endDate;
         if (true) {
-          // showToastRedAlert("INNNER 2");
           // setInterval(() => {
             const watchID = Geolocation.getCurrentPosition(
               async (lastPosition) => {
-                // showToastRedAlert("LLKLKLKK");
                 let speed =
                   lastPosition?.coords?.speed <= -1
                     ? 0
@@ -131,7 +127,6 @@ const AppScreen = () => {
                   AsyncStore.Keys.LOGIN_EMPLOYEE
                 );
                 if (employeeData) {
-                  // showToastRedAlert("employeeData");
                   const jsonObj = JSON.parse(employeeData);
                   const trackingResponse = await client.get(
                     getDetailsByempIdAndorgId +
@@ -170,9 +165,7 @@ const AppScreen = () => {
                     lastPosition?.coords?.latitude,
                     lastPosition?.coords?.longitude
                   );
-                  // console.log("LLLLL", dist*1000);
                   let distance = dist * 1000;
-                  // showToastRedAlert("trackingJson");
 
                   // if (newLatLng && parsedValue) {
                   //   // if (
@@ -193,9 +186,6 @@ const AppScreen = () => {
                   let condition =
                     new Date(date).getDate() == new Date().getDate();
                   if (trackingJson.length > 0 && condition) {
-                    console.log("Condition");
-                    // showToastRedAlert("Condition");
-
                     let tempPayload = {
                       id: trackingJson[trackingJson.length - 1]?.id,
                       orgId: jsonObj?.orgId,
@@ -208,10 +198,7 @@ const AppScreen = () => {
                       kmph: speed.toString(),
                       speed: speed.toString(),
                     };
-                    console.log("SPEED", speed);
-
                     if (speed <= 10 && distance > 10) {
-                      // console.log("SPEED");
                       // await AsyncStore.storeJsonData(
                       //   AsyncStore.Keys.COORDINATES,
                       //   newArray
@@ -225,15 +212,12 @@ const AppScreen = () => {
                       //     );
                       //   }, 300000);
                       // }
-                      // sendAlertLocalNotification();
                       const response = await client.put(
                         locationUpdate +
                           `/${trackingJson[trackingJson.length - 1].id}`,
                         tempPayload
                       );
-                      console.log("::::::");
                       const json = await response.json();
-                      // showToastRedAlert("json");
                     }
                   } else {
                     let payload = {
@@ -254,10 +238,8 @@ const AppScreen = () => {
                       //   AsyncStore.Keys.COORDINATES,
                       //   newArray
                       // );
-                      // sendAlertLocalNotification();
                       const response = await client.post(saveLocation, payload);
                       const json = await response.json();
-                      // showToastRedAlert("json");
                     }
                   }
                 } 

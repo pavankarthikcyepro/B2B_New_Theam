@@ -238,7 +238,6 @@ const LoginScreen = ({ navigation }) => {
     Object.keys(o1).every((p) => o1[p] === o2[p]);
 
   const getCoordinates = async () => {
-    // showToastRedAlert("getCoordinates");
     try {
       let coordinates = await AsyncStore.getJsonData(
         AsyncStore.Keys.COORDINATES
@@ -247,7 +246,6 @@ const LoginScreen = ({ navigation }) => {
       if (todaysDate != new Date().getDate()) {
         initialData();
       } else {
-        // showToastRedAlert("=======");
         var startDate = createDateTime("8:30");
         var startBetween = createDateTime("9:30");
         var endBetween = createDateTime("20:30");
@@ -262,15 +260,10 @@ const LoginScreen = ({ navigation }) => {
                   lastPosition?.coords?.speed <= -1
                     ? 0
                     : lastPosition?.coords?.speed;
-                // showToastRedAlert("SPEED=============");
                 const employeeData = await AsyncStore.getData(
                   AsyncStore.Keys.LOGIN_EMPLOYEE
                 );
-                // console.log("employeeData", employeeData);
                 if (employeeData) {
-                  console.log("LLLLLL");
-                  // showToastRedAlert("LLLLLL");
-
                   const jsonObj = JSON.parse(employeeData);
                   const trackingResponse = await client.get(
                     getDetailsByempIdAndorgId +
@@ -306,7 +299,6 @@ const LoginScreen = ({ navigation }) => {
                     lastPosition?.coords?.latitude,
                     lastPosition?.coords?.longitude
                   );
-                  // console.log("LLLLL", dist * 1000);
                   let distance = dist * 1000;
 
                   let newArray = [...parsedValue, ...[newLatLng]];
@@ -317,7 +309,6 @@ const LoginScreen = ({ navigation }) => {
                   let condition =
                     new Date(date).getDate() == new Date().getDate();
                   if (trackingJson.length > 0 && condition) {
-                    // showToastRedAlert("Condition");
                     let tempPayload = {
                       id: trackingJson[trackingJson.length - 1]?.id,
                       orgId: jsonObj?.orgId,
@@ -336,17 +327,12 @@ const LoginScreen = ({ navigation }) => {
                       //   AsyncStore.Keys.COORDINATES,
                       //   newArray
                       // );
-                      console.log("tempPayload", tempPayload);
-
                       const response = await client.put(
                         locationUpdate +
                           `/${trackingJson[trackingJson.length - 1].id}`,
                         tempPayload
                       );
-                      // sendAlertLocalNotification();
                       const json = await response.json();
-                      console.log("KKKKsssssK", json);
-                      // showToastRedAlert("json");
                     }
                   } else {
                     let payload = {
@@ -367,12 +353,8 @@ const LoginScreen = ({ navigation }) => {
                       //   AsyncStore.Keys.COORDINATES,
                       //   newArray
                       // );
-                      console.log("KKKKK");
                       const response = await client.post(saveLocation, payload);
-                      // sendAlertLocalNotification();
                       const json = await response.json();
-                      console.log("KKKKK", json);
-                      // showToastRedAlert("json");
                     }
                   }
                 } 
