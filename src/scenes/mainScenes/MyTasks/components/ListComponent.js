@@ -148,7 +148,7 @@ const ListComponent = ({ route, navigation }) => {
     },
   ];
   useEffect(() => {
-    console.log("Use Efect");
+    
     setSelectedFilter("TODAY");
     setIndex(0);
     initialTask("TODAY");
@@ -165,14 +165,14 @@ const ListComponent = ({ route, navigation }) => {
   // }, [navigation]);
 
   useEffect(() => {
-    console.log("Index Change");
+    
     setMyTasksData([...defaultData]);
     setMyTeamsData([...defaultData]);
     initialTask(selectedFilter);
   }, [index]);
 
   const initialTask = async (selectedFilterLocal) => {
-    console.log("Called",selectedFilterLocal);
+    
     try {
       const employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE

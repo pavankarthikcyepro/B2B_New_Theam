@@ -194,7 +194,7 @@ const SideMenuScreen = ({ navigation }) => {
           isdiloadopen = true;
 
           RenderPoorNetWorkError();
-          // console.log("manthan000d ", isdiloadopen)
+         
           setTimeout(() => {
             isdiloadopen = false;
 

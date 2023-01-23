@@ -88,7 +88,7 @@ const GeoLocationScreen = ({ route, navigation }) => {
       // }
       Geolocation.getCurrentPosition(
         (position) => {
-          console.log("Sss", position);
+        
           const initialPosition = JSON.stringify(position);
           let json = JSON.parse(initialPosition);
           setInitialPosition(json.coords);
@@ -98,7 +98,7 @@ const GeoLocationScreen = ({ route, navigation }) => {
             json?.coords?.latitude,
             json?.coords?.longitude
           );
-          console.log("LLLLL", dist);
+        
           if (dist > officeRadius) {
             setReason(true); ///true for reason
           } else {
@@ -106,12 +106,12 @@ const GeoLocationScreen = ({ route, navigation }) => {
           }
         },
         (error) => {
-          console.log(JSON.stringify(error));
+         
         },
         { enableHighAccuracy: true }
       );
     } catch (error) {
-      console.log("ERROR", error);
+     
     }
   };
 
@@ -204,7 +204,7 @@ const GeoLocationScreen = ({ route, navigation }) => {
   };
 
   const getProfilePic = (userData) => {
-      console.log("manthanfff ")
+     
     // fetch(
     //   `http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
     // )
@@ -264,15 +264,15 @@ const GeoLocationScreen = ({ route, navigation }) => {
       <View>
         <Calendar
           onDayPress={(day) => {
-            console.log("selected day", day);
+           
             isCurrentDate(day);
           }}
           onDayLongPress={(day) => {
-            console.log("selected day", day);
+         
           }}
           monthFormat={"MMM yyyy"}
           onMonthChange={(month) => {
-            console.log("month changed", month);
+           
             setCurrentMonth(new Date(month.dateString));
           }}
           hideExtraDays={true}

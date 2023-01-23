@@ -186,7 +186,7 @@ const DropLostCancelScreen = ({ route, navigation }) => {
         maximumDate={new Date(liveLeadsEndDate.toString())}
         value={new Date()}
         onChange={(event, selectedDate) => {
-          console.log("date: ", selectedDate);
+          
           setShowDatePicker(false);
           if (Platform.OS === "android") {
             if (selectedDate) {
@@ -242,7 +242,7 @@ const DropLostCancelScreen = ({ route, navigation }) => {
             setLeadsSubMenuFilterVisible(false);
           }}
           onChange={(x) => {
-            // console.log("onChange", x);
+           
           }}
         />
       </View>

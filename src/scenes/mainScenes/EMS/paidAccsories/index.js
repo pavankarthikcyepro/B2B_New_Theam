@@ -149,7 +149,7 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
         allData = allData.concat(JSON.parse(selectedData));
       }
     });
-    console.log("allData==========>: ", JSON.stringify(allData));
+   
     if (fromScreen ==="PROFORMA"){
       navigation.navigate({
         name: AppNavigator.EmsStackIdentifiers.ProformaScreen,

@@ -1095,7 +1095,7 @@ const TestDriveScreen = ({ route, navigation }) => {
   
   const reSubmitClick = (status,taskName)=>{
     // call API here 
-    console.log("API call here")
+   
     setIsisReopenSubmitVisible(false)
     setIsSubmitPress(true);
     if (!mobileNumber || mobileNumber.length === 0) {

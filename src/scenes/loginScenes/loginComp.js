@@ -248,13 +248,13 @@ const LoginScreen = ({ navigation }) => {
                 lastPosition?.coords?.speed <= -1
                   ? 0
                   : lastPosition?.coords?.speed * 3.6;
-              console.log("SPEED=============", speed);
+              
               const employeeData = await AsyncStore.getData(
                 AsyncStore.Keys.LOGIN_EMPLOYEE
               );
-              // console.log("employeeData", employeeData);
+             
               if (employeeData) {
-                console.log("LLLLLL");
+               
                 // showToastRedAlert("LLLLLL");
 
                 const jsonObj = JSON.parse(employeeData);
@@ -318,7 +318,7 @@ const LoginScreen = ({ navigation }) => {
                       AsyncStore.Keys.COORDINATES,
                       newArray
                     );
-                    console.log("tempPayload", tempPayload);
+                    
 
                     const response = await client.put(
                       locationUpdate +
@@ -327,7 +327,7 @@ const LoginScreen = ({ navigation }) => {
                     );
 
                     const json = await response.json();
-                    console.log("KKKKsssssK", json);
+                   
                     // showToastRedAlert("json");
                   }
                 } else {
@@ -349,10 +349,10 @@ const LoginScreen = ({ navigation }) => {
                       AsyncStore.Keys.COORDINATES,
                       newArray
                     );
-                    console.log("KKKKK");
+                   
                     const response = await client.post(saveLocation, payload);
                     const json = await response.json();
-                    console.log("KKKKK", json);
+                    
                     // showToastRedAlert("json");
                   }
                 }
@@ -379,7 +379,7 @@ const LoginScreen = ({ navigation }) => {
     const { delay } = taskDataArguments;
     await new Promise(async (resolve) => {
       for (let i = 0; BackgroundService.isRunning(); i++) {
-        // console.log(i);
+       
         var startDate = createDateTime("8:30");
         var startBetween = createDateTime("9:30");
         var endBetween = createDateTime("20:30");
