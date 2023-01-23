@@ -198,7 +198,7 @@ export const MyTaskNewItem = ({
               >
                 {tdflage == "CLOSED" ? (
                   <Image
-                    source={require("./../../../../assets/images/test_drive_icon.jpg")}
+                    source={require("./../../../../assets/images/test_drive_icon.png")}
                     style={styles.testDriveIconImage}
                     resizeMode="contain"
                   />
@@ -418,7 +418,6 @@ const styles = StyleSheet.create({
   testDriveIconImage: {
     height: 30,
     width: 30,
-    marginRight: 5,
     borderRadius: 15
   }
 });

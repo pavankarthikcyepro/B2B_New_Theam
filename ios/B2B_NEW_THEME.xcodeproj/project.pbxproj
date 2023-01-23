@@ -14,6 +14,7 @@
 		2EEA8B97CD9BBE593FAA13B7 /* libPods-B2B_NEW_THEME-B2B_NEW_THEMETests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B26212028DC0C44CBF1A3F1B /* libPods-B2B_NEW_THEME-B2B_NEW_THEMETests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		81CAFF77EB8C8C0DC35022C9 /* libPods-B2B_NEW_THEME.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 214902D7051F1FD0500A5835 /* libPods-B2B_NEW_THEME.a */; };
+		BDAE9779297657E900F6B56E /* libswiftWebKit.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = BDAE9778297657E900F6B56E /* libswiftWebKit.tbd */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +58,7 @@
 		8CEA9284A7C82313218A16F1 /* Pods-B2B_NEW_THEME.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-B2B_NEW_THEME.debug.xcconfig"; path = "Target Support Files/Pods-B2B_NEW_THEME/Pods-B2B_NEW_THEME.debug.xcconfig"; sourceTree = "<group>"; };
 		B26212028DC0C44CBF1A3F1B /* libPods-B2B_NEW_THEME-B2B_NEW_THEMETests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-B2B_NEW_THEME-B2B_NEW_THEMETests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B4FEB1C28B484398939CB480 /* FontAwesome5_Solid.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Solid.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf"; sourceTree = "<group>"; };
+		BDAE9778297657E900F6B56E /* libswiftWebKit.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libswiftWebKit.tbd; path = usr/lib/swift/libswiftWebKit.tbd; sourceTree = SDKROOT; };
 		CC70D5A54F3F43FD9DD83181 /* Entypo.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Entypo.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Entypo.ttf"; sourceTree = "<group>"; };
 		D489445F4D0D4B69814B8D27 /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialCommunityIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
@@ -77,6 +79,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BDAE9779297657E900F6B56E /* libswiftWebKit.tbd in Frameworks */,
 				81CAFF77EB8C8C0DC35022C9 /* libPods-B2B_NEW_THEME.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -119,6 +122,7 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				BDAE9778297657E900F6B56E /* libswiftWebKit.tbd */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				214902D7051F1FD0500A5835 /* libPods-B2B_NEW_THEME.a */,
 				B26212028DC0C44CBF1A3F1B /* libPods-B2B_NEW_THEME-B2B_NEW_THEMETests.a */,
@@ -535,6 +539,10 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SDKROOT)/usr/lib/swift",
+				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -560,6 +568,10 @@
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SDKROOT)/usr/lib/swift",
 				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",

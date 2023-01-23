@@ -56,6 +56,7 @@ import { clearLeadDropState } from "../../redux/leaddropReducer";
 import ReactNativeModal from "react-native-modal";
 import { EventRegister } from "react-native-event-listeners";
 import { setBranchId, setBranchName } from "../../utils/helperFunctions";
+import { myTaskClearState } from "../../redux/mytaskReducer";
 import Snackbar from "react-native-snackbar";
 import NetInfo from "@react-native-community/netinfo";
 
@@ -193,7 +194,7 @@ const SideMenuScreen = ({ navigation }) => {
           isdiloadopen = true;
 
           RenderPoorNetWorkError();
-          // console.log("manthan000d ", isdiloadopen)
+         
           setTimeout(() => {
             isdiloadopen = false;
 
@@ -419,6 +420,7 @@ const SideMenuScreen = ({ navigation }) => {
     setBranchName("");
     dispatch(clearState());
     dispatch(clearState());
+    dispatch(myTaskClearState())
     dispatch(clearEnqState());
     dispatch(clearLeadDropState());
     signOut();

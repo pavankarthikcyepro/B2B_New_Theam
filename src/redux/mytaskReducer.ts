@@ -1,183 +1,254 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { client } from '../networking/client';
+import { client } from "../networking/client";
 import URL from "../networking/endpoints";
 
-
-export const getCurrentTasksListApi = createAsyncThunk("MY_TASKS/getCurrentTasksListApi", async (endUrl, { rejectWithValue }) => {
-
-  const url = URL.GET_CURRENT_TASK_LIST() + endUrl;
-  const response = await client.get(url);
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+export const getCurrentTasksListApi = createAsyncThunk(
+  "MY_TASKS/getCurrentTasksListApi",
+  async (endUrl, { rejectWithValue }) => {
+    const url = URL.GET_CURRENT_TASK_LIST() + endUrl;
+    const response = await client.get(url);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
   }
-  return json;
-})
+);
 
-export const getPendingTasksListApi = createAsyncThunk("MY_TASKS/getPendingTasksListApi", async (endUrl, { rejectWithValue }) => {
-
-  const url = URL.GET_FEATURE_PENDING_TASK_LIST() + endUrl;
-  const response = await client.get(url);
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+export const getPendingTasksListApi = createAsyncThunk(
+  "MY_TASKS/getPendingTasksListApi",
+  async (endUrl, { rejectWithValue }) => {
+    const url = URL.GET_FEATURE_PENDING_TASK_LIST() + endUrl;
+    const response = await client.get(url);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
   }
-  return json;
-})
+);
 
-export const getMoreCurrentTasksListApi = createAsyncThunk("MY_TASKS/getMoreCurrentTasksListApi", async (endUrl, { rejectWithValue }) => {
-
-  const url = URL.GET_CURRENT_TASK_LIST() + endUrl;
-  const response = await client.get(url);
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+export const getMoreCurrentTasksListApi = createAsyncThunk(
+  "MY_TASKS/getMoreCurrentTasksListApi",
+  async (endUrl, { rejectWithValue }) => {
+    const url = URL.GET_CURRENT_TASK_LIST() + endUrl;
+    const response = await client.get(url);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
   }
-  return json;
-})
+);
 
-export const getMorePendingTasksListApi = createAsyncThunk("MY_TASKS/getMorePendingTasksListApi", async (endUrl, { rejectWithValue }) => {
-
-  const url = URL.GET_FEATURE_PENDING_TASK_LIST() + endUrl;
-  const response = await client.get(url);
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+export const getMorePendingTasksListApi = createAsyncThunk(
+  "MY_TASKS/getMorePendingTasksListApi",
+  async (endUrl, { rejectWithValue }) => {
+    const url = URL.GET_FEATURE_PENDING_TASK_LIST() + endUrl;
+    const response = await client.get(url);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
   }
-  return json;
-})
+);
 
-export const getMyTasksListApi = createAsyncThunk("MY_TASKS/getMyTasksListApi", async (userId, { rejectWithValue }) => {
+export const getMyTasksListApi = createAsyncThunk(
+  "MY_TASKS/getMyTasksListApi",
+  async (userId, { rejectWithValue }) => {
+    const payload = {
+      loggedInEmpId: userId,
+      onlyForEmp: true,
+    };
 
-  const payload = {
-    "loggedInEmpId": userId,
-    "onlyForEmp": true
+    const url = URL.GET_MY_TASKS_NEW_DATA();
+    const response = await client.post(url, payload);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
   }
+);
 
-  const url = URL.GET_MY_TASKS_NEW_DATA();
-  const response = await client.post(url, payload);
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+export const getMyTeamsTasksListApi = createAsyncThunk(
+  "MY_Teams_TASKS/getMyTeamsTasksListApi",
+  async (userId, { rejectWithValue }) => {
+    const payload = {
+      loggedInEmpId: userId,
+      onlyForEmp: false,
+    };
+
+    const url = URL.GET_MY_TASKS_NEW_DATA();
+    const response = await client.post(url, payload);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
   }
-  return json;
-})
+);
 
-export const getMyTeamsTasksListApi = createAsyncThunk("MY_Teams_TASKS/getMyTeamsTasksListApi", async (userId, { rejectWithValue }) => {
-
-  const payload = {
-    "loggedInEmpId": userId,
-    "onlyForEmp": false
+export const getTodayMyTasksListApi = createAsyncThunk(
+  "MY_TASKS/getTodayMyTasksListApi",
+  async (payload, { rejectWithValue }) => {
+    const url = URL.GET_MY_TASKS_NEW_DATA();
+    const response = await client.post(url, payload);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
   }
+);
 
-  const url = URL.GET_MY_TASKS_NEW_DATA();
-  const response = await client.post(url, payload);
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+export const getUpcomingMyTasksListApi = createAsyncThunk(
+  "MY_TASKS/getUpcomingMyTasksListApi",
+  async (payload, { rejectWithValue }) => {
+    const url = URL.GET_MY_TASKS_NEW_DATA();
+    const response = await client.post(url, payload);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
   }
-  return json;
-})
+);
 
-export const getTodayMyTasksListApi = createAsyncThunk("MY_TASKS/getTodayMyTasksListApi", async (payload, { rejectWithValue }) => {
-  const url = URL.GET_MY_TASKS_NEW_DATA();
-  const response = await client.post(url, payload);
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+export const getPendingMyTasksListApi = createAsyncThunk(
+  "MY_TASKS/getPendingMyTasksListApi",
+  async (payload, { rejectWithValue }) => {
+    const url = URL.GET_MY_TASKS_NEW_DATA();
+    const response = await client.post(url, payload);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
   }
-  return json;
-})
+);
 
-export const getUpcomingMyTasksListApi = createAsyncThunk("MY_TASKS/getUpcomingMyTasksListApi", async (payload, { rejectWithValue }) => {
-  const url = URL.GET_MY_TASKS_NEW_DATA();
-  const response = await client.post(url, payload);
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+export const getRescheduleMyTasksListApi = createAsyncThunk(
+  "MY_TASKS/getRescheduleMyTasksListApi",
+  async (payload, { rejectWithValue }) => {
+    const url = URL.GET_MY_TASKS_NEW_DATA();
+    const response = await client.post(url, payload);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
   }
-  return json;
-})
+);
 
-export const getPendingMyTasksListApi = createAsyncThunk("MY_TASKS/getPendingMyTasksListApi", async (payload, { rejectWithValue }) => {
-  const url = URL.GET_MY_TASKS_NEW_DATA();
-  const response = await client.post(url, payload);
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+export const getCompletedMyTasksListApi = createAsyncThunk(
+  "MY_TASKS/getCompletedMyTasksListApi",
+  async (payload, { rejectWithValue }) => {
+    const url = URL.GET_MY_TASKS_NEW_DATA();
+    const response = await client.post(url, payload);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
   }
-  return json;
-})
+);
 
-export const getRescheduleMyTasksListApi = createAsyncThunk("MY_TASKS/getRescheduleMyTasksListApi", async (payload, { rejectWithValue }) => {
-  const url = URL.GET_MY_TASKS_NEW_DATA();
-  const response = await client.post(url, payload);
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+export const getTodayTeamTasksListApi = createAsyncThunk(
+  "MY_TASKS/getTodayTeamTasksListApi",
+  async (payload, { rejectWithValue }) => {
+    const url = URL.GET_MY_TASKS_NEW_DATA();
+    const response = await client.post(url, payload);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
   }
-  return json;
-})
+);
 
-export const getCompletedMyTasksListApi = createAsyncThunk("MY_TASKS/getCompletedMyTasksListApi", async (payload, { rejectWithValue }) => {
-  const url = URL.GET_MY_TASKS_NEW_DATA();
-  const response = await client.post(url, payload);
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+export const getUpcomingTeamTasksListApi = createAsyncThunk(
+  "MY_TASKS/getUpcomingTeamTasksListApi",
+  async (payload, { rejectWithValue }) => {
+    const url = URL.GET_MY_TASKS_NEW_DATA();
+    const response = await client.post(url, payload);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
   }
-  return json;
-})
+);
 
-export const getTodayTeamTasksListApi = createAsyncThunk("MY_TASKS/getTodayTeamTasksListApi", async (payload, { rejectWithValue }) => {
-  const url = URL.GET_MY_TASKS_NEW_DATA();
-  const response = await client.post(url, payload);
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+export const getPendingTeamTasksListApi = createAsyncThunk(
+  "MY_TASKS/getPendingTeamTasksListApi",
+  async (payload, { rejectWithValue }) => {
+    const url = URL.GET_MY_TASKS_NEW_DATA();
+    const response = await client.post(url, payload);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
   }
-  return json;
-})
+);
 
-export const getUpcomingTeamTasksListApi = createAsyncThunk("MY_TASKS/getUpcomingTeamTasksListApi", async (payload, { rejectWithValue }) => {
-  const url = URL.GET_MY_TASKS_NEW_DATA();
-  const response = await client.post(url, payload);
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+export const getRescheduleTeamTasksListApi = createAsyncThunk(
+  "MY_TASKS/getRescheduleTeamTasksListApi",
+  async (payload, { rejectWithValue }) => {
+    const url = URL.GET_MY_TASKS_NEW_DATA();
+    const response = await client.post(url, payload);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
   }
-  return json;
-})
+);
 
-export const getPendingTeamTasksListApi = createAsyncThunk("MY_TASKS/getPendingTeamTasksListApi", async (payload, { rejectWithValue }) => {
-  const url = URL.GET_MY_TASKS_NEW_DATA();
-  const response = await client.post(url, payload);
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+export const getCompletedTeamTasksListApi = createAsyncThunk(
+  "MY_TASKS/getCompletedTeamTasksListApi",
+  async (payload, { rejectWithValue }) => {
+    const url = URL.GET_MY_TASKS_NEW_DATA();
+    const response = await client.post(url, payload);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
   }
-  return json;
-})
+);
 
-export const getRescheduleTeamTasksListApi = createAsyncThunk("MY_TASKS/getRescheduleTeamTasksListApi", async (payload, { rejectWithValue }) => {
-  const url = URL.GET_MY_TASKS_NEW_DATA();
-  const response = await client.post(url, payload);
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+export const getOrganizationHierarchyList = createAsyncThunk(
+  "MY_TASKS/getOrganizationHierarchyList",
+  async (payload: any, { rejectWithValue }) => {
+    const response = await client.get(
+      URL.ORG_HIRARCHY(payload.orgId, payload.branchId)
+    );
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
   }
-  return json;
-})
+);
 
-export const getCompletedTeamTasksListApi = createAsyncThunk("MY_TASKS/getCompletedTeamTasksListApi", async (payload, { rejectWithValue }) => {
-  const url = URL.GET_MY_TASKS_NEW_DATA();
-  const response = await client.post(url, payload);
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+export const getEmployeesDropDownData = createAsyncThunk(
+  "HOME/getEmployeesDropDownData",
+  async (payload: any, { rejectWithValue }) => {
+    const response = await client.post(
+      URL.GET_EMPLOYEES_DROP_DOWN_DATA(payload.orgId, payload.empId),
+      payload.selectedIds
+    );
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
   }
-  return json;
-})
+);
 
 export const getRescheduled = createAsyncThunk(
   "MY_TASKS/getRescheduled",
@@ -194,7 +265,7 @@ export const getRescheduled = createAsyncThunk(
 
 export const role = createAsyncThunk("MY-_TASKS/role", (role) => {
   return role;
-})
+});
 
 export const mytaskSlice = createSlice({
   name: "MY_TASKS",
@@ -226,12 +297,42 @@ export const mytaskSlice = createSlice({
     teamUpcomingData: [],
     teamPendingData: [],
     teamReData: [],
-    index : 0,
+    index: 0,
+    currentScreen: "",
+    filter_drop_down_data: {},
+    employees_drop_down_data: {},
+    filterIds: {
+      dealerCodes:[],
+      levelSelectedIds: [],
+      empSelectedIds: [],
+    },
   },
   reducers: {
     updateIndex: (state, action) => {
-      state.index = action.payload
-    }
+      state.index = action.payload;
+    },
+    updateFilterDropDownData: (state, action) => {
+      state.filter_drop_down_data = action.payload;
+    },
+    updateFilterIds: (state, action) => {
+      state.filterIds = action.payload;
+    },
+    updateCurrentScreen: (state, action) => {
+      state.currentScreen = action.payload;
+    },
+    updateEmpDropDown: (state, action) => {
+      state.employees_drop_down_data = {};
+    },
+    myTaskClearState: (state, action) => {
+      state.filter_drop_down_data = {};
+      state.employees_drop_down_data = {};
+      state.filterIds = {
+        dealerCodes:[],
+        levelSelectedIds: [],
+        empSelectedIds: [],
+      };
+      state.currentScreen = "";
+    },
   },
   extraReducers: (builder) => {
     // Get Current Task List
@@ -467,20 +568,47 @@ export const mytaskSlice = createSlice({
       state.teamReData = action.payload.completedData;
       state.isTeamsTaskLoading = false;
     });
-    builder.addCase(getCompletedTeamTasksListApi.rejected, (state, action) => {
-      state.teamReData = [];
-      state.isTeamsTaskLoading = false;
-    });
+    builder
+      .addCase(getCompletedTeamTasksListApi.rejected, (state, action) => {
+        state.teamReData = [];
+        state.isTeamsTaskLoading = false;
+      })
+
+      // Get Filter Dropdown list
+      .addCase(getOrganizationHierarchyList.pending, (state, action) => {})
+      .addCase(getOrganizationHierarchyList.fulfilled, (state, action) => {
+        if (action.payload) {
+          state.filter_drop_down_data = action.payload;
+        }
+      })
+      .addCase(getOrganizationHierarchyList.rejected, (state, action) => {});
+
+    // Get Employees Drop Down Data
+    builder
+      .addCase(getEmployeesDropDownData.pending, (state, action) => {
+        state.employees_drop_down_data = {};
+      })
+      .addCase(getEmployeesDropDownData.fulfilled, (state, action) => {
+        if (action.payload) {
+          state.employees_drop_down_data = action.payload;
+        }
+      })
+      .addCase(getEmployeesDropDownData.rejected, (state, action) => {
+        state.employees_drop_down_data = {};
+      });
 
     // Task History rescheduled today
-    builder.addCase(getRescheduled.pending, (state) => {
-    });
-    builder.addCase(getRescheduled.fulfilled, (state, action) => {
-    });
-    builder.addCase(getRescheduled.rejected, (state, action) => {
-    });
-  }
+    builder.addCase(getRescheduled.pending, (state) => {});
+    builder.addCase(getRescheduled.fulfilled, (state, action) => {});
+    builder.addCase(getRescheduled.rejected, (state, action) => {});
+  },
 });
 
-export const { updateIndex } = mytaskSlice.actions;
+export const {
+  updateIndex,
+  updateFilterIds,
+  updateCurrentScreen,
+  updateEmpDropDown,
+  myTaskClearState,
+} = mytaskSlice.actions;
 export default mytaskSlice.reducer;

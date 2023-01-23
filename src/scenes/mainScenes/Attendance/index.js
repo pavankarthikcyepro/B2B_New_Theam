@@ -108,7 +108,7 @@ const AttendanceScreen = ({ route, navigation }) => {
   }, [navigation]);
 
   useEffect(() => {
-    console.log(route?.params);
+    
     if (route?.params) {
       setFromDateState(lastMonthFirstDate);
       setToDateState(currentDate);
@@ -556,7 +556,7 @@ const AttendanceScreen = ({ route, navigation }) => {
       const response = await client.post(URL.GET_ATTENDANCE_REPORT(), payload);
       const json = await response.json();
       if (json.downloadUrl) {
-        // console.log(json);
+        
         downloadInLocal(URL.GET_DOWNLOAD_URL(json.downloadUrl));
       }
     } catch (error) {
