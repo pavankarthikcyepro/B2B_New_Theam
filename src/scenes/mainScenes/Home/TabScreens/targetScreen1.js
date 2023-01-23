@@ -869,12 +869,11 @@ const TargetScreen = ({ route }) => {
                     bounces={false}
                     scrollEventThrottle={16}
                   >
-                    <View>
+                    <View
+                      style={{ height: Dimensions.get("screen").height / 2.7 }}
+                    >
                       <ScrollView
-                        style={{
-                          height: Dimensions.get("screen").height / 2.7,
-                        }}
-                        // style={{ height: selector.isMD ? "81%" : "80%" }}
+                      // style={{ height: selector.isMD ? "81%" : "80%" }}
                       >
                         {receptionistTeamParameters.length > 0 &&
                           receptionistTeamParameters.map((item, index) => {
