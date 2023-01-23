@@ -2252,7 +2252,7 @@ const TargetScreen = ({ route }) => {
                   {/* Grand Total Section */}
                   {selector.totalParameters.length > 0 && (
                     <View
-                      style={{ width: Dimensions.get("screen").width - 35 }}
+                      style={{ width: Dimensions.get("screen").width - 35, position: "absolute", bottom: 0 }}
                     >
                       <SourceModelView
                         style={{
