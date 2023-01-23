@@ -149,7 +149,7 @@ const NotificationScreen = ({ navigation }) => {
           icon={icon}
           style={{ backgroundColor: bg }}
           flagColor={
-            item.notificationType == "SCHEDULED" ? Colors.RED : Colors.GRAY
+            item?.isFlag == "Y" ? Colors.RED : Colors.GRAY
           }
         />
       </View>
