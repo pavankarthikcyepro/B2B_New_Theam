@@ -2046,7 +2046,7 @@ const MainParamScreen = ({ route, navigation }) => {
                 </View>
                 {/* Employee params section */}
                 <ScrollView
-                  style={{ height: Dimensions.get("screen").height / 2.2 }}
+                  style={{ height: Dimensions.get("screen").height / 2.7 }}
                   // style={{ height: selector.isMD ? "81%" : "80%" }}
                   nestedScrollEnabled={true}
                 >

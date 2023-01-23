@@ -766,11 +766,13 @@ const HomeScreen = ({ route, navigation }) => {
       size: 100,
     };
     if (selector.filterIds?.empSelected?.length) {
-      payload2["empSelected"] = selector.filterIds.empSelected;
+      payload2["empSelected"] = [];
+      // payload2["empSelected"] = selector.filterIds.empSelected;
     } else {
-      payload2["levelSelected"] = selector.filterIds?.levelSelected?.length
-        ? selector.filterIds.levelSelected
-        : null;
+      payload2["levelSelected"] = [];
+      // payload2["levelSelected"] = selector.filterIds?.levelSelected?.length
+      //   ? selector.filterIds.levelSelected
+      //   : null;
     }
     Promise.allSettled([
       //dispatch(getTargetParametersAllData(payload1)),
