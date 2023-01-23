@@ -296,6 +296,15 @@ const URL = {
   GET_DRIVERS_LIST: (orgId) => {
     return roleManagement_url + `/user/role/name/Driver/${orgId}`;
   },
+
+  GET_TEST_HISTORY_COUNT: (universalId) => {
+    return sales_url + `/task-history/get-count-audit?customerId=${universalId}`;
+  },
+
+  GET_TEST_HISTORY_DETAILS: (universalId) => {
+    return sales_url + `/task-history/get-testdrive-history?customerId=${universalId}`;
+  },
+
   GET_TEST_DRIVE_VEHICLES: (branchId, orgId) => {
     return (
       inventory_url +
