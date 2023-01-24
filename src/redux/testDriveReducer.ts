@@ -269,11 +269,13 @@ const testDriveSlice = createSlice({
             ...vehicleInfo,
             name: vehicleInfo.model,
             id: element.id,
+            varientId: element.varientId,
           };
           const vehicleInfoForVarient = {
             ...vehicleInfo,
             name: vehicleInfo.varientName,
             id: element.id,
+            varientId: element.varientId,
           };
 
           if (vehicleNames.includes(vehicleInfo.vehicleId)) {
@@ -285,6 +287,7 @@ const testDriveSlice = createSlice({
             new_vehicles.push(vehicleInfoForModel)
           }
         });
+        
         state.test_drive_vehicle_list_for_drop_down = new_vehicles;
         state.test_drive_varients_obj_for_drop_down = varientObj;
       }
