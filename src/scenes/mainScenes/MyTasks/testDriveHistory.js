@@ -41,6 +41,7 @@ const TestDriveHistory = ({ route, navigation }) => {
                     fontWeight: "700",
                     marginBottom: 5,
                     width: "80%",
+                    margin:5
                 }}
             >
                 Test drive
@@ -122,6 +123,7 @@ const TestDriveHistory = ({ route, navigation }) => {
                     ]}
                 >
                     <TouchableOpacity
+                    disabled={true}
                         onPress={() => { }}
                     >
                         <View
@@ -138,7 +140,80 @@ const TestDriveHistory = ({ route, navigation }) => {
                                 {TaskNameView()}
 
                             </View>
-                            <View style={{ flexDirection: "row" }}>
+
+                            <View style={{ flexDirection: "column" }}>
+                                <View style={styles.view6}>
+                                    <Text
+                                        style={styles.txt5}
+                                    >
+                                        {"Model: "}
+                                    </Text>
+                                    <Text
+                                        style={styles.txt3}
+                                    >
+                                        {item.model}
+                                    </Text>
+                                    
+                                </View>  
+                                <View style={styles.view6}>
+                                    <Text
+                                        style={styles.txt5}
+                                    >
+                                        {"Variant: "}
+                                    </Text>
+                                    <Text
+                                        style={styles.txt3}
+                                    >
+                                        {item.varient}
+                                    </Text>
+
+                                </View>  
+                                <View style={styles.view6}>
+                                    <Text
+                                        style={styles.txt5}
+                                    >
+                                        {"Fuel Type: "}
+                                    </Text>
+                                    <Text
+                                        style={styles.txt3}
+                                    >
+                                        {item.fuel}
+                                    </Text>
+
+                                </View>  
+                                <View style={styles.view6}>
+                                    <Text
+                                        style={styles.txt5}
+                                    >
+                                        {"Transmission: "}
+                                    </Text>
+                                    <Text
+                                        style={styles.txt3}
+                                    >
+                                        {item.transmission}
+                                    </Text>
+
+                                </View>  
+
+                                <View style={styles.view6}>
+                                    <Text
+                                        style={styles.txt5}
+                                    >
+                                        {"Customer address: "}
+                                    </Text>
+                                    <Text
+                                        // numberOfLines={3}
+                                        style={styles.txt3}
+                                    >
+                                        {(item.location === "showroom" ? "showroom" : item.address)}
+                                    </Text>
+
+                                </View>  
+                              
+                            </View>
+
+
+                            {/* <View style={{ flexDirection: "row" }}>
                                 <View style={{ flexDirection: "column", alignContent: "center", }}>
                                     <Text
                                         style={styles.txt5}
@@ -171,22 +246,22 @@ const TestDriveHistory = ({ route, navigation }) => {
                                     <Text
                                         style={styles.txt3}
                                     >
-                                        {item.vehicleId}
+                                        {item.model}
                                     </Text>
                                     <Text
                                         style={styles.txt3}
                                     >
-                                        {item.varientId}
+                                        {item.varient}
                                     </Text>
                                     <Text
                                         style={styles.txt3}
                                     >
-                                        {item.varientId}
+                                        {item.fuel}
                                     </Text>
                                     <Text
                                         style={styles.txt3}
                                     >
-                                        {item.varientId}
+                                        {item.transmission}
                                     </Text>
                                     <Text
                                         // numberOfLines={3}
@@ -199,7 +274,7 @@ const TestDriveHistory = ({ route, navigation }) => {
                                         {(item.location === "showroom" ? "showroom" : item.address)}
                                     </Text>
                                 </View>
-                            </View>
+                            </View> */}
 
 
                         </View>
@@ -284,12 +359,14 @@ const styles = StyleSheet.create({
     txt3: {
         fontSize: 14,
         fontWeight: "400",
-        color: Colors.BLACK
+        color: Colors.BLACK,
+        flex:1
     },
     txt5: {
         fontSize: 14,
         fontWeight: "400",
-        color: Colors.GRAY
+        color: Colors.GRAY,
+        flex:1
     },
     view4: {
         width: "100%",
@@ -324,5 +401,6 @@ const styles = StyleSheet.create({
         flexDirection: "column", width: 0,
         flexGrow: 1,
         flex: 1,
-    }
+    },
+    view6: { flexDirection: "row", margin: 5 }
 })

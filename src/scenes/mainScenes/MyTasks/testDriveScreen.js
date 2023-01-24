@@ -1045,7 +1045,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       // fuelType: vehicleInfo.fuelType || "",
       // transType: vehicleInfo.transmission_type || "",
       // vehicleId: vehicleInfo.vehicleId,
-      vehicleId: vehicleInfo.id,
+      vehicleId: fromVarient ? vehicleInfo.vehicleId : "",
       varientId: fromVarient ? vehicleInfo.varientId : "",
     });
   };
