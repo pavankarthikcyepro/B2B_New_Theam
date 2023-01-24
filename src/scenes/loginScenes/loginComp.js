@@ -174,12 +174,12 @@ const LoginScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="white" barStyle="dark-content" />
-      <LoaderComponent
-        visible={selector.isLoading}
-        onRequestClose={() => { }}
-      />
-      <ScrollView contentContainerStyle={{ flex: 1 }} keyboardShouldPersistTaps="always">
-      {/* <KeyboardAvoidingView
+      <LoaderComponent visible={selector.isLoading} onRequestClose={() => {}} />
+      <ScrollView
+        contentContainerStyle={{ flex: 1 }}
+        keyboardShouldPersistTaps="always"
+      >
+        {/* <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS == "ios" ? "padding" : "height"}
         enabled
@@ -187,9 +187,17 @@ const LoginScreen = ({ navigation }) => {
         keyboardShouldPersistTaps="always"
       > */}
 
-        <View style={{ flexDirection: 'column', backgroundColor: Colors.WHITE }}>
-
-          <View style={{ width: "100%", height: ScreenHeight * 0.23, alignItems: "center", justifyContent: 'center', }}>
+        <View
+          style={{ flexDirection: "column", backgroundColor: Colors.WHITE }}
+        >
+          <View
+            style={{
+              width: "100%",
+              height: ScreenHeight * 0.23,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
             <Image
               style={{ width: 200, height: ScreenHeight * 0.4 }}
               resizeMode={"center"}
@@ -226,7 +234,10 @@ const LoginScreen = ({ navigation }) => {
             mode={"outlined"}
             isSecure={selector.securePassword}
             showRightIcon={true}
-            rightIconObj={{ name: selector.securePassword ? "eye-off-outline" : "eye-outline", color: Colors.GRAY }}
+            rightIconObj={{
+              name: selector.securePassword ? "eye-off-outline" : "eye-outline",
+              color: Colors.GRAY,
+            }}
             onChangeText={(text) => dispatch(updatePassword(text))}
             onRightIconPressed={() => dispatch(updateSecurePassword())}
           />
@@ -236,13 +247,19 @@ const LoginScreen = ({ navigation }) => {
             </Pressable>
           </View> */}
           <View style={{ height: 40 }}></View>
-          <Pressable 
-            style={styles.loginButton}
-            onPress={() => loginClicked()}
-          >
+          <Pressable style={styles.loginButton} onPress={() => loginClicked()}>
             <Text style={styles.buttonText}>Login to Account</Text>
           </Pressable>
-          <Image 
+          <Text
+            onPress={() =>
+              navigation.navigate(AuthNavigator.AuthStackIdentifiers.REGISTER)
+            }
+            style={styles.registerText}
+          >
+            {"Register"}
+          </Text>
+
+          <Image
             source={require("../../assets/images/loginCar.jpg")}
             style={styles.loginImage}
           />
@@ -281,7 +298,7 @@ const LoginScreen = ({ navigation }) => {
             />
           </Animated.View> */}
         </View>
-      {/* </KeyboardAvoidingView> */}
+        {/* </KeyboardAvoidingView> */}
       </ScrollView>
     </SafeAreaView>
   );
@@ -300,7 +317,7 @@ const styles = StyleSheet.create({
     color: Colors.BLACK,
     textAlign: "center",
     marginBottom: 30,
-    fontWeight: "bold"
+    fontWeight: "bold",
   },
   forgotView: {
     flexDirection: "row",
@@ -345,22 +362,30 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 8,
-    elevation: 3
+    elevation: 3,
   },
   buttonText: {
     fontWeight: "bold",
-    color: Colors.WHITE
+    color: Colors.WHITE,
   },
   loginImage: {
     width: ScreenWidth - 40,
     height: 100,
-    marginTop:30
+    marginTop: 30,
   },
   signUpText: {
     alignSelf: "center",
-    marginTop: 25
+    marginTop: 25,
   },
   signUpSubtext: {
-    fontWeight: "bold"
-  }
+    fontWeight: "bold",
+  },
+  registerText: {
+    fontSize: 14,
+    fontWeight: "bold",
+    textAlign: "center",
+    color: Colors.BLUE,
+    textDecorationLine: "underline",
+    marginTop: 5
+  },
 });

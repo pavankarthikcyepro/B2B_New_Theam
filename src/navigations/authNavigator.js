@@ -41,7 +41,7 @@ const AuthStackNavigator = () => {
         <Stack.Screen
           name={AuthStackIdentifiers.REGISTER}
           component={RegisterScreen}
-          options={{ headerShown: false }}
+          options={{ headerTransparent: true, headerTintColor: Colors.BLACK, headerBackTitleVisible: false, headerTitle: "" }}
         />
         <Stack.Screen
           name={AuthStackIdentifiers.FORGOT}
