@@ -71,6 +71,7 @@ export const PreBookingModelListitemCom = ({
   isSubmitPress,
   isOnlyOne,
   onChangeSubmit,
+  carModelsList = [],
   disabled = false,
 }) => {
   const dispatch = useDispatch();
@@ -225,10 +226,11 @@ export const PreBookingModelListitemCom = ({
           variant: "",
           isPrimary: item.isPrimary,
         };
-        var modelsarr = await selector.dmsLeadProducts;
+        var modelsarr =
+          carModelsList.length > 0 ? carModelsList : selector.dmsLeadProducts;
+        // var modelsarr = await selector.dmsLeadProducts;
         modelsarr[index] = await carmodeldata;
         modelOnclick(index, carmodeldata, "update");
-
         await dispatch(updatedmsLeadProduct(modelsarr));
       } catch (error) {
       }
@@ -344,7 +346,9 @@ export const PreBookingModelListitemCom = ({
             };
           }
 
-          const modelsarr = [...selector.dmsLeadProducts];
+          const modelsarr =
+            carModelsList.length > 0 ? carModelsList : selector.dmsLeadProducts;;
+          // const modelsarr = [...selector.dmsLeadProducts];
           modelsarr[index] = carmodeldata;
           modelOnclick(index, carmodeldata, "update");
 
@@ -491,11 +495,14 @@ export const PreBookingModelListitemCom = ({
       };
     }
 
-    const modelsarr = selector.dmsLeadProducts;
+    let modelsarr =
+      carModelsList.length > 0 ? carModelsList : selector.dmsLeadProducts;;
+    // let modelsarr = selector.dmsLeadProducts;
     modelsarr[index] = carmodeldata;
     modelOnclick(index, carmodeldata, "update");
     dispatch(updatedmsLeadProduct(modelsarr));
   };
+
   return (
     <View disabled={disabled}>
       <DropDownComponant

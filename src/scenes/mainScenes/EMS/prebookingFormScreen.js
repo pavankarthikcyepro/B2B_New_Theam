@@ -865,6 +865,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           } else if (!value.color) {
             dispatch(updateOfferPriceData());
             clearPriceConfirmationData();
+            setCarModelDataList(value, index);
           } else {
             setCarModelDataList(value, index);
           }
@@ -959,9 +960,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           variant: item.variant,
           isPrimary: "Y",
         };
+        console.log("2 -> ");
         await setCarModelsList([]);
         arr[isPrimaryCureentIndex] = cardata;
         arr[index] = selecteditem;
+        console.log("3 -> ", arr);
         await setCarModelsList([...arr]);
         await setIsPrimaryCurrentIndex(index);
       }
@@ -4639,6 +4642,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           item={item}
                           leadStage={leadStage}
                           isSubmitPress={isSubmitPress}
+                          carModelsList={carModelsList}
                           isOnlyOne={carModelsList.length == 1 ? true : false}
                           onChangeSubmit={() => setIsSubmitPress(false)}
                         />
