@@ -490,7 +490,7 @@ const testDriveSlice = createSlice({
       if (action.payload) {
        
         state.test_drive_history_count_statu = "successs";
-        state.test_drive_history_count = action.payload;
+        state.test_drive_history_count = action.payload.count;
       }
       // else if (action.payload["reason"]) {
       //   showToastRedAlert(action.payload["reason"]);

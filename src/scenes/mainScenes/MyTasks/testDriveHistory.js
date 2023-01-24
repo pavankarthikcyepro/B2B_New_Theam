@@ -1,8 +1,8 @@
-import { StyleSheet, Text, View ,TouchableOpacity} from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from "react-redux";
 import {
-    clearState,getTestDriveHistoryDetails
+    clearState, getTestDriveHistoryDetails
 
 } from "../../../redux/testDriveReducer";
 import { Colors, GlobalStyle } from "../../../styles"
@@ -13,27 +13,27 @@ const TestDriveHistory = ({ route, navigation }) => {
     const { universalId } = route.params;
     const dispatch = useDispatch();
     const selector = useSelector((state) => state.testDriveReducer);
-    const [historyList,setHistoryList] = useState("");
+    const [historyList, setHistoryList] = useState("");
     useEffect(() => {
-        
-        if(universalId){
-           dispatch(getTestDriveHistoryDetails(universalId)) 
+
+        if (universalId) {
+            dispatch(getTestDriveHistoryDetails(universalId))
         }
 
 
     }, [])
 
     useEffect(() => {
-        if (selector.test_drive_history_details_statu === "successs"){
+        if (selector.test_drive_history_details_statu === "successs") {
             setHistoryList(selector.test_drive_history_details);
         }
-    
-      
+
+
     }, [selector.test_drive_history_details_statu])
-    
+
 
     function TaskNameView() {
-        
+
         return (
             <Text
                 style={{
@@ -44,26 +44,26 @@ const TestDriveHistory = ({ route, navigation }) => {
                 }}
             >
                 Test drive
-              
+
             </Text>
         );
     }
 
-    const renderItem = ({item,index})=>{
-       
+    const renderItem = ({ item, index }) => {
+
         const date = moment(item.testDriveDatetime).format("DD/MM/YY h:mm a").split(" ");
         let topBcgColor = Colors.LIGHT_GRAY;
         let bottomBcgColor = Colors.LIGHT_GRAY;
         if (historyList[index - 1] !== undefined) {
-           
+
             topBcgColor = Colors.GRAY;
         }
 
         if (historyList[index + 1] !== undefined) {
-      
+
             bottomBcgColor = Colors.GRAY;
         }
-      
+
         return <View
             style={styles.view4}
         >
@@ -91,26 +91,20 @@ const TestDriveHistory = ({ route, navigation }) => {
                     style={styles.view5}
                 >
                     <View
-                        style={{
-                            height: 20,
-                            width: 20,
-                            borderRadius: 20,
-                            backgroundColor: Colors.GRAY,
-                            
-                        }}
-                    ></View>    
+                        style={styles.blankView}
+                    ></View>
                     <View style={{ marginLeft: 5 }}>
                         <Text
                             style={styles.txt2}
                         >
                             {date[0]}
-                            
+
                         </Text>
                         <Text
                             style={styles.txt2}
                         >
                             {date[1] + " " + date[2]}
-                          
+
                         </Text>
                     </View>
                 </View>
@@ -118,7 +112,7 @@ const TestDriveHistory = ({ route, navigation }) => {
             <View
                 style={{
                     width: "75%",
-                    padding: 5, 
+                    padding: 5,
                 }}
             >
                 <View
@@ -144,7 +138,7 @@ const TestDriveHistory = ({ route, navigation }) => {
                                 {TaskNameView()}
 
                             </View>
-                            <View style={{flexDirection:"row"}}>
+                            <View style={{ flexDirection: "row" }}>
                                 <View style={{ flexDirection: "column", alignContent: "center", }}>
                                     <Text
                                         style={styles.txt5}
@@ -173,11 +167,7 @@ const TestDriveHistory = ({ route, navigation }) => {
                                     </Text>
                                 </View>
 
-                                <View style={{
-                                    flexDirection: "column", width: 0,
-                                    flexGrow: 1,
-                                    flex: 1,
-}}>
+                                <View style={styles.colView}>
                                     <Text
                                         style={styles.txt3}
                                     >
@@ -210,47 +200,26 @@ const TestDriveHistory = ({ route, navigation }) => {
                                     </Text>
                                 </View>
                             </View>
-                            
-                            
+
+
                         </View>
                     </TouchableOpacity>
                 </View>
             </View>
-            {/* {isHistory ? (
-                    <TouchableOpacity
-                        onPress={() =>
-                            navigation.navigate(
-                                EmsStackIdentifiers.task360History,
-                                {
-                                    identifier:
-                                        mytasksIdentifires.task360History,
-                                    title: checkForTaskNames(
-                                        item.taskName
-                                    ),
-                                    universalId: item.universalId,
-                                }
-                            )
-                        }
-                    >
-                        <Image
-                            source={require("./../../../assets/images/dots.png")}
-                            resizeMode="contain"
-                            style={styles.dotContainer}
-                        />
-                    </TouchableOpacity>
-                ) : null} */}
+
         </View>
     }
+
     return (
         <SafeAreaView style={styles.container}>
             <FlatList
-                style={{ flex:1 }}
+                style={{ flex: 1 }}
                 data={historyList}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={renderItem}
             />
 
-           
+
         </SafeAreaView>
     )
 }
@@ -315,12 +284,12 @@ const styles = StyleSheet.create({
     txt3: {
         fontSize: 14,
         fontWeight: "400",
-        color:Colors.BLACK
+        color: Colors.BLACK
     },
     txt5: {
         fontSize: 14,
         fontWeight: "400",
-        color:Colors.GRAY
+        color: Colors.GRAY
     },
     view4: {
         width: "100%",
@@ -343,5 +312,17 @@ const styles = StyleSheet.create({
         borderColor: "#d1d1d1",
         borderRadius: 5,
     },
-    txt4: { fontSize: 18, fontWeight: "700", marginBottom: 5 }
+    txt4: { fontSize: 18, fontWeight: "700", marginBottom: 5 },
+    blankView: {
+        height: 20,
+        width: 20,
+        borderRadius: 20,
+        backgroundColor: Colors.GRAY,
+
+    },
+    colView: {
+        flexDirection: "column", width: 0,
+        flexGrow: 1,
+        flex: 1,
+    }
 })
