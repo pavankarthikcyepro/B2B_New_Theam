@@ -1346,28 +1346,50 @@ const HomeScreen = ({ route, navigation }) => {
             <View style={styles.view7}>
               <View style={styles.view8}>
                 <Text numberOfLines={2} style={styles.rankHeadingText}>
-                  {"Leads Allocated"}
+                  {"Contact"}
                 </Text>
                 <View style={styles.cardView}>
                   <Text style={{ ...styles.rankText, color: "blue" }}>
-                    {selector.receptionistData?.totalAllocatedCount}
+                    {selector.receptionistData?.contactsCount || 0}
                   </Text>
                 </View>
               </View>
-
+              <View style={styles.view8}>
+                <Text numberOfLines={2} style={styles.rankHeadingText}>
+                  {"Enquiry"}
+                </Text>
+                <View style={styles.cardView}>
+                  <Text style={{ ...styles.rankText, color: "blue" }}>
+                    {selector.receptionistData?.enquirysCount || 0}
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.view8}>
+                <Text
+                  numberOfLines={1}
+                  style={{ ...styles.rankHeadingText, width: 50 }}
+                >
+                  {"Leads"}
+                </Text>
+                <View style={styles.cardView}>
+                  <Text style={{ ...styles.rankText, color: "blue" }}>
+                    {selector.receptionistData?.totalAllocatedCount || 0}
+                  </Text>
+                </View>
+              </View>
               <View style={styles.view8}>
                 <Text style={styles.rankHeadingText}>{"Bookings"}</Text>
                 <View style={styles.cardView}>
-                  <Text style={{ ...styles.rankText, color: "red" }}>
-                    {selector.receptionistData?.bookingCount}
+                  <Text style={{ ...styles.rankText, color: "blue" }}>
+                    {selector.receptionistData?.bookingsCount || 0}
                   </Text>
                 </View>
               </View>
               <View style={styles.view8}>
                 <Text style={styles.rankHeadingText}>{"Retails"}</Text>
                 <View style={styles.cardView}>
-                  <Text style={{ ...styles.rankText, color: "green" }}>
-                    {selector.receptionistData?.RetailCount}
+                  <Text style={{ ...styles.rankText, color: "blue" }}>
+                    {selector.receptionistData?.RetailCount || 0}
                   </Text>
                 </View>
               </View>
@@ -1584,6 +1606,7 @@ const styles = StyleSheet.create({
   rankHeadingText: {
     fontSize: 10,
     fontWeight: "500",
+    textAlign: "center",
   },
   rankText: {
     fontSize: 16,
@@ -1738,6 +1761,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     flexDirection: "row",
     marginTop: 20,
+    alignItems: "center",
+    marginBottom:20
   },
   view8: { flexDirection: "column", alignItems: "center" },
   view9: {

@@ -609,10 +609,7 @@ export const getSourceModelDataForTeam = createAsyncThunk(
 export const getReceptionistData = createAsyncThunk(
   "HOME/getReceptionistData",
   async (payload, { rejectWithValue }) => {
-    const response = await client.post(
-      URL.RECEPTIONIST_DASHBOARD(),
-      payload
-    );
+    const response = await client.post(URL.RECEPTIONIST_DASHBOARD(), payload);
     const json = await response.json();
     if (!response.ok) {
       return rejectWithValue(json);
@@ -752,21 +749,23 @@ export const homeSlice = createSlice({
     bannerList: [],
     receptionistData: {
       RetailCount: 0,
-      bookingCount: 0,
+      bookingsCount: 0,
       consultantList: [],
       totalAllocatedCount: 0,
       totalDroppedCount: 0,
+      contactsCount: 0,
+      enquirysCount: 0,
     },
     receptionistModel: [],
     receptionistSource: [],
-    selectedIDS :[],
-    selectedDate : {},
-    filterIds:{
-      startDate:"",
-      endDate:"",
-      levelSelected:[],
-      empSelected:[],
-      allEmpSelected:[],
+    selectedIDS: [],
+    selectedDate: {},
+    filterIds: {
+      startDate: "",
+      endDate: "",
+      levelSelected: [],
+      empSelected: [],
+      allEmpSelected: [],
     },
   },
   reducers: {
@@ -776,11 +775,11 @@ export const homeSlice = createSlice({
     updateFilterDropDownData: (state, action) => {
       state.filter_drop_down_data = action.payload;
     },
-    updateFilterIds:(state,action)=>{
-      state.filterIds = action.payload
+    updateFilterIds: (state, action) => {
+      state.filterIds = action.payload;
     },
-     updateEmpDropDown:(state,action)=>{
-      state.employees_drop_down_data = {}
+    updateEmpDropDown: (state, action) => {
+      state.employees_drop_down_data = {};
     },
     updateIsTeamPresent: (state, action) => {
       state.isTeamPresent = action.payload;
@@ -849,18 +848,20 @@ export const homeSlice = createSlice({
       state.insights_target_parameters_data = empData;
       state.receptionistData = {
         RetailCount: 0,
-        bookingCount: 0,
+        bookingsCount: 0,
         consultantList: [],
         totalAllocatedCount: 0,
         totalDroppedCount: 0,
+        contactsCount: 0,
+        enquirysCount: 0,
       };
       state.filterIds = {
-        startDate:"",
-        endDate:"",
-        levelSelected:[],
-        empSelected:[],
-        allEmpSelected:[],
-      }
+        startDate: "",
+        endDate: "",
+        levelSelected: [],
+        empSelected: [],
+        allEmpSelected: [],
+      };
     },
   },
   extraReducers: (builder) => {
@@ -1303,10 +1304,12 @@ export const homeSlice = createSlice({
         const dataObj = action.payload;
         state.receptionistData = {
           RetailCount: dataObj.RetailCount,
-          bookingCount: dataObj.bookingCount,
+          bookingsCount: dataObj.bookingsCount,
           consultantList: dataObj.consultantList,
           totalAllocatedCount: dataObj.totalAllocatedCount,
           totalDroppedCount: dataObj.totalDroppedCount,
+          contactsCount: dataObj.contactsCount,
+          enquirysCount: dataObj.enquirysCount,
         };
       })
       .addCase(getReceptionistData.rejected, (state, action) => {})
@@ -1315,10 +1318,12 @@ export const homeSlice = createSlice({
         const dataObj = action.payload;
         state.receptionistData = {
           RetailCount: dataObj.RetailCount,
-          bookingCount: dataObj.bookingCount,
+          bookingsCount: dataObj.bookingsCount,
           consultantList: dataObj.consultantList,
           totalAllocatedCount: dataObj.totalAllocatedCount,
           totalDroppedCount: dataObj.totalDroppedCount,
+          contactsCount: dataObj.contactsCount,
+          enquirysCount: dataObj.enquirysCount,
         };
       })
       .addCase(getReceptionistManagerData.rejected, (state, action) => {})
@@ -1345,7 +1350,7 @@ export const homeSlice = createSlice({
         const dataObj = action.payload;
         state.receptionistModel = dataObj;
       })
-      .addCase(getReceptionistManagerModel.rejected, (state, action) => {});;
+      .addCase(getReceptionistManagerModel.rejected, (state, action) => {});
 
     builder.addCase(getDeptDropdown.pending, (state, action) => {
       state.isLoading = true;

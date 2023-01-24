@@ -84,7 +84,7 @@ const TargetScreen = ({ route }) => {
   const [receptionistTeamParameters, setReceptionistTeamParameters] = useState(
     []
   );
-  const [totalOfTeam, setTotalofTeam] = useState(0);
+  const [totalOfTeam, setTotalofTeam] = useState([]);
   const [myParameters, setMyParameters] = useState([]);
 
   const [selectedName, setSelectedName] = useState("");
@@ -194,6 +194,37 @@ const TargetScreen = ({ route }) => {
     },
   ];
 
+  const crmMetaData = [
+    // 'Enquiry', 'Test Drive', 'Home Visit', 'Booking', 'INVOICE', 'Finance', 'Insurance', 'Exchange', 'EXTENDEDWARRANTY', 'Accessories'
+    {
+      color: "#FA03B9",
+      paramName: "Enquiry",
+      shortName: "Enq",
+      initial: "E",
+      toggleIndex: 0,
+    },
+    {
+      color: "#1C95A6",
+      paramName: "Booking",
+      shortName: "Bkg",
+      initial: "B",
+      toggleIndex: 0,
+    },
+    {
+      color: "#C62159",
+      paramName: "INVOICE",
+      shortName: "Retail",
+      initial: "R",
+      toggleIndex: 0,
+    },
+    {
+      color: "#C62159",
+      paramName: "DROPPED",
+      shortName: "Lost",
+      initial: "DRP",
+      toggleIndex: 0,
+    },
+  ];
   const getEmployeeListFromServer = async (user) => {
     const payload = {
       empId: user.empId,
@@ -467,7 +498,8 @@ const TargetScreen = ({ route }) => {
     setIsTeam(selector.isTeam);
     if (selector.isTeam) {
       setToggleParamsIndex(0);
-      let data = [...paramsMetadata];
+      let data =
+        userData.hrmsRole == "CRM" ? [...crmMetaData] : [...paramsMetadata];
       data = data.filter((x) => x.toggleIndex === 0);
       setToggleParamsMetaData([...data]);
     }
@@ -617,7 +649,19 @@ const TargetScreen = ({ route }) => {
             previousValue.totalAllocatedCount + currentValue.totalAllocatedCount
           );
         });
-        setTotalofTeam(val);
+        var val1 = json.empName.reduce(function (previousValue, currentValue) {
+          return previousValue.bookingCount + currentValue.bookingCount;
+        });
+        var val2 = json.empName.reduce(function (previousValue, currentValue) {
+          return previousValue.RetailCount + currentValue.RetailCount;
+        });
+        var val3 = json.empName.reduce(function (previousValue, currentValue) {
+          return (
+            previousValue.totalDroppedCount + currentValue.totalDroppedCount
+          );
+        });
+        let total = [val, val1, val2, val3];
+        setTotalofTeam(total);
       }
     } catch (error) {}
   };
@@ -869,9 +913,38 @@ const TargetScreen = ({ route }) => {
                     bounces={false}
                     scrollEventThrottle={16}
                   >
-                    <View
-                      style={{ height: Dimensions.get("screen").height / 2.7 }}
-                    >
+                    <View>
+                      <View key={"headers"} style={styles.view3}>
+                        <View
+                          style={{ width: 100, height: 20, marginRight: 5 }}
+                        ></View>
+                        <View style={styles.view4}>
+                          {toggleParamsMetaData.map((param) => {
+                            return (
+                              <View
+                                style={[
+                                  styles.itemBox,
+                                  {
+                                    width:
+                                      param.paramName === "DROPPED" ? 60 : 55,
+                                  },
+                                ]}
+                                key={param.shortName}
+                              >
+                                <Text
+                                  style={{
+                                    color: param.color,
+                                    fontSize:
+                                      param.paramName === "DROPPED" ? 11 : 12,
+                                  }}
+                                >
+                                  {param.shortName}
+                                </Text>
+                              </View>
+                            );
+                          })}
+                        </View>
+                      </View>
                       <ScrollView
                       // style={{ height: selector.isMD ? "81%" : "80%" }}
                       >
@@ -908,7 +981,8 @@ const TargetScreen = ({ route }) => {
                                       }}
                                     >
                                       {item.empName}
-                                      {/* {item?.childCount > 1 ? "  |" : ""} */}
+                                      {"  "}
+                                      {"-   " + item?.roleName}
                                     </Text>
                                   </View>
                                   <View style={{ flexDirection: "row" }}></View>
@@ -932,32 +1006,49 @@ const TargetScreen = ({ route }) => {
                                       <RenderLevel1NameView
                                         level={0}
                                         item={item}
-                                        branchName={getBranchName(
-                                          item.branchId
-                                        )}
+                                        branchName={item.branch}
                                         color={"#C62159"}
                                         receptionManager={true}
                                         navigation={navigation}
                                         titleClick={async () => {}}
+                                        roleName={item.roleName}
                                       />
                                       <View
                                         style={{
                                           flex: 1,
                                           backgroundColor:
                                             "rgba(223,228,231,0.67)",
-                                          alignContent: "center",
-                                          justifyContent: "center",
+                                          alignItems: "center",
+                                          flexDirection: "row",
                                         }}
                                       >
-                                        <Text
-                                          style={{
-                                            fontSize: 16,
-                                            fontWeight: "700",
-                                            marginLeft: 50,
-                                          }}
-                                        >
-                                          {item.totalAllocatedCount}
-                                        </Text>
+                                        {[
+                                          item.totalAllocatedCount || 0,
+                                          item.bookingCount || 0,
+                                          item.RetailCount || 0,
+                                          item.totalDroppedCount || 0,
+                                        ].map((e) => {
+                                          return (
+                                            <View
+                                              style={{
+                                                width: 55,
+                                                height: 30,
+                                                justifyContent: "center",
+                                                alignItems: "center",
+                                              }}
+                                            >
+                                              <Text
+                                                style={{
+                                                  fontSize: 16,
+                                                  fontWeight: "700",
+                                                  // marginLeft: 50,
+                                                }}
+                                              >
+                                                {e || 0}
+                                              </Text>
+                                            </View>
+                                          );
+                                        })}
                                       </View>
                                     </View>
                                     {/* GET EMPLOYEE TOTAL MAIN ITEM */}
@@ -971,7 +1062,10 @@ const TargetScreen = ({ route }) => {
                     {/* Grand Total Section */}
                     {totalOfTeam && (
                       <View
-                        style={{ width: Dimensions.get("screen").width - 35 }}
+                        style={{
+                          width: Dimensions.get("screen").width - 35,
+                          marginTop: 20,
+                        }}
                       >
                         <View
                           style={{
@@ -1042,11 +1136,35 @@ const TargetScreen = ({ route }) => {
                             >
                               <View
                                 style={{
-                                  alignContent: "center",
-                                  justifyContent: "center",
+                                  // alignContent: "center",
+                                  // justifyContent: "center",
+                                  flexDirection: "row",
+                                  alignItems: "center",
                                 }}
                               >
-                                <Text
+                                {totalOfTeam.map((e) => {
+                                  return (
+                                    <View
+                                      style={{
+                                        width: 55,
+                                        height: 30,
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                      }}
+                                    >
+                                      <Text
+                                        style={{
+                                          fontSize: 16,
+                                          fontWeight: "700",
+                                          color: Colors.WHITE,
+                                        }}
+                                      >
+                                        {e || 0}
+                                      </Text>
+                                    </View>
+                                  );
+                                })}
+                                {/* <Text
                                   style={{
                                     fontSize: 16,
                                     fontWeight: "700",
@@ -1055,7 +1173,7 @@ const TargetScreen = ({ route }) => {
                                   }}
                                 >
                                   {totalOfTeam}
-                                </Text>
+                                </Text> */}
                               </View>
                             </View>
                           </View>
@@ -2460,20 +2578,32 @@ const TargetScreen = ({ route }) => {
                             style={{
                               flexDirection: "row",
                               justifyContent: "space-between",
-                              width: "50%",
+                              width: "60%",
                             }}
                           >
                             <Text
-                              style={{ ...styles.txt4, width: "50%" }}
+                              style={{ ...styles.txt4, width: "25%" }}
                               numberOfLines={2}
                             >
-                              {"Leads Allocated"}
+                              {"Enq"}
                             </Text>
                             <Text
-                              style={{ ...styles.txt4, width: "50%" }}
+                              style={{ ...styles.txt4, width: "25%" }}
                               numberOfLines={2}
                             >
-                              {"Drop Leads"}
+                              {"Bkg"}
+                            </Text>
+                            <Text
+                              style={{ ...styles.txt4, width: "25%" }}
+                              numberOfLines={2}
+                            >
+                              {"Retail"}
+                            </Text>
+                            <Text
+                              style={{ ...styles.txt4, width: "25%" }}
+                              numberOfLines={2}
+                            >
+                              {"Lost"}
                             </Text>
                           </View>
                         </View>
@@ -2496,6 +2626,60 @@ const TargetScreen = ({ route }) => {
                                   </Text>
                                 </View>
                                 <View style={styles.view18}>
+                                  <View
+                                    style={{
+                                      minWidth: 45,
+                                      height: 25,
+                                      borderColor: Colors.RED,
+                                      borderWidth: 1,
+                                      borderRadius: 8,
+                                      justifyContent: "center",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    <Text
+                                      onPress={() => {
+                                        item?.allocatedCount > 0 &&
+                                          navigateToEMS();
+                                      }}
+                                      style={{
+                                        padding: 2,
+                                        textDecorationLine:
+                                          item?.allocatedCount > 0
+                                            ? "underline"
+                                            : "none",
+                                      }}
+                                    >
+                                      {item?.allocatedCount}
+                                    </Text>
+                                  </View>
+                                  <View
+                                    style={{
+                                      minWidth: 45,
+                                      height: 25,
+                                      borderColor: Colors.RED,
+                                      borderWidth: 1,
+                                      borderRadius: 8,
+                                      justifyContent: "center",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    <Text
+                                      onPress={() => {
+                                        item?.allocatedCount > 0 &&
+                                          navigateToEMS();
+                                      }}
+                                      style={{
+                                        padding: 2,
+                                        textDecorationLine:
+                                          item?.allocatedCount > 0
+                                            ? "underline"
+                                            : "none",
+                                      }}
+                                    >
+                                      {item?.allocatedCount}
+                                    </Text>
+                                  </View>
                                   <View
                                     style={{
                                       minWidth: 45,
@@ -2608,18 +2792,59 @@ const TargetScreen = ({ route }) => {
                                 {selector.receptionistData.totalDroppedCount}
                               </Text>
                             </View>
+                            <View style={styles.view20}>
+                              <Text
+                                onPress={() => {
+                                  selector.receptionistData
+                                    .totalAllocatedCount > 0 && navigateToEMS();
+                                }}
+                                style={{
+                                  padding: 2,
+                                  textDecorationLine:
+                                    selector.receptionistData
+                                      .totalAllocatedCount > 0
+                                      ? "underline"
+                                      : "none",
+                                }}
+                              >
+                                {selector.receptionistData.totalAllocatedCount}
+                              </Text>
+                            </View>
+                            <View style={styles.view20}>
+                              <Text
+                                onPress={() => {
+                                  navigateToDropLostCancel();
+                                }}
+                                style={{
+                                  padding: 2,
+                                  textDecorationLine:
+                                    selector.receptionistData
+                                      .totalDroppedCount > 0
+                                      ? "underline"
+                                      : "none",
+                                }}
+                              >
+                                {selector.receptionistData.totalDroppedCount}
+                              </Text>
+                            </View>
                           </View>
                         </View>
                         <View style={styles.view21}>
                           <View style={{ ...styles.statWrap, width: "33%" }}>
                             <Text style={styles.txt5}>E2B</Text>
-                            {bookingData !== null && enqData !== null ? (
+                            {selector.receptionistData.bookingsCount !== null &&
+                            selector.receptionistData.enquirysCount !== null ? (
                               <Text
                                 style={{
                                   color:
                                     Math.floor(
-                                      (parseInt(bookingData?.achievment) /
-                                        parseInt(enqData?.achievment)) *
+                                      (parseInt(
+                                        selector.receptionistData.bookingsCount
+                                      ) /
+                                        parseInt(
+                                          selector.receptionistData
+                                            .enquirysCount
+                                        )) *
                                         100
                                     ) > 40
                                       ? "#14ce40"
@@ -2628,12 +2853,21 @@ const TargetScreen = ({ route }) => {
                                   marginRight: 4,
                                 }}
                               >
-                                {parseInt(bookingData?.achievment) === 0 ||
-                                parseInt(enqData?.achievment) === 0
+                                {parseInt(
+                                  selector.receptionistData.bookingsCount
+                                ) === 0 ||
+                                parseInt(
+                                  selector.receptionistData.enquirysCount
+                                ) === 0
                                   ? 0
                                   : Math.round(
-                                      (parseInt(bookingData?.achievment) /
-                                        parseInt(enqData?.achievment)) *
+                                      (parseInt(
+                                        selector.receptionistData.bookingsCount
+                                      ) /
+                                        parseInt(
+                                          selector.receptionistData
+                                            .enquirysCount
+                                        )) *
                                         100
                                     )}
                                 %
@@ -2651,13 +2885,19 @@ const TargetScreen = ({ route }) => {
                           </View>
                           <View style={{ ...styles.statWrap, width: "33%" }}>
                             <Text style={styles.txt6}>B2R</Text>
-                            {enqData !== null && visitData !== null ? (
+                            {selector.receptionistData.bookingsCount !== null &&
+                            selector.receptionistData.RetailCount !== null ? (
                               <Text
                                 style={{
                                   color:
                                     Math.floor(
-                                      (parseInt(visitData?.achievment) /
-                                        parseInt(enqData?.achievment)) *
+                                      (parseInt(
+                                        selector.receptionistData.RetailCount
+                                      ) /
+                                        parseInt(
+                                          selector.receptionistData
+                                            .bookingsCount
+                                        )) *
                                         100
                                     ) > 40
                                       ? "#14ce40"
@@ -2666,12 +2906,21 @@ const TargetScreen = ({ route }) => {
                                   marginRight: 4,
                                 }}
                               >
-                                {parseInt(enqData?.achievment) === 0 ||
-                                parseInt(visitData?.achievment) === 0
+                                {parseInt(
+                                  selector.receptionistData.RetailCount
+                                ) === 0 ||
+                                parseInt(
+                                  selector.receptionistData.bookingsCount
+                                ) === 0
                                   ? 0
                                   : Math.round(
-                                      (parseInt(visitData?.achievment) /
-                                        parseInt(enqData?.achievment)) *
+                                      (parseInt(
+                                        selector.receptionistData.RetailCount
+                                      ) /
+                                        parseInt(
+                                          selector.receptionistData
+                                            .bookingsCount
+                                        )) *
                                         100
                                     )}
                                 %
@@ -2689,13 +2938,18 @@ const TargetScreen = ({ route }) => {
                           </View>
                           <View style={{ ...styles.statWrap, width: "33%" }}>
                             <Text style={styles.txt6}>E2R</Text>
-                            {finData !== null && retailData !== null ? (
+                            {selector.receptionistData.enquirysCount !== null &&
+                            selector.receptionistData.RetailCount !== null ? (
                               <Text
                                 style={{
                                   color:
                                     Math.floor(
-                                      (parseInt(finData?.achievment) /
-                                        parseInt(retailData?.achievment)) *
+                                      (parseInt(
+                                        selector.receptionistData.enquirysCount
+                                      ) /
+                                        parseInt(
+                                          selector.receptionistData.RetailCount
+                                        )) *
                                         100
                                     ) > 40
                                       ? "#14ce40"
@@ -2704,12 +2958,20 @@ const TargetScreen = ({ route }) => {
                                   marginRight: 4,
                                 }}
                               >
-                                {parseInt(finData?.achievment) === 0 ||
-                                parseInt(retailData?.achievment) === 0
+                                {parseInt(
+                                  selector.receptionistData.enquirysCount
+                                ) === 0 ||
+                                parseInt(
+                                  selector.receptionistData.RetailCount
+                                ) === 0
                                   ? 0
                                   : Math.round(
-                                      (parseInt(finData?.achievment) /
-                                        parseInt(retailData?.achievment)) *
+                                      (parseInt(
+                                        selector.receptionistData.enquirysCount
+                                      ) /
+                                        parseInt(
+                                          selector.receptionistData.RetailCount
+                                        )) *
                                         100
                                     )}
                                 %
@@ -3448,6 +3710,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "400",
     textDecorationLine: "underline",
+    textAlign:'center'
   },
   view16: {
     flexDirection: "row",
@@ -3462,7 +3725,7 @@ const styles = StyleSheet.create({
     width: "35%",
   },
   view18: {
-    width: "45%",
+    width: "60%",
     justifyContent: "space-around",
     flexDirection: "row",
     height: 25,

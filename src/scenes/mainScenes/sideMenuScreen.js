@@ -194,7 +194,7 @@ const SideMenuScreen = ({ navigation }) => {
           isdiloadopen = true;
 
           RenderPoorNetWorkError();
-         
+
           setTimeout(() => {
             isdiloadopen = false;
 
@@ -393,6 +393,11 @@ const SideMenuScreen = ({ navigation }) => {
       case 117:
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.geolocation);
         break;
+      case 118:
+        navigation.navigate(
+          AppNavigator.DrawerStackIdentifiers.digitalDashboard
+        );
+        break;
       case 112:
         signOutClicked();
         break;
@@ -420,7 +425,7 @@ const SideMenuScreen = ({ navigation }) => {
     setBranchName("");
     dispatch(clearState());
     dispatch(clearState());
-    dispatch(myTaskClearState())
+    dispatch(myTaskClearState());
     dispatch(clearEnqState());
     dispatch(clearLeadDropState());
     signOut();
