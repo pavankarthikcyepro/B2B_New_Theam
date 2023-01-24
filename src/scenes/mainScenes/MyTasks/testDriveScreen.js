@@ -312,9 +312,9 @@ const TestDriveScreen = ({ route, navigation }) => {
             return item.model == selectedVehicleDetails.model;
           }
         );
-        tempObj.vehicleId = findModel[0].vehicleId;
 
         if (findModel.length > 0) {
+          tempObj.vehicleId = findModel[0].vehicleId;
           let findVarient = [];
           findVarient = selector.test_drive_varients_obj_for_drop_down[
             findModel[0].model
@@ -336,9 +336,6 @@ const TestDriveScreen = ({ route, navigation }) => {
           } else {
             tempObj.varientId = findModel[0].varientId;
           }
-        } else {
-          tempObj.fuelType = "";
-          tempObj.transType = "";
         }
         setSelectedVehicleDetails(tempObj);
       }
@@ -693,6 +690,8 @@ const TestDriveScreen = ({ route, navigation }) => {
         //     vehicleId = selectedVehicleDetails.vehicleId;
         //   }
         // });
+
+        console.log("selectedVehicleDetails -> ", selectedVehicleDetails);
         if (!varientId || !vehicleId) return;
 
         const location = addressType === 1 ? "showroom" : "customer";
