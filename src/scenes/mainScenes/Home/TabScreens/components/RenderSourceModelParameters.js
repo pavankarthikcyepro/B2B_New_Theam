@@ -82,7 +82,10 @@ export const RenderSourceModelParameters = (parameter) => {
                             selectedParameter.achievment,
                             sourceModelTotals[selectedParameter.paramName]
                           )}%`
-                        : `${selectedParameter.achievment}%`
+                        : `${sourceModelPercentage(
+                            selectedParameter.achievment,
+                            sourceModelTotals[selectedParameter.paramName]
+                          )}%`
                       : 0}
                   </Text>
                 </View>
@@ -119,7 +122,10 @@ export const RenderSourceModelParameters = (parameter) => {
                           selectedParameter.achievment,
                           sourceModelTotals[selectedParameter.paramName]
                         )}%`
-                      : `${selectedParameter.achievment * 100}%`
+                      : `${sourceModelPercentage(
+                          selectedParameter.achievment,
+                          sourceModelTotals[selectedParameter.paramName]
+                        )}%`
                     : 0}
                 </Text>
               </View>
