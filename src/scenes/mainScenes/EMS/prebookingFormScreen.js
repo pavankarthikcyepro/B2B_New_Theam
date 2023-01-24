@@ -854,30 +854,23 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             dispatch(
               updateOfferPriceData(selector.on_road_price_dto_list_response)
             );
-            addingIsPrimary();
+            // if (
+            //   selector?.pre_booking_details_response?.dmsLeadDto?.leadStatus ==
+            //   "PREBOOKINGCOMPLETED"
+            // ) {
+            setCarModelDataList(value, index);
+            // } else {
+            //   addingIsPrimary();
+            // }
           } else if (!value.color) {
             dispatch(updateOfferPriceData());
             clearPriceConfirmationData();
+            setCarModelDataList(value, index);
+          } else {
+            setCarModelDataList(value, index);
           }
         } else {
-          let arr = await [...carModelsList];
-          arr[index] = value;
-          // arr.splice(carModelsList, index, value);
-          let primaryModel = [];
-          primaryModel = arr.filter((item) => item.isPrimary === "Y");
-          if (primaryModel.length > 0) {
-            if (
-              primaryModel[0].variant !== "" &&
-              primaryModel[0].model !== ""
-            ) {
-              updateVariantModelsData(
-                primaryModel[0].model,
-                true,
-                primaryModel[0].variant
-              );
-            }
-          }
-          await setCarModelsList([...arr]);
+          setCarModelDataList(value, index);
         }
       } else {
         if (type == "delete") {
@@ -890,6 +883,26 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     } catch (error) {
       // alert(error)
     }
+  };
+
+  const setCarModelDataList = async (value, index) => {
+    let arr = Object.assign([], carModelsList);
+    if (arr[index] && value) {
+      arr[index] = value;
+    }
+    let primaryModel = [];
+    primaryModel = arr.filter((item) => item.isPrimary === "Y");
+
+    if (primaryModel.length > 0) {
+      if (primaryModel[0].variant !== "" && primaryModel[0].model !== "") {
+        updateVariantModelsData(
+          primaryModel[0].model,
+          true,
+          primaryModel[0].variant
+        );
+      }
+    }
+    await setCarModelsList(Object.assign([], arr));
   };
 
   const setPaidAccessoriesData = () => {
@@ -947,9 +960,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           variant: item.variant,
           isPrimary: "Y",
         };
+        console.log("2 -> ");
         await setCarModelsList([]);
         arr[isPrimaryCureentIndex] = cardata;
         arr[index] = selecteditem;
+        console.log("3 -> ", arr);
         await setCarModelsList([...arr]);
         await setIsPrimaryCurrentIndex(index);
       }
@@ -1435,7 +1450,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const showDropDownModelMethod = (key, headerText) => {
     Keyboard.dismiss();
     const orgId = +userData.orgId;
-
     switch (key) {
       case "SALUTATION":
         setDataForDropDown([...Salutation_Types]);
@@ -1444,7 +1458,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         let segments = [...Enquiry_Segment_Data];
         if (orgId === 21) {
           segments = [...EnquiryTypes21];
-        } else if (orgId === 22) {
+        } else if (orgId === 22 || orgId === 26) {
           segments = [...EnquiryTypes22];
         }
         setDataForDropDown(segments);
@@ -1463,7 +1477,15 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           customerTypes =
             CustomerTypesObj21[selector.enquiry_segment.toLowerCase()];
           selector.customerType = "";
-        } else if (orgId === 22) {
+        } else if (selector.enquiry_segment == "Individual") {
+          customerTypes = Object.assign(
+            [],
+            selector.customer_types_response?.personal
+              ? selector.customer_types_response.personal
+              : CustomerTypesObj[selector.enquiry_segment.toLowerCase()]
+          );
+        }
+         else if (orgId === 22 || orgId === 26) {
           customerTypes =
             CustomerTypesObj22[selector.enquiry_segment.toLowerCase()];
           selector.customerType = "";
@@ -3072,10 +3094,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     selectorBooking.update_enquiry_details_response,
   ]);
 
-   displayCreateEnquiryAlert = (refNum) => {
+   const displayCreateEnquiryAlert = (refNum) => {
      Alert.alert(
-       `Booking Successfully Created\nRef Num: ${refNum}`,
-       "",
+       `Booking Successfully Created`,
+       `Ref Num: ${refNum}`,
        [
          {
            text: "OK",
@@ -4620,6 +4642,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           item={item}
                           leadStage={leadStage}
                           isSubmitPress={isSubmitPress}
+                          carModelsList={carModelsList}
                           isOnlyOne={carModelsList.length == 1 ? true : false}
                           onChangeSubmit={() => setIsSubmitPress(false)}
                         />

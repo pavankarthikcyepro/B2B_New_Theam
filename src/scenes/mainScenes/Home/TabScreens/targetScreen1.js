@@ -724,7 +724,8 @@ const TargetScreen = ({ route }) => {
                 if (i === tempRawData.length - 1) {
                   lastParameter[index].employeeTargetAchievements = tempRawData;
                   let newIds = tempRawData.map((emp) => emp.empId);
-                  if (newIds.length >= 2) {
+                  if (true) {
+                    // if (newIds.length >= 2) {
                     for (let i = 0; i < newIds.length; i++) {
                       const element = newIds[i].toString();
                       let tempPayload = getTotalPayload(employeeData, element);

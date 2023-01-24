@@ -2457,7 +2457,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
         let segments = [...Enquiry_Segment_Data];
         if (orgId === 21) {
           segments = [...EnquiryTypes21];
-        } else if (orgId === 22) {
+        } else if (orgId === 22||orgId === 26) {
           segments = [...EnquiryTypes22];
         }
         setDataForDropDown(segments);
@@ -2467,7 +2467,6 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
         //   showToast("No Customer Types found");
         //   return;
         // }
-
         let customerTypes = [];
         customerTypes =
           CustomerTypesObj21[selector.enquiry_segment.toLowerCase()];
@@ -2487,6 +2486,17 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
               selector.customer_types?.personal
                 ? selector.customer_types.personal
                 : CustomerTypesObj[selector.enquiry_segment.toLowerCase()]
+            );
+          } else if (selector.enquiry_segment == "Individual") {
+            tmpArr = Object.assign(
+              [],
+              selector.customer_types?.personal
+                ? selector.customer_types.personal
+                : CustomerTypesObj[selector.enquiry_segment.toLowerCase()]
+            );
+          } else if (selector.enquiry_segment == "Institutional") {
+            tmpArr = Object.assign(
+              [],CustomerTypesObj22[selector.enquiry_segment.toLowerCase()]
             );
           } else if (selector.enquiry_segment == "Company") {
             tmpArr = Object.assign(
