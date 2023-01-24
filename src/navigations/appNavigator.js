@@ -73,6 +73,7 @@ import ChangePasswordScreen from "../scenes/mainScenes/changePasswordScreen";
 import BookingScreen from "../scenes/mainScenes/EMS/bookingScreen";
 import BookingFormScreen from "../scenes/mainScenes/EMS/bookingFormScreen";
 import ProceedToBookingScreen from "../scenes/mainScenes/MyTasks/proceedToBookingScreen";
+import TestDriveHistory from "../scenes/mainScenes/MyTasks/testDriveHistory";
 
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -127,6 +128,17 @@ export const MenuIcon = ({ navigation }) => {
       color={Colors.WHITE}
       size={30}
       onPress={() => navigation.openDrawer()}
+    />
+  );
+};
+
+export const TestDriveHistoryIcon = ({ navigation }) => {
+  return (
+    <IconButton
+      icon="history"
+      color={Colors.WHITE}
+      size={30}
+      onPress={() => navigation.navigate(MyTasksStackIdentifiers.testDriveHistory)}
     />
   );
 };
@@ -405,6 +417,7 @@ export const MyTasksStackIdentifiers = {
   createEnquiry: "CREATE_ENQUIRY",
   tasksListScreen: "TASKS_LIST_SCREEN",
   myTaskFilterScreen: "MYTASK_FILTER",
+  testDriveHistory:"TEST_HISTORY"
 };
 
 export const PriceStackIdentifiers = {
@@ -631,6 +644,7 @@ const EmsStackNavigator = ({ navigation }) => {
 const MyTaskStack = createStackNavigator();
 
 const MyTaskStackNavigator = ({ navigation }) => {
+
   return (
     <MyTaskStack.Navigator
       initialRouteName={MyTasksStackIdentifiers.mytasks}
@@ -694,7 +708,14 @@ const MyTaskStackNavigator = ({ navigation }) => {
         component={TestDriveScreen}
         options={{ title: "Test Drive" }}
       />
-
+      <MyTaskStack.Screen
+        name={MyTasksStackIdentifiers.testDriveHistory}
+        component={TestDriveHistory}
+        options={{
+          title: "Test Drive History",
+          // headerRight: () => <TestDriveHistoryIcon navigation={navigation} />,
+        }}
+      />
       <MyTaskStack.Screen
         name={MyTasksStackIdentifiers.homeVisit}
         component={HomeVisitScreen}
