@@ -198,7 +198,7 @@ const AppScreen = () => {
                       kmph: speed.toString(),
                       speed: speed.toString(),
                     };
-                    if (speed <= 10 && distance > 10) {
+                    if (speed <= 10 && distance > distanceFilterValue) {
                       // await AsyncStore.storeJsonData(
                       //   AsyncStore.Keys.COORDINATES,
                       //   newArray
@@ -274,7 +274,7 @@ const AppScreen = () => {
     const { delay } = taskDataArguments;
     await new Promise(async (resolve) => {
       for (let i = 0; BackgroundService.isRunning(); i++) {
-        console.log(i);
+        // console.log(i);
         var startDate = createDateTime("8:30");
         var startBetween = createDateTime("9:30");
         var endBetween = createDateTime("20:30");

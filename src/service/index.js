@@ -14,7 +14,7 @@ var endDate = createDateTime("12:00");
 var now = new Date();
 var isBetween = startDate <= now && now <= endDate;
 
-export const distanceFilterValue = 10;
+export const distanceFilterValue = 5;
 export const officeRadius = 0.1;
 export const sleep = (time) =>
   new Promise((resolve) => setTimeout(() => resolve(), time));

@@ -322,7 +322,7 @@ const LoginScreen = ({ navigation }) => {
                       speed: speed.toString(),
                     };
 
-                    if (speed <= 10 && distance>10) {
+                    if (speed <= 10 && distance > distanceFilterValue) {
                       // await AsyncStore.storeJsonData(
                       //   AsyncStore.Keys.COORDINATES,
                       //   newArray

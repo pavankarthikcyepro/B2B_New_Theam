@@ -34,20 +34,20 @@ const RecepSourceModel = ({ route, navigation }) => {
       initial: "E",
       toggleIndex: 0,
     },
-    {
-      color: "#FA03B9",
-      paramName: "Test Drive",
-      shortName: "TD",
-      initial: "T",
-      toggleIndex: 0,
-    },
-    {
-      color: "#9E31BE",
-      paramName: "Home Visit",
-      shortName: "Visit",
-      initial: "V",
-      toggleIndex: 0,
-    },
+    // {
+    //   color: "#FA03B9",
+    //   paramName: "Test Drive",
+    //   shortName: "TD",
+    //   initial: "T",
+    //   toggleIndex: 0,
+    // },
+    // {
+    //   color: "#9E31BE",
+    //   paramName: "Home Visit",
+    //   shortName: "Visit",
+    //   initial: "V",
+    //   toggleIndex: 0,
+    // },
     {
       color: "#1C95A6",
       paramName: "Booking",
@@ -84,7 +84,7 @@ const RecepSourceModel = ({ route, navigation }) => {
   const [toggleParamsIndex, setToggleParamsIndex] = useState(0);
   const [toggleParamsMetaData, setToggleParamsMetaData] =
     useState(paramsMetadata);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const scrollViewRef = useRef();
 
   useEffect(() => {
@@ -110,10 +110,10 @@ const RecepSourceModel = ({ route, navigation }) => {
     navigation.setOptions({
       title: headerTitle ? headerTitle : "Source/Model",
     });
-    setIsLoading(true);
     if (isSourceIndex !== 0) {
       setIsSourceIndex(0);
     }
+    setIsLoading(true);
     let newPayload = {
       orgId: orgId,
       loggedInEmpId: loggedInEmpId,
@@ -140,7 +140,7 @@ const RecepSourceModel = ({ route, navigation }) => {
 
   useEffect(() => {
     if (selector.sourceModelData) {
-      setIsLoading(true);
+      // setIsLoading(true);
       const json = selector.sourceModelData;
       const sourceData = [];
       const modelData = [];
@@ -197,7 +197,7 @@ const RecepSourceModel = ({ route, navigation }) => {
       const groupedModels = getData([...newModelData], 1);
       setVehicleModel(groupedModels);
       // getTotal(0);
-      setIsLoading(false);
+      // setIsLoading(false);
     }
   }, [selector.sourceModelData, toggleParamsIndex]);
 
@@ -221,6 +221,7 @@ const RecepSourceModel = ({ route, navigation }) => {
     }, {});
 
     setSourceModelTotals({ ...result });
+    setIsLoading(false);
   };
 
   const getData = (data, type) => {
@@ -264,7 +265,7 @@ const RecepSourceModel = ({ route, navigation }) => {
                     paddingVertical: 6,
                   }}
                 >
-                  <View style={{ width: 100 }}>
+                  <View style={{ width: 175 }}>
                     <Text
                       style={{
                         color: Colors.BLACK,
@@ -272,7 +273,7 @@ const RecepSourceModel = ({ route, navigation }) => {
                         fontWeight: "500",
                       }}
                     >
-                      {x?.source || x?.model}
+                      {x?.source&&x?.subsource?  x?.source+" - "+x?.subsource : x?.model}
                     </Text>
                   </View>
                   {toggleParamsMetaData.map((param, i) => {
@@ -395,7 +396,7 @@ const RecepSourceModel = ({ route, navigation }) => {
                 marginTop: 10,
               }}
             >
-              <View style={{ width: 100 }} />
+              <View style={{ width: 175 }} />
               {toggleParamsMetaData.map((item) => {
                 if (item.paramName !== "PreEnquiry") {
                   return (
@@ -421,6 +422,7 @@ const RecepSourceModel = ({ route, navigation }) => {
                 }
               })}
             </View>
+            {isLoading && <ActivityIndicator size={"large"} color={Colors.RED} />}
             {renderDataView()}
             <>
               <View
@@ -437,6 +439,7 @@ const RecepSourceModel = ({ route, navigation }) => {
                     color: Colors.WHITE,
                     fontSize: 13,
                     fontWeight: "500",
+                    width: 112,
                   }}
                 >
                   {" Total"}

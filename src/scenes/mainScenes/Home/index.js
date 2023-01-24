@@ -161,12 +161,10 @@ const HomeScreen = ({ route, navigation }) => {
           let json = JSON.parse(initialPosition);
           setInitialPosition(json.coords);
         },
-        (error) => {
-        },
+        (error) => {},
         { enableHighAccuracy: true }
       );
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -197,7 +195,7 @@ const HomeScreen = ({ route, navigation }) => {
         if (employeeData) {
           const jsonObj = JSON.parse(employeeData);
           dispatch(getNotificationList(jsonObj.empId));
-           var d = new Date();
+          var d = new Date();
           const response = await client.get(
             URL.GET_ATTENDANCE_EMPID(
               jsonObj.empId,
@@ -256,12 +254,12 @@ const HomeScreen = ({ route, navigation }) => {
         loggedInEmpId: userData.empId,
       };
       dispatch(getReceptionistData(payload));
-    }else if (userData.hrmsRole === "CRM") {
-       let payload = {
-         orgId: userData.orgId,
-         loggedInEmpId: userData.empId,
-       };
-       dispatch(getReceptionistManagerData(payload));
+    } else if (userData.hrmsRole === "CRM") {
+      let payload = {
+        orgId: userData.orgId,
+        loggedInEmpId: userData.empId,
+      };
+      dispatch(getReceptionistManagerData(payload));
     }
   }, [userData]);
 
@@ -362,7 +360,7 @@ const HomeScreen = ({ route, navigation }) => {
     });
 
     return unsubscribe;
-  }, [navigation,selector.filterIds]);
+  }, [navigation, selector.filterIds]);
 
   const getCustomerType = async () => {
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
@@ -660,7 +658,7 @@ const HomeScreen = ({ route, navigation }) => {
     } else {
       payload["levelSelected"] = null;
     }
-   
+
     Promise.all([
       // dispatch(getLeadSourceTableList(payload)),
       // dispatch(getVehicleModelTableList(payload)),
@@ -1340,28 +1338,50 @@ const HomeScreen = ({ route, navigation }) => {
             <View style={styles.view7}>
               <View style={styles.view8}>
                 <Text numberOfLines={2} style={styles.rankHeadingText}>
-                  {"Leads Allocated"}
+                  {"Contact"}
                 </Text>
                 <View style={styles.cardView}>
                   <Text style={{ ...styles.rankText, color: "blue" }}>
-                    {selector.receptionistData?.totalAllocatedCount}
+                    {selector.receptionistData?.contactsCount || 0}
                   </Text>
                 </View>
               </View>
-
+              <View style={styles.view8}>
+                <Text numberOfLines={2} style={styles.rankHeadingText}>
+                  {"Enquiry"}
+                </Text>
+                <View style={styles.cardView}>
+                  <Text style={{ ...styles.rankText, color: "blue" }}>
+                    {selector.receptionistData?.enquirysCount || 0}
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.view8}>
+                <Text
+                  numberOfLines={1}
+                  style={{ ...styles.rankHeadingText, width: 50 }}
+                >
+                  {"Leads"}
+                </Text>
+                <View style={styles.cardView}>
+                  <Text style={{ ...styles.rankText, color: "blue" }}>
+                    {selector.receptionistData?.totalAllocatedCount || 0}
+                  </Text>
+                </View>
+              </View>
               <View style={styles.view8}>
                 <Text style={styles.rankHeadingText}>{"Bookings"}</Text>
                 <View style={styles.cardView}>
-                  <Text style={{ ...styles.rankText, color: "red" }}>
-                    {selector.receptionistData?.bookingCount}
+                  <Text style={{ ...styles.rankText, color: "blue" }}>
+                    {selector.receptionistData?.bookingsCount || 0}
                   </Text>
                 </View>
               </View>
               <View style={styles.view8}>
                 <Text style={styles.rankHeadingText}>{"Retails"}</Text>
                 <View style={styles.cardView}>
-                  <Text style={{ ...styles.rankText, color: "green" }}>
-                    {selector.receptionistData?.RetailCount}
+                  <Text style={{ ...styles.rankText, color: "blue" }}>
+                    {selector.receptionistData?.RetailCount || 0}
                   </Text>
                 </View>
               </View>
@@ -1578,6 +1598,7 @@ const styles = StyleSheet.create({
   rankHeadingText: {
     fontSize: 10,
     fontWeight: "500",
+    textAlign: "center",
   },
   rankText: {
     fontSize: 16,
@@ -1697,7 +1718,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
     marginVertical: 6,
   },
-  tochable1:{
+  tochable1: {
     width: 140,
     height: 30,
     borderColor: Colors.RED,
@@ -1711,27 +1732,28 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: Colors.RED,
   },
-  view2:{
+  view2: {
     marginTop: 5,
     marginLeft: 5,
   },
-  view3:{
-     flexDirection: "row" 
-    },
-    view4:{
-    marginTop: 5,
-  },
-  view5:{
+  view3: {
     flexDirection: "row",
   },
- view6: {
+  view4: {
+    marginTop: 5,
+  },
+  view5: {
+    flexDirection: "row",
+  },
+  view6: {
     marginTop: 5,
     marginLeft: 3,
   },
- view7: {
+  view7: {
     justifyContent: "space-around",
     flexDirection: "row",
     marginTop: 20,
+    alignItems: "center",
   },
   view8: { flexDirection: "column", alignItems: "center" },
   view9: {
@@ -1750,7 +1772,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: "80%",
   },
- touchable2: {
+  touchable2: {
     width: "100%",
     justifyContent: "center",
     alignItems: "center",
@@ -1759,9 +1781,9 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 5,
   },
 
- txt4:{
+  txt4: {
     fontSize: 16,
     color: Colors.WHITE,
     fontWeight: "600",
-  }
+  },
 });
