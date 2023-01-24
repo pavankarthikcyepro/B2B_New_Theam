@@ -856,7 +856,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         if (organizationId == 21) {
           setDataForDropDown([...selector.enquiry_type_list21]);
 
-        } else if (organizationId == 22) {
+        } else if (organizationId == 22 || organizationId == 26) {
           setDataForDropDown([...selector.enquiry_type_list22]);
         }
         //  else if(organizationId ==22){

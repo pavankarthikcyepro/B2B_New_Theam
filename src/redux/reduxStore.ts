@@ -32,6 +32,7 @@ import callRecordingReducer from "./callRecordingReducer";
 import taskTransferReducer from "./taskTransferReducer";
 import leaddropReducer from "./leaddropReducer";
 import liveLeadsReducer from "./liveLeadsReducer";
+import settingReducer from "./settingReducer";
 
 
 const reducer = combineReducers({
@@ -59,8 +60,14 @@ const reducer = combineReducers({
   targetSettingsReducer,
   taskThreeSixtyReducer,
   leaddropReducer,
-  bookingReducer, bookingFormReducer, proceedToBookingReducer, appReducer, callRecordingReducer, taskTransferReducer,
+  bookingReducer,
+  bookingFormReducer,
+  proceedToBookingReducer,
+  appReducer,
+  callRecordingReducer,
+  taskTransferReducer,
   liveLeadsReducer,
+  settingReducer,
 });
 
 const createDebugger = require("redux-flipper").default;

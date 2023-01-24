@@ -523,6 +523,9 @@ const URL = {
   ENQUIRY_CONTACT: () => {
     return sales_url + `/contact/enquiryContact?allocateDse=false`;
   },
+  CALL_DEALLOCATE: (empId) => {
+    return roleManagement_url + "/dms/emp-update/" + empId;
+  },
 };
 
 // bankFinancier, incuranceCompany, enqueryCategory, deliveryCheckList, sublostReason
