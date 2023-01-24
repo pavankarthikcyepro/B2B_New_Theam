@@ -533,7 +533,9 @@ const HomeScreen = ({ route, navigation }) => {
         if (selector.filterIds?.empSelected?.length) {
           payload["empSelected"] = selector.filterIds.empSelected;
         } else {
-          payload["levelSelected"] = null;
+          payload["levelSelected"] = selector.filterIds?.levelSelected?.length
+            ? selector.filterIds.levelSelected
+            : null;
         }
         getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
           .then((x) => {})
@@ -656,7 +658,9 @@ const HomeScreen = ({ route, navigation }) => {
     if (selector.filterIds?.empSelected?.length) {
       payload["empSelected"] = selector.filterIds.empSelected;
     } else {
-      payload["levelSelected"] = null;
+      payload["levelSelected"] = selector.filterIds?.levelSelected?.length
+        ? selector.filterIds.levelSelected
+        : null;
     }
 
     Promise.all([
@@ -762,9 +766,13 @@ const HomeScreen = ({ route, navigation }) => {
       size: 100,
     };
     if (selector.filterIds?.empSelected?.length) {
-      payload2["empSelected"] = selector.filterIds.empSelected;
+      payload2["empSelected"] = [];
+      // payload2["empSelected"] = selector.filterIds.empSelected;
     } else {
-      payload2["levelSelected"] = null;
+      payload2["levelSelected"] = [];
+      // payload2["levelSelected"] = selector.filterIds?.levelSelected?.length
+      //   ? selector.filterIds.levelSelected
+      //   : null;
     }
     Promise.allSettled([
       //dispatch(getTargetParametersAllData(payload1)),
