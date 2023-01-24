@@ -106,6 +106,7 @@ import GeoLocationScreen from "../scenes/mainScenes/Geolocation";
 import { MyGeolocationTopTabNavigatorOne } from "./geolocationNavigator";
 import TaskThreeSixtyHistory from "../scenes/mainScenes/EMS/taskThreeSixtyHistory";
 import NotificationIcon from "../components/NotificationIcon";
+import DigitalDashBoardScreen from "../scenes/mainScenes/DigitalDashboard";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -338,6 +339,7 @@ export const DrawerStackIdentifiers = {
   dropLostCancel: "DROP_LOST_CANCEL",
   attendance: "Attendance",
   geolocation: "Geolocation",
+  digitalDashboard: "DIGITAL_DASHBOARD",
 };
 
 export const TabStackIdentifiers = {
@@ -1241,6 +1243,10 @@ const MainStackDrawerNavigator = () => {
         name={DrawerStackIdentifiers.evtbrlReport}
         component={TabNavigator}
         initialParams={{ screen: "EVTBRL_REPORT" }}
+      />
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.digitalDashboard}
+        component={DigitalDashBoardScreen}
       />
 
       {/* <MainDrawerNavigator.Screen

@@ -84,7 +84,7 @@ const TargetScreen = ({ route }) => {
   const [receptionistTeamParameters, setReceptionistTeamParameters] = useState(
     []
   );
-  const [totalOfTeam, setTotalofTeam] = useState(0);
+  const [totalOfTeam, setTotalofTeam] = useState([]);
   const [myParameters, setMyParameters] = useState([]);
 
   const [selectedName, setSelectedName] = useState("");
@@ -649,7 +649,19 @@ const TargetScreen = ({ route }) => {
             previousValue.totalAllocatedCount + currentValue.totalAllocatedCount
           );
         });
-        setTotalofTeam(val);
+        var val1 = json.empName.reduce(function (previousValue, currentValue) {
+          return previousValue.bookingCount + currentValue.bookingCount;
+        });
+        var val2 = json.empName.reduce(function (previousValue, currentValue) {
+          return previousValue.RetailCount + currentValue.RetailCount;
+        });
+        var val3 = json.empName.reduce(function (previousValue, currentValue) {
+          return (
+            previousValue.totalDroppedCount + currentValue.totalDroppedCount
+          );
+        });
+        let total = [val, val1, val2, val3];
+        setTotalofTeam(total);
       }
     } catch (error) {}
   };
@@ -968,8 +980,8 @@ const TargetScreen = ({ route }) => {
                                         textTransform: "capitalize",
                                       }}
                                     >
-                                      {item.empName}
-                                      {/* {item?.childCount > 1 ? "  |" : ""} */}
+                                      {item.empName}{"  "}
+                                      {"-   " + item?.roleName}
                                     </Text>
                                   </View>
                                   <View style={{ flexDirection: "row" }}></View>
@@ -998,6 +1010,7 @@ const TargetScreen = ({ route }) => {
                                         receptionManager={true}
                                         navigation={navigation}
                                         titleClick={async () => {}}
+                                        roleName={item.roleName}
                                       />
                                       <View
                                         style={{
@@ -1005,15 +1018,14 @@ const TargetScreen = ({ route }) => {
                                           backgroundColor:
                                             "rgba(223,228,231,0.67)",
                                           alignItems: "center",
-                                          // justifyContent:"space-between",
                                           flexDirection: "row",
                                         }}
                                       >
                                         {[
-                                          item.totalAllocatedCount,
-                                          item.bookingCount,
-                                          item.RetailCount,
-                                          item.totalDroppedCount,
+                                          item.totalAllocatedCount || 0,
+                                          item.bookingCount || 0,
+                                          item.RetailCount || 0,
+                                          item.totalDroppedCount || 0,
                                         ].map((e) => {
                                           return (
                                             <View
@@ -1049,7 +1061,10 @@ const TargetScreen = ({ route }) => {
                     {/* Grand Total Section */}
                     {totalOfTeam && (
                       <View
-                        style={{ width: Dimensions.get("screen").width - 35 }}
+                        style={{
+                          width: Dimensions.get("screen").width - 35,
+                          marginTop: 20,
+                        }}
                       >
                         <View
                           style={{
@@ -1120,11 +1135,35 @@ const TargetScreen = ({ route }) => {
                             >
                               <View
                                 style={{
-                                  alignContent: "center",
-                                  justifyContent: "center",
+                                  // alignContent: "center",
+                                  // justifyContent: "center",
+                                  flexDirection: "row",
+                                  alignItems: "center",
                                 }}
                               >
-                                <Text
+                                {totalOfTeam.map((e) => {
+                                  return (
+                                    <View
+                                      style={{
+                                        width: 55,
+                                        height: 30,
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                      }}
+                                    >
+                                      <Text
+                                        style={{
+                                          fontSize: 16,
+                                          fontWeight: "700",
+                                          color: Colors.WHITE,
+                                        }}
+                                      >
+                                        {e || 0}
+                                      </Text>
+                                    </View>
+                                  );
+                                })}
+                                {/* <Text
                                   style={{
                                     fontSize: 16,
                                     fontWeight: "700",
@@ -1133,7 +1172,7 @@ const TargetScreen = ({ route }) => {
                                   }}
                                 >
                                   {totalOfTeam}
-                                </Text>
+                                </Text> */}
                               </View>
                             </View>
                           </View>
@@ -2574,6 +2613,60 @@ const TargetScreen = ({ route }) => {
                                   </Text>
                                 </View>
                                 <View style={styles.view18}>
+                                  <View
+                                    style={{
+                                      minWidth: 45,
+                                      height: 25,
+                                      borderColor: Colors.RED,
+                                      borderWidth: 1,
+                                      borderRadius: 8,
+                                      justifyContent: "center",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    <Text
+                                      onPress={() => {
+                                        item?.allocatedCount > 0 &&
+                                          navigateToEMS();
+                                      }}
+                                      style={{
+                                        padding: 2,
+                                        textDecorationLine:
+                                          item?.allocatedCount > 0
+                                            ? "underline"
+                                            : "none",
+                                      }}
+                                    >
+                                      {item?.allocatedCount}
+                                    </Text>
+                                  </View>
+                                  <View
+                                    style={{
+                                      minWidth: 45,
+                                      height: 25,
+                                      borderColor: Colors.RED,
+                                      borderWidth: 1,
+                                      borderRadius: 8,
+                                      justifyContent: "center",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    <Text
+                                      onPress={() => {
+                                        item?.allocatedCount > 0 &&
+                                          navigateToEMS();
+                                      }}
+                                      style={{
+                                        padding: 2,
+                                        textDecorationLine:
+                                          item?.allocatedCount > 0
+                                            ? "underline"
+                                            : "none",
+                                      }}
+                                    >
+                                      {item?.allocatedCount}
+                                    </Text>
+                                  </View>
                                   <View
                                     style={{
                                       minWidth: 45,

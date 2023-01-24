@@ -98,6 +98,7 @@ import Carousel, { Pagination } from "react-native-snap-carousel";
 import { monthNamesCap } from "../Attendance/AttendanceTop";
 import { getNotificationList } from "../../../redux/notificationReducer";
 import AttendanceFromSelf from "../../../components/AttendanceFromSelf";
+import DigitalDashBoardTargetScreen from "./targetScreen";
 
 const officeLocation = {
   latitude: 37.33233141,
@@ -105,7 +106,7 @@ const officeLocation = {
 };
 const receptionistRole = ["Reception", "CRM"];
 
-const HomeScreen = ({ route, navigation }) => {
+const DigitalDashBoardScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
   const [salesDataAry, setSalesDataAry] = useState([]);
@@ -137,6 +138,7 @@ const HomeScreen = ({ route, navigation }) => {
     empName: "",
     hrmsRole: "",
     orgId: 0,
+    branchs:[],
   });
 
   useLayoutEffect(() => {
@@ -248,16 +250,18 @@ const HomeScreen = ({ route, navigation }) => {
   };
 
   useEffect(async () => {
-    if (userData.hrmsRole === "Reception") {
+    // if (userData.hrmsRole === "Reception") {
+    //   let payload = {
+    //     orgId: userData.orgId,
+    //     loggedInEmpId: userData.empId,
+    //   };
+    //   dispatch(getReceptionistData(payload));
+    // } else
+    if (true) {
       let payload = {
         orgId: userData.orgId,
-        loggedInEmpId: userData.empId,
-      };
-      dispatch(getReceptionistData(payload));
-    } else if (userData.hrmsRole === "CRM") {
-      let payload = {
-        orgId: userData.orgId,
-        loggedInEmpId: userData.empId,
+        // loggedInEmpId: userData.empId,
+        branchList: userData.branchs.map((a) => a.branchId),
       };
       dispatch(getReceptionistManagerData(payload));
     }
@@ -429,6 +433,7 @@ const HomeScreen = ({ route, navigation }) => {
         empName: jsonObj.empName,
         hrmsRole: jsonObj.hrmsRole,
         orgId: jsonObj.orgId,
+        branchs: jsonObj.branchs,
       });
       const payload = {
         orgId: jsonObj.orgId,
@@ -834,309 +839,8 @@ const HomeScreen = ({ route, navigation }) => {
     setShowDropDownModel(true);
   };
 
-  const downloadFileFromServer = async () => {
-    setLoading(true);
-    Promise.all([dispatch(getBranchIds({}))])
-      .then(async (res) => {
-        let branchIds = [];
-        let employeeData = await AsyncStore.getData(
-          AsyncStore.Keys.LOGIN_EMPLOYEE
-        );
-        if (employeeData) {
-          const jsonObj = JSON.parse(employeeData);
-          if (res[0]?.payload.length > 0) {
-            let braches = res[0]?.payload;
-            for (let i = 0; i < braches.length; i++) {
-              branchIds.push(braches[i].id);
-              if (i == braches.length - 1) {
-                const dateFormat = "YYYY-MM-DD";
-                const currentDate = moment().format(dateFormat);
-                const monthFirstDate = moment(currentDate, dateFormat)
-                  .subtract(0, "months")
-                  .startOf("month")
-                  .format(dateFormat);
-                const monthLastDate = moment(currentDate, dateFormat)
-                  .subtract(0, "months")
-                  .endOf("month")
-                  .format(dateFormat);
-                let payload = {
-                  branchIdList: branchIds,
-                  orgId: jsonObj.orgId,
-                  fromDate: monthFirstDate + " 00:00:00",
-                  toDate: monthLastDate + " 23:59:59",
-                };
-                Promise.all([dispatch(downloadFile(payload))])
-                  .then(async (res) => {
-                    if (res[0]?.payload?.downloadUrl) {
-                      downloadInLocal(res[0]?.payload?.downloadUrl);
-                    } else {
-                      setLoading(false);
-                    }
-                  })
-                  .catch(() => {
-                    setLoading(false);
-                  });
-              }
-            }
-          }
-        }
-      })
-      .catch(() => {
-        setLoading(false);
-      });
-  };
-
-  const downloadFileFromServer1 = async () => {
-    if (!isEmpty(options) && Platform.OS === "ios") {
-      setShowModal(true);
-    } else {
-      setLoading(true);
-      Promise.all([dispatch(getBranchIds({}))])
-        .then(async (res) => {
-          let branchIds = [];
-          let employeeData = await AsyncStore.getData(
-            AsyncStore.Keys.LOGIN_EMPLOYEE
-          );
-          if (employeeData) {
-            const jsonObj = JSON.parse(employeeData);
-            const dateFormat = "YYYY-MM-DD";
-            const currentDate = moment().format(dateFormat);
-            const monthFirstDate = moment(currentDate, dateFormat)
-              .subtract(0, "months")
-              .startOf("month")
-              .format(dateFormat);
-            const monthLastDate = moment(currentDate, dateFormat)
-              .subtract(0, "months")
-              .endOf("month")
-              .format(dateFormat);
-            let payload7 = {
-              orgId: jsonObj.orgId,
-              reportFrequency: "MONTHLY",
-              reportType: "ORG",
-              location: "Khammam",
-            };
-            var date = new Date();
-            var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
-            var lastDay = new Date(
-              date.getFullYear(),
-              date.getMonth() + 1,
-              0
-            ).setHours(23, 59, 59, 999);
-            let dateFormat1 = moment(firstDay).format("YYYY-MM-DD HH:mm:ss");
-            let dateFormat2 = moment(lastDay).format("YYYY-MM-DD HH:mm:ss");
-            let newPayload = {
-              branchIdList: [],
-              fromDate: dateFormat1,
-              orgId: jsonObj.orgId,
-              toDate: dateFormat2,
-            };
-            Promise.all([dispatch(downloadFile(newPayload))])
-              .then(async (res) => {
-                if (res[0]?.payload?.downloadUrl) {
-                  let path = res[0]?.payload;
-                  if (Platform.OS === "android") {
-                    for (const property in path) {
-                      downloadInLocal(path[property]);
-                    }
-                  }
-                  if (Platform.OS === "ios") {
-                    setLoading(false);
-                    setOptions(path);
-                    setShowModal(true);
-                  }
-                } else {
-                  setLoading(false);
-                }
-              })
-              .catch(() => {
-                setLoading(false);
-              });
-          }
-        })
-        .catch(() => {
-          setLoading(false);
-        });
-    }
-  };
-
-  const downloadInLocal = async (url) => {
-    const { config, fs } = RNFetchBlob;
-    let downloadDir = Platform.select({
-      ios: fs.dirs.DocumentDir,
-      android: fs.dirs.DownloadDir,
-    });
-    let date = new Date();
-    let file_ext = getFileExtention(url);
-    file_ext = "." + file_ext[0];
-    let options = {};
-    if (Platform.OS === "android") {
-      options = {
-        fileCache: true,
-        addAndroidDownloads: {
-          useDownloadManager: true, // setting it to true will use the device's native download manager and will be shown in the notification bar.
-          notification: true,
-          path:
-            downloadDir +
-            "/ETVBRL_" +
-            Math.floor(date.getTime() + date.getSeconds() / 2) +
-            file_ext, // this is the path where your downloaded file will live in
-          description: "Downloading image.",
-        },
-      };
-      config(options)
-        .fetch("GET", url)
-        .then((res) => {
-          setLoading(false);
-          RNFetchBlob.android.actionViewIntent(res.path());
-          // do some magic here
-        })
-        .catch((err) => {
-          console.error(err);
-          setLoading(false);
-        });
-    }
-    if (Platform.OS === "ios") {
-      options = {
-        fileCache: true,
-        path:
-          downloadDir +
-          "/ETVBRL_" +
-          Math.floor(date.getTime() + date.getSeconds() / 2) +
-          file_ext,
-        // mime: 'application/xlsx',
-        // appendExt: 'xlsx',
-        //path: filePath,
-        //appendExt: fileExt,
-        notification: true,
-      };
-
-      config(options)
-        .fetch("GET", url)
-        .then((res) => {
-          setLoading(false);
-          setTimeout(() => {
-            // RNFetchBlob.ios.previewDocument('file://' + res.path());   //<---Property to display iOS option to save file
-            RNFetchBlob.ios.openDocument(res.data); //<---Property to display downloaded file on documaent viewer
-            // Alert.alert(CONSTANTS.APP_NAME,'File download successfully');
-          }, 300);
-        })
-        .catch((errorMessage) => {
-          setLoading(false);
-        });
-    }
-  };
-
-  const getFileExtention = (fileUrl) => {
-    // To get the file extension
-    return /[.]/.exec(fileUrl) ? /[^.]+$/.exec(fileUrl) : undefined;
-  };
-
-  const RenderModal = () => {
-    return (
-      <ReactNativeModal
-        onBackdropPress={() => {
-          setShowModal(false);
-        }}
-        transparent={true}
-        visible={showModal}
-      >
-        <View style={styles.newModalContainer}>
-          <TouchableWithoutFeedback
-            style={styles.actionButtonContainer}
-            onPress={() => {}}
-          >
-            <>
-              <Button
-                onPress={() => {
-                  downloadInLocal(options?.downloadUrl);
-                  setShowModal(false);
-                }}
-                color="black"
-              >
-                {"ETVBRL Excel"}
-              </Button>
-
-              <View style={styles.divider} />
-              <Button
-                onPress={() => {
-                  downloadInLocal(options?.downloadUrl1);
-                  setShowModal(false);
-                }}
-                color="black"
-              >
-                {"EBR"}
-              </Button>
-              <View style={styles.divider} />
-              <Button
-                onPress={() => {
-                  downloadInLocal(options?.downloadUrl2);
-                  setShowModal(false);
-                }}
-                color="black"
-              >
-                {"Support"}
-              </Button>
-            </>
-          </TouchableWithoutFeedback>
-        </View>
-      </ReactNativeModal>
-    );
-  };
-
-  const renderBannerList = () => {
-    return (
-      <View>
-        <View style={styles.bannerListContainer}>
-          <Carousel
-            data={selector.bannerList}
-            keyExtractor={(item, index) => item._id + "_" + index}
-            renderItem={renderBanner}
-            sliderWidth={Dimensions.get("screen").width}
-            itemWidth={Dimensions.get("screen").width - 50}
-            hasParallaxImages={true}
-            inactiveSlideScale={1}
-            inactiveSlideOpacity={1}
-            onSnapToItem={(index) => setActiveBannerIndex(index)}
-            autoplay={true}
-            autoplayInterval={3000}
-            loop={true}
-          />
-        </View>
-        <Pagination
-          dotsLength={selector.bannerList.length}
-          activeDotIndex={activeBannerIndex}
-          containerStyle={styles.paginationContainer}
-          dotColor={Colors.PINK}
-          dotStyle={styles.paginationDot}
-          inactiveDotStyle={styles.inactiveDotStyle}
-          inactiveDotColor={Colors.GRAY}
-          inactiveDotOpacity={0.4}
-          inactiveDotScale={0.6}
-        />
-      </View>
-    );
-  };
-
-  const renderBanner = ({ item, index }) => {
-    return (
-      <Image
-        source={{ uri: item.fileUrl }}
-        style={styles.bannerImage}
-        resizeMode="contain"
-      />
-    );
-  };
-
   return (
     <SafeAreaView style={styles.container}>
-      <RenderModal />
-      <AttendanceFromSelf
-        visible={attendance}
-        showReason={reason}
-        inVisible={() => {
-          setAttendance(false);
-        }}
-      />
       <DropDownComponant
         visible={showDropDownModel}
         headerTitle={dropDownTitle}
@@ -1167,182 +871,7 @@ const HomeScreen = ({ route, navigation }) => {
       >
         {/* 0000 */}
         <View>
-          {isButtonPresent && (
-            <View style={styles.view1}>
-              <TouchableOpacity
-                style={styles.tochable1}
-                onPress={downloadFileFromServer1}
-              >
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  <IconButton
-                    icon={"download"}
-                    size={16}
-                    color={Colors.RED}
-                    style={{ margin: 0, padding: 0 }}
-                  />
-                  <Text style={styles.etvbrlTxt}>ETVBRL Report</Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-          )}
-          {!receptionistRole.includes(userData.hrmsRole) ? (
-            selector.isRankHide ? (
-              <View style={styles.hideRankRow}>
-                <View style={styles.hideRankBox}>
-                  <Text style={styles.rankHeadingText}>Dealer Ranking</Text>
-                  <TouchableOpacity
-                    style={styles.rankIconBox}
-                    onPress={() => {
-                      navigation.navigate(
-                        AppNavigator.HomeStackIdentifiers.leaderboard
-                      );
-                    }}
-                  >
-                    <Image
-                      style={styles.rankIcon}
-                      source={require("../../../assets/images/perform_rank.png")}
-                    />
-                  </TouchableOpacity>
-                </View>
-                <View style={styles.hideRankBox}>
-                  <Text style={styles.rankHeadingText}>Branch Ranking</Text>
-                  <TouchableOpacity
-                    style={styles.rankIconBox}
-                    onPress={() => {
-                      navigation.navigate(
-                        AppNavigator.HomeStackIdentifiers.branchRanking
-                      );
-                    }}
-                  >
-                    <Image
-                      style={styles.rankIcon}
-                      source={require("../../../assets/images/perform_rank.png")}
-                    />
-                  </TouchableOpacity>
-                </View>
-                <View style={styles.hideRankBox}>
-                  <Text style={styles.rankHeadingText}>Retails</Text>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                    }}
-                  >
-                    <View style={styles.rankIconBox}>
-                      <Image
-                        style={styles.rankIcon}
-                        source={require("../../../assets/images/retail.png")}
-                      />
-                    </View>
-                    <View style={styles.view2}>
-                      <View style={styles.view3}>
-                        <Text style={[styles.rankText, { color: Colors.RED }]}>
-                          {retailData?.achievment}
-                        </Text>
-                        <Text style={[styles.rankText]}>
-                          /{retailData?.target}
-                        </Text>
-                      </View>
-                      <View style={styles.view4}>
-                        <Text style={styles.baseText}>Ach v/s Tar</Text>
-                      </View>
-                    </View>
-                  </View>
-                </View>
-              </View>
-            ) : (
-              <View style={styles.rankView}>
-                <View style={styles.rankBox}>
-                  <Text style={styles.rankHeadingText}>Dealer Ranking</Text>
-                  <View style={styles.view5}>
-                    <TouchableOpacity
-                      style={styles.rankIconBox}
-                      onPress={() => {
-                        navigation.navigate(
-                          AppNavigator.HomeStackIdentifiers.leaderboard
-                        );
-                      }}
-                    >
-                      <Image
-                        style={styles.rankIcon}
-                        source={require("../../../assets/images/perform_rank.png")}
-                      />
-                    </TouchableOpacity>
-                    <View
-                      style={{
-                        marginTop: 5,
-                        marginLeft: 3,
-                      }}
-                    >
-                      {groupDealerRank !== null && (
-                        <Text style={styles.rankText}>
-                          {groupDealerRank}/{groupDealerCount}
-                        </Text>
-                      )}
-                    </View>
-                  </View>
-                </View>
-                <View style={styles.rankBox}>
-                  <Text style={styles.rankHeadingText}>Branch Ranking</Text>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                    }}
-                  >
-                    <TouchableOpacity
-                      style={styles.rankIconBox}
-                      onPress={() => {
-                        navigation.navigate(
-                          AppNavigator.HomeStackIdentifiers.branchRanking
-                        );
-                      }}
-                    >
-                      <Image
-                        style={styles.rankIcon}
-                        source={require("../../../assets/images/perform_rank.png")}
-                      />
-                    </TouchableOpacity>
-                    <View style={styles.view6}>
-                      {dealerRank !== null && (
-                        <View style={styles.view3}>
-                          <Text style={[styles.rankText]}>{dealerRank}</Text>
-                          <Text style={[styles.rankText]}>/{dealerCount}</Text>
-                        </View>
-                      )}
-                    </View>
-                  </View>
-                </View>
-                <View style={styles.rankBox}>
-                  <Text style={styles.rankHeadingText}>Retails</Text>
-                  <View style={styles.view3}>
-                    <View style={styles.rankIconBox}>
-                      <Image
-                        style={styles.rankIcon}
-                        source={require("../../../assets/images/retail.png")}
-                      />
-                    </View>
-                    <View style={styles.view2}>
-                      <View style={styles.view3}>
-                        <Text style={[styles.rankText, { color: Colors.RED }]}>
-                          {retailData?.achievment}
-                        </Text>
-                        <Text style={[styles.rankText]}>
-                          /{retailData?.target}
-                        </Text>
-                      </View>
-                      <View
-                        style={{
-                          marginTop: 5,
-                        }}
-                      >
-                        <Text style={styles.baseText}>Ach v/s Tar</Text>
-                      </View>
-                    </View>
-                  </View>
-                </View>
-              </View>
-            )
-          ) : null}
-          {receptionistRole.includes(userData.hrmsRole) && (
+          {true && (
             <View style={styles.view7}>
               <View style={styles.view8}>
                 <Text numberOfLines={2} style={styles.rankHeadingText}>
@@ -1396,9 +925,6 @@ const HomeScreen = ({ route, navigation }) => {
             </View>
           )}
         </View>
-
-        {selector.bannerList.length > 0 && renderBannerList()}
-
         {/* 1111 */}
         <View>
           {isTeamPresent && !selector.isDSE && (
@@ -1494,7 +1020,7 @@ const HomeScreen = ({ route, navigation }) => {
             {(selector.target_parameters_data.length > 0 ||
               (isTeamPresent &&
                 selector.all_target_parameters_data.length > 0)) && (
-              <DashboardTopTabNavigatorNew />
+              <DigitalDashBoardTargetScreen />
             )}
           </View>
         </View>
@@ -1504,7 +1030,7 @@ const HomeScreen = ({ route, navigation }) => {
   );
 };
 
-export default HomeScreen;
+export default DigitalDashBoardScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -1762,7 +1288,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginTop: 20,
     alignItems: "center",
-    marginBottom:20
+    marginBottom: 20,
   },
   view8: { flexDirection: "column", alignItems: "center" },
   view9: {
