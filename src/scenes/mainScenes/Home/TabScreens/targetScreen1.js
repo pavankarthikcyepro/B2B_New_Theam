@@ -980,7 +980,8 @@ const TargetScreen = ({ route }) => {
                                         textTransform: "capitalize",
                                       }}
                                     >
-                                      {item.empName}{"  "}
+                                      {item.empName}
+                                      {"  "}
                                       {"-   " + item?.roleName}
                                     </Text>
                                   </View>
@@ -2577,20 +2578,32 @@ const TargetScreen = ({ route }) => {
                             style={{
                               flexDirection: "row",
                               justifyContent: "space-between",
-                              width: "50%",
+                              width: "60%",
                             }}
                           >
                             <Text
-                              style={{ ...styles.txt4, width: "50%" }}
+                              style={{ ...styles.txt4, width: "25%" }}
                               numberOfLines={2}
                             >
-                              {"Leads Allocated"}
+                              {"Enq"}
                             </Text>
                             <Text
-                              style={{ ...styles.txt4, width: "50%" }}
+                              style={{ ...styles.txt4, width: "25%" }}
                               numberOfLines={2}
                             >
-                              {"Drop Leads"}
+                              {"Bkg"}
+                            </Text>
+                            <Text
+                              style={{ ...styles.txt4, width: "25%" }}
+                              numberOfLines={2}
+                            >
+                              {"Retail"}
+                            </Text>
+                            <Text
+                              style={{ ...styles.txt4, width: "25%" }}
+                              numberOfLines={2}
+                            >
+                              {"Lost"}
                             </Text>
                           </View>
                         </View>
@@ -2744,6 +2757,41 @@ const TargetScreen = ({ route }) => {
                             </Text>
                           </View>
                           <View style={styles.view18}>
+                            <View style={styles.view20}>
+                              <Text
+                                onPress={() => {
+                                  selector.receptionistData
+                                    .totalAllocatedCount > 0 && navigateToEMS();
+                                }}
+                                style={{
+                                  padding: 2,
+                                  textDecorationLine:
+                                    selector.receptionistData
+                                      .totalAllocatedCount > 0
+                                      ? "underline"
+                                      : "none",
+                                }}
+                              >
+                                {selector.receptionistData.totalAllocatedCount}
+                              </Text>
+                            </View>
+                            <View style={styles.view20}>
+                              <Text
+                                onPress={() => {
+                                  navigateToDropLostCancel();
+                                }}
+                                style={{
+                                  padding: 2,
+                                  textDecorationLine:
+                                    selector.receptionistData
+                                      .totalDroppedCount > 0
+                                      ? "underline"
+                                      : "none",
+                                }}
+                              >
+                                {selector.receptionistData.totalDroppedCount}
+                              </Text>
+                            </View>
                             <View style={styles.view20}>
                               <Text
                                 onPress={() => {
@@ -3662,6 +3710,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "400",
     textDecorationLine: "underline",
+    textAlign:'center'
   },
   view16: {
     flexDirection: "row",
@@ -3676,7 +3725,7 @@ const styles = StyleSheet.create({
     width: "35%",
   },
   view18: {
-    width: "45%",
+    width: "60%",
     justifyContent: "space-around",
     flexDirection: "row",
     height: 25,
