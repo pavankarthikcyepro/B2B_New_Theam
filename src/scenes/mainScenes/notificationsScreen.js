@@ -148,9 +148,7 @@ const NotificationScreen = ({ navigation }) => {
           onPress={() => navigateTo(screenName, props.item)}
           icon={icon}
           style={{ backgroundColor: bg }}
-          flagColor={
-            item?.isFlag == "Y" ? Colors.RED : Colors.GRAY
-          }
+          isFlag={item.isFlag}
         />
       </View>
     );

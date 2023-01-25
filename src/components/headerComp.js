@@ -16,6 +16,7 @@ const HeaderComp = ({
   filterClicked,
   notification = false,
   navigation,
+  filter = true,
 }) => {
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.targetSettingsReducer);
@@ -79,16 +80,18 @@ const HeaderComp = ({
         ) : null}
       </View>
       <View>
-        <View style={style.filterContainer}>
-          <IconButton
-            icon="filter-outline"
-            style={{ padding: 0, margin: 0 }}
-            color={Colors.WHITE}
-            size={30}
-            onPress={filterClicked}
-          />
-          {notification && <NotificationIcon navigation={navigation} />}
-        </View>
+        {filter && (
+          <View style={style.filterContainer}>
+            <IconButton
+              icon="filter-outline"
+              style={{ padding: 0, margin: 0 }}
+              color={Colors.WHITE}
+              size={30}
+              onPress={filterClicked}
+            />
+            {notification && <NotificationIcon navigation={navigation} />}
+          </View>
+        )}
       </View>
     </View>
   );
@@ -138,14 +141,14 @@ const style = StyleSheet.create({
   },
   badgeContainer: {
     bottom: 0,
-    right:10,
+    right: 10,
     alignSelf: "flex-start",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor:Colors.RED,
-    borderRadius:7.5,
-    height:15,
-    width:15
+    backgroundColor: Colors.RED,
+    borderRadius: 7.5,
+    height: 15,
+    width: 15,
   },
   badgeText: { fontSize: 12, color: Colors.WHITE, fontWeight: "bold" },
 });

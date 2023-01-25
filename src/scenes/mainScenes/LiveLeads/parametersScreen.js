@@ -447,7 +447,7 @@ const ParametersScreen = ({ route }) => {
         let payload = {
           orgId: jsonObj.orgId,
           selectedEmpId: item.empId,
-          endDate: currentDate,
+          endDate: monthLastDate,
           loggedInEmpId: jsonObj.empId,
           empId: item.empId,
           startDate: monthFirstDate,
@@ -929,7 +929,7 @@ const ParametersScreen = ({ route }) => {
                                                     orgId: jsonObj.orgId,
                                                     selectedEmpId:
                                                       innerItem1.empId,
-                                                    endDate: currentDate,
+                                                    endDate: monthLastDate,
                                                     loggedInEmpId:
                                                       jsonObj.empId,
                                                     empId: innerItem1.empId,
@@ -1237,7 +1237,7 @@ const ParametersScreen = ({ route }) => {
                                                               selectedEmpId:
                                                                 innerItem2.empId,
                                                               endDate:
-                                                                currentDate,
+                                                                monthLastDate,
                                                               loggedInEmpId:
                                                                 innerItem2.empId,
                                                               empId:
@@ -1623,7 +1623,7 @@ const ParametersScreen = ({ route }) => {
                                                                           selectedEmpId:
                                                                             innerItem3.empId,
                                                                           endDate:
-                                                                            currentDate,
+                                                                            monthLastDate,
                                                                           loggedInEmpId:
                                                                             innerItem3.empId,
                                                                           empId:
@@ -1982,7 +1982,7 @@ const ParametersScreen = ({ route }) => {
                                                                                     selectedEmpId:
                                                                                       innerItem4.empId,
                                                                                     endDate:
-                                                                                      currentDate,
+                                                                                      monthLastDate,
                                                                                     loggedInEmpId:
                                                                                       innerItem4.empId,
                                                                                     empId:
@@ -2358,7 +2358,7 @@ const ParametersScreen = ({ route }) => {
                                                                                               selectedEmpId:
                                                                                                 innerItem5.empId,
                                                                                               endDate:
-                                                                                                currentDate,
+                                                                                                monthLastDate,
                                                                                               loggedInEmpId:
                                                                                                 innerItem5.empId,
                                                                                               empId:
@@ -2751,7 +2751,7 @@ const ParametersScreen = ({ route }) => {
                                                                                                         selectedEmpId:
                                                                                                           innerItem6.empId,
                                                                                                         endDate:
-                                                                                                          currentDate,
+                                                                                                          monthLastDate,
                                                                                                         loggedInEmpId:
                                                                                                           innerItem6.empId,
                                                                                                         empId:

@@ -138,7 +138,7 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
     empName: "",
     hrmsRole: "",
     orgId: 0,
-    branchs:[],
+    branchs: [],
   });
 
   useLayoutEffect(() => {
@@ -839,6 +839,17 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
     setShowDropDownModel(true);
   };
 
+  function navigateToEMS(params) {
+    navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
+    setTimeout(() => {
+      navigation.navigate("LEADS", {
+        // param: param === "INVOICE" ? "Retail" : param,
+        // moduleType: "home",
+        // employeeDetail: "",
+      });
+    }, 100);
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <DropDownComponant
@@ -863,6 +874,7 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
         branchClicked={() => moveToSelectBranch()}
         filterClicked={() => moveToFilter()}
         notification={true}
+        filter={false}
         navigation={navigation}
       />
       <ScrollView
@@ -873,7 +885,13 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
         <View>
           {true && (
             <View style={styles.view7}>
-              <View style={styles.view8}>
+              <TouchableOpacity
+                onPress={() => {
+                  selector.receptionistData.contactsCount > 0 &&
+                    navigateToEMS();
+                }}
+                style={styles.view8}
+              >
                 <Text numberOfLines={2} style={styles.rankHeadingText}>
                   {"Contact"}
                 </Text>
@@ -882,8 +900,33 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
                     {selector.receptionistData?.contactsCount || 0}
                   </Text>
                 </View>
-              </View>
-              <View style={styles.view8}>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  selector.receptionistData.totalDroppedCount > 0 &&
+                    navigateToEMS();
+                }}
+                style={styles.view8}
+              >
+                <Text
+                  numberOfLines={1}
+                  style={{ ...styles.rankHeadingText, width: 50 }}
+                >
+                  {"Drops"}
+                </Text>
+                <View style={styles.cardView}>
+                  <Text style={{ ...styles.rankText, color: "blue" }}>
+                    {selector.receptionistData?.totalDroppedCount || 0}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  selector.receptionistData.enquirysCount > 0 &&
+                    navigateToEMS();
+                }}
+                style={styles.view8}
+              >
                 <Text numberOfLines={2} style={styles.rankHeadingText}>
                   {"Enquiry"}
                 </Text>
@@ -892,36 +935,34 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
                     {selector.receptionistData?.enquirysCount || 0}
                   </Text>
                 </View>
-              </View>
-              <View style={styles.view8}>
-                <Text
-                  numberOfLines={1}
-                  style={{ ...styles.rankHeadingText, width: 50 }}
-                >
-                  {"Leads"}
-                </Text>
-                <View style={styles.cardView}>
-                  <Text style={{ ...styles.rankText, color: "blue" }}>
-                    {selector.receptionistData?.totalAllocatedCount || 0}
-                  </Text>
-                </View>
-              </View>
-              <View style={styles.view8}>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  selector.receptionistData.bookingsCount > 0 &&
+                    navigateToEMS();
+                }}
+                style={styles.view8}
+              >
                 <Text style={styles.rankHeadingText}>{"Bookings"}</Text>
                 <View style={styles.cardView}>
                   <Text style={{ ...styles.rankText, color: "blue" }}>
                     {selector.receptionistData?.bookingsCount || 0}
                   </Text>
                 </View>
-              </View>
-              <View style={styles.view8}>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  selector.receptionistData.RetailCount > 0 && navigateToEMS();
+                }}
+                style={styles.view8}
+              >
                 <Text style={styles.rankHeadingText}>{"Retails"}</Text>
                 <View style={styles.cardView}>
                   <Text style={{ ...styles.rankText, color: "blue" }}>
                     {selector.receptionistData?.RetailCount || 0}
                   </Text>
                 </View>
-              </View>
+              </TouchableOpacity>
             </View>
           )}
         </View>
