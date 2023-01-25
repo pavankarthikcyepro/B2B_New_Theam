@@ -259,11 +259,10 @@ export default function branchRankingScreen(props) {
       <View style={isActive ? styles.activeSubRow : styles.tableSubRow}>
         <View style={styles.itemRow}>
           <Text style={isActive ? styles.activeItemRowText : styles.itemRowText}>{item.rank}</Text>
-          <Text style={isActive ? styles.activeItemRowText : styles.itemRowText}>{getEmpName(item.empName)}</Text>
           <Text style={isActive ? styles.activeItemRowText : styles.itemRowText}>
             {getBranchName(item.branchCode)}
           </Text>
-         
+          <Text style={isActive ? styles.activeItemRowText : styles.itemRowText}>{getEmpName(item.empName)}</Text> 
           <Text style={isActive ? styles.activeItemRowText : styles.itemRowText}>{item.targetAchivements}</Text>
           <Text style={isActive ? styles.activeItemRowText : styles.itemRowText}>{item.achivementPerc}</Text>
         </View>
@@ -300,8 +299,9 @@ export default function branchRankingScreen(props) {
       return (
         <View style={styles.tableTitleRow}>
           <Text style={styles.tableTitleText}>Rank</Text>
-          <Text style={styles.tableTitleText}>Name</Text>
           <Text style={styles.tableTitleText}>Branch</Text>
+          <Text style={styles.tableTitleText}>Name</Text>
+       
          
           <Text style={styles.tableTitleText}>Retail</Text>
           <Text style={styles.tableTitleText}>Ret T/A%</Text>
