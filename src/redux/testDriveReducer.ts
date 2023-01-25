@@ -140,6 +140,29 @@ export const postReOpenTestDrive = createAsyncThunk("HOME_VISIT_SLICE/postReOpen
   return json;
 })
 
+
+
+export const getTestDriveHistoryCount = createAsyncThunk("TEST_DRIVE_SLICE/getTestDriveHistoryCount", async (universalId, { rejectWithValue }) => {
+
+  const response = await client.get(URL.GET_TEST_HISTORY_COUNT(universalId));
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+
+export const getTestDriveHistoryDetails = createAsyncThunk("TEST_DRIVE_SLICE/getTestDriveHistoryDetails", async (universalId, { rejectWithValue }) => {
+
+  const response = await client.get(URL.GET_TEST_HISTORY_DETAILS(universalId));
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
 const testDriveSlice = createSlice({
   name: "TEST_DRIVE_SLICE",
   initialState: {
@@ -165,6 +188,10 @@ const testDriveSlice = createSlice({
     otp_session_key: "",
     validate_otp_response_status: "",
     reopen_test_drive_res_status:"",
+    test_drive_history_count_statu:"",
+    test_drive_history_count:0,
+     test_drive_history_details_statu:"",
+    test_drive_history_details:"",
   },
   reducers: {
     clearState: (state, action) => {
@@ -187,6 +214,10 @@ const testDriveSlice = createSlice({
       state.otp_session_key = "";
       state.validate_otp_response_status = "";
       state.reopen_test_drive_res_status ="";
+      state.test_drive_history_count_statu="";
+      state.test_drive_history_count=0;
+     state.test_drive_history_details_statu= "";
+        state.test_drive_history_details= "";
     },
     updateSelectedDate: (state, action: PayloadAction<CustomerDetailModel>) => {
       const { key, text } = action.payload;
@@ -446,6 +477,65 @@ const testDriveSlice = createSlice({
       // }
       state.isLoading = false;
       state.reopen_test_drive_res_status = "failed";
+    })
+
+
+    // reopen test drive history count 
+    builder.addCase(getTestDriveHistoryCount.pending, (state, action) => {
+      state.isLoading = true;
+      state.test_drive_history_count_statu = "pending";
+      state.test_drive_history_count = 0;
+    })
+    builder.addCase(getTestDriveHistoryCount.fulfilled, (state, action) => {
+      if (action.payload) {
+       
+        state.test_drive_history_count_statu = "successs";
+        state.test_drive_history_count = action.payload.count;
+      }
+      // else if (action.payload["reason"]) {
+      //   showToastRedAlert(action.payload["reason"]);
+      //   state.reopen_test_drive_res_status = "failed";
+      // }
+      state.isLoading = false;
+    })
+    builder.addCase(getTestDriveHistoryCount.rejected, (state, action) => {
+      // if (action.payload["reason"]) {
+      //   showToastRedAlert(action.payload["reason"]);
+      // }
+      state.isLoading = false;
+      state.test_drive_history_count_statu = "failed";
+      state.test_drive_history_count = 0;
+    })
+
+    
+
+
+    // reopen test drive history Details listing 
+    builder.addCase(getTestDriveHistoryDetails.pending, (state, action) => {
+      state.isLoading = true;
+    
+      state.test_drive_history_details_statu = "pending";
+      state.test_drive_history_details = "";
+    })
+    builder.addCase(getTestDriveHistoryDetails.fulfilled, (state, action) => {
+      if (action.payload) {
+        
+        state.test_drive_history_details_statu = "successs";
+        state.test_drive_history_details = action.payload;
+      }
+      // else if (action.payload["reason"]) {
+      //   showToastRedAlert(action.payload["reason"]);
+      //   state.reopen_test_drive_res_status = "failed";
+      // }
+      state.isLoading = false;
+    })
+    builder.addCase(getTestDriveHistoryDetails.rejected, (state, action) => {
+      // if (action.payload["reason"]) {
+      //   showToastRedAlert(action.payload["reason"]);
+      // }
+      state.isLoading = false;
+      state.test_drive_history_details_statu = "failed";
+      state.test_drive_history_details = "";
     })
   }
 });
