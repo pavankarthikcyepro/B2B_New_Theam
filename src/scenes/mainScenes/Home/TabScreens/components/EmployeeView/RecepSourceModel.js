@@ -72,8 +72,16 @@ const RecepSourceModel = ({ route, navigation }) => {
   ];
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.homeReducer);
-  const { empId, loggedInEmpId, headerTitle, orgId, type, moduleType, role } =
-    route.params;
+  const {
+    empId,
+    loggedInEmpId,
+    headerTitle,
+    orgId,
+    type,
+    moduleType,
+    role,
+    branchList,
+  } = route.params;
   const [leadSource, setLeadSource] = useState([]);
   const [vehicleModel, setVehicleModel] = useState([]);
   const [leadSourceKeys, setLeadSourceKeys] = useState([]);
@@ -95,11 +103,13 @@ const RecepSourceModel = ({ route, navigation }) => {
           color={Colors.WHITE}
           size={30}
           onPress={() => {
-            moduleType === "live-leads"
-              ? navigation.navigate(
-                  AppNavigator.DrawerStackIdentifiers.liveLeads
-                )
-              : navigation.pop();
+            if (role == "Reception") {
+              navigation.pop();
+            } else if (role == "CRM") {
+              navigation.pop();
+            } else {
+              navigation.goBack();
+            }
           }}
         />
       ),
@@ -118,12 +128,19 @@ const RecepSourceModel = ({ route, navigation }) => {
       orgId: orgId,
       loggedInEmpId: loggedInEmpId,
     };
+    let payload = {
+      orgId: orgId,
+      branchList: branchList,
+    };
     if (role == "Reception") {
       dispatch(getReceptionistSource(newPayload));
       dispatch(getReceptionistModel(newPayload));
     } else if (role == "CRM") {
       dispatch(getReceptionistManagerSource(newPayload));
       dispatch(getReceptionistManagerModel(newPayload));
+    } else {
+      dispatch(getReceptionistManagerSource(payload));
+      dispatch(getReceptionistManagerModel(payload));
     }
   }, [empId, navigation]);
 
@@ -191,7 +208,6 @@ const RecepSourceModel = ({ route, navigation }) => {
       setLeadSourceKeys([...sourceUnique]);
       setVehicleModelKeys([...modelUnique]);
       const groupedSources = getData([...newSourceData], 0);
-     
 
       setLeadSource(groupedSources);
       const groupedModels = getData([...newModelData], 1);
@@ -273,7 +289,9 @@ const RecepSourceModel = ({ route, navigation }) => {
                         fontWeight: "500",
                       }}
                     >
-                      {x?.source&&x?.subsource?  x?.source+" - "+x?.subsource : x?.model}
+                      {x?.source && x?.subsource
+                        ? x?.source + " - " + x?.subsource
+                        : x?.model}
                     </Text>
                   </View>
                   {toggleParamsMetaData.map((param, i) => {
@@ -422,7 +440,9 @@ const RecepSourceModel = ({ route, navigation }) => {
                 }
               })}
             </View>
-            {isLoading && <ActivityIndicator size={"large"} color={Colors.RED} />}
+            {isLoading && (
+              <ActivityIndicator size={"large"} color={Colors.RED} />
+            )}
             {renderDataView()}
             <>
               <View
