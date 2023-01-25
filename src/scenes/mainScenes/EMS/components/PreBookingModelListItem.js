@@ -71,6 +71,7 @@ export const PreBookingModelListitemCom = ({
   isSubmitPress,
   isOnlyOne,
   onChangeSubmit,
+  carModelsList = [],
   disabled = false,
 }) => {
   const dispatch = useDispatch();
@@ -225,13 +226,13 @@ export const PreBookingModelListitemCom = ({
           variant: "",
           isPrimary: item.isPrimary,
         };
-        var modelsarr = await selector.dmsLeadProducts;
+        // var modelsarr = await selector.dmsLeadProducts;
+          carModelsList.length > 0 ? carModelsList : selector.dmsLeadProducts;
         modelsarr[index] = await carmodeldata;
         modelOnclick(index, carmodeldata, "update");
 
         await dispatch(updatedmsLeadProduct(modelsarr));
-      } catch (error) {
-      }
+      } catch (error) {}
       let mArray = carModelObj.varients;
       if (mArray.length) {
         mArray.forEach((item) => {
@@ -344,7 +345,9 @@ export const PreBookingModelListitemCom = ({
             };
           }
 
-          const modelsarr = [...selector.dmsLeadProducts];
+          // const modelsarr = [...selector.dmsLeadProducts];
+          const modelsarr =
+            carModelsList.length > 0 ? carModelsList : selector.dmsLeadProducts;
           modelsarr[index] = carmodeldata;
           modelOnclick(index, carmodeldata, "update");
 
@@ -408,7 +411,9 @@ export const PreBookingModelListitemCom = ({
         setCarTransmissionType(carModelObj.transmission_type);
         var carmodeldata;
 
-        const modelsarr = selector.dmsLeadProducts;
+        // const modelsarr = selector.dmsLeadProducts;
+        let modelsarr =
+          carModelsList.length > 0 ? carModelsList : selector.dmsLeadProducts;
         modelsarr[index] = carmodeldata;
         modelOnclick(index, carmodeldata, "update");
 
