@@ -325,6 +325,10 @@ const SideMenuScreen = ({ navigation }) => {
       newFilterData = selector.tableData.filter((item) =>
         SalesConsultant.includes(item.title)
       );
+    } else if (jsonObj.hrmsRole === "Sales Manager") {
+      newFilterData = selector.tableData.filter((item) =>
+        SalesConsultant.includes(item.title)
+      );
     } else if (jsonObj.hrmsRole === "MD") {
       newFilterData = selector.tableData.filter((item) =>
         MDMenu.includes(item.title)

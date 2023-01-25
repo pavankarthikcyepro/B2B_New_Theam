@@ -431,7 +431,6 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
     );
   }, [selector.employee_list]);
 
-
   useEffect(() => {
     allParameters[0] = {
       ...allParameters[0],
@@ -541,23 +540,23 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
       const json = await response.json();
       if (json.empName) {
         setReceptionistTeamParameters(json.empName);
-        var val = json.empName.reduce(function (previousValue, currentValue) {
-          return (
-            previousValue.totalAllocatedCount + currentValue.totalAllocatedCount
-          );
-        });
-        var val1 = json.empName.reduce(function (previousValue, currentValue) {
-          return previousValue.bookingCount + currentValue.bookingCount;
-        });
-        var val2 = json.empName.reduce(function (previousValue, currentValue) {
-          return previousValue.RetailCount + currentValue.RetailCount;
-        });
-        var val3 = json.empName.reduce(function (previousValue, currentValue) {
-          return (
-            previousValue.totalDroppedCount + currentValue.totalDroppedCount
-          );
-        });
-        let total = [val, val1, val2, val3];
+        let totalKey1 = json.empName.reduce(
+          (acc, obj) => acc + obj.totalAllocatedCount,
+          0
+        );
+        let totalKey2 = json.empName.reduce(
+          (acc, obj) => acc + obj.bookingCount,
+          0
+        );
+        let totalKey3 = json.empName.reduce(
+          (acc, obj) => acc + obj.RetailCount,
+          0
+        );
+        let totalKey4 = json.empName.reduce(
+          (acc, obj) => acc + obj.totalDroppedCount,
+          0
+        );
+        let total = [totalKey1, totalKey2, totalKey3, totalKey4];
         setTotalofTeam(total);
       }
     } catch (error) {}
@@ -1085,6 +1084,9 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                                 loggedInEmpId: userData.empId,
                                 orgId: userData.orgId,
                                 role: userData.hrmsRole,
+                                branchList: userData.branchs.map(
+                                  (a) => a.branchId
+                                ),
                               });
                             }}
                           />
@@ -1114,20 +1116,32 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                               style={{
                                 flexDirection: "row",
                                 justifyContent: "space-between",
-                                width: "50%",
+                                width: "60%",
                               }}
                             >
                               <Text
-                                style={{ ...styles.txt4, width: "50%" }}
+                                style={{ ...styles.txt4, width: "25%" }}
                                 numberOfLines={2}
                               >
-                                {"Leads Allocated"}
+                                {"Enq"}
                               </Text>
                               <Text
-                                style={{ ...styles.txt4, width: "50%" }}
+                                style={{ ...styles.txt4, width: "25%" }}
                                 numberOfLines={2}
                               >
-                                {"Drop Leads"}
+                                {"Bkg"}
+                              </Text>
+                              <Text
+                                style={{ ...styles.txt4, width: "25%" }}
+                                numberOfLines={2}
+                              >
+                                {"Retail"}
+                              </Text>
+                              <Text
+                                style={{ ...styles.txt4, width: "25%" }}
+                                numberOfLines={2}
+                              >
+                                {"Lost"}
                               </Text>
                             </View>
                           </View>
@@ -1175,6 +1189,60 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                                         }}
                                       >
                                         {item?.allocatedCount}
+                                      </Text>
+                                    </View>
+                                    <View
+                                      style={{
+                                        minWidth: 45,
+                                        height: 25,
+                                        borderColor: Colors.RED,
+                                        borderWidth: 1,
+                                        borderRadius: 8,
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                      }}
+                                    >
+                                      <Text
+                                        onPress={() => {
+                                          item?.bookingCount > 0 &&
+                                            navigateToEMS();
+                                        }}
+                                        style={{
+                                          padding: 2,
+                                          textDecorationLine:
+                                            item?.bookingCount > 0
+                                              ? "underline"
+                                              : "none",
+                                        }}
+                                      >
+                                        {item?.bookingCount}
+                                      </Text>
+                                    </View>
+                                    <View
+                                      style={{
+                                        minWidth: 45,
+                                        height: 25,
+                                        borderColor: Colors.RED,
+                                        borderWidth: 1,
+                                        borderRadius: 8,
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                      }}
+                                    >
+                                      <Text
+                                        onPress={() => {
+                                          item?.retailCount > 0 &&
+                                            navigateToEMS();
+                                        }}
+                                        style={{
+                                          padding: 2,
+                                          textDecorationLine:
+                                            item?.retailCount > 0
+                                              ? "underline"
+                                              : "none",
+                                        }}
+                                      >
+                                        {item?.retailCount}
                                       </Text>
                                     </View>
                                     <View
@@ -1247,6 +1315,40 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                                     selector.receptionistData
                                       .totalAllocatedCount
                                   }
+                                </Text>
+                              </View>
+                              <View style={styles.view20}>
+                                <Text
+                                  onPress={() => {
+                                    navigateToDropLostCancel();
+                                  }}
+                                  style={{
+                                    padding: 2,
+                                    textDecorationLine:
+                                      selector.receptionistData.bookingsCount >
+                                      0
+                                        ? "underline"
+                                        : "none",
+                                  }}
+                                >
+                                  {selector.receptionistData.bookingsCount}
+                                </Text>
+                              </View>
+                              <View style={styles.view20}>
+                                <Text
+                                  onPress={() => {
+                                    selector.receptionistData.RetailCount > 0 &&
+                                      navigateToEMS();
+                                  }}
+                                  style={{
+                                    padding: 2,
+                                    textDecorationLine:
+                                      selector.receptionistData.RetailCount > 0
+                                        ? "underline"
+                                        : "none",
+                                  }}
+                                >
+                                  {selector.receptionistData.RetailCount}
                                 </Text>
                               </View>
                               <View style={styles.view20}>
@@ -1770,6 +1872,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "400",
     textDecorationLine: "underline",
+    textAlign: "center",
   },
   view16: {
     flexDirection: "row",
@@ -1784,7 +1887,7 @@ const styles = StyleSheet.create({
     width: "35%",
   },
   view18: {
-    width: "45%",
+    width: "60%",
     justifyContent: "space-around",
     flexDirection: "row",
     height: 25,

@@ -644,23 +644,23 @@ const TargetScreen = ({ route }) => {
       const json = await response.json();
       if (json.empName) {
         setReceptionistTeamParameters(json.empName);
-        var val = json.empName.reduce(function (previousValue, currentValue) {
-          return (
-            previousValue.totalAllocatedCount + currentValue.totalAllocatedCount
-          );
-        });
-        var val1 = json.empName.reduce(function (previousValue, currentValue) {
-          return previousValue.bookingCount + currentValue.bookingCount;
-        });
-        var val2 = json.empName.reduce(function (previousValue, currentValue) {
-          return previousValue.RetailCount + currentValue.RetailCount;
-        });
-        var val3 = json.empName.reduce(function (previousValue, currentValue) {
-          return (
-            previousValue.totalDroppedCount + currentValue.totalDroppedCount
-          );
-        });
-        let total = [val, val1, val2, val3];
+        let totalKey1 = json.empName.reduce(
+          (acc, obj) => acc + obj.totalAllocatedCount,
+          0
+        );
+        let totalKey2 = json.empName.reduce(
+          (acc, obj) => acc + obj.bookingCount,
+          0
+        );
+        let totalKey3 = json.empName.reduce(
+          (acc, obj) => acc + obj.RetailCount,
+          0
+        );
+        let totalKey4 = json.empName.reduce(
+          (acc, obj) => acc + obj.totalDroppedCount,
+          0
+        );
+        let total = [totalKey1, totalKey2, totalKey3, totalKey4];
         setTotalofTeam(total);
       }
     } catch (error) {}
@@ -2666,18 +2666,18 @@ const TargetScreen = ({ route }) => {
                                   >
                                     <Text
                                       onPress={() => {
-                                        item?.allocatedCount > 0 &&
+                                        item?.bookingCount > 0 &&
                                           navigateToEMS();
                                       }}
                                       style={{
                                         padding: 2,
                                         textDecorationLine:
-                                          item?.allocatedCount > 0
+                                          item?.bookingCount > 0
                                             ? "underline"
                                             : "none",
                                       }}
                                     >
-                                      {item?.allocatedCount}
+                                      {item?.bookingCount}
                                     </Text>
                                   </View>
                                   <View
@@ -2693,18 +2693,18 @@ const TargetScreen = ({ route }) => {
                                   >
                                     <Text
                                       onPress={() => {
-                                        item?.allocatedCount > 0 &&
+                                        item?.retailCount > 0 &&
                                           navigateToEMS();
                                       }}
                                       style={{
                                         padding: 2,
                                         textDecorationLine:
-                                          item?.allocatedCount > 0
+                                          item?.retailCount > 0
                                             ? "underline"
                                             : "none",
                                       }}
                                     >
-                                      {item?.allocatedCount}
+                                      {item?.retailCount}
                                     </Text>
                                   </View>
                                   <View
@@ -2783,31 +2783,29 @@ const TargetScreen = ({ route }) => {
                                 style={{
                                   padding: 2,
                                   textDecorationLine:
-                                    selector.receptionistData
-                                      .totalDroppedCount > 0
+                                    selector.receptionistData.bookingsCount > 0
                                       ? "underline"
                                       : "none",
                                 }}
                               >
-                                {selector.receptionistData.totalDroppedCount}
+                                {selector.receptionistData.bookingsCount}
                               </Text>
                             </View>
                             <View style={styles.view20}>
                               <Text
                                 onPress={() => {
-                                  selector.receptionistData
-                                    .totalAllocatedCount > 0 && navigateToEMS();
+                                  selector.receptionistData.RetailCount > 0 &&
+                                    navigateToEMS();
                                 }}
                                 style={{
                                   padding: 2,
                                   textDecorationLine:
-                                    selector.receptionistData
-                                      .totalAllocatedCount > 0
+                                    selector.receptionistData.RetailCount > 0
                                       ? "underline"
                                       : "none",
                                 }}
                               >
-                                {selector.receptionistData.totalAllocatedCount}
+                                {selector.receptionistData.RetailCount}
                               </Text>
                             </View>
                             <View style={styles.view20}>
@@ -3710,7 +3708,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "400",
     textDecorationLine: "underline",
-    textAlign:'center'
+    textAlign: "center",
   },
   view16: {
     flexDirection: "row",
