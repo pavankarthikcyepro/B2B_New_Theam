@@ -3713,6 +3713,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       "Enquiry Category"
                     )
                   }
+                  isDropDownIconShow={false}
                 />
 
                 <DropDownSelectionItem

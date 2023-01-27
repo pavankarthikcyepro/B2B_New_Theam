@@ -874,6 +874,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           } else if (!value.color) {
             dispatch(updateOfferPriceData());
             clearPriceConfirmationData();
+            setCarModelDataList(value, index);
           } else {
             setCarModelDataList(value, index);
           }
@@ -4769,6 +4770,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           item={item}
                           leadStage={leadStage}
                           isSubmitPress={isSubmitPress}
+                          carModelsList={carModelsList}
                           isOnlyOne={carModelsList.length == 1 ? true : false}
                           onChangeSubmit={() => setIsSubmitPress(false)}
                         />
