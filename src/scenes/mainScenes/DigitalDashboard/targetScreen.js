@@ -751,7 +751,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
         // moduleType: "home",
         // employeeDetail: "",
       });
-    }, 100);
+    }, 1000);
   }
 
   function navigateToDropLostCancel(params) {
