@@ -47,11 +47,11 @@ export default function leaderBoardScreen(props) {
   const [loggedInEmpId, setLoggedInEmpId] = useState(0);
   const [reversebottomRankList, setReverseBottomRankList] = useState([]);
   const [selectedRankTop, setselectedRankTop] = useState({
-    name: "Top 5",
+    name: "Top",
     id: 1,
   });
   const [selectedRankLow, setselectedRankLow] = useState({
-    name: "Top 5",
+    name: "Low",
     id: 1,
   });
   const [showDropDownModel, setShowDropDownModel] = useState(false);
@@ -79,7 +79,8 @@ export default function leaderBoardScreen(props) {
     if(props?.route?.params){
     
       let selectedid = props.route.params.params.selectedID
-      getLeaderboardListFromServer(selectedid)
+      let deladerID = props.route.params.params.dealeid
+      getLeaderboardListFromServer(selectedid, deladerID)
     }
 
   }, [props.route])
@@ -231,20 +232,24 @@ export default function leaderBoardScreen(props) {
   }, [selector.leaderboard_list])
 
 
-  const getLeaderboardListFromServer = async (loogedInid) => {
+  const getLeaderboardListFromServer = async (loogedInid, deladerID) => {
+    console.log("manthan---fff ",deladerID)
     var date = new Date();
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     const jsonObj = await JSON.parse(employeeData);
-    var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
-    var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    // var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+    // var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    const startOfMonth = moment().startOf('month').format('YYYY-MM-DD');
+    const endOfMonth = moment().endOf('month').format('YYYY-MM-DD');
     let payload = {
-      "endDate": moment.utc(lastDay).format('YYYY-MM-DD'),
+      "endDate": endOfMonth,
       "levelSelected": null,
       "loggedInEmpId": loogedInid ? loogedInid :jsonObj.empId,
       "pageNo": 0,
       "size": 50,
-      "startDate": moment.utc(firstDay).format('YYYY-MM-DD'),
-      "orgId": jsonObj.orgId
+      "startDate": startOfMonth,
+      "orgId": jsonObj.orgId,
+      "branchId": deladerID ? deladerID[0]: jsonObj.branchId
     };
     // alert(JSON.stringify(payload))
     dispatch(getLeaderBoardList(payload));
@@ -341,13 +346,236 @@ export default function leaderBoardScreen(props) {
 
   const showDropDownModelMethod = (key, headerText) => {
     // Keyboard.dismiss();
+    let dropdownDataV3 = [
 
+    ];
     switch (key) {
       case "TOP_DATA":
-        setDataForDropDown([...dropdownDataV2]);
+        if (selector.leaderboard_list.length <= 5) {
+
+          let tmp = {
+            name: "Top 5",
+            id: 1
+          }
+          dropdownDataV3.push(tmp);
+
+          setDataForDropDown([...dropdownDataV3]);
+        } else if (selector.leaderboard_list.length >= 6 && selector.leaderboard_list.length <= 10) {
+          let tmp = [{
+            name: "Top 5",
+            id: 1
+          }, {
+            name: "Top 10",
+            id: 2
+          },
+          ]
+          for (let i = 0; i < tmp.length; i++) {
+            dropdownDataV3.push(tmp[i]);
+          }
+          // dropdownDataV3.push(tmp);
+
+          setDataForDropDown([...dropdownDataV3]);
+        } else if (selector.leaderboard_list.length >= 11 && selector.leaderboard_list.length <= 15) {
+          let tmp = [{
+            name: "Top 5",
+            id: 1
+          }, {
+            name: "Top 10",
+            id: 2
+          }, {
+            name: "Top 15",
+            id: 3
+          }
+          ]
+
+          for (let i = 0; i < tmp.length; i++) {
+            dropdownDataV3.push(tmp[i]);
+          }
+          // let tmp = {
+          //   name: "Top 15",
+          //   id: 3
+          // }
+          // dropdownDataV3.push(tmp);
+
+          setDataForDropDown([...dropdownDataV3]);
+        } else if (selector.leaderboard_list.length >= 16 && selector.leaderboard_list.length <= 20) {
+
+          let tmp = [{
+            name: "Top 5",
+            id: 1
+          }, {
+            name: "Top 10",
+            id: 2
+          }, {
+            name: "Top 15",
+            id: 3
+          }, {
+            name: "Top 20",
+            id: 4
+          }
+          ]
+
+          for (let i = 0; i < tmp.length; i++) {
+            dropdownDataV3.push(tmp[i]);
+          }
+          // let tmp = {
+          //   name: "Top 20",
+          //   id: 4
+          // }
+          // dropdownDataV3.push(tmp);
+
+          setDataForDropDown([...dropdownDataV3]);
+        } else if (selector.leaderboard_list.length >= 21) {
+
+          let tmp = [{
+            name: "Top 5",
+            id: 1
+          }, {
+            name: "Top 10",
+            id: 2
+          }, {
+            name: "Top 15",
+            id: 3
+          }, {
+            name: "Top 20",
+            id: 4
+          },
+          {
+            name: "View all",
+            id: 5
+          }
+          ]
+
+          for (let i = 0; i < tmp.length; i++) {
+            dropdownDataV3.push(tmp[i]);
+          }
+
+          // let tmp = {
+          //   name: "View all",
+          //   id: 5
+          // }
+          // dropdownDataV3.push(tmp);
+
+          setDataForDropDown([...dropdownDataV3]);
+        }
+        
+        // setDataForDropDown([...dropdownDataV3]);
         break;
       case "LOW_DATA":
-        setDataForDropDown([...dropdownDataV2]);
+
+        if (selector.leaderboard_list.length <= 5) {
+
+          let tmp = {
+            name: "Low 5",
+            id: 1
+          }
+          dropdownDataV3.push(tmp);
+
+          setDataForDropDown([...dropdownDataV3]);
+        } else if (selector.leaderboard_list.length >= 6 && selector.leaderboard_list.length <= 10) {
+          // let tmp = {
+          //   name: "Low 10",
+          //   id: 2
+          // }
+          // dropdownDataV3.push(tmp);
+          let tmp = [{
+            name: "Low 5",
+            id: 1
+          }, {
+            name: "Low 10",
+            id: 2
+          },
+          ]
+          for (let i = 0; i < tmp.length; i++) {
+            dropdownDataV3.push(tmp[i]);
+          }
+          setDataForDropDown([...dropdownDataV3]);
+        } else if (selector.leaderboard_list.length >= 11 && selector.leaderboard_list.length <= 15) {
+          // let tmp = {
+          //   name: "Low 15",
+          //   id: 3
+          // }
+          // dropdownDataV3.push(tmp);
+          let tmp = [{
+            name: "Low 5",
+            id: 1
+          }, {
+            name: "Low 10",
+            id: 2
+          },
+          {
+            name: "Low 15",
+            id: 3
+          }
+          ]
+          for (let i = 0; i < tmp.length; i++) {
+            dropdownDataV3.push(tmp[i]);
+          }
+          setDataForDropDown([...dropdownDataV3]);
+        } else if (selector.leaderboard_list.length >= 16 && selector.leaderboard_list.length <= 20) {
+          // let tmp = {
+          //   name: "Low 20",
+          //   id: 4
+          // }
+          // dropdownDataV3.push(tmp);
+
+
+          let tmp = [{
+            name: "Low 5",
+            id: 1
+          }, {
+            name: "Low 10",
+            id: 2
+          },
+          {
+            name: "Low 15",
+            id: 3
+          },
+          {
+            name: "Low 20",
+            id: 4
+          }
+          ]
+          for (let i = 0; i < tmp.length; i++) {
+            dropdownDataV3.push(tmp[i]);
+          }
+          setDataForDropDown([...dropdownDataV3]);
+        } else if (selector.leaderboard_list.length >= 21) {
+          // let tmp = {
+          //   name: "View all",
+          //   id: 5
+          // }
+          // dropdownDataV3.push(tmp);
+
+          let tmp = [{
+            name: "Low 5",
+            id: 1
+          }, {
+            name: "Low 10",
+            id: 2
+          },
+          {
+            name: "Low 15",
+            id: 3
+          },
+          {
+            name: "Low 20",
+            id: 4
+          },
+          {
+            name: "View all",
+            id: 5
+          }
+          ]
+          for (let i = 0; i < tmp.length; i++) {
+            dropdownDataV3.push(tmp[i]);
+          }
+
+
+          setDataForDropDown([...dropdownDataV3]);
+        }
+
+        // setDataForDropDown([...dropdownDataV3]);
         break;
 
     }
@@ -355,6 +583,73 @@ export default function leaderBoardScreen(props) {
     // setDropDownTitle(headerText);
     setShowDropDownModel(true);
   };
+
+  const setDataOnSelection = (from, selection) => {
+    
+    let top = selector.leaderboard_list;
+    let bottom = [];
+    bottom = selector.leaderboard_list;
+    if (from === "TOP") {
+      if (selection.id === 1) {
+        setTimeout(() => {
+          setTopRankList(top);
+          setTop5RankList(top.slice(0, 5));
+        }, 100);
+      } else if (selection.id === 2) {
+        setTimeout(() => {
+          setTopRankList(top);
+          setTop5RankList(top.slice(0, 10));
+        }, 100);
+      } else if (selection.id === 3) {
+        setTimeout(() => {
+          setTopRankList(top);
+          setTop5RankList(top.slice(0, 15));
+        }, 100);
+      } else if (selection.id === 4) {
+        setTimeout(() => {
+          setTopRankList(top);
+          setTop5RankList(top.slice(0, 20));
+        }, 100);
+      } else if (selection.id === 5) {
+        setTimeout(() => {
+          setTopRankList(top);
+          setTop5RankList(top);
+        }, 100);
+      }
+    } else {
+      if (selection.id === 1) {
+        setTimeout(() => {
+          setBottom5RankList([...bottom].reverse().slice(0, 5));
+          setReverseBottomRankList([...bottom].reverse());
+        }, 100);
+      } else if (selection.id === 2) {
+        setTimeout(() => {
+
+          setBottom5RankList([...bottom].reverse().slice(0, 10));
+          setReverseBottomRankList([...bottom].reverse());
+        }, 100);
+      } else if (selection.id === 3) {
+        setTimeout(() => {
+
+          setBottom5RankList([...bottom].reverse().slice(0, 15));
+          setReverseBottomRankList([...bottom].reverse());
+        }, 100);
+      } else if (selection.id === 4) {
+        setTimeout(() => {
+
+          setBottom5RankList([...bottom].reverse().slice(0, 20));
+          setReverseBottomRankList([...bottom].reverse());
+        }, 100);
+      } else if (selection.id === 5) {
+        setTimeout(() => {
+          setBottom5RankList([...bottom].reverse());
+          setReverseBottomRankList([...bottom].reverse());
+        }, 100);
+      }
+
+    }
+
+  }
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
@@ -372,11 +667,13 @@ export default function leaderBoardScreen(props) {
               case "TOP_DATA":
               
                 setselectedRankTop(newdata)
+                setDataOnSelection("TOP", newdata)
                 // setselectedRank(newdata);
                 break;
               case "LOW_DATA":
              
                 setselectedRankLow(newdata)
+                setDataOnSelection("LOW", newdata)
                 // setselectedRank(newdata);
                 break;
 
@@ -466,7 +763,7 @@ export default function leaderBoardScreen(props) {
                     </View>
                 </View>
             */}
-        {top5RankList.length && bottom5RankList.length ? null : (
+        {!selector.isLoading ? null : (
           <LoaderComponent
             visible={selector.isLoading}
             onRequestClose={() => { }}

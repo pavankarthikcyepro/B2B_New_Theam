@@ -115,7 +115,7 @@ export const salesGap = baseUrl + "dfd/sales-gap";
 export const getBranch = baseUrl + "dfd/oh";
 export const tasktransfer = baseUrl + "dfd/sales-gap/target-dropdown";
 export const getLeaderBoardData =
-  baseUrl + "dfd/dashboard/v2/get_emp_target_ranking/org";
+  baseUrl + "dfd/dashboard/v2/get_emp_target_Dealer_ranking";
 export const getBranchRankingData =
   baseUrl + "dfd/dashboard/v2/get_emp_target_ranking";
 
@@ -591,8 +591,8 @@ const URL = {
   GET_EMPLOYEE_DETAILS: (orgId, branchId, deptId, desigId) => {
     return `${getEmployeeData}?orgId=${orgId}&branchId=${branchId}&deptId=${deptId}&desigId=${desigId}`;
   },
-  GET_LEADERBOARD_DATA: (orgId) => {
-    return `${getLeaderBoardData}/${orgId}`;
+  GET_LEADERBOARD_DATA: (orgId,branchId) => {
+    return getLeaderBoardData + "/org/" + orgId + "/branch/" + branchId;
   },
   GET_BRANCH_RANKING_DATA: (orgId, branchId) => {
     return getBranchRankingData + "/org/" + orgId + "/branch/" + branchId;

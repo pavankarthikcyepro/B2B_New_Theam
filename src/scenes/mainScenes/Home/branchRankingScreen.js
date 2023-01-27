@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, FlatList, LogBox ,TouchableOpacity} from 'react-native';
 import * as AsyncStore from '../../../asyncStore';
 import { useDispatch, useSelector } from 'react-redux';
-import { getBranchRanksList } from "../../../redux/homeReducer";
+import { getBranchRanksList ,clearState} from "../../../redux/homeReducer";
 import { LoaderComponent, DropDownComponant } from '../../../components';
 import moment from 'moment';
 import { Colors } from '../../../styles';
@@ -20,6 +20,7 @@ const dropdownDataV2 = [
 
 
 ];  
+
 export default function branchRankingScreen(props) {
     const selector = useSelector((state) => state.homeReducer);
     const dispatch = useDispatch();
@@ -33,11 +34,11 @@ export default function branchRankingScreen(props) {
   const [showBottom5View, setShowBottom5View] = useState(false);
   const [reversebottomRankList, setReverseBottomRankList] = useState([]);
   const [selectedRankTop, setselectedRankTop] = useState({
-    name: "Top 5",
+    name: "Top",
     id: 1,
   });
   const [selectedRankLow, setselectedRankLow] = useState({
-    name: "Top 5",
+    name: "Low",
     id: 1,
   });
   const [showDropDownModel, setShowDropDownModel] = useState(false);
@@ -60,7 +61,8 @@ export default function branchRankingScreen(props) {
     if (props?.route?.params) {
     
       let selectedid = props.route.params.params.selectedID
-      getBranchRankListFromServer(selectedid)
+      let deladerID = props.route.params.params.dealeid
+      getBranchRankListFromServer(selectedid,deladerID)
     }
    
   }, [props.route.params])
@@ -170,7 +172,9 @@ export default function branchRankingScreen(props) {
       />
     );
   };
-  const getBranchRankListFromServer = async (selectedid) => {
+  const getBranchRankListFromServer = async (selectedid, deladerID) => {
+    console.log("manthan--- ", deladerID[0])
+    setBranchList([])
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
         const jsonObj = await JSON.parse(employeeData);
          if (jsonObj && jsonObj.empId) {
@@ -180,18 +184,20 @@ export default function branchRankingScreen(props) {
             AsyncStore.Keys.SELECTED_BRANCH_ID
         );
         var date = new Date();
-        var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
-        var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+        // var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+        // var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    const startOfMonth = moment().startOf('month').format('YYYY-MM-DD');
+    const endOfMonth = moment().endOf('month').format('YYYY-MM-DD');
         let payload = {
-            "endDate": moment.utc(lastDay).format('YYYY-MM-DD'),
+          "endDate": endOfMonth,
             "levelSelected": null,
           "loggedInEmpId": selectedid ? selectedid : jsonObj.empId,
             "pageNo": 1,
             "size": 50,
-            "startDate": moment.utc(firstDay).format('YYYY-MM-DD'),
+          "startDate": startOfMonth,
             //not for payload, just to add in params
             "orgId":jsonObj.orgId,
-            "branchId":jsonObj.branchId
+          "branchId": deladerID ?deladerID[0] :jsonObj.branchId
 
         };
         dispatch(getBranchRanksList(payload));
@@ -202,7 +208,7 @@ export default function branchRankingScreen(props) {
       getBranchRankListFromServer();
       setTimeout(() => {
         setBranchList(selector.branchrank_list);
-      }, 2000);
+      }, 1000);
     }, []);
 
     useEffect(() => {
@@ -216,15 +222,16 @@ export default function branchRankingScreen(props) {
         let top = selector.branchrank_list;
         let bottom = [];
         bottom = selector.branchrank_list;
+       
         setTimeout(() => {
           setTopRankList(top);
           setTop5RankList(top.slice(0, 5));
-        }, 2000);
+        }, 1000);
 
         setTimeout(() => {
           setBottom5RankList([...bottom].reverse().slice(0, 5));
           setReverseBottomRankList([...bottom].reverse());
-        }, 2000);
+        }, 1000);
       }
     }, [selector.branchrank_list]);
 
@@ -315,13 +322,238 @@ export default function branchRankingScreen(props) {
 
   const showDropDownModelMethod = (key, headerText) => {
     // Keyboard.dismiss();
+    let dropdownDataV3 = [
 
+    ];
     switch (key) {
       case "TOP_DATA":
-        setDataForDropDown([...dropdownDataV2]);
+       
+        if (selector.branchrank_list.length <= 5) {
+
+          let tmp = {
+            name: "Top 5",
+            id: 1
+          }
+          dropdownDataV3.push(tmp);
+        
+          setDataForDropDown([...dropdownDataV3]);
+        } else if (selector.branchrank_list.length >= 6 && selector.branchrank_list.length <= 10) {
+          let tmp = [{
+            name: "Top 5",
+            id: 1
+          },{
+            name: "Top 10",
+            id: 2 
+          },
+        ]
+        for(let i=0;i<tmp.length;i++){
+          dropdownDataV3.push(tmp[i]);
+        }
+          // dropdownDataV3.push(tmp);
+
+          setDataForDropDown([...dropdownDataV3]);
+        } else if (selector.branchrank_list.length >= 11 && selector.branchrank_list.length <= 15) {
+          let tmp = [{
+            name: "Top 5",
+            id: 1
+          }, {
+            name: "Top 10",
+            id: 2
+            }, {
+              name: "Top 15",
+              id: 3
+            }
+          ]
+      
+          for (let i = 0; i < tmp.length; i++) {
+            dropdownDataV3.push(tmp[i]);
+          }
+          // let tmp = {
+          //   name: "Top 15",
+          //   id: 3
+          // }
+          // dropdownDataV3.push(tmp);
+     
+          setDataForDropDown([...dropdownDataV3]);
+        } else if (selector.branchrank_list.length >= 16 && selector.branchrank_list.length <= 20) {
+          
+          let tmp = [{
+            name: "Top 5",
+            id: 1
+          }, {
+            name: "Top 10",
+            id: 2
+          }, {
+            name: "Top 15",
+            id: 3
+            }, {
+              name: "Top 20",
+              id: 4
+            }
+          ]
+         
+          for (let i = 0; i < tmp.length; i++) {
+            dropdownDataV3.push(tmp[i]);
+          }
+          // let tmp = {
+          //   name: "Top 20",
+          //   id: 4
+          // }
+          // dropdownDataV3.push(tmp);
+
+          setDataForDropDown([...dropdownDataV3]);
+        } else if (selector.branchrank_list.length >= 21) {
+
+          let tmp = [{
+            name: "Top 5",
+            id: 1
+          }, {
+            name: "Top 10",
+            id: 2
+          }, {
+            name: "Top 15",
+            id: 3
+          }, {
+            name: "Top 20",
+            id: 4
+          },
+            {
+              name: "View all",
+              id: 5
+            }
+          ]
+        
+          for (let i = 0; i < tmp.length; i++) {
+            dropdownDataV3.push(tmp[i]);
+          }
+        
+          // let tmp = {
+          //   name: "View all",
+          //   id: 5
+          // }
+          // dropdownDataV3.push(tmp);
+
+          setDataForDropDown([...dropdownDataV3]);
+        }
+       
+        // setDataForDropDown([...dropdownDataV3]);
         break;
       case "LOW_DATA":
-        setDataForDropDown([...dropdownDataV2]);
+
+        
+        if (selector.branchrank_list.length <= 5) {
+
+          let tmp = {
+            name: "Low 5",
+            id: 1
+          }
+          dropdownDataV3.push(tmp);
+
+          setDataForDropDown([...dropdownDataV3]);
+        } else if (selector.branchrank_list.length >= 6 && selector.branchrank_list.length <= 10) {
+          // let tmp = {
+          //   name: "Low 10",
+          //   id: 2
+          // }
+          // dropdownDataV3.push(tmp);
+          let tmp = [{
+            name: "Low 5",
+            id: 1
+          }, {
+            name: "Low 10",
+            id: 2
+          },
+          ]
+          for (let i = 0; i < tmp.length; i++) {
+            dropdownDataV3.push(tmp[i]);
+          }
+          setDataForDropDown([...dropdownDataV3]);
+        } else if (selector.branchrank_list.length >= 11 && selector.branchrank_list.length <= 15) {
+          // let tmp = {
+          //   name: "Low 15",
+          //   id: 3
+          // }
+          // dropdownDataV3.push(tmp);
+          let tmp = [{
+            name: "Low 5",
+            id: 1
+          }, {
+            name: "Low 10",
+            id: 2
+          },
+            {
+            name: "Low 15",
+            id: 3
+          }
+          ]
+          for (let i = 0; i < tmp.length; i++) {
+            dropdownDataV3.push(tmp[i]);
+          }
+          setDataForDropDown([...dropdownDataV3]);
+        } else if (selector.branchrank_list.length >= 16 && selector.branchrank_list.length <= 20) {
+          // let tmp = {
+          //   name: "Low 20",
+          //   id: 4
+          // }
+          // dropdownDataV3.push(tmp);
+
+
+          let tmp = [{
+            name: "Low 5",
+            id: 1
+          }, {
+            name: "Low 10",
+            id: 2
+          },
+          {
+            name: "Low 15",
+            id: 3
+            },
+             {
+              name: "Low 20",
+              id: 4
+            }
+          ]
+          for (let i = 0; i < tmp.length; i++) {
+            dropdownDataV3.push(tmp[i]);
+          }
+          setDataForDropDown([...dropdownDataV3]);
+        } else if (selector.branchrank_list.length >= 21) {
+          // let tmp = {
+          //   name: "View all",
+          //   id: 5
+          // }
+          // dropdownDataV3.push(tmp);
+
+          let tmp = [{
+            name: "Low 5",
+            id: 1
+          }, {
+            name: "Low 10",
+            id: 2
+          },
+          {
+            name: "Low 15",
+            id: 3
+          },
+          {
+            name: "Low 20",
+            id: 4
+          },
+            {
+              name: "View all",
+              id: 5
+            }
+          ]
+          for (let i = 0; i < tmp.length; i++) {
+            dropdownDataV3.push(tmp[i]);
+          }
+
+
+          setDataForDropDown([...dropdownDataV3]);
+        }
+      
+        // setDataForDropDown([...dropdownDataV3]);
         break;
 
     }
@@ -329,6 +561,74 @@ export default function branchRankingScreen(props) {
     // setDropDownTitle(headerText);
     setShowDropDownModel(true);
   };
+
+
+  const setDataOnSelection = (from,selection )=>{
+    
+    let top = selector.branchrank_list;
+    let bottom = [];
+    bottom = selector.branchrank_list;
+    if (from === "TOP"){
+      if (selection.id === 1) {
+        setTimeout(() => {
+          setTopRankList(top);
+          setTop5RankList(top.slice(0, 5));
+        }, 100);
+      } else if (selection.id === 2) {
+        setTimeout(() => {
+          setTopRankList(top);
+          setTop5RankList(top.slice(0, 10));
+        }, 100);
+      } else if (selection.id === 3) {
+        setTimeout(() => {
+          setTopRankList(top);
+          setTop5RankList(top.slice(0, 15));
+        }, 100);
+      } else if (selection.id === 4) {
+        setTimeout(() => {
+          setTopRankList(top);
+          setTop5RankList(top.slice(0, 20));
+        }, 100);
+      } else if (selection.id === 5) {
+        setTimeout(() => {
+          setTopRankList(top);
+          setTop5RankList(top);
+        }, 100);
+      }
+    }else{
+      if (selection.id === 1) {
+        setTimeout(() => {
+          setBottom5RankList([...bottom].reverse().slice(0, 5));
+          setReverseBottomRankList([...bottom].reverse());
+        }, 100);
+      } else if (selection.id === 2) {
+        setTimeout(() => {
+          
+          setBottom5RankList([...bottom].reverse().slice(0, 10));
+          setReverseBottomRankList([...bottom].reverse());
+        }, 100);
+      } else if (selection.id === 3) {
+        setTimeout(() => {
+          
+          setBottom5RankList([...bottom].reverse().slice(0, 15));
+          setReverseBottomRankList([...bottom].reverse());
+        }, 100);
+      } else if (selection.id === 4) {
+        setTimeout(() => {
+      
+          setBottom5RankList([...bottom].reverse().slice(0, 20));
+          setReverseBottomRankList([...bottom].reverse());
+        }, 100);
+      } else if (selection.id === 5) {
+        setTimeout(() => {
+          setBottom5RankList([...bottom].reverse());
+          setReverseBottomRankList([...bottom].reverse());
+        }, 100);
+      }
+    
+    }
+   
+  }
 
     return (
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -345,11 +645,13 @@ export default function branchRankingScreen(props) {
               case "TOP_DATA":
                
                 setselectedRankTop(newdata)
+                setDataOnSelection("TOP",newdata)
                 // setselectedRank(newdata);
                 break;
               case "LOW_DATA":
               
                 setselectedRankLow(newdata)
+                setDataOnSelection("LOW",newdata)
                 // setselectedRank(newdata);
                 break;
 
@@ -362,7 +664,7 @@ export default function branchRankingScreen(props) {
 
         <View style={styles.rankBox}>
           
-              {branchList.length ? null : (
+          {!selector.isLoading ? null : (
                 <LoaderComponent
                   visible={selector.isLoading}
                   onRequestClose={() => {}}

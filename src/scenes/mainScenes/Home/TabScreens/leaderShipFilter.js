@@ -33,7 +33,7 @@ import {
     getTargetParametersData,
     getEmployeesDropDownData,
     getSalesData,
-    getSalesComparisonData,
+    getSalesComparisonData, updateLeaderShipFilter
 } from "../../../../redux/homeReducer";
 import { showAlertMessage, showToast } from "../../../../utils/toast";
 import { AppNavigator } from "../../../../navigations";
@@ -58,7 +58,7 @@ const AcitivityLoader = () => {
         </View>
     );
 };
-
+let dealeid;
 const LeaderShipFilter = (props) => {
     const selector = useSelector((state) => state.homeReducer);
     const dispatch = useDispatch();
@@ -89,7 +89,69 @@ const LeaderShipFilter = (props) => {
     useEffect(() => {
         
         getAsyncData();
+
     }, []);
+
+    useEffect(() => {
+        let tempArr = selector.leaderShipFIlterId;
+    
+        if(tempArr.length > 0){
+            // let names=[];
+            // for (let key in selector.filter_drop_down_data) {
+            //     // names.push(key);
+            //     // console.log("manthansssss 11", )
+            //     key.map((item) => { console.log("manthansssssqq ",item) })
+            // }
+
+            let data = selector.filter_drop_down_data;
+            let filterIds = selector.leaderShipFIlterId;
+            let names = [];
+            let dealerIds = [];
+            for (let key in data) {
+                names.push(key);
+                let localData =
+                    data[key] && data[key]?.sublevels?.length ? data[key].sublevels : [];
+                let newData = localData?.map((obj) => {
+                   
+                    if (key === "Dealer Code" && filterIds.includes(obj?.id)) {
+                        dealerIds.push(obj?.id);
+                     
+                    }
+                    return {
+                        ...obj,
+                        selected: filterIds?.includes(obj?.id) ? true : false,
+                    };
+                });
+                data = {
+                    ...data,
+                    [key]: {
+                        sublevels: newData,
+                    },
+                };
+            }
+            
+
+           
+            setTotalDataObj(data);
+            setNameKeyList([...names]);
+            // dropDownItemClicked(4)
+          
+           
+        }else{
+            if (selector.filter_drop_down_data) {
+
+                let names = [];
+                for (let key in selector.filter_drop_down_data) {
+                    names.push(key);
+                }
+
+                setNameKeyList(names);
+                setTotalDataObj(selector.filter_drop_down_data);
+            }
+        }
+    
+    }, [selector.leaderShipFIlterId, selector.filter_drop_down_data])
+    
 
     const getAsyncData = async (startDate, endDate) => {
         const employeeData = await AsyncStore.getData(
@@ -108,14 +170,7 @@ const LeaderShipFilter = (props) => {
     };
 
     useEffect(() => {
-        if (selector.filter_drop_down_data) {
-            let names = [];
-            for (let key in selector.filter_drop_down_data) {
-                names.push(key);
-            }
-            setNameKeyList(names);
-            setTotalDataObj(selector.filter_drop_down_data);
-        }
+        
 
         const currentDate = moment().format(dateFormat);
         const monthFirstDate = moment(currentDate, dateFormat)
@@ -178,7 +233,6 @@ const LeaderShipFilter = (props) => {
         }
 
         if (index === 4) {
-
             setDropDownData([...newData]);
             if (initalCall) {
                 let updatedMultipleData = [...newData];
@@ -201,6 +255,7 @@ const LeaderShipFilter = (props) => {
         setSelectedItemIndex(index);
         !initalCall && setShowDropDownModel(true);
         setDropDownFrom("ORG_TABLE");
+       
     };
 
     const dropDownItemClicked2 = (index) => {
@@ -355,22 +410,45 @@ const LeaderShipFilter = (props) => {
     };
 
     const submitBtnClicked = (initialData) => {
+        // let i = 0;
+        // const selectedIds = [];
+        // for (i; i < nameKeyList.length; i++) {
+        //     let key = nameKeyList[i];
+        //     const dataArray = initialData
+        //         ? initialData[key].sublevels
+        //         : totalDataObj[key].sublevels;
+        //     if (dataArray.length > 0) {
+        //         dataArray.forEach((item, index) => {
+        //             if (item.selected != undefined && item.selected == true) {
+        //                 selectedIds.push(item.id);
+        //             }
+        //         });
+        //     }
+        // }
+
         let i = 0;
-        const selectedIds = [];
-        for (i; i < nameKeyList.length; i++) {
-            let key = nameKeyList[i];
-            const dataArray = initialData
-                ? initialData[key].sublevels
-                : totalDataObj[key].sublevels;
-            if (dataArray.length > 0) {
-                dataArray.forEach((item, index) => {
-                    if (item.selected != undefined && item.selected == true) {
-                        selectedIds.push(item.id);
-                    }
-                });
+    const selectedIds = [];
+    let dealerIds = [];
+    for (i; i < nameKeyList.length; i++) {
+      let key = nameKeyList[i];
+      const dataArray = initialData
+        ? initialData[key].sublevels
+        : totalDataObj[key].sublevels;
+      if (dataArray.length > 0) {
+        dataArray.forEach((item, index) => {
+          if (item.selected != undefined && item.selected == true) {
+            if (key === "Dealer Code") {
+                dealerIds.push(item.branch);
             }
-        }
+            selectedIds.push(item.id);
+          }
+        });
+      }
+    }
+        dealeid = dealerIds;
+        console.log("manthanddd selectedIds", dealeid)
         if (selectedIds.length > 0) {
+            dispatch(updateLeaderShipFilter(selectedIds))
             setIsLoading(true);
             getDashboadTableDataFromServer(selectedIds, "LEVEL");
         } else {
@@ -495,6 +573,7 @@ const LeaderShipFilter = (props) => {
             newDataObj[key] = newArray;
         }
         setEmployeeDropDownDataLocal(newDataObj);
+        clearBtnClicked()
     };
 
     const submitBtnForEmployeeData = () => {
@@ -517,7 +596,7 @@ const LeaderShipFilter = (props) => {
             ]
             ];
         let selectedID = x.filter((e) => e.selected == true);
-
+        console.log("manthanssssssss ", dealeid);
         // todo
         // return
         if (props.route.params.fromScreen === "BRANCH_RANK"){
@@ -527,6 +606,7 @@ const LeaderShipFilter = (props) => {
                     selectedID: selectedIds[selectedIds.length - 1],
                     fromDate: fromDate,
                     toDate: toDate,
+                    dealeid: dealeid
                 },
             });
         } else if (props.route.params.fromScreen === "DEALER_RANK"){
@@ -536,6 +616,7 @@ const LeaderShipFilter = (props) => {
                     selectedID: selectedIds[selectedIds.length - 1],
                     fromDate: fromDate,
                     toDate: toDate,
+                    dealeid: dealeid
                 },
             });
         }
@@ -657,7 +738,7 @@ const LeaderShipFilter = (props) => {
                                             renderItem={({ item, index }) => {
 
                                                 const data = totalDataObj[item].sublevels;
-
+                                              
                                                 let selectedNames = "";
                                                 let disabletemp = false;
                                                 data.forEach((obj, index) => {
@@ -680,7 +761,7 @@ const LeaderShipFilter = (props) => {
                                                         selectedNames.length - 1
                                                     );
                                                 }
-
+                                               
                                                 return (
                                                     <View>
                                                         <DropDownSelectionItem
