@@ -118,6 +118,8 @@ export const getLeaderBoardData =
   baseUrl + "dfd/dashboard/v2/get_emp_target_Dealer_ranking";
 export const getBranchRankingData =
   baseUrl + "dfd/dashboard/v2/get_emp_target_ranking";
+export const getBranchRankingDataV2 =
+  baseUrl + "dfd/dashboard/v2/get_emp_target_Branch_ranking";
 
 export const vehicleServices_url = baseUrl + "dfdl/vehicle-services";
 
@@ -594,8 +596,14 @@ const URL = {
   GET_LEADERBOARD_DATA: (orgId,branchId) => {
     return getLeaderBoardData + "/org/" + orgId + "/branch/" + branchId;
   },
+  GET_LEADERBOARD_DATA_branch: (orgId, branchId) => {
+    return getLeaderBoardData + "/org/" + orgId + "/branchName/" + branchId;
+  },
   GET_BRANCH_RANKING_DATA: (orgId, branchId) => {
     return getBranchRankingData + "/org/" + orgId + "/branch/" + branchId;
+  },
+  GET_BRANCH_RANKING_DATA_branch: (orgId, branchId) => {
+    return getBranchRankingDataV2 + "/org/" + orgId + "/branchName/" + branchId;
   },
   EMPLOYEE_DATA_UPDATE: (empID, managerID) => {
     return `${updateEmployeeTaskDelegate}/${empID}/reportingManager/${managerID}/update`;

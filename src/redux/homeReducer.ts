@@ -523,7 +523,7 @@ export const getLeaderBoardList = createAsyncThunk(
   "HOME/getLeaderBoardList",
   async (payload: any, { rejectWithValue }) => {
     const response = await client.post(
-      URL.GET_LEADERBOARD_DATA(payload.orgId, payload.branchId),
+      URL.GET_LEADERBOARD_DATA_branch(payload.orgId, payload.branchId),
       payload
     );
     const json = await response.json();
@@ -534,11 +534,11 @@ export const getLeaderBoardList = createAsyncThunk(
   }
 );
 
-export const getBranchRanksList = createAsyncThunk(
+export const  getBranchRanksList = createAsyncThunk(
   "HOME/getBranchRanksList",
   async (payload, { rejectWithValue }) => {
     const response = await client.post(
-      URL.GET_BRANCH_RANKING_DATA(payload.orgId, payload.branchId),
+      URL.GET_BRANCH_RANKING_DATA_branch(payload.orgId, payload.branchId),
       payload
     );
     const json = await response.json();

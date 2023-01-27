@@ -233,7 +233,7 @@ export default function leaderBoardScreen(props) {
 
 
   const getLeaderboardListFromServer = async (loogedInid, deladerID) => {
-    console.log("manthan---fff ",deladerID)
+   
     var date = new Date();
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     const jsonObj = await JSON.parse(employeeData);
@@ -241,6 +241,13 @@ export default function leaderBoardScreen(props) {
     // var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
     const startOfMonth = moment().startOf('month').format('YYYY-MM-DD');
     const endOfMonth = moment().endOf('month').format('YYYY-MM-DD');
+    let branName= "";
+    await AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_NAME).then((branchName) => {
+      if (branchName) {
+       
+        branName = branchName;
+      }
+    });
     let payload = {
       "endDate": endOfMonth,
       "levelSelected": null,
@@ -249,7 +256,7 @@ export default function leaderBoardScreen(props) {
       "size": 50,
       "startDate": startOfMonth,
       "orgId": jsonObj.orgId,
-      "branchId": deladerID ? deladerID[0]: jsonObj.branchId
+      "branchId": deladerID ? deladerID[0] : branName
     };
     // alert(JSON.stringify(payload))
     dispatch(getLeaderBoardList(payload));
@@ -315,6 +322,7 @@ export default function leaderBoardScreen(props) {
   }
 
   const renderListItem = (item, extraIndex) => {
+   
     let isActive = item.empId == loggedInEmpId && !selector.isRankHide;
     return (
       <View style={isActive ? styles.activeSubRow : styles.tableSubRow}>

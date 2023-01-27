@@ -173,7 +173,7 @@ export default function branchRankingScreen(props) {
     );
   };
   const getBranchRankListFromServer = async (selectedid, deladerID) => {
-    console.log("manthan--- ", deladerID[0])
+    
     setBranchList([])
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
         const jsonObj = await JSON.parse(employeeData);
@@ -188,6 +188,17 @@ export default function branchRankingScreen(props) {
         // var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
     const startOfMonth = moment().startOf('month').format('YYYY-MM-DD');
     const endOfMonth = moment().endOf('month').format('YYYY-MM-DD');
+
+
+    let branName = "";
+    await AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_NAME).then((branchName) => {
+      if (branchName) {
+     
+        branName = branchName;
+      }
+    });
+
+
         let payload = {
           "endDate": endOfMonth,
             "levelSelected": null,
@@ -197,7 +208,7 @@ export default function branchRankingScreen(props) {
           "startDate": startOfMonth,
             //not for payload, just to add in params
             "orgId":jsonObj.orgId,
-          "branchId": deladerID ?deladerID[0] :jsonObj.branchId
+          "branchId": deladerID ? deladerID[0] : branName
 
         };
         dispatch(getBranchRanksList(payload));

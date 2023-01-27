@@ -96,12 +96,7 @@ const LeaderShipFilter = (props) => {
         let tempArr = selector.leaderShipFIlterId;
     
         if(tempArr.length > 0){
-            // let names=[];
-            // for (let key in selector.filter_drop_down_data) {
-            //     // names.push(key);
-            //     // console.log("manthansssss 11", )
-            //     key.map((item) => { console.log("manthansssssqq ",item) })
-            // }
+            
 
             let data = selector.filter_drop_down_data;
             let filterIds = selector.leaderShipFIlterId;
@@ -438,7 +433,7 @@ const LeaderShipFilter = (props) => {
         dataArray.forEach((item, index) => {
           if (item.selected != undefined && item.selected == true) {
             if (key === "Dealer Code") {
-                dealerIds.push(item.branch);
+                dealerIds.push(item.name);
             }
             selectedIds.push(item.id);
           }
@@ -446,7 +441,7 @@ const LeaderShipFilter = (props) => {
       }
     }
         dealeid = dealerIds;
-        console.log("manthanddd selectedIds", dealeid)
+        
         if (selectedIds.length > 0) {
             dispatch(updateLeaderShipFilter(selectedIds))
             setIsLoading(true);
@@ -596,7 +591,7 @@ const LeaderShipFilter = (props) => {
             ]
             ];
         let selectedID = x.filter((e) => e.selected == true);
-        console.log("manthanssssssss ", dealeid);
+        
         // todo
         // return
         if (props.route.params.fromScreen === "BRANCH_RANK"){
