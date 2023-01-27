@@ -127,6 +127,7 @@ const MDMenu = [
   "Settings",
   "Digital Payment",
   "Digital Dashboard",
+  "Event Dashboard",
   "Target Planning",
   "My Attendance",
   "Helpdesk",
@@ -141,6 +142,7 @@ const SalesConsultant = [
   "Home",
   "Live Leads",
   "Target Planning",
+  "Event Dashboard",
   "My Attendance",
   "Geolocation",
   "Drop/Lost/Cancel",
@@ -398,9 +400,10 @@ const SideMenuScreen = ({ navigation }) => {
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.geolocation);
         break;
       case 118:
-        navigation.navigate(
-          AppNavigator.DrawerStackIdentifiers.digitalDashboard
-        );
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.digitalDashboard);
+        break;
+      case 119:
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.eventDashboard);
         break;
       case 112:
         signOutClicked();
