@@ -159,7 +159,6 @@ const AppScreen = () => {
                 let y = x[x.length - 1].location;
                 let z = JSON.parse(y);
                 let lastlocation = z[z.length - 1];
-                console.log("PPPPPPPPP", lastlocation);
 
                 let dist = getDistanceBetweenTwoPoints(
                   lastlocation.latitude,
