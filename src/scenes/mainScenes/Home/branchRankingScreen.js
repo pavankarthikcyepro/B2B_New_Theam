@@ -56,8 +56,12 @@ export default function branchRankingScreen(props) {
 
 
   useEffect(() => {
-    console.log("manthan-- ddd ",props.route.params)
-
+  
+    if (props?.route?.params) {
+    
+      let selectedid = props.route.params.params.selectedID
+      getBranchRankListFromServer(selectedid)
+    }
    
   }, [props.route.params])
 
@@ -166,7 +170,7 @@ export default function branchRankingScreen(props) {
       />
     );
   };
-    const getBranchRankListFromServer = async () => {
+  const getBranchRankListFromServer = async (selectedid) => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
         const jsonObj = await JSON.parse(employeeData);
          if (jsonObj && jsonObj.empId) {
@@ -181,7 +185,7 @@ export default function branchRankingScreen(props) {
         let payload = {
             "endDate": moment.utc(lastDay).format('YYYY-MM-DD'),
             "levelSelected": null,
-            "loggedInEmpId": jsonObj.empId,
+          "loggedInEmpId": selectedid ? selectedid : jsonObj.empId,
             "pageNo": 1,
             "size": 50,
             "startDate": moment.utc(firstDay).format('YYYY-MM-DD'),
