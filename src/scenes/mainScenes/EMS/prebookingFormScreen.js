@@ -260,6 +260,7 @@ const PaidAccessoriesTextAndAmountComp = ({
 };
 
 let isProceedToBookingClicked = false;
+let isChangedModelPrimary = true;
 
 const PrebookingFormScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
@@ -838,6 +839,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           modelData.model != value.model
         ) {
           dispatch(updateOfferPriceData());
+          console.log("clearPriceConfirmationData 1");
           clearPriceConfirmationData();
         }
 
@@ -862,7 +864,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             // } else {
             //   addingIsPrimary();
             // }
-          } else if (!value.color) {
+          } else if (!value.color && value.isPrimary == "Y") {
             dispatch(updateOfferPriceData());
             clearPriceConfirmationData();
             setCarModelDataList(value, index);
@@ -890,6 +892,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     if (arr[index] && value) {
       arr[index] = value;
     }
+
+    if (value?.isPrimary == "Y") {
+      isChangedModelPrimary = true;
+    } else {
+      isChangedModelPrimary = false;
+    }
+
     let primaryModel = [];
     primaryModel = arr.filter((item) => item.isPrimary === "Y");
 
@@ -960,11 +969,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           variant: item.variant,
           isPrimary: "Y",
         };
-        console.log("2 -> ");
         await setCarModelsList([]);
         arr[isPrimaryCureentIndex] = cardata;
         arr[index] = selecteditem;
-        console.log("3 -> ", arr);
         await setCarModelsList([...arr]);
         await setIsPrimaryCurrentIndex(index);
       }
@@ -1647,12 +1654,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           transmissionType: carModelObj.transmission_type,
         };
         dispatch(updateFuelAndTransmissionType(obj));
-        dispatch(
-          getOnRoadPriceAndInsurenceDetailsApi({
-            orgId: userData.orgId,
-            varientId: varientId,
-          })
-        );
+        
+          dispatch(
+            getOnRoadPriceAndInsurenceDetailsApi({
+              orgId: userData.orgId,
+              varientId: varientId,
+            })
+          );
         setCarColorsData([...newArray]);
       }
     }
@@ -2970,6 +2978,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     }
     return () => {
       dispatch(clearBookingState());
+      isChangedModelPrimary = true;
     };
   }, []);
 
