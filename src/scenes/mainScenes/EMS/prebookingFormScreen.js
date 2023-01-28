@@ -896,7 +896,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             findPrimaryData[0].fuel,
             userData.orgId
           );
-          await setCarModelsList([...arr]);
+          console.log("LLLLLLLL", arr);
+          if (arr.some((val) => val === undefined)) {
+            console.log("Array contains undefined value");
+            await setCarModelsList(Object.assign([], arr));
+          } else {
+            console.log("Array does not contain undefined value");
+          }
+          // await setCarModelsList([...arr]);
         }
       }
     } catch (error) {
@@ -905,12 +912,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   };
 
   const setCarModelDataList = async (value, index) => {
-    let arr = Object.assign([], carModelsList);
+    let arr = Object.assign([], carModelsList) || carModelsList;
     if (arr[index] && value) {
       arr[index] = value;
     }
     let primaryModel = [];
-    primaryModel = arr.filter((item) => item.isPrimary === "Y");
+    console.log("arr", carModelsList, arr);
+    primaryModel = arr.filter((item) => item?.isPrimary === "Y");
 
     if (primaryModel.length > 0) {
       if (primaryModel[0].variant !== "" && primaryModel[0].model !== "") {
@@ -921,6 +929,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         );
       }
     }
+    console.log("arrssss", arr);
 
     let findPrimaryData = [...arr].filter((item) => item.isPrimary === "Y");
     getConfigureRulesDetails(
@@ -929,7 +938,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       findPrimaryData[0].fuel,
       userData.orgId
     );
+              console.log("sssssss", arr);
+if (arr.some((val) => val === undefined)) {
+  console.log("Array contains undefined value");
     await setCarModelsList(Object.assign([], arr));
+} else {
+  console.log("Array does not contain undefined value");
+}
   };
 
   useEffect(() => {
@@ -969,6 +984,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   };
 
   const isPrimaryOnclick = async (isPrimaryEnabled, index, item) => {
+    // return
     try {
       if (isPrimaryEnabled === "Y") {
         await setIsPrimaryCurrentIndex(index);
@@ -997,6 +1013,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           variant: item.variant,
           isPrimary: "Y",
         };
+                  console.log("ssaaaa", );
+
         await setCarModelsList([]);
         arr[isPrimaryCureentIndex] = cardata;
         arr[index] = selecteditem;
@@ -1005,11 +1023,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         let findPrimaryData = [...arr].filter(item => item.isPrimary === "Y")
         
         getConfigureRulesDetails(findPrimaryData[0].model, findPrimaryData[0].variant, findPrimaryData[0].fuel, userData.orgId)
+                  console.log("bbbbbbbb", arr);
+
         await setCarModelsList([...arr]);
         await setIsPrimaryCurrentIndex(index);
       }
     } catch (error) {
-      // alert(error)
+      alert(error)
     }
   };
   const getAsyncstoreData = async () => {
@@ -2585,7 +2605,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       let findPrimaryData = array.filter(item => item.isPrimary === "Y")
     
       getConfigureRulesDetails(findPrimaryData[0].model, findPrimaryData[0].variant, findPrimaryData[0].fuel, userData.orgId)
-      await setCarModelsList(array);
+                console.log("kkkkkkkk", array);
+if (array.some((val) => val === undefined)) {
+  console.log("Array contains undefined value");
+  setCarModelsList(array);
+} else {
+  console.log("Array does not contain undefined value");
+}
     } catch (error) { }
   };
   const mapContactOrAccountDto = (prevData) => {
@@ -4742,7 +4768,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       };
                       let arr = [...carModelsList];
                       arr.push(carmodeldata);
-                      setCarModelsList(arr);
+                                      console.log("xggggggg", arr);
+if (arr.some((val) => val === undefined)) {
+  console.log("Array contains undefined value");
+                        setCarModelsList(arr);
+
+} else {
+  console.log("Array does not contain undefined value");
+}
                       // selector.dmsLeadProducts = [...selector.dmsLeadProducts, carmodeldata]
                     }}
                     style={styles.addmodelView}
@@ -4754,10 +4787,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     </Text>
                   </TouchableOpacity>
                 )}
+                {console.log("carModelsList",carModelsList)}
                 <FlatList
                   data={carModelsList}
                   extraData={carModelsList}
-                  keyExtractor={(item, index) => item.id.toString()}
+                  keyExtractor={(item, index) => item?.id?.toString()}
                   renderItem={({ item, index }) => {
                     return (
                       // <Pressable onPress={() => selectedItem(item, index)}>

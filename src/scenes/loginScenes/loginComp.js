@@ -360,7 +360,7 @@ const LoginScreen = ({ navigation }) => {
                 } 
               },
               (error) => {
-                console.error(error);
+                // console.error(error);
               },
               {
                 enableHighAccuracy: true,

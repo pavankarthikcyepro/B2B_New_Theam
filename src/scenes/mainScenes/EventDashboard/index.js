@@ -147,7 +147,6 @@ const EventDashBoardScreen = ({ route, navigation }) => {
     });
   }, [navigation]);
 
-
   function isEmpty(obj) {
     return Object.keys(obj).length === 0;
   }
@@ -237,17 +236,187 @@ const EventDashBoardScreen = ({ route, navigation }) => {
   }, [selector.allGroupDealerData]);
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener("focus", () => {
-    });
-
+    const unsubscribe = navigation.addListener("focus", () => {});
+    getLoginEmployeeDetailsFromAsyn();
     return unsubscribe;
   }, [navigation]);
-
 
   useEffect(() => {
     setIsTeam(selector.isTeam);
   }, [selector.isTeam]);
 
+  const getLoginEmployeeDetailsFromAsyn = async () => {
+    let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      setUserData({
+        empId: jsonObj.empId,
+        empName: jsonObj.empName,
+        hrmsRole: jsonObj.hrmsRole,
+        orgId: jsonObj.orgId,
+      });
+      const payload = {
+        orgId: jsonObj.orgId,
+        branchId: jsonObj.branchId,
+      };
+      setHeaderText(jsonObj.empName);
+      const dateFormat = "YYYY-MM-DD";
+      const currentDate = moment().format(dateFormat);
+      const monthFirstDate = moment(currentDate, dateFormat)
+        .subtract(0, "months")
+        .startOf("month")
+        .format(dateFormat);
+      const monthLastDate = moment(currentDate, dateFormat)
+        .subtract(0, "months")
+        .endOf("month")
+        .format(dateFormat);
+
+      Promise.all([
+        dispatch(getOrganaizationHirarchyList(payload)),
+        dispatch(getSourceOfEnquiryList(jsonObj.orgId)),
+        dispatch(
+          getVehicalModalList({
+            bu: jsonObj.orgId,
+            dropdownType: "model",
+            parentId: 0,
+          })
+        ),
+        dispatch(
+          getDealerRanking({
+            payload: {
+              endDate: monthLastDate,
+              loggedInEmpId: jsonObj.empId,
+              startDate: monthFirstDate,
+              levelSelected: null,
+              pageNo: 0,
+              size: 0,
+            },
+            orgId: jsonObj.orgId,
+            branchId: jsonObj.branchId,
+          })
+        ),
+        dispatch(
+          getGroupDealerRanking({
+            payload: {
+              endDate: monthLastDate,
+              loggedInEmpId: jsonObj.empId,
+              startDate: monthFirstDate,
+              levelSelected: null,
+              pageNo: 0,
+              size: 0,
+            },
+            orgId: jsonObj.orgId,
+          })
+        ),
+      ]).then(() => {});
+      if (
+        jsonObj?.hrmsRole === "Admin" ||
+        jsonObj?.hrmsRole === "Admin Prod" ||
+        jsonObj?.hrmsRole === "App Admin" ||
+        jsonObj?.hrmsRole === "Manager" ||
+        jsonObj?.hrmsRole === "TL" ||
+        jsonObj?.hrmsRole === "General Manager" ||
+        jsonObj?.hrmsRole === "branch manager" ||
+        jsonObj?.hrmsRole === "Testdrive_Manager" ||
+        jsonObj?.hrmsRole === "MD" ||
+        jsonObj?.hrmsRole === "Business Head" ||
+        jsonObj?.hrmsRole === "Sales Manager" ||
+        jsonObj?.hrmsRole === "Sales Head" ||
+        jsonObj?.hrmsRole === "CRM"
+      ) {
+        dispatch(updateIsTeamPresent(true));
+        setIsTeamPresent(true);
+        if (jsonObj?.hrmsRole === "MD" || jsonObj?.hrmsRole === "App Admin") {
+          dispatch(updateIsMD(true));
+          if (jsonObj?.hrmsRole === "MD") {
+            setIsButtonPresent(true);
+          }
+        } else {
+          dispatch(updateIsMD(false));
+        }
+        const dateFormat = "YYYY-MM-DD";
+        const currentDate = moment().format(dateFormat);
+        const monthFirstDate = moment(currentDate, dateFormat)
+          .subtract(0, "months")
+          .startOf("month")
+          .format(dateFormat);
+        const monthLastDate = moment(currentDate, dateFormat)
+          .subtract(0, "months")
+          .endOf("month")
+          .format(dateFormat);
+
+        const payload = {
+          endDate: selector?.filterIds?.endDate
+            ? selector.filterIds.endDate
+            : monthLastDate,
+          loggedInEmpId: jsonObj.empId,
+          startDate: selector?.filterIds?.startDate
+            ? selector.filterIds.startDate
+            : monthFirstDate,
+          empId: jsonObj.empId,
+        };
+        if (selector.filterIds?.empSelected?.length) {
+          payload["empSelected"] = selector.filterIds.empSelected;
+        } else {
+          payload["levelSelected"] = selector.filterIds?.levelSelected?.length
+            ? selector.filterIds.levelSelected
+            : null;
+        }
+        getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
+          .then((x) => {})
+          .catch((y) => {});
+      }
+
+      if (
+        jsonObj?.hrmsRole === "Business Head" ||
+        jsonObj?.hrmsRole === "MD" ||
+        jsonObj?.hrmsRole === "General Manager" ||
+        jsonObj?.hrmsRole === "Admin" ||
+        jsonObj?.hrmsRole === "App Admin" ||
+        jsonObj?.hrmsRole === "Admin Prod"
+      ) {
+        dispatch(updateIsRankHide(true));
+      } else {
+        dispatch(updateIsRankHide(false));
+      }
+
+      if (jsonObj?.hrmsRole.toLowerCase().includes("manager")) {
+        dispatch(updateIsManager(true));
+      } else {
+        dispatch(updateIsManager(false));
+      }
+
+      if (
+        jsonObj?.hrmsRole.toLowerCase().includes("dse") ||
+        jsonObj?.hrmsRole.toLowerCase().includes("sales consultant")
+      ) {
+        dispatch(updateIsDSE(true));
+      } else {
+        dispatch(updateIsDSE(false));
+      }
+
+      if (jsonObj?.roles.length > 0) {
+        let rolesArr = [],
+          mdArr = [],
+          dseArr = [];
+        rolesArr = jsonObj.roles.filter((item) => {
+          return (
+            item === "Admin Prod" ||
+            item === "App Admin" ||
+            item === "Manager" ||
+            item === "TL" ||
+            item === "General Manager" ||
+            item === "branch manager" ||
+            item === "Testdrive_Manager"
+          );
+        });
+        if (rolesArr.length > 0) {
+          setRoles(rolesArr);
+        }
+      }
+      // getDashboadTableDataFromServer(jsonObj.empId);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -257,6 +426,7 @@ const EventDashBoardScreen = ({ route, navigation }) => {
       >
         <View>
           {isTeamPresent && !selector.isDSE && (
+        //   {true && (
             <View style={{ ...styles.view9, marginTop: 25 }}>
               <View style={styles.view10}>
                 <TouchableOpacity
@@ -343,7 +513,7 @@ const EventDashBoardScreen = ({ route, navigation }) => {
               shadowRadius: 4,
               shadowOpacity: 0.5,
               marginHorizontal: 4,
-              height:"90%",
+              height: "90%",
             }}
           >
             {(selector.target_parameters_data.length > 0 ||
