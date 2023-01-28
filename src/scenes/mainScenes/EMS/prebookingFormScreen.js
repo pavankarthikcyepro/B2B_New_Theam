@@ -4799,9 +4799,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 <FlatList
                   data={carModelsList}
                   extraData={carModelsList}
-                  keyExtractor={(item, index) =>
-                    item && item.id ? item.id.toString() : index.toString()
-                  }
+                  keyExtractor={(item, index) => item && item.id ? item.id.toString() : index.toString()}
                   renderItem={({ item, index }) => {
                     return (
                       // <Pressable onPress={() => selectedItem(item, index)}>

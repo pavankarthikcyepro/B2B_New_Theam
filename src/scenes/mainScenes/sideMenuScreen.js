@@ -154,6 +154,22 @@ const SalesConsultant = [
   "Sign Out",
 ];
 
+const SalesManager = [
+  "Home",
+  "Live Leads",
+  "Target Planning",
+  "My Attendance",
+  "Digital Dashboard",
+  "Geolocation",
+  "Drop/Lost/Cancel",
+  "Task Transfer",
+  "Helpdesk",
+  "Settings",
+  "QR Code",
+  "Drop Analysis",
+  "Sign Out",
+];
+
 const SideMenuScreen = ({ navigation }) => {
   const selector = useSelector((state) => state.sideMenuReducer);
   const homeSelector = useSelector((state) => state.loginReducer);
@@ -327,9 +343,13 @@ const SideMenuScreen = ({ navigation }) => {
       newFilterData = selector.tableData.filter((item) =>
         SalesConsultant.includes(item.title)
       );
-    } else if (jsonObj.hrmsRole === "Sales Manager") {
+    } else if (
+      jsonObj.hrmsRole == "Sales Manager" ||
+      jsonObj.hrmsRole == "Manager" ||
+      jsonObj.hrmsRole == "branch manager"
+    ) {
       newFilterData = selector.tableData.filter((item) =>
-        SalesConsultant.includes(item.title)
+        SalesManager.includes(item.title)
       );
     } else if (jsonObj.hrmsRole === "MD") {
       newFilterData = selector.tableData.filter((item) =>
