@@ -457,6 +457,8 @@ const MainParamScreen = ({ route, navigation }) => {
           targetType: "MONTHLY",
           // "targetName": selector.targetType === 'MONTHLY' ? selector.selectedMonth.value : selector.selectedSpecial.keyId
           targetName: targetName !== "" ? targetName : "DEFAULT",
+          loggedInEmpId: jsonObj.empId,
+          recordId: selectedUser?.recordId || ownData?.id,
         };
 
         Promise.all([dispatch(editTargetMapping(payload))])
