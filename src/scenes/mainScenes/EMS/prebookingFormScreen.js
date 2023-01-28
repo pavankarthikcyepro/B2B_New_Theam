@@ -15,7 +15,9 @@ import {
   Image,
   TouchableOpacity,
   Modal,
-  Alert, FlatList, RefreshControl
+  Alert,
+  FlatList,
+  RefreshControl,
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { useDispatch, useSelector } from "react-redux";
@@ -25,7 +27,7 @@ import {
   DatePickerComponent,
 } from "../../../components";
 import { PreBookingModelListitemCom } from "./components/PreBookingModelListItem";
-import { LoaderComponent } from '../../../components';
+import { LoaderComponent } from "../../../components";
 
 import {
   clearState,
@@ -71,7 +73,9 @@ import {
   updateRef,
   updateResponseStatus,
   clearPermanentAddr,
-  updateAddressByPincode2, getRulesConfiguration, getOtherPricesDropDown
+  updateAddressByPincode2,
+  getRulesConfiguration,
+  getOtherPricesDropDown,
 } from "../../../redux/preBookingFormReducer";
 import {
   clearBookingState,
@@ -94,7 +98,7 @@ import {
 } from "../../../components";
 import { Checkbox, List, Button, IconButton } from "react-native-paper";
 import * as AsyncStore from "../../../asyncStore";
-import { Dropdown } from 'react-native-element-dropdown';
+import { Dropdown } from "react-native-element-dropdown";
 import {
   Salutation_Types,
   Enquiry_Segment_Data,
@@ -103,7 +107,7 @@ import {
   Finance_Category_Types,
   Approx_Auual_Income_Types,
   Buyer_Type_Data,
-  Gender_Types
+  Gender_Types,
 } from "../../../jsonData/enquiryFormScreenJsonData";
 import {
   Payment_At_Types,
@@ -121,7 +125,8 @@ import {
 } from "../../../utils/toast";
 import {
   convertDateStringToMillisecondsUsingMoment,
-  isValidateAlphabetics, isValidate,
+  isValidateAlphabetics,
+  isValidate,
   isMobileNumber,
   emiCalculator,
   GetCarModelList,
@@ -132,7 +137,7 @@ import {
   isEmail,
   PincodeDetailsNew,
   isCheckPanOrAadhaar,
-  convertDateStringToMilliseconds
+  convertDateStringToMilliseconds,
 } from "../../../utils/helperFunctions";
 import URL from "../../../networking/endpoints";
 import uuid from "react-native-uuid";
@@ -144,12 +149,12 @@ import {
   CustomerTypesObj21,
   CustomerTypesObj22,
   EnquiryTypes21,
-  EnquiryTypes22
+  EnquiryTypes22,
 } from "../../../jsonData/preEnquiryScreenJsonData";
 import { EmsTopTabNavigatorIdentifiers } from "../../../navigations/emsTopTabNavigator";
 import Geolocation from "@react-native-community/geolocation";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons"
-import Entypo from 'react-native-vector-icons/Entypo'
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import Entypo from "react-native-vector-icons/Entypo";
 import { client } from "../../../networking/client";
 const rupeeSymbol = "\u20B9";
 
@@ -183,12 +188,13 @@ const CheckboxTextAndAmountComp = ({
   amoutStyle = {},
   isChecked = false,
   onPress,
-  disabled
+  disabled,
 }) => {
   return (
     <View style={[styles.textAndAmountView, { paddingLeft: 2 }]}>
       <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
-        <Checkbox.Android disabled={disabled}
+        <Checkbox.Android
+          disabled={disabled}
           style={{ padding: 0, margin: 0 }}
           status={isChecked ? "checked" : "unchecked"}
           color={Colors.BLUE}
@@ -262,6 +268,7 @@ const PaidAccessoriesTextAndAmountComp = ({
 };
 
 let isProceedToBookingClicked = false;
+let isChangedModelPrimary = true;
 
 const PrebookingFormScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
@@ -394,8 +401,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [authToken, setAuthToken] = useState("");
 
-  const [isMinimumAmtModalVisible, setIsMinimumAmtModalVisible] = useState(false);
-  const [configureRuleData, setConfigureRuleData] = useState("")
+  const [isMinimumAmtModalVisible, setIsMinimumAmtModalVisible] =
+    useState(false);
+  const [configureRuleData, setConfigureRuleData] = useState("");
   const [isMiniAmountCheck, setisMiniAmountCheck] = useState(true);
   const [otherPriceDropDownIndex, setOtherPriceDropDownIndex] = useState(null);
 
@@ -762,7 +770,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           }
           // dispatch(updateAddressByPincode(resolve));
         },
-        (rejected) => { }
+        (rejected) => {}
       );
     }
   }, [selector.pincode]);
@@ -807,7 +815,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        "Authorization": "Bearer " + authToken,
+        Authorization: "Bearer " + authToken,
       },
     })
       .then((json) => {
@@ -867,11 +875,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             //   selector?.pre_booking_details_response?.dmsLeadDto?.leadStatus ==
             //   "PREBOOKINGCOMPLETED"
             // ) {
-              setCarModelDataList(value, index);
+            setCarModelDataList(value, index);
             // } else {
             //   addingIsPrimary();
             // }
-          } else if (!value.color) {
+          } else if (!value.color && value.isPrimary == "Y") {
             dispatch(updateOfferPriceData());
             clearPriceConfirmationData();
             setCarModelDataList(value, index);
@@ -896,14 +904,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             findPrimaryData[0].fuel,
             userData.orgId
           );
-          console.log("LLLLLLLL", arr);
-          if (arr.some((val) => val === undefined)) {
-            console.log("Array contains undefined value");
-            await setCarModelsList(Object.assign([], arr));
-          } else {
-            console.log("Array does not contain undefined value");
-          }
-          // await setCarModelsList([...arr]);
+          await setCarModelsList([...arr]);
         }
       }
     } catch (error) {
@@ -912,13 +913,18 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   };
 
   const setCarModelDataList = async (value, index) => {
-    let arr = Object.assign([], carModelsList) || carModelsList;
+    let arr = Object.assign([], carModelsList);
     if (arr[index] && value) {
       arr[index] = value;
     }
     let primaryModel = [];
-    console.log("arr", carModelsList, arr);
-    primaryModel = arr.filter((item) => item?.isPrimary === "Y");
+    primaryModel = arr.filter((item) => item.isPrimary === "Y");
+
+    if (value?.isPrimary == "Y") {
+      isChangedModelPrimary = true;
+    } else {
+      isChangedModelPrimary = false;
+    }
 
     if (primaryModel.length > 0) {
       if (primaryModel[0].variant !== "" && primaryModel[0].model !== "") {
@@ -929,7 +935,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         );
       }
     }
-    console.log("arrssss", arr);
 
     let findPrimaryData = [...arr].filter((item) => item.isPrimary === "Y");
     getConfigureRulesDetails(
@@ -938,24 +943,16 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       findPrimaryData[0].fuel,
       userData.orgId
     );
-              console.log("sssssss", arr);
-if (arr.some((val) => val === undefined)) {
-  console.log("Array contains undefined value");
     await setCarModelsList(Object.assign([], arr));
-} else {
-  console.log("Array does not contain undefined value");
-}
   };
 
   useEffect(() => {
     if (selector.configureRulesResponse_status == "fulfilled") {
-     
       setConfigureRuleData(selector.configureRulesResponse);
     } else {
-      setConfigureRuleData("")
+      setConfigureRuleData("");
     }
-  }, [selector.configureRulesResponse])
-
+  }, [selector.configureRulesResponse]);
 
   const setPaidAccessoriesData = () => {
     const dmsLeadDto = selector.pre_booking_details_response.dmsLeadDto;
@@ -984,7 +981,6 @@ if (arr.some((val) => val === undefined)) {
   };
 
   const isPrimaryOnclick = async (isPrimaryEnabled, index, item) => {
-    // return
     try {
       if (isPrimaryEnabled === "Y") {
         await setIsPrimaryCurrentIndex(index);
@@ -1013,23 +1009,24 @@ if (arr.some((val) => val === undefined)) {
           variant: item.variant,
           isPrimary: "Y",
         };
-                  console.log("ssaaaa", );
-
         await setCarModelsList([]);
         arr[isPrimaryCureentIndex] = cardata;
         arr[index] = selecteditem;
-       
-        setisMiniAmountCheck(true)
-        let findPrimaryData = [...arr].filter(item => item.isPrimary === "Y")
-        
-        getConfigureRulesDetails(findPrimaryData[0].model, findPrimaryData[0].variant, findPrimaryData[0].fuel, userData.orgId)
-                  console.log("bbbbbbbb", arr);
 
+        setisMiniAmountCheck(true);
+        let findPrimaryData = [...arr].filter((item) => item.isPrimary === "Y");
+
+        getConfigureRulesDetails(
+          findPrimaryData[0].model,
+          findPrimaryData[0].variant,
+          findPrimaryData[0].fuel,
+          userData.orgId
+        );
         await setCarModelsList([...arr]);
         await setIsPrimaryCurrentIndex(index);
       }
     } catch (error) {
-      alert(error)
+      // alert(error)
     }
   };
   const getAsyncstoreData = async () => {
@@ -1076,7 +1073,7 @@ if (arr.some((val) => val === undefined)) {
         dispatch(getDropDataApi(payload)),
         dispatch(getOtherPricesDropDown(jsonObj.orgId)),
         getCarModelListFromServer(jsonObj.orgId),
-      ]).then(() => { });
+      ]).then(() => {});
 
       // Get Token
       AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
@@ -1099,21 +1096,27 @@ if (arr.some((val) => val === undefined)) {
     );
   };
 
-  const getConfigureRulesDetails = async (modalNAme, variantName, fuel, orgid) => {
+  const getConfigureRulesDetails = async (
+    modalNAme,
+    variantName,
+    fuel,
+    orgid
+  ) => {
     //todo
-    setisMiniAmountCheck(true)
+    setisMiniAmountCheck(true);
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
-      dispatch(getRulesConfiguration({
-        model: modalNAme,
-        variant: variantName,
-        fuel: fuel,
-        orgId: jsonObj.orgId
-      }))
+      dispatch(
+        getRulesConfiguration({
+          model: modalNAme,
+          variant: variantName,
+          fuel: fuel,
+          orgId: jsonObj.orgId,
+        })
+      );
     }
-
-  }
+  };
 
   const getCarModelListFromServer = (orgId) => {
     // Call Api
@@ -1133,7 +1136,7 @@ if (arr.some((val) => val === undefined)) {
           }
           setCarModelsData([...modelList]);
         },
-        (rejected) => { }
+        (rejected) => {}
       )
       .finally(() => {
         // Get PreBooking Details
@@ -2048,16 +2051,17 @@ if (arr.some((val) => val === undefined)) {
     //todo
     if (isMiniAmountCheck) {
       if (configureRuleData != "") {
-        if (parseInt(configureRuleData.bookingAmount) > parseInt(selector.booking_amount)) {
-          setIsMinimumAmtModalVisible(true)
+        if (
+          parseInt(configureRuleData.bookingAmount) >
+          parseInt(selector.booking_amount)
+        ) {
+          setIsMinimumAmtModalVisible(true);
           return;
         } else {
-          setIsMinimumAmtModalVisible(false)
+          setIsMinimumAmtModalVisible(false);
         }
       }
     }
-
-
 
     let primaryTempCars = [];
     primaryTempCars = carModelsList.filter((item) => {
@@ -2602,17 +2606,16 @@ if (arr.some((val) => val === undefined)) {
         }
       }
 
-      let findPrimaryData = array.filter(item => item.isPrimary === "Y")
-    
-      getConfigureRulesDetails(findPrimaryData[0].model, findPrimaryData[0].variant, findPrimaryData[0].fuel, userData.orgId)
-                console.log("kkkkkkkk", array);
-if (array.some((val) => val === undefined)) {
-  console.log("Array contains undefined value");
-  setCarModelsList(array);
-} else {
-  console.log("Array does not contain undefined value");
-}
-    } catch (error) { }
+      let findPrimaryData = array.filter((item) => item.isPrimary === "Y");
+
+      getConfigureRulesDetails(
+        findPrimaryData[0].model,
+        findPrimaryData[0].variant,
+        findPrimaryData[0].fuel,
+        userData.orgId
+      );
+      await setCarModelsList(array);
+    } catch (error) {}
   };
   const mapContactOrAccountDto = (prevData) => {
     let dataObj = { ...prevData };
@@ -3068,6 +3071,7 @@ if (array.some((val) => val === undefined)) {
     }
     return () => {
       dispatch(clearBookingState());
+      isChangedModelPrimary = true;
     };
   }, []);
 
@@ -3105,7 +3109,6 @@ if (array.some((val) => val === undefined)) {
       }
     }
   }, [selectorBooking.task_details_response]);
-
 
   const proceedToPreBookingClicked = async () => {
     const newTaskObj = { ...selectorBooking.task_details_response };
@@ -3149,7 +3152,8 @@ if (array.some((val) => val === undefined)) {
     //   method: "POST",
     //   body: JSON.stringify(payload),
     // })
-    await client.post(url,payload)
+    await client
+      .post(url, payload)
       .then((res) => res.json())
       .then((jsonRes) => {
         if (jsonRes.success === true) {
@@ -3176,7 +3180,6 @@ if (array.some((val) => val === undefined)) {
     dispatch(updateEnquiryDetailsApi(enquiryDetailsObj));
   };
 
-
   useEffect(() => {
     if (
       selectorBooking.update_enquiry_details_response_status === "success" &&
@@ -3186,7 +3189,9 @@ if (array.some((val) => val === undefined)) {
         selectorBooking.update_enquiry_details_response.dmsLeadDto
           .referencenumber
       );
-    } else if (selectorBooking.update_enquiry_details_response_status === "failed") {
+    } else if (
+      selectorBooking.update_enquiry_details_response_status === "failed"
+    ) {
       showToastRedAlert("something went wrong");
     }
   }, [
@@ -3194,32 +3199,32 @@ if (array.some((val) => val === undefined)) {
     selectorBooking.update_enquiry_details_response,
   ]);
 
-  const  displayCreateEnquiryAlert = (refNum) => {
-     Alert.alert(
-       `Booking Successfully Created`,
-       `Ref Num: ${refNum}`,
-       [
-         {
-           text: "OK",
-           onPress: () => goToParentScreen(),
-         },
-       ],
-       {
-         cancelable: false,
-       }
-     );
-   };
+  const displayCreateEnquiryAlert = (refNum) => {
+    Alert.alert(
+      `Booking Successfully Created`,
+      `Ref Num: ${refNum}`,
+      [
+        {
+          text: "OK",
+          onPress: () => goToParentScreen(),
+        },
+      ],
+      {
+        cancelable: false,
+      }
+    );
+  };
 
-   const goToParentScreen = () => {
-     navigation.popToTop();
-     navigation.navigate("EMS_TAB");
-     navigation.navigate(EmsTopTabNavigatorIdentifiers.leads, {
-       fromScreen: "booking",
-     });
-     dispatch(clearState());
-     clearLocalData();
-     dispatch(clearBookingState());
-   };
+  const goToParentScreen = () => {
+    navigation.popToTop();
+    navigation.navigate("EMS_TAB");
+    navigation.navigate(EmsTopTabNavigatorIdentifiers.leads, {
+      fromScreen: "booking",
+    });
+    dispatch(clearState());
+    clearLocalData();
+    dispatch(clearBookingState());
+  };
 
   // ========================== //
   // ========================== //
@@ -3427,7 +3432,7 @@ if (array.some((val) => val === undefined)) {
       method: "POST",
       headers: {
         "Content-Type": "multipart/form-data",
-        "Authorization": "Bearer " + authToken,
+        Authorization: "Bearer " + authToken,
       },
       body: formData,
     })
@@ -3535,7 +3540,7 @@ if (array.some((val) => val === undefined)) {
         }
         // dispatch(updateAddressByPincode(resolve));
       },
-      (rejected) => { }
+      (rejected) => {}
     );
   };
 
@@ -3560,7 +3565,7 @@ if (array.some((val) => val === undefined)) {
         }
         // dispatch(updateAddressByPincode(resolve));
       },
-      (rejected) => { }
+      (rejected) => {}
     );
   };
 
@@ -3657,70 +3662,85 @@ if (array.some((val) => val === undefined)) {
     return isError;
   };
 
-
-
-
   const renderMinimumAmountModal = () => {
     //todo
-    return (<Modal
-      animationType="fade"
-      visible={isMinimumAmtModalVisible}
-      // onRequestClose={() => {
-      //   setImagePath("");
-      // }}
-      transparent={true}
-
-    >
-      <View
-        style={{
-
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor:  "rgba(0,0,0,0.7)",
-          flex: 1,
-          paddingHorizontal: 10
-        }}
+    return (
+      <Modal
+        animationType="fade"
+        visible={isMinimumAmtModalVisible}
+        // onRequestClose={() => {
+        //   setImagePath("");
+        // }}
+        transparent={true}
       >
-        <View style={{
-          width: '100%',
-          height: '20%',
-          backgroundColor: Colors.WHITE,
-          paddingHorizontal: 10,
-          borderRadius: 10,
-          justifyContent: "flex-start"
-        }}>
-          <View style={{
-            flexDirection: "row",
+        <View
+          style={{
+            justifyContent: "center",
             alignItems: "center",
+            backgroundColor: "rgba(0,0,0,0.7)",
+            flex: 1,
+            paddingHorizontal: 10,
+          }}
+        >
+          <View
+            style={{
+              width: "100%",
+              height: "20%",
+              backgroundColor: Colors.WHITE,
+              paddingHorizontal: 10,
+              borderRadius: 10,
+              justifyContent: "flex-start",
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              <MaterialIcons name="cancel" size={60} color={Colors.BLACK} />
 
-          }}>
-            <MaterialIcons name="cancel" size={60} color={Colors.BLACK} />
-
-            <View style={{ flexDirection: "column" }}>
-              <View style={{ flexDirection: "row", marginVertical: 10, }}>
-                <Text style={{ color: Colors.BLACK, fontSize: 16, fontWeight: '700', marginEnd: 10, marginBottom: 1 }} >Minimum Booking Amount Alert</Text>
-                <TouchableOpacity
-
-                  onPress={() => {
-                    setIsMinimumAmtModalVisible(false)
-                    setisMiniAmountCheck(false)
-                  }}>
-                  <Entypo name="cross" size={20} color={Colors.BLACK} />
-                </TouchableOpacity>
-
+              <View style={{ flexDirection: "column" }}>
+                <View style={{ flexDirection: "row", marginVertical: 10 }}>
+                  <Text
+                    style={{
+                      color: Colors.BLACK,
+                      fontSize: 16,
+                      fontWeight: "700",
+                      marginEnd: 10,
+                      marginBottom: 1,
+                    }}
+                  >
+                    Minimum Booking Amount Alert
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setIsMinimumAmtModalVisible(false);
+                      setisMiniAmountCheck(false);
+                    }}
+                  >
+                    <Entypo name="cross" size={20} color={Colors.BLACK} />
+                  </TouchableOpacity>
+                </View>
+                <Text
+                  style={{
+                    color: Colors.BLACK,
+                    fontSize: 14,
+                    width: "30%",
+                    fontWeight: "700",
+                  }}
+                >
+                  For the selected vehicle Minimum booking amount{" "}
+                  {configureRuleData.bookingAmount} Rs/-, but entered booking
+                  amount not equal to minimum booking amount slab
+                </Text>
               </View>
-              <Text style={{ color: Colors.BLACK, fontSize: 14, width: '30%', fontWeight: '700' }} >For the selected vehicle Minimum booking amount {configureRuleData.bookingAmount} Rs/-, but entered booking amount not equal to minimum booking amount slab</Text>
             </View>
           </View>
-
-
         </View>
-
-
-      </View>
-    </Modal>)
-
-  }
+      </Modal>
+    );
+  };
 
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
@@ -3733,7 +3753,7 @@ if (array.some((val) => val === undefined)) {
         selectedImage={(data, keyId) => {
           uploadSelectedImage(data, keyId);
         }}
-      // onDismiss={() => dispatch(setImagePicker(""))}
+        // onDismiss={() => dispatch(setImagePicker(""))}
       />
 
       <DropDownComponant
@@ -3999,7 +4019,7 @@ if (array.some((val) => val === undefined)) {
                   disabled={!isInputsEditable()}
                   style={{ height: 65, width: "100%" }}
                   value={selector.email}
-                  label={userData.isTracker == "Y" ?"Email ID" :"Email ID*"}
+                  label={userData.isTracker == "Y" ? "Email ID" : "Email ID*"}
                   keyboardType={"email-address"}
                   onChangeText={(text) =>
                     dispatch(setCustomerDetails({ key: "EMAIL", text: text }))
@@ -4768,30 +4788,20 @@ if (array.some((val) => val === undefined)) {
                       };
                       let arr = [...carModelsList];
                       arr.push(carmodeldata);
-                                      console.log("xggggggg", arr);
-if (arr.some((val) => val === undefined)) {
-  console.log("Array contains undefined value");
-                        setCarModelsList(arr);
-
-} else {
-  console.log("Array does not contain undefined value");
-}
+                      setCarModelsList(arr);
                       // selector.dmsLeadProducts = [...selector.dmsLeadProducts, carmodeldata]
                     }}
                     style={styles.addmodelView}
                   >
-                    <Text
-                      style={styles.addmodeltxt}
-                    >
-                      Add Model
-                    </Text>
+                    <Text style={styles.addmodeltxt}>Add Model</Text>
                   </TouchableOpacity>
                 )}
-                {console.log("carModelsList",carModelsList)}
                 <FlatList
                   data={carModelsList}
                   extraData={carModelsList}
-                  keyExtractor={(item, index) => item?.id?.toString()}
+                  keyExtractor={(item, index) =>
+                    item && item.id ? item.id.toString() : index.toString()
+                  }
                   renderItem={({ item, index }) => {
                     return (
                       // <Pressable onPress={() => selectedItem(item, index)}>
@@ -4881,7 +4891,9 @@ if (arr.some((val) => val === undefined)) {
                       disabled={!isInputsEditable()}
                       style={styles.textInputStyle}
                       value={selector.pan_number}
-                      label={userData.isTracker == "Y" ?"PAN Number":"PAN Number*"}
+                      label={
+                        userData.isTracker == "Y" ? "PAN Number" : "PAN Number*"
+                      }
                       maxLength={10}
                       autoCapitalize={"characters"}
                       onChangeText={(text) => {
@@ -4925,11 +4937,7 @@ if (arr.some((val) => val === undefined)) {
                             }
                           }}
                         >
-                          <Text
-                            style={styles.previetxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previetxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -4968,11 +4976,7 @@ if (arr.some((val) => val === undefined)) {
                             }
                           }}
                         >
-                          <Text
-                            style={styles.previetxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previetxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -5026,11 +5030,7 @@ if (arr.some((val) => val === undefined)) {
                               }
                             }}
                           >
-                            <Text
-                              style={styles.previetxt}
-                            >
-                              Preview
-                            </Text>
+                            <Text style={styles.previetxt}>Preview</Text>
                           </TouchableOpacity>
                           <View style={{ width: "80%" }}>
                             <DisplaySelectedImage
@@ -5047,9 +5047,9 @@ if (arr.some((val) => val === undefined)) {
 
                 {/* // Employeed ID */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                  (selector.customer_type.toLowerCase() === "corporate" ||
-                    selector.customer_type.toLowerCase() === "government" ||
-                    selector.customer_type.toLowerCase() === "retired") ? (
+                (selector.customer_type.toLowerCase() === "corporate" ||
+                  selector.customer_type.toLowerCase() === "government" ||
+                  selector.customer_type.toLowerCase() === "retired") ? (
                   <View>
                     <TextinputComp
                       disabled={!isInputsEditable()}
@@ -5080,7 +5080,7 @@ if (arr.some((val) => val === undefined)) {
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
                           disabled={!isInputsEditable()}
-                            style={styles.previewBtn}
+                          style={styles.previewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.employeeId?.documentPath
@@ -5091,11 +5091,7 @@ if (arr.some((val) => val === undefined)) {
                             }
                           }}
                         >
-                          <Text
-                              style={styles.previetxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previetxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -5111,8 +5107,8 @@ if (arr.some((val) => val === undefined)) {
 
                 {/* Last 3 month payslip */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                  (selector.customer_type.toLowerCase() === "corporate" ||
-                    selector.customer_type.toLowerCase() === "government") ? (
+                (selector.customer_type.toLowerCase() === "corporate" ||
+                  selector.customer_type.toLowerCase() === "government") ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -5127,7 +5123,7 @@ if (arr.some((val) => val === undefined)) {
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
                           disabled={!isInputsEditable()}
-                            style={styles.previewBtn}
+                          style={styles.previewBtn}
                           onPress={() => {
                             if (uploadedImagesDataObj.payslips?.documentPath) {
                               setImagePath(
@@ -5136,11 +5132,7 @@ if (arr.some((val) => val === undefined)) {
                             }
                           }}
                         >
-                          <Text
-                              style={styles.previetxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previetxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -5156,7 +5148,7 @@ if (arr.some((val) => val === undefined)) {
 
                 {/* Patta Pass book */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                  selector.customer_type.toLowerCase() === "farmer" ? (
+                selector.customer_type.toLowerCase() === "farmer" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -5171,7 +5163,7 @@ if (arr.some((val) => val === undefined)) {
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
                           disabled={!isInputsEditable()}
-                            style={styles.previewBtn}
+                          style={styles.previewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.pattaPassBook?.documentPath
@@ -5183,11 +5175,7 @@ if (arr.some((val) => val === undefined)) {
                             }
                           }}
                         >
-                          <Text
-                              style={styles.previetxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previetxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -5205,7 +5193,7 @@ if (arr.some((val) => val === undefined)) {
                           disabled={
                             userData.isManager ? (isEdit ? false : true) : false
                           }
-                              style={styles.previewBtn}
+                          style={styles.previewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj?.pattaPassBook?.documentPath
@@ -5217,11 +5205,7 @@ if (arr.some((val) => val === undefined)) {
                             }
                           }}
                         >
-                          <Text
-                                style={styles.previetxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previetxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -5245,7 +5229,7 @@ if (arr.some((val) => val === undefined)) {
 
                 {/* Pension Letter */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                  selector.customer_type.toLowerCase() === "retired" ? (
+                selector.customer_type.toLowerCase() === "retired" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -5260,7 +5244,7 @@ if (arr.some((val) => val === undefined)) {
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
                           disabled={!isInputsEditable()}
-                            style={styles.previewBtn}
+                          style={styles.previewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.pensionLetter?.documentPath
@@ -5272,11 +5256,7 @@ if (arr.some((val) => val === undefined)) {
                             }
                           }}
                         >
-                          <Text
-                              style={styles.previetxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previetxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -5294,7 +5274,7 @@ if (arr.some((val) => val === undefined)) {
 
                 {/* IMA Certificate */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                  selector.customer_type.toLowerCase() === "doctor" ? (
+                selector.customer_type.toLowerCase() === "doctor" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -5309,7 +5289,7 @@ if (arr.some((val) => val === undefined)) {
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
                           disabled={!isInputsEditable()}
-                            style={styles.previewBtn}
+                          style={styles.previewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.imaCertificate?.documentPath
@@ -5321,11 +5301,7 @@ if (arr.some((val) => val === undefined)) {
                             }
                           }}
                         >
-                          <Text
-                              style={styles.previetxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previetxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -5343,7 +5319,7 @@ if (arr.some((val) => val === undefined)) {
 
                 {/* Leasing Confirmation */}
                 {selector.enquiry_segment.toLowerCase() === "commercial" &&
-                  selector.customer_type.toLowerCase() === "fleet" ? (
+                selector.customer_type.toLowerCase() === "fleet" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -5361,7 +5337,7 @@ if (arr.some((val) => val === undefined)) {
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
                           disabled={!isInputsEditable()}
-                              style={styles.previewBtn}
+                          style={styles.previewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.leasingConfirmationLetter
@@ -5374,11 +5350,7 @@ if (arr.some((val) => val === undefined)) {
                             }
                           }}
                         >
-                          <Text
-                                style={styles.previetxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previetxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -5394,7 +5366,7 @@ if (arr.some((val) => val === undefined)) {
                     ) : uploadedImagesDataObj.leasingConfirmationLetter ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                              style={styles.previewBtn}
+                          style={styles.previewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.leasingConfirmationLetter
@@ -5407,11 +5379,7 @@ if (arr.some((val) => val === undefined)) {
                             }
                           }}
                         >
-                          <Text
-                                style={styles.previetxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previetxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -5429,7 +5397,7 @@ if (arr.some((val) => val === undefined)) {
 
                 {/* Address Proof */}
                 {selector.enquiry_segment.toLowerCase() === "company" &&
-                  selector.customer_type.toLowerCase() === "institution" ? (
+                selector.customer_type.toLowerCase() === "institution" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -5443,7 +5411,7 @@ if (arr.some((val) => val === undefined)) {
                     {uploadedImagesDataObj.address?.fileName ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                            style={styles.previewBtn}
+                          style={styles.previewBtn}
                           onPress={() => {
                             if (uploadedImagesDataObj.address?.documentPath) {
                               setImagePath(
@@ -5452,11 +5420,7 @@ if (arr.some((val) => val === undefined)) {
                             }
                           }}
                         >
-                          <Text
-                              style={styles.previetxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previetxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -5468,7 +5432,7 @@ if (arr.some((val) => val === undefined)) {
                     ) : uploadedImagesDataObj.addressProof?.fileName ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                              style={styles.previewBtn}
+                          style={styles.previewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.addressProof?.documentPath
@@ -5479,11 +5443,7 @@ if (arr.some((val) => val === undefined)) {
                             }
                           }}
                         >
-                          <Text
-                                style={styles.previetxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previetxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -5519,8 +5479,8 @@ if (arr.some((val) => val === undefined)) {
                 {/* GSTIN Number */}
                 {(selector.enquiry_segment.toLowerCase() === "company" &&
                   selector.customer_type.toLowerCase() === "institution") ||
-                  selector.customer_type_category == "B2B" ||
-                  selector.customer_type_category == "B2C" ? (
+                selector.customer_type_category == "B2B" ||
+                selector.customer_type_category == "B2C" ? (
                   <View>
                     <TextinputComp
                       disabled={!isInputsEditable()}
@@ -5586,11 +5546,7 @@ if (arr.some((val) => val === undefined)) {
                           }
                         }}
                       >
-                        <Text
-                          style={styles.previetxt}
-                        >
-                          Preview
-                        </Text>
+                        <Text style={styles.previetxt}>Preview</Text>
                       </TouchableOpacity>
                       <View style={{ width: "80%" }}>
                         <DisplaySelectedImage
@@ -5691,7 +5647,9 @@ if (arr.some((val) => val === undefined)) {
                                 /> */}
                 <View style={styles.textAndAmountView}>
                   {/* <View style={{width: '60%', flexDirection: 'row'}}> */}
-                  <Text style={[styles.leftLabel]}>{userData.isTracker == "Y"? "Life Tax:": "Life Tax*:"}</Text>
+                  <Text style={[styles.leftLabel]}>
+                    {userData.isTracker == "Y" ? "Life Tax:" : "Life Tax*:"}
+                  </Text>
                   {/* </View> */}
                   <View
                     style={{
@@ -5752,9 +5710,10 @@ if (arr.some((val) => val === undefined)) {
                   <Text style={styles.shadowText}>
                     {rupeeSymbol +
                       " " +
-                      `${selectedRegistrationCharges?.cost
-                        ? selectedRegistrationCharges?.cost
-                        : "0.00"
+                      `${
+                        selectedRegistrationCharges?.cost
+                          ? selectedRegistrationCharges?.cost
+                          : "0.00"
                       }`}
                   </Text>
                 </View>
@@ -6645,7 +6604,8 @@ if (arr.some((val) => val === undefined)) {
                         key: "BOOKING_AMOUNT",
                         text: text,
                       })
-                    )}
+                    )
+                  }
                 />
                 <Text
                   style={[
@@ -6837,11 +6797,7 @@ if (arr.some((val) => val === undefined)) {
                             }
                           }}
                         >
-                          <Text
-                            style={styles.previetxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previetxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -6906,44 +6862,44 @@ if (arr.some((val) => val === undefined)) {
 
                   {(selector.booking_payment_mode === "InternetBanking" ||
                     selector.booking_payment_mode === "Internet Banking") && (
-                      <View>
-                        <TextinputComp
-                          style={styles.textInputStyle}
-                          value={selector.utr_no}
-                          label={"UTR No"}
-                          onChangeText={(text) =>
-                            dispatch(
-                              setPreBookingPaymentDetials({
-                                key: "UTR_NO",
-                                text: text,
-                              })
-                            )
-                          }
-                        />
-                        <Text style={GlobalStyle.underline}></Text>
-                        <DateSelectItem
-                          label={"Transaction Date"}
-                          value={selector.transaction_date}
-                          onPress={() =>
-                            dispatch(setDatePicker("TRANSACTION_DATE"))
-                          }
-                        />
-                        <TextinputComp
-                          style={styles.textInputStyle}
-                          value={selector.comapany_bank_name}
-                          label={"Company Bank Name"}
-                          onChangeText={(text) =>
-                            dispatch(
-                              setPreBookingPaymentDetials({
-                                key: "COMPANY_BANK_NAME",
-                                text: text,
-                              })
-                            )
-                          }
-                        />
-                        <Text style={GlobalStyle.underline}></Text>
-                      </View>
-                    )}
+                    <View>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.utr_no}
+                        label={"UTR No"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setPreBookingPaymentDetials({
+                              key: "UTR_NO",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <DateSelectItem
+                        label={"Transaction Date"}
+                        value={selector.transaction_date}
+                        onPress={() =>
+                          dispatch(setDatePicker("TRANSACTION_DATE"))
+                        }
+                      />
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.comapany_bank_name}
+                        label={"Company Bank Name"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setPreBookingPaymentDetials({
+                              key: "COMPANY_BANK_NAME",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
 
                   {selector.booking_payment_mode === "Cheque" && (
                     <View>
@@ -7470,7 +7426,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     backgroundColor: Colors.WHITE,
-    paddingTop: 7
+    paddingTop: 7,
   },
   addIcon: {
     backgroundColor: Colors.RED,
@@ -7485,7 +7441,7 @@ const styles = StyleSheet.create({
     color: Colors.GRAY,
     paddingLeft: 12,
   },
- addmodelView: {
+  addmodelView: {
     width: "40%",
     margin: 5,
     borderRadius: 5,
@@ -7496,14 +7452,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
- addmodeltxt: {
+  addmodeltxt: {
     fontSize: 16,
     textAlign: "center",
     textAlignVertical: "center",
     color: Colors.WHITE,
     width: "100%",
   },
-  previewBtn:{
+  previewBtn: {
     width: "20%",
     height: 30,
     backgroundColor: Colors.SKY_BLUE,
@@ -7511,9 +7467,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-previetxt:  {
+  previetxt: {
     color: Colors.WHITE,
     fontSize: 14,
     fontWeight: "600",
-  }
+  },
 });
