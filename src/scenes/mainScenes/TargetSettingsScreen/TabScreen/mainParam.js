@@ -37,6 +37,7 @@ import {
 import { updateIsTeamPresent } from "../../../../redux/homeReducer";
 import { showToast, showToastRedAlert } from "../../../../utils/toast";
 import { updateFuelAndTransmissionType } from "../../../../redux/preBookingFormReducer";
+import moment from "moment";
 
 const color = [
   "#9f31bf",
@@ -48,6 +49,12 @@ const color = [
   "#1f93ab",
   "#ec3466",
 ];
+const dateFormat = "YYYY-MM-DD";
+const currentDate = moment().add(0, "day").endOf("month").format(dateFormat);
+const lastMonthFirstDate = moment(currentDate, dateFormat)
+  .subtract(0, "months")
+  .startOf("month")
+  .format(dateFormat);
 
 const MainParamScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.targetSettingsReducer);
@@ -358,7 +365,9 @@ const MainParamScreen = ({ route, navigation }) => {
         empId: jsonObj.empId,
         pageNo: 1,
         size: 500,
-        targetType: selector.targetType,
+        // targetType: selector.targetType,
+        startDate: lastMonthFirstDate,
+        endDate: currentDate,
       };
       //dispatch(getAllTargetMapping(payload))
     }
@@ -425,7 +434,9 @@ const MainParamScreen = ({ route, navigation }) => {
             empId: jsonObj.empId,
             pageNo: 1,
             size: 500,
-            targetType: selector.targetType,
+            // targetType: selector.targetType,
+            startDate: lastMonthFirstDate,
+            endDate: currentDate,
           };
           dispatch(getAllTargetMapping(payload2));
         });
@@ -458,7 +469,7 @@ const MainParamScreen = ({ route, navigation }) => {
           // "targetName": selector.targetType === 'MONTHLY' ? selector.selectedMonth.value : selector.selectedSpecial.keyId
           targetName: targetName !== "" ? targetName : "DEFAULT",
           loggedInEmpId: jsonObj.empId,
-          recordId: selectedUser?.recordId || ownData?.id,
+          recordId: selectedUser?.id || selectedUser?.recordId || ownData?.id,
         };
 
         Promise.all([dispatch(editTargetMapping(payload))])
@@ -472,7 +483,9 @@ const MainParamScreen = ({ route, navigation }) => {
               empId: jsonObj.empId,
               pageNo: 1,
               size: 500,
-              targetType: selector.targetType,
+              // targetType: selector.targetType,
+              startDate: lastMonthFirstDate,
+              endDate: currentDate,
             };
             dispatch(getAllTargetMapping(payload2));
           })
@@ -484,7 +497,8 @@ const MainParamScreen = ({ route, navigation }) => {
   const getTotal = (key) => {
     let total = 0;
     for (let i = 0; i < selector.targetMapping.length; i++) {
-      if (true
+      if (
+        true
         // selector.targetMapping[i][key] !== null &&
         // selector.endDate === selector.targetMapping[i].endDate &&
         // selector.startDate === selector.targetMapping[i].startDate &&
@@ -511,8 +525,23 @@ const MainParamScreen = ({ route, navigation }) => {
   function RenderTeamsSelfData(type) {
     return (
       <TextInput
-        editable={editParameters}
-        style={editParameters ? styles.textBox : styles.textBoxDisabled}
+        onPressIn={() => {
+          if (editParameters) {
+            if (ownData?.updatedUserName) {
+              showToastRedAlert(`Target Set By ${ownData?.updatedUserName}`);
+            }
+          }
+        }}
+        editable={
+          editParameters ? (ownData?.updatedUserName ? false : true) : false
+        }
+        style={
+          editParameters
+            ? ownData.updatedUserName
+              ? styles.textBoxDisabled
+              : styles.textBox
+            : styles.textBoxDisabled
+        }
         value={`${updatedSelfParameters[type]}`}
         keyboardType={"number-pad"}
         onChangeText={(z) => onChangeSelfParamValue(type, z)}
@@ -623,7 +652,9 @@ const MainParamScreen = ({ route, navigation }) => {
               empId: loggedInEmpDetails.empId,
               pageNo: 1,
               size: 500,
-              targetType: selector.targetType,
+              // targetType: selector.targetType,
+              startDate: lastMonthFirstDate,
+              endDate: currentDate,
             };
             Promise.all([dispatch(getAllTargetMapping(payload2))])
               .then((x) => {})
@@ -657,9 +688,24 @@ const MainParamScreen = ({ route, navigation }) => {
         {
           <View key={index}>
             <TextInput
+              onPressIn={() => {
+                if (editParameters) {
+                  if (item?.updatedUserName) {
+                    showToastRedAlert(`Target Set By ${item?.updatedUserName}`);
+                  }
+                }
+              }}
               key={index}
-              editable={editParameters}
-              style={editParameters ? styles.textBox : styles.textBoxDisabled}
+              editable={
+                editParameters ? (item.updatedUserName ? false : true) : false
+              }
+              style={
+                editParameters
+                  ? item.updatedUserName
+                    ? styles.textBoxDisabled
+                    : styles.textBox
+                  : styles.textBoxDisabled
+              }
               value={param || "0"}
               onChangeText={(x) => {
                 onChangeTeamParamValue(curIndex, x, item.id, type);
@@ -724,7 +770,9 @@ const MainParamScreen = ({ route, navigation }) => {
                       empId: loggedInEmpDetails.empId,
                       pageNo: 1,
                       size: 500,
-                      targetType: selector.targetType,
+                      // targetType: selector.targetType,
+                      startDate: lastMonthFirstDate,
+                      endDate: currentDate,
                     };
                     Promise.all([dispatch(getAllTargetMapping(payload2))])
                       .then((x) => {})
@@ -846,41 +894,47 @@ const MainParamScreen = ({ route, navigation }) => {
                               {
                                 <TouchableOpacity
                                   onPress={() => {
-                                    setSelectedDropdownData([
-                                      {
-                                        label: item?.branchName,
-                                        value: item?.branch,
-                                      },
-                                    ]);
-                                    if (
-                                      item?.retailTarget !== null &&
-                                      selector?.endDate === item?.endDate &&
-                                      selector?.startDate === item?.startDate
-                                    ) {
-                                      setSelectedBranch({
-                                        label: item?.branchName,
-                                        value: item?.branch,
-                                      });
-                                      setDefaultBranch(item?.branch);
-                                      setAddOrEdit("E");
+                                    if (item?.updatedUserName) {
+                                      showToastRedAlert(
+                                        `Target Set By ${item?.updatedUserName}`
+                                      );
                                     } else {
-                                      setDefaultBranch(null);
-                                      setAddOrEdit("A");
-                                    }
-                                    if (item?.targetName) {
-                                      setTargetName(item?.targetName);
-                                    }
-                                    setIsNoTargetAvailable(false);
-                                    setRetail(
-                                      item.retailTarget !== null &&
-                                        selector.endDate === item.endDate &&
-                                        selector.startDate === item.startDate
-                                        ? item.retailTarget
-                                        : 0
-                                    );
-                                    setSelectedUser(item);
+                                      setSelectedDropdownData([
+                                        {
+                                          label: item?.branchName,
+                                          value: item?.branch,
+                                        },
+                                      ]);
+                                      if (
+                                        item?.retailTarget !== null &&
+                                        selector?.endDate === item?.endDate &&
+                                        selector?.startDate === item?.startDate
+                                      ) {
+                                        setSelectedBranch({
+                                          label: item?.branchName,
+                                          value: item?.branch,
+                                        });
+                                        setDefaultBranch(item?.branch);
+                                        setAddOrEdit("E");
+                                      } else {
+                                        setDefaultBranch(null);
+                                        setAddOrEdit("A");
+                                      }
+                                      if (item?.targetName) {
+                                        setTargetName(item?.targetName);
+                                      }
+                                      setIsNoTargetAvailable(false);
+                                      setRetail(
+                                        item.retailTarget !== null &&
+                                          selector.endDate === item.endDate &&
+                                          selector.startDate === item.startDate
+                                          ? item.retailTarget
+                                          : 0
+                                      );
+                                      setSelectedUser(item);
 
-                                    setOpenRetail(true);
+                                      setOpenRetail(true);
+                                    }
                                   }}
                                   style={{
                                     width: 80,
@@ -900,6 +954,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                   </Text>
                                 </TouchableOpacity>
                               }
+                              {/* <Text>{"lll"}</Text> */}
                             </View>
 
                             {[
@@ -1071,40 +1126,46 @@ const MainParamScreen = ({ route, navigation }) => {
                 </View>
               </View>
 
-              <View style={styles.textBoxWrap}>
+              <View style={{ ...styles.textBoxWrap, alignItems: "center" }}>
                 <TouchableOpacity
                   style={styles.textBox}
                   onPress={() => {
-                    setSelectedUser({ ...loggedInEmpDetails });
-                    // if (isNoTargetAvailable) {
-                    //     setAddOrEdit('A')
-                    // }
-                    // else {
-                    //     setAddOrEdit('E')
-                    // }
-                    if (loggedInEmpDetails.primaryDepartment === "Sales") {
-                      if (
+                    if (ownData.updatedUserName) {
+                      showToastRedAlert(
+                        `Target Set By ${ownData.updatedUserName}`
+                      );
+                    } else {
+                      setSelectedUser({ ...loggedInEmpDetails });
+                      // if (isNoTargetAvailable) {
+                      //     setAddOrEdit('A')
+                      // }
+                      // else {
+                      //     setAddOrEdit('E')
+                      // }
+                      if (loggedInEmpDetails.primaryDepartment === "Sales") {
+                        if (
+                          ownData.retailTarget !== null &&
+                          selector.endDate === ownData.endDate &&
+                          selector.startDate === ownData.startDate
+                        ) {
+                          setSelectedBranch({
+                            label: ownData.branchName,
+                            value: ownData.branch,
+                          });
+                          setDefaultBranch(ownData.branch);
+                          setAddOrEdit("E");
+                        } else {
+                          setDefaultBranch(null);
+                          setAddOrEdit("A");
+                        }
                         ownData.retailTarget !== null &&
                         selector.endDate === ownData.endDate &&
                         selector.startDate === ownData.startDate
-                      ) {
-                        setSelectedBranch({
-                          label: ownData.branchName,
-                          value: ownData.branch,
-                        });
-                        setDefaultBranch(ownData.branch);
-                        setAddOrEdit("E");
-                      } else {
-                        setDefaultBranch(null);
-                        setAddOrEdit("A");
-                      }
-                      ownData.retailTarget !== null &&
-                      selector.endDate === ownData.endDate &&
-                      selector.startDate === ownData.startDate
-                        ? setRetail(ownData.retailTarget.toString())
-                        : setRetail("");
-                      setOpenRetail(true);
-                    } else showToast("Access Denied");
+                          ? setRetail(ownData.retailTarget.toString())
+                          : setRetail("");
+                        setOpenRetail(true);
+                      } else showToast("Access Denied");
+                    }
                   }}
                 >
                   <Text style={styles.textInput}>
@@ -1115,6 +1176,13 @@ const MainParamScreen = ({ route, navigation }) => {
                       : 0}
                   </Text>
                 </TouchableOpacity>
+                {ownData.updatedUserName && (
+                  <View style={{ width: "50%" }}>
+                    <Text
+                      numberOfLines={3}
+                    >{`Target Set by ${ownData.updatedUserName}`}</Text>
+                  </View>
+                )}
               </View>
 
               <View style={styles.textBoxWrap}>
@@ -1212,7 +1280,7 @@ const MainParamScreen = ({ route, navigation }) => {
                 </View>
               </View>
 
-              <View style={styles.textBoxWrap}>
+              <View style={{ ...styles.textBoxWrap, alignItems: "center" }}>
                 <TouchableOpacity
                   style={styles.textBox}
                   onPress={() => {
@@ -1257,6 +1325,13 @@ const MainParamScreen = ({ route, navigation }) => {
                       : 0}
                   </Text>
                 </TouchableOpacity>
+                {ownData.updatedUserName && (
+                  <View style={{ width: "50%" }}>
+                    <Text
+                      numberOfLines={3}
+                    >{`Target Set by ${ownData.updatedUserName}`}</Text>
+                  </View>
+                )}
               </View>
 
               <View style={styles.textBoxWrap}>
