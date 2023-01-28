@@ -376,7 +376,7 @@ const AttendanceFilter = ({ route, navigation }) => {
         })
       );
 
-      navigation.navigate(AttendanceTopTabNavigatorIdentifiers.dashboard);
+      navigation.navigate(AttendanceTopTabNavigatorIdentifiers.team);
       //   getDashboadTableDataFromServer(selectedIds, "LEVEL");
     } else {
       showToast("Please select any value");
@@ -599,7 +599,7 @@ const AttendanceFilter = ({ route, navigation }) => {
         }}
       >
         <FlatList
-          data={employeeTitleNameList.length > 0 ? [1, 2, 3] : [1, 2]}
+          data={employeeTitleNameList.length > 0 ? [1, 2] : [1, 2]}
           keyExtractor={(item, index) => "MAIN" + index.toString()}
           renderItem={({ item, index }) => {
             if (index === 0) {

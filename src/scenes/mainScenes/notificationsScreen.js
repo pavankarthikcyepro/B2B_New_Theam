@@ -148,9 +148,7 @@ const NotificationScreen = ({ navigation }) => {
           onPress={() => navigateTo(screenName, props.item)}
           icon={icon}
           style={{ backgroundColor: bg }}
-          flagColor={
-            item.notificationType == "SCHEDULED" ? Colors.RED : Colors.GRAY
-          }
+          isFlag={item.isFlag}
         />
       </View>
     );
@@ -185,7 +183,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: StatusBar.currentHeight,
-    backgroundColor: Colors.LIGHT_GRAY,
+    backgroundColor: Colors.WHITE,
   },
   header: {
     fontSize: 20,

@@ -605,7 +605,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
           }
         },
         (rejected) => {
-          console.log("getCarModelListFromServer Failed");
+       
         }
       )
       .finally(() => {
@@ -743,7 +743,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
           // dispatch(updateAddressByPincode(resolve));
         },
         (rejected) => {
-          console.log("rejected...: ", rejected);
+        
         }
       );
     }
@@ -885,7 +885,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
             );
           })
           .catch(() => {
-            console.log("INSIDE CATCH");
+          
           });
       }
       // dispatch(getEnquiryDetailsApi({universalId, leadStage, leadStatus}));
@@ -3032,7 +3032,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
         // dispatch(updateAddressByPincode(resolve));
       },
       (rejected) => {
-        console.log("rejected...: ", rejected);
+       
       }
     );
   };
@@ -3059,7 +3059,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
         // dispatch(updateAddressByPincode(resolve));
       },
       (rejected) => {
-        console.log("rejected...: ", rejected);
+        
       }
     );
   };
@@ -4085,6 +4085,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                       "Enquiry Category"
                     )
                   }
+                  isDropDownIconShow={false}
                 />
 
                 <DropDownSelectionItem

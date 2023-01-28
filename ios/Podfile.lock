@@ -261,13 +261,17 @@ PODS:
     - React-Core
   - react-native-geolocation (2.1.0):
     - React-Core
+  - react-native-geolocation-service (5.3.1):
+    - React
   - react-native-html-to-pdf (0.12.0):
     - React-Core
   - react-native-image-picker (4.10.3):
     - React-Core
   - react-native-mail (6.1.1):
     - React-Core
-  - react-native-maps (1.3.2):
+  - react-native-maps (1.4.0):
+    - React-Core
+  - react-native-netinfo (9.3.7):
     - React-Core
   - react-native-netinfo (9.3.7):
     - React-Core
@@ -423,6 +427,7 @@ DEPENDENCIES:
   - react-native-background-actions (from `../node_modules/react-native-background-actions`)
   - react-native-flipper (from `../node_modules/react-native-flipper`)
   - "react-native-geolocation (from `../node_modules/@react-native-community/geolocation`)"
+  - react-native-geolocation-service (from `../node_modules/react-native-geolocation-service`)
   - react-native-html-to-pdf (from `../node_modules/react-native-html-to-pdf`)
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - react-native-mail (from `../node_modules/react-native-mail`)
@@ -516,6 +521,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-flipper"
   react-native-geolocation:
     :path: "../node_modules/@react-native-community/geolocation"
+  react-native-geolocation-service:
+    :path: "../node_modules/react-native-geolocation-service"
   react-native-html-to-pdf:
     :path: "../node_modules/react-native-html-to-pdf"
   react-native-image-picker:
@@ -624,10 +631,15 @@ SPEC CHECKSUMS:
   react-native-background-actions: bfb2b818ae96e752b42fb335b3427ab6b050d0f6
   react-native-flipper: 4bfe0a324e663f1ae2f76ad0da75673de6895efe
   react-native-geolocation: 69f4fd37650b8e7fee91816d395e62dd16f5ab8d
+  react-native-geolocation-service: 608e1da71a1ac31b4de64d9ef2815f697978c55b
   react-native-html-to-pdf: 4c5c6e26819fe202971061594058877aa9b25265
   react-native-image-picker: 60f4246eb5bb7187fc15638a8c1f13abd3820695
   react-native-mail: 8fdcd3aef007c33a6877a18eb4cf7447a1d4ce4a
+<<<<<<< HEAD
   react-native-maps: 085f614cf14d3637b2048bb9752da5b1c27c2886
+=======
+  react-native-maps: 7135a33610202745d08fdf151ce6b0d01952a99c
+>>>>>>> 321a207a8bcaef03cd11dc2d0b1ea60a388d1747
   react-native-netinfo: 2517ad504b3d303e90d7a431b0fcaef76d207983
   react-native-restart: 45c8dca02491980f2958595333cbccd6877cb57e
   react-native-safe-area-context: 9e40fb181dac02619414ba1294d6c2a807056ab9

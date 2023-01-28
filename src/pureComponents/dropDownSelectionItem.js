@@ -11,12 +11,13 @@ export const DropDownSelectionItem = ({
   takeMinHeight = false,
   style,
   otherPrices = false,
+  isDropDownIconShow = true,
 }) => {
-
-    let labelStyle = {
-      height: 20,
-      marginBottom: !takeMinHeight ? (value ? 0 : 20) : value ? 0 : 20,
-    };
+  
+  let labelStyle = {
+    height: 20,
+    marginBottom: !takeMinHeight ? (value ? 0 : 20) : value ? 0 : 20,
+  };
 
   return (
     <Pressable onPress={onPress} disabled={disabled}>
@@ -46,11 +47,13 @@ export const DropDownSelectionItem = ({
           >
             {value ? value : label}
           </Text>
-          <IconButton
-            icon="menu-down"
-            color={disabled ? Colors.GRAY : Colors.BLACK}
-            size={25}
-          />
+          {isDropDownIconShow && (
+            <IconButton
+              icon="menu-down"
+              color={disabled ? Colors.GRAY : Colors.BLACK}
+              size={25}
+            />
+          )}
         </View>
         <View
           style={[

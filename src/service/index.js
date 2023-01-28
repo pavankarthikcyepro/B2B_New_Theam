@@ -9,12 +9,13 @@ import URL from "../networking/endpoints";
 import { client } from "../networking/client";
 import { monthNamesCap } from "../scenes/mainScenes/Attendance/AttendanceTop";
 
+export const GoogleMapKey = "AIzaSyD1p1YFpi2w3yBrYl1aUpudMqe9IzMQt2Y";
 var startDate = createDateTime("8:30");
 var endDate = createDateTime("12:00");
 var now = new Date();
 var isBetween = startDate <= now && now <= endDate;
 
-export const distanceFilterValue = 10;
+export const distanceFilterValue = 5;
 export const officeRadius = 0.1;
 export const sleep = (time) =>
   new Promise((resolve) => setTimeout(() => resolve(), time));
@@ -47,7 +48,7 @@ export const MarkAbsent = async (absentRequest = false) => {
             )
           );
           const json = await response.json();
-          // console.log("OKOKOKOK", json[json?.length - 1]);
+         
           let latestDate = new Date(
             json[json?.length - 1]?.createdtimestamp
           )?.getDate();
@@ -72,7 +73,7 @@ const saveData = async (payload, absentRequest = false) => {
   try {
     const saveData = await client.post(URL.SAVE_EMPLOYEE_ATTENDANCE(), payload);
     const savedJson = await saveData.json();
-    console.log("savedJson", savedJson, absentRequest);
+   
   } catch (error) {
     console.error("savedJsonERROR", error);
   }
@@ -87,11 +88,11 @@ export const veryIntensiveTask = async (taskDataArguments) => {
   const { delay } = taskDataArguments;
   await new Promise(async (resolve) => {
     for (let i = 0; BackgroundService.isRunning(); i++) {
-      console.log(i);
+      
       try {
         await Geolocation.watchPosition(
           (lastPosition) => {
-            console.log(lastPosition);
+           
             var newLatLng = {
               latitude: lastPosition.coords.latitude,
               longitude: lastPosition.coords.longitude,
@@ -101,7 +102,7 @@ export const veryIntensiveTask = async (taskDataArguments) => {
           { enableHighAccuracy: true, distanceFilter: 100 }
         );
         Geolocation.watchPosition((data) => {
-          console.log("LOCATION", data);
+         
         });
       } catch (error) {}
 

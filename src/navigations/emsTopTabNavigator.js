@@ -67,9 +67,8 @@ const Badge = ({ focused, title, countList }) => {
             ? countList
               ? countList.length
               : 0
-            : countList &&
-              countList?.dmsEntity?.leadDtoPage?.numberOfElements > 0
-            ? countList.dmsEntity.leadDtoPage.numberOfElements
+            : countList && countList?.dmsEntity?.leadDtoPage?.totalElements > 0
+            ? countList.dmsEntity.leadDtoPage.totalElements
             : 0}
         </Text>
       </View>
