@@ -523,7 +523,7 @@ export const getLeaderBoardList = createAsyncThunk(
   "HOME/getLeaderBoardList",
   async (payload: any, { rejectWithValue }) => {
     const response = await client.post(
-      URL.GET_LEADERBOARD_DATA(payload.orgId),
+      URL.GET_LEADERBOARD_DATA_branch(payload.orgId, payload.branchId),
       payload
     );
     const json = await response.json();
@@ -534,11 +534,11 @@ export const getLeaderBoardList = createAsyncThunk(
   }
 );
 
-export const getBranchRanksList = createAsyncThunk(
+export const  getBranchRanksList = createAsyncThunk(
   "HOME/getBranchRanksList",
   async (payload, { rejectWithValue }) => {
     const response = await client.post(
-      URL.GET_BRANCH_RANKING_DATA(payload.orgId, payload.branchId),
+      URL.GET_BRANCH_RANKING_DATA_branch(payload.orgId, payload.branchId),
       payload
     );
     const json = await response.json();
@@ -767,6 +767,7 @@ export const homeSlice = createSlice({
       empSelected: [],
       allEmpSelected: [],
     },
+    leaderShipFIlterId:[]
   },
   reducers: {
     dateSelected: (state, action) => {
@@ -774,6 +775,9 @@ export const homeSlice = createSlice({
     },
     updateFilterDropDownData: (state, action) => {
       state.filter_drop_down_data = action.payload;
+    },
+    updateLeaderShipFilter: (state, action) => {
+      state.leaderShipFIlterId = action.payload;
     },
     updateFilterIds: (state, action) => {
       state.filterIds = action.payload;
@@ -862,6 +866,7 @@ export const homeSlice = createSlice({
         empSelected: [],
         allEmpSelected: [],
       };
+      state.leaderShipFIlterId=[];
     },
   },
   extraReducers: (builder) => {
@@ -1393,6 +1398,6 @@ export const {
   clearState,
   updateTargetData,
   updateFilterIds,
-  updateEmpDropDown,
+  updateEmpDropDown,updateLeaderShipFilter
 } = homeSlice.actions;
 export default homeSlice.reducer;

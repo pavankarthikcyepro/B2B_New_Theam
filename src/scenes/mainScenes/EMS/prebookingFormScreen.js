@@ -262,6 +262,7 @@ const PaidAccessoriesTextAndAmountComp = ({
 };
 
 let isProceedToBookingClicked = false;
+let isChangedModelPrimary = true;
 
 const PrebookingFormScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
@@ -871,7 +872,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             // } else {
             //   addingIsPrimary();
             // }
-          } else if (!value.color) {
+          } else if (!value.color && value.isPrimary == "Y") {
             dispatch(updateOfferPriceData());
             clearPriceConfirmationData();
             setCarModelDataList(value, index);
@@ -911,6 +912,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     }
     let primaryModel = [];
     primaryModel = arr.filter((item) => item.isPrimary === "Y");
+
+    if (value?.isPrimary == "Y") {
+      isChangedModelPrimary = true;
+    } else {
+      isChangedModelPrimary = false;
+    }
 
     if (primaryModel.length > 0) {
       if (primaryModel[0].variant !== "" && primaryModel[0].model !== "") {
@@ -3042,6 +3049,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     }
     return () => {
       dispatch(clearBookingState());
+      isChangedModelPrimary = true;
     };
   }, []);
 
@@ -4757,7 +4765,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 <FlatList
                   data={carModelsList}
                   extraData={carModelsList}
-                  keyExtractor={(item, index) => item.id.toString()}
+                  keyExtractor={(item, index) => item && item.id ? item.id.toString() : index.toString()}
                   renderItem={({ item, index }) => {
                     return (
                       // <Pressable onPress={() => selectedItem(item, index)}>

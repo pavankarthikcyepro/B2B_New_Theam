@@ -108,6 +108,7 @@ import { MyGeolocationTopTabNavigatorOne } from "./geolocationNavigator";
 import TaskThreeSixtyHistory from "../scenes/mainScenes/EMS/taskThreeSixtyHistory";
 import NotificationIcon from "../components/NotificationIcon";
 import DigitalDashBoardScreen from "../scenes/mainScenes/DigitalDashboard";
+import LeaderShipFilter from "../scenes/mainScenes/Home/TabScreens/leaderShipFilter";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -372,6 +373,7 @@ export const HomeStackIdentifiers = {
   home: "HOME_SCREEN",
   location: "MAP_TRACKER",
   receptionistFilter: "REECEPTION_FILTER",
+  laderfilterScreen:"LEADER_FLITER_SCREEN"
 };
 
 export const EmsStackIdentifiers = {
@@ -462,12 +464,17 @@ const HomeStackNavigator = ({ navigation }) => {
       <HomeStack.Screen
         name={HomeStackIdentifiers.leaderboard}
         component={leaderBoardScreen}
-        options={{ title: "LeaderBoard" }}
+        options={{ title: "Leader Board - Dealer Ranking" }}
       />
       <HomeStack.Screen
         name={HomeStackIdentifiers.branchRanking}
         component={branchRankingScreen}
-        options={{ title: "Branch ranking" }}
+        options={{ title: "Leader Board - Branch Ranking" }}
+      />
+      <HomeStack.Screen
+        name={HomeStackIdentifiers.laderfilterScreen}
+        component={LeaderShipFilter}
+        options={{ title: "Filter" }}
       />
       <HomeStack.Screen
         name={HomeStackIdentifiers.sourceModel}
