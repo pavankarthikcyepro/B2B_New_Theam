@@ -9,6 +9,7 @@ import URL from "../networking/endpoints";
 import { client } from "../networking/client";
 import { monthNamesCap } from "../scenes/mainScenes/Attendance/AttendanceTop";
 
+export const GoogleMapKey = "AIzaSyD1p1YFpi2w3yBrYl1aUpudMqe9IzMQt2Y";
 var startDate = createDateTime("8:30");
 var endDate = createDateTime("12:00");
 var now = new Date();
