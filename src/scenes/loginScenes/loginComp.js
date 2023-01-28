@@ -358,7 +358,7 @@ const LoginScreen = ({ navigation }) => {
               }
             },
             (error) => {
-              console.error(error);
+              // console.error(error);
             },
             {
               enableHighAccuracy: true,
@@ -378,7 +378,6 @@ const LoginScreen = ({ navigation }) => {
         }
       }
     } catch (error) {
-      showToastRedAlert("error");
     }
   };
 

@@ -246,7 +246,7 @@ const AppScreen = () => {
               }
             },
             (error) => {
-              console.error("ssss", error);
+              // console.error("ssss", error);
             },
             {
               enableHighAccuracy: true,
