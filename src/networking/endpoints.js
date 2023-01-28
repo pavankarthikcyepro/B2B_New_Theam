@@ -1,5 +1,7 @@
 // Production Urls:
 
+import { GoogleMapKey } from "../service";
+
 // export const hrms_url = "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8088/hrms";
 // export const sales_url = "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8081/sales";
 // export const roleManagement_url = "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8089/role-management";
@@ -738,6 +740,9 @@ const URL = {
   CALL_DEALLOCATE: (empId) => {
     return roleManagement_url + "/dms/emp-update/" + empId;
   },
+  ADDRESS_NAME:(lat,long)=>{
+    return `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${long}&key=${GoogleMapKey}`;
+  }
 };
 
 // bankFinancier, incuranceCompany, enqueryCategory, deliveryCheckList, sublostReason
