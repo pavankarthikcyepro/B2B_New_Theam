@@ -260,6 +260,7 @@ const PaidAccessoriesTextAndAmountComp = ({
 };
 
 let isProceedToBookingClicked = false;
+let isChangedModelPrimary = true;
 
 const PrebookingFormScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
@@ -838,6 +839,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           modelData.model != value.model
         ) {
           dispatch(updateOfferPriceData());
+          console.log("clearPriceConfirmationData 1");
           clearPriceConfirmationData();
         }
 
@@ -854,30 +856,23 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             dispatch(
               updateOfferPriceData(selector.on_road_price_dto_list_response)
             );
-            addingIsPrimary();
-          } else if (!value.color) {
+            // if (
+            //   selector?.pre_booking_details_response?.dmsLeadDto?.leadStatus ==
+            //   "PREBOOKINGCOMPLETED"
+            // ) {
+            setCarModelDataList(value, index);
+            // } else {
+            //   addingIsPrimary();
+            // }
+          } else if (!value.color && value.isPrimary == "Y") {
             dispatch(updateOfferPriceData());
             clearPriceConfirmationData();
+            setCarModelDataList(value, index);
+          } else {
+            setCarModelDataList(value, index);
           }
         } else {
-          let arr = await [...carModelsList];
-          arr[index] = value;
-          // arr.splice(carModelsList, index, value);
-          let primaryModel = [];
-          primaryModel = arr.filter((item) => item.isPrimary === "Y");
-          if (primaryModel.length > 0) {
-            if (
-              primaryModel[0].variant !== "" &&
-              primaryModel[0].model !== ""
-            ) {
-              updateVariantModelsData(
-                primaryModel[0].model,
-                true,
-                primaryModel[0].variant
-              );
-            }
-          }
-          await setCarModelsList([...arr]);
+          setCarModelDataList(value, index);
         }
       } else {
         if (type == "delete") {
@@ -890,6 +885,33 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     } catch (error) {
       // alert(error)
     }
+  };
+
+  const setCarModelDataList = async (value, index) => {
+    let arr = Object.assign([], carModelsList);
+    if (arr[index] && value) {
+      arr[index] = value;
+    }
+
+    if (value?.isPrimary == "Y") {
+      isChangedModelPrimary = true;
+    } else {
+      isChangedModelPrimary = false;
+    }
+
+    let primaryModel = [];
+    primaryModel = arr.filter((item) => item.isPrimary === "Y");
+
+    if (primaryModel.length > 0) {
+      if (primaryModel[0].variant !== "" && primaryModel[0].model !== "") {
+        updateVariantModelsData(
+          primaryModel[0].model,
+          true,
+          primaryModel[0].variant
+        );
+      }
+    }
+    await setCarModelsList(Object.assign([], arr));
   };
 
   const setPaidAccessoriesData = () => {
@@ -1632,12 +1654,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           transmissionType: carModelObj.transmission_type,
         };
         dispatch(updateFuelAndTransmissionType(obj));
-        dispatch(
-          getOnRoadPriceAndInsurenceDetailsApi({
-            orgId: userData.orgId,
-            varientId: varientId,
-          })
-        );
+        
+          dispatch(
+            getOnRoadPriceAndInsurenceDetailsApi({
+              orgId: userData.orgId,
+              varientId: varientId,
+            })
+          );
         setCarColorsData([...newArray]);
       }
     }
@@ -2955,6 +2978,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     }
     return () => {
       dispatch(clearBookingState());
+      isChangedModelPrimary = true;
     };
   }, []);
 
@@ -3079,10 +3103,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     selectorBooking.update_enquiry_details_response,
   ]);
 
-   displayCreateEnquiryAlert = (refNum) => {
+   const displayCreateEnquiryAlert = (refNum) => {
      Alert.alert(
-       `Booking Successfully Created\nRef Num: ${refNum}`,
-       "",
+       `Booking Successfully Created`,
+       `Ref Num: ${refNum}`,
        [
          {
            text: "OK",
@@ -4627,6 +4651,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           item={item}
                           leadStage={leadStage}
                           isSubmitPress={isSubmitPress}
+                          carModelsList={carModelsList}
                           isOnlyOne={carModelsList.length == 1 ? true : false}
                           onChangeSubmit={() => setIsSubmitPress(false)}
                         />

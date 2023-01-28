@@ -150,6 +150,7 @@ const TestDriveScreen = ({ route, navigation }) => {
         value: otpValue,
         setValue: setOtpValue,
     });
+    const [isDemoVehiclesAvailable, setIsDemoVehiclesAvailable] = useState(true);
     const [isSubmitPress, setIsSubmitPress] = useState(false);
     const [vehicleDetails, setVehicleDetails] =useState({});
     let date = new Date();
@@ -312,18 +313,19 @@ const TestDriveScreen = ({ route, navigation }) => {
             return item.model == selectedVehicleDetails.model;
           }
         );
-        tempObj.vehicleId = findModel[0].vehicleId;
 
         if (findModel.length > 0) {
+          tempObj.vehicleId = findModel[0].vehicleId;
           let findVarient = [];
           findVarient = selector.test_drive_varients_obj_for_drop_down[
             findModel[0].model
           ].filter((item) => {
             return item.varientName == selectedVehicleDetails.varient;
           });
+
           if (findVarient.length > 0) {
             tempObj.varientId = findVarient[0].varientId;
-
+            setIsDemoVehiclesAvailable(true);
             if (
               selector.test_drive_varients_obj_for_drop_down[findModel[0].model]
             ) {
@@ -337,8 +339,10 @@ const TestDriveScreen = ({ route, navigation }) => {
             tempObj.varientId = findModel[0].varientId;
           }
         } else {
-          tempObj.fuelType = "";
-          tempObj.transType = "";
+          setIsDemoVehiclesAvailable(false);
+          showToast(
+            "The demo vehicle is not configured for this model. Please contact admin. "
+          );
         }
         setSelectedVehicleDetails(tempObj);
       }
@@ -693,6 +697,7 @@ const TestDriveScreen = ({ route, navigation }) => {
         //     vehicleId = selectedVehicleDetails.vehicleId;
         //   }
         // });
+
         if (!varientId || !vehicleId) return;
 
         const location = addressType === 1 ? "showroom" : "customer";
@@ -1062,7 +1067,7 @@ const TestDriveScreen = ({ route, navigation }) => {
     }, [selector.validate_otp_response_status])
 
     const isViewMode = () => {
-      if (route?.params?.taskStatus === "CLOSED") {
+      if (route?.params?.taskStatus === "CLOSED" || !isDemoVehiclesAvailable) {
         return true;
       }
       return false;
