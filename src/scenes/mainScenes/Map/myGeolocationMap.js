@@ -46,6 +46,8 @@ const GeolocationMapScreen = ({ route }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [data, setData] = useState([]);
   const [distance, setDistance] = useState([]);
+  const [startAddress, setStartAddress] = useState("");
+  const [endAddress, setEndAddress] = useState("");
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -106,7 +108,19 @@ const GeolocationMapScreen = ({ route }) => {
             )
           );
         }
-
+        const startNameResponse = await client.get(
+          URL.ADDRESS_NAME(arr[0].latitude, arr[0].longitude)
+        );
+        const startJson = await startNameResponse.json();
+        const endNameResponse = await client.get(
+          URL.ADDRESS_NAME(
+            arr[arr.length - 1].latitude,
+            arr[arr.length - 1].longitude
+          )
+        );
+        const endJson = await endNameResponse.json();
+        setStartAddress(startJson.results[0].formatted_address);
+        setEndAddress(endJson.results[0].formatted_address);
         setDistance(result);
         setLoading(false);
       } else {
@@ -182,6 +196,19 @@ const GeolocationMapScreen = ({ route }) => {
             )
           );
         }
+        const startNameResponse = await client.get(
+          URL.ADDRESS_NAME(arr[0].latitude, arr[0].longitude)
+        );
+        const startJson = await startNameResponse.json();
+        const endNameResponse = await client.get(
+          URL.ADDRESS_NAME(
+            arr[arr.length - 1].latitude,
+            arr[arr.length - 1].longitude
+          )
+        );
+        const endJson = await endNameResponse.json();
+        setStartAddress(startJson.results[0].formatted_address);
+        setEndAddress(endJson.results[0].formatted_address);
         setDistance(result);
         setLoading(false);
       } else {
@@ -249,35 +276,35 @@ const GeolocationMapScreen = ({ route }) => {
     );
   };
 
+  const tickIcon = () => {
+    return (
+      <Svg
+        width="30px"
+        height="30px"
+        // viewBox="0 0 40 56"
+        viewBox="0 0 24 24"
+        // fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        // fill="#FFF"
+        // opacity="0.6"
+      >
+        <Path
+          d="M3.61971 8.49C5.58971 -0.169998 18.4197 -0.159997 20.3797 8.5C21.5297 13.58 18.3697 17.88 15.5997 20.54C13.5897 22.48 10.4097 22.48 8.38971 20.54C5.62971 17.88 2.46971 13.57 3.61971 8.49Z"
+          stroke="#292D32"
+          stroke-width="1.5"
+        />
+        <Path
+          opacity="0.4"
+          d="M9.25 11.5L10.75 13L14.75 9"
+          stroke="#292D32"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </Svg>
+    );
+  };
 
-    const tickIcon = () => {
-      return (
-        <Svg
-          width="30px"
-          height="30px"
-          // viewBox="0 0 40 56"
-          viewBox="0 0 24 24"
-          // fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          // fill="#FFF"
-          // opacity="0.6"
-        >
-            <Path
-              d="M3.61971 8.49C5.58971 -0.169998 18.4197 -0.159997 20.3797 8.5C21.5297 13.58 18.3697 17.88 15.5997 20.54C13.5897 22.48 10.4097 22.48 8.38971 20.54C5.62971 17.88 2.46971 13.57 3.61971 8.49Z"
-              stroke="#292D32"
-              stroke-width="1.5"
-            />
-            <Path
-              opacity="0.4"
-              d="M9.25 11.5L10.75 13L14.75 9"
-              stroke="#292D32"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-        </Svg>
-      );
-    };
   return (
     <SafeAreaView style={styles.container}>
       <DatePickerComponent
@@ -326,7 +353,7 @@ const GeolocationMapScreen = ({ route }) => {
                 //   // padding:5,
                 //   // flex:1
                 // }}
-                // image={index === coordinates.length - 1 ? CYEPRO : HISTORY_LOC} 
+                // image={index === coordinates.length - 1 ? CYEPRO : HISTORY_LOC}
                 // title={marker}
                 // description={}
               >
@@ -351,6 +378,30 @@ const GeolocationMapScreen = ({ route }) => {
         )}
       </View>
       <View style={styles.bottomView}>
+        {/* <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-around",
+            marginBottom: 15,
+          }}
+        >
+          <View style={{ width: "15%" }}>
+            <Text style={{ ...styles.columnsTitle, marginVertical: 15 }}>
+              {"Start"}
+            </Text>
+            <Text style={{ ...styles.columnsTitle, marginVertical: 15 }}>
+              {"Goal"}
+            </Text>
+          </View>
+          <View style={{ width: "85%" }}>
+            <Text style={{ ...styles.valueTxt, marginVertical: 15 }}>
+              {startAddress}
+            </Text>
+            <Text style={{ ...styles.valueTxt, marginVertical: 15 }}>
+              {endAddress}
+            </Text>
+          </View>
+        </View> */}
         <View style={styles.tableRow}>
           <View style={styles.colums}>
             <View style={styles.innerRow}>
@@ -447,6 +498,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
+    // bottom: "40%",
     bottom: "30%",
     justifyContent: "flex-end",
     alignItems: "center",
@@ -487,6 +539,7 @@ const styles = StyleSheet.create({
   },
   bottomView: {
     flex: 1,
+    // top: "67%",
     top: "80%",
     width: "85%",
     alignSelf: "center",
