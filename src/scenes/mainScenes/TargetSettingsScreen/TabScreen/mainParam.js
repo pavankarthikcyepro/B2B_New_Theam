@@ -527,15 +527,17 @@ const MainParamScreen = ({ route, navigation }) => {
       <TextInput
         onPressIn={() => {
           if (editParameters) {
-            if (!ownData?.isAccess) {
+            if (ownData?.isAccess == "false") {
               showToastRedAlert(`Target Set By ${ownData?.updatedUserName}`);
             }
           }
         }}
-        editable={editParameters ? (!ownData?.isAccess ? false : true) : false}
+        editable={
+          editParameters ? (ownData?.isAccess == "false" ? false : true) : false
+        }
         style={
           editParameters
-            ? !ownData.isAccess
+            ? ownData.isAccess == "false"
               ? styles.textBoxDisabled
               : styles.textBox
             : styles.textBoxDisabled
@@ -688,18 +690,22 @@ const MainParamScreen = ({ route, navigation }) => {
             <TextInput
               onPressIn={() => {
                 if (editParameters) {
-                  if (!item?.isAccess) {
+                  if (item?.isAccess == "false") {
                     showToastRedAlert(`Target Set By ${item?.updatedUserName}`);
                   }
                 }
               }}
               key={index}
               editable={
-                editParameters ? (!item.isAccess ? false : true) : false
+                editParameters
+                  ? item.isAccess == "false"
+                    ? false
+                    : true
+                  : false
               }
               style={
                 editParameters
-                  ? !item.isAccess
+                  ? item.isAccess == "false"
                     ? styles.textBoxDisabled
                     : styles.textBox
                   : styles.textBoxDisabled
@@ -744,10 +750,14 @@ const MainParamScreen = ({ route, navigation }) => {
             <Pressable
               style={[styles.editParamsButton, { borderColor: "green" }]}
               onPress={() => {
-                if (homeSelector.isTeamPresent && selector.isTeam) {
-                  saveTeamData();
+                if (ownData.isAccess == "false") {
+                  setEditParameters(false);
                 } else {
-                  saveSelfData();
+                  if (homeSelector.isTeamPresent && selector.isTeam) {
+                    saveTeamData();
+                  } else {
+                    saveSelfData();
+                  }
                 }
               }}
             >
@@ -892,7 +902,7 @@ const MainParamScreen = ({ route, navigation }) => {
                               {
                                 <TouchableOpacity
                                   onPress={() => {
-                                    if (!item?.isAccess) {
+                                    if (item?.isAccess == "false") {
                                       showToastRedAlert(
                                         `Target Set By ${item?.updatedUserName}`
                                       );
@@ -1128,7 +1138,7 @@ const MainParamScreen = ({ route, navigation }) => {
                 <TouchableOpacity
                   style={styles.textBox}
                   onPress={() => {
-                    if (!ownData.isAccess) {
+                    if (ownData.isAccess == "false") {
                       showToastRedAlert(
                         `Target Set By ${ownData.updatedUserName}`
                       );
@@ -1174,7 +1184,7 @@ const MainParamScreen = ({ route, navigation }) => {
                       : 0}
                   </Text>
                 </TouchableOpacity>
-                {!ownData.isAccess && ownData.updatedUserName && (
+                {ownData.isAccess == "false" && ownData.updatedUserName && (
                   <View style={{ width: "50%" }}>
                     <Text
                       numberOfLines={3}
@@ -1288,7 +1298,8 @@ const MainParamScreen = ({ route, navigation }) => {
                     // else {
                     //     setAddOrEdit('E')
                     // }
-                    if (!ownData.isAccess) {
+                    console.log(ownData.isAccess);
+                    if (ownData.isAccess == "false") {
                       showToastRedAlert(
                         `Target Set By ${ownData.updatedUserName}`
                       );
@@ -1329,7 +1340,7 @@ const MainParamScreen = ({ route, navigation }) => {
                       : 0}
                   </Text>
                 </TouchableOpacity>
-                {!ownData.isAccess && ownData.updatedUserName && (
+                {ownData.isAccess == "false" && ownData.updatedUserName && (
                   <View style={{ width: "50%" }}>
                     <Text
                       numberOfLines={3}
