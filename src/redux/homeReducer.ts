@@ -534,6 +534,21 @@ export const getLeaderBoardList = createAsyncThunk(
   }
 );
 
+export const getLeaderBoardListWithoutFilter = createAsyncThunk(
+  "HOME/getLeaderBoardListWithoutFilter",
+  async (payload: any, { rejectWithValue }) => {
+    const response = await client.post(
+      URL.GET_DEALER_RANKING_DATA(payload.orgId),
+      payload
+    );
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 export const  getBranchRanksList = createAsyncThunk(
   "HOME/getBranchRanksList",
   async (payload, { rejectWithValue }) => {
@@ -549,6 +564,20 @@ export const  getBranchRanksList = createAsyncThunk(
   }
 );
 
+export const getBranchRanksListWithoutFilter = createAsyncThunk(
+  "HOME/getBranchRanksListWithoutFilter",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(
+      URL.GET_TARGET_RANKING(payload.orgId, payload.branchId),
+      payload
+    );
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
 export const getSourceModelDataForSelf = createAsyncThunk(
   "HOME/getSourceModelDataForSelf",
   async (data: any, { rejectWithValue }) => {
@@ -1279,6 +1308,21 @@ export const homeSlice = createSlice({
       .addCase(getLeaderBoardList.rejected, (state, action) => {
         state.isLoading = false;
       })
+
+      .addCase(getLeaderBoardListWithoutFilter.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getLeaderBoardListWithoutFilter.fulfilled, (state, action) => {
+        const dataObj = action.payload;
+        state.leaderboard_list = dataObj ? dataObj : [];
+        if (!dataObj || dataObj.length === 0) showToast("No data available");
+        state.isLoading = false;
+      })
+      .addCase(getLeaderBoardListWithoutFilter.rejected, (state, action) => {
+        state.isLoading = false;
+      })
+
+
       .addCase(getBranchRanksList.pending, (state) => {
         state.isLoading = true;
       })
@@ -1289,6 +1333,19 @@ export const homeSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(getBranchRanksList.rejected, (state, action) => {
+        state.isLoading = false;
+      })
+
+      .addCase(getBranchRanksListWithoutFilter.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getBranchRanksListWithoutFilter.fulfilled, (state, action) => {
+        const dataObj = action.payload;
+        state.branchrank_list = dataObj ? dataObj : [];
+        if (!dataObj || dataObj.length === 0) showToast("No data available");
+        state.isLoading = false;
+      })
+      .addCase(getBranchRanksListWithoutFilter.rejected, (state, action) => {
         state.isLoading = false;
       })
       .addCase(getSourceModelDataForSelf.pending, (state, action) => {
