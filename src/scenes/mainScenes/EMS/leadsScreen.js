@@ -836,7 +836,7 @@ const LeadsScreen = ({ route, navigation }) => {
   };
 
   const getFirstLetterUpperCase = (name) => {
-    return name.charAt(0).toUpperCase() + name.slice(1);
+    return name?.charAt(0).toUpperCase() + name?.slice(1);
   };
 
   const onChangeSearch = (query) => {
@@ -1173,7 +1173,7 @@ const LeadsScreen = ({ route, navigation }) => {
           ]}
         >
           <FlatList
-              initialNumToRender={searchedData.length}
+              initialNumToRender={searchedData?.length}
             data={searchedData}
             extraData={searchedData}
             keyExtractor={(item, index) => index.toString()}
