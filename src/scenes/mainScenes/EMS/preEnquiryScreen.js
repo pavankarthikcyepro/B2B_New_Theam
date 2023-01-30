@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, StyleSheet, View, Text, FlatList, Pressable, Alert, ActivityIndicator, RefreshControl, Platform } from 'react-native';
+import { SafeAreaView, StyleSheet, View, Text, FlatList, Pressable, Alert, ActivityIndicator, RefreshControl, Platform ,Keyboard} from 'react-native';
 import { PreEnquiryItem, PageControlItem, EmptyListView } from '../../../pureComponents';
 import { Colors, GlobalStyle } from '../../../styles';
 import { useSelector, useDispatch } from 'react-redux';
@@ -348,7 +348,7 @@ const PreEnquiryScreen = ({ route, navigation }) => {
             "empId": empId,
             "status": "PREENQUIRY",
             "offset": offSet,
-            "limit": 50000,
+            "limit": 50,
         }
         return payload;
     }
@@ -445,6 +445,7 @@ const PreEnquiryScreen = ({ route, navigation }) => {
     }
 
     const onChangeSearch = query => {
+  
         setSearchQuery(query);
         dispatch(updateSearchKey(query));
         dispatch(updateIsSearch(true));
@@ -595,11 +596,12 @@ const PreEnquiryScreen = ({ route, navigation }) => {
                 }
                 showsVerticalScrollIndicator={false}
                 onEndReachedThreshold={0}
-                // onEndReached={() => {
-                //     if (appSelector.searchKey === ''){
-                //         getMorePreEnquiryListFromServer()
-                //     }
-                // }}
+                onEndReached={() => {
+                  if (searchQuery === ''){
+                    
+                        getMorePreEnquiryListFromServer()
+                    }
+                }}
                 ListFooterComponent={renderFooter}
                 renderItem={renderItem}
               />

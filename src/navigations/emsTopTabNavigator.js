@@ -63,13 +63,16 @@ const Badge = ({ focused, title, countList }) => {
       </Text>
       <View style={styles.badgeContainer}>
         <Text style={styles.badgeText}>
-          {title == "CONTACTS"
+          {/* {title == "CONTACTS"
             ? countList
               ? countList.length
               : 0
             : countList && countList?.dmsEntity?.leadDtoPage?.totalElements > 0
             ? countList.dmsEntity.leadDtoPage.totalElements
-            : 0}
+            : 0} */}
+          { countList && countList?.dmsEntity?.leadDtoPage?.totalElements > 0
+              ? countList.dmsEntity.leadDtoPage.totalElements
+              : 0}
         </Text>
       </View>
     </View>
@@ -77,7 +80,7 @@ const Badge = ({ focused, title, countList }) => {
 };
 
 const EMSTopTabNavigatorTwo = () => {
-  const { pre_enquiry_list } = useSelector((state) => state.preEnquiryReducer);
+  const { pre_enquiry_list_TotalElements } = useSelector((state) => state.preEnquiryReducer);
   const { leadList } = useSelector((state) => state.leaddropReducer);
   return (
     <EMSTopTab.Navigator
@@ -92,7 +95,7 @@ const EMSTopTabNavigatorTwo = () => {
             <Badge
               title={"CONTACTS"}
               focused={focused}
-              countList={pre_enquiry_list}
+              countList={pre_enquiry_list_TotalElements}
             />
           ),
         }}
