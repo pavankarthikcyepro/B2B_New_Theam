@@ -527,17 +527,15 @@ const MainParamScreen = ({ route, navigation }) => {
       <TextInput
         onPressIn={() => {
           if (editParameters) {
-            if (ownData?.updatedUserName) {
+            if (!ownData?.isAccess) {
               showToastRedAlert(`Target Set By ${ownData?.updatedUserName}`);
             }
           }
         }}
-        editable={
-          editParameters ? (ownData?.updatedUserName ? false : true) : false
-        }
+        editable={editParameters ? (!ownData?.isAccess ? false : true) : false}
         style={
           editParameters
-            ? ownData.updatedUserName
+            ? !ownData.isAccess
               ? styles.textBoxDisabled
               : styles.textBox
             : styles.textBoxDisabled
@@ -690,18 +688,18 @@ const MainParamScreen = ({ route, navigation }) => {
             <TextInput
               onPressIn={() => {
                 if (editParameters) {
-                  if (item?.updatedUserName) {
+                  if (!item?.isAccess) {
                     showToastRedAlert(`Target Set By ${item?.updatedUserName}`);
                   }
                 }
               }}
               key={index}
               editable={
-                editParameters ? (item.updatedUserName ? false : true) : false
+                editParameters ? (!item.isAccess ? false : true) : false
               }
               style={
                 editParameters
-                  ? item.updatedUserName
+                  ? !item.isAccess
                     ? styles.textBoxDisabled
                     : styles.textBox
                   : styles.textBoxDisabled
@@ -894,7 +892,7 @@ const MainParamScreen = ({ route, navigation }) => {
                               {
                                 <TouchableOpacity
                                   onPress={() => {
-                                    if (item?.updatedUserName) {
+                                    if (!item?.isAccess) {
                                       showToastRedAlert(
                                         `Target Set By ${item?.updatedUserName}`
                                       );
@@ -1130,7 +1128,7 @@ const MainParamScreen = ({ route, navigation }) => {
                 <TouchableOpacity
                   style={styles.textBox}
                   onPress={() => {
-                    if (ownData.updatedUserName) {
+                    if (!ownData.isAccess) {
                       showToastRedAlert(
                         `Target Set By ${ownData.updatedUserName}`
                       );
@@ -1176,7 +1174,7 @@ const MainParamScreen = ({ route, navigation }) => {
                       : 0}
                   </Text>
                 </TouchableOpacity>
-                {ownData.updatedUserName && (
+                {!ownData.isAccess && ownData.updatedUserName && (
                   <View style={{ width: "50%" }}>
                     <Text
                       numberOfLines={3}
@@ -1290,31 +1288,37 @@ const MainParamScreen = ({ route, navigation }) => {
                     // else {
                     //     setAddOrEdit('E')
                     // }
-                    if (loggedInEmpDetails.primaryDepartment === "Sales") {
-                      if (
+                    if (!ownData.isAccess) {
+                      showToastRedAlert(
+                        `Target Set By ${ownData.updatedUserName}`
+                      );
+                    } else {
+                      if (loggedInEmpDetails.primaryDepartment === "Sales") {
+                        if (
+                          ownData.retailTarget !== null &&
+                          selector.endDate === ownData.endDate &&
+                          selector.startDate === ownData.startDate
+                        ) {
+                          setSelectedBranch({
+                            label: ownData.branchName,
+                            value: ownData.branch,
+                          });
+                          setDefaultBranch(ownData.branch);
+                          setAddOrEdit("E");
+                        } else {
+                          setDefaultBranch(null);
+                          setAddOrEdit("A");
+                        }
+                        setSelectedUser({ ...loggedInEmpDetails });
                         ownData.retailTarget !== null &&
                         selector.endDate === ownData.endDate &&
                         selector.startDate === ownData.startDate
-                      ) {
-                        setSelectedBranch({
-                          label: ownData.branchName,
-                          value: ownData.branch,
-                        });
-                        setDefaultBranch(ownData.branch);
-                        setAddOrEdit("E");
-                      } else {
-                        setDefaultBranch(null);
-                        setAddOrEdit("A");
-                      }
-                      setSelectedUser({ ...loggedInEmpDetails });
-                      ownData.retailTarget !== null &&
-                      selector.endDate === ownData.endDate &&
-                      selector.startDate === ownData.startDate
-                        ? setRetail(ownData.retailTarget.toString())
-                        : setRetail("");
+                          ? setRetail(ownData.retailTarget.toString())
+                          : setRetail("");
 
-                      setOpenRetail(true);
-                    } else showToast("Access Denied");
+                        setOpenRetail(true);
+                      } else showToast("Access Denied");
+                    }
                   }}
                 >
                   <Text style={styles.textInput}>
@@ -1325,7 +1329,7 @@ const MainParamScreen = ({ route, navigation }) => {
                       : 0}
                   </Text>
                 </TouchableOpacity>
-                {ownData.updatedUserName && (
+                {!ownData.isAccess && ownData.updatedUserName && (
                   <View style={{ width: "50%" }}>
                     <Text
                       numberOfLines={3}
