@@ -750,7 +750,11 @@ const MainParamScreen = ({ route, navigation }) => {
             <Pressable
               style={[styles.editParamsButton, { borderColor: "green" }]}
               onPress={() => {
-                if (ownData.isAccess == "false") {
+                if (
+                  homeSelector.isTeamPresent &&
+                  !selector.isTeam &&
+                  ownData.isAccess == "false"
+                ) {
                   setEditParameters(false);
                 } else {
                   if (homeSelector.isTeamPresent && selector.isTeam) {
