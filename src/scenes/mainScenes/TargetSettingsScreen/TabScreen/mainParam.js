@@ -528,7 +528,9 @@ const MainParamScreen = ({ route, navigation }) => {
         onPressIn={() => {
           if (editParameters) {
             if (ownData?.isAccess == "false") {
-              showToastRedAlert(`Target has been already set by ${ownData?.updatedUserName}`);
+              showToastRedAlert(
+                `Target has been already set by ${ownData?.updatedUserName}`
+              );
             }
           }
         }}
@@ -592,7 +594,12 @@ const MainParamScreen = ({ route, navigation }) => {
       const obj = { employeeId: x, ...branchInfo, targets: internalTargets };
       targets.push(obj);
     });
-    return targets;
+    let mapData = selector.targetMapping.filter((y) => y.isAccess === "false");
+    let result = targets.filter(
+      (obj1) => !mapData.find((obj2) => obj2.employeeId === obj1.employeeId)
+    );
+    return result;
+    // return targets;
   };
 
   function saveSelfData() {
@@ -616,10 +623,35 @@ const MainParamScreen = ({ route, navigation }) => {
         designation: `${ownData.designation}`,
         start_date: selector.startDate,
         end_date: selector.endDate,
+        loggedInEmpId: empId,
       };
       Promise.all([dispatch(saveSelfTargetParams(payload))])
-        .then((x) => {})
-        .catch((y) => {});
+        .then((x) => {
+          const payload2 = {
+            empId: loggedInEmpDetails.empId,
+            pageNo: 1,
+            size: 500,
+            // targetType: selector.targetType,
+            startDate: lastMonthFirstDate,
+            endDate: currentDate,
+          };
+          Promise.all([dispatch(getAllTargetMapping(payload2))])
+            .then((x) => {})
+            .catch((y) => {});
+        })
+        .catch((y) => {
+          const payload2 = {
+            empId: loggedInEmpDetails.empId,
+            pageNo: 1,
+            size: 500,
+            // targetType: selector.targetType,
+            startDate: lastMonthFirstDate,
+            endDate: currentDate,
+          };
+          Promise.all([dispatch(getAllTargetMapping(payload2))])
+            .then((x) => {})
+            .catch((y) => {});
+        });
     }
   }
 
@@ -659,9 +691,33 @@ const MainParamScreen = ({ route, navigation }) => {
             Promise.all([dispatch(getAllTargetMapping(payload2))])
               .then((x) => {})
               .catch((y) => {});
+          } else {
+            const payload2 = {
+              empId: loggedInEmpDetails.empId,
+              pageNo: 1,
+              size: 500,
+              // targetType: selector.targetType,
+              startDate: lastMonthFirstDate,
+              endDate: currentDate,
+            };
+            Promise.all([dispatch(getAllTargetMapping(payload2))])
+              .then((x) => {})
+              .catch((y) => {});
           }
         })
-        .catch((y) => {});
+        .catch((y) => {
+          const payload2 = {
+            empId: loggedInEmpDetails.empId,
+            pageNo: 1,
+            size: 500,
+            // targetType: selector.targetType,
+            startDate: lastMonthFirstDate,
+            endDate: currentDate,
+          };
+          Promise.all([dispatch(getAllTargetMapping(payload2))])
+            .then((x) => {})
+            .catch((y) => {});
+        });
     }
   }
 
@@ -691,7 +747,9 @@ const MainParamScreen = ({ route, navigation }) => {
               onPressIn={() => {
                 if (editParameters) {
                   if (item?.isAccess == "false") {
-                    showToastRedAlert(`Target has been already set by ${item?.updatedUserName}`);
+                    showToastRedAlert(
+                      `Target has been already set by ${item?.updatedUserName}`
+                    );
                   }
                 }
               }}
@@ -1559,7 +1617,8 @@ const MainParamScreen = ({ route, navigation }) => {
                   //     editTargetData()
                   // }
                   if (isNoTargetAvailable) {
-                    addTargetData();
+                    // addTargetData();
+                    editTargetData();
                   } else {
                     editTargetData();
                   }
