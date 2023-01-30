@@ -81,7 +81,7 @@ const Badge = ({ focused, title, countList }) => {
 
 const EMSTopTabNavigatorTwo = () => {
   const { pre_enquiry_list_TotalElements } = useSelector((state) => state.preEnquiryReducer);
-  const { leadList } = useSelector((state) => state.leaddropReducer);
+  const { leadList_totoalElemntData } = useSelector((state) => state.enquiryReducer);
   return (
     <EMSTopTab.Navigator
       initialRouteName={EmsTopTabNavigatorIdentifiers.preEnquiry}
@@ -105,7 +105,7 @@ const EMSTopTabNavigatorTwo = () => {
         component={Leads}
         options={{
           title: ({ focused }) => (
-            <Badge title={"LEADS"} focused={focused} countList={leadList} />
+            <Badge title={"LEADS"} focused={focused} countList={leadList_totoalElemntData} />
           ),
         }}
       />
