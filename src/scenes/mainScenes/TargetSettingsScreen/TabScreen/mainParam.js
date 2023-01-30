@@ -528,7 +528,7 @@ const MainParamScreen = ({ route, navigation }) => {
         onPressIn={() => {
           if (editParameters) {
             if (ownData?.isAccess == "false") {
-              showToastRedAlert(`Target Set By ${ownData?.updatedUserName}`);
+              showToastRedAlert(`Target has been already set by ${ownData?.updatedUserName}`);
             }
           }
         }}
@@ -691,7 +691,7 @@ const MainParamScreen = ({ route, navigation }) => {
               onPressIn={() => {
                 if (editParameters) {
                   if (item?.isAccess == "false") {
-                    showToastRedAlert(`Target Set By ${item?.updatedUserName}`);
+                    showToastRedAlert(`Target has been already set by ${item?.updatedUserName}`);
                   }
                 }
               }}
@@ -908,7 +908,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                   onPress={() => {
                                     if (item?.isAccess == "false") {
                                       showToastRedAlert(
-                                        `Target Set By ${item?.updatedUserName}`
+                                        `Target has been already set by ${item?.updatedUserName}`
                                       );
                                     } else {
                                       setSelectedDropdownData([
@@ -953,7 +953,10 @@ const MainParamScreen = ({ route, navigation }) => {
                                     height: 40,
                                     borderWidth: 1,
                                     borderRadius: 5,
-                                    borderColor: "blue",
+                                    borderColor:
+                                      item?.isAccess == "false"
+                                        ? "#d1d1d1"
+                                        : "blue",
                                     justifyContent: "center",
                                     alignItems: "center",
                                     textAlign: "center",
@@ -966,7 +969,6 @@ const MainParamScreen = ({ route, navigation }) => {
                                   </Text>
                                 </TouchableOpacity>
                               }
-                              {/* <Text>{"lll"}</Text> */}
                             </View>
 
                             {[
@@ -1144,7 +1146,7 @@ const MainParamScreen = ({ route, navigation }) => {
                   onPress={() => {
                     if (ownData.isAccess == "false") {
                       showToastRedAlert(
-                        `Target Set By ${ownData.updatedUserName}`
+                        `Target has been already set by ${ownData.updatedUserName}`
                       );
                     } else {
                       setSelectedUser({ ...loggedInEmpDetails });
@@ -1188,13 +1190,13 @@ const MainParamScreen = ({ route, navigation }) => {
                       : 0}
                   </Text>
                 </TouchableOpacity>
-                {ownData.isAccess == "false" && ownData.updatedUserName && (
+                {/* {ownData.isAccess == "false" && ownData.updatedUserName && (
                   <View style={{ width: "50%" }}>
                     <Text
                       numberOfLines={3}
-                    >{`Target Set by ${ownData.updatedUserName}`}</Text>
+                    >{`Target has been already set by ${ownData.updatedUserName}`}</Text>
                   </View>
-                )}
+                )} */}
               </View>
 
               <View style={styles.textBoxWrap}>
@@ -1302,10 +1304,9 @@ const MainParamScreen = ({ route, navigation }) => {
                     // else {
                     //     setAddOrEdit('E')
                     // }
-                    console.log(ownData.isAccess);
                     if (ownData.isAccess == "false") {
                       showToastRedAlert(
-                        `Target Set By ${ownData.updatedUserName}`
+                        `Target has been already set by ${ownData.updatedUserName}`
                       );
                     } else {
                       if (loggedInEmpDetails.primaryDepartment === "Sales") {
@@ -1344,13 +1345,13 @@ const MainParamScreen = ({ route, navigation }) => {
                       : 0}
                   </Text>
                 </TouchableOpacity>
-                {ownData.isAccess == "false" && ownData.updatedUserName && (
+                {/* {ownData.isAccess == "false" && ownData.updatedUserName && (
                   <View style={{ width: "50%" }}>
                     <Text
                       numberOfLines={3}
-                    >{`Target Set by ${ownData.updatedUserName}`}</Text>
+                    >{`Target has been already set by ${ownData.updatedUserName}`}</Text>
                   </View>
-                )}
+                )} */}
               </View>
 
               <View style={styles.textBoxWrap}>
