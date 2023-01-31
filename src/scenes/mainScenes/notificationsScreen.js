@@ -31,7 +31,7 @@ import {
   ACCESSORIES,
   LEAD_ALLOCATION,
 } from "../../assets/icon";
-import { getNotificationList, readNotification } from "../../redux/notificationReducer";
+import { getNotificationList, readNotification, setNotificationMyTaskAllFilter } from "../../redux/notificationReducer";
 
 const NotificationScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -81,6 +81,9 @@ const NotificationScreen = ({ navigation }) => {
 
   const navigateTo = (screenName, data) => {
     if (screenName) {
+      if (screenName == AppNavigator.TabStackIdentifiers.myTask) {
+        dispatch(setNotificationMyTaskAllFilter(true));
+      }
       navigation.navigate(screenName);
       if (screenName != "Target Settings") {
         setTimeout(() => {
