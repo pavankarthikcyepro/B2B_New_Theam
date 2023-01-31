@@ -1026,6 +1026,26 @@ const HomeScreen = ({ route, navigation }) => {
     }
   };
 
+  function navigateToEMS(params) {
+    navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
+    setTimeout(() => {
+      navigation.navigate("LEADS", {
+        // param: param === "INVOICE" ? "Retail" : param,
+        // moduleType: "home",
+        // employeeDetail: "",
+      });
+    }, 1000);
+  }
+  function navigateToContact(params) {
+    navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
+    setTimeout(() => {
+      navigation.navigate("PRE_ENQUIRY", {
+        // param: param === "INVOICE" ? "Retail" : param,
+        // moduleType: "home",
+        // employeeDetail: "",
+      });
+    }, 1000);
+  }
   const getFileExtention = (fileUrl) => {
     // To get the file extension
     return /[.]/.exec(fileUrl) ? /[^.]+$/.exec(fileUrl) : undefined;
@@ -1347,7 +1367,7 @@ const HomeScreen = ({ route, navigation }) => {
               <TouchableOpacity
                 onPress={() => {
                   selector.receptionistData.contactsCount > 0 &&
-                    navigateToEMS();
+                    navigateToContact();
                 }}
                 style={styles.view8}
               >
@@ -1791,7 +1811,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginTop: 20,
     alignItems: "center",
-    marginBottom:20
+    marginBottom: 20,
   },
   view8: { flexDirection: "column", alignItems: "center" },
   view9: {
