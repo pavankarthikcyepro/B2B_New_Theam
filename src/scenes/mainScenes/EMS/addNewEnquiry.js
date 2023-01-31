@@ -83,6 +83,7 @@ import {
   updatedmsLeadProduct,
   clearState2,
   getEventConfigList,
+  getEnquiryTypesApi,
 } from "../../../redux/enquiryFormReducer";
 import {
   RadioTextItem,
@@ -173,7 +174,7 @@ import {
 } from "../../../jsonData/preEnquiryScreenJsonData";
 import { getEmployeesListApi } from "../../../redux/confirmedPreEnquiryReducer";
 import { client } from "../../../networking/client";
-import Fontisto from "react-native-vector-icons/Fontisto"
+import Fontisto from "react-native-vector-icons/Fontisto";
 const theme = {
   ...DefaultTheme,
   // Specify custom property
@@ -191,8 +192,7 @@ let EventListData = [
     Startdate: "10/12/2022",
     Enddate: "10/12/2022",
     isSelected: false,
-    id: 0
-
+    id: 0,
   },
   {
     eventName: "omega thon22",
@@ -200,16 +200,7 @@ let EventListData = [
     Startdate: "10/12/2022",
     Enddate: "10/12/2022",
     isSelected: false,
-    id: 1
-  },
-  {
-    eventName: "omega thon22",
-    eventLocation: "Ahmedabad",
-    Startdate: "10/12/2022",
-    Enddate: "10/12/2022",
-    isSelected: false
-    ,
-    id: 2
+    id: 1,
   },
   {
     eventName: "omega thon22",
@@ -217,7 +208,7 @@ let EventListData = [
     Startdate: "10/12/2022",
     Enddate: "10/12/2022",
     isSelected: false,
-    id: 3
+    id: 2,
   },
   {
     eventName: "omega thon22",
@@ -225,10 +216,17 @@ let EventListData = [
     Startdate: "10/12/2022",
     Enddate: "10/12/2022",
     isSelected: false,
-    id: 4
+    id: 3,
   },
-
-]
+  {
+    eventName: "omega thon22",
+    eventLocation: "Ahmedabad",
+    Startdate: "10/12/2022",
+    Enddate: "10/12/2022",
+    isSelected: false,
+    id: 4,
+  },
+];
 const dmsAttachmentsObj = {
   branchId: null,
   contentSize: 0,
@@ -333,8 +331,8 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
   const [disabled, setDisabled] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState("");
   const [isEventListModalVisible, setisEventListModalVisible] = useState(false);
-  const [eventListdata, seteventListData] = useState([])
-  const [selectedEventData, setSelectedEventData] = useState([])
+  const [eventListdata, seteventListData] = useState([]);
+  const [selectedEventData, setSelectedEventData] = useState([]);
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
@@ -448,7 +446,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     getAsyncstoreData();
     getBranchId();
     setComponentAppear(true);
-    getCustomerType();
+    getCustomerEnquiryType();
 
     //  const dms = [{ "color": "Outback Bronze", "fuel": "Petrol", "id": 2704, "model": "Kwid",
     //           "transimmisionType": "Manual", "variant": "KWID RXT 1.0L EASY- R BS6 ORVM MY22" },
@@ -509,11 +507,12 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     // };
   }, [navigation]);
 
-  const getCustomerType = async () => {
+  const getCustomerEnquiryType = async () => {
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
       dispatch(getCustomerTypesApi(jsonObj.orgId));
+      dispatch(getEnquiryTypesApi(jsonObj.orgId));
     }
   };
 
@@ -604,9 +603,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
             setCarModelsList([tempModelObj]);
           }
         },
-        (rejected) => {
-       
-        }
+        (rejected) => {}
       )
       .finally(() => {
         // Get Enquiry Details
@@ -630,9 +627,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
             setMakerData([...makeList]);
           }
         },
-        (rejected) => { }
+        (rejected) => {}
       )
-      .finally(() => { });
+      .finally(() => {});
   };
 
   const getInsurenceCompanyNamesFromServer = async (token, orgId) => {
@@ -644,7 +641,8 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     //     "auth-token": token,
     //   },
     // })
-    await client.get(URL.GET_INSURENCE_COMPANY_NAMES(orgId))
+    await client
+      .get(URL.GET_INSURENCE_COMPANY_NAMES(orgId))
       .then((json) => json.json())
       .then((res) => {
         if (res != null && res.length > 0) {
@@ -666,7 +664,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        "Authorization": "Bearer " + authToken,
+        Authorization: "Bearer " + authToken,
       },
     })
       .then((json) => {
@@ -742,9 +740,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
           }
           // dispatch(updateAddressByPincode(resolve));
         },
-        (rejected) => {
-        
-        }
+        (rejected) => {}
       );
     }
   }, [selector.pincode]);
@@ -805,20 +801,19 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
   useEffect(() => {
     if (selector.event_list_response_Config_status === "success") {
       //todo
-   
+
       let data = selector.event_list_Config;
       if (data) {
-        let addSelectedFlag = data.content.map(i => ({ ...i, isSelected: false }));
+        let addSelectedFlag = data.content.map((i) => ({
+          ...i,
+          isSelected: false,
+        }));
 
-
-      
-        seteventListData(addSelectedFlag)
-        setisEventListModalVisible(true)
+        seteventListData(addSelectedFlag);
+        setisEventListModalVisible(true);
       }
-
-
     }
-  }, [selector.event_list_response_Config_status])
+  }, [selector.event_list_response_Config_status]);
 
   function isEmpty(obj) {
     return Object.keys(obj).length === 0;
@@ -875,18 +870,14 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
         // dispatch(getEnquiryDetailsApi({ universalId, leadStage, leadStatus }));
       } else {
         Promise.all([
-          dispatch(
-            // getEnquiryDetailsApiAuto({ universalId, leadStage, leadStatus })
-          ),
+          dispatch(),
+          // getEnquiryDetailsApiAuto({ universalId, leadStage, leadStatus })
         ])
           .then(() => {
-            dispatch(
-              // getEnquiryDetailsApi({ universalId, leadStage, leadStatus })
-            );
+            dispatch();
+            // getEnquiryDetailsApi({ universalId, leadStage, leadStatus })
           })
-          .catch(() => {
-          
-          });
+          .catch(() => {});
       }
       // dispatch(getEnquiryDetailsApi({universalId, leadStage, leadStatus}));
       // } else {
@@ -949,7 +940,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       }
 
       await setCarModelsList(array);
-    } catch (error) { }
+    } catch (error) {}
   };
 
   const checkModelSelection = () => {
@@ -1286,14 +1277,13 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       return;
     }
 
-    // check if events are selected 
+    // check if events are selected
     if (selector.source_of_enquiry === "Events") {
       if (selectedEventData.length <= 0) {
         showToast("Please select event details");
         return;
       }
     }
-
 
     // if (!selector.enquiry_details_response) {
     //   return;
@@ -1341,12 +1331,10 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
             eventName: selectedEventData[0].name,
             eventLocation: selectedEventData[0].location,
             startDate: selectedEventData[0].startdate,
-            endDate: selectedEventData[0].enddate
-          }
+            endDate: selectedEventData[0].enddate,
+          };
         } else {
-          dmsLeadEventDto = {
-
-          }
+          dmsLeadEventDto = {};
         }
         let payloadx = {
           dmsAccountDto: {
@@ -1368,8 +1356,8 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
             age: selector.age,
             anniversaryDate: selector.anniversaryDate
               ? convertDateStringToMillisecondsUsingMoment(
-                selector.anniversaryDate
-              )
+                  selector.anniversaryDate
+                )
               : "",
             annualRevenue: selector.approx_annual_income,
             dateOfBirth: selector.dateOfBirth
@@ -1560,7 +1548,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
             subSource: selector.sub_source_of_enquiry,
           },
 
-          dmsLeadEventDto: dmsLeadEventDto
+          dmsLeadEventDto: dmsLeadEventDto,
         };
 
         let tempAttachments = Object.assign(
@@ -1628,7 +1616,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
         // if pan number
         if (!panArr.length && selector.pan_number) {
-          newObj = {
+          let newObj = {
             ...dmsAttachmentsObj,
             documentNumber: selector.pan_number,
             documentType: "pan",
@@ -1639,7 +1627,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
         // if aadhar number
         if (!aadharArr.length && selector.adhaar_number) {
-          newObj = {
+         let newObj = {
             ...dmsAttachmentsObj,
             documentNumber: selector.adhaar_number,
             documentType: "aadhar",
@@ -1650,7 +1638,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
         // if emp id
         if (!empArr.length && selector.employee_id) {
-          newObj = {
+          let newObj = {
             ...dmsAttachmentsObj,
             documentNumber: selector.employee_id,
             documentType: "employeeId",
@@ -1663,7 +1651,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
         let payloady = {
           dmsContactDto: payloadx.dmsAccountDto,
           dmsLeadDto: payloadx.dmsLeadDto,
-          dmsLeadEventDto: payloadx.dmsLeadEventDto
+          dmsLeadEventDto: payloadx.dmsLeadEventDto,
         };
         try {
           if (
@@ -1671,7 +1659,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
             selector.enquiry_segment === "Personal"
           ) {
             const response = await client.post(URL.ENQUIRY_CONTACT(), payloady);
-         
+
             const json = await response.json();
             if (json.success) {
               displayCreateEnquiryLeadAlert(
@@ -1687,7 +1675,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
               URL.ENQURIY_ACCOUNT(),
               payloadx
             );
-            
+
             const json1 = await response1.json();
             if (json1.success) {
               displayCreateEnquiryLeadAlert(
@@ -2274,7 +2262,8 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     //   method: "POST",
     //   body: JSON.stringify(payload),
     // })
-   await client.post(url,payload)
+    await client
+      .post(url, payload)
       .then((res) => res.json())
       .then((jsonRes) => {
         if (jsonRes.success === true) {
@@ -2289,7 +2278,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
   };
 
   const updateEnuiquiryDetails = async (refNumber) => {
-    return
+    return;
     // let response = await dispatch(proceedGetEnquiryDetailsApi(universalId));
 
     if (response?.payload?.dmsEntity) {
@@ -2311,7 +2300,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     if (typeOfActionDispatched === "PROCEED_TO_PREBOOKING") {
       if (
         proceedToPreSelector.update_enquiry_details_response_status ===
-        "success" &&
+          "success" &&
         proceedToPreSelector.update_enquiry_details_response
       ) {
         if (typeOfActionDispatched === "PROCEED_TO_PREBOOKING") {
@@ -2404,7 +2393,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
           (selector.enquiry_details_response.dmsLeadDto.buyerType ===
             "Replacement Buyer" ||
             selector.enquiry_details_response.dmsLeadDto.buyerType ===
-            "Exchange Buyer")
+              "Exchange Buyer")
         ) {
           pendingTaskNames.push("Evaluation : Pending \n");
         }
@@ -2432,9 +2421,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       const jsonObj = JSON.parse(employeeData);
       if (
         selector.enquiry_details_response.dmsLeadDto.salesConsultant ==
-        jsonObj.empName ||
+          jsonObj.empName ||
         selector.enquiry_details_response.dmsLeadDto.createdBy ==
-        jsonObj.empName
+          jsonObj.empName
       ) {
         // if (universalId) {
         //   const endUrl = universalId + "?" + "stage=Enquiry";
@@ -2549,68 +2538,30 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
   const showDropDownModelMethod = (key, headerText) => {
     Keyboard.dismiss();
-    const orgId = +userData.orgId;
     switch (key) {
       case "ENQUIRY_SEGMENT":
-        let segments = [...Enquiry_Segment_Data];
-        if (orgId === 21) {
-          segments = [...EnquiryTypes21];
-        } else if (orgId === 22) {
-          segments = [...EnquiryTypes22];
+        if (selector.enquiry_type_list?.length === 0) {
+          showToast("No Enquiry Types found");
+          return;
         }
-        setDataForDropDown(segments);
+        let eData = selector.enquiry_type_list;
+        let eNewData = eData?.map((val) => ({
+          ...val,
+          name: val?.segment_type || "",
+        }));
+        setDataForDropDown([...eNewData]);
         break;
       case "CUSTOMER_TYPE":
-        // if (selector.customer_typcustomer_types_dataes_data.length === 0) {
-        //   showToast("No Customer Types found");
-        //   return;
-        // }
-
-        let customerTypes = [];
-        customerTypes =
-          CustomerTypesObj21[selector.enquiry_segment.toLowerCase()];
-        if (orgId === 21) {
-          customerTypes =
-            CustomerTypesObj21[selector.enquiry_segment.toLowerCase()];
-          selector.customerType = "";
-        } else if (orgId === 22) {
-          customerTypes =
-            CustomerTypesObj22[selector.enquiry_segment.toLowerCase()];
-          selector.customerType = "";
-        } else if (orgId == 26) {
-          let tmpArr = [];
-          if (selector.enquiry_segment == "Personal") {
-            tmpArr = Object.assign(
-              [],
-              selector.customer_types?.personal
-                ? selector.customer_types.personal
-                : CustomerTypesObj[selector.enquiry_segment.toLowerCase()]
-            );
-          } else if (selector.enquiry_segment == "Company") {
-            tmpArr = Object.assign(
-              [],
-              selector.customer_types?.company
-                ? selector.customer_types.company
-                : CustomerTypesObj[selector.enquiry_segment.toLowerCase()]
-            );
-          } else {
-            tmpArr = Object.assign(
-              [],
-              selector.customer_types?.commercial
-                ? selector.customer_types.commercial
-                : CustomerTypesObj[selector.enquiry_segment.toLowerCase()]
-            );
-          }
-
-          customerTypes = [...tmpArr];
-          selector.customerType = "";
-        } else {
-          customerTypes =
-            CustomerTypesObj[selector.enquiry_segment.toLowerCase()];
-          selector.customerType = "";
+        if (selector.customer_types_data?.length === 0) {
+          showToast("No Customer Types found");
+          return;
         }
-
-        setDataForDropDown([...customerTypes]);
+        let cData = selector.customer_types_data;
+        let cNewData = cData.map((val) => ({
+          ...val,
+          name: val?.customer_type || "",
+        }));
+        setDataForDropDown([...cNewData]);
         break;
       case "SOURCE_OF_ENQUIRY":
         if (homeSelector.source_of_enquiry_list.length === 0) {
@@ -2874,7 +2825,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       method: "POST",
       headers: {
         "Content-Type": "multipart/form-data",
-        "Authorization": "Bearer " + authToken,
+        Authorization: "Bearer " + authToken,
       },
       body: formData,
     })
@@ -3031,9 +2982,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
         }
         // dispatch(updateAddressByPincode(resolve));
       },
-      (rejected) => {
-       
-      }
+      (rejected) => {}
     );
   };
 
@@ -3058,9 +3007,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
         }
         // dispatch(updateAddressByPincode(resolve));
       },
-      (rejected) => {
-        
-      }
+      (rejected) => {}
     );
   };
 
@@ -3113,7 +3060,6 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     dispatch(getEventListApi(payload));
   };
 
-
   const getEventConfigListFromServer = (startDate, endDate) => {
     if (
       startDate === undefined ||
@@ -3156,7 +3102,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       orgId: userData.orgId,
       branchId: userData.branchId,
     };
-    Promise.all([dispatch(getEmployeesListApi(data))]).then(async (res) => { });
+    Promise.all([dispatch(getEmployeesListApi(data))]).then(async (res) => {});
   };
 
   const updateEmployee = (employeeObj) => {
@@ -3181,69 +3127,85 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
   };
 
   const addSelectedEvent = () => {
-    // todo add api call 
+    // todo add api call
 
-    let findSelected = eventListdata.filter(item => {
+    let findSelected = eventListdata.filter((item) => {
       if (item.isSelected === true) {
         return item;
       }
-    })
+    });
     if (findSelected.length > 0) {
       setSelectedEventData(findSelected);
       setisEventListModalVisible(false);
     } else {
       showToast("Please select event");
     }
-    
-   
+  };
 
-  }
-
-  const eventListTableRow = (txt1, txt2, txt3, txt4, isDisplayRadio, isRadioSelected, isClickable, itemMain, index) => {
-
+  const eventListTableRow = (
+    txt1,
+    txt2,
+    txt3,
+    txt4,
+    isDisplayRadio,
+    isRadioSelected,
+    isClickable,
+    itemMain,
+    index
+  ) => {
     return (
       <>
-
-        <TouchableOpacity style={styles.eventTouchable}
+        <TouchableOpacity
+          style={styles.eventTouchable}
           disabled={isClickable}
           onPress={() => {
-
             // let temp = [...eventListdata].filter(item => item.id === itemMain.id).map(i => i.isSelected = true)
-            let temp = eventListdata.map(i =>
-              i.id === itemMain.id ? { ...i, isSelected: true } : { ...i, isSelected: false }
-            )
-          
-            seteventListData(temp);
+            let temp = eventListdata.map((i) =>
+              i.id === itemMain.id
+                ? { ...i, isSelected: true }
+                : { ...i, isSelected: false }
+            );
 
+            seteventListData(temp);
           }}
         >
           {/* todo */}
-          {isDisplayRadio ?
-            <Fontisto name={itemMain.isSelected ? "radio-btn-active" : "radio-btn-passive"}
-              size={12} color={Colors.RED}
+          {isDisplayRadio ? (
+            <Fontisto
+              name={
+                itemMain.isSelected ? "radio-btn-active" : "radio-btn-passive"
+              }
+              size={12}
+              color={Colors.RED}
               style={{ marginEnd: 10 }}
-            /> :
-            <View style={{ marginEnd: 10, width: 12, }}  >{ }</View>}
+            />
+          ) : (
+            <View style={{ marginEnd: 10, width: 12 }}>{}</View>
+          )}
 
-          <Text numberOfLines={1} style={styles.eventText}  >{txt1}</Text>
-          <Text numberOfLines={1} style={styles.eventText} >{txt2}</Text>
-          <Text numberOfLines={1} style={styles.eventText} >{txt3}</Text>
-          <Text numberOfLines={1} style={styles.eventText} >{txt4}</Text>
-
+          <Text numberOfLines={1} style={styles.eventText}>
+            {txt1}
+          </Text>
+          <Text numberOfLines={1} style={styles.eventText}>
+            {txt2}
+          </Text>
+          <Text numberOfLines={1} style={styles.eventText}>
+            {txt3}
+          </Text>
+          <Text numberOfLines={1} style={styles.eventText}>
+            {txt4}
+          </Text>
         </TouchableOpacity>
-
-      </>)
-  }
+      </>
+    );
+  };
 
   const addEventListModal = () => {
-
     return (
       <Modal
         animationType="fade"
         visible={isEventListModalVisible}
-        onRequestClose={() => {
-
-        }}
+        onRequestClose={() => {}}
         transparent={true}
       >
         <View
@@ -3252,93 +3214,117 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
             justifyContent: "center",
             alignItems: "center",
             backgroundColor: "rgba(0,0,0,0.7)",
-
-
           }}
         >
-          <View style={styles.modelView}
-
-          >
+          <View style={styles.modelView}>
             <Text style={styles.selectTitle}>Select Event</Text>
-            <ScrollView style={{
-              width: '100%',
-
-            }}
+            <ScrollView
+              style={{
+                width: "100%",
+              }}
               horizontal={true}
             >
               <View style={{ flexDirection: "column" }}>
-
                 <Text style={GlobalStyle.underline} />
-                <View style={{
-                  height: 30, borderBottomColor: 'rgba(208, 212, 214, 0.7)',
-                  borderBottomWidth: 2,
-
-                }}>
-                  {eventListTableRow("Event Name", "Event location", "Start Date", "End Date", false, false, true, 0, 0)}
+                <View
+                  style={{
+                    height: 30,
+                    borderBottomColor: "rgba(208, 212, 214, 0.7)",
+                    borderBottomWidth: 2,
+                  }}
+                >
+                  {eventListTableRow(
+                    "Event Name",
+                    "Event location",
+                    "Start Date",
+                    "End Date",
+                    false,
+                    false,
+                    true,
+                    0,
+                    0
+                  )}
                   {/* <Text style={GlobalStyle.underline} /> */}
                 </View>
                 <View>
                   <FlatList
                     key={"CATEGORY_LIST"}
                     data={eventListdata}
-                    style={{ height: '80%' }}
+                    style={{ height: "80%" }}
                     keyExtractor={(item, index) => index.toString()}
                     ListEmptyComponent={() => {
-                      return (<View style={{ alignItems: 'center', marginVertical: 20 }}><Text>{"Data Not Available"}</Text></View>)
+                      return (
+                        <View
+                          style={{ alignItems: "center", marginVertical: 20 }}
+                        >
+                          <Text>{"Data Not Available"}</Text>
+                        </View>
+                      );
                     }}
-
                     renderItem={({ item, index }) => {
                       return (
                         <>
-                          <View style={{
-                            height: 35, borderBottomColor: 'rgba(208, 212, 214, 0.7)',
-                            borderBottomWidth: 4, marginTop: 5
-                          }}>
+                          <View
+                            style={{
+                              height: 35,
+                              borderBottomColor: "rgba(208, 212, 214, 0.7)",
+                              borderBottomWidth: 4,
+                              marginTop: 5,
+                            }}
+                          >
                             {/* {eventListTableRow(item.eventName, item.eventLocation, item.Startdate, item.Enddate, true, false, false, item, index)} */}
-                            {eventListTableRow(item.name, item.location, moment(item.startdate).format("DD-MM-YYYY"), moment(item.enddate).format("DD-MM-YYYY"), true, false, false, item, index)}
+                            {eventListTableRow(
+                              item.name,
+                              item.location,
+                              moment(item.startdate).format("DD-MM-YYYY"),
+                              moment(item.enddate).format("DD-MM-YYYY"),
+                              true,
+                              false,
+                              false,
+                              item,
+                              index
+                            )}
                           </View>
-
                         </>
                       );
                     }}
                   />
-
                 </View>
-
-
               </View>
-
             </ScrollView>
-            <View style={{ flexDirection: "row", alignSelf: "flex-end", marginTop: 10 }}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignSelf: "flex-end",
+                marginTop: 10,
+              }}
+            >
               <Button
                 mode="contained"
-
                 style={{ flex: 1, marginRight: 10 }}
                 color={Colors.GRAY}
                 labelStyle={{ textTransform: "none" }}
-                onPress={() => setisEventListModalVisible(false)}>
+                onPress={() => setisEventListModalVisible(false)}
+              >
                 Cancel
               </Button>
               <Button
                 mode="contained"
-
                 style={{ flex: 1 }}
                 color={Colors.PINK}
                 labelStyle={{ textTransform: "none" }}
-                onPress={() => addSelectedEvent()}>
+                onPress={() => addSelectedEvent()}
+              >
                 Add
               </Button>
             </View>
-
           </View>
-
         </View>
       </Modal>
-    )
-  }
-
+    );
+  };
   return (
-    <SafeAreaView style={[styles.container, { flexDirection: "column", }]}>
+    <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
       <SelectEmployeeComponant
         visible={showEmployeeSelectModel}
         headerTitle={"Select Employee"}
@@ -3392,10 +3378,12 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
             );
           }
           if (dropDownKey === "SOURCE_OF_ENQUIRY") {
-            setSelectedEventData([])
+            setSelectedEventData([]);
             if (item.name === "Events") {
-              const startOfMonth = moment().startOf('month').format('YYYY-MM-DD');
-              const endOfMonth = moment().endOf('month').format('YYYY-MM-DD');
+              const startOfMonth = moment()
+                .startOf("month")
+                .format("YYYY-MM-DD");
+              const endOfMonth = moment().endOf("month").format("YYYY-MM-DD");
               getEventConfigListFromServer(startOfMonth, endOfMonth);
             }
             if (item.name === "Event") {
@@ -3565,9 +3553,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                   styles.accordianBorder,
                 ]}
               >
-                <View
-                  style={styles.view3}
-                >
+                <View style={styles.view3}>
                   <View
                     style={{
                       width:
@@ -3661,9 +3647,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                   ]}
                 ></Text>
 
-                <View
-                  style={styles.view3}
-                >
+                <View style={styles.view3}>
                   <View style={{ width: "45%" }}>
                     <DropDownSelectionItem
                       label={"Relation"}
@@ -3879,11 +3863,11 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                   ]}
                 ></Text>
                 {selector.customer_type.toLowerCase() === "fleet" ||
-                  selector.customer_type.toLowerCase() === "institution" ||
-                  selector.customer_type.toLowerCase() === "corporate" ||
-                  selector.customer_type.toLowerCase() === "government" ||
-                  selector.customer_type.toLowerCase() === "retired" ||
-                  selector.customer_type.toLowerCase() === "other" ? (
+                selector.customer_type.toLowerCase() === "institution" ||
+                selector.customer_type.toLowerCase() === "corporate" ||
+                selector.customer_type.toLowerCase() === "government" ||
+                selector.customer_type.toLowerCase() === "retired" ||
+                selector.customer_type.toLowerCase() === "other" ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -3974,7 +3958,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                         {
                           backgroundColor:
                             isSubmitPress &&
-                              selector.sub_source_of_enquiry === ""
+                            selector.sub_source_of_enquiry === ""
                               ? "red"
                               : "rgba(208, 212, 214, 0.7)",
                         },
@@ -4062,8 +4046,8 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                   value={
                     selector.expected_delivery_date
                       ? moment(
-                        new Date(Number(selector.expected_delivery_date))
-                      ).format("DD/MM/YYYY")
+                          new Date(Number(selector.expected_delivery_date))
+                        ).format("DD/MM/YYYY")
                       : moment().format("DD/MM/YYYY")
                   }
                   onPress={() =>
@@ -4386,7 +4370,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     value={"yes"}
                     status={
                       selector.is_permanent_address_same === "YES" ||
-                        isPermanent() === "YES"
+                      isPermanent() === "YES"
                         ? true
                         : false
                     }
@@ -4674,11 +4658,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                   }}
                   style={styles.addmodelView}
                 >
-                  <Text
-                    style={styles.addmodelTxt}
-                  >
-                    Add Model
-                  </Text>
+                  <Text style={styles.addmodelTxt}>Add Model</Text>
                 </TouchableOpacity>
                 <FlatList
                   //  style={{ height: faltListHeight }}
@@ -4877,51 +4857,51 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
                 {(selector.retail_finance === "In House" ||
                   selector.retail_finance === "Out House") && (
-                    <View>
-                      <TextinputComp
-                        style={{ height: 65, width: "100%" }}
-                        label={"Loan Amount"}
-                        keyboardType={"numeric"}
-                        maxLength={10}
-                        value={selector.loan_amount}
-                        onChangeText={(text) => {
-                          emiCal(
-                            text,
-                            selector.loan_of_tenure,
-                            selector.rate_of_interest
-                          );
-                          dispatch(
-                            setFinancialDetails({
-                              key: "LOAN_AMOUNT",
-                              text: text,
-                            })
-                          );
-                        }}
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                      <TextinputComp
-                        style={{ height: 65, width: "100%" }}
-                        label={"Rate of Interest"}
-                        keyboardType={"numeric"}
-                        maxLength={10}
-                        value={selector.rate_of_interest?.toString()}
-                        onChangeText={(text) => {
-                          emiCal(
-                            selector.loan_amount,
-                            selector.loan_of_tenure,
-                            text
-                          );
-                          dispatch(
-                            setFinancialDetails({
-                              key: "RATE_OF_INTEREST",
-                              text: text,
-                            })
-                          );
-                        }}
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                    </View>
-                  )}
+                  <View>
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
+                      label={"Loan Amount"}
+                      keyboardType={"numeric"}
+                      maxLength={10}
+                      value={selector.loan_amount}
+                      onChangeText={(text) => {
+                        emiCal(
+                          text,
+                          selector.loan_of_tenure,
+                          selector.rate_of_interest
+                        );
+                        dispatch(
+                          setFinancialDetails({
+                            key: "LOAN_AMOUNT",
+                            text: text,
+                          })
+                        );
+                      }}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
+                      label={"Rate of Interest"}
+                      keyboardType={"numeric"}
+                      maxLength={10}
+                      value={selector.rate_of_interest?.toString()}
+                      onChangeText={(text) => {
+                        emiCal(
+                          selector.loan_amount,
+                          selector.loan_of_tenure,
+                          text
+                        );
+                        dispatch(
+                          setFinancialDetails({
+                            key: "RATE_OF_INTEREST",
+                            text: text,
+                          })
+                        );
+                      }}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                  </View>
+                )}
 
                 {selector.retail_finance === "In House" && (
                   <View>
@@ -5033,11 +5013,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                         }
                       }}
                     >
-                      <Text
-                        style={styles.previewTxt}
-                      >
-                        Preview
-                      </Text>
+                      <Text style={styles.previewTxt}>Preview</Text>
                     </TouchableOpacity>
                     <View style={{ width: "80%" }}>
                       <DisplaySelectedImage
@@ -5085,11 +5061,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                             }
                           }}
                         >
-                          <Text
-                            style={styles.previewTxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previewTxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -5104,9 +5076,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
                 {/* // Employeed ID */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                  (selector.customer_type.toLowerCase() === "corporate" ||
-                    selector.customer_type.toLowerCase() === "government" ||
-                    selector.customer_type.toLowerCase() === "retired") ? (
+                (selector.customer_type.toLowerCase() === "corporate" ||
+                  selector.customer_type.toLowerCase() === "government" ||
+                  selector.customer_type.toLowerCase() === "retired") ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -5134,7 +5106,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj?.employeeId?.fileName ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                            style={styles.preViewBtn}
+                          style={styles.preViewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.employeeId?.documentPath
@@ -5145,11 +5117,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                             }
                           }}
                         >
-                          <Text
-                              style={styles.previewTxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previewTxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -5164,8 +5132,8 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
                 {/* Last 3 month payslip */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                  (selector.customer_type.toLowerCase() === "corporate" ||
-                    selector.customer_type.toLowerCase() === "government") ? (
+                (selector.customer_type.toLowerCase() === "corporate" ||
+                  selector.customer_type.toLowerCase() === "government") ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -5178,7 +5146,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj?.payslips ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                            style={styles.preViewBtn}
+                          style={styles.preViewBtn}
                           onPress={() => {
                             if (uploadedImagesDataObj?.payslips?.documentPath) {
                               setImagePath(
@@ -5187,11 +5155,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                             }
                           }}
                         >
-                          <Text
-                              style={styles.previewTxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previewTxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -5206,7 +5170,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
                 {/* Patta Pass book */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                  selector.customer_type.toLowerCase() === "farmer" ? (
+                selector.customer_type.toLowerCase() === "farmer" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -5219,7 +5183,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj.pattaPassBook ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                            style={styles.preViewBtn}
+                          style={styles.preViewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.pattaPassBook?.documentPath
@@ -5231,11 +5195,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                             }
                           }}
                         >
-                          <Text
-                              style={styles.previewTxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previewTxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -5249,7 +5209,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     ) : uploadedImagesDataObj.pattaPassBook ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                              style={styles.preViewBtn}
+                          style={styles.preViewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.pattaPassBook?.documentPath
@@ -5261,11 +5221,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                             }
                           }}
                         >
-                          <Text
-                                style={styles.previewTxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previewTxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -5282,7 +5238,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
                 {/* Pension Letter */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                  selector.customer_type.toLowerCase() === "retired" ? (
+                selector.customer_type.toLowerCase() === "retired" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -5295,7 +5251,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj.pensionLetter ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                            style={styles.preViewBtn}
+                          style={styles.preViewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.pensionLetter?.documentPath
@@ -5307,11 +5263,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                             }
                           }}
                         >
-                          <Text
-                              style={styles.previewTxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previewTxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -5328,7 +5280,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
                 {/* IMA Certificate */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                  selector.customer_type.toLowerCase() === "doctor" ? (
+                selector.customer_type.toLowerCase() === "doctor" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -5341,7 +5293,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj.imaCertificate ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                            style={styles.preViewBtn}
+                          style={styles.preViewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.imaCertificate?.documentPath
@@ -5353,11 +5305,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                             }
                           }}
                         >
-                          <Text
-                              style={styles.previewTxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previewTxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -5374,7 +5322,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
                 {/* Leasing Confirmation */}
                 {selector.enquiry_segment.toLowerCase() === "commercial" &&
-                  selector.customer_type.toLowerCase() === "fleet" ? (
+                selector.customer_type.toLowerCase() === "fleet" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -5389,7 +5337,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj.leasingConfirmationLetter ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                            style={styles.preViewBtn}
+                          style={styles.preViewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.leasingConfirmationLetter
@@ -5402,11 +5350,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                             }
                           }}
                         >
-                          <Text
-                              style={styles.previewTxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previewTxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -5421,7 +5365,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     ) : uploadedImagesDataObj.leasingConfirmationLetter ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                              style={styles.preViewBtn}
+                          style={styles.preViewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.leasingConfirmationLetter
@@ -5434,11 +5378,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                             }
                           }}
                         >
-                          <Text
-                                style={styles.previewTxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previewTxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -5456,7 +5396,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
                 {/* Address Proof */}
                 {selector.enquiry_segment.toLowerCase() === "company" &&
-                  selector.customer_type.toLowerCase() === "institution" ? (
+                selector.customer_type.toLowerCase() === "institution" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -5469,7 +5409,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj.address ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                            style={styles.preViewBtn}
+                          style={styles.preViewBtn}
                           onPress={() => {
                             if (uploadedImagesDataObj.address?.documentPath) {
                               setImagePath(
@@ -5478,11 +5418,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                             }
                           }}
                         >
-                          <Text
-                              style={styles.previewTxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previewTxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -5494,7 +5430,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     ) : uploadedImagesDataObj.addressProof?.fileName ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                              style={styles.preViewBtn}
+                          style={styles.preViewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.addressProof?.documentPath
@@ -5505,11 +5441,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                             }
                           }}
                         >
-                          <Text
-                                style={styles.previewTxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previewTxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -5526,7 +5458,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
                 {/* GSTIN Number */}
                 {selector.enquiry_segment.toLowerCase() === "company" &&
-                  selector.customer_type.toLowerCase() === "institution" ? (
+                selector.customer_type.toLowerCase() === "institution" ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -5692,8 +5624,8 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                         userData.isSelfManager == "Y"
                           ? "Battery Type"
                           : userData.isTracker == "Y"
-                            ? "Clutch Type"
-                            : "Transmission Type"
+                          ? "Clutch Type"
+                          : "Transmission Type"
                       }
                       value={selector.c_transmission_type}
                       onPress={() =>
@@ -5807,8 +5739,8 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                 <Text style={GlobalStyle.underline}></Text>
               </List.Accordion>
               {selector.buyer_type == "Additional Buyer" ||
-                selector.buyer_type == "Replacement Buyer" ||
-                selector.buyer_type == "Exchange Buyer" ? (
+              selector.buyer_type == "Replacement Buyer" ||
+              selector.buyer_type == "Exchange Buyer" ? (
                 <View style={styles.space}></View>
               ) : null}
               {/* // 8.Additional Buyer */}
@@ -5935,7 +5867,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
               {/* // 9.Replacement Buyer */}
               {selector.buyer_type == "Replacement Buyer" ||
-                selector.buyer_type == "Exchange Buyer" ? (
+              selector.buyer_type == "Exchange Buyer" ? (
                 <List.Accordion
                   id={"9"}
                   title={"Exchange Buyer"}
@@ -5989,18 +5921,14 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                   {selector.regDocumentPath ? (
                     <View style={{ flexDirection: "row" }}>
                       <TouchableOpacity
-                          style={styles.preViewBtn}
+                        style={styles.preViewBtn}
                         onPress={() => {
                           if (selector.regDocumentPath) {
                             setImagePath(selector.regDocumentPath);
                           }
                         }}
                       >
-                        <Text
-                            style={styles.previewTxt}
-                        >
-                          Preview
-                        </Text>
+                        <Text style={styles.previewTxt}>Preview</Text>
                       </TouchableOpacity>
                       <View style={{ width: "80%" }}>
                         <DisplaySelectedImage
@@ -6111,8 +6039,8 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                       userData.isSelfManager == "Y"
                         ? "Battery Type"
                         : userData.isTracker == "Y"
-                          ? "Clutch Type"
-                          : "Transmission Type"
+                        ? "Clutch Type"
+                        : "Transmission Type"
                     }
                     value={selector.r_transmission_type}
                     onPress={() =>
@@ -6308,18 +6236,14 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                       {selector.insuranceDocumentPath ? (
                         <View style={{ flexDirection: "row" }}>
                           <TouchableOpacity
-                              style={styles.preViewBtn}
+                            style={styles.preViewBtn}
                             onPress={() => {
                               if (selector.insuranceDocumentPath) {
                                 setImagePath(selector.insuranceDocumentPath);
                               }
                             }}
                           >
-                            <Text
-                                style={styles.previewTxt}
-                            >
-                              Preview
-                            </Text>
+                            <Text style={styles.previewTxt}>Preview</Text>
                           </TouchableOpacity>
                           <View style={{ width: "80%" }}>
                             <DisplaySelectedImage
@@ -6730,29 +6654,39 @@ const styles = StyleSheet.create({
     alignItems: "center",
     // height: '15%',
     alignContent: "center",
-    width: '100%',
-    marginTop: 5
-
-
+    width: "100%",
+    marginTop: 5,
   },
-  eventText: { fontSize: 12, color: Colors.BLACK, textAlign: "left", marginEnd: 10, width: 100, },
+  eventText: {
+    fontSize: 12,
+    color: Colors.BLACK,
+    textAlign: "left",
+    marginEnd: 10,
+    width: 100,
+  },
   modelView: {
-    width: '90%',
+    width: "90%",
     backgroundColor: Colors.WHITE,
     padding: 10,
     borderWidth: 2,
     borderColor: Colors.BLACK,
     flexDirection: "column",
-    height: '40%',
+    height: "40%",
   },
-  selectTitle: { color: Colors.BLACK, fontSize: 16, fontWeight: "700", textAlign: "left", margin: 5 },
+  selectTitle: {
+    color: Colors.BLACK,
+    fontSize: 16,
+    fontWeight: "700",
+    textAlign: "left",
+    margin: 5,
+  },
   view3: {
     flexDirection: "row",
     display: "flex",
     justifyContent: "space-between",
     backgroundColor: Colors.WHITE,
   },
-  addmodelView:{
+  addmodelView: {
     width: "40%",
     margin: 5,
     borderRadius: 5,
@@ -6763,12 +6697,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  addmodelTxt:{
+  addmodelTxt: {
     fontSize: 16,
     textAlign: "center",
     color: Colors.WHITE,
   },
-  preViewBtn:{
+  preViewBtn: {
     width: "20%",
     height: 30,
     backgroundColor: Colors.SKY_BLUE,
@@ -6780,5 +6714,5 @@ const styles = StyleSheet.create({
     color: Colors.WHITE,
     fontSize: 14,
     fontWeight: "600",
-  }
+  },
 });

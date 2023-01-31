@@ -1,6 +1,12 @@
 /** @format */
 
-import React, { useState, useEffect, useLayoutEffect, useRef, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useCallback,
+} from "react";
 import {
   SafeAreaView,
   FlatList,
@@ -81,6 +87,7 @@ import {
   autoSaveEnquiryDetailsApi,
   updatedmsLeadProduct,
   clearState2,
+  getEnquiryTypesApi,
 } from "../../../redux/enquiryFormReducer";
 import {
   RadioTextItem,
@@ -157,15 +164,18 @@ import {
   clearState as preClearState,
 } from "../../../redux/proceedToPreBookingReducer";
 import { EmsTopTabNavigatorIdentifiers } from "../../../navigations/emsTopTabNavigator";
-import { getCurrentTasksListApi, getPendingTasksListApi } from "../../../redux/mytaskReducer";
+import {
+  getCurrentTasksListApi,
+  getPendingTasksListApi,
+} from "../../../redux/mytaskReducer";
 import {
   CustomerTypesObj,
   CustomerTypesObj21,
   CustomerTypesObj22,
   EnquiryTypes21,
-  EnquiryTypes22
+  EnquiryTypes22,
 } from "../../../jsonData/preEnquiryScreenJsonData";
-import Fontisto from "react-native-vector-icons/Fontisto"
+import Fontisto from "react-native-vector-icons/Fontisto";
 import { client } from "../../../networking/client";
 
 const theme = {
@@ -209,8 +219,7 @@ let EventListData = [
     Startdate: "10/12/2022",
     Enddate: "10/12/2022",
     isSelected: false,
-    id: 0
-
+    id: 0,
   },
   {
     eventName: "omega thon22",
@@ -218,16 +227,7 @@ let EventListData = [
     Startdate: "10/12/2022",
     Enddate: "10/12/2022",
     isSelected: false,
-    id: 1
-  },
-  {
-    eventName: "omega thon22",
-    eventLocation: "Ahmedabad",
-    Startdate: "10/12/2022",
-    Enddate: "10/12/2022",
-    isSelected: false
-    ,
-    id: 2
+    id: 1,
   },
   {
     eventName: "omega thon22",
@@ -235,7 +235,7 @@ let EventListData = [
     Startdate: "10/12/2022",
     Enddate: "10/12/2022",
     isSelected: false,
-    id: 3
+    id: 2,
   },
   {
     eventName: "omega thon22",
@@ -243,10 +243,17 @@ let EventListData = [
     Startdate: "10/12/2022",
     Enddate: "10/12/2022",
     isSelected: false,
-    id: 4
+    id: 3,
   },
-
-]
+  {
+    eventName: "omega thon22",
+    eventLocation: "Ahmedabad",
+    Startdate: "10/12/2022",
+    Enddate: "10/12/2022",
+    isSelected: false,
+    id: 4,
+  },
+];
 
 const DetailsOverviewScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
@@ -315,13 +322,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const [currentLocation, setCurrentLocation] = useState(null);
   const [authToken, setAuthToken] = useState("");
-  
+
   const [makerData, setMakerData] = useState([]);
   const [isEventListModalVisible, setisEventListModalVisible] = useState(false);
-  const [eventListdata, seteventListData] = useState([])
-  const [selectedEventData, setSelectedEventData] = useState([])
-  const [eventConfigRes, setEventConfigRes] = useState([])
-
+  const [eventListdata, seteventListData] = useState([]);
+  const [selectedEventData, setSelectedEventData] = useState([]);
+  const [eventConfigRes, setEventConfigRes] = useState([]);
 
   // todo
   useLayoutEffect(() => {
@@ -464,15 +470,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     return () => {
       dispatch(clearStateData());
       clearLocalData();
-    }
-  }, [])
+    };
+  }, []);
 
   useEffect(() => {
     getAuthToken();
     getAsyncstoreData();
     getBranchId();
     setComponentAppear(true);
-    getCustomerType();
+    getCustomerEnquiryType();
 
     //  const dms = [{ "color": "Outback Bronze", "fuel": "Petrol", "id": 2704, "model": "Kwid",
     //           "transimmisionType": "Manual", "variant": "KWID RXT 1.0L EASY- R BS6 ORVM MY22" },
@@ -508,11 +514,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     // };
   }, [navigation]);
 
-  const getCustomerType = async () => {
+  const getCustomerEnquiryType = async () => {
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
       dispatch(getCustomerTypesApi(jsonObj.orgId));
+      dispatch(getEnquiryTypesApi(jsonObj.orgId));
     }
   };
 
@@ -550,7 +557,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
       // Get Token
       AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
-        if (token.length > 0) {
+        if (token?.length > 0) {
           getInsurenceCompanyNamesFromServer(token, jsonObj.orgId);
           getBanksListFromServer(jsonObj.orgId, token);
           GetEnquiryDropReasons(jsonObj.orgId, token);
@@ -603,8 +610,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             setCarModelsList([tempModelObj]);
           }
         },
-        (rejected) => {
-        }
+        (rejected) => {}
       )
       .finally(() => {
         // Get Enquiry Details
@@ -642,7 +648,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     //     "Authorization": "Bearer " + authToken,
     //   },
     // })
-    await client.get(URL.GET_INSURENCE_COMPANY_NAMES(orgId))
+    await client
+      .get(URL.GET_INSURENCE_COMPANY_NAMES(orgId))
       .then((json) => json.json())
       .then((res) => {
         if (res != null && res.length > 0) {
@@ -664,7 +671,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        "Authorization": "Bearer " + authToken,
+        Authorization: "Bearer " + authToken,
       },
     })
       .then((json) => {
@@ -695,7 +702,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     try {
-      if (selector.dmsLeadProducts && selector.dmsLeadProducts.length > 0) {
+      if (selector.dmsLeadProducts && selector.dmsLeadProducts?.length > 0) {
         // setCarModelsList(selector.dmsLeadProducts)
         addingIsPrimary();
       } else {
@@ -726,7 +733,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           let tempAddr = [];
           if (res.length > 0) {
             for (let i = 0; i < res.length; i++) {
-              if (res[i].Block === selector.village || res[i].Name === selector.village) {
+              if (
+                res[i].Block === selector.village ||
+                res[i].Name === selector.village
+              ) {
                 setDefaultAddress(res[i]);
               }
               tempAddr.push({ label: res[i].Name, value: res[i] });
@@ -737,8 +747,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           }
           // dispatch(updateAddressByPincode(resolve));
         },
-        (rejected) => {
-        }
+        (rejected) => {}
       );
     }
   }, [selector.pincode]);
@@ -788,20 +797,23 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       );
       // Update Attachment details
 
-      saveAttachmentDetailsInLocalObject(dmsLeadDto.dmsAttachments, dmsLeadDto.dmsExchagedetails);
+      saveAttachmentDetailsInLocalObject(
+        dmsLeadDto.dmsAttachments,
+        dmsLeadDto.dmsExchagedetails
+      );
       dispatch(updateDmsAttachmentDetails(dmsLeadDto.dmsAttachments));
     }
   }, [selector.enquiry_details_response]); //selector.enquiry_details_response
 
   function isEmpty(obj) {
-    return Object.keys(obj).length === 0;
+    return Object.keys(obj)?.length === 0;
   }
 
   const saveAttachmentDetailsInLocalObject = (dmsAttachments, exchangeDoc) => {
     if (dmsAttachments.length > 0) {
       const dataObj = {};
       dmsAttachments.forEach((item, index) => {
-        if(!dataObj[item.documentType]){
+        if (!dataObj[item.documentType]) {
           const obj = {
             documentPath: item.documentPath,
             documentType: item.documentType,
@@ -857,8 +869,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               getEnquiryDetailsApi({ universalId, leadStage, leadStatus })
             );
           })
-          .catch(() => {
-          });
+          .catch(() => {});
       }
       // dispatch(getEnquiryDetailsApi({universalId, leadStage, leadStatus}));
       // } else {
@@ -921,7 +932,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       }
 
       await setCarModelsList(array);
-    } catch (error) { }
+    } catch (error) {}
   };
 
   const updateEnquiry = async () => {
@@ -960,7 +971,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           let newArr = dmsLeadDto.dmsAttachments.filter((item) => {
             return item.documentType === "pan";
           });
-          if (newArr.length) {
+          if (newArr?.length) {
             tempAttachments.push({
               ...newArr[0],
               documentNumber: selector.pan_number,
@@ -1043,14 +1054,17 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         dmsLeadDto.dmsAttachments = tempAttachments;
       }
 
-      var tempDmsLeadProducts = selector.dmsLeadProducts
-      var tempArr = [...carModelsList, ...tempDmsLeadProducts.filter(a => a)]
+      var tempDmsLeadProducts = selector.dmsLeadProducts;
+      var tempArr = [...carModelsList, ...tempDmsLeadProducts.filter((a) => a)];
 
       dmsLeadDto.dmsLeadProducts = tempArr.filter((value, index) => {
         const _value = JSON.stringify(value);
-        return index === tempArr.findIndex(obj => {
-          return JSON.stringify(obj) === _value;
-        });
+        return (
+          index ===
+          tempArr.findIndex((obj) => {
+            return JSON.stringify(obj) === _value;
+          })
+        );
       });
     }
 
@@ -1125,7 +1139,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       }
     }
 
-
     if (!isValidate(selector.firstName)) {
       scrollToPos(0);
       setOpenAccordian("2");
@@ -1140,14 +1153,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       return;
     }
 
-    if (selector.enquiry_segment.length == 0) {
+    if (selector.enquiry_segment?.length == 0) {
       scrollToPos(2);
       setOpenAccordian("1");
       showToast("Please select enquery segment");
       return;
     }
 
-    if (selector.customer_type.length == 0) {
+    if (selector.customer_type?.length == 0) {
       scrollToPos(2);
       setOpenAccordian("1");
       showToast("Please select customer type");
@@ -1359,7 +1372,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       showToast("Please enter proper PAN number");
       return;
     }
-    
+
     if (isCheckPanOrAadhaar("aadhaar", selector.adhaar_number)) {
       scrollToPos(6);
       setOpenAccordian("6");
@@ -1394,7 +1407,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     if (dmsEntity.hasOwnProperty("dmsLeadDto")) {
       try {
         dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
-      } catch (error) { }
+      } catch (error) {}
       dmsLeadDto.firstName = selector.firstName;
       dmsLeadDto.lastName = selector.lastName;
       dmsLeadDto.phone = selector.mobile;
@@ -1427,7 +1440,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         for (let i = 0; i < imgObjArr.length; i++) {
           let isAvailable = false;
           for (let j = 0; j < tempAttachments.length; j++) {
-            if(tempAttachments[j].documentType == imgObjArr[i].name){
+            if (tempAttachments[j].documentType == imgObjArr[i].name) {
               isAvailable = true;
               break;
             }
@@ -1444,11 +1457,17 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               ...empObj,
             };
 
-            if (imgObjArr[i].name === "pan" && selector.pan_number){
+            if (imgObjArr[i].name === "pan" && selector.pan_number) {
               newObj.documentNumber = selector.pan_number;
-            }else if (imgObjArr[i].name == "aadhar" && selector.adhaar_number) {
+            } else if (
+              imgObjArr[i].name == "aadhar" &&
+              selector.adhaar_number
+            ) {
               newObj.documentNumber = selector.adhaar_number;
-            } else if (imgObjArr[i].name == "employeeId" && selector.employee_id) {
+            } else if (
+              imgObjArr[i].name == "employeeId" &&
+              selector.employee_id
+            ) {
               newObj.documentNumber = selector.employee_id;
             }
 
@@ -1713,7 +1732,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const mapExchangeDetails = (prevDmsExchagedetails) => {
     let dmsExchagedetails = [...prevDmsExchagedetails];
-    if (dmsExchagedetails.length > 0) {
+    if (dmsExchagedetails?.length > 0) {
       const dataObj = formatExchangeDetails(dmsExchagedetails[0]);
       dmsExchagedetails[0] = dataObj;
     } else {
@@ -2074,7 +2093,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     //   method: "POST",
     //   body: JSON.stringify(payload),
     // })
-    await client.post(url, payload)
+    await client
+      .post(url, payload)
       .then((res) => res.json())
       .then((jsonRes) => {
         if (jsonRes.success === true) {
@@ -2108,10 +2128,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   // Handle Enquiry Update response
   useEffect(() => {
     if (typeOfActionDispatched === "PROCEED_TO_PREBOOKING") {
-
       if (
         proceedToPreSelector.update_enquiry_details_response_status ===
-        "success" &&
+          "success" &&
         proceedToPreSelector.update_enquiry_details_response
       ) {
         if (typeOfActionDispatched === "PROCEED_TO_PREBOOKING") {
@@ -2137,7 +2156,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   ]);
 
   const displayCreateEnquiryAlert = () => {
-
     let refNumber = "";
     if (proceedToPreSelector.update_enquiry_details_response) {
       refNumber =
@@ -2205,7 +2223,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           (selector.enquiry_details_response.dmsLeadDto.buyerType ===
             "Replacement Buyer" ||
             selector.enquiry_details_response.dmsLeadDto.buyerType ===
-            "Exchange Buyer")
+              "Exchange Buyer")
         ) {
           pendingTaskNames.push("Evaluation : Pending \n");
         }
@@ -2233,9 +2251,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       const jsonObj = JSON.parse(employeeData);
       if (
         selector.enquiry_details_response.dmsLeadDto.salesConsultant ==
-        jsonObj.empName ||
+          jsonObj.empName ||
         selector.enquiry_details_response.dmsLeadDto.createdBy ==
-        jsonObj.empName
+          jsonObj.empName
       ) {
         if (universalId) {
           const endUrl = universalId + "?" + "stage=Enquiry";
@@ -2350,66 +2368,34 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const showDropDownModelMethod = (key, headerText) => {
     Keyboard.dismiss();
-    const orgId = +userData.orgId;
+    // const orgId = +userData.orgId;
     switch (key) {
       case "ENQUIRY_SEGMENT":
-        let segments = [...Enquiry_Segment_Data];
-        if (orgId === 21) {
-          segments = [...EnquiryTypes21];
-        } else if (orgId === 22) {
-          segments = [...EnquiryTypes22];
+        if (selector.enquiry_type_list?.length === 0) {
+          showToast("No Enquiry Types found");
+          return;
         }
-        setDataForDropDown(segments);
+        let eData = selector.enquiry_type_list;
+        let eNewData = eData?.map((val) => ({
+          ...val,
+          name: val?.segment_type || "",
+        }));
+        setDataForDropDown([...eNewData]);
         break;
       case "CUSTOMER_TYPE":
-        // if (selector.customer_typcustomer_types_dataes_data.length === 0) {
-        //   showToast("No Customer Types found");
-        //   return;
-        // }
+        if (selector.customer_types_data?.length === 0) {
+          showToast("No Customer Types found");
+          return;
+        }
+        let cData = selector.customer_types_data;
+        let cNewData = cData?.map((val) => {
+          return {
+            ...val,
+            name: val?.customer_type || "",
+          };
+        });
+        setDataForDropDown([...cNewData]);
 
-        let customerTypes = []
-        customerTypes = CustomerTypesObj21[selector.enquiry_segment.toLowerCase()]
-        if (orgId === 21) {
-          customerTypes = CustomerTypesObj21[selector.enquiry_segment.toLowerCase()];
-          selector.customerType = "";
-        }
-        else if (orgId === 22) {
-          customerTypes = CustomerTypesObj22[selector.enquiry_segment.toLowerCase()];
-          selector.customerType = "";
-        }
-        else if (orgId == 26) {
-          let tmpArr = [];
-          if (selector.enquiry_segment == "Personal") {
-            tmpArr = Object.assign(
-              [],
-              selector.customer_types?.personal
-                ? selector.customer_types.personal
-                : CustomerTypesObj[selector.enquiry_segment.toLowerCase()]
-            );
-          } else if (selector.enquiry_segment == "Company") {
-            tmpArr = Object.assign(
-              [],
-              selector.customer_types?.company
-                ? selector.customer_types.company
-                : CustomerTypesObj[selector.enquiry_segment.toLowerCase()]
-            );
-          } else {
-            tmpArr = Object.assign(
-              [],
-              selector.customer_types?.commercial
-                ? selector.customer_types.commercial
-                : CustomerTypesObj[selector.enquiry_segment.toLowerCase()]
-            );
-          }
-
-          customerTypes = [...tmpArr];
-          selector.customerType = "";
-        }
-        else {
-          customerTypes = CustomerTypesObj[selector.enquiry_segment.toLowerCase()];
-          selector.customerType = "";
-        }
-        setDataForDropDown([...customerTypes]);
         break;
       case "SUB_SOURCE_OF_ENQUIRY":
         setDataForDropDown([...Enquiry_Sub_Source_Type_Data]);
@@ -2512,7 +2498,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     fromInitialize,
     selectedVarientName
   ) => {
-    if (!selectedModelName || selectedModelName.length === 0) {
+    if (!selectedModelName || selectedModelName?.length === 0) {
       return;
     }
 
@@ -2665,7 +2651,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       method: "POST",
       headers: {
         "Content-Type": "multipart/form-data",
-        "Authorization": "Bearer " + authToken,
+        Authorization: "Bearer " + authToken,
       },
       body: formData,
     })
@@ -2822,8 +2808,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         }
         // dispatch(updateAddressByPincode(resolve));
       },
-      (rejected) => {
-      }
+      (rejected) => {}
     );
   };
 
@@ -2848,8 +2833,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         }
         // dispatch(updateAddressByPincode(resolve));
       },
-      (rejected) => {
-      }
+      (rejected) => {}
     );
   };
 
@@ -2877,15 +2861,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       selector?.p_district == selector?.district &&
       selector?.p_state == selector?.state
     ) {
-      return "YES"
+      return "YES";
     } else {
-      return "NO"
+      return "NO";
     }
-  }
+  };
 
   const onEventInfoPress = () => {
     // todo
-    
+
     let tempArr = [
       {
         eventName: enqDetails?.eventName,
@@ -2893,67 +2877,81 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         Startdate: enqDetails?.eventStartDate,
         Enddate: enqDetails?.eventEndDate,
         isSelected: false,
-        id: 0
-      }
-    ]
+        id: 0,
+      },
+    ];
 
-    
-    if(enqDetails.eventName !== null ){
-      seteventListData(tempArr)
+    if (enqDetails.eventName !== null) {
+      seteventListData(tempArr);
     }
-   
-    setisEventListModalVisible(true)
-  }
 
+    setisEventListModalVisible(true);
+  };
 
-  const eventListTableRow = (txt1, txt2, txt3, txt4, isDisplayRadio, isRadioSelected, isClickable, itemMain, index) => {
-
+  const eventListTableRow = (
+    txt1,
+    txt2,
+    txt3,
+    txt4,
+    isDisplayRadio,
+    isRadioSelected,
+    isClickable,
+    itemMain,
+    index
+  ) => {
     return (
       <>
-
-        <TouchableOpacity style={styles.eventTouchable}
+        <TouchableOpacity
+          style={styles.eventTouchable}
           disabled={true}
           onPress={() => {
-
             // let temp = [...eventListdata].filter(item => item.id === itemMain.id).map(i => i.isSelected = true)
-            let temp = eventListdata.map(i =>
-              i.id === itemMain.id ? { ...i, isSelected: true } : { ...i, isSelected: false }
-            )
-           
+            let temp = eventListdata.map((i) =>
+              i.id === itemMain.id
+                ? { ...i, isSelected: true }
+                : { ...i, isSelected: false }
+            );
+
             seteventListData(temp);
-
-
-
           }}
         >
           {/* todo */}
-          {isDisplayRadio ?
-            <Fontisto name={itemMain.isSelected ? "radio-btn-active" : "radio-btn-passive"}
-              size={12} color={Colors.RED}
+          {isDisplayRadio ? (
+            <Fontisto
+              name={
+                itemMain.isSelected ? "radio-btn-active" : "radio-btn-passive"
+              }
+              size={12}
+              color={Colors.RED}
               style={{ marginEnd: 10 }}
-            /> :
-            <View style={{ marginEnd: 10, width: 12, }}  >{ }</View>}
+            />
+          ) : (
+            <View style={{ marginEnd: 10, width: 12 }}>{}</View>
+          )}
 
-          <Text numberOfLines={1} style={styles.eventText} >{txt1}</Text>
-          <Text numberOfLines={1} style={styles.eventText} >{txt2}</Text>
-          <Text numberOfLines={1} style={styles.eventText} >{txt3}</Text>
-          <Text numberOfLines={1} style={styles.eventText} >{txt4}</Text>
-
+          <Text numberOfLines={1} style={styles.eventText}>
+            {txt1}
+          </Text>
+          <Text numberOfLines={1} style={styles.eventText}>
+            {txt2}
+          </Text>
+          <Text numberOfLines={1} style={styles.eventText}>
+            {txt3}
+          </Text>
+          <Text numberOfLines={1} style={styles.eventText}>
+            {txt4}
+          </Text>
         </TouchableOpacity>
-
-      </>)
-  }
-
+      </>
+    );
+  };
 
   const addEventListModal = () => {
-
     return (
       <Modal
         animationType="fade"
         visible={isEventListModalVisible}
-        onRequestClose={() => {
-
-        }}
+        onRequestClose={() => {}}
         transparent={true}
       >
         <View
@@ -2962,74 +2960,102 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             justifyContent: "center",
             alignItems: "center",
             backgroundColor: "rgba(0,0,0,0.7)",
-
-
           }}
         >
-          <View style={styles.modelView}
-
-          >
-            <Text style={styles.selectTitle} >Selected Event</Text>
-            <ScrollView style={{
-              width: '100%',
-
-            }}
+          <View style={styles.modelView}>
+            <Text style={styles.selectTitle}>Selected Event</Text>
+            <ScrollView
+              style={{
+                width: "100%",
+              }}
               horizontal={true}
             >
               <View style={{ flexDirection: "column" }}>
-
                 <Text style={GlobalStyle.underline} />
-                <View style={{
-                  height: 30, borderBottomColor: 'rgba(208, 212, 214, 0.7)',
-                  borderBottomWidth: 2,
-
-                }}>
-                  {eventListTableRow("Event Name", "Event location", "Start Date", "End Date", false, false, true, 0, 0)}
+                <View
+                  style={{
+                    height: 30,
+                    borderBottomColor: "rgba(208, 212, 214, 0.7)",
+                    borderBottomWidth: 2,
+                  }}
+                >
+                  {eventListTableRow(
+                    "Event Name",
+                    "Event location",
+                    "Start Date",
+                    "End Date",
+                    false,
+                    false,
+                    true,
+                    0,
+                    0
+                  )}
                   {/* <Text style={GlobalStyle.underline} /> */}
                 </View>
                 <View>
                   <FlatList
                     key={"EVENT_LIST"}
                     data={eventListdata}
-                    style={{ height: '80%' }}
+                    style={{ height: "80%" }}
                     keyExtractor={(item, index) => index.toString()}
                     ListEmptyComponent={() => {
-                      return (<View style={{ alignItems: 'center', marginVertical: 20 }}><Text>{"Data Not Available"}</Text></View>)
+                      return (
+                        <View
+                          style={{ alignItems: "center", marginVertical: 20 }}
+                        >
+                          <Text>{"Data Not Available"}</Text>
+                        </View>
+                      );
                     }}
-
                     renderItem={({ item, index }) => {
-
                       return (
                         <>
-                          <View style={{
-                            height: 35, borderBottomColor: 'rgba(208, 212, 214, 0.7)',
-                            borderBottomWidth: 4, marginTop: 5
-                          }}>
-                            {eventListTableRow(item.eventName, item.eventLocation, moment(item.Startdate).format("DD-MM-YYYY"), moment(item.Enddate).format("DD-MM-YYYY"), false, false, false, item, index)}
+                          <View
+                            style={{
+                              height: 35,
+                              borderBottomColor: "rgba(208, 212, 214, 0.7)",
+                              borderBottomWidth: 4,
+                              marginTop: 5,
+                            }}
+                          >
+                            {eventListTableRow(
+                              item.eventName,
+                              item.eventLocation,
+                              moment(item.Startdate).format("DD-MM-YYYY"),
+                              moment(item.Enddate).format("DD-MM-YYYY"),
+                              false,
+                              false,
+                              false,
+                              item,
+                              index
+                            )}
                             {/* {eventListTableRow(item.eventName, item.eventLocation, item.Startdate, item.Enddate, false, false, false, item, index)} */}
                           </View>
-
                         </>
                       );
                     }}
                   />
-
                 </View>
               </View>
-
             </ScrollView>
-            <View style={{ flexDirection: "row", alignSelf: "flex-end", marginTop: 10 }}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignSelf: "flex-end",
+                marginTop: 10,
+              }}
+            >
               <Button
                 mode="contained"
-
-                style={{ width:'30%',   }}
+                style={{ width: "30%" }}
                 color={Colors.GRAY}
                 labelStyle={{ textTransform: "none" }}
                 onPress={() => {
-                  setisEventListModalVisible(false)
+                  setisEventListModalVisible(false);
                   // todo
                   seteventListData([]);
-                }}>
+                }}
+              >
                 Close
               </Button>
               {/* <Button
@@ -3042,14 +3068,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 Add
               </Button> */}
             </View>
-
           </View>
-
         </View>
       </Modal>
-    )
-  }
-
+    );
+  };
 
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
@@ -3252,9 +3275,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   styles.accordianBorder,
                 ]}
               >
-                <View
-                  style={styles.view3}
-                >
+                <View style={styles.view3}>
                   <View
                     style={{
                       width:
@@ -3348,9 +3369,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   ]}
                 ></Text>
 
-                <View
-                  style={styles.view3}
-                >
+                <View style={styles.view3}>
                   <View style={{ width: "45%" }}>
                     <DropDownSelectionItem
                       label={"Relation"}
@@ -3428,9 +3447,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {selector.enquiry_segment.toLowerCase() == "personal" ? (
                   <View>
-                    <View
-                      style={styles.view3}
-                    >
+                    <View style={styles.view3}>
                       <View style={{ width: "45%" }}>
                         <DateSelectItem
                           label={"Date Of Birth"}
@@ -3572,8 +3589,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   value={selector.source_of_enquiry}
                   label={"Source Of Enquiry*"}
                   editable={false}
-                  rightIconObj={{ name: "information-outline", color: Colors.GRAY }}
-                  showRightIcon={selector.source_of_enquiry === "Events" ? true : false}
+                  rightIconObj={{
+                    name: "information-outline",
+                    color: Colors.GRAY,
+                  }}
+                  showRightIcon={
+                    selector.source_of_enquiry === "Events" ? true : false
+                  }
                   onRightIconPressed={onEventInfoPress}
                 />
                 <Text style={GlobalStyle.underline}></Text>
@@ -3802,7 +3824,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   keyboardType={"phone-pad"}
                   onChangeText={(text) => {
                     // get addreess by pincode
-                    if (text.length === 6) {
+                    if (text?.length === 6) {
                       updateAddressDetails(text);
                     }
                     dispatch(
@@ -3823,7 +3845,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   ]}
                 ></Text>
 
-                {addressData.length > 0 && (
+                {addressData?.length > 0 && (
                   <>
                     <Text style={GlobalStyle.underline}></Text>
                     <Dropdown
@@ -4055,7 +4077,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     maxLength={6}
                     keyboardType={"phone-pad"}
                     onChangeText={(text) => {
-                      if (text.length === 6) {
+                      if (text?.length === 6) {
                         updateAddressDetails2(text);
                       }
                       dispatch(
@@ -4080,7 +4102,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     ]}
                   ></Text>
 
-                  {addressData2.length > 0 && (
+                  {addressData2?.length > 0 && (
                     <>
                       <Text style={GlobalStyle.underline}></Text>
                       <Dropdown
@@ -4302,11 +4324,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   }}
                   style={styles.addmodelbtn}
                 >
-                  <Text
-                    style={styles.addmodeltxt}
-                  >
-                    Add Model
-                  </Text>
+                  <Text style={styles.addmodeltxt}>Add Model</Text>
                 </TouchableOpacity>
                 <FlatList
                   //  style={{ height: faltListHeight }}
@@ -4661,11 +4679,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         }
                       }}
                     >
-                      <Text
-                        style={styles.previewtxt}
-                      >
-                        Preview
-                      </Text>
+                      <Text style={styles.previewtxt}>Preview</Text>
                     </TouchableOpacity>
                     <View style={{ width: "80%" }}>
                       <DisplaySelectedImage
@@ -4713,11 +4727,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                             }
                           }}
                         >
-                          <Text
-                            style={styles.previewtxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previewtxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -4762,7 +4772,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj?.employeeId?.fileName ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                            style={styles.previewbtn}
+                          style={styles.previewbtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.employeeId?.documentPath
@@ -4773,12 +4783,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                             }
                           }}
                         >
-                          <Text
-                              style={styles.previewtxt}
-
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previewtxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -4807,7 +4812,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj?.payslips ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                            style={styles.previewbtn}
+                          style={styles.previewbtn}
                           onPress={() => {
                             if (uploadedImagesDataObj?.payslips?.documentPath) {
                               setImagePath(
@@ -4816,11 +4821,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                             }
                           }}
                         >
-                          <Text
-                              style={styles.previewtxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previewtxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -4848,7 +4849,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj.pattaPassBook ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                            style={styles.previewbtn}
+                          style={styles.previewbtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.pattaPassBook?.documentPath
@@ -4860,11 +4861,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                             }
                           }}
                         >
-                          <Text
-                              style={styles.previewtxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previewtxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -4878,7 +4875,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     ) : uploadedImagesDataObj.pattaPassBook ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                              style={styles.previewbtn}
+                          style={styles.previewbtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.pattaPassBook?.documentPath
@@ -4890,11 +4887,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                             }
                           }}
                         >
-                          <Text
-                                style={styles.previewtxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previewtxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -4924,7 +4917,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj.pensionLetter ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                            style={styles.previewbtn}
+                          style={styles.previewbtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.pensionLetter?.documentPath
@@ -4936,11 +4929,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                             }
                           }}
                         >
-                          <Text
-                            style={styles.previewtxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previewtxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -4970,7 +4959,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj.imaCertificate ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                            style={styles.previewbtn}
+                          style={styles.previewbtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.imaCertificate?.documentPath
@@ -4982,11 +4971,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                             }
                           }}
                         >
-                          <Text
-                              style={styles.previewtxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previewtxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -5018,7 +5003,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj.leasingConfirmationLetter ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                            style={styles.previewbtn}
+                          style={styles.previewbtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.leasingConfirmationLetter
@@ -5031,11 +5016,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                             }
                           }}
                         >
-                          <Text
-                              style={styles.previewtxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previewtxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -5050,7 +5031,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     ) : uploadedImagesDataObj.leasingConfirmationLetter ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                            style={styles.previewbtn}
+                          style={styles.previewbtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.leasingConfirmationLetter
@@ -5063,11 +5044,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                             }
                           }}
                         >
-                          <Text
-                                style={styles.previewtxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previewtxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -5098,7 +5075,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj.address ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                            style={styles.previewbtn}
+                          style={styles.previewbtn}
                           onPress={() => {
                             if (uploadedImagesDataObj.address?.documentPath) {
                               setImagePath(
@@ -5107,11 +5084,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                             }
                           }}
                         >
-                          <Text
-                              style={styles.previewtxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previewtxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -5123,7 +5096,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     ) : uploadedImagesDataObj.addressProof?.fileName ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                              style={styles.previewbtn}
+                          style={styles.previewbtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.addressProof?.documentPath
@@ -5134,11 +5107,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                             }
                           }}
                         >
-                          <Text
-                                style={styles.previewtxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previewtxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -5618,18 +5587,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   {selector.regDocumentPath ? (
                     <View style={{ flexDirection: "row" }}>
                       <TouchableOpacity
-                          style={styles.previewbtn}
+                        style={styles.previewbtn}
                         onPress={() => {
                           if (selector.regDocumentPath) {
                             setImagePath(selector.regDocumentPath);
                           }
                         }}
                       >
-                        <Text
-                            style={styles.previewtxt}
-                        >
-                          Preview
-                        </Text>
+                        <Text style={styles.previewtxt}>Preview</Text>
                       </TouchableOpacity>
                       <View style={{ width: "80%" }}>
                         <DisplaySelectedImage
@@ -5937,18 +5902,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       {selector.insuranceDocumentPath ? (
                         <View style={{ flexDirection: "row" }}>
                           <TouchableOpacity
-                              style={styles.previewbtn}
+                            style={styles.previewbtn}
                             onPress={() => {
                               if (selector.insuranceDocumentPath) {
                                 setImagePath(selector.insuranceDocumentPath);
                               }
                             }}
                           >
-                            <Text
-                                style={styles.previewtxt}
-                            >
-                              Preview
-                            </Text>
+                            <Text style={styles.previewtxt}>Preview</Text>
                           </TouchableOpacity>
                           <View style={{ width: "80%" }}>
                             <DisplaySelectedImage
@@ -6346,29 +6307,39 @@ const styles = StyleSheet.create({
     alignItems: "center",
     // height: '15%',
     alignContent: "center",
-    width: '100%',
-    marginTop: 5
-
-
+    width: "100%",
+    marginTop: 5,
   },
-  eventText: { fontSize: 12, color: Colors.BLACK, textAlign: "left", marginEnd: 10, width: 100, },
+  eventText: {
+    fontSize: 12,
+    color: Colors.BLACK,
+    textAlign: "left",
+    marginEnd: 10,
+    width: 100,
+  },
   modelView: {
-    width: '90%',
+    width: "90%",
     backgroundColor: Colors.WHITE,
     padding: 10,
     borderWidth: 2,
     borderColor: Colors.BLACK,
     flexDirection: "column",
-    height: '22%',
+    height: "22%",
   },
-  selectTitle: { color: Colors.BLACK, fontSize: 16, fontWeight: "700", textAlign: "left", margin: 5 },
+  selectTitle: {
+    color: Colors.BLACK,
+    fontSize: 16,
+    fontWeight: "700",
+    textAlign: "left",
+    margin: 5,
+  },
   view3: {
     flexDirection: "row",
     display: "flex",
     justifyContent: "space-between",
     backgroundColor: Colors.WHITE,
   },
-  addmodelbtn:{
+  addmodelbtn: {
     width: "40%",
     margin: 5,
     borderRadius: 5,
@@ -6384,7 +6355,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: Colors.WHITE,
   },
-  previewbtn:{
+  previewbtn: {
     width: "20%",
     height: 30,
     backgroundColor: Colors.SKY_BLUE,
@@ -6396,5 +6367,5 @@ const styles = StyleSheet.create({
     color: Colors.WHITE,
     fontSize: 14,
     fontWeight: "600",
-  }
+  },
 });
