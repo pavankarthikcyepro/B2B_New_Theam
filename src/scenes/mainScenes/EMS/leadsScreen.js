@@ -36,14 +36,14 @@ import { updateIsSearch, updateSearchKey } from "../../../redux/appReducer";
 import { getPreBookingData } from "../../../redux/preBookingReducer";
 import DateRangePicker from "../../../utils/DateRangePicker";
 import {
-  getLeadsList,
+  
   getMenu,
   getStatus,
   getSubMenu,
 } from "../../../redux/leaddropReducer";
 import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 import Entypo from "react-native-vector-icons/FontAwesome";
-
+import { getLeadsList } from "../../../redux/enquiryReducer";
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().add(0, "day").endOf("month").format(dateFormat);
 const lastMonthFirstDate = moment(currentDate, dateFormat)
@@ -343,15 +343,18 @@ const LeadsScreen = ({ route, navigation }) => {
   ) => {
     // const type = {enq: "ENQUIRY", bkgAprvl: 'PRE_BOOKING', bkg: 'BOOKING'}
     return {
-      startdate: startDate,
-      enddate: endDate,
+      startdate: selectedFromDate,
+      enddate: selectedToDate,
       model: modelFilters,
       categoryType: categoryFilters,
       sourceOfEnquiry: sourceFilters,
-      empId: empId,
-      status: leadType,
+      empId: employeeId,
+      status: "",
       offset: offSet,
-      limit: 50000,
+      limit: 50,
+       "leadStage": defualtLeadStage,
+      "leadStatus": defualtLeadStatus
+
     };
   };
 
@@ -359,13 +362,15 @@ const LeadsScreen = ({ route, navigation }) => {
     if (selector.isLoadingExtraData) {
       return;
     }
-    if (employeeId && selector.pageNumber + 1 < selector.totalPages) {
+   
+    if (employeeId && ((selector.pageNumber + 1) < selector.totalPages)) {
       const payload = getPayloadData(
         employeeId,
         selectedFromDate,
-        selectedToDate,
+        selectedToDate,"",
         selector.pageNumber + 1
       );
+      
       dispatch(getMoreEnquiryList(payload));
     }
   };
@@ -798,7 +803,7 @@ const LeadsScreen = ({ route, navigation }) => {
           : jsonObj.empId,
         status: "",
         offset: 0,
-        limit: 50000,
+        limit: 50,
         leadStage: leadStages,
         leadStatus: defLeadStatus
           ? defLeadStatus
@@ -813,15 +818,28 @@ const LeadsScreen = ({ route, navigation }) => {
       Promise.all([dispatch(getLeadsList(data))])
         .then((response) => {
           setLoader(false);
-          let newData = response[0].payload?.dmsEntity?.leadDtoPage?.content;
-          setSearchedData(newData);
-          setLeadsList(newData);
+          // let newData = response[0].payload?.dmsEntity?.leadDtoPage?.content;
+          // setSearchedData(newData);
+          // setLeadsList(newData);
         })
         .catch((error) => {
           setLoader(false);
         });
     }
   };
+  useEffect(() => {
+    if (selector.leadList_status === "success"){
+      let newData = selector.leadList;
+      if(newData.length > 0){
+        setSearchedData(newData);
+        setLeadsList(newData);
+      }
+    
+    }
+    
+  
+  }, [selector.leadList])
+  
 
   const renderFooter = () => {
     if (!selector.isLoadingExtraData) {
@@ -836,7 +854,7 @@ const LeadsScreen = ({ route, navigation }) => {
   };
 
   const getFirstLetterUpperCase = (name) => {
-    return name.charAt(0).toUpperCase() + name.slice(1);
+    return name?.charAt(0).toUpperCase() + name?.slice(1);
   };
 
   const onChangeSearch = (query) => {
@@ -1173,7 +1191,7 @@ const LeadsScreen = ({ route, navigation }) => {
           ]}
         >
           <FlatList
-              initialNumToRender={searchedData.length}
+              initialNumToRender={searchedData?.length}
             data={searchedData}
             extraData={searchedData}
             keyExtractor={(item, index) => index.toString()}
@@ -1186,11 +1204,13 @@ const LeadsScreen = ({ route, navigation }) => {
             }
             showsVerticalScrollIndicator={false}
             onEndReachedThreshold={0}
-            // onEndReached={() => {
-            //     if (appSelector.searchKey === '') {
-            //         getMoreEnquiryListFromServer()
-            //     }
-            // }}
+            onEndReached={() => {
+              
+              if (searchQuery === '') {
+                 
+                    getMoreEnquiryListFromServer()
+                }
+            }}
             ListFooterComponent={renderFooter}
             renderItem={renderItem}
           />

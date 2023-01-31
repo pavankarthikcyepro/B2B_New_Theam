@@ -108,6 +108,8 @@ import { MyGeolocationTopTabNavigatorOne } from "./geolocationNavigator";
 import TaskThreeSixtyHistory from "../scenes/mainScenes/EMS/taskThreeSixtyHistory";
 import NotificationIcon from "../components/NotificationIcon";
 import DigitalDashBoardScreen from "../scenes/mainScenes/DigitalDashboard";
+import EventDashBoardScreen from "../scenes/mainScenes/EventDashboard";
+import EventSourceModel from "../scenes/mainScenes/EventDashboard/EventSourceModel";
 import LeaderShipFilter from "../scenes/mainScenes/Home/TabScreens/leaderShipFilter";
 
 const drawerWidth = 300;
@@ -350,6 +352,7 @@ export const DrawerStackIdentifiers = {
   dropAnalysis: "DROP_ANALYSIS",
   liveLeads: "LIVE_LEADS",
   dropLostCancel: "DROP_LOST_CANCEL",
+  eventDashboard:"EVENT_DASHBOARD",
   attendance: "Attendance",
   geolocation: "Geolocation",
   digitalDashboard: "DIGITAL_DASHBOARD",
@@ -426,6 +429,12 @@ export const MyTasksStackIdentifiers = {
 
 export const PriceStackIdentifiers = {
   price: "PRICE",
+};
+
+export const EventDashboardStackIdentifiers = {
+  home: "EVENT_DASHBOARD",
+  event: "EVENT",
+  sourceModel: "EVENT_SOURCE_MODEL"
 };
 
 const HomeStack = createStackNavigator();
@@ -1229,6 +1238,10 @@ const MainStackDrawerNavigator = () => {
         component={DropLostCancelNavigator}
       />
       <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.eventDashboard}
+        component={EventDashboardNavigator}
+      />
+      <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.taskTransfer}
         component={TaskTransferStackNavigator}
       />
@@ -1310,6 +1323,33 @@ const DropLostCancelNavigator = ({ navigation }) => {
   );
 };
 
+const EventDashboardStack = createStackNavigator();
+
+const EventDashboardNavigator = ({ navigation }) => {
+  return (
+    <EventDashboardStack.Navigator
+      initialRouteName={EventDashboardStackIdentifiers.home}
+      screenOptions={screeOptionStyle}
+    >
+      <EventDashboardStack.Screen
+        name={EventDashboardStackIdentifiers.home}
+        component={EventDashBoardScreen}
+        options={{
+          title: "Event Dashboard",
+          headerShown: true,
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+      <EventDashboardStack.Screen
+        name={EventDashboardStackIdentifiers.sourceModel}
+        component={EventSourceModel}
+        options={{
+          title: "Event Source/Model",
+        }}
+      />
+    </EventDashboardStack.Navigator>
+  );
+};
 // const MainStackNavigator = createStackNavigator();
 
 // const MainStackNavigator = ({ navigation }) => {

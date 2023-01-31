@@ -34,7 +34,8 @@ export const preEnquirySlice = createSlice({
     totalPages: 1,
     isLoading: false,
     isLoadingExtraData: false,
-    status: ""
+    status: "",
+    pre_enquiry_list_TotalElements:0
   },
   reducers: {
     callPressed: (state, action) => {
@@ -59,6 +60,7 @@ export const preEnquirySlice = createSlice({
       if (dmsEntityObj) {
         state.totalPages = dmsEntityObj.leadDtoPage.totalPages;
         state.pageNumber = dmsEntityObj.leadDtoPage.pageable.pageNumber;
+        state.pre_enquiry_list_TotalElements= action.payload;
         state.pre_enquiry_list = dmsEntityObj.leadDtoPage.content.length > 0 ? dmsEntityObj.leadDtoPage.content : [];
 
       }

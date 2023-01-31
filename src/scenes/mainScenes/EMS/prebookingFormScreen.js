@@ -15,7 +15,9 @@ import {
   Image,
   TouchableOpacity,
   Modal,
-  Alert, FlatList, RefreshControl
+  Alert,
+  FlatList,
+  RefreshControl,
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { useDispatch, useSelector } from "react-redux";
@@ -25,7 +27,7 @@ import {
   DatePickerComponent,
 } from "../../../components";
 import { PreBookingModelListitemCom } from "./components/PreBookingModelListItem";
-import { LoaderComponent } from '../../../components';
+import { LoaderComponent } from "../../../components";
 
 import {
   clearState,
@@ -71,7 +73,9 @@ import {
   updateRef,
   updateResponseStatus,
   clearPermanentAddr,
-  updateAddressByPincode2, getRulesConfiguration, getOtherPricesDropDown
+  updateAddressByPincode2,
+  getRulesConfiguration,
+  getOtherPricesDropDown,
 } from "../../../redux/preBookingFormReducer";
 import {
   clearBookingState,
@@ -94,7 +98,7 @@ import {
 } from "../../../components";
 import { Checkbox, List, Button, IconButton } from "react-native-paper";
 import * as AsyncStore from "../../../asyncStore";
-import { Dropdown } from 'react-native-element-dropdown';
+import { Dropdown } from "react-native-element-dropdown";
 import {
   Salutation_Types,
   Enquiry_Segment_Data,
@@ -103,7 +107,7 @@ import {
   Finance_Category_Types,
   Approx_Auual_Income_Types,
   Buyer_Type_Data,
-  Gender_Types
+  Gender_Types,
 } from "../../../jsonData/enquiryFormScreenJsonData";
 import {
   Payment_At_Types,
@@ -121,7 +125,8 @@ import {
 } from "../../../utils/toast";
 import {
   convertDateStringToMillisecondsUsingMoment,
-  isValidateAlphabetics, isValidate,
+  isValidateAlphabetics,
+  isValidate,
   isMobileNumber,
   emiCalculator,
   GetCarModelList,
@@ -132,7 +137,7 @@ import {
   isEmail,
   PincodeDetailsNew,
   isCheckPanOrAadhaar,
-  convertDateStringToMilliseconds
+  convertDateStringToMilliseconds,
 } from "../../../utils/helperFunctions";
 import URL from "../../../networking/endpoints";
 import uuid from "react-native-uuid";
@@ -144,12 +149,12 @@ import {
   CustomerTypesObj21,
   CustomerTypesObj22,
   EnquiryTypes21,
-  EnquiryTypes22
+  EnquiryTypes22,
 } from "../../../jsonData/preEnquiryScreenJsonData";
 import { EmsTopTabNavigatorIdentifiers } from "../../../navigations/emsTopTabNavigator";
 import Geolocation from "@react-native-community/geolocation";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons"
-import Entypo from 'react-native-vector-icons/Entypo'
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import Entypo from "react-native-vector-icons/Entypo";
 import { client } from "../../../networking/client";
 const rupeeSymbol = "\u20B9";
 
@@ -183,12 +188,13 @@ const CheckboxTextAndAmountComp = ({
   amoutStyle = {},
   isChecked = false,
   onPress,
-  disabled
+  disabled,
 }) => {
   return (
     <View style={[styles.textAndAmountView, { paddingLeft: 2 }]}>
       <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
-        <Checkbox.Android disabled={disabled}
+        <Checkbox.Android
+          disabled={disabled}
           style={{ padding: 0, margin: 0 }}
           status={isChecked ? "checked" : "unchecked"}
           color={Colors.BLUE}
@@ -395,10 +401,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [authToken, setAuthToken] = useState("");
 
-  const [isMinimumAmtModalVisible, setIsMinimumAmtModalVisible] = useState(false);
-  const [configureRuleData, setConfigureRuleData] = useState("")
+  const [isMinimumAmtModalVisible, setIsMinimumAmtModalVisible] =
+    useState(false);
+  const [configureRuleData, setConfigureRuleData] = useState("");
   const [isMiniAmountCheck, setisMiniAmountCheck] = useState(true);
   const [otherPriceDropDownIndex, setOtherPriceDropDownIndex] = useState(null);
+  const [isSelectOption, setIsSelectOption] = useState(false);
 
   // Edit buttons shows
   useEffect(() => {
@@ -763,7 +771,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           }
           // dispatch(updateAddressByPincode(resolve));
         },
-        (rejected) => { }
+        (rejected) => {}
       );
     }
   }, [selector.pincode]);
@@ -808,7 +816,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        "Authorization": "Bearer " + authToken,
+        Authorization: "Bearer " + authToken,
       },
     })
       .then((json) => {
@@ -868,7 +876,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             //   selector?.pre_booking_details_response?.dmsLeadDto?.leadStatus ==
             //   "PREBOOKINGCOMPLETED"
             // ) {
-              setCarModelDataList(value, index);
+            setCarModelDataList(value, index);
             // } else {
             //   addingIsPrimary();
             // }
@@ -941,13 +949,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     if (selector.configureRulesResponse_status == "fulfilled") {
-     
       setConfigureRuleData(selector.configureRulesResponse);
     } else {
-      setConfigureRuleData("")
+      setConfigureRuleData("");
     }
-  }, [selector.configureRulesResponse])
-
+  }, [selector.configureRulesResponse]);
 
   const setPaidAccessoriesData = () => {
     const dmsLeadDto = selector.pre_booking_details_response.dmsLeadDto;
@@ -1007,11 +1013,16 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         await setCarModelsList([]);
         arr[isPrimaryCureentIndex] = cardata;
         arr[index] = selecteditem;
-       
-        setisMiniAmountCheck(true)
-        let findPrimaryData = [...arr].filter(item => item.isPrimary === "Y")
-        
-        getConfigureRulesDetails(findPrimaryData[0].model, findPrimaryData[0].variant, findPrimaryData[0].fuel, userData.orgId)
+
+        setisMiniAmountCheck(true);
+        let findPrimaryData = [...arr].filter((item) => item.isPrimary === "Y");
+
+        getConfigureRulesDetails(
+          findPrimaryData[0].model,
+          findPrimaryData[0].variant,
+          findPrimaryData[0].fuel,
+          userData.orgId
+        );
         await setCarModelsList([...arr]);
         await setIsPrimaryCurrentIndex(index);
       }
@@ -1063,7 +1074,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         dispatch(getDropDataApi(payload)),
         dispatch(getOtherPricesDropDown(jsonObj.orgId)),
         getCarModelListFromServer(jsonObj.orgId),
-      ]).then(() => { });
+      ]).then(() => {});
 
       // Get Token
       AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
@@ -1086,21 +1097,27 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     );
   };
 
-  const getConfigureRulesDetails = async (modalNAme, variantName, fuel, orgid) => {
+  const getConfigureRulesDetails = async (
+    modalNAme,
+    variantName,
+    fuel,
+    orgid
+  ) => {
     //todo
-    setisMiniAmountCheck(true)
+    setisMiniAmountCheck(true);
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
-      dispatch(getRulesConfiguration({
-        model: modalNAme,
-        variant: variantName,
-        fuel: fuel,
-        orgId: jsonObj.orgId
-      }))
+      dispatch(
+        getRulesConfiguration({
+          model: modalNAme,
+          variant: variantName,
+          fuel: fuel,
+          orgId: jsonObj.orgId,
+        })
+      );
     }
-
-  }
+  };
 
   const getCarModelListFromServer = (orgId) => {
     // Call Api
@@ -1120,7 +1137,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           }
           setCarModelsData([...modelList]);
         },
-        (rejected) => { }
+        (rejected) => {}
       )
       .finally(() => {
         // Get PreBooking Details
@@ -1514,6 +1531,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
   const showDropDownModelMethod = (key, headerText) => {
     Keyboard.dismiss();
+    setIsSelectOption(false);
     const orgId = +userData.orgId;
 
     switch (key) {
@@ -1599,6 +1617,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           showToast("No Insurence Types Data Found");
           return;
         }
+        setIsSelectOption(true);
         setDataForDropDown([...insurenceVarientTypes]);
         break;
       case "WARRANTY":
@@ -1606,6 +1625,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           showToast("No Warranty Data Found");
           return;
         }
+        setIsSelectOption(true);
         setDataForDropDown([...warrentyTypes]);
         break;
       case "INSURENCE_ADD_ONS":
@@ -1613,6 +1633,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           showToast("No AddOns Insurence Data Found");
           return;
         }
+        setIsSelectOption(true);
         setDataForDropDown([...insurenceAddOnTypes]);
         setShowMultipleDropDownData(true);
         break;
@@ -1620,6 +1641,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         setDataForDropDown([...Vehicle_Types]);
         break;
       case "REGISTRATION_CHARGES":
+        setIsSelectOption(true);
         setDataForDropDown([...registrationChargesType]);
         break;
       case "CUSTOMER_TYPE_CATEGORY":
@@ -2035,16 +2057,17 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     //todo
     if (isMiniAmountCheck) {
       if (configureRuleData != "") {
-        if (parseInt(configureRuleData.bookingAmount) > parseInt(selector.booking_amount)) {
-          setIsMinimumAmtModalVisible(true)
+        if (
+          parseInt(configureRuleData.bookingAmount) >
+          parseInt(selector.booking_amount)
+        ) {
+          setIsMinimumAmtModalVisible(true);
           return;
         } else {
-          setIsMinimumAmtModalVisible(false)
+          setIsMinimumAmtModalVisible(false);
         }
       }
     }
-
-
 
     let primaryTempCars = [];
     primaryTempCars = carModelsList.filter((item) => {
@@ -2589,11 +2612,16 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         }
       }
 
-      let findPrimaryData = array.filter(item => item.isPrimary === "Y")
-    
-      getConfigureRulesDetails(findPrimaryData[0].model, findPrimaryData[0].variant, findPrimaryData[0].fuel, userData.orgId)
+      let findPrimaryData = array.filter((item) => item.isPrimary === "Y");
+
+      getConfigureRulesDetails(
+        findPrimaryData[0].model,
+        findPrimaryData[0].variant,
+        findPrimaryData[0].fuel,
+        userData.orgId
+      );
       await setCarModelsList(array);
-    } catch (error) { }
+    } catch (error) {}
   };
   const mapContactOrAccountDto = (prevData) => {
     let dataObj = { ...prevData };
@@ -3088,7 +3116,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     }
   }, [selectorBooking.task_details_response]);
 
-
   const proceedToPreBookingClicked = async () => {
     const newTaskObj = { ...selectorBooking.task_details_response };
     newTaskObj.taskStatus = "CLOSED";
@@ -3131,7 +3158,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     //   method: "POST",
     //   body: JSON.stringify(payload),
     // })
-    await client.post(url,payload)
+    await client
+      .post(url, payload)
       .then((res) => res.json())
       .then((jsonRes) => {
         if (jsonRes.success === true) {
@@ -3158,7 +3186,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     dispatch(updateEnquiryDetailsApi(enquiryDetailsObj));
   };
 
-
   useEffect(() => {
     if (
       selectorBooking.update_enquiry_details_response_status === "success" &&
@@ -3168,7 +3195,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         selectorBooking.update_enquiry_details_response.dmsLeadDto
           .referencenumber
       );
-    } else if (selectorBooking.update_enquiry_details_response_status === "failed") {
+    } else if (
+      selectorBooking.update_enquiry_details_response_status === "failed"
+    ) {
       showToastRedAlert("something went wrong");
     }
   }, [
@@ -3176,32 +3205,32 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     selectorBooking.update_enquiry_details_response,
   ]);
 
-  const  displayCreateEnquiryAlert = (refNum) => {
-     Alert.alert(
-       `Booking Successfully Created`,
-       `Ref Num: ${refNum}`,
-       [
-         {
-           text: "OK",
-           onPress: () => goToParentScreen(),
-         },
-       ],
-       {
-         cancelable: false,
-       }
-     );
-   };
+  const displayCreateEnquiryAlert = (refNum) => {
+    Alert.alert(
+      `Booking Successfully Created`,
+      `Ref Num: ${refNum}`,
+      [
+        {
+          text: "OK",
+          onPress: () => goToParentScreen(),
+        },
+      ],
+      {
+        cancelable: false,
+      }
+    );
+  };
 
-   const goToParentScreen = () => {
-     navigation.popToTop();
-     navigation.navigate("EMS_TAB");
-     navigation.navigate(EmsTopTabNavigatorIdentifiers.leads, {
-       fromScreen: "booking",
-     });
-     dispatch(clearState());
-     clearLocalData();
-     dispatch(clearBookingState());
-   };
+  const goToParentScreen = () => {
+    navigation.popToTop();
+    navigation.navigate("EMS_TAB");
+    navigation.navigate(EmsTopTabNavigatorIdentifiers.leads, {
+      fromScreen: "booking",
+    });
+    dispatch(clearState());
+    clearLocalData();
+    dispatch(clearBookingState());
+  };
 
   // ========================== //
   // ========================== //
@@ -3409,7 +3438,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       method: "POST",
       headers: {
         "Content-Type": "multipart/form-data",
-        "Authorization": "Bearer " + authToken,
+        Authorization: "Bearer " + authToken,
       },
       body: formData,
     })
@@ -3517,7 +3546,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         }
         // dispatch(updateAddressByPincode(resolve));
       },
-      (rejected) => { }
+      (rejected) => {}
     );
   };
 
@@ -3542,7 +3571,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         }
         // dispatch(updateAddressByPincode(resolve));
       },
-      (rejected) => { }
+      (rejected) => {}
     );
   };
 
@@ -3639,70 +3668,85 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     return isError;
   };
 
-
-
-
   const renderMinimumAmountModal = () => {
     //todo
-    return (<Modal
-      animationType="fade"
-      visible={isMinimumAmtModalVisible}
-      // onRequestClose={() => {
-      //   setImagePath("");
-      // }}
-      transparent={true}
-
-    >
-      <View
-        style={{
-
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor:  "rgba(0,0,0,0.7)",
-          flex: 1,
-          paddingHorizontal: 10
-        }}
+    return (
+      <Modal
+        animationType="fade"
+        visible={isMinimumAmtModalVisible}
+        // onRequestClose={() => {
+        //   setImagePath("");
+        // }}
+        transparent={true}
       >
-        <View style={{
-          width: '100%',
-          height: '20%',
-          backgroundColor: Colors.WHITE,
-          paddingHorizontal: 10,
-          borderRadius: 10,
-          justifyContent: "flex-start"
-        }}>
-          <View style={{
-            flexDirection: "row",
+        <View
+          style={{
+            justifyContent: "center",
             alignItems: "center",
+            backgroundColor: "rgba(0,0,0,0.7)",
+            flex: 1,
+            paddingHorizontal: 10,
+          }}
+        >
+          <View
+            style={{
+              width: "100%",
+              height: "20%",
+              backgroundColor: Colors.WHITE,
+              paddingHorizontal: 10,
+              borderRadius: 10,
+              justifyContent: "flex-start",
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              <MaterialIcons name="cancel" size={60} color={Colors.BLACK} />
 
-          }}>
-            <MaterialIcons name="cancel" size={60} color={Colors.BLACK} />
-
-            <View style={{ flexDirection: "column" }}>
-              <View style={{ flexDirection: "row", marginVertical: 10, }}>
-                <Text style={{ color: Colors.BLACK, fontSize: 16, fontWeight: '700', marginEnd: 10, marginBottom: 1 }} >Minimum Booking Amount Alert</Text>
-                <TouchableOpacity
-
-                  onPress={() => {
-                    setIsMinimumAmtModalVisible(false)
-                    setisMiniAmountCheck(false)
-                  }}>
-                  <Entypo name="cross" size={20} color={Colors.BLACK} />
-                </TouchableOpacity>
-
+              <View style={{ flexDirection: "column" }}>
+                <View style={{ flexDirection: "row", marginVertical: 10 }}>
+                  <Text
+                    style={{
+                      color: Colors.BLACK,
+                      fontSize: 16,
+                      fontWeight: "700",
+                      marginEnd: 10,
+                      marginBottom: 1,
+                    }}
+                  >
+                    Minimum Booking Amount Alert
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setIsMinimumAmtModalVisible(false);
+                      setisMiniAmountCheck(false);
+                    }}
+                  >
+                    <Entypo name="cross" size={20} color={Colors.BLACK} />
+                  </TouchableOpacity>
+                </View>
+                <Text
+                  style={{
+                    color: Colors.BLACK,
+                    fontSize: 14,
+                    width: "30%",
+                    fontWeight: "700",
+                  }}
+                >
+                  For the selected vehicle Minimum booking amount{" "}
+                  {configureRuleData.bookingAmount} Rs/-, but entered booking
+                  amount not equal to minimum booking amount slab
+                </Text>
               </View>
-              <Text style={{ color: Colors.BLACK, fontSize: 14, width: '30%', fontWeight: '700' }} >For the selected vehicle Minimum booking amount {configureRuleData.bookingAmount} Rs/-, but entered booking amount not equal to minimum booking amount slab</Text>
             </View>
           </View>
-
-
         </View>
-
-
-      </View>
-    </Modal>)
-
-  }
+      </Modal>
+    );
+  };
 
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
@@ -3715,7 +3759,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         selectedImage={(data, keyId) => {
           uploadSelectedImage(data, keyId);
         }}
-      // onDismiss={() => dispatch(setImagePicker(""))}
+        // onDismiss={() => dispatch(setImagePicker(""))}
       />
 
       <DropDownComponant
@@ -3723,6 +3767,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         headerTitle={dropDownTitle}
         data={dataForDropDown}
         disabledData={addNewInput}
+        isSelectOption={isSelectOption}
         multiple={showMultipleDropDownData}
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
@@ -3748,27 +3793,41 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             };
             dispatch(getDropSubReasonDataApi(payload));
           } else if (dropDownKey === "INSURENCE_ADD_ONS") {
-            let totalCost = 0;
-            let names = "";
-            let insurenceAddOns = [];
-            if (item.length > 0) {
-              item.forEach((obj, index) => {
-                totalCost += Number(obj.cost);
-                names += obj.name + (index + 1 < item.length ? ", " : "");
-                insurenceAddOns.push({
-                  insuranceAmount: obj.cost,
-                  insuranceAddonName: obj.name,
+            if (item.name == "Select") {
+              setSelectedAddOnsPrice(0);
+              setSelectedInsurenceAddons([]);
+              dispatch(
+                setDropDownData({ key: dropDownKey, value: names, id: "" })
+              );
+            } else {
+              setSelectedRegistrationCharges(item);
+              let totalCost = 0;
+              let names = "";
+              let insurenceAddOns = [];
+              if (item.length > 0) {
+                item.forEach((obj, index) => {
+                  totalCost += Number(obj.cost);
+                  names += obj.name + (index + 1 < item.length ? ", " : "");
+                  insurenceAddOns.push({
+                    insuranceAmount: obj.cost,
+                    insuranceAddonName: obj.name,
+                  });
                 });
-              });
+              }
+              setSelectedAddOnsPrice(totalCost);
+              setSelectedInsurenceAddons([...insurenceAddOns]);
+              dispatch(
+                setDropDownData({ key: dropDownKey, value: names, id: "" })
+              );
             }
-            setSelectedAddOnsPrice(totalCost);
-            setSelectedInsurenceAddons([...insurenceAddOns]);
-            dispatch(
-              setDropDownData({ key: dropDownKey, value: names, id: "" })
-            );
             return;
-          } else if (dropDownKey === "REGISTRATION_CHARGES") {
-            setSelectedRegistrationCharges(item);
+          } else if (dropDownKey === "REGISTRATION_CHARGES")
+          {
+            if (item.name == "Select") {
+              setSelectedRegistrationCharges({});
+            }else{
+              setSelectedRegistrationCharges(item);
+            }
           } else if (dropDownKey === "OTHER_PRICES") {
             inputHandlerName(item.name, otherPriceDropDownIndex);
           }
@@ -3786,13 +3845,23 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             );
           }
 
-          dispatch(
-            setDropDownData({
-              key: dropDownKey,
-              value: item.name,
-              id: item.id,
-            })
-          );
+          if (item.name == "Select") {
+            dispatch(
+              setDropDownData({
+                key: dropDownKey,
+                value: "",
+                id: "",
+              })
+            );
+          } else {
+            dispatch(
+              setDropDownData({
+                key: dropDownKey,
+                value: item.name,
+                id: item.id,
+              })
+            );
+          }
         }}
       />
 
@@ -3981,7 +4050,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   disabled={!isInputsEditable()}
                   style={{ height: 65, width: "100%" }}
                   value={selector.email}
-                  label={userData.isTracker == "Y" ?"Email ID" :"Email ID*"}
+                  label={userData.isTracker == "Y" ? "Email ID" : "Email ID*"}
                   keyboardType={"email-address"}
                   onChangeText={(text) =>
                     dispatch(setCustomerDetails({ key: "EMAIL", text: text }))
@@ -4755,17 +4824,15 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     }}
                     style={styles.addmodelView}
                   >
-                    <Text
-                      style={styles.addmodeltxt}
-                    >
-                      Add Model
-                    </Text>
+                    <Text style={styles.addmodeltxt}>Add Model</Text>
                   </TouchableOpacity>
                 )}
                 <FlatList
                   data={carModelsList}
                   extraData={carModelsList}
-                  keyExtractor={(item, index) => item && item.id ? item.id.toString() : index.toString()}
+                  keyExtractor={(item, index) =>
+                    item && item.id ? item.id.toString() : index.toString()
+                  }
                   renderItem={({ item, index }) => {
                     return (
                       // <Pressable onPress={() => selectedItem(item, index)}>
@@ -4855,7 +4922,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       disabled={!isInputsEditable()}
                       style={styles.textInputStyle}
                       value={selector.pan_number}
-                      label={userData.isTracker == "Y" ?"PAN Number":"PAN Number*"}
+                      label={
+                        userData.isTracker == "Y" ? "PAN Number" : "PAN Number*"
+                      }
                       maxLength={10}
                       autoCapitalize={"characters"}
                       onChangeText={(text) => {
@@ -4899,11 +4968,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             }
                           }}
                         >
-                          <Text
-                            style={styles.previetxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previetxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -4942,11 +5007,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             }
                           }}
                         >
-                          <Text
-                            style={styles.previetxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previetxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -5000,11 +5061,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                               }
                             }}
                           >
-                            <Text
-                              style={styles.previetxt}
-                            >
-                              Preview
-                            </Text>
+                            <Text style={styles.previetxt}>Preview</Text>
                           </TouchableOpacity>
                           <View style={{ width: "80%" }}>
                             <DisplaySelectedImage
@@ -5021,9 +5078,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 {/* // Employeed ID */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                  (selector.customer_type.toLowerCase() === "corporate" ||
-                    selector.customer_type.toLowerCase() === "government" ||
-                    selector.customer_type.toLowerCase() === "retired") ? (
+                (selector.customer_type.toLowerCase() === "corporate" ||
+                  selector.customer_type.toLowerCase() === "government" ||
+                  selector.customer_type.toLowerCase() === "retired") ? (
                   <View>
                     <TextinputComp
                       disabled={!isInputsEditable()}
@@ -5054,7 +5111,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
                           disabled={!isInputsEditable()}
-                            style={styles.previewBtn}
+                          style={styles.previewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.employeeId?.documentPath
@@ -5065,11 +5122,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             }
                           }}
                         >
-                          <Text
-                              style={styles.previetxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previetxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -5085,8 +5138,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 {/* Last 3 month payslip */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                  (selector.customer_type.toLowerCase() === "corporate" ||
-                    selector.customer_type.toLowerCase() === "government") ? (
+                (selector.customer_type.toLowerCase() === "corporate" ||
+                  selector.customer_type.toLowerCase() === "government") ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -5101,7 +5154,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
                           disabled={!isInputsEditable()}
-                            style={styles.previewBtn}
+                          style={styles.previewBtn}
                           onPress={() => {
                             if (uploadedImagesDataObj.payslips?.documentPath) {
                               setImagePath(
@@ -5110,11 +5163,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             }
                           }}
                         >
-                          <Text
-                              style={styles.previetxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previetxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -5130,7 +5179,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 {/* Patta Pass book */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                  selector.customer_type.toLowerCase() === "farmer" ? (
+                selector.customer_type.toLowerCase() === "farmer" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -5145,7 +5194,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
                           disabled={!isInputsEditable()}
-                            style={styles.previewBtn}
+                          style={styles.previewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.pattaPassBook?.documentPath
@@ -5157,11 +5206,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             }
                           }}
                         >
-                          <Text
-                              style={styles.previetxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previetxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -5179,7 +5224,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           disabled={
                             userData.isManager ? (isEdit ? false : true) : false
                           }
-                              style={styles.previewBtn}
+                          style={styles.previewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj?.pattaPassBook?.documentPath
@@ -5191,11 +5236,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             }
                           }}
                         >
-                          <Text
-                                style={styles.previetxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previetxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -5219,7 +5260,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 {/* Pension Letter */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                  selector.customer_type.toLowerCase() === "retired" ? (
+                selector.customer_type.toLowerCase() === "retired" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -5234,7 +5275,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
                           disabled={!isInputsEditable()}
-                            style={styles.previewBtn}
+                          style={styles.previewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.pensionLetter?.documentPath
@@ -5246,11 +5287,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             }
                           }}
                         >
-                          <Text
-                              style={styles.previetxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previetxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -5268,7 +5305,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 {/* IMA Certificate */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                  selector.customer_type.toLowerCase() === "doctor" ? (
+                selector.customer_type.toLowerCase() === "doctor" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -5283,7 +5320,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
                           disabled={!isInputsEditable()}
-                            style={styles.previewBtn}
+                          style={styles.previewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.imaCertificate?.documentPath
@@ -5295,11 +5332,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             }
                           }}
                         >
-                          <Text
-                              style={styles.previetxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previetxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -5317,7 +5350,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 {/* Leasing Confirmation */}
                 {selector.enquiry_segment.toLowerCase() === "commercial" &&
-                  selector.customer_type.toLowerCase() === "fleet" ? (
+                selector.customer_type.toLowerCase() === "fleet" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -5335,7 +5368,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
                           disabled={!isInputsEditable()}
-                              style={styles.previewBtn}
+                          style={styles.previewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.leasingConfirmationLetter
@@ -5348,11 +5381,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             }
                           }}
                         >
-                          <Text
-                                style={styles.previetxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previetxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -5368,7 +5397,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ) : uploadedImagesDataObj.leasingConfirmationLetter ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                              style={styles.previewBtn}
+                          style={styles.previewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.leasingConfirmationLetter
@@ -5381,11 +5410,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             }
                           }}
                         >
-                          <Text
-                                style={styles.previetxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previetxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -5403,7 +5428,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 {/* Address Proof */}
                 {selector.enquiry_segment.toLowerCase() === "company" &&
-                  selector.customer_type.toLowerCase() === "institution" ? (
+                selector.customer_type.toLowerCase() === "institution" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -5417,7 +5442,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj.address?.fileName ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                            style={styles.previewBtn}
+                          style={styles.previewBtn}
                           onPress={() => {
                             if (uploadedImagesDataObj.address?.documentPath) {
                               setImagePath(
@@ -5426,11 +5451,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             }
                           }}
                         >
-                          <Text
-                              style={styles.previetxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previetxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -5442,7 +5463,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ) : uploadedImagesDataObj.addressProof?.fileName ? (
                       <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity
-                              style={styles.previewBtn}
+                          style={styles.previewBtn}
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.addressProof?.documentPath
@@ -5453,11 +5474,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             }
                           }}
                         >
-                          <Text
-                                style={styles.previetxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previetxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -5493,8 +5510,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 {/* GSTIN Number */}
                 {(selector.enquiry_segment.toLowerCase() === "company" &&
                   selector.customer_type.toLowerCase() === "institution") ||
-                  selector.customer_type_category == "B2B" ||
-                  selector.customer_type_category == "B2C" ? (
+                selector.customer_type_category == "B2B" ||
+                selector.customer_type_category == "B2C" ? (
                   <View>
                     <TextinputComp
                       disabled={!isInputsEditable()}
@@ -5560,11 +5577,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           }
                         }}
                       >
-                        <Text
-                          style={styles.previetxt}
-                        >
-                          Preview
-                        </Text>
+                        <Text style={styles.previetxt}>Preview</Text>
                       </TouchableOpacity>
                       <View style={{ width: "80%" }}>
                         <DisplaySelectedImage
@@ -5665,7 +5678,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                 /> */}
                 <View style={styles.textAndAmountView}>
                   {/* <View style={{width: '60%', flexDirection: 'row'}}> */}
-                  <Text style={[styles.leftLabel]}>{userData.isTracker == "Y"? "Life Tax:": "Life Tax*:"}</Text>
+                  <Text style={[styles.leftLabel]}>
+                    {userData.isTracker == "Y" ? "Life Tax:" : "Life Tax*:"}
+                  </Text>
                   {/* </View> */}
                   <View
                     style={{
@@ -5726,9 +5741,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   <Text style={styles.shadowText}>
                     {rupeeSymbol +
                       " " +
-                      `${selectedRegistrationCharges?.cost
-                        ? selectedRegistrationCharges?.cost
-                        : "0.00"
+                      `${
+                        selectedRegistrationCharges?.cost
+                          ? selectedRegistrationCharges?.cost
+                          : "0.00"
                       }`}
                   </Text>
                 </View>
@@ -6619,7 +6635,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         key: "BOOKING_AMOUNT",
                         text: text,
                       })
-                    )}
+                    )
+                  }
                 />
                 <Text
                   style={[
@@ -6811,11 +6828,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             }
                           }}
                         >
-                          <Text
-                            style={styles.previetxt}
-                          >
-                            Preview
-                          </Text>
+                          <Text style={styles.previetxt}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
@@ -6880,44 +6893,44 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                   {(selector.booking_payment_mode === "InternetBanking" ||
                     selector.booking_payment_mode === "Internet Banking") && (
-                      <View>
-                        <TextinputComp
-                          style={styles.textInputStyle}
-                          value={selector.utr_no}
-                          label={"UTR No"}
-                          onChangeText={(text) =>
-                            dispatch(
-                              setPreBookingPaymentDetials({
-                                key: "UTR_NO",
-                                text: text,
-                              })
-                            )
-                          }
-                        />
-                        <Text style={GlobalStyle.underline}></Text>
-                        <DateSelectItem
-                          label={"Transaction Date"}
-                          value={selector.transaction_date}
-                          onPress={() =>
-                            dispatch(setDatePicker("TRANSACTION_DATE"))
-                          }
-                        />
-                        <TextinputComp
-                          style={styles.textInputStyle}
-                          value={selector.comapany_bank_name}
-                          label={"Company Bank Name"}
-                          onChangeText={(text) =>
-                            dispatch(
-                              setPreBookingPaymentDetials({
-                                key: "COMPANY_BANK_NAME",
-                                text: text,
-                              })
-                            )
-                          }
-                        />
-                        <Text style={GlobalStyle.underline}></Text>
-                      </View>
-                    )}
+                    <View>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.utr_no}
+                        label={"UTR No"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setPreBookingPaymentDetials({
+                              key: "UTR_NO",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <DateSelectItem
+                        label={"Transaction Date"}
+                        value={selector.transaction_date}
+                        onPress={() =>
+                          dispatch(setDatePicker("TRANSACTION_DATE"))
+                        }
+                      />
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.comapany_bank_name}
+                        label={"Company Bank Name"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setPreBookingPaymentDetials({
+                              key: "COMPANY_BANK_NAME",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
 
                   {selector.booking_payment_mode === "Cheque" && (
                     <View>
@@ -7444,7 +7457,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     backgroundColor: Colors.WHITE,
-    paddingTop: 7
+    paddingTop: 7,
   },
   addIcon: {
     backgroundColor: Colors.RED,
@@ -7459,7 +7472,7 @@ const styles = StyleSheet.create({
     color: Colors.GRAY,
     paddingLeft: 12,
   },
- addmodelView: {
+  addmodelView: {
     width: "40%",
     margin: 5,
     borderRadius: 5,
@@ -7470,14 +7483,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
- addmodeltxt: {
+  addmodeltxt: {
     fontSize: 16,
     textAlign: "center",
     textAlignVertical: "center",
     color: Colors.WHITE,
     width: "100%",
   },
-  previewBtn:{
+  previewBtn: {
     width: "20%",
     height: 30,
     backgroundColor: Colors.SKY_BLUE,
@@ -7485,9 +7498,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-previetxt:  {
+  previetxt: {
     color: Colors.WHITE,
     fontSize: 14,
     fontWeight: "600",
-  }
+  },
 });
