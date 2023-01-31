@@ -3007,6 +3007,7 @@ const TargetScreen = ({ route }) => {
                           <Text style={{ fontSize: 8 }}>ACH</Text>
                           <Text style={{ fontSize: 8 }}>TGT</Text>
                         </View>
+                        {/* // todo here */}
                         <RenderSelfInsights
                           data={selfInsightsData}
                           type={togglePercentage}

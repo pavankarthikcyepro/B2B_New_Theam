@@ -50,12 +50,16 @@ const lastMonthFirstDate = moment(currentDate, dateFormat)
   .subtract(0, "months")
   .startOf("month")
   .format(dateFormat);
+const lastMonthLastDate = moment(currentDate, dateFormat)
+  .subtract(0, "months")
+  .endOf("month")
+  .format(dateFormat);
 
 const LeadsScreen = ({ route, navigation }) => {
   const isFocused = useIsFocused();
   const selector = useSelector((state) => state.enquiryReducer);
   const appSelector = useSelector((state) => state.appReducer);
-  const { vehicle_model_list_for_filters, source_of_enquiry_list } =
+  const { vehicle_model_list_for_filters, source_of_enquiry_list, filterIds } =
     useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
   const [vehicleModelList, setVehicleModelList] = useState(
@@ -687,7 +691,7 @@ const LeadsScreen = ({ route, navigation }) => {
   ) => {
     setSearchedData([]);
     setLeadsList([]);
-    setSelectedToDate(moment().add(0, "day").endOf("month").format(dateFormat));
+    // setSelectedToDate(moment().add(0, "day").endOf("month").format(dateFormat));
     setLoader(true);
     const employeeData = await AsyncStore.getData(
       AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -789,9 +793,28 @@ const LeadsScreen = ({ route, navigation }) => {
         isLive = true;
         from = "2021-01-01";
       } else if (route?.params?.param && route?.params?.moduleType == "home") {
-        from = lastMonthFirstDate;
+        // todo
+        if (filterIds?.startDate && filterIds.endDate){
+          setFromDateState(filterIds.startDate)
+          setToDateState(filterIds.endDate)
+          from = await filterIds.startDate ? filterIds.startDate : lastMonthFirstDate;
+          to = await filterIds.endDate ? filterIds.endDate : lastMonthLastDate
+        }else{
+          setFromDateState(lastMonthFirstDate)
+          setToDateState(lastMonthLastDate)
+        }
+       
       } else {
       }
+      if (from){
+        setSelectedFromDate(from);
+        setSelectedToDate(to)
+      }else{
+        setSelectedFromDate(selectedFromDate);
+        setSelectedToDate(selectedToDate)  
+      }
+
+//todo
       let newPayload = {
         startdate: from ? from : selectedFromDate,
         enddate: to ? to : selectedToDate,
@@ -815,6 +838,7 @@ const LeadsScreen = ({ route, navigation }) => {
         newPayload,
         isLive,
       };
+      
       Promise.all([dispatch(getLeadsList(data))])
         .then((response) => {
           setLoader(false);
@@ -876,7 +900,8 @@ const LeadsScreen = ({ route, navigation }) => {
   }
 
   const onRefresh = async () => {
-    setSelectedFromDate(lastMonthFirstDate);
+    // setSelectedFromDate(lastMonthFirstDate);
+    // setSelectedToDate(lastMonthLastDate)
     Promise.all([dispatch(getMenu()), dispatch(getStatus())])
       .then(async ([res, res2]) => {
         let path = res.payload;

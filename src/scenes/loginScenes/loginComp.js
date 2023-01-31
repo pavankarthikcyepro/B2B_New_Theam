@@ -319,7 +319,7 @@ const LoginScreen = ({ navigation }) => {
                  let date = new Date(
                    trackingJson[trackingJson.length - 1]?.createdtimestamp
                  );
-                 console.log("LssssLLL");
+            
 
                  let condition =
                    new Date(date).getDate() == new Date().getDate();
