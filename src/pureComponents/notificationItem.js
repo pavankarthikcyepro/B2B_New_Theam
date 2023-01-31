@@ -4,7 +4,9 @@ import { IconButton } from "react-native-paper";
 import { Colors, GlobalStyle } from "../styles";
 
 export const NotificationItem = ({ title, date, onPress, icon, style, isFlag }) => {
-  const conversionIndex = title.indexOf("Conversion:") + 12;
+  const conversionIndex = title.includes("Conversion :")
+    ? title.indexOf("Conversion :") + 13
+    : title.indexOf("Conversion:") + 12;
   const perIndex = title.indexOf("%,");
 
   let firstStr = "";
