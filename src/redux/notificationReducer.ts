@@ -44,6 +44,9 @@ export const notificationSlice = createSlice({
       state.readNotificationResponseStatus = "";
       state.myTaskAllFilter = false;
     },
+    notificationReadClearState: (state, action) => {
+      state.readNotificationResponseStatus = "";
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -73,6 +76,9 @@ export const notificationSlice = createSlice({
   },
 });
 
-export const { setNotificationMyTaskAllFilter, notificationClearState } =
-  notificationSlice.actions;
+export const {
+  setNotificationMyTaskAllFilter,
+  notificationClearState,
+  notificationReadClearState,
+} = notificationSlice.actions;
 export default notificationSlice.reducer;
