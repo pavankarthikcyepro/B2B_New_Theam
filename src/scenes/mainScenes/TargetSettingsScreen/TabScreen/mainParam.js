@@ -489,7 +489,18 @@ const MainParamScreen = ({ route, navigation }) => {
             };
             dispatch(getAllTargetMapping(payload2));
           })
-          .catch((error) => {});
+          .catch((error) => {
+            setIsNoTargetAvailable(false);
+            const payload2 = {
+              empId: jsonObj.empId,
+              pageNo: 1,
+              size: 500,
+              // targetType: selector.targetType,
+              startDate: lastMonthFirstDate,
+              endDate: currentDate,
+            };
+            dispatch(getAllTargetMapping(payload2));
+          });
       }
     }
   };
