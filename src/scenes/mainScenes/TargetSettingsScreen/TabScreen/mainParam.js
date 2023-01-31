@@ -527,17 +527,19 @@ const MainParamScreen = ({ route, navigation }) => {
       <TextInput
         onPressIn={() => {
           if (editParameters) {
-            if (ownData?.updatedUserName) {
-              showToastRedAlert(`Target Set By ${ownData?.updatedUserName}`);
+            if (ownData?.isAccess == "false") {
+              showToastRedAlert(
+                `Target has been already set by ${ownData?.updatedUserName}`
+              );
             }
           }
         }}
         editable={
-          editParameters ? (ownData?.updatedUserName ? false : true) : false
+          editParameters ? (ownData?.isAccess == "false" ? false : true) : false
         }
         style={
           editParameters
-            ? ownData.updatedUserName
+            ? ownData.isAccess == "false"
               ? styles.textBoxDisabled
               : styles.textBox
             : styles.textBoxDisabled
@@ -592,7 +594,12 @@ const MainParamScreen = ({ route, navigation }) => {
       const obj = { employeeId: x, ...branchInfo, targets: internalTargets };
       targets.push(obj);
     });
-    return targets;
+    let mapData = selector.targetMapping.filter((y) => y.isAccess === "false");
+    let result = targets.filter(
+      (obj1) => !mapData.find((obj2) => obj2.employeeId === obj1.employeeId)
+    );
+    return result;
+    // return targets;
   };
 
   function saveSelfData() {
@@ -616,10 +623,35 @@ const MainParamScreen = ({ route, navigation }) => {
         designation: `${ownData.designation}`,
         start_date: selector.startDate,
         end_date: selector.endDate,
+        loggedInEmpId: empId,
       };
       Promise.all([dispatch(saveSelfTargetParams(payload))])
-        .then((x) => {})
-        .catch((y) => {});
+        .then((x) => {
+          const payload2 = {
+            empId: loggedInEmpDetails.empId,
+            pageNo: 1,
+            size: 500,
+            // targetType: selector.targetType,
+            startDate: lastMonthFirstDate,
+            endDate: currentDate,
+          };
+          Promise.all([dispatch(getAllTargetMapping(payload2))])
+            .then((x) => {})
+            .catch((y) => {});
+        })
+        .catch((y) => {
+          const payload2 = {
+            empId: loggedInEmpDetails.empId,
+            pageNo: 1,
+            size: 500,
+            // targetType: selector.targetType,
+            startDate: lastMonthFirstDate,
+            endDate: currentDate,
+          };
+          Promise.all([dispatch(getAllTargetMapping(payload2))])
+            .then((x) => {})
+            .catch((y) => {});
+        });
     }
   }
 
@@ -659,9 +691,33 @@ const MainParamScreen = ({ route, navigation }) => {
             Promise.all([dispatch(getAllTargetMapping(payload2))])
               .then((x) => {})
               .catch((y) => {});
+          } else {
+            const payload2 = {
+              empId: loggedInEmpDetails.empId,
+              pageNo: 1,
+              size: 500,
+              // targetType: selector.targetType,
+              startDate: lastMonthFirstDate,
+              endDate: currentDate,
+            };
+            Promise.all([dispatch(getAllTargetMapping(payload2))])
+              .then((x) => {})
+              .catch((y) => {});
           }
         })
-        .catch((y) => {});
+        .catch((y) => {
+          const payload2 = {
+            empId: loggedInEmpDetails.empId,
+            pageNo: 1,
+            size: 500,
+            // targetType: selector.targetType,
+            startDate: lastMonthFirstDate,
+            endDate: currentDate,
+          };
+          Promise.all([dispatch(getAllTargetMapping(payload2))])
+            .then((x) => {})
+            .catch((y) => {});
+        });
     }
   }
 
@@ -690,18 +746,24 @@ const MainParamScreen = ({ route, navigation }) => {
             <TextInput
               onPressIn={() => {
                 if (editParameters) {
-                  if (item?.updatedUserName) {
-                    showToastRedAlert(`Target Set By ${item?.updatedUserName}`);
+                  if (item?.isAccess == "false") {
+                    showToastRedAlert(
+                      `Target has been already set by ${item?.updatedUserName}`
+                    );
                   }
                 }
               }}
               key={index}
               editable={
-                editParameters ? (item.updatedUserName ? false : true) : false
+                editParameters
+                  ? item.isAccess == "false"
+                    ? false
+                    : true
+                  : false
               }
               style={
                 editParameters
-                  ? item.updatedUserName
+                  ? item.isAccess == "false"
                     ? styles.textBoxDisabled
                     : styles.textBox
                   : styles.textBoxDisabled
@@ -746,10 +808,18 @@ const MainParamScreen = ({ route, navigation }) => {
             <Pressable
               style={[styles.editParamsButton, { borderColor: "green" }]}
               onPress={() => {
-                if (homeSelector.isTeamPresent && selector.isTeam) {
-                  saveTeamData();
+                if (
+                  homeSelector.isTeamPresent &&
+                  !selector.isTeam &&
+                  ownData.isAccess == "false"
+                ) {
+                  setEditParameters(false);
                 } else {
-                  saveSelfData();
+                  if (homeSelector.isTeamPresent && selector.isTeam) {
+                    saveTeamData();
+                  } else {
+                    saveSelfData();
+                  }
                 }
               }}
             >
@@ -894,9 +964,9 @@ const MainParamScreen = ({ route, navigation }) => {
                               {
                                 <TouchableOpacity
                                   onPress={() => {
-                                    if (item?.updatedUserName) {
+                                    if (item?.isAccess == "false") {
                                       showToastRedAlert(
-                                        `Target Set By ${item?.updatedUserName}`
+                                        `Target has been already set by ${item?.updatedUserName}`
                                       );
                                     } else {
                                       setSelectedDropdownData([
@@ -941,7 +1011,10 @@ const MainParamScreen = ({ route, navigation }) => {
                                     height: 40,
                                     borderWidth: 1,
                                     borderRadius: 5,
-                                    borderColor: "blue",
+                                    borderColor:
+                                      item?.isAccess == "false"
+                                        ? "#d1d1d1"
+                                        : "blue",
                                     justifyContent: "center",
                                     alignItems: "center",
                                     textAlign: "center",
@@ -954,7 +1027,6 @@ const MainParamScreen = ({ route, navigation }) => {
                                   </Text>
                                 </TouchableOpacity>
                               }
-                              {/* <Text>{"lll"}</Text> */}
                             </View>
 
                             {[
@@ -1130,9 +1202,9 @@ const MainParamScreen = ({ route, navigation }) => {
                 <TouchableOpacity
                   style={styles.textBox}
                   onPress={() => {
-                    if (ownData.updatedUserName) {
+                    if (ownData.isAccess == "false") {
                       showToastRedAlert(
-                        `Target Set By ${ownData.updatedUserName}`
+                        `Target has been already set by ${ownData.updatedUserName}`
                       );
                     } else {
                       setSelectedUser({ ...loggedInEmpDetails });
@@ -1176,13 +1248,13 @@ const MainParamScreen = ({ route, navigation }) => {
                       : 0}
                   </Text>
                 </TouchableOpacity>
-                {ownData.updatedUserName && (
+                {/* {ownData.isAccess == "false" && ownData.updatedUserName && (
                   <View style={{ width: "50%" }}>
                     <Text
                       numberOfLines={3}
-                    >{`Target Set by ${ownData.updatedUserName}`}</Text>
+                    >{`Target has been already set by ${ownData.updatedUserName}`}</Text>
                   </View>
-                )}
+                )} */}
               </View>
 
               <View style={styles.textBoxWrap}>
@@ -1290,31 +1362,37 @@ const MainParamScreen = ({ route, navigation }) => {
                     // else {
                     //     setAddOrEdit('E')
                     // }
-                    if (loggedInEmpDetails.primaryDepartment === "Sales") {
-                      if (
+                    if (ownData.isAccess == "false") {
+                      showToastRedAlert(
+                        `Target has been already set by ${ownData.updatedUserName}`
+                      );
+                    } else {
+                      if (loggedInEmpDetails.primaryDepartment === "Sales") {
+                        if (
+                          ownData.retailTarget !== null &&
+                          selector.endDate === ownData.endDate &&
+                          selector.startDate === ownData.startDate
+                        ) {
+                          setSelectedBranch({
+                            label: ownData.branchName,
+                            value: ownData.branch,
+                          });
+                          setDefaultBranch(ownData.branch);
+                          setAddOrEdit("E");
+                        } else {
+                          setDefaultBranch(null);
+                          setAddOrEdit("A");
+                        }
+                        setSelectedUser({ ...loggedInEmpDetails });
                         ownData.retailTarget !== null &&
                         selector.endDate === ownData.endDate &&
                         selector.startDate === ownData.startDate
-                      ) {
-                        setSelectedBranch({
-                          label: ownData.branchName,
-                          value: ownData.branch,
-                        });
-                        setDefaultBranch(ownData.branch);
-                        setAddOrEdit("E");
-                      } else {
-                        setDefaultBranch(null);
-                        setAddOrEdit("A");
-                      }
-                      setSelectedUser({ ...loggedInEmpDetails });
-                      ownData.retailTarget !== null &&
-                      selector.endDate === ownData.endDate &&
-                      selector.startDate === ownData.startDate
-                        ? setRetail(ownData.retailTarget.toString())
-                        : setRetail("");
+                          ? setRetail(ownData.retailTarget.toString())
+                          : setRetail("");
 
-                      setOpenRetail(true);
-                    } else showToast("Access Denied");
+                        setOpenRetail(true);
+                      } else showToast("Access Denied");
+                    }
                   }}
                 >
                   <Text style={styles.textInput}>
@@ -1325,13 +1403,13 @@ const MainParamScreen = ({ route, navigation }) => {
                       : 0}
                   </Text>
                 </TouchableOpacity>
-                {ownData.updatedUserName && (
+                {/* {ownData.isAccess == "false" && ownData.updatedUserName && (
                   <View style={{ width: "50%" }}>
                     <Text
                       numberOfLines={3}
-                    >{`Target Set by ${ownData.updatedUserName}`}</Text>
+                    >{`Target has been already set by ${ownData.updatedUserName}`}</Text>
                   </View>
-                )}
+                )} */}
               </View>
 
               <View style={styles.textBoxWrap}>
@@ -1539,7 +1617,8 @@ const MainParamScreen = ({ route, navigation }) => {
                   //     editTargetData()
                   // }
                   if (isNoTargetAvailable) {
-                    addTargetData();
+                    // addTargetData();
+                    editTargetData();
                   } else {
                     editTargetData();
                   }
