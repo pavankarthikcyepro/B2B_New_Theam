@@ -26,7 +26,7 @@ export const getMoreEnquiryList = createAsyncThunk("ENQUIRY/getMoreEnquiryList",
 
 
 export const getLeadsList = createAsyncThunk(
-  "DROPANALYSIS/getLeadsList",
+  "ENQUIRY/getLeadsList",
   async (payload, { rejectWithValue }) => {
     let url = URL.GET_LEAD_LIST_2();
     if (payload?.isLive) {
@@ -53,6 +53,7 @@ const enquirySlice = createSlice({
     status: "",
     leadList:[],
     leadList_status:"",
+    leadList_totoalElemntData: []
   },
   reducers: {
     clearEnqState: (state, action) => {
@@ -63,7 +64,8 @@ const enquirySlice = createSlice({
       state.isLoadingExtraData =  false,
       state.status =  "",
       state.leadList = [],
-        state.leadList_status = ""
+        state.leadList_status = "",
+        state.leadList_totoalElemntData = []
     },
   },
   extraReducers: (builder) => {
@@ -128,6 +130,7 @@ const enquirySlice = createSlice({
       //   state.pageNumber = dmsEntityObj.leadDtoPage.pageable.pageNumber;
         const content = dmsEntityObj.leadDtoPage.content;
         state.leadList = content;
+        state.leadList_totoalElemntData = action.payload;
         state.leadList_status = "success";
         // state.enquiry_list = [...state.enquiry_list, ...content];
       }
