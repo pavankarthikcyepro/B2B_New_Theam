@@ -406,6 +406,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [configureRuleData, setConfigureRuleData] = useState("");
   const [isMiniAmountCheck, setisMiniAmountCheck] = useState(true);
   const [otherPriceDropDownIndex, setOtherPriceDropDownIndex] = useState(null);
+  const [isSelectOption, setIsSelectOption] = useState(false);
 
   // Edit buttons shows
   useEffect(() => {
@@ -1530,6 +1531,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
   const showDropDownModelMethod = (key, headerText) => {
     Keyboard.dismiss();
+    setIsSelectOption(false);
     const orgId = +userData.orgId;
 
     switch (key) {
@@ -1615,6 +1617,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           showToast("No Insurence Types Data Found");
           return;
         }
+        setIsSelectOption(true);
         setDataForDropDown([...insurenceVarientTypes]);
         break;
       case "WARRANTY":
@@ -1622,6 +1625,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           showToast("No Warranty Data Found");
           return;
         }
+        setIsSelectOption(true);
         setDataForDropDown([...warrentyTypes]);
         break;
       case "INSURENCE_ADD_ONS":
@@ -1629,6 +1633,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           showToast("No AddOns Insurence Data Found");
           return;
         }
+        setIsSelectOption(true);
         setDataForDropDown([...insurenceAddOnTypes]);
         setShowMultipleDropDownData(true);
         break;
@@ -1636,6 +1641,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         setDataForDropDown([...Vehicle_Types]);
         break;
       case "REGISTRATION_CHARGES":
+        setIsSelectOption(true);
         setDataForDropDown([...registrationChargesType]);
         break;
       case "CUSTOMER_TYPE_CATEGORY":
@@ -3761,6 +3767,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         headerTitle={dropDownTitle}
         data={dataForDropDown}
         disabledData={addNewInput}
+        isSelectOption={isSelectOption}
         multiple={showMultipleDropDownData}
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
@@ -3786,27 +3793,41 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             };
             dispatch(getDropSubReasonDataApi(payload));
           } else if (dropDownKey === "INSURENCE_ADD_ONS") {
-            let totalCost = 0;
-            let names = "";
-            let insurenceAddOns = [];
-            if (item.length > 0) {
-              item.forEach((obj, index) => {
-                totalCost += Number(obj.cost);
-                names += obj.name + (index + 1 < item.length ? ", " : "");
-                insurenceAddOns.push({
-                  insuranceAmount: obj.cost,
-                  insuranceAddonName: obj.name,
+            if (item.name == "Select") {
+              setSelectedAddOnsPrice(0);
+              setSelectedInsurenceAddons([]);
+              dispatch(
+                setDropDownData({ key: dropDownKey, value: names, id: "" })
+              );
+            } else {
+              setSelectedRegistrationCharges(item);
+              let totalCost = 0;
+              let names = "";
+              let insurenceAddOns = [];
+              if (item.length > 0) {
+                item.forEach((obj, index) => {
+                  totalCost += Number(obj.cost);
+                  names += obj.name + (index + 1 < item.length ? ", " : "");
+                  insurenceAddOns.push({
+                    insuranceAmount: obj.cost,
+                    insuranceAddonName: obj.name,
+                  });
                 });
-              });
+              }
+              setSelectedAddOnsPrice(totalCost);
+              setSelectedInsurenceAddons([...insurenceAddOns]);
+              dispatch(
+                setDropDownData({ key: dropDownKey, value: names, id: "" })
+              );
             }
-            setSelectedAddOnsPrice(totalCost);
-            setSelectedInsurenceAddons([...insurenceAddOns]);
-            dispatch(
-              setDropDownData({ key: dropDownKey, value: names, id: "" })
-            );
             return;
-          } else if (dropDownKey === "REGISTRATION_CHARGES") {
-            setSelectedRegistrationCharges(item);
+          } else if (dropDownKey === "REGISTRATION_CHARGES")
+          {
+            if (item.name == "Select") {
+              setSelectedRegistrationCharges({});
+            }else{
+              setSelectedRegistrationCharges(item);
+            }
           } else if (dropDownKey === "OTHER_PRICES") {
             inputHandlerName(item.name, otherPriceDropDownIndex);
           }
@@ -3824,13 +3845,23 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             );
           }
 
-          dispatch(
-            setDropDownData({
-              key: dropDownKey,
-              value: item.name,
-              id: item.id,
-            })
-          );
+          if (item.name == "Select") {
+            dispatch(
+              setDropDownData({
+                key: dropDownKey,
+                value: "",
+                id: "",
+              })
+            );
+          } else {
+            dispatch(
+              setDropDownData({
+                key: dropDownKey,
+                value: item.name,
+                id: item.id,
+              })
+            );
+          }
         }}
       />
 
@@ -4799,7 +4830,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 <FlatList
                   data={carModelsList}
                   extraData={carModelsList}
-                  keyExtractor={(item, index) => item && item.id ? item.id.toString() : index.toString()}
+                  keyExtractor={(item, index) =>
+                    item && item.id ? item.id.toString() : index.toString()
+                  }
                   renderItem={({ item, index }) => {
                     return (
                       // <Pressable onPress={() => selectedItem(item, index)}>
