@@ -18,6 +18,7 @@ import { AppNavigator } from "../../../navigations";
 import PercentageToggleControl from "../Home/TabScreens/components/EmployeeView/PercentageToggleControl";
 import { RenderSourceModelParameters } from "../Home/TabScreens/components/RenderSourceModelParameters";
 import { sampleData } from "./data";
+import * as AsyncStore from "../../../asyncStore";
 
 const EventInsights = ({ route, navigation }) => {
   const dispatch = useDispatch();
@@ -27,7 +28,7 @@ const EventInsights = ({ route, navigation }) => {
     loggedInEmpId: 0,
     headerTitle: 0,
     orgId: 0,
-    type: 0,
+    type: 'SELF',
     moduleType: 0,
   };
   const [leadSource, setLeadSource] = useState([]);
@@ -65,72 +66,81 @@ const EventInsights = ({ route, navigation }) => {
     // navigation.setOptions({
     //   title: headerTitle ? headerTitle : "Source/Model",
     // });
-    setIsLoading(false);
-    if (isSourceIndex !== 0) {
-      setIsSourceIndex(0);
-    }
-    const dateFormat = "YYYY-MM-DD";
-    const currentDate = moment().format(dateFormat);
-    const monthFirstDate = moment(currentDate, dateFormat)
-      .subtract(0, "months")
-      .startOf("month")
-      .format(dateFormat);
-    const monthLastDate = moment(currentDate, dateFormat)
-      .subtract(0, "months")
-      .endOf("month")
-      .format(dateFormat);
+    try {
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        setIsLoading(false);
+        if (isSourceIndex !== 0) {
+          setIsSourceIndex(0);
+        }
+        const dateFormat = "YYYY-MM-DD";
+        const currentDate = moment().format(dateFormat);
+        const monthFirstDate = moment(currentDate, dateFormat)
+          .subtract(0, "months")
+          .startOf("month")
+          .format(dateFormat);
+        const monthLastDate = moment(currentDate, dateFormat)
+          .subtract(0, "months")
+          .endOf("month")
+          .format(dateFormat);
 
-    let payload = {
-      // endDate: monthLastDate,
-      endDate: moduleType === "live-leads" ? monthLastDate : monthLastDate,
-      loggedInEmpId: empId,
-      empId: empId,
-      // startDate: monthFirstDate,
-      startDate: moduleType === "live-leads" ? "2021-01-01" : monthFirstDate,
-      levelSelected: null,
-      pageNo: 0,
-      size: 100,
-      orgId: orgId,
-      pageNo: 0,
-      selectedEmpId: empId,
-    };
+        let payload = {
+          // endDate: monthLastDate,
+          endDate: monthLastDate,
+          loggedInEmpId: jsonObj.empId,
+          empId: jsonObj.empId,
+          // startDate: monthFirstDate,
+          startDate: monthFirstDate,
+          levelSelected: null,
+          pageNo: 0,
+          size: 100,
+          orgId: jsonObj.orgId,
+          pageNo: 0,
+          selectedEmpId: jsonObj.empId,
+        };
 
-    const urlSelf = URL.MODEL_SOURCE_SELF();
-    const urlInsights = URL.MODEL_SOURCE_INSIGHTS();
-    const urlTeam = URL.MODEL_SOURCE_TEAM();
-    let url = "";
-    switch (type) {
-      case "SELF":
-        url = urlSelf;
-        break;
-      case "INSIGHTS":
-        url = urlInsights;
-        break;
-      case "TEAM":
-        url = urlTeam;
-        const data = {
-          // orgId: orgId,
-          // selectedEmpId: empId,
+        const urlSelf = URL.MODEL_SOURCE_SELF();
+        const urlInsights = URL.MODEL_SOURCE_INSIGHTS();
+        const urlTeam = URL.MODEL_SOURCE_TEAM();
+        let url = "";
+        switch ("SELF") {
+          case "SELF":
+            url = urlSelf;
+            break;
+          case "INSIGHTS":
+            url = urlInsights;
+            break;
+          case "TEAM":
+            url = urlTeam;
+            const data = {
+              // orgId: orgId,
+              // selectedEmpId: empId,
+            };
+            payload = {
+              ...payload,
+              ...data,
+            };
+            break;
+        }
+        let tempPayload = {
+          orgId: orgId,
+          endDate: moduleType === "live-leads" ? currentDate : monthLastDate,
+          loggedInEmpId: loggedInEmpId,
+          empId: empId,
+          startDate:
+            moduleType === "live-leads" ? "2021-01-01" : monthFirstDate,
+          levelSelected: null,
+          pageNo: 0,
+          size: 100,
         };
-        payload = {
-          ...payload,
-          ...data,
-        };
-        break;
-    }
-    let tempPayload = {
-      orgId: orgId,
-      endDate: moduleType === "live-leads" ? currentDate : monthLastDate,
-      loggedInEmpId: loggedInEmpId,
-      empId: empId,
-      startDate: moduleType === "live-leads" ? "2021-01-01" : monthFirstDate,
-      levelSelected: null,
-      pageNo: 0,
-      size: 100,
-    };
-    let key = moduleType !== "live-leads" ? "" : "LIVE-LEADS";
-    dispatch(getSourceModelDataForSelf({ type, payload, key }));
-  }, [empId]);
+        let key = moduleType !== "live-leads" ? "" : "LIVE-LEADS";
+        dispatch(getSourceModelDataForSelf({ type, payload, key }));
+      }
+    } catch (error) {}
+  }, []);
 
   useEffect(() => {
     setToggleParamsIndex(0);
@@ -140,10 +150,9 @@ const EventInsights = ({ route, navigation }) => {
   }, [isSourceIndex]);
 
   useEffect(() => {
-    if (true) {
-      console.log("KKKKKKKK");
+    if (selector.sourceModelData) {
       setIsLoading(false);
-      const json = sampleData;
+      const json = selector.sourceModelData;
       const sourceData = [];
       const modelData = [];
       const data = type === "TEAM" ? json : json;
@@ -199,7 +208,7 @@ const EventInsights = ({ route, navigation }) => {
       // getTotal(0);
       setIsLoading(false);
     }
-  }, [toggleParamsIndex]);
+  }, [selector.sourceModelData,toggleParamsIndex]);
 
   useEffect(() => {
     if (leadSource) {

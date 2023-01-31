@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, FlatList, LogBox ,TouchableOpacity} from 'react-native';
 import * as AsyncStore from '../../../asyncStore';
 import { useDispatch, useSelector } from 'react-redux';
-import { getBranchRanksList ,clearState} from "../../../redux/homeReducer";
+import { getBranchRanksList ,clearState, getBranchRanksListWithoutFilter} from "../../../redux/homeReducer";
 import { LoaderComponent, DropDownComponant } from '../../../components';
 import moment from 'moment';
 import { Colors } from '../../../styles';
@@ -88,7 +88,8 @@ export default function branchRankingScreen(props) {
           jsonObj.hrmsRole === "MD" ||
           jsonObj.hrmsRole === "General Manager" ||
           jsonObj.hrmsRole === "Manager" ||
-          jsonObj.hrmsRole === "Sales Manager"
+          jsonObj.hrmsRole === "Sales Manager" ||
+          jsonObj.hrmsRole === "branch manager"
         ) {
           isManager = true;
         }
@@ -214,9 +215,52 @@ export default function branchRankingScreen(props) {
         dispatch(getBranchRanksList(payload));
     }
 
+  const getBranchRankListFromServerWithoutFilter = async (selectedid, deladerID) => {
+
+    setBranchList([])
+    let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    const jsonObj = await JSON.parse(employeeData);
+    if (jsonObj && jsonObj.empId) {
+      setLoggedInEmpId(jsonObj.empId);
+    }
+    const branchId = await AsyncStore.getData(
+      AsyncStore.Keys.SELECTED_BRANCH_ID
+    );
+    var date = new Date();
+    // var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+    // var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    const startOfMonth = moment().startOf('month').format('YYYY-MM-DD');
+    const endOfMonth = moment().endOf('month').format('YYYY-MM-DD');
+
+
+    let branName = "";
+    await AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_NAME).then((branchName) => {
+      if (branchName) {
+
+        branName = branchName;
+      }
+    });
+
+
+    let payload = {
+      "endDate": endOfMonth,
+      "levelSelected": null,
+      "loggedInEmpId": selectedid ? selectedid : jsonObj.empId,
+      "pageNo": 1,
+      "size": 50,
+      "startDate": startOfMonth,
+      //not for payload, just to add in params
+      "orgId": jsonObj.orgId,
+      "branchId": jsonObj.branchId
+
+    };
+    dispatch(getBranchRanksListWithoutFilter(payload));
+  }
+
     useEffect(async () => {
       LogBox.ignoreAllLogs();
-      getBranchRankListFromServer();
+      // getBranchRankListFromServer();
+      getBranchRankListFromServerWithoutFilter();
       setTimeout(() => {
         setBranchList(selector.branchrank_list);
       }, 1000);
