@@ -99,6 +99,8 @@ const MainParamScreen = ({ route, navigation }) => {
     []
   );
   const [showChild, setShowChild] = useState(false);
+  const [editableData, setEditableData] = useState([]);
+
   useEffect(async () => {
     navigation.addListener("focus", async () => {
       let employeeData = await AsyncStore.getData(
@@ -280,7 +282,10 @@ const MainParamScreen = ({ route, navigation }) => {
       selector.isDataLoaded
     ) {
       setTeamEmployeeTargetParams();
-
+      let updatedArray = selector.targetMapping.map((obj) => {
+        return { ...obj, edit: false };
+      });
+      setEditableData(updatedArray);
       let ownDataArray = [];
       if (selector.targetType === "MONTHLY") {
         ownDataArray = selector.targetMapping.filter((item) => {
@@ -613,6 +618,43 @@ const MainParamScreen = ({ route, navigation }) => {
     // return targets;
   };
 
+  const formTeamParamsTargetPayloadData2 = (item) => {
+    const targets = [];
+    const data = [...updateTeamsParamsData];
+    const tempArr = data.filter((e) => e.empId == item);
+
+    const empIds = tempArr.map(({ empId }) => empId);
+    const teamMembers = new Set(empIds);
+    teamMembers.forEach((x) => {
+      const internalTargets = [];
+      const empData = data.filter((y) => y.empId === x);
+      const user = selector.targetMapping.find((y) => y.employeeId === x);
+      const branchInfo = {};
+      if (user) {
+        const { branch, department, designation } = user;
+        branchInfo.branch = branch;
+        branchInfo.department = department;
+        branchInfo.designation = designation;
+      }
+      empData.forEach((e) => {
+        const obj = {
+          unit: e.type === "accessories" ? "number" : "percentage",
+          target: e.target,
+          parameter: e.type,
+        };
+        internalTargets.push(obj);
+      });
+      const obj = { employeeId: x, ...branchInfo, targets: internalTargets };
+      targets.push(obj);
+    });
+    let mapData = selector.targetMapping.filter((y) => y.isAccess === "false");
+    let result = targets.filter(
+      (obj1) => !mapData.find((obj2) => obj2.employeeId === obj1.employeeId)
+    );
+    return result;
+    // return targets;
+  };
+
   function saveSelfData() {
     // if (!updatedSelfParameters || Object.keys(updatedSelfParameters).length <=0 ) {
     //     return;
@@ -756,7 +798,7 @@ const MainParamScreen = ({ route, navigation }) => {
           <View key={index}>
             <TextInput
               onPressIn={() => {
-                if (editParameters) {
+                if (editParameters || item.edit) {
                   if (item?.isAccess == "false") {
                     showToastRedAlert(
                       `Target has been already set by ${item?.updatedUserName}`
@@ -766,18 +808,24 @@ const MainParamScreen = ({ route, navigation }) => {
               }}
               key={index}
               editable={
-                editParameters
-                  ? item.isAccess == "false"
-                    ? false
-                    : true
-                  : false
+                item.edit ? (item.isAccess == "false" ? false : true) : false
+                // editParameters
+                //   ? item.isAccess == "false"
+                //     ? false
+                //     : true
+                //   : false
               }
               style={
-                editParameters
+                item.edit
                   ? item.isAccess == "false"
                     ? styles.textBoxDisabled
                     : styles.textBox
                   : styles.textBoxDisabled
+                // editParameters
+                //   ? item.isAccess == "false"
+                //     ? styles.textBoxDisabled
+                //     : styles.textBox
+                //   : styles.textBoxDisabled
               }
               value={param || "0"}
               onChangeText={(x) => {
@@ -790,10 +838,82 @@ const MainParamScreen = ({ route, navigation }) => {
     );
   };
 
+  const editTeamTargets = (index) => {
+    let i = index;
+    let key = "edit";
+    // editableData[i][key] = !editableData[i][key];
+    let newData = [...editableData];
+    newData[i][key] = !newData[i][key];
+    setEditableData(newData);
+  };
+
+  const checkEditValue = () => {
+    return editableData.some((item) => item.edit === true);
+  };
+
+  const updateTeam = async (item) => {
+    const data = { ...updateTeamsParamsData };
+    setMasterTeamsParamsData({ ...data });
+    if (loggedInEmpDetails) {
+      const { orgId, empId, branchId } = loggedInEmpDetails;
+      const payload = {
+        orgId: `${orgId}`,
+        employeeId: `${empId}`,
+        targets: formTeamParamsTargetPayloadData2(item),
+
+        start_date: selector.startDate,
+        end_date: selector.endDate,
+      };
+      Promise.all([dispatch(saveTeamTargetParams(payload))])
+        .then((x) => {
+          if (
+            Array.isArray(x) &&
+            x[0].payload.message.toLowerCase() === "not updated"
+          ) {
+            const payload2 = {
+              empId: loggedInEmpDetails.empId,
+              pageNo: 1,
+              size: 500,
+              // targetType: selector.targetType,
+              startDate: lastMonthFirstDate,
+              endDate: currentDate,
+            };
+            Promise.all([dispatch(getAllTargetMapping(payload2))])
+              .then((x) => {})
+              .catch((y) => {});
+          } else {
+            const payload2 = {
+              empId: loggedInEmpDetails.empId,
+              pageNo: 1,
+              size: 500,
+              // targetType: selector.targetType,
+              startDate: lastMonthFirstDate,
+              endDate: currentDate,
+            };
+            Promise.all([dispatch(getAllTargetMapping(payload2))])
+              .then((x) => {})
+              .catch((y) => {});
+          }
+        })
+        .catch((y) => {
+          const payload2 = {
+            empId: loggedInEmpDetails.empId,
+            pageNo: 1,
+            size: 500,
+            // targetType: selector.targetType,
+            startDate: lastMonthFirstDate,
+            endDate: currentDate,
+          };
+          Promise.all([dispatch(getAllTargetMapping(payload2))])
+            .then((x) => {})
+            .catch((y) => {});
+        });
+    }
+  };
   return (
     <>
       <View>
-        {!editParameters && (
+        {!editParameters && !selector.isTeam && (
           <View>
             <Pressable
               style={[styles.editParamsButton, { borderColor: Colors.RED }]}
@@ -935,8 +1055,10 @@ const MainParamScreen = ({ route, navigation }) => {
                   </View>
                 </View>
               </View>
-              {selector.targetMapping.length > 0 &&
-                selector.targetMapping.map((item, index) => {
+              {/* {selector.targetMapping.length > 0 &&
+                selector.targetMapping.map((item, index) => { */}
+              {editableData.length > 0 &&
+                editableData.map((item, index) => {
                   return (
                     <>
                       {
@@ -956,14 +1078,23 @@ const MainParamScreen = ({ route, navigation }) => {
                             }}
                           >
                             {/*// left side name section */}
-                            <View style={{ width: 150, marginTop: 5 }}>
-                              {
-                                <View style={styles.nameBox}>
-                                  <Text style={styles.text} numberOfLines={1}>
-                                    {item?.empName}
-                                  </Text>
-                                </View>
-                              }
+                            <View
+                              style={{
+                                width: 160,
+                                marginTop: 5,
+                                flexDirection: "row",
+                              }}
+                            >
+                              <View style={styles.nameBox}>
+                                {/* <IconButton
+                                  icon="pencil"
+                                  size={16}
+                                  color={Colors.RED}
+                                /> */}
+                                <Text style={styles.text} numberOfLines={1}>
+                                  {item?.empName}
+                                </Text>
+                              </View>
                             </View>
 
                             <View
@@ -1065,6 +1196,88 @@ const MainParamScreen = ({ route, navigation }) => {
                                     
                                 </TouchableOpacity> */}
                           </View>
+                          <View>
+                            {!item.edit &&
+                              item.isAccess == "true" &&
+                              !checkEditValue() && (
+                                <Pressable
+                                  style={[
+                                    styles.editParamsButton,
+                                    { borderColor: Colors.RED },
+                                  ]}
+                                  onPress={() => {
+                                    editTeamTargets(index);
+                                  }}
+                                >
+                                  <View style={styles.editParamsBtnView}>
+                                    <IconButton
+                                      icon="pencil"
+                                      size={16}
+                                      color={Colors.RED}
+                                    />
+                                  </View>
+                                </Pressable>
+                              )}
+                          </View>
+                          {item.edit && item.isAccess == "true" && (
+                            <View
+                              style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                alignSelf: "flex-end",
+                              }}
+                            >
+                              <Pressable
+                                style={[
+                                  styles.editParamsButton,
+                                  { borderColor: "green" },
+                                ]}
+                                onPress={() => {
+                                  updateTeam(item.employeeId);
+                                }}
+                              >
+                                <View style={styles.editParamsBtnView}>
+                                  <IconButton
+                                    icon="content-save"
+                                    size={16}
+                                    color={"green"}
+                                  />
+                                </View>
+                              </Pressable>
+                              <Pressable
+                                style={[
+                                  styles.editParamsButton,
+                                  { borderColor: "red" },
+                                ]}
+                                onPress={async () => {
+                                  editTeamTargets(index);
+                                  // cancelTeamTargets(index);
+                                  const payload2 = {
+                                    empId: loggedInEmpDetails.empId,
+                                    pageNo: 1,
+                                    size: 500,
+                                    // targetType: selector.targetType,
+                                    startDate: lastMonthFirstDate,
+                                    endDate: currentDate,
+                                  };
+                                  Promise.all([
+                                    dispatch(getAllTargetMapping(payload2)),
+                                  ])
+                                    .then((x) => {})
+                                    .catch((y) => {});
+                                }}
+                              >
+                                <View style={styles.editParamsBtnView}>
+                                  <IconButton
+                                    icon="cancel"
+                                    size={16}
+                                    color={"red"}
+                                    style={{ padding: 0 }}
+                                  />
+                                </View>
+                              </Pressable>
+                            </View>
+                          )}
                         </View>
                       }
                     </>
@@ -1090,7 +1303,7 @@ const MainParamScreen = ({ route, navigation }) => {
                       }}
                     >
                       {/*// left side name section */}
-                      <View style={{ width: 150, marginTop: 5 }}>
+                      <View style={{ width: 160, marginTop: 5 }}>
                         <View style={styles.nameBox}>
                           <Text style={styles.text} numberOfLines={1}>
                             {"Team Total"}
