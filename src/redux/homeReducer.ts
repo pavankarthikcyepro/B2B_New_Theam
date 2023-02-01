@@ -784,6 +784,7 @@ export const homeSlice = createSlice({
       totalDroppedCount: 0,
       contactsCount: 0,
       enquirysCount: 0,
+      totalLostCount:0,
     },
     receptionistModel: [],
     receptionistSource: [],
@@ -796,7 +797,7 @@ export const homeSlice = createSlice({
       empSelected: [],
       allEmpSelected: [],
     },
-    leaderShipFIlterId:[]
+    leaderShipFIlterId: [],
   },
   reducers: {
     dateSelected: (state, action) => {
@@ -887,6 +888,7 @@ export const homeSlice = createSlice({
         totalDroppedCount: 0,
         contactsCount: 0,
         enquirysCount: 0,
+        totalLostCount: 0,
       };
       state.filterIds = {
         startDate: "",
@@ -895,7 +897,7 @@ export const homeSlice = createSlice({
         empSelected: [],
         allEmpSelected: [],
       };
-      state.leaderShipFIlterId=[];
+      state.leaderShipFIlterId = [];
     },
   },
   extraReducers: (builder) => {
@@ -1322,7 +1324,6 @@ export const homeSlice = createSlice({
         state.isLoading = false;
       })
 
-
       .addCase(getBranchRanksList.pending, (state) => {
         state.isLoading = true;
       })
@@ -1372,6 +1373,7 @@ export const homeSlice = createSlice({
           totalDroppedCount: dataObj.totalDroppedCount,
           contactsCount: dataObj.contactsCount,
           enquirysCount: dataObj.enquirysCount,
+          totalLostCount: dataObj.totalLostCount,
         };
       })
       .addCase(getReceptionistData.rejected, (state, action) => {})
@@ -1386,6 +1388,7 @@ export const homeSlice = createSlice({
           totalDroppedCount: dataObj.totalDroppedCount,
           contactsCount: dataObj.contactsCount,
           enquirysCount: dataObj.enquirysCount,
+          totalLostCount: dataObj.totalLostCount,
         };
       })
       .addCase(getReceptionistManagerData.rejected, (state, action) => {})
