@@ -849,7 +849,16 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
       });
     }, 100);
   }
-
+  function navigateToContact(params) {
+    navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
+    setTimeout(() => {
+      navigation.navigate("PRE_ENQUIRY", {
+        // param: param === "INVOICE" ? "Retail" : param,
+        // moduleType: "home",
+        // employeeDetail: "",
+      });
+    }, 1000);
+  }
   return (
     <SafeAreaView style={styles.container}>
       <DropDownComponant
@@ -888,7 +897,7 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
               <TouchableOpacity
                 onPress={() => {
                   selector.receptionistData.contactsCount > 0 &&
-                    navigateToEMS();
+                    navigateToContact();
                 }}
                 style={styles.view8}
               >
