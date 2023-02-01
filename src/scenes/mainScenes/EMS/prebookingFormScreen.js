@@ -76,6 +76,7 @@ import {
   updateAddressByPincode2,
   getRulesConfiguration,
   getOtherPricesDropDown,
+  getEnquiryTypesApi,
 } from "../../../redux/preBookingFormReducer";
 import {
   clearBookingState,
@@ -579,7 +580,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     setComponentAppear(true);
     getAsyncstoreData();
     getBranchId();
-    getCustomerType();
+    getCustomerEnquiryType();
 
     BackHandler.addEventListener("hardwareBackPress", handleBackButtonClick);
     // return () => {
@@ -689,11 +690,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     setIsEdit(false);
   };
 
-  const getCustomerType = async () => {
+  const getCustomerEnquiryType = async () => {
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
       dispatch(getCustomerTypesApi(jsonObj.orgId));
+      dispatch(getEnquiryTypesApi(jsonObj.orgId));
     }
   };
 
@@ -1539,38 +1541,31 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         setDataForDropDown([...Salutation_Types]);
         break;
       case "ENQUIRY_SEGMENT":
-        let segments = [...Enquiry_Segment_Data];
-        if (orgId === 21) {
-          segments = [...EnquiryTypes21];
-        } else if (orgId === 22) {
-          segments = [...EnquiryTypes22];
+        if (selector.enquiry_type_list?.length === 0) {
+          showToast("No Enquiry Types found");
+          return;
         }
-        setDataForDropDown(segments);
-        // setDataForDropDown([...Enquiry_Segment_Data]);
+        let eData = selector.enquiry_type_list;
+        let eNewData = eData?.map((val) => ({
+          ...val,
+          name: val?.segment_type || "",
+        }));
+        setDataForDropDown([...eNewData]);
         break;
       case "BUYER_TYPE":
         setDataForDropDown([...Buyer_Type_Data]);
         break;
       case "CUSTOMER_TYPE":
-        // setDataForDropDown([...selector.customer_types_data]);
-
-        let customerTypes = [];
-        customerTypes =
-          CustomerTypesObj21[selector.enquiry_segment.toLowerCase()];
-        if (orgId === 21) {
-          customerTypes =
-            CustomerTypesObj21[selector.enquiry_segment.toLowerCase()];
-          selector.customerType = "";
-        } else if (orgId === 22) {
-          customerTypes =
-            CustomerTypesObj22[selector.enquiry_segment.toLowerCase()];
-          selector.customerType = "";
-        } else {
-          customerTypes =
-            CustomerTypesObj[selector.enquiry_segment.toLowerCase()];
-          selector.customerType = "";
+          if (selector.customer_types_data?.length === 0) {
+          showToast("No Customer Types found");
+          return;
         }
-        setDataForDropDown([...customerTypes]);
+        let cData = selector.customer_types_data;
+        let cNewData = cData.map((val) => ({
+          ...val,
+          name: val?.customer_type || "",
+        }));
+        setDataForDropDown([...cNewData]);
         break;
 
       case "GENDER":
@@ -3821,11 +3816,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
               );
             }
             return;
-          } else if (dropDownKey === "REGISTRATION_CHARGES")
-          {
+          } else if (dropDownKey === "REGISTRATION_CHARGES") {
             if (item.name == "Select") {
               setSelectedRegistrationCharges({});
-            }else{
+            } else {
               setSelectedRegistrationCharges(item);
             }
           } else if (dropDownKey === "OTHER_PRICES") {

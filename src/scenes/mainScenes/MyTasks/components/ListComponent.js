@@ -38,6 +38,7 @@ import {
 import moment from "moment";
 import { showToast } from "../../../../utils/toast";
 import { useIsFocused } from "@react-navigation/native";
+import { setNotificationMyTaskAllFilter } from "../../../../redux/notificationReducer";
 
 const screenWidth = Dimensions.get("window").width;
 const item1Width = screenWidth - 10;
@@ -90,6 +91,9 @@ const ListComponent = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.mytaskReducer);
   const homeSelector = useSelector((state) => state.homeReducer);
+  const notificationSelector = useSelector(
+    (state) => state.notificationReducer
+  );
 
   useEffect(() => {
     if (isFocused) {
@@ -104,16 +108,23 @@ const ListComponent = ({ route, navigation }) => {
           setIndex(1);
           changeTab(1);
         }
-       
-        initialTask(route.params.from ? "MONTH" : "TODAY");
-        setSelectedFilter("MONTH");
+        initialTask(
+          notificationSelector.myTaskAllFilter
+            ? "ALL"
+            : route.params.from
+            ? "MONTH"
+            : "TODAY"
+        );
+        setSelectedFilter(
+          notificationSelector.myTaskAllFilter ? "ALL" : "MONTH"
+        );
         setIsOpenFilter(false);
       } else {
         
         initialTask(selectedFilter);
       }
     }
-  }, [isFocused,selector.filterIds]);
+  }, [isFocused, selector.filterIds]);
 
   const defaultData = [
     {
@@ -1208,6 +1219,10 @@ const ListComponent = ({ route, navigation }) => {
     return newData;
   };
 
+  const removeIsAllFilter = () => {
+    dispatch(setNotificationMyTaskAllFilter(false));
+  }
+
   return (
     <View style={styles.mainView}>
       <View
@@ -1649,6 +1664,7 @@ const ListComponent = ({ route, navigation }) => {
                 if (selectedFilter !== "TODAY") {
                   initialTask("TODAY",true);
                 }
+                removeIsAllFilter();
                 setSelectedFilter("TODAY");
                 setIsOpenFilter(false);
               }}
@@ -1674,6 +1690,7 @@ const ListComponent = ({ route, navigation }) => {
                 if (selectedFilter !== "WEEK") {
                   initialTask("WEEK", true);
                 }
+                removeIsAllFilter();
                 setSelectedFilter("WEEK");
                 setIsOpenFilter(false);
               }}
@@ -1699,6 +1716,7 @@ const ListComponent = ({ route, navigation }) => {
                 if (selectedFilter !== "MONTH") {
                   initialTask("MONTH", true);
                 }
+                removeIsAllFilter();
                 setSelectedFilter("MONTH");
                 setIsOpenFilter(false);
               }}
@@ -1724,6 +1742,7 @@ const ListComponent = ({ route, navigation }) => {
                 if (selectedFilter !== "ALL") {
                   initialTask("ALL", true);
                 }
+                removeIsAllFilter();
                 setSelectedFilter("ALL");
                 setIsOpenFilter(false);
               }}

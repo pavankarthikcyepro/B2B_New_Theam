@@ -182,8 +182,6 @@ const AppScreen = () => {
                  let date = new Date(
                    trackingJson[trackingJson.length - 1]?.createdtimestamp
                  );
-                 
-
                  let condition =
                    new Date(date).getDate() == new Date().getDate();
                  if (trackingJson.length > 0 && condition) {
@@ -234,7 +232,6 @@ const AppScreen = () => {
                      speed: speed.toString(),
                    };
                    if (speed <= 10) {
-                     // showToastRedAlert("ELSE");
                      // await AsyncStore.storeJsonData(
                      //   AsyncStore.Keys.COORDINATES,
                      //   newArray
@@ -257,7 +254,6 @@ const AppScreen = () => {
                    speed: speed.toString(),
                  };
                  if (speed <= 10) {
-                   // showToastRedAlert("ELSE");
                    // await AsyncStore.storeJsonData(
                    //   AsyncStore.Keys.COORDINATES,
                    //   newArray
