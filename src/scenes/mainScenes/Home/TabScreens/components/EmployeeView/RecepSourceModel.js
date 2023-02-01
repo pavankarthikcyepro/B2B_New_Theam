@@ -14,6 +14,8 @@ import PercentageToggleControl from "./PercentageToggleControl";
 import URL from "../../../../../../networking/endpoints";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  getReceptionistManagerModel,
+  getReceptionistManagerSource,
   getReceptionistModel,
   getReceptionistSource,
   getSourceModelDataForSelf,
@@ -24,10 +26,62 @@ import { AppNavigator } from "../../../../../../navigations";
 import { achievementPercentage } from "../../../../../../utils/helperFunctions";
 
 const RecepSourceModel = ({ route, navigation }) => {
+  const paramsMetadata = [
+    {
+      color: "#FA03B9",
+      paramName: "Enquiry",
+      shortName: "Enq",
+      initial: "E",
+      toggleIndex: 0,
+    },
+    // {
+    //   color: "#FA03B9",
+    //   paramName: "Test Drive",
+    //   shortName: "TD",
+    //   initial: "T",
+    //   toggleIndex: 0,
+    // },
+    // {
+    //   color: "#9E31BE",
+    //   paramName: "Home Visit",
+    //   shortName: "Visit",
+    //   initial: "V",
+    //   toggleIndex: 0,
+    // },
+    {
+      color: "#1C95A6",
+      paramName: "Booking",
+      shortName: "Bkg",
+      initial: "B",
+      toggleIndex: 0,
+    },
+    {
+      color: "#C62159",
+      paramName: "INVOICE",
+      shortName: "Retail",
+      initial: "R",
+      toggleIndex: 0,
+    },
+    {
+      color: "#9E31BE",
+      paramName: "Lost",
+      shortName: "Lost",
+      initial: "L",
+      toggleIndex: 0,
+    },
+  ];
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.homeReducer);
-  const { empId, loggedInEmpId, headerTitle, orgId, type, moduleType } =
-    route.params;
+  const {
+    empId,
+    loggedInEmpId,
+    headerTitle,
+    orgId,
+    type,
+    moduleType,
+    role,
+    branchList,
+  } = route.params;
   const [leadSource, setLeadSource] = useState([]);
   const [vehicleModel, setVehicleModel] = useState([]);
   const [leadSourceKeys, setLeadSourceKeys] = useState([]);
@@ -36,9 +90,11 @@ const RecepSourceModel = ({ route, navigation }) => {
   const [displayType, setDisplayType] = useState(0);
   const [sourceModelTotals, setSourceModelTotals] = useState({});
   const [toggleParamsIndex, setToggleParamsIndex] = useState(0);
-  const [toggleParamsMetaData, setToggleParamsMetaData] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [toggleParamsMetaData, setToggleParamsMetaData] =
+    useState(paramsMetadata);
+  const [isLoading, setIsLoading] = useState(true);
   const scrollViewRef = useRef();
+
   useEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
@@ -47,11 +103,13 @@ const RecepSourceModel = ({ route, navigation }) => {
           color={Colors.WHITE}
           size={30}
           onPress={() => {
-            moduleType === "live-leads"
-              ? navigation.navigate(
-                  AppNavigator.DrawerStackIdentifiers.liveLeads
-                )
-              : navigation.pop();
+            if (role == "Reception") {
+              navigation.pop();
+            } else if (role == "CRM") {
+              navigation.pop();
+            } else {
+              navigation.goBack();
+            }
           }}
         />
       ),
@@ -62,17 +120,33 @@ const RecepSourceModel = ({ route, navigation }) => {
     navigation.setOptions({
       title: headerTitle ? headerTitle : "Source/Model",
     });
-    setIsLoading(true);
     if (isSourceIndex !== 0) {
       setIsSourceIndex(0);
     }
+    setIsLoading(true);
     let newPayload = {
       orgId: orgId,
       loggedInEmpId: loggedInEmpId,
     };
-    dispatch(getReceptionistSource(newPayload));
-    dispatch(getReceptionistModel(newPayload));
+    let payload = {
+      orgId: orgId,
+      branchList: branchList,
+    };
+    if (role == "Reception") {
+      dispatch(getReceptionistSource(newPayload));
+      dispatch(getReceptionistModel(newPayload));
+    } else if (role == "CRM") {
+      dispatch(getReceptionistManagerSource(newPayload));
+      dispatch(getReceptionistManagerModel(newPayload));
+    } else {
+      dispatch(getReceptionistManagerSource(payload));
+      dispatch(getReceptionistManagerModel(payload));
+    }
   }, [empId, navigation]);
+
+  useEffect(() => {
+    getTotal(0);
+  }, [selector.receptionistSource]);
 
   useEffect(() => {
     setToggleParamsIndex(0);
@@ -83,7 +157,7 @@ const RecepSourceModel = ({ route, navigation }) => {
 
   useEffect(() => {
     if (selector.sourceModelData) {
-      setIsLoading(true);
+      // setIsLoading(true);
       const json = selector.sourceModelData;
       const sourceData = [];
       const modelData = [];
@@ -134,13 +208,12 @@ const RecepSourceModel = ({ route, navigation }) => {
       setLeadSourceKeys([...sourceUnique]);
       setVehicleModelKeys([...modelUnique]);
       const groupedSources = getData([...newSourceData], 0);
-      // console.log(groupedSources);
 
       setLeadSource(groupedSources);
       const groupedModels = getData([...newModelData], 1);
       setVehicleModel(groupedModels);
       // getTotal(0);
-      setIsLoading(false);
+      // setIsLoading(false);
     }
   }, [selector.sourceModelData, toggleParamsIndex]);
 
@@ -164,52 +237,8 @@ const RecepSourceModel = ({ route, navigation }) => {
     }, {});
 
     setSourceModelTotals({ ...result });
+    setIsLoading(false);
   };
-
-  const paramsMetadata = [
-    {
-      color: "#FA03B9",
-      paramName: "Enquiry",
-      shortName: "Enq",
-      initial: "E",
-      toggleIndex: 0,
-    },
-    {
-      color: "#FA03B9",
-      paramName: "Test Drive",
-      shortName: "TD",
-      initial: "T",
-      toggleIndex: 0,
-    },
-    {
-      color: "#9E31BE",
-      paramName: "Home Visit",
-      shortName: "Visit",
-      initial: "V",
-      toggleIndex: 0,
-    },
-    {
-      color: "#1C95A6",
-      paramName: "Booking",
-      shortName: "Bkg",
-      initial: "B",
-      toggleIndex: 0,
-    },
-    {
-      color: "#C62159",
-      paramName: "INVOICE",
-      shortName: "Retail",
-      initial: "R",
-      toggleIndex: 0,
-    },
-    {
-      color: "#9E31BE",
-      paramName: "Lost",
-      shortName: "Lost",
-      initial: "L",
-      toggleIndex: 0,
-    },
-  ];
 
   const getData = (data, type) => {
     return (
@@ -242,25 +271,29 @@ const RecepSourceModel = ({ route, navigation }) => {
           newData.map((x, index) => {
             return (
               <>
-                <View style={{ flexDirection: "row", marginTop: 10 }}>
-                  <Text
-                    style={{
-                      color: "darkblue",
-                      fontSize: 16,
-                      fontWeight: "500",
-                    }}
-                  >
-                    {x?.source || x?.model}
-                  </Text>
-                </View>
+                <View style={{ flexDirection: "row", marginTop: 10 }}></View>
                 <View
                   style={{
                     flexDirection: "row",
-                    backgroundColor: "#D7EAF9",
+                    // backgroundColor: "#D7EAF9",
+                    // backgroundColor: "#FAAFBA",
+                    backgroundColor: "rgba(223,228,231,0.67)",
                     paddingVertical: 6,
                   }}
                 >
-                  <View style={{ width: 100 }} />
+                  <View style={{ width: 175 }}>
+                    <Text
+                      style={{
+                        color: Colors.BLACK,
+                        fontSize: 13,
+                        fontWeight: "500",
+                      }}
+                    >
+                      {x?.source && x?.subsource
+                        ? x?.source + " - " + x?.subsource
+                        : x?.model}
+                    </Text>
+                  </View>
                   {toggleParamsMetaData.map((param, i) => {
                     return (
                       <View
@@ -270,7 +303,7 @@ const RecepSourceModel = ({ route, navigation }) => {
                           justifyContent: "center",
                         }}
                       >
-                        <Text>
+                        <Text style={{ color: Colors.RED }}>
                           {displayType == 0
                             ? x[param?.initial?.toLowerCase()]
                             : `${getPercentage(
@@ -381,7 +414,7 @@ const RecepSourceModel = ({ route, navigation }) => {
                 marginTop: 10,
               }}
             >
-              <View style={{ width: 100 }} />
+              <View style={{ width: 175 }} />
               {toggleParamsMetaData.map((item) => {
                 if (item.paramName !== "PreEnquiry") {
                   return (
@@ -395,18 +428,21 @@ const RecepSourceModel = ({ route, navigation }) => {
                     >
                       <Text
                         style={{
-                          color: "darkblue",
-                          fontSize: 16,
+                          color: item.color,
+                          fontSize: 14,
                           fontWeight: "500",
                         }}
                       >
-                        {item.initial}
+                        {item.shortName}
                       </Text>
                     </View>
                   );
                 }
               })}
             </View>
+            {isLoading && (
+              <ActivityIndicator size={"large"} color={Colors.RED} />
+            )}
             {renderDataView()}
             <>
               <View
@@ -414,16 +450,19 @@ const RecepSourceModel = ({ route, navigation }) => {
                   flexDirection: "row",
                   marginTop: 15,
                   marginBottom: 40,
+                  backgroundColor: Colors.RED,
+                  paddingVertical: 10,
                 }}
               >
                 <Text
                   style={{
-                    color: "darkblue",
-                    fontSize: 16,
+                    color: Colors.WHITE,
+                    fontSize: 13,
                     fontWeight: "500",
+                    width: 112,
                   }}
                 >
-                  {"Total"}
+                  {" Total"}
                 </Text>
                 <View
                   style={{
@@ -442,9 +481,9 @@ const RecepSourceModel = ({ route, navigation }) => {
                       >
                         <Text
                           style={{
-                            color: "darkblue",
-                            fontSize: 16,
-                            fontWeight: "500",
+                            color: Colors.WHITE,
+                            fontSize: 14,
+                            fontWeight: "600",
                             textDecorationLine: "underline",
                           }}
                         >

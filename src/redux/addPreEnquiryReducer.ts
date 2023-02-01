@@ -1,21 +1,13 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import { client } from "../networking/client";
-import {
-  EnquiryTypes,
-  SourceOfEnquiryTypes,
-  CustomerTypesObj,
-  EnquiryTypes21,
-  CustomerTypesObj21,
-  EnquiryTypes22,
-  CustomerTypesObj22
-} from "../jsonData/preEnquiryScreenJsonData";
+import { SourceOfEnquiryTypes } from "../jsonData/preEnquiryScreenJsonData";
 import { showToast } from "../utils/toast";
 import URL from "../networking/endpoints";
 import { convertToDate } from "../utils/helperFunctions";
 import moment from "moment";
 import * as AsyncStore from "../asyncStore";
-import {loginSlice} from '../redux/loginReducer'
-import {useSelector} from 'react-redux'
+import { loginSlice } from "../redux/loginReducer";
+import { useSelector } from "react-redux";
 
 interface TextModel {
   key: string;
@@ -26,7 +18,7 @@ interface DropDownModel {
   key: string;
   value: string;
   id: string;
-  orgId:string;
+  orgId: string;
 }
 
 interface Item {
@@ -34,32 +26,37 @@ interface Item {
   id: string;
 }
 
+export const getPreEnquiryDetails = createAsyncThunk(
+  "ADD_PRE_ENQUIRY_SLICE/getPreEnquiryDetails",
+  async (universalId, { rejectWithValue }) => {
+    const response = await client.get(URL.CONTACT_DETAILS(universalId));
 
-
-export const getPreEnquiryDetails = createAsyncThunk("ADD_PRE_ENQUIRY_SLICE/getPreEnquiryDetails", async (universalId, { rejectWithValue }) => {
-
-  const response = await client.get(URL.CONTACT_DETAILS(universalId))
-
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
-  }
-  return json;
-})
-
-export const createPreEnquiry = createAsyncThunk("ADD_PRE_ENQUIRY_SLICE/createPreEnquiry", async (data, { rejectWithValue }) => {
-  const response = await client.post(data["url"], data["body"]);
-
-  try {
     const json = await response.json();
-    if (response.status != 200) {
+    if (!response.ok) {
       return rejectWithValue(json);
     }
     return json;
-  } catch (error) {
-    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
   }
-});
+);
+
+export const createPreEnquiry = createAsyncThunk(
+  "ADD_PRE_ENQUIRY_SLICE/createPreEnquiry",
+  async (data, { rejectWithValue }) => {
+    const response = await client.post(data["url"], data["body"]);
+
+    try {
+      const json = await response.json();
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
+    }
+  }
+);
 
 export const continueToCreatePreEnquiry = createAsyncThunk(
   "ADD_PRE_ENQUIRY_SLICE/continueToCreatePreEnquiry",
@@ -81,7 +78,6 @@ export const continueToCreatePreEnquiry = createAsyncThunk(
 export const updatePreEnquiry = createAsyncThunk(
   "ADD_PRE_ENQUIRY_SLICE/updatePreEnquiry",
   async (data, { rejectWithValue }) => {
-
     const response = await client.put(data["url"], data["body"]);
     try {
       const json = await response.json();
@@ -119,11 +115,9 @@ export const getEventListApi = createAsyncThunk(
   }
 );
 
-
 export const getEventConfigList = createAsyncThunk(
   "ADD_PRE_ENQUIRY_SLICE/getEventConfigList",
   async (payload: any, { rejectWithValue }) => {
-   
     const customConfig = {
       branchid: payload.branchId,
       orgid: payload.orgId,
@@ -132,7 +126,7 @@ export const getEventConfigList = createAsyncThunk(
       URL.GET_EVENTS_NEW(payload.startDate, payload.endDate, payload.empId),
       customConfig
     );
-   
+
     try {
       const json = await response.json();
       if (response.status != 200) {
@@ -144,7 +138,6 @@ export const getEventConfigList = createAsyncThunk(
     }
   }
 );
-
 
 export const getCustomerTypesApi = createAsyncThunk(
   "ADD_PRE_ENQUIRY_SLICE/getCustomerTypesApi",
@@ -158,9 +151,21 @@ export const getCustomerTypesApi = createAsyncThunk(
   }
 );
 
- const getAsyncstoreData = async () => {
-        const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
- }
+export const getEnquiryTypesApi = createAsyncThunk(
+  "ADD_PRE_ENQUIRY_SLICE/getEnquiryTypesApi",
+  async (orgId, { rejectWithValue }) => {
+    const response = await client.get(URL.GET_ENQUIRY_TYPE(orgId));
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+const getAsyncstoreData = async () => {
+  const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+};
 
 export const addPreEnquirySlice = createSlice({
   name: "ADD_PRE_ENQUIRY_SLICE",
@@ -188,9 +193,7 @@ export const addPreEnquirySlice = createSlice({
     drop_down_data: [],
     drop_down_key_id: "",
     show_drop_down: false,
-    enquiry_type_list22: EnquiryTypes22,
-    enquiry_type_list21: EnquiryTypes21,
-    enquiry_type_list: EnquiryTypes,
+    enquiry_type_list: [],
     source_of_enquiry_type_list: SourceOfEnquiryTypes,
     show_model_drop_down: false,
     show_enquiry_segment_drop_down: false,
@@ -200,8 +203,6 @@ export const addPreEnquirySlice = createSlice({
     status: "",
     errorMsg: "",
     customer_type_list: [],
-    customer_type_list21: [],
-    //customer_type_list21: [],
     createEnquiryStatus: "",
     updateEnquiryStatus: "",
     create_enquiry_response_obj: {},
@@ -244,6 +245,8 @@ export const addPreEnquirySlice = createSlice({
       state.event_list_response_status = "";
       state.event_list_response_Config_status = "";
       state.customer_types_response = [];
+      state.enquiry_type_list = [];
+      state.customer_type_list = [];
     },
     setCreateEnquiryCheckbox: (state, action) => {
       state.create_enquiry_checked = !state.create_enquiry_checked;
@@ -253,51 +256,14 @@ export const addPreEnquirySlice = createSlice({
     },
     setDropDownData: (state, action: PayloadAction<DropDownModel>) => {
       const { key, value, id, orgId } = action.payload;
-
       switch (key) {
         case "ENQUIRY_SEGMENT":
           state.enquiryType = value;
+          let data = state.customer_types_response;
+          let newData = data?.filter((val) => val?.enquiry_segment == value);
+          state.customer_type_list = newData;
+          state.customerType = "";
 
-          if (orgId == "21") {
-            state.customer_type_list = CustomerTypesObj21[value.toLowerCase()];
-            state.customerType = "";
-          } else if (orgId == "22") {
-            state.customer_type_list = CustomerTypesObj22[value.toLowerCase()];
-            state.customerType = "";
-          } else if (orgId == "26") {
-            let tmpArr = [];
-            if (value == "Personal") {
-              tmpArr = Object.assign(
-                [],
-                state.customer_types_response?.personal
-                  ? state.customer_types_response.personal
-                  : CustomerTypesObj22[value.toLowerCase()]
-              );
-            } else if (value == "Company") {
-              tmpArr = Object.assign(
-                [],
-                state.customer_types_response?.company
-                  ? state.customer_types_response.company
-                  : CustomerTypesObj22[value.toLowerCase()]
-              );
-            } else {
-              tmpArr = Object.assign(
-                [],
-                state.customer_types_response?.commercial
-                  ? state.customer_types_response.commercial
-                  : CustomerTypesObj22[value.toLowerCase()]
-              );
-            }
-            state.customer_type_list = tmpArr;
-            state.customerType = "";
-          } else {
-            state.customer_type_list = CustomerTypesObj[value.toLowerCase()];
-            state.customerType = "";
-          }
-
-          //state.customer_type_list = CustomerTypesObj22[value.toLowerCase()];
-
-          //state.customerType = "";
           break;
         case "CAR_MODEL":
           state.carModel = value;
@@ -374,7 +340,6 @@ export const addPreEnquirySlice = createSlice({
     },
     setCustomerTypeList: (state, action) => {
       state.customer_type_list = JSON.parse(action.payload);
-      //state.customer_type_list21 = JSON.parse(action.payload);
     },
     setExistingDetails: (state, action) => {
       let orgId = "0";
@@ -407,31 +372,19 @@ export const addPreEnquirySlice = createSlice({
           ? action.payload.dmsAddressList[0].pincode
           : "";
       state.carModel = preEnquiryDetails.model;
-      state.enquiryType = preEnquiryDetails.enquirySegment;
-      state.customer_type_list =
-        CustomerTypesObj[preEnquiryDetails.enquirySegment.toLowerCase()];
-      // state.customer_type_list =
-      //   CustomerTypesObj21[preEnquiryDetails.enquirySegment.toLowerCase()];
-      // state.customer_type_list =
-      //   CustomerTypesObj22[preEnquiryDetails.enquirySegment.toLowerCase()];
-      if (orgId === "21") {
-        state.customer_type_list =
-          CustomerTypesObj21[preEnquiryDetails.enquirySegment.toLowerCase()];
-        state.customerType = "";
-      } else if (orgId == "22") {
-        state.customer_type_list =
-          CustomerTypesObj22[preEnquiryDetails.enquirySegment.toLowerCase()];
-        state.customerType = "";
+      if (preEnquiryDetails.enquirySegment) {
+        state.enquiryType = preEnquiryDetails.enquirySegment;
+        let data = state.customer_types_response;
+        let newData = data?.filter(
+          (val) => val?.enquiry_segment == preEnquiryDetails.enquirySegment
+        );
+        state.customer_type_list = newData;
+        state.customerType = dmsAccountOrContactObj["customerType"] || "";
       } else {
-        state.customer_type_list =
-          CustomerTypesObj[preEnquiryDetails.enquirySegment.toLowerCase()];
         state.customerType = "";
+        state.enquiryType = "";
+        state.customer_type_list = [];
       }
-
-      state.enquiry_type_list = EnquiryTypes;
-      state.enquiry_type_list21 = EnquiryTypes21;
-      state.enquiry_type_list22 = EnquiryTypes22;
-      state.customerType = dmsAccountOrContactObj["customerType"] || "";
       state.sourceOfEnquiry = preEnquiryDetails.enquirySource;
       state.sourceOfEnquiryId = preEnquiryDetails.sourceOfEnquiry;
       state.subSourceOfEnquiry = preEnquiryDetails.subSource;
@@ -533,34 +486,24 @@ export const addPreEnquirySlice = createSlice({
     });
     builder.addCase(getCustomerTypesApi.fulfilled, (state, action) => {
       if (action.payload) {
-        const customerTypes = action.payload;
-        let personalTypes = [];
-        let commercialTypes = [];
-        let companyTypes = [];
-
-        customerTypes.forEach((customer) => {
-          const obj = { id: customer.id, name: customer.customerType };
-          if (customer.enquirySegment === "Personal") {
-            personalTypes.push(obj);
-          } else if (customer.enquirySegment === "Company") {
-            companyTypes.push(obj);
-          } else {
-            commercialTypes.push(obj);
-          }
-        });
-        const obj = {
-          personal: personalTypes,
-          commercial: commercialTypes,
-          company: companyTypes,
-          handicapped: companyTypes,
-        };
-
-        state.customer_types_response = obj;
+        state.customer_types_response = action.payload;
       }
       state.isLoading = false;
     });
     builder.addCase(getCustomerTypesApi.rejected, (state, action) => {
       state.customer_types_response = [];
+      state.isLoading = false;
+    });
+    builder.addCase(getEnquiryTypesApi.pending, (state, action) => {
+      state.enquiry_type_list = [];
+      state.isLoading = true;
+    });
+    builder.addCase(getEnquiryTypesApi.fulfilled, (state, action) => {
+      state.enquiry_type_list = action.payload;
+      state.isLoading = false;
+    });
+    builder.addCase(getEnquiryTypesApi.rejected, (state, action) => {
+      state.enquiry_type_list = [];
       state.isLoading = false;
     });
   },

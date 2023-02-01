@@ -39,6 +39,7 @@ const DropDownComponant = ({
   keyId = "",
   onRequestClose,
   disabledData = [],
+  isSelectOption = false,
 }) => {
   const [multipleData, setMultipleData] = useState([]);
 
@@ -76,6 +77,16 @@ const DropDownComponant = ({
   let faltListHeight = tableHeight;
   if (estimateTableHeight < tableHeight) {
     faltListHeight = null;
+  }
+
+  if (isSelectOption) {
+    data = [
+      {
+        name: "Select",
+        cost: 0,
+      },
+      ...data,
+    ];
   }
 
   return (
@@ -175,7 +186,9 @@ const DropDownComponant = ({
                             titleStyle={{
                               fontSize: 16,
                               fontWeight: "400",
-                              color: disabledItem ? Colors.TARGET_GRAY : Colors.BLACK,
+                              color: disabledItem
+                                ? Colors.TARGET_GRAY
+                                : Colors.BLACK,
                             }}
                             title={item.name}
                             titleNumberOfLines={1}

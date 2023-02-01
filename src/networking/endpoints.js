@@ -1,5 +1,7 @@
 // Production Urls:
 
+import { GoogleMapKey } from "../service";
+
 // export const hrms_url = "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8088/hrms";
 // export const sales_url = "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8081/sales";
 // export const roleManagement_url = "http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8089/role-management";
@@ -115,9 +117,13 @@ export const salesGap = baseUrl + "dfd/sales-gap";
 export const getBranch = baseUrl + "dfd/oh";
 export const tasktransfer = baseUrl + "dfd/sales-gap/target-dropdown";
 export const getLeaderBoardData =
-  baseUrl + "dfd/dashboard/v2/get_emp_target_ranking/org";
+  baseUrl + "dfd/dashboard/v2/get_emp_target_Dealer_ranking";
 export const getBranchRankingData =
   baseUrl + "dfd/dashboard/v2/get_emp_target_ranking";
+export const getDealerRankingData =
+  baseUrl + "dfd/dashboard/v2/get_emp_target_ranking";
+export const getBranchRankingDataV2 =
+  baseUrl + "dfd/dashboard/v2/get_emp_target_Branch_ranking";
 
 export const vehicleServices_url = baseUrl + "dfdl/vehicle-services";
 
@@ -251,7 +257,10 @@ const URL = {
     );
   },
   GET_CUSTOMER_TYPES: (orgId) => {
-    return sales_url + `/master-data/customertype/${orgId}`;
+    return dfGetAll + `/${orgId}/%22Active%22/${orgId}/costomerType`;
+  },
+   GET_ENQUIRY_TYPE: (orgId) => {
+    return dfGetAll + `/${orgId}/%22Active%22/${orgId}/enquerySegment`;
   },
   DROP_ENQUIRY: () => sales_url + "/lead-drop",
   UPLOAD_DOCUMENT: () => sales_url + "/documents",
@@ -296,6 +305,15 @@ const URL = {
   GET_DRIVERS_LIST: (orgId) => {
     return roleManagement_url + `/user/role/name/Driver/${orgId}`;
   },
+
+  GET_TEST_HISTORY_COUNT: (universalId) => {
+    return sales_url + `/task-history/get-count-audit?customerId=${universalId}`;
+  },
+
+  GET_TEST_HISTORY_DETAILS: (universalId) => {
+    return sales_url + `/task-history/get-testdrive-history?customerId=${universalId}`;
+  },
+
   GET_TEST_DRIVE_VEHICLES: (branchId, orgId) => {
     return (
       inventory_url +
@@ -369,8 +387,8 @@ const URL = {
   VALIDATE_OTP: () => {
     return notificationServices_url + "/validateOTP";
   },
-   SAVETESTDRIVE: () => {
-     return sales_url + "/task-history/savetestDrive";
+  SAVETESTDRIVE: () => {
+    return sales_url + "/task-history/savetestDrive";
   },
   ORG_HIRARCHY: (orgId, branchId) => {
     return orgnaizationHirarchy + `/active-levels/${orgId}/${branchId}`;
@@ -500,7 +518,7 @@ const URL = {
     return lostSubLost + `?organizationId=${ordId}&stageName=${type}`;
   },
   GET_MY_TASKS_NEW_DATA: () => {
-    return dashboard + "/v2/get_todays_datav2";
+    return dashboard + "/v2/get_todays_datav2/filter";
   },
   GET_WORK_FLOW_TASKS: (universalId) => {
     return sales_url + `/workflow/lead/universalId/${universalId}`;
@@ -582,11 +600,20 @@ const URL = {
   GET_EMPLOYEE_DETAILS: (orgId, branchId, deptId, desigId) => {
     return `${getEmployeeData}?orgId=${orgId}&branchId=${branchId}&deptId=${deptId}&desigId=${desigId}`;
   },
-  GET_LEADERBOARD_DATA: (orgId) => {
-    return `${getLeaderBoardData}/${orgId}`;
+  GET_LEADERBOARD_DATA: (orgId,branchId) => {
+    return getLeaderBoardData + "/org/" + orgId + "/branch/" + branchId;
+  },
+  GET_LEADERBOARD_DATA_branch: (orgId, branchId) => {
+    return getLeaderBoardData + "/org/" + orgId + "/branchName/" + branchId;
   },
   GET_BRANCH_RANKING_DATA: (orgId, branchId) => {
     return getBranchRankingData + "/org/" + orgId + "/branch/" + branchId;
+  },
+  GET_DEALER_RANKING_DATA: (orgId) => {
+    return getDealerRankingData + "/org/" + orgId;
+  },
+  GET_BRANCH_RANKING_DATA_branch: (orgId, branchId) => {
+    return getBranchRankingDataV2 + "/org/" + orgId + "/branchName/" + branchId;
   },
   EMPLOYEE_DATA_UPDATE: (empID, managerID) => {
     return `${updateEmployeeTaskDelegate}/${empID}/reportingManager/${managerID}/update`;
@@ -694,11 +721,23 @@ const URL = {
   RECEPTIONIST_DASHBOARD: () => {
     return dashboard + "/receptionist";
   },
+  RECEPTIONIST_MANAGER_DASHBOARD: () => {
+    return dashboard + "/receptionistManager";
+  },
+  RECEPTIONIST_MANAGER_TEAM: () => {
+    return dashboard + "/receptionistTeam";
+  },
   RECEPTIONIST_SOURCE: () => {
     return dashboard + "/receptionist/source";
   },
   RECEPTIONIST_MODEL: () => {
     return dashboard + "/receptionist/model";
+  },
+  RECEPTIONIST_MANAGER_SOURCE: () => {
+    return dashboard + "/receptionistManager/source";
+  },
+  RECEPTIONIST_MANAGER_MODEL: () => {
+    return dashboard + "/receptionistManager/model";
   },
   ROLE_STAGE_ACCESS: (role) => {
     return sales_url + "/lead/roleStageAccess/" + role;
@@ -709,6 +748,9 @@ const URL = {
   CALL_DEALLOCATE: (empId) => {
     return roleManagement_url + "/dms/emp-update/" + empId;
   },
+  ADDRESS_NAME:(lat,long)=>{
+    return `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${long}&key=${GoogleMapKey}`;
+  }
 };
 
 // bankFinancier, incuranceCompany, enqueryCategory, deliveryCheckList, sublostReason

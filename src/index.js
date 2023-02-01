@@ -23,7 +23,7 @@ import {
   sleep,
   veryIntensiveTask,
 } from "./service";
-import Geolocation from "@react-native-community/geolocation";
+import Geolocation from "react-native-geolocation-service";
 import { client } from "./networking/client";
 import {
   getDetailsByempIdAndorgId,
@@ -73,7 +73,18 @@ const AppScreen = () => {
       userToken: null,
     }
   );
+  const [subscriptionId, setSubscriptionId] = useState(null);
 
+  useEffect(() => {
+    return () => {
+      clearWatch();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const clearWatch = () => {
+    subscriptionId !== null && Geolocation.clearWatch(subscriptionId);
+    setSubscriptionId(null);
+  };
   const initialData = async () => {
     try {
       await AsyncStore.storeJsonData(
@@ -105,12 +116,13 @@ const AppScreen = () => {
         var now = new Date();
         var isBetween = startDate <= now && now <= endDate;
         if (true) {
-          Geolocation.watchPosition(
+          // setInterval(() => {
+          const watchID = Geolocation.getCurrentPosition(
             async (lastPosition) => {
               let speed =
                 lastPosition?.coords?.speed <= -1
                   ? 0
-                  : lastPosition?.coords?.speed * 3.6;
+                  : lastPosition?.coords?.speed;
               const employeeData = await AsyncStore.getData(
                 AsyncStore.Keys.LOGIN_EMPLOYEE
               );
@@ -126,75 +138,110 @@ const AppScreen = () => {
                   latitude: lastPosition.coords.latitude,
                   longitude: lastPosition.coords.longitude,
                 };
-                let dist = getDistanceBetweenTwoPoints(
-                  officeLocation.latitude,
-                  officeLocation.longitude,
-                  lastPosition?.coords?.latitude,
-                  lastPosition?.coords?.longitude
-                );
-                if (dist > officeRadius) {
-                  // sendAlertLocalNotification();
-                } else {
-                  // seteReason(false);
-                }
-                let parsedValue =
-                  trackingJson.length > 0
-                    ? JSON.parse(trackingJson[trackingJson.length - 1].location)
-                    : null;
-                if (newLatLng && parsedValue) {
-                  // if (
-                  //   objectsEqual(
-                  //     newLatLng,
-                  //     parsedValue[parsedValue.length - 1]
-                  //   )
-                  // ) {
-                  //   return;
+                if (trackingJson.length > 0) {
+                  // let dist = getDistanceBetweenTwoPoints(
+                  //   officeLocation.latitude,
+                  //   officeLocation.longitude,
+                  //   lastPosition?.coords?.latitude,
+                  //   lastPosition?.coords?.longitude
+                  // );
+                  // if (dist > officeRadius) {
+                  //   // sendAlertLocalNotification();
+                  // } else {
+                  //   // seteReason(false);
                   // }
-                }
+                  let parsedValue =
+                    trackingJson.length > 0
+                      ? JSON.parse(
+                          trackingJson[trackingJson.length - 1].location
+                        )
+                      : [];
 
-                let newArray = [...parsedValue, ...[newLatLng]];
-                let date = new Date(
-                  trackingJson[trackingJson.length - 1]?.createdtimestamp
-                );
+                  let x = trackingJson;
+                  let y = x[x.length - 1].location;
+                  let z = JSON.parse(y);
+                  let lastlocation = z[z.length - 1];
 
-                let condition =
-                  new Date(date).getDate() == new Date().getDate();
-                if (trackingJson.length > 0 && condition) {
-                  // showToastRedAlert("Condition");
+                  let dist = getDistanceBetweenTwoPoints(
+                    lastlocation.latitude,
+                    lastlocation.longitude,
+                    lastPosition?.coords?.latitude,
+                    lastPosition?.coords?.longitude
+                  );
+                  let distance = dist * 1000;
 
-                  let tempPayload = {
-                    id: trackingJson[trackingJson.length - 1]?.id,
-                    orgId: jsonObj?.orgId,
-                    empId: jsonObj?.empId,
-                    branchId: jsonObj?.branchId,
-                    currentTimestamp: new Date().getTime(),
-                    updateTimestamp: new Date().getTime(),
-                    purpose: "",
-                    location: JSON.stringify(newArray),
-                    kmph: speed.toString(),
-                    speed: speed.toString(),
-                  };
-                  if (speed <= 10) {
-                    // await AsyncStore.storeJsonData(
-                    //   AsyncStore.Keys.COORDINATES,
-                    //   newArray
-                    // );
-                    // if (speed < 10) {
-                    //   setTimeout(async () => {
-                    //     await client.put(
-                    //       locationUpdate +
-                    //         `/${trackingJson[trackingJson.length - 1].id}`,
-                    //       tempPayload
-                    //     );
-                    //   }, 300000);
-                    // }
-                    const response = await client.put(
-                      locationUpdate +
-                        `/${trackingJson[trackingJson.length - 1].id}`,
-                      tempPayload
-                    );
-                    const json = await response.json();
-                    // showToastRedAlert("json");
+                  // if (newLatLng && parsedValue) {
+                  //   // if (
+                  //   //   objectsEqual(
+                  //   //     newLatLng,
+                  //   //     parsedValue[parsedValue.length - 1]
+                  //   //   )
+                  //   // ) {
+                  //   //   return;
+                  //   // }
+                  // }
+
+                  let newArray = [...parsedValue, ...[newLatLng]];
+                  let date = new Date(
+                    trackingJson[trackingJson.length - 1]?.createdtimestamp
+                  );
+                  let condition =
+                    new Date(date).getDate() == new Date().getDate();
+                  if (trackingJson.length > 0 && condition) {
+                    let tempPayload = {
+                      id: trackingJson[trackingJson.length - 1]?.id,
+                      orgId: jsonObj?.orgId,
+                      empId: jsonObj?.empId,
+                      branchId: jsonObj?.branchId,
+                      currentTimestamp: new Date().getTime(),
+                      updateTimestamp: new Date().getTime(),
+                      purpose: "",
+                      location: JSON.stringify(newArray),
+                      kmph: speed.toString(),
+                      speed: speed.toString(),
+                    };
+                    if (speed <= 10 && distance > distanceFilterValue) {
+                      // await AsyncStore.storeJsonData(
+                      //   AsyncStore.Keys.COORDINATES,
+                      //   newArray
+                      // );
+                      // if (speed < 10) {
+                      //   setTimeout(async () => {
+                      //     await client.put(
+                      //       locationUpdate +
+                      //         `/${trackingJson[trackingJson.length - 1].id}`,
+                      //       tempPayload
+                      //     );
+                      //   }, 300000);
+                      // }
+                      const response = await client.put(
+                        locationUpdate +
+                          `/${trackingJson[trackingJson.length - 1].id}`,
+                        tempPayload
+                      );
+                      const json = await response.json();
+                    }
+                  } else {
+                    let payload = {
+                      id: 0,
+                      orgId: jsonObj?.orgId,
+                      empId: jsonObj?.empId,
+                      branchId: jsonObj?.branchId,
+                      currentTimestamp: new Date().getTime(),
+                      updateTimestamp: new Date().getTime(),
+                      purpose: "",
+                      location: JSON.stringify([newLatLng]),
+                      kmph: speed.toString(),
+                      speed: speed.toString(),
+                    };
+                    if (speed <= 10) {
+                      // await AsyncStore.storeJsonData(
+                      //   AsyncStore.Keys.COORDINATES,
+                      //   newArray
+                      // );
+                      const response = await client.post(saveLocation, payload);
+                      const json = await response.json();
+                    }
                   }
                 } else {
                   let payload = {
@@ -205,36 +252,44 @@ const AppScreen = () => {
                     currentTimestamp: new Date().getTime(),
                     updateTimestamp: new Date().getTime(),
                     purpose: "",
-                    location: JSON.stringify(newArray),
+                    location: JSON.stringify([newLatLng]),
                     kmph: speed.toString(),
                     speed: speed.toString(),
                   };
                   if (speed <= 10) {
-                    await AsyncStore.storeJsonData(
-                      AsyncStore.Keys.COORDINATES,
-                      newArray
-                    );
+                    // await AsyncStore.storeJsonData(
+                    //   AsyncStore.Keys.COORDINATES,
+                    //   newArray
+                    // );
                     const response = await client.post(saveLocation, payload);
                     const json = await response.json();
-                    // showToastRedAlert("json");
                   }
                 }
               }
             },
             (error) => {
-              console.error(error);
+              // console.error("ssss", error);
             },
             {
               enableHighAccuracy: true,
-              distanceFilter: distanceFilterValue,
-              timeout: 2000,
-              maximumAge: 0,
+              //  distanceFilter: distanceFilterValue,
+              //  timeout: 2000,
+              //  maximumAge: 0,
+              //  interval: 5000,
+              //  fastestInterval: 2000,
+              accuracy: {
+                android: "high",
+              },
               // useSignificantChanges: true,
             }
           );
+          setSubscriptionId(watchID);
+          // }, 5000);
         }
       }
-    } catch (error) {}
+    } catch (error) {
+      // showToastRedAlert(error);
+    }
   };
 
   const veryIntensiveTask = async (taskDataArguments) => {
@@ -242,14 +297,15 @@ const AppScreen = () => {
     const { delay } = taskDataArguments;
     await new Promise(async (resolve) => {
       for (let i = 0; BackgroundService.isRunning(); i++) {
+        // console.log(i);
         var startDate = createDateTime("8:30");
         var startBetween = createDateTime("9:30");
         var endBetween = createDateTime("20:30");
         var endDate = createDateTime("21:30");
         var now = new Date();
-        if (startDate <= now && now <= startBetween) {
-          // sendLocalNotification();
-        }
+        // if (startDate <= now && now <= startBetween) {
+        //   // sendLocalNotification();
+        // }
         // if (
         //   AppState.currentState === "background" ||
         //   AppState.currentState === "inactive"
@@ -259,9 +315,9 @@ const AppScreen = () => {
         //   }
         // }
 
-        if (endBetween <= now && now <= endDate) {
-          // sendLocalNotification();
-        }
+        // if (endBetween <= now && now <= endDate) {
+        //   // sendLocalNotification();
+        // }
         try {
           let todaysDate = await AsyncStore.getData(AsyncStore.Keys.TODAYSDATE);
           if (todaysDate) {
@@ -277,9 +333,7 @@ const AppScreen = () => {
 
   const startTracking = async () => {
     if (Platform.OS === "ios") {
-      Geolocation.requestAuthorization((value) => {
-        // alert(value);
-      });
+      Geolocation.requestAuthorization("always");
     }
     await Geolocation.setRNConfiguration({
       skipPermissionRequests: false,

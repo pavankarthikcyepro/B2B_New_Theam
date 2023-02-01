@@ -169,7 +169,8 @@ export const RenderEmployeeParameters = (parameter) => {
                       : 0}
                   </Text>
                 </View>
-                {selectedParameter?.paramName !== "DROPPED" && (
+                {selectedParameter &&
+                selectedParameter?.paramName !== "DROPPED" ? (
                   <Text
                     style={[
                       styles.totalText,
@@ -192,7 +193,7 @@ export const RenderEmployeeParameters = (parameter) => {
                       ? Number(selectedParameter?.target)
                       : 0}
                   </Text>
-                )}
+                ) : null}
               </View>
             ) : (
               <View key={param} style={[styles.itemBox, { width: 68 }]}>

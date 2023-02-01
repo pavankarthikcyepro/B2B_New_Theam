@@ -34,7 +34,7 @@ import {
   getTestDriveAppointmentDetailsApi,
   validateTestDriveApi,
   generateOtpApi,
-  validateOtpApi,postReOpenTestDrive,
+  validateOtpApi,postReOpenTestDrive,getTestDriveHistoryCount,
   clearOTP,
 } from "../../../redux/testDriveReducer";
 import {
@@ -181,6 +181,10 @@ const TestDriveScreen = ({ route, navigation }) => {
     // getUserToken();
     isViewMode();
     isViewMode2("");
+
+    if (route?.params?.taskStatus === "CLOSED") {
+      dispatch(getTestDriveHistoryCount(universalId))
+    }
   }, []);
 
   useEffect(() => {
@@ -1041,7 +1045,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       // fuelType: vehicleInfo.fuelType || "",
       // transType: vehicleInfo.transmission_type || "",
       // vehicleId: vehicleInfo.vehicleId,
-      vehicleId: vehicleInfo.id,
+      vehicleId: fromVarient ? vehicleInfo.vehicleId : "",
       varientId: fromVarient ? vehicleInfo.varientId : "",
     });
   };
@@ -1095,7 +1099,7 @@ const TestDriveScreen = ({ route, navigation }) => {
   
   const reSubmitClick = (status,taskName)=>{
     // call API here 
-    console.log("API call here")
+   
     setIsisReopenSubmitVisible(false)
     setIsSubmitPress(true);
     if (!mobileNumber || mobileNumber.length === 0) {
@@ -1277,6 +1281,46 @@ const TestDriveScreen = ({ route, navigation }) => {
   
   }, [selector.reopen_test_drive_res_status])
   
+  useEffect(() => {
+    if (route?.params?.taskStatus === "CLOSED"){
+     
+      if (selector.test_drive_history_count_statu === "successs"){
+       
+        navigation.setOptions({
+          headerRight: () => <TestDriveHistoryIcon navigation={navigation} />,
+        })
+      }
+     
+    
+    }
+  
+  }, [selector.test_drive_history_count_statu])
+   const TestDriveHistoryIcon = ({ navigation }) => {
+    return (
+
+     
+      <View style={{flexDirection:'row',alignItems:"center"}}>
+       
+          <IconButton
+          style={{marginEnd:15}}
+            icon="history"
+            color={Colors.WHITE}
+            size={30}
+            onPress={() =>
+              navigation.navigate("TEST_HISTORY", {
+                universalId: universalId,
+
+              })
+
+            }
+          />
+       
+        
+        <Text style={{ fontSize: 16, color: Colors.PINK, fontWeight: "bold", position: "absolute", top: 9, right: 10, }}>{selector.test_drive_history_count}</Text>
+      </View>
+      
+    );
+  };
 
   const verifyClicked = async () => {
     if (otpValue.length != 4) {
@@ -2153,4 +2197,18 @@ const otpStyles = StyleSheet.create({
   focusCell: {
     borderColor: "#000",
   },
+
+  titleText: {
+    fontSize: 12,
+    fontWeight: "600",
+    color:Colors.PINK
+  },
+  badgeContainer: {
+    marginLeft: 3,
+    bottom: 4,
+    alignSelf: "flex-start",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  badgeText: { fontSize: 13, color: Colors.PINK, fontWeight: "bold" },
 });

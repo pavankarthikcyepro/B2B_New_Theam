@@ -154,12 +154,12 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
           }
         },
         (error) => {
-          // console.log(JSON.stringify(error));
+         
         },
         { enableHighAccuracy: true }
       );
     } catch (error) {
-      console.error("ERROR", error);
+     
     }
   };
 

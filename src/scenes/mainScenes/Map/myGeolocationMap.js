@@ -17,8 +17,8 @@ import {
   LoaderComponent,
 } from "../../../components";
 import { Colors } from "../../../styles";
-import CYEPRO from "../../../assets/images/cy.png";
-import HISTORY_LOC from "../../../assets/images/cyOld.png";
+import CYEPRO from "../../../assets/images/cyepro-tick.svg";
+import HISTORY_LOC from "../../../assets/images/cyepro-add.svg";
 import MapView, {
   Marker,
   Polyline,
@@ -32,6 +32,7 @@ import { IconButton } from "react-native-paper";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import moment from "moment";
 import { getDistanceBetweenTwoPoints } from "../../../service";
+import { G, Path, Svg } from "react-native-svg";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
@@ -45,6 +46,8 @@ const GeolocationMapScreen = ({ route }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [data, setData] = useState([]);
   const [distance, setDistance] = useState([]);
+  const [startAddress, setStartAddress] = useState("");
+  const [endAddress, setEndAddress] = useState("");
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -105,7 +108,19 @@ const GeolocationMapScreen = ({ route }) => {
             )
           );
         }
-        // console.log(result, sumArray(result));
+        const startNameResponse = await client.get(
+          URL.ADDRESS_NAME(arr[0].latitude, arr[0].longitude)
+        );
+        const startJson = await startNameResponse.json();
+        const endNameResponse = await client.get(
+          URL.ADDRESS_NAME(
+            arr[arr.length - 1].latitude,
+            arr[arr.length - 1].longitude
+          )
+        );
+        const endJson = await endNameResponse.json();
+        setStartAddress(startJson.results[0].formatted_address);
+        setEndAddress(endJson.results[0].formatted_address);
         setDistance(result);
         setLoading(false);
       } else {
@@ -181,6 +196,19 @@ const GeolocationMapScreen = ({ route }) => {
             )
           );
         }
+        const startNameResponse = await client.get(
+          URL.ADDRESS_NAME(arr[0].latitude, arr[0].longitude)
+        );
+        const startJson = await startNameResponse.json();
+        const endNameResponse = await client.get(
+          URL.ADDRESS_NAME(
+            arr[arr.length - 1].latitude,
+            arr[arr.length - 1].longitude
+          )
+        );
+        const endJson = await endNameResponse.json();
+        setStartAddress(startJson.results[0].formatted_address);
+        setEndAddress(endJson.results[0].formatted_address);
         setDistance(result);
         setLoading(false);
       } else {
@@ -202,7 +230,7 @@ const GeolocationMapScreen = ({ route }) => {
   function diff_minutes(dt2, dt1) {
     var diff = (dt2.getTime() - dt1.getTime()) / 1000;
     diff /= 60;
-    // console.log(parseFloat(diff).toFixed(2));
+
     return Math.abs(parseFloat(diff).toFixed(2));
   }
 
@@ -212,6 +240,71 @@ const GeolocationMapScreen = ({ route }) => {
     { latitude: 37.38009618, longitude: -122.15169624 },
     { latitude: 37.38409618, longitude: -122.15469624 },
   ];
+
+  const addIcon = () => {
+    return (
+      <Svg
+        width="30px"
+        height="30px"
+        // viewBox="0 0 40 56"
+        viewBox="0 0 24 24"
+        // fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        // fill="#FFF"
+        // opacity="0.6"
+      >
+        <G opacity="0.4">
+          <Path
+            d="M9.25 11H14.75"
+            stroke="#292D32"
+            stroke-width="1.5"
+            stroke-linecap="round"
+          />
+          <Path
+            d="M12 13.75V8.25"
+            stroke="#292D32"
+            stroke-width="1.5"
+            stroke-linecap="round"
+          />
+        </G>
+        <Path
+          d="M3.61971 8.49C5.58971 -0.169998 18.4197 -0.159997 20.3797 8.5C21.5297 13.58 18.3697 17.88 15.5997 20.54C13.5897 22.48 10.4097 22.48 8.38971 20.54C5.62971 17.88 2.46971 13.57 3.61971 8.49Z"
+          stroke="#292D32"
+          stroke-width="1.5"
+        />
+      </Svg>
+    );
+  };
+
+  const tickIcon = () => {
+    return (
+      <Svg
+        width="30px"
+        height="30px"
+        // viewBox="0 0 40 56"
+        viewBox="0 0 24 24"
+        // fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        // fill="#FFF"
+        // opacity="0.6"
+      >
+        <Path
+          d="M3.61971 8.49C5.58971 -0.169998 18.4197 -0.159997 20.3797 8.5C21.5297 13.58 18.3697 17.88 15.5997 20.54C13.5897 22.48 10.4097 22.48 8.38971 20.54C5.62971 17.88 2.46971 13.57 3.61971 8.49Z"
+          stroke="#292D32"
+          stroke-width="1.5"
+        />
+        <Path
+          opacity="0.4"
+          d="M9.25 11.5L10.75 13L14.75 9"
+          stroke="#292D32"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </Svg>
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <DatePickerComponent
@@ -253,32 +346,62 @@ const GeolocationMapScreen = ({ route }) => {
                 key={`marker-${index}`}
                 coordinate={marker}
                 tracksViewChanges={false}
-                style={{
-                  height: 15,
-                  width: 15,
-                  // padding:5,
-                  // flex:1
-                }}
-                image={index === coordinates.length - 1 ? CYEPRO : HISTORY_LOC}
+                // icon={require("../../../assets/images/cyepro-tick.svg")}
+                // style={{
+                //   height: 15,
+                //   width: 15,
+                //   // padding:5,
+                //   // flex:1
+                // }}
+                // image={index === coordinates.length - 1 ? CYEPRO : HISTORY_LOC}
                 // title={marker}
                 // description={}
               >
-                  {/* <Image
-                    source={
-                      index === coordinates.length - 1 ? CYEPRO : HISTORY_LOC
-                    }
-                    style={{
-                      height: 20,
-                      width: 20,
-                    }}
+                <View
+                  style={{ width: 33, height: Platform.OS === "ios" ? 59 : 37 }}
+                >
+                  {addIcon()}
+                </View>
+                {/* <Svg width={40} height={30}>
+                  <Image
+                    source={require("../../../assets/images/cyepro-tick.svg")}
+                    // style={{
+                    //   height: 20,
+                    //   width: 20,
+                    // }}
                     resizeMode="contain"
-                  /> */}
+                  />
+                </Svg> */}
               </Marker.Animated>
             ))}
           </MapView>
         )}
       </View>
       <View style={styles.bottomView}>
+        {/* <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-around",
+            marginBottom: 15,
+          }}
+        >
+          <View style={{ width: "15%" }}>
+            <Text style={{ ...styles.columnsTitle, marginVertical: 15 }}>
+              {"Start"}
+            </Text>
+            <Text style={{ ...styles.columnsTitle, marginVertical: 15 }}>
+              {"Goal"}
+            </Text>
+          </View>
+          <View style={{ width: "85%" }}>
+            <Text style={{ ...styles.valueTxt, marginVertical: 15 }}>
+              {startAddress}
+            </Text>
+            <Text style={{ ...styles.valueTxt, marginVertical: 15 }}>
+              {endAddress}
+            </Text>
+          </View>
+        </View> */}
         <View style={styles.tableRow}>
           <View style={styles.colums}>
             <View style={styles.innerRow}>
@@ -375,6 +498,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
+    // bottom: "40%",
     bottom: "30%",
     justifyContent: "flex-end",
     alignItems: "center",
@@ -415,6 +539,7 @@ const styles = StyleSheet.create({
   },
   bottomView: {
     flex: 1,
+    // top: "67%",
     top: "80%",
     width: "85%",
     alignSelf: "center",

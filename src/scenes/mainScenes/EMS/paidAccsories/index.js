@@ -76,8 +76,8 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
         return (
           innerItem.accessoriesName === item.partName &&
           Number(innerItem.amount) === Number(item.cost) &&
-          innerItem?.dmsAccessoriesType === item.item 
-          // && innerItem?.id === item.id
+          innerItem?.dmsAccessoriesType === item.item && 
+          innerItem?.id === item.id
         );
       });
 
@@ -149,7 +149,7 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
         allData = allData.concat(JSON.parse(selectedData));
       }
     });
-    console.log("allData==========>: ", JSON.stringify(allData));
+   
     if (fromScreen ==="PROFORMA"){
       navigation.navigate({
         name: AppNavigator.EmsStackIdentifiers.ProformaScreen,
