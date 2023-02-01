@@ -459,6 +459,7 @@ const MainParamScreen = ({ route, navigation }) => {
       let employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
       );
+      console.log(selectedUser?.id ,selectedUser?.recordId , ownData?.id);
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
         let payload = {
