@@ -2816,13 +2816,12 @@ const TargetScreen = ({ route }) => {
                                 style={{
                                   padding: 2,
                                   textDecorationLine:
-                                    selector.receptionistData
-                                      .totalDroppedCount > 0
+                                    selector.receptionistData.totalLostCount > 0
                                       ? "underline"
                                       : "none",
                                 }}
                               >
-                                {selector.receptionistData.totalDroppedCount}
+                                {selector.receptionistData.totalLostCount}
                               </Text>
                             </View>
                           </View>
