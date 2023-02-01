@@ -98,10 +98,13 @@ const ListComponent = ({ route, navigation }) => {
   useEffect(() => {
     if (isFocused) {
       if (route.params) {
+       
         if (route.params?.from) {
+          
           dispatch(updateCurrentScreen(route.params.from));
         }
         if (homeSelector.isTeamPresent && !homeSelector.isDSE) {
+         
           setIndex(1);
           changeTab(1);
         }
@@ -117,6 +120,7 @@ const ListComponent = ({ route, navigation }) => {
         );
         setIsOpenFilter(false);
       } else {
+        
         initialTask(selectedFilter);
       }
     }
@@ -183,8 +187,9 @@ const ListComponent = ({ route, navigation }) => {
     initialTask(selectedFilter);
   }, [index]);
 
-  const initialTask = async (selectedFilterLocal) => {
-    
+  const initialTask = async (selectedFilterLocal,fromClick) => {
+    console.log("manthan selecccc ", selectedFilterLocal);
+    console.log("manthan selecccc fromClick", fromClick);
     try {
       const employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -838,6 +843,40 @@ const ListComponent = ({ route, navigation }) => {
             });
           }
         } else if (route.params.from === "CLOSED") {
+        
+          if (homeSelector.filterIds?.startDate && homeSelector.filterIds.endDate) {
+           
+            startDate = await homeSelector.filterIds?.startDate ? homeSelector.filterIds?.startDate : startDate;
+            endDate = await homeSelector.filterIds?.endDate ? homeSelector.filterIds?.endDate : endDate
+          }
+          if (fromClick !== undefined && fromClick === true){
+            if (selectedFilterLocal === "TODAY") {
+              startDate = currentDate;
+              endDate = currentDate;
+            } else if (selectedFilterLocal === "MONTH") {
+              startDate = moment(currentDate, dateFormat)
+                .subtract(0, "months")
+                .startOf("month")
+                .format(dateFormat);
+              endDate = moment(currentDate, dateFormat)
+                .subtract(0, "months")
+                .endOf("month")
+                .format(dateFormat);
+            } else if (selectedFilterLocal === "WEEK") {
+              var curr = new Date(); // get current date
+              var first = curr.getDate() - curr.getDay(); // First day is the day of the month - the day of the week
+              var last = first + 6; // last day is the first day + 6
+              var firstday = new Date(curr.setDate(first)).toUTCString();
+              var lastday = new Date(curr.setDate(last)).toUTCString();
+              startDate = moment(firstday).format(dateFormat);
+              endDate = moment(lastday).format(dateFormat);
+            }
+          }
+          console.log("manthaneeeeee startDate ", startDate);
+          console.log("manthaneeeeee index ", endDate);
+          
+
+
           if (index === 0) {
             let payload = {};
             if (selectedFilterLocal !== "ALL") {
@@ -1623,7 +1662,7 @@ const ListComponent = ({ route, navigation }) => {
               ]}
               onPress={() => {
                 if (selectedFilter !== "TODAY") {
-                  initialTask("TODAY");
+                  initialTask("TODAY",true);
                 }
                 removeIsAllFilter();
                 setSelectedFilter("TODAY");
@@ -1649,7 +1688,7 @@ const ListComponent = ({ route, navigation }) => {
               ]}
               onPress={() => {
                 if (selectedFilter !== "WEEK") {
-                  initialTask("WEEK");
+                  initialTask("WEEK", true);
                 }
                 removeIsAllFilter();
                 setSelectedFilter("WEEK");
@@ -1675,7 +1714,7 @@ const ListComponent = ({ route, navigation }) => {
               ]}
               onPress={() => {
                 if (selectedFilter !== "MONTH") {
-                  initialTask("MONTH");
+                  initialTask("MONTH", true);
                 }
                 removeIsAllFilter();
                 setSelectedFilter("MONTH");
@@ -1701,7 +1740,7 @@ const ListComponent = ({ route, navigation }) => {
               ]}
               onPress={() => {
                 if (selectedFilter !== "ALL") {
-                  initialTask("ALL");
+                  initialTask("ALL", true);
                 }
                 removeIsAllFilter();
                 setSelectedFilter("ALL");
