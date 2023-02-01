@@ -779,6 +779,239 @@ export const ProformaComp = ({
     showDropDownModelMethod("SELECTPERFORMA", "Select Proforma")
   }
 
+  const downloadPdf3 = async (from) => {
+     
+    try {
+      let siteTypeName =
+        (await '<body style="padding:0; margin:0;">') +
+        '<div style="border-left: 10px solid #FF156B; padding: 25px; font-family: Arial, Helvetica, sans-serif; ">' +
+        '<div style="padding-bottom:30px;">' +
+        // '<img width="100" height="100" src="http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com/assets/media/logos/Automate-Final-Logo.jpg">'+
+        '</div>' +
+        '<table style="width:100%;" border="1" cellpadding="4" cellspacing="0" bordercolor="#ddd">' +
+        '<tr>' +
+        '<td colspan="4" style="background-color: #4d4f51; font-size: 16px; color: #fff !important; text-align:center;">' +
+        '<strong>PROFORMA INVOICE</strong></td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td colspan="2" rowspan="5">' +
+        '<table style="width:100%;">' +
+        '<tr>' +
+        '<td width="120px" style="text-align:center;">' +
+        '<img  style="max-width:100%;" src=' +
+        selector.proforma_logo +
+        ">" +
+        '</td>' +
+        '<td  style="border-left:1px solid #ddd; padding-left:20px;">' +
+        '<div>'+
+      selector.proforma_orgName +'</div>' +
+        '<div > GSTN: ' +
+        selector.proforma_gstnNumber + '</div>' +
+        '<div>' + selector.proforma_houseNo + '</div>' +
+        '<div >' + selector.profprma_street + '</div>' +
+        '<div >' + selector.proforma_branch + '</div>' +
+        '<div >' + selector.proforma_city + selector.proforma_pincode + '</div>' +
+        '<div >' + selector.proforma_state + '</div>' +
+        '</td>' +
+        '</tr>' +
+        '</table>' +
+
+        '</td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td>PROFORMA NO :</td>' +
+        '<td> ' + proformaNo +' </td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td>DATE</td>' +
+        '<td>' + selectedDate + '</td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td>PAN NO :</td>' +
+        '<td style="text-transform: uppercase"> ' + selector.pan_number + '</td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td>GST NO :</td>' +
+        '<td style="text-transform: uppercase">' + selector.proforma_gstnNumber + '</td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td colspan="4" style="text-align:center;"><strong>' + carModel + " " + "Model" + " " + carVariant + '</strong></td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td colspan="4" style="text-align:center;"><strong>' + carColor +'</strong></td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td width="25%"><strong>PARTICULARS</strong></td>' +
+        '<td style="text-align: right" width="25%"><strong>AMOUNT</strong></td>' +
+        '<td width="25%"><strong>DISCOUNT</strong></td>' +
+        '<td style="text-align: right;" width="25%"><strong>AMOUNT</strong></td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td width="25%">Ex-Showroom Price</td>' +
+        '<td width="25%" style="text-align: right;"> ' + priceInfomationData.ex_showroom_price.toString() + ' </td>' +
+        '<td width="25%">Consumer Offer</td>' +
+        '<td width="25%" style="text-align: right;"> ' + selector.consumer_offer.toString() + ' </td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td width="25%">Life Tax</td>' +
+        '<td width="25%" style="text-align: right;"> ' + lifeTaxAmount.toString() + '</td>' +
+        '<td width="25%">Exchange Offer</td>' +
+        '<td width="25%" style="text-align: right;">' + selector.exchange_offer.toString() + ' </td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td>Registration Charges</td>' +
+        '<td style="text-align: right;">  ' + `${selectedRegistrationCharges?.cost ? selectedRegistrationCharges?.cost : "0.00"}`
+        + '  </td>' +
+        '<td width="25%">Corporate Offer</td>' +
+        '<td width="25%" style="text-align: right;"> ' + selector.corporate_offer.toString() + ' </td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td>Insurance ()</td>' +
+        '<td style="text-align: right;"> ' + selectedInsurencePrice.toString() + ' </td>' +
+        '<td>Promotional Offers</td>' +
+        '<td style="text-align: right;"> ' + selector.promotional_offer.toString() + ' </td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td>Add-on Insurance</td>' +
+        '<td style="text-align: right;">' + selectedAddOnsPrice.toString() + ' </td>' +
+        '<td>Cash Discount</td>' +
+        '<td style="text-align: right;">' + selector.cash_discount.toString() + ' </td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td>Warranty ()</td>' +
+        '<td style="text-align: right;"> ' + selectedWarrentyPrice.toString() + ' </td>' +
+        '<td>FOC Accessories</td>' +
+        '<td style="text-align: right;"> ' + selector.for_accessories.toString() + ' </td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td>Handling Charges:</td>' +
+        '<td style="text-align: right;"> ' + `${handlingChargSlctd ? priceInfomationData.handling_charges.toFixed(2) : 0}` + '</td>' +
+        '<td>Insurance Discount</td>' +
+        '<td style="text-align: right;"> ' + selector.insurance_discount.toString() + ' </td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td>Essential Kit:</td>' +
+        '<td style="text-align: right;">' + `${essentialKitSlctd ? priceInfomationData.essential_kit.toFixed(2) : 0}` + '</td>' +
+        '<td>Accessories Discount</td>' +
+        '<td style="text-align: right;"> ' + selector.accessories_discount.toString() + '</td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td>TCS(&gt;10Lakhs -&gt; 1%):</td>' +
+        '<td style="text-align: right;"> ' + tcsAmount.toString() + ' </td>' +
+        '<td>Additional Offer 1</td>' +
+        '<td style="text-align: right;">' + selector.additional_offer_1.toString() + ' </td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td>Paid Accessories:</td>' +
+        '<td style="text-align: right;"> ' + selectedPaidAccessoriesPrice.toString() + ' </td>' +
+        ' <td>Additional Offer 2</td>' +
+        '<td style="text-align: right;">' + selector.additional_offer_2.toString() + '</td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td>Fast Tag</td>' +
+        '<td style="text-align: right;"> ' + `${fastTagSlctd ? priceInfomationData?.fast_tag?.toFixed(2) : 0}` + ' </td>' +
+        '<td></td>' +
+        '<td style="text-align: right;"></td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td>Other Charges</td>' +
+        '<td style="text-align: right;"> 0 </td>' +
+        '<td></td>' +
+        '<td style="text-align: right;"></td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td></td>' +
+        '<td style="text-align: right;"></td>' +
+        '<td></td>' +
+        '<td style="text-align: right;"></td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td class="tCenter" style="background-color: #4d4f51; color: #fff !important;"><strong>NET ON ROAD PRICE</strong></td>' +
+        '<td style="background-color: #4d4f51; color: #fff !important; text-align: right;"><strong>12833</strong></td>' +
+        '<td class="tCenter" style="background-color: #4d4f51; color: #fff !important;"><strong>NET ON ROAD PRICE AFTER DISCOUNT</strong></td>' +
+        '<td style="background-color: #4d4f51; color: #fff !important; text-align: right;"><strong>12833</strong></td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td colspan="4">' +
+        '<p style="text-decoration: underline">TERMS AND CONDITIONS</p>' +
+                           
+        '</td>' +
+        '</tr>' +
+        '</table>' +
+        '<div style="text-align: right; padding-top:20px;">' +
+        '<div style="padding-bottom:30px;"><b>For, PPS Jeep</b></div>' +
+        '<div> <b>Authorised Signatory</b></div>' +
+        '</div>' +
+        '</div>' +
+        '</body>';
+
+
+      let bottomPitch =
+        (await '<div style="padding-top:10px;" >') +
+        "<p>" +
+        "Thank you for using our LED Savings Calculator. Energy Lighting Services is based in Nashville, Tennessee, and has been retrofitting commercial buildings all over North America with LED lighting systems since 2010. We would be honored to help you with your project needs.Please reach out to us if you have any questions.www.energylightingservices.com  855.270.3300  info@elsco.org" +
+        "<p>" +
+        "</div>";
+      let finalHtmlText = await siteTypeName;
+      let directoryPath = "";
+      if (Platform.OS === "android") {
+        directoryPath = "Download";
+      }
+      else {
+        directoryPath = "Documents";
+      }
+      let options = {
+        html: finalHtmlText,
+        fileName: 'ProformaInvoice' + `${selectedProformaID}`,
+        directory: directoryPath,
+      };
+      let file = await RNHTMLtoPDF.convert(options);
+      var PdfData = await RNFS.readFile(file.filePath, "base64").then();
+
+      // RNFS.copyFile(file.filePath + "/ProformaInvoice.pdf", RNFS.DocumentDirectoryPath + "/ProformaInvoice2.pdf")
+
+
+      // downloadInLocal(file.filePath);
+      if (from === "email") {
+        await Mailer.mail(
+          {
+            subject: "Invoice",
+            //  recipients: ['radhadevi8958@gmail.com'],
+            body: "",
+            attachments: [
+              {
+                path: file.filePath, // The absolute path of the file from which to read data.
+                type: "pdf", // Mime Type: jpg, png, doc, ppt, html, pdf
+                name: "ProformaInvoice.pdf", // Optional: Custom filename for attachment
+              },
+            ],
+          },
+          (error, event) => {
+            if (error) {
+              AlertIOS.alert(
+                "Error",
+                "Could not send mail. Please send a mail to support@example.com"
+              );
+            }
+          }
+        );
+      }
+
+      // alert(file.filePath);
+      Alert.alert(
+        'File Downloaded to following location',
+        `${file.filePath}`, // <- this part is optional, you can pass an empty string
+        [
+          { text: 'OK', onPress: () => console.log('OK Pressed') },
+        ],
+        { cancelable: false },
+      );
+    } catch (error) {
+
+      alert(error);
+    }
+  };
+
   const downloadPdf2 = async (from) => {
 
     try {
@@ -3746,7 +3979,7 @@ export const ProformaComp = ({
                   // style={{ width: '30%', marginRight: 10 }}
                   color={Colors.PINK}
                   labelStyle={{ textTransform: "none" }}
-                  onPress={() => downloadPdf2("downlaod")}>
+                  onPress={() => downloadPdf3("downlaod")}>
                   Download
                 </Button>
                 <Button
@@ -3755,7 +3988,7 @@ export const ProformaComp = ({
                   // style={{ width: '30%', }}
                   color={Colors.PINK}
                   labelStyle={{ textTransform: "none" }}
-                  onPress={() => downloadPdf2("email")}>
+                  onPress={() => downloadPdf3("email")}>
                   Email
                 </Button>
               </View>}
