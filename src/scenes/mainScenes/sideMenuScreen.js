@@ -59,6 +59,7 @@ import { setBranchId, setBranchName } from "../../utils/helperFunctions";
 import { myTaskClearState } from "../../redux/mytaskReducer";
 import Snackbar from "react-native-snackbar";
 import NetInfo from "@react-native-community/netinfo";
+import { notificationClearState } from "../../redux/notificationReducer";
 
 const screenWidth = Dimensions.get("window").width;
 const profileWidth = screenWidth / 6;
@@ -453,6 +454,7 @@ const SideMenuScreen = ({ navigation }) => {
     dispatch(clearState());
     dispatch(clearState());
     dispatch(myTaskClearState());
+    dispatch(notificationClearState());
     dispatch(clearEnqState());
     dispatch(clearLeadDropState());
     signOut();

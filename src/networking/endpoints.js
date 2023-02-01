@@ -257,7 +257,10 @@ const URL = {
     );
   },
   GET_CUSTOMER_TYPES: (orgId) => {
-    return sales_url + `/master-data/customertype/${orgId}`;
+    return dfGetAll + `/${orgId}/%22Active%22/${orgId}/costomerType`;
+  },
+   GET_ENQUIRY_TYPE: (orgId) => {
+    return dfGetAll + `/${orgId}/%22Active%22/${orgId}/enquerySegment`;
   },
   DROP_ENQUIRY: () => sales_url + "/lead-drop",
   UPLOAD_DOCUMENT: () => sales_url + "/documents",
