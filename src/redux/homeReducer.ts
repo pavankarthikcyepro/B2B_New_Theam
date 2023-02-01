@@ -1373,7 +1373,7 @@ export const homeSlice = createSlice({
           totalDroppedCount: dataObj.totalDroppedCount,
           contactsCount: dataObj.contactsCount,
           enquirysCount: dataObj.enquirysCount,
-          totalLostCount: 0,
+          totalLostCount: dataObj.totalLostCount,
         };
       })
       .addCase(getReceptionistData.rejected, (state, action) => {})
@@ -1388,7 +1388,7 @@ export const homeSlice = createSlice({
           totalDroppedCount: dataObj.totalDroppedCount,
           contactsCount: dataObj.contactsCount,
           enquirysCount: dataObj.enquirysCount,
-          totalLostCount: 0,
+          totalLostCount: dataObj.totalLostCount,
         };
       })
       .addCase(getReceptionistManagerData.rejected, (state, action) => {})
