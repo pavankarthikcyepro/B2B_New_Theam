@@ -302,11 +302,16 @@ const URL = {
   },
 
   GET_TEST_HISTORY_COUNT: (universalId) => {
-    return sales_url + `/task-history/get-count-audit?customerId=${universalId}`;
+    return (
+      sales_url + `/task-history/get-count-audit?customerId=${universalId}`
+    );
   },
 
   GET_TEST_HISTORY_DETAILS: (universalId) => {
-    return sales_url + `/task-history/get-testdrive-history?customerId=${universalId}`;
+    return (
+      sales_url +
+      `/task-history/get-testdrive-history?customerId=${universalId}`
+    );
   },
 
   GET_TEST_DRIVE_VEHICLES: (branchId, orgId) => {
@@ -595,7 +600,7 @@ const URL = {
   GET_EMPLOYEE_DETAILS: (orgId, branchId, deptId, desigId) => {
     return `${getEmployeeData}?orgId=${orgId}&branchId=${branchId}&deptId=${deptId}&desigId=${desigId}`;
   },
-  GET_LEADERBOARD_DATA: (orgId,branchId) => {
+  GET_LEADERBOARD_DATA: (orgId, branchId) => {
     return getLeaderBoardData + "/org/" + orgId + "/branch/" + branchId;
   },
   GET_LEADERBOARD_DATA_branch: (orgId, branchId) => {
@@ -631,6 +636,8 @@ const URL = {
   UPDATE_TEAM_TARGET_PARAMS: () => {
     return `${salesGap}/target-update`;
   },
+  EVENT_DASHBOARD: () =>
+    `${dashboard}/v2/get_target_params_events`,
   MODEL_SOURCE_SELF: () =>
     `${dashboard}/v2/get_target_params_for_emp_model_source`,
   GET_LIVE_LEADS_MODEL_SOURCE_SELF: () =>
@@ -740,9 +747,9 @@ const URL = {
   CALL_DEALLOCATE: (empId) => {
     return roleManagement_url + "/dms/emp-update/" + empId;
   },
-  ADDRESS_NAME:(lat,long)=>{
+  ADDRESS_NAME: (lat, long) => {
     return `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${long}&key=${GoogleMapKey}`;
-  }
+  },
 };
 
 // bankFinancier, incuranceCompany, enqueryCategory, deliveryCheckList, sublostReason

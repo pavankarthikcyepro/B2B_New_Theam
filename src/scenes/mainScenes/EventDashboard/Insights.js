@@ -11,7 +11,10 @@ import { Colors } from "../../../styles";
 import moment from "moment/moment";
 import URL from "../../../networking/endpoints";
 import { useDispatch, useSelector } from "react-redux";
-import { getSourceModelDataForSelf } from "../../../redux/homeReducer";
+import {
+  getEventSourceModel,
+  getSourceModelDataForSelf,
+} from "../../../redux/homeReducer";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
 import { ActivityIndicator, IconButton } from "react-native-paper";
 import { AppNavigator } from "../../../navigations";
@@ -28,7 +31,7 @@ const EventInsights = ({ route, navigation }) => {
     loggedInEmpId: 0,
     headerTitle: 0,
     orgId: 0,
-    type: 'SELF',
+    type: "SELF",
     moduleType: 0,
   };
   const [leadSource, setLeadSource] = useState([]);
@@ -63,9 +66,6 @@ const EventInsights = ({ route, navigation }) => {
   //   }, [navigation]);
 
   useEffect(async () => {
-    // navigation.setOptions({
-    //   title: headerTitle ? headerTitle : "Source/Model",
-    // });
     try {
       let employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -88,18 +88,13 @@ const EventInsights = ({ route, navigation }) => {
           .format(dateFormat);
 
         let payload = {
-          // endDate: monthLastDate,
           endDate: monthLastDate,
           loggedInEmpId: jsonObj.empId,
-          empId: jsonObj.empId,
-          // startDate: monthFirstDate,
           startDate: monthFirstDate,
           levelSelected: null,
+          empId: jsonObj.empId,
           pageNo: 0,
-          size: 100,
-          orgId: jsonObj.orgId,
-          pageNo: 0,
-          selectedEmpId: jsonObj.empId,
+          size: 5,
         };
 
         const urlSelf = URL.MODEL_SOURCE_SELF();
@@ -125,19 +120,8 @@ const EventInsights = ({ route, navigation }) => {
             };
             break;
         }
-        let tempPayload = {
-          orgId: orgId,
-          endDate: moduleType === "live-leads" ? currentDate : monthLastDate,
-          loggedInEmpId: loggedInEmpId,
-          empId: empId,
-          startDate:
-            moduleType === "live-leads" ? "2021-01-01" : monthFirstDate,
-          levelSelected: null,
-          pageNo: 0,
-          size: 100,
-        };
         let key = moduleType !== "live-leads" ? "" : "LIVE-LEADS";
-        dispatch(getSourceModelDataForSelf({ type, payload, key }));
+        dispatch(getEventSourceModel({ type, payload, key }));
       }
     } catch (error) {}
   }, []);
@@ -208,7 +192,7 @@ const EventInsights = ({ route, navigation }) => {
       // getTotal(0);
       setIsLoading(false);
     }
-  }, [selector.sourceModelData,toggleParamsIndex]);
+  }, [selector.sourceModelData, toggleParamsIndex]);
 
   useEffect(() => {
     if (leadSource) {
@@ -508,7 +492,7 @@ const EventInsights = ({ route, navigation }) => {
             )}
           </View>
           <View style={{ flex: 1 }}>
-            {isLoading || isEmpty(leadSource) ? (
+            {isLoading || selector.isLoading ? (
               <ActivityIndicator color={Colors.RED} size={"large"} />
             ) : (
               <ScrollView>
