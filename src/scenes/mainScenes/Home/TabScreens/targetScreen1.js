@@ -2816,13 +2816,12 @@ const TargetScreen = ({ route }) => {
                                 style={{
                                   padding: 2,
                                   textDecorationLine:
-                                    selector.receptionistData
-                                      .totalDroppedCount > 0
+                                    selector.receptionistData.totalLostCount > 0
                                       ? "underline"
                                       : "none",
                                 }}
                               >
-                                {selector.receptionistData.totalDroppedCount}
+                                {selector.receptionistData.totalLostCount}
                               </Text>
                             </View>
                           </View>
@@ -2943,10 +2942,11 @@ const TargetScreen = ({ route }) => {
                                   color:
                                     Math.floor(
                                       (parseInt(
-                                        selector.receptionistData.enquirysCount
+                                        selector.receptionistData.RetailCount
                                       ) /
                                         parseInt(
-                                          selector.receptionistData.RetailCount
+                                          selector.receptionistData
+                                            .enquirysCount
                                         )) *
                                         100
                                     ) > 40
@@ -2965,10 +2965,11 @@ const TargetScreen = ({ route }) => {
                                   ? 0
                                   : Math.round(
                                       (parseInt(
-                                        selector.receptionistData.enquirysCount
+                                        selector.receptionistData.RetailCount
                                       ) /
                                         parseInt(
-                                          selector.receptionistData.RetailCount
+                                          selector.receptionistData
+                                            .enquirysCount
                                         )) *
                                         100
                                     )}
@@ -3007,6 +3008,7 @@ const TargetScreen = ({ route }) => {
                           <Text style={{ fontSize: 8 }}>ACH</Text>
                           <Text style={{ fontSize: 8 }}>TGT</Text>
                         </View>
+                        {/* // todo here */}
                         <RenderSelfInsights
                           data={selfInsightsData}
                           type={togglePercentage}

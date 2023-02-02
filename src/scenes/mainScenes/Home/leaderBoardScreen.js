@@ -5,7 +5,7 @@ import * as AsyncStore from '../../../asyncStore';
 import { useDispatch, useSelector } from 'react-redux';
 import { Dropdown } from 'react-native-element-dropdown';
 import ArrowIcon from "react-native-vector-icons/FontAwesome";
-import { getLeaderBoardList } from "../../../redux/homeReducer";
+import { getLeaderBoardList, getLeaderBoardListWithoutFilter } from "../../../redux/homeReducer";
 import { DropDownComponant, LoaderComponent } from '../../../components';
 import moment from 'moment';
 import { showToast } from '../../../utils/toast';
@@ -102,7 +102,8 @@ export default function leaderBoardScreen(props) {
           jsonObj.hrmsRole === "MD" ||
           jsonObj.hrmsRole === "General Manager" ||
           jsonObj.hrmsRole === "Manager" ||
-          jsonObj.hrmsRole === "Sales Manager"
+          jsonObj.hrmsRole === "Sales Manager" ||
+          jsonObj.hrmsRole === "branch manager"
         ) {
           isManager = true;
         }
@@ -232,6 +233,36 @@ export default function leaderBoardScreen(props) {
   }, [selector.leaderboard_list])
 
 
+  const getLeaderboardListFromServerWithoutFilter = async () => {
+
+    var date = new Date();
+    let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    const jsonObj = await JSON.parse(employeeData);
+    // var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+    // var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    const startOfMonth = moment().startOf('month').format('YYYY-MM-DD');
+    const endOfMonth = moment().endOf('month').format('YYYY-MM-DD');
+    // let branName = "";
+    // await AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_NAME).then((branchName) => {
+    //   if (branchName) {
+
+    //     branName = branchName;
+    //   }
+    // });
+    let payload = {
+      "endDate": endOfMonth,
+      "levelSelected": null,
+      "loggedInEmpId":jsonObj.empId,
+      "pageNo": 0,
+      "size": 50,
+      "startDate": startOfMonth,
+      "orgId": jsonObj.orgId,
+      // "branchId": deladerID ? deladerID[0] : branName
+    };
+    // alert(JSON.stringify(payload))
+    dispatch(getLeaderBoardListWithoutFilter(payload));
+  }
+
   const getLeaderboardListFromServer = async (loogedInid, deladerID) => {
    
     var date = new Date();
@@ -266,7 +297,8 @@ export default function leaderBoardScreen(props) {
     LogBox.ignoreAllLogs();
     // alert(JSON.stringify(topRankList))
     // if(topRankList && topRankList.length > 1)
-    getLeaderboardListFromServer();
+    // getLeaderboardListFromServer();
+    getLeaderboardListFromServerWithoutFilter();
 
     let top = selector.leaderboard_list;
     let bottom = [];

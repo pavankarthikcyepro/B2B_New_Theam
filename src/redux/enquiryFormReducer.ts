@@ -32,6 +32,7 @@ export const getEnquiryDetailsApi = createAsyncThunk(
 
     const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
     const json = await response.json();
+
     if (!response.ok) {
       return rejectWithValue(json);
     }
@@ -180,7 +181,7 @@ export const getLogoNameApi = createAsyncThunk(
       URL.PROFORMA_LOGO_NAME(data.orgId, data.branchId)
     );
     const json = await response.json();
-  
+
     if (!response.ok) {
       return rejectWithValue(json);
     }
@@ -230,7 +231,6 @@ export const postProformaInvoiceDetails = createAsyncThunk(
 export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/getOnRoadPriceAndInsurenceDetailsApi",
   async (payload, { rejectWithValue }) => {
-
     const response = await client.get(
       URL.GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS(
         payload["varientId"],
@@ -274,7 +274,6 @@ export const updateEnquiryDetailsApi = createAsyncThunk(
 export const autoSaveEnquiryDetailsApi = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/autoSaveEnquiryDetailsApi",
   async (payload, { rejectWithValue }) => {
-
     const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
     const json = await response.json();
 
@@ -316,7 +315,6 @@ export const updateRef = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     const response = await client.post(URL.UPDATE_REF(), payload);
     try {
-
       // const json = await response.json();
 
       if (!response.ok) {
@@ -341,6 +339,18 @@ export const dropEnquiryApi = createAsyncThunk(
     const response = await client.post(URL.DROP_ENQUIRY(), payload);
     const json = await response.json();
 
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+export const getEnquiryTypesApi = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/getEnquiryTypesApi",
+  async (orgId, { rejectWithValue }) => {
+    const response = await client.get(URL.GET_ENQUIRY_TYPE(orgId));
+    const json = await response.json();
     if (!response.ok) {
       return rejectWithValue(json);
     }
@@ -383,7 +393,7 @@ export const getTermsAndConditionsOrgwise = createAsyncThunk(
 
     // const response = await client.get(url);
     const json = await response.json();
-    
+
     if (!response.ok) {
       return rejectWithValue(json);
     }
@@ -391,11 +401,9 @@ export const getTermsAndConditionsOrgwise = createAsyncThunk(
   }
 );
 
-
 export const getEventConfigList = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/getEventConfigList",
   async (payload: any, { rejectWithValue }) => {
-
     const customConfig = {
       branchid: payload.branchId,
       orgid: payload.orgId,
@@ -448,15 +456,15 @@ const initialState = {
   maxDate: null,
 
   //Proforma Invoice
-  getTermsNConditions_res:"",
-  getTermsNConditions_res_status:"",
+  getTermsNConditions_res: "",
+  getTermsNConditions_res_status: "",
   proforma_API_respData: "",
   proforma_API_response: "",
-  proforma_listingdata : [],
-  proforma_houseNo : "",
-  proforma_address:"",
-  profprma_street:"",
-  proforma_gstnNumber:"",
+  proforma_listingdata: [],
+  proforma_houseNo: "",
+  proforma_address: "",
+  profprma_street: "",
+  proforma_gstnNumber: "",
   proforma_orgName: "",
   proforma_logo: "",
   proforma_city: "",
@@ -617,8 +625,9 @@ const initialState = {
   // data variables
   enquiry_details_response: null,
   update_enquiry_details_response: null,
-  customer_types_response: null,
+  customer_types_response: [],
   customer_types: null,
+  enquiry_type_list: [],
   isAddressSet: false,
   isOpened: false,
   refNo: "",
@@ -632,9 +641,9 @@ const initialState = {
   for_accessories: "",
   additional_offer_1: "",
   additional_offer_2: "",
-  accessories_discount:"",
-  insurance_discount:"",
-  foc_accessoriesFromServer :"",
+  accessories_discount: "",
+  insurance_discount: "",
+  foc_accessoriesFromServer: "",
   event_list_Config: [],
   event_list_response_Config_status: "",
 };
@@ -652,13 +661,16 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.get_pending_tasks_response_list = [];
 
       state.customer_types_data = [];
+      state.enquiry_segment = "";
+      state.customer_type = ""
       state.enquiry_drop_response_status = "";
       state.get_pending_tasks_response_status = "";
       state.get_pending_tasks_response_list = [];
       state.enquiry_details_response = null;
       state.update_enquiry_details_response = null;
-      state.customer_types_response = null;
+      state.customer_types_response = [];
       state.customer_types = null;
+      state.enquiry_type_list = [];
       state.employee_id = "";
       state.gstin_number = "";
       state.expected_delivery_date = "";
@@ -671,11 +683,11 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.a_reg_no = "";
       // Replacement Buyer
       state.r_reg_no = "";
-      state.regDocumentKey= "",
-      state.regDocumentPath= "",
-      state.insuranceDocumentKey= "",
-      state.insuranceDocumentPath= "",
-      state.r_varient = "";
+      (state.regDocumentKey = ""),
+        (state.regDocumentPath = ""),
+        (state.insuranceDocumentKey = ""),
+        (state.insuranceDocumentPath = ""),
+        (state.r_varient = "");
       state.r_color = "";
       state.r_make = "";
       state.r_model = "";
@@ -709,10 +721,10 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.for_accessories = "";
       state.additional_offer_1 = "";
       state.additional_offer_2 = "";
-      state.accessories_discount = "",
-      state.insurance_discount = "",
-        state.foc_accessoriesFromServer = "",
-        state.event_list_Config = [];
+      (state.accessories_discount = ""),
+        (state.insurance_discount = ""),
+        (state.foc_accessoriesFromServer = ""),
+        (state.event_list_Config = []);
       state.event_list_response_Config_status = "";
     },
     clearState2: (state, action) => {
@@ -723,13 +735,16 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.get_pending_tasks_response_list = [];
 
       state.customer_types_data = [];
+      state.customer_type = ""
+      state.enquiry_segment = "";
       state.enquiry_drop_response_status = "";
       state.get_pending_tasks_response_status = "";
       state.get_pending_tasks_response_list = [];
       state.enquiry_details_response = null;
       state.update_enquiry_details_response = null;
-      state.customer_types_response = null;
+      state.customer_types_response = [];
       state.customer_types = null;
+      state.enquiry_type_list = [];
       state.employee_id = "";
       state.gstin_number = "";
       state.expected_delivery_date = "";
@@ -742,11 +757,11 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.a_reg_no = "";
       // Replacement Buyer
       state.r_reg_no = "";
-      state.regDocumentKey= "",
-      state.regDocumentPath= "",
-      state.insuranceDocumentKey= "",
-      state.insuranceDocumentPath= "",
-      state.r_varient = "";
+      (state.regDocumentKey = ""),
+        (state.regDocumentPath = ""),
+        (state.insuranceDocumentKey = ""),
+        (state.insuranceDocumentPath = ""),
+        (state.r_varient = "");
       state.r_color = "";
       state.r_make = "";
       state.r_model = "";
@@ -791,46 +806,10 @@ const enquiryDetailsOverViewSlice = createSlice({
       switch (key) {
         case "ENQUIRY_SEGMENT":
           state.enquiry_segment = value;
+          let data = state.customer_types_response;
+          let newData = data?.filter((val) => val?.enquiry_segment == value);
+          state.customer_types_data = newData;
           state.customer_type = "";
-
-          // if (state.customer_types_response) {
-          //   state.customer_types_data =
-          //       state.customer_types_response[value.toLowerCase()];
-          // }
-          // state.customer_type_list = CustomerTypesObj21[value.toLowerCase()]
-          if (+orgId == 21) {
-            state.customer_types_data = CustomerTypesObj21[value.toLowerCase()];
-          } else if (+orgId == 22) {
-            state.customer_types_data = CustomerTypesObj22[value.toLowerCase()];
-          } else if (+orgId == 26) {
-            let tmpArr = [];
-            if (value == "Personal") {
-              tmpArr = Object.assign(
-                [],
-                state.customer_types?.personal
-                  ? state.customer_types.personal
-                  : CustomerTypesObj22[value.toLowerCase()]
-              );
-            } else if (value == "Company") {
-              tmpArr = Object.assign(
-                [],
-                state.customer_types?.company
-                  ? state.customer_types.company
-                  : CustomerTypesObj22[value.toLowerCase()]
-              );
-            } else {
-              tmpArr = Object.assign(
-                [],
-                state.customer_types?.commercial
-                  ? state.customer_types.commercial
-                  : CustomerTypesObj22[value.toLowerCase()]
-              );
-            }
-
-            state.customer_types_data = tmpArr;
-          } else {
-            state.customer_types_data = CustomerTypesObj[value.toLowerCase()];
-          }
           break;
         case "CUSTOMER_TYPE":
           state.customer_type = value;
@@ -841,7 +820,7 @@ const enquiryDetailsOverViewSlice = createSlice({
         case "SALUTATION":
           if (state.salutation !== value) {
             const genderData = Gender_Data_Obj[value.toLowerCase()];
-            state.gender = genderData.length > 0 ? genderData[0].name : "";
+            state.gender = genderData?.length > 0 ? genderData[0].name : "";
             state.relation = "";
             state.gender_types_data = genderData;
             state.relation_types_data = Relation_Data_Obj[value.toLowerCase()];
@@ -1610,47 +1589,54 @@ const enquiryDetailsOverViewSlice = createSlice({
         state.enquiry_segment = dmsLeadDto.enquirySegment;
       }
 
-      if (state.customer_types_response && state.enquiry_segment) {
-        state.customer_types_data =
-          state.customer_types_response[state.enquiry_segment.toLowerCase()];
-      }
+      if (state.customer_types_response?.length && state.enquiry_segment) {
+        let data = state.customer_types_response;
+        let newData = data?.filter(
+          (val: any) => val?.enquiry_segment == state.enquiry_segment
+        );
+        state.customer_types_data = newData;
 
-      if (dmsLeadDto.enquirySource && dmsLeadDto.enquirySource != "") {
-        state.source_of_enquiry = dmsLeadDto.enquirySource;
-      }
+        if (dmsLeadDto.enquirySource && dmsLeadDto.enquirySource != "") {
+          state.source_of_enquiry = dmsLeadDto.enquirySource;
+        }
 
-      if (dmsLeadDto.subSource && dmsLeadDto.subSource != "") {
-        state.sub_source_of_enquiry = dmsLeadDto.subSource;
-      }
+        if (dmsLeadDto.subSource && dmsLeadDto.subSource != "") {
+          state.sub_source_of_enquiry = dmsLeadDto.subSource;
+        }
 
-      if (dmsLeadDto.gstNumber && dmsLeadDto.gstNumber != "") {
-        state.gstin_number = dmsLeadDto.gstNumber;
-      }
+        if (dmsLeadDto.gstNumber && dmsLeadDto.gstNumber != "") {
+          state.gstin_number = dmsLeadDto.gstNumber;
+        }
 
-      if (dmsLeadDto.eventCode && dmsLeadDto.eventCode != "") {
-        state.event_code = dmsLeadDto.eventCode;
-      }
+        if (dmsLeadDto.eventCode && dmsLeadDto.eventCode != "") {
+          state.event_code = dmsLeadDto.eventCode;
+        }
 
-      if (
-        dmsLeadDto.dmsExpectedDeliveryDate &&
-        dmsLeadDto.dmsExpectedDeliveryDate != ""
-      ) {
-        const deliveryDate = dmsLeadDto.dmsExpectedDeliveryDate;
-        state.expected_delivery_date = deliveryDate;
-      }
-      if (dmsLeadDto.model && dmsLeadDto.model != "") {
-        state.model = dmsLeadDto.model;
-      }
+        if (
+          dmsLeadDto.dmsExpectedDeliveryDate &&
+          dmsLeadDto.dmsExpectedDeliveryDate != ""
+        ) {
+          const deliveryDate = dmsLeadDto.dmsExpectedDeliveryDate;
+          state.expected_delivery_date = deliveryDate;
+        }
+        if (dmsLeadDto.model && dmsLeadDto.model != "") {
+          state.model = dmsLeadDto.model;
+        }
 
-      if (dmsLeadDto.dmsLeadProducts && dmsLeadDto.dmsLeadProducts.length != 0)
-        state.dmsLeadProducts = dmsLeadDto.dmsLeadProducts;
+        if (
+          dmsLeadDto.dmsLeadProducts &&
+          dmsLeadDto.dmsLeadProducts?.length != 0
+        ) {
+          state.dmsLeadProducts = dmsLeadDto.dmsLeadProducts;
+        }
 
-      // documentType: dmsLeadDto.documentType === null ? '' : dmsLeadDto.documentType,
-      // modeOfPayment: dmsLeadDto.modeOfPayment === null ? '' : dmsLeadDto.modeOfPayment,
+        // documentType: dmsLeadDto.documentType === null ? '' : dmsLeadDto.documentType,
+        // modeOfPayment: dmsLeadDto.modeOfPayment === null ? '' : dmsLeadDto.modeOfPayment,
+      }
     },
     updateDmsAddressData: (state, action) => {
       const dmsAddresses = action.payload;
-      if (dmsAddresses.length == 2) {
+      if (dmsAddresses?.length == 2) {
         dmsAddresses.forEach((address) => {
           if (address.addressType === "Communication") {
             if (address.pincode && address.pincode != "") {
@@ -1775,7 +1761,7 @@ const enquiryDetailsOverViewSlice = createSlice({
       //   ? dataObj.transimmisionType
       //   : "";
       try {
-        if (dmsLeadProducts && dmsLeadProducts.length != 0) {
+        if (dmsLeadProducts && dmsLeadProducts?.length != 0) {
           state.dmsLeadProducts = dmsLeadProducts;
         } else {
           state.dmsLeadProducts = [];
@@ -1843,7 +1829,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     updateCustomerNeedAnalysisData: (state, action) => {
       const dmsLeadScoreCards = action.payload;
       let dataObj: any = {};
-      if (dmsLeadScoreCards.length > 0) {
+      if (dmsLeadScoreCards?.length > 0) {
         dataObj = { ...dmsLeadScoreCards[0] };
       }
       if (
@@ -1922,7 +1908,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     updateAdditionalOrReplacementBuyerData: (state, action) => {
       const dmsExchagedetails = action.payload;
       let dataObj: any = {};
-      if (dmsExchagedetails.length > 0) {
+      if (dmsExchagedetails?.length > 0) {
         dataObj = dmsExchagedetails[0];
       }
       if (dataObj.buyerType === "Additional Buyer") {
@@ -1936,10 +1922,18 @@ const enquiryDetailsOverViewSlice = createSlice({
         dataObj.buyerType === "Exchange Buyer"
       ) {
         state.r_reg_no = dataObj.regNo ? dataObj.regNo : "";
-        state.regDocumentKey = dataObj.regDocumentKey ? dataObj.regDocumentKey : "";
-        state.regDocumentPath = dataObj.regDocumentPath ? dataObj.regDocumentPath : "";
-        state.insuranceDocumentKey = dataObj.insuranceDocumentKey ? dataObj.insuranceDocumentKey : "";
-        state.insuranceDocumentPath = dataObj.insuranceDocumentPath ? dataObj.insuranceDocumentPath : "";
+        state.regDocumentKey = dataObj.regDocumentKey
+          ? dataObj.regDocumentKey
+          : "";
+        state.regDocumentPath = dataObj.regDocumentPath
+          ? dataObj.regDocumentPath
+          : "";
+        state.insuranceDocumentKey = dataObj.insuranceDocumentKey
+          ? dataObj.insuranceDocumentKey
+          : "";
+        state.insuranceDocumentPath = dataObj.insuranceDocumentPath
+          ? dataObj.insuranceDocumentPath
+          : "";
         state.r_make = dataObj.brand ? dataObj.brand : "";
         state.r_model = dataObj.model ? dataObj.model : "";
         state.r_varient = dataObj.varient ? dataObj.varient : "";
@@ -1961,7 +1955,6 @@ const enquiryDetailsOverViewSlice = createSlice({
             "MM-YYYY"
           );
         }
-
 
         state.r_kms_driven_or_odometer_reading = dataObj.kiloMeters
           ? dataObj.kiloMeters
@@ -2032,10 +2025,12 @@ const enquiryDetailsOverViewSlice = createSlice({
       const dmsAttachments = action.payload;
       // state.pan_number = "";
       // state.adhaar_number = "";
-      if (dmsAttachments.length > 0) {
+      if (dmsAttachments?.length > 0) {
         let newArr = [];
         dmsAttachments.forEach((item, index) => {
-          let isAvailableIndex = newArr.findIndex(element => element === item.documentType);
+          let isAvailableIndex = newArr.findIndex(
+            (element) => element === item.documentType
+          );
           if (isAvailableIndex < 0) {
             newArr.push(item.documentType);
             switch (item.documentType) {
@@ -2072,7 +2067,6 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.get_pending_tasks_response_list = [];
     },
     updateAddressByPincode: (state, action) => {
-
       state.village = action.payload.Block || "";
 
       state.mandal = state.mandal ? state.mandal : action.payload.Mandal || "";
@@ -2106,48 +2100,57 @@ const enquiryDetailsOverViewSlice = createSlice({
     updateRefNo: (state, action) => {
       state.refNo = action.payload;
     },
-    setOfferPriceDataForSelectedProforma: (state ,action) =>{
-     
+    setOfferPriceDataForSelectedProforma: (state, action) => {
       let oth_performa_column = action.payload;
-      
-      if(action.payload){
-        state.consumer_offer = oth_performa_column.special_scheme 
-        ? oth_performa_column.special_scheme.toString(): "";
 
-        state.exchange_offer = oth_performa_column.exchange_offers 
-        ? oth_performa_column.exchange_offers.toString(): "";
-      
+      if (action.payload) {
+        state.consumer_offer = oth_performa_column.special_scheme
+          ? oth_performa_column.special_scheme.toString()
+          : "";
+
+        state.exchange_offer = oth_performa_column.exchange_offers
+          ? oth_performa_column.exchange_offers.toString()
+          : "";
+
         state.corporate_offer = oth_performa_column.corporate_offer
-          ? oth_performa_column.corporate_offer.toString() : "";
-        
+          ? oth_performa_column.corporate_offer.toString()
+          : "";
+
         state.promotional_offer = oth_performa_column.promotional_offers
-          ? oth_performa_column.promotional_offers.toString() : "";
+          ? oth_performa_column.promotional_offers.toString()
+          : "";
 
         state.cash_discount = oth_performa_column.cash_discount
-          ? oth_performa_column.cash_discount.toString() : "";
+          ? oth_performa_column.cash_discount.toString()
+          : "";
 
         state.for_accessories = oth_performa_column.foc_accessories
-          ? oth_performa_column.foc_accessories.toString() : "";
+          ? oth_performa_column.foc_accessories.toString()
+          : "";
 
         state.foc_accessoriesFromServer = oth_performa_column.foc_accessories
-          ? oth_performa_column.foc_accessories.toString() : "";
+          ? oth_performa_column.foc_accessories.toString()
+          : "";
 
         state.additional_offer_1 = oth_performa_column.additional_offer1
-          ? oth_performa_column.additional_offer1.toString() : "";
+          ? oth_performa_column.additional_offer1.toString()
+          : "";
 
         state.additional_offer_2 = oth_performa_column.additional_offer2
-          ? oth_performa_column.additional_offer2.toString() : "";
+          ? oth_performa_column.additional_offer2.toString()
+          : "";
 
         state.accessories_discount = oth_performa_column.accessories_discount
-          ? oth_performa_column.accessories_discount.toString() : "";
+          ? oth_performa_column.accessories_discount.toString()
+          : "";
 
         state.insurance_discount = oth_performa_column.insurance_discount
-          ? oth_performa_column.insurance_discount.toString() : "";
+          ? oth_performa_column.insurance_discount.toString()
+          : "";
       }
     },
 
-    clearOfferPriceData: (state,action)=>{
-      
+    clearOfferPriceData: (state, action) => {
       state.consumer_offer = "";
       state.exchange_offer = "";
       state.corporate_offer = "";
@@ -2156,8 +2159,7 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.for_accessories = "";
       state.additional_offer_1 = "";
       state.additional_offer_2 = "";
-      state.accessories_discount = "",
-        state.insurance_discount = ""
+      (state.accessories_discount = ""), (state.insurance_discount = "");
     },
     setOfferPriceDetails: (
       state,
@@ -2208,7 +2210,7 @@ const enquiryDetailsOverViewSlice = createSlice({
       //  state.enquiry_details_response = action.payload.dmsEntity;
       state.enquiry_details_response = action.payload;
       state.isOpened = true;
-      
+
       // }
       state.isLoading = false;
     });
@@ -2223,7 +2225,6 @@ const enquiryDetailsOverViewSlice = createSlice({
       //  state.enquiry_details_response = action.payload.dmsEntity;
       const data = action.payload;
       if (data && data.orgName) {
-       
         state.proforma_orgName = data.orgName;
         state.proforma_logo = data.url;
         state.proforma_branch = data.branchName;
@@ -2241,15 +2242,13 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.isLoading = false;
     });
 
-
     builder.addCase(getProformaListingDetailsApi.pending, (state) => {
       state.isLoading = true;
       state.proforma_listingdata = [];
     });
     builder.addCase(getProformaListingDetailsApi.fulfilled, (state, action) => {
-      
       const data = action.payload;
-      if(data){
+      if (data) {
         state.proforma_listingdata = data;
       }
       state.isLoading = false;
@@ -2259,8 +2258,6 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.proforma_listingdata = [];
     });
 
-
-    
     builder.addCase(
       getOnRoadPriceAndInsurenceDetailsApi.pending,
       (state, action) => {
@@ -2271,19 +2268,17 @@ const enquiryDetailsOverViewSlice = createSlice({
     builder.addCase(
       getOnRoadPriceAndInsurenceDetailsApi.fulfilled,
       (state, action) => {
-        
-
         if (action.payload) {
           state.vehicle_on_road_price_insurence_details_response =
             action.payload;
-          if (action.payload.insuranceAddOn.length > 0) {
+          if (action.payload.insuranceAddOn?.length > 0) {
             let addOnNames = "",
               price = 0;
 
             action.payload.insuranceAddOn.forEach((element, index) => {
               addOnNames +=
                 element.add_on_price[0].document_name +
-                (index + 1 < action.payload.insuranceAddOn.length ? ", " : "");
+                (index + 1 < action.payload.insuranceAddOn?.length ? ", " : "");
               price += Number(element.add_on_price[0].cost);
             });
             // state.add_on_insurance = addOnNames;
@@ -2303,49 +2298,41 @@ const enquiryDetailsOverViewSlice = createSlice({
       }
     );
     builder.addCase(postProformaInvoiceDetails.pending, (state) => {
-      state.isLoading = true ;
+      state.isLoading = true;
       state.proforma_API_response = "pending";
       state.proforma_API_respData = "";
     });
     builder.addCase(postProformaInvoiceDetails.fulfilled, (state, action) => {
       // if (action.payload.dmsEntity) {
       //  state.enquiry_details_response = action.payload.dmsEntity;
-      if(action.payload){
-     
-        
-
-      if (action.payload && action.payload.crmUniversalId &&
-         action.payload.performa_status ==="ENQUIRYCOMPLETED"){
-
-        showToast("Proforma invoice saved successfully"); 
-        state.proforma_API_response = "ENQUIRYCOMPLETED";
-        state.proforma_API_respData = action.payload;
-
-      } else if (action.payload.performa_status === "SENTFORAPPROVAL"){
-
-        showToast("Proforma invoice sent for approval"); 
-        state.proforma_API_response = "SENTFORAPPROVAL";
-        state.proforma_API_respData = action.payload;
-
-      } else if (action.payload.performa_status === "APPROVED"){
-
-        state.proforma_API_response = "APPROVED";
-        showToast("Proforma invoice approved successfully"); 
-        state.proforma_API_respData = action.payload;
-
-      } else if (action.payload.performa_status === "REJECTED") {
-
-        showToast("Proforma invoice rejected successfully");
-        state.proforma_API_response = "REJECTED";
-        state.proforma_API_respData = action.payload;
-
-      }
+      if (action.payload) {
+        if (
+          action.payload &&
+          action.payload.crmUniversalId &&
+          action.payload.performa_status === "ENQUIRYCOMPLETED"
+        ) {
+          showToast("Proforma invoice saved successfully");
+          state.proforma_API_response = "ENQUIRYCOMPLETED";
+          state.proforma_API_respData = action.payload;
+        } else if (action.payload.performa_status === "SENTFORAPPROVAL") {
+          showToast("Proforma invoice sent for approval");
+          state.proforma_API_response = "SENTFORAPPROVAL";
+          state.proforma_API_respData = action.payload;
+        } else if (action.payload.performa_status === "APPROVED") {
+          state.proforma_API_response = "APPROVED";
+          showToast("Proforma invoice approved successfully");
+          state.proforma_API_respData = action.payload;
+        } else if (action.payload.performa_status === "REJECTED") {
+          showToast("Proforma invoice rejected successfully");
+          state.proforma_API_response = "REJECTED";
+          state.proforma_API_respData = action.payload;
+        }
 
         state.isLoading = false;
         // state.proforma_API_response = "fullfilled";
-    }
-        // showToast("Successfully updated");
-     
+      }
+      // showToast("Successfully updated");
+
       // state.enquiry_details_response = action.payload;
       // state.isOpened = true
       // }
@@ -2353,7 +2340,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     builder.addCase(postProformaInvoiceDetails.rejected, (state, action) => {
       state.isLoading = false;
       state.proforma_API_response = "rejected";
-      state.proforma_API_respData ="";
+      state.proforma_API_respData = "";
     });
     builder.addCase(getEnquiryDetailsApiAuto.pending, (state) => {
       state.isLoading = true;
@@ -2439,59 +2426,35 @@ const enquiryDetailsOverViewSlice = createSlice({
     });
     // Get Customer Types
     builder.addCase(getCustomerTypesApi.pending, (state, action) => {
-      state.customer_types_response = null;
+      state.customer_types_response = [];
       state.customer_types = null;
       state.isLoading = true;
     });
     builder.addCase(getCustomerTypesApi.fulfilled, (state, action) => {
       if (action.payload) {
-        const customerTypes = action.payload;
-        let personalTypes = [];
-        let commercialTypes = [];
-        let companyTypes = [];
-        let personalTypes2 = [];
-        let commercialTypes2 = [];
-        let companyTypes2 = [];
-        customerTypes.forEach((customer) => {
-          const obj = { id: customer.id, name: customer.customerType };
-          if (customer.customerType === "Fleet") {
-            commercialTypes.push(obj);
-          } else if (customer.customerType === "Institution") {
-            companyTypes.push(obj);
-          } else {
-            personalTypes.push(obj);
-          }
-
-          if (customer.enquirySegment === "Personal") {
-            personalTypes2.push(obj);
-          } else if (customer.enquirySegment === "Company") {
-            companyTypes2.push(obj);
-          } else {
-            commercialTypes2.push(obj);
-          }
-        });
-        const obj = {
-          personal: personalTypes,
-          commercial: commercialTypes,
-          company: companyTypes,
-          handicapped: companyTypes,
-        };
-        const obj2 = {
-          personal: personalTypes2,
-          commercial: commercialTypes2,
-          company: companyTypes2,
-          handicapped: companyTypes2,
-        };
-        state.customer_types_response = obj;
-        state.customer_types = obj2;
+        state.customer_types_response = action.payload;
       }
       state.isLoading = false;
     });
     builder.addCase(getCustomerTypesApi.rejected, (state, action) => {
-      state.customer_types_response = null;
+      state.customer_types_response = [];
       state.customer_types = null;
       state.isLoading = false;
     });
+
+    builder.addCase(getEnquiryTypesApi.pending, (state, action) => {
+      state.enquiry_type_list = [];
+      state.isLoading = true;
+    });
+    builder.addCase(getEnquiryTypesApi.fulfilled, (state, action) => {
+      state.enquiry_type_list = action.payload;
+      state.isLoading = false;
+    });
+    builder.addCase(getEnquiryTypesApi.rejected, (state, action) => {
+      state.enquiry_type_list = [];
+      state.isLoading = false;
+    });
+
     //update ref number
     builder.addCase(updateRef.pending, (state, action) => {});
     builder.addCase(updateRef.fulfilled, (state, action) => {});
@@ -2530,8 +2493,7 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.isLoading = false;
     });
 
-
-    // Get event config list 
+    // Get event config list
     builder.addCase(getEventConfigList.pending, (state, action) => {
       state.event_list_Config = [];
       state.event_list_response_Config_status = "pending";
@@ -2587,6 +2549,6 @@ export const {
   updatedmsLeadProduct,
   setOfferPriceDetails,
   setOfferPriceDataForSelectedProforma,
-  clearOfferPriceData, 
+  clearOfferPriceData,
 } = enquiryDetailsOverViewSlice.actions;
 export default enquiryDetailsOverViewSlice.reducer;

@@ -31,6 +31,7 @@ import { IconButton } from "react-native-paper";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import moment from "moment";
 import { getDistanceBetweenTwoPoints } from "../../../service";
+import { G, Path, Svg } from "react-native-svg";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
@@ -43,6 +44,9 @@ const MapScreen = ({ route }) => {
   const [latitude, setLatitude] = useState(0);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [data, setData] = useState([]);
+  const [distance, setDistance] = useState([]);
+  const [startAddress, setStartAddress] = useState("");
+  const [endAddress, setEndAddress] = useState("");
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -67,11 +71,7 @@ const MapScreen = ({ route }) => {
   const getLocation = async (params) => {
     try {
       const response = await client.get(
-        URL.GET_MAP_COORDINATES_BY_ID(
-          params.empId,
-          params.orgId,
-          moment(new Date()).format(dateFormat)
-        )
+        URL.GET_MAP_COORDINATES_BY_ID(params.empId, params.orgId, currentDate)
       );
       const json = await response.json();
 
@@ -96,6 +96,31 @@ const MapScreen = ({ route }) => {
         // setLatitude(latitude / newArr.length);
         // setLongitude(longitude / newArr.length);
         setCoordinates(arr);
+        var result = [];
+        for (var i = 0; i < arr.length - 1; i++) {
+          result.push(
+            getDistanceBetweenTwoPoints(
+              arr[i].latitude,
+              arr[i].longitude,
+              arr[i + 1].latitude,
+              arr[i + 1].longitude
+            )
+          );
+        }
+        const startNameResponse = await client.get(
+          URL.ADDRESS_NAME(arr[0].latitude, arr[0].longitude)
+        );
+        const startJson = await startNameResponse.json();
+        const endNameResponse = await client.get(
+          URL.ADDRESS_NAME(
+            arr[arr.length - 1].latitude,
+            arr[arr.length - 1].longitude
+          )
+        );
+        const endJson = await endNameResponse.json();
+        setStartAddress(startJson.results[0].formatted_address);
+        setEndAddress(endJson.results[0].formatted_address);
+        setDistance(result);
         setLoading(false);
       } else {
         Alert.alert("No data are Available", "", [
@@ -111,6 +136,17 @@ const MapScreen = ({ route }) => {
       setLoading(false);
     }
   };
+
+  function sumArray(array) {
+    const ourArray = array;
+    let sum = 0;
+
+    for (let i = 0; i < ourArray.length; i += 1) {
+      sum += ourArray[i];
+    }
+
+    return sum;
+  }
 
   const getLocationByDate = async (params) => {
     try {
@@ -148,6 +184,31 @@ const MapScreen = ({ route }) => {
         // setLatitude(latitude / newArr.length);
         // setLongitude(longitude / newArr.length);
         setCoordinates(arr);
+        var result = [];
+        for (var i = 0; i < arr.length - 1; i++) {
+          result.push(
+            getDistanceBetweenTwoPoints(
+              arr[i].latitude,
+              arr[i].longitude,
+              arr[i + 1].latitude,
+              arr[i + 1].longitude
+            )
+          );
+        }
+        const startNameResponse = await client.get(
+          URL.ADDRESS_NAME(arr[0].latitude, arr[0].longitude)
+        );
+        const startJson = await startNameResponse.json();
+        const endNameResponse = await client.get(
+          URL.ADDRESS_NAME(
+            arr[arr.length - 1].latitude,
+            arr[arr.length - 1].longitude
+          )
+        );
+        const endJson = await endNameResponse.json();
+        setStartAddress(startJson.results[0].formatted_address);
+        setEndAddress(endJson.results[0].formatted_address);
+        setDistance(result);
         setLoading(false);
       } else {
         setData([]);
@@ -177,6 +238,71 @@ const MapScreen = ({ route }) => {
     { latitude: 37.38009618, longitude: -122.15169624 },
     { latitude: 37.38409618, longitude: -122.15469624 },
   ];
+
+  const addIcon = () => {
+    return (
+      <Svg
+        width="30px"
+        height="30px"
+        // viewBox="0 0 40 56"
+        viewBox="0 0 24 24"
+        // fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        // fill="#FFF"
+        // opacity="0.6"
+      >
+        <G opacity="0.4">
+          <Path
+            d="M9.25 11H14.75"
+            stroke="#292D32"
+            stroke-width="1.5"
+            stroke-linecap="round"
+          />
+          <Path
+            d="M12 13.75V8.25"
+            stroke="#292D32"
+            stroke-width="1.5"
+            stroke-linecap="round"
+          />
+        </G>
+        <Path
+          d="M3.61971 8.49C5.58971 -0.169998 18.4197 -0.159997 20.3797 8.5C21.5297 13.58 18.3697 17.88 15.5997 20.54C13.5897 22.48 10.4097 22.48 8.38971 20.54C5.62971 17.88 2.46971 13.57 3.61971 8.49Z"
+          stroke="#292D32"
+          stroke-width="1.5"
+        />
+      </Svg>
+    );
+  };
+
+  const tickIcon = () => {
+    return (
+      <Svg
+        width="30px"
+        height="30px"
+        // viewBox="0 0 40 56"
+        viewBox="0 0 24 24"
+        // fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        // fill="#FFF"
+        // opacity="0.6"
+      >
+        <Path
+          d="M3.61971 8.49C5.58971 -0.169998 18.4197 -0.159997 20.3797 8.5C21.5297 13.58 18.3697 17.88 15.5997 20.54C13.5897 22.48 10.4097 22.48 8.38971 20.54C5.62971 17.88 2.46971 13.57 3.61971 8.49Z"
+          stroke="#292D32"
+          stroke-width="1.5"
+        />
+        <Path
+          opacity="0.4"
+          d="M9.25 11.5L10.75 13L14.75 9"
+          stroke="#292D32"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </Svg>
+    );
+  };
+  
   return (
     <SafeAreaView style={styles.container}>
       <DatePickerComponent
@@ -214,13 +340,17 @@ const MapScreen = ({ route }) => {
               strokeWidth={4}
             />
             {coordinates.map((marker, index) => (
-              <Marker
-                key={index}
+              <Marker.Animated
+                key={`marker-${index}`}
                 coordinate={marker}
-                image={index === coordinates.length - 1 ? CYEPRO : HISTORY_LOC}
-                // title={marker}
-                // description={}
-              />
+                tracksViewChanges={false}
+              >
+                <View
+                  style={{ width: 33, height: Platform.OS === "ios" ? 59 : 37 }}
+                >
+                  {addIcon()}
+                </View>
+              </Marker.Animated>
             ))}
           </MapView>
         )}
@@ -236,16 +366,17 @@ const MapScreen = ({ route }) => {
               />
               <Text style={styles.columnsTitle}>{"Travel Distance"}</Text>
             </View>
-            {coordinates.length > 0 ? (
+            {distance.length > 0 ? (
               <Text style={styles.valueTxt}>
-                {Math.round(
+                {/* {Math.round(
                   getDistanceBetweenTwoPoints(
                     coordinates[0].latitude,
                     coordinates[0].longitude,
                     coordinates[coordinates.length - 1].latitude,
                     coordinates[coordinates.length - 1].longitude
                   ) || 0
-                )}
+                )} */}
+                {parseFloat(sumArray(distance)).toFixed(2) || 0}
                 {" KM"}
               </Text>
             ) : (
@@ -263,12 +394,12 @@ const MapScreen = ({ route }) => {
             </View>
             {data.length > 0 ? (
               <Text style={styles.valueTxt}>
-                {Math.round(
+                {parseFloat(
                   diff_minutes(
-                    new Date(data[0].updatedtimestamp),
-                    new Date(data[data.length - 1].updatedtimestamp)
+                    new Date(data[data.length - 1].updatedtimestamp),
+                    new Date(data[0].createdtimestamp)
                   )
-                ) || 0}
+                ).toFixed(2) || 0}
                 {" min"}
               </Text>
             ) : (

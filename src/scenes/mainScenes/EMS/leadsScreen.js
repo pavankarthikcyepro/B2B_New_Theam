@@ -35,14 +35,26 @@ import { MyTaskNewItem } from "../MyTasks/components/MyTasksNewItem";
 import { updateIsSearch, updateSearchKey } from "../../../redux/appReducer";
 import { getPreBookingData } from "../../../redux/preBookingReducer";
 import DateRangePicker from "../../../utils/DateRangePicker";
-import {
-  getLeadsList,
-  getMenu,
-  getStatus,
-  getSubMenu,
-} from "../../../redux/leaddropReducer";
+import { getMenu, getStatus, getSubMenu } from "../../../redux/leaddropReducer";
 import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 import Entypo from "react-native-vector-icons/FontAwesome";
+import { getLeadsList } from "../../../redux/enquiryReducer";
+import URL from "../../../networking/endpoints";
+import { client } from "../../../networking/client";
+
+const EmployeesRoles = [
+  "Reception".toLowerCase(),
+  "Tele Caller".toLowerCase(),
+  "CRM".toLowerCase(),
+  "Sales Consultant".toLowerCase(),
+  "TL".toLowerCase(),
+  "Manager".toLowerCase(),
+  "Sales Manager".toLowerCase(),
+  "branch manager".toLowerCase(),
+  "MD".toLowerCase(),
+  "EDP".toLowerCase(),
+  "Field DSE".toLowerCase(),
+];
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().add(0, "day").endOf("month").format(dateFormat);
@@ -50,12 +62,16 @@ const lastMonthFirstDate = moment(currentDate, dateFormat)
   .subtract(0, "months")
   .startOf("month")
   .format(dateFormat);
+const lastMonthLastDate = moment(currentDate, dateFormat)
+  .subtract(0, "months")
+  .endOf("month")
+  .format(dateFormat);
 
 const LeadsScreen = ({ route, navigation }) => {
   const isFocused = useIsFocused();
   const selector = useSelector((state) => state.enquiryReducer);
   const appSelector = useSelector((state) => state.appReducer);
-  const { vehicle_model_list_for_filters, source_of_enquiry_list } =
+  const { vehicle_model_list_for_filters, source_of_enquiry_list, filterIds } =
     useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
   const [vehicleModelList, setVehicleModelList] = useState(
@@ -98,7 +114,13 @@ const LeadsScreen = ({ route, navigation }) => {
   const [defualtLeadStage, setDefualtLeadStage] = useState([]);
   const [defualtLeadStatus, setdefualtLeadStatus] = useState([]);
   const [refreshed, setRefreshed] = useState(false);
-
+  const [userData, setUserData] = useState({
+    empId: 0,
+    empName: "",
+    hrmsRole: "",
+    orgId: 0,
+  });
+  const [stageAccess, setStageAccess] = useState([]);
   const orgIdStateRef = React.useRef(orgId);
   const empIdStateRef = React.useRef(employeeId);
   const fromDateRef = React.useRef(selectedFromDate);
@@ -165,8 +187,26 @@ const LeadsScreen = ({ route, navigation }) => {
       const jsonObj = JSON.parse(employeeData);
       setEmployeeId(jsonObj.empId);
       setOrgId(jsonObj.orgId);
+      setUserData({
+        empId: jsonObj.empId,
+        empName: jsonObj.empName,
+        hrmsRole: jsonObj.hrmsRole,
+        orgId: jsonObj.orgId,
+      });
     }
   }, []);
+
+  useEffect(async () => {
+    try {
+      if (userData.hrmsRole) {
+        const response = await client.get(
+          URL.ROLE_STAGE_ACCESS(userData.hrmsRole)
+        );
+        const json = await response.json();
+        setStageAccess(json);
+      }
+    } catch (error) {}
+  }, [userData]);
 
   const managerFilter = useCallback(
     (newArr) => {
@@ -343,15 +383,17 @@ const LeadsScreen = ({ route, navigation }) => {
   ) => {
     // const type = {enq: "ENQUIRY", bkgAprvl: 'PRE_BOOKING', bkg: 'BOOKING'}
     return {
-      startdate: startDate,
-      enddate: endDate,
+      startdate: selectedFromDate,
+      enddate: selectedToDate,
       model: modelFilters,
       categoryType: categoryFilters,
       sourceOfEnquiry: sourceFilters,
-      empId: empId,
-      status: leadType,
+      empId: employeeId,
+      status: "",
       offset: offSet,
-      limit: 50000,
+      limit: 50,
+      leadStage: defualtLeadStage,
+      leadStatus: defualtLeadStatus,
     };
   };
 
@@ -359,13 +401,16 @@ const LeadsScreen = ({ route, navigation }) => {
     if (selector.isLoadingExtraData) {
       return;
     }
+
     if (employeeId && selector.pageNumber + 1 < selector.totalPages) {
       const payload = getPayloadData(
         employeeId,
         selectedFromDate,
         selectedToDate,
+        "",
         selector.pageNumber + 1
       );
+
       dispatch(getMoreEnquiryList(payload));
     }
   };
@@ -608,11 +653,11 @@ const LeadsScreen = ({ route, navigation }) => {
           // setTempFilterPayload(newArr);
           // onTempFliter(newArr, employeeDetail,);
           // setSubMenu(newArr);
-        //   setLeadsSubMenuFilterDropDownText("ALL");
+          //   setLeadsSubMenuFilterDropDownText("ALL");
           const x =
             item === "Delivery"
               ? path.map((object) => {
-                   return { ...object, checked: true };
+                  return { ...object, checked: true };
                 })
               : path.map((object) => {
                   if (object.subMenu === condition) {
@@ -682,7 +727,7 @@ const LeadsScreen = ({ route, navigation }) => {
   ) => {
     setSearchedData([]);
     setLeadsList([]);
-    setSelectedToDate(moment().add(0, "day").endOf("month").format(dateFormat));
+    // setSelectedToDate(moment().add(0, "day").endOf("month").format(dateFormat));
     setLoader(true);
     const employeeData = await AsyncStore.getData(
       AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -784,9 +829,31 @@ const LeadsScreen = ({ route, navigation }) => {
         isLive = true;
         from = "2021-01-01";
       } else if (route?.params?.param && route?.params?.moduleType == "home") {
-        from = lastMonthFirstDate;
+        // todo
+        if (filterIds?.startDate && filterIds.endDate) {
+          setFromDateState(filterIds.startDate);
+          setToDateState(filterIds.endDate);
+          from = (await filterIds.startDate)
+            ? filterIds.startDate
+            : lastMonthFirstDate;
+          to = (await filterIds.endDate)
+            ? filterIds.endDate
+            : lastMonthLastDate;
+        } else {
+          setFromDateState(lastMonthFirstDate);
+          setToDateState(lastMonthLastDate);
+        }
       } else {
       }
+      if (from) {
+        setSelectedFromDate(from);
+        setSelectedToDate(to);
+      } else {
+        setSelectedFromDate(selectedFromDate);
+        setSelectedToDate(selectedToDate);
+      }
+
+      //todo
       let newPayload = {
         startdate: from ? from : selectedFromDate,
         enddate: to ? to : selectedToDate,
@@ -798,7 +865,7 @@ const LeadsScreen = ({ route, navigation }) => {
           : jsonObj.empId,
         status: "",
         offset: 0,
-        limit: 50000,
+        limit: 50,
         leadStage: leadStages,
         leadStatus: defLeadStatus
           ? defLeadStatus
@@ -810,18 +877,28 @@ const LeadsScreen = ({ route, navigation }) => {
         newPayload,
         isLive,
       };
+
       Promise.all([dispatch(getLeadsList(data))])
         .then((response) => {
           setLoader(false);
-          let newData = response[0].payload?.dmsEntity?.leadDtoPage?.content;
-          setSearchedData(newData);
-          setLeadsList(newData);
+          // let newData = response[0].payload?.dmsEntity?.leadDtoPage?.content;
+          // setSearchedData(newData);
+          // setLeadsList(newData);
         })
         .catch((error) => {
           setLoader(false);
         });
     }
   };
+  useEffect(() => {
+    if (selector.leadList_status === "success") {
+      let newData = selector.leadList;
+      if (newData.length > 0) {
+        setSearchedData(newData);
+        setLeadsList(newData);
+      }
+    }
+  }, [selector.leadList]);
 
   const renderFooter = () => {
     if (!selector.isLoadingExtraData) {
@@ -858,7 +935,8 @@ const LeadsScreen = ({ route, navigation }) => {
   }
 
   const onRefresh = async () => {
-    setSelectedFromDate(lastMonthFirstDate);
+    // setSelectedFromDate(lastMonthFirstDate);
+    // setSelectedToDate(lastMonthLastDate)
     Promise.all([dispatch(getMenu()), dispatch(getStatus())])
       .then(async ([res, res2]) => {
         let path = res.payload;
@@ -892,8 +970,7 @@ const LeadsScreen = ({ route, navigation }) => {
       });
   };
 
-
-  const renderItem = ({item,index}) => {
+  const renderItem = ({ item, index }) => {
     return (
       <>
         <View>
@@ -923,6 +1000,10 @@ const LeadsScreen = ({ route, navigation }) => {
             leadStatus={item.leadStatus}
             leadStage={item.leadStage}
             needStatus={"YES"}
+            stageAccess={stageAccess}
+            onlylead={true}
+            userData={userData.hrmsRole}
+            EmployeesRoles={EmployeesRoles}
             enqCat={item.enquiryCategory}
             onItemPress={() => {
               navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, {
@@ -932,29 +1013,52 @@ const LeadsScreen = ({ route, navigation }) => {
               });
             }}
             onDocPress={() => {
-              let route = AppNavigator.EmsStackIdentifiers.detailsOverview;
-              switch (item.leadStage) {
-                case "BOOKING":
-                  route = AppNavigator.EmsStackIdentifiers.bookingForm;
-                  break;
-                case "PRE_BOOKING":
-                case "PREBOOKING":
-                  route = AppNavigator.EmsStackIdentifiers.preBookingForm;
-                  break;
+              let user = userData.hrmsRole.toLowerCase();
+              if (EmployeesRoles.includes(user)) {
+                if (stageAccess[0]?.viewStage?.includes(item.leadStage)) {
+                  let route = AppNavigator.EmsStackIdentifiers.detailsOverview;
+                  switch (item.leadStage) {
+                    case "BOOKING":
+                      route = AppNavigator.EmsStackIdentifiers.bookingForm;
+                      break;
+                    case "PRE_BOOKING":
+                    case "PREBOOKING":
+                      route = AppNavigator.EmsStackIdentifiers.preBookingForm;
+                      break;
+                  }
+                  navigation.navigate(route, {
+                    universalId: item.universalId,
+                    enqDetails: item,
+                    leadStatus: item.leadStatus,
+                    leadStage: item.leadStage,
+                  });
+                } else {
+                  alert("No Access");
+                }
+              } else {
+                let route = AppNavigator.EmsStackIdentifiers.detailsOverview;
+                switch (item.leadStage) {
+                  case "BOOKING":
+                    route = AppNavigator.EmsStackIdentifiers.bookingForm;
+                    break;
+                  case "PRE_BOOKING":
+                  case "PREBOOKING":
+                    route = AppNavigator.EmsStackIdentifiers.preBookingForm;
+                    break;
+                }
+                navigation.navigate(route, {
+                  universalId: item.universalId,
+                  enqDetails: item,
+                  leadStatus: item.leadStatus,
+                  leadStage: item.leadStage,
+                });
               }
-            
-              navigation.navigate(route, {
-                universalId: item.universalId,
-                enqDetails: item,
-                leadStatus: item.leadStatus,
-                leadStage: item.leadStage,
-              });
             }}
           />
         </View>
       </>
     );
-}
+  };
 
   // const liveLeadsStartDate = route?.params?.moduleType === 'live-leads' ? '2021-01-01' : lastMonthFirstDate;
   const liveLeadsEndDate =
@@ -1062,9 +1166,7 @@ const LeadsScreen = ({ route, navigation }) => {
           />
         </View>
         <Pressable onPress={() => setSortAndFilterVisible(true)}>
-          <View
-            style={styles.filterView}
-          >
+          <View style={styles.filterView}>
             <Text style={styles.text1}>{"Filter"}</Text>
             <IconButton
               icon={"filter-outline"}
@@ -1075,22 +1177,15 @@ const LeadsScreen = ({ route, navigation }) => {
           </View>
         </Pressable>
       </View>
-      <View
-        style={styles.view3}
-      >
+      <View style={styles.view3}>
         <View style={{ width: subMenu?.length > 1 ? "45%" : "100%" }}>
           <Pressable
             onPress={() => {
               setLeadsFilterVisible(true);
             }}
           >
-            <View
-              style={styles.view4}
-            >
-              <Text
-                style={styles.txt1}
-                numberOfLines={2}
-              >
+            <View style={styles.view4}>
+              <Text style={styles.txt1} numberOfLines={2}>
                 {leadsFilterDropDownText}
               </Text>
               <IconButton
@@ -1167,13 +1262,9 @@ const LeadsScreen = ({ route, navigation }) => {
           isLoading={selector.isLoading || loader}
         />
       ) : (
-        <View
-          style={[
-           styles.flatlistView,
-          ]}
-        >
+        <View style={[styles.flatlistView]}>
           <FlatList
-              initialNumToRender={searchedData?.length}
+            initialNumToRender={searchedData?.length}
             data={searchedData}
             extraData={searchedData}
             keyExtractor={(item, index) => index.toString()}
@@ -1186,11 +1277,11 @@ const LeadsScreen = ({ route, navigation }) => {
             }
             showsVerticalScrollIndicator={false}
             onEndReachedThreshold={0}
-            // onEndReached={() => {
-            //     if (appSelector.searchKey === '') {
-            //         getMoreEnquiryListFromServer()
-            //     }
-            // }}
+            onEndReached={() => {
+              if (searchQuery === "") {
+                getMoreEnquiryListFromServer();
+              }
+            }}
             ListFooterComponent={renderFooter}
             renderItem={renderItem}
           />
@@ -1312,7 +1403,7 @@ const styles = StyleSheet.create({
     borderRadius: 100,
   },
 
- filterView: {
+  filterView: {
     flexDirection: "row",
     alignItems: "center",
     borderColor: Colors.BORDER_COLOR,
@@ -1347,5 +1438,9 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "600",
   },
-  flatlistView: { backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10 }
+  flatlistView: {
+    backgroundColor: Colors.LIGHT_GRAY,
+    flex: 1,
+    marginBottom: 10,
+  },
 });

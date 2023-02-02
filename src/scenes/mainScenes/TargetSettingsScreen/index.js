@@ -59,6 +59,9 @@ import {
 import { updateIsTeamPresent } from "../../../redux/homeReducer";
 import { showToast } from "../../../utils/toast";
 import { LoaderComponent } from "../../../components";
+import Orientation from "react-native-orientation-locker";
+import { useIsFocused } from "@react-navigation/native";
+import { useIsDrawerOpen } from "@react-navigation/drawer";
 
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 30) / 2;
@@ -134,9 +137,18 @@ const TargetSettingsScreen = ({ route, navigation }) => {
   const [toDate, setToDate] = useState("");
   const [datePickerId, setDatePickerId] = useState("");
 
-  useEffect(()=>{
+  const isFocused = useIsFocused();
+  const isDrawerOpen = useIsDrawerOpen();
+
+  useEffect(() => {
+    if (isFocused || (isFocused && isDrawerOpen)) {
+      Orientation.unlockAllOrientations();
+    }
+  }, [isFocused, isDrawerOpen]);
+
+  useEffect(() => {
     dispatch(saveFilterPayload(route.params));
-  },[route.params])
+  }, [route.params]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
@@ -194,7 +206,6 @@ const TargetSettingsScreen = ({ route, navigation }) => {
         selectedIds: [],
       };
 
-   
       const dateFormat = "YYYY-MM-DD";
       const currentDate = moment().format(dateFormat);
       let monthArr = [];
@@ -224,7 +235,7 @@ const TargetSettingsScreen = ({ route, navigation }) => {
         pageNo: 1,
         size: 500,
         startDate: monthFirstDate,
-        endDate:monthLastDate
+        endDate: monthLastDate,
         // "targetType": selector.targetType
       };
       if (jsonObj.roles.length > 0) {
@@ -244,7 +255,7 @@ const TargetSettingsScreen = ({ route, navigation }) => {
           dispatch(updateIsTeamPresent(true));
         }
       }
-      
+
       Promise.all([
         dispatch(
           getSpecialDropValue({
@@ -301,9 +312,9 @@ const TargetSettingsScreen = ({ route, navigation }) => {
     });
   };
 
-  const onRefresh =()=>{
+  const onRefresh = () => {
     dispatch(saveFilterPayload({}));
-  }
+  };
 
   return (
     <SafeAreaView style={styles.container}>

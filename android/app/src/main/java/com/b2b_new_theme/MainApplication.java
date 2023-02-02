@@ -1,5 +1,6 @@
 package com.b2b_new_theme;
 
+import org.wonday.orientation.OrientationActivityLifecycle;
 import android.app.Application;
 import android.content.Context;
 import com.facebook.react.PackageList;
@@ -55,6 +56,7 @@ public class MainApplication extends Application implements ReactApplication {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
+    registerActivityLifecycleCallbacks(OrientationActivityLifecycle.getInstance());
   }
 
   /**

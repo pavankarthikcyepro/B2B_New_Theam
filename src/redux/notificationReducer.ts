@@ -32,16 +32,35 @@ export const notificationSlice = createSlice({
     notificationList: [],
     loading: true,
     readNotificationResponseStatus: "",
+    myTaskAllFilter: false,
   },
-  reducers: {},
+  reducers: {
+    setNotificationMyTaskAllFilter: (state, action) => {
+      state.myTaskAllFilter = action.payload;
+    },
+    notificationClearState: (state, action) => {
+      state.notificationList = [];
+      state.loading = true;
+      state.readNotificationResponseStatus = "";
+      state.myTaskAllFilter = false;
+    },
+    notificationReadClearState: (state, action) => {
+      state.readNotificationResponseStatus = "";
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getNotificationList.pending, (state) => {
         state.loading = true;
       })
       .addCase(getNotificationList.fulfilled, (state, action) => {
-        const dataObj = action.payload;
-        state.notificationList = dataObj;
+        const nonReadData = action.payload.filter((item, index) => {
+          return item.isRead == "N";
+        });
+        const readData = action.payload.filter((item, index) => {
+          return item.isRead == "Y";
+        });
+        state.notificationList = [...nonReadData, ...readData];
         state.loading = false;
       })
       .addCase(getNotificationList.rejected, (state, action) => {
@@ -52,7 +71,7 @@ export const notificationSlice = createSlice({
         state.readNotificationResponseStatus = "";
       })
       .addCase(readNotification.fulfilled, (state, action) => {
-        if(action?.payload == 1){
+        if (action?.payload == 1) {
           state.readNotificationResponseStatus = "success";
         }
       })
@@ -62,5 +81,9 @@ export const notificationSlice = createSlice({
   },
 });
 
-export const {} = notificationSlice.actions;
+export const {
+  setNotificationMyTaskAllFilter,
+  notificationClearState,
+  notificationReadClearState,
+} = notificationSlice.actions;
 export default notificationSlice.reducer;

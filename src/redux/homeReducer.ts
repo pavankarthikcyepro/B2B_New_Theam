@@ -534,6 +534,21 @@ export const getLeaderBoardList = createAsyncThunk(
   }
 );
 
+export const getLeaderBoardListWithoutFilter = createAsyncThunk(
+  "HOME/getLeaderBoardListWithoutFilter",
+  async (payload: any, { rejectWithValue }) => {
+    const response = await client.post(
+      URL.GET_DEALER_RANKING_DATA(payload.orgId),
+      payload
+    );
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 export const  getBranchRanksList = createAsyncThunk(
   "HOME/getBranchRanksList",
   async (payload, { rejectWithValue }) => {
@@ -548,7 +563,36 @@ export const  getBranchRanksList = createAsyncThunk(
     return json;
   }
 );
+export const getEventSourceModel = createAsyncThunk(
+  "HOME/getEventSourceModel",
+  async (data: any, { rejectWithValue }) => {
+    const { type, payload, key } = data;
+    const url = URL.EVENT_DASHBOARD();
 
+    const response = await client.post(url, payload);
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+export const getBranchRanksListWithoutFilter = createAsyncThunk(
+  "HOME/getBranchRanksListWithoutFilter",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(
+      URL.GET_TARGET_RANKING(payload.orgId, payload.branchId),
+      payload
+    );
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
 export const getSourceModelDataForSelf = createAsyncThunk(
   "HOME/getSourceModelDataForSelf",
   async (data: any, { rejectWithValue }) => {
@@ -755,6 +799,7 @@ export const homeSlice = createSlice({
       totalDroppedCount: 0,
       contactsCount: 0,
       enquirysCount: 0,
+      totalLostCount:0,
     },
     receptionistModel: [],
     receptionistSource: [],
@@ -767,7 +812,7 @@ export const homeSlice = createSlice({
       empSelected: [],
       allEmpSelected: [],
     },
-    leaderShipFIlterId:[]
+    leaderShipFIlterId: [],
   },
   reducers: {
     dateSelected: (state, action) => {
@@ -858,6 +903,7 @@ export const homeSlice = createSlice({
         totalDroppedCount: 0,
         contactsCount: 0,
         enquirysCount: 0,
+        totalLostCount: 0,
       };
       state.filterIds = {
         startDate: "",
@@ -866,7 +912,7 @@ export const homeSlice = createSlice({
         empSelected: [],
         allEmpSelected: [],
       };
-      state.leaderShipFIlterId=[];
+      state.leaderShipFIlterId = [];
     },
   },
   extraReducers: (builder) => {
@@ -1279,6 +1325,20 @@ export const homeSlice = createSlice({
       .addCase(getLeaderBoardList.rejected, (state, action) => {
         state.isLoading = false;
       })
+
+      .addCase(getLeaderBoardListWithoutFilter.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getLeaderBoardListWithoutFilter.fulfilled, (state, action) => {
+        const dataObj = action.payload;
+        state.leaderboard_list = dataObj ? dataObj : [];
+        if (!dataObj || dataObj.length === 0) showToast("No data available");
+        state.isLoading = false;
+      })
+      .addCase(getLeaderBoardListWithoutFilter.rejected, (state, action) => {
+        state.isLoading = false;
+      })
+
       .addCase(getBranchRanksList.pending, (state) => {
         state.isLoading = true;
       })
@@ -1289,6 +1349,19 @@ export const homeSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(getBranchRanksList.rejected, (state, action) => {
+        state.isLoading = false;
+      })
+
+      .addCase(getBranchRanksListWithoutFilter.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getBranchRanksListWithoutFilter.fulfilled, (state, action) => {
+        const dataObj = action.payload;
+        state.branchrank_list = dataObj ? dataObj : [];
+        if (!dataObj || dataObj.length === 0) showToast("No data available");
+        state.isLoading = false;
+      })
+      .addCase(getBranchRanksListWithoutFilter.rejected, (state, action) => {
         state.isLoading = false;
       })
       .addCase(getSourceModelDataForSelf.pending, (state, action) => {
@@ -1304,6 +1377,19 @@ export const homeSlice = createSlice({
       .addCase(getSourceModelDataForSelf.rejected, (state, action) => {
         state.isLoading = false;
       })
+      .addCase(getEventSourceModel.pending, (state, action) => {
+        state.isLoading = true;
+        state.sourceModelData = [];
+      })
+      .addCase(getEventSourceModel.fulfilled, (state, action) => {
+        state.isLoading = false;
+        if (action.payload) {
+          state.sourceModelData = action.payload;
+        }
+      })
+      .addCase(getEventSourceModel.rejected, (state, action) => {
+        state.isLoading = false;
+      })
       .addCase(getReceptionistData.pending, (state) => {})
       .addCase(getReceptionistData.fulfilled, (state, action) => {
         const dataObj = action.payload;
@@ -1315,6 +1401,7 @@ export const homeSlice = createSlice({
           totalDroppedCount: dataObj.totalDroppedCount,
           contactsCount: dataObj.contactsCount,
           enquirysCount: dataObj.enquirysCount,
+          totalLostCount: dataObj.totalLostCount,
         };
       })
       .addCase(getReceptionistData.rejected, (state, action) => {})
@@ -1329,6 +1416,7 @@ export const homeSlice = createSlice({
           totalDroppedCount: dataObj.totalDroppedCount,
           contactsCount: dataObj.contactsCount,
           enquirysCount: dataObj.enquirysCount,
+          totalLostCount: dataObj.totalLostCount,
         };
       })
       .addCase(getReceptionistManagerData.rejected, (state, action) => {})

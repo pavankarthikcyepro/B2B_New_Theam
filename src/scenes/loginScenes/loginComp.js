@@ -61,16 +61,13 @@ import {
   saveLocation,
 } from "../../networking/endpoints";
 import { client } from "../../networking/client";
-import { setBranchId, setBranchName } from "../../utils/helperFunctions";
+import { getHeight, getWidth, setBranchId, setBranchName } from "../../utils/helperFunctions";
 
 // import { TextInput } from 'react-native-paper';
 const officeLocation = {
   latitude: 37.33233141,
   longitude: -122.0312186,
 };
-
-const ScreenWidth = Dimensions.get("window").width;
-const ScreenHeight = Dimensions.get("window").height;
 
 const LoginScreen = ({ navigation }) => {
   const selector = useSelector((state) => state.loginReducer);
@@ -254,125 +251,175 @@ const LoginScreen = ({ navigation }) => {
         var isBetween = startDate <= now && now <= endDate;
         if (true) {
           // setInterval(() => {
-          const watchID = Geolocation.getCurrentPosition(
-            async (lastPosition) => {
-              let speed =
-                lastPosition?.coords?.speed <= -1
-                  ? 0
-                  : lastPosition?.coords?.speed;
-              const employeeData = await AsyncStore.getData(
-                AsyncStore.Keys.LOGIN_EMPLOYEE
-              );
-              if (employeeData) {
-                const jsonObj = JSON.parse(employeeData);
-                const trackingResponse = await client.get(
-                  getDetailsByempIdAndorgId +
-                    `/${jsonObj.empId}/${jsonObj.orgId}`
-                );
-                const trackingJson = await trackingResponse.json();
+           const watchID = Geolocation.getCurrentPosition(
+             async (lastPosition) => {
+               let speed =
+                 lastPosition?.coords?.speed <= -1
+                   ? 0
+                   : lastPosition?.coords?.speed;
+               const employeeData = await AsyncStore.getData(
+                 AsyncStore.Keys.LOGIN_EMPLOYEE
+               );
+               if (employeeData) {
+                 const jsonObj = JSON.parse(employeeData);
+                 const trackingResponse = await client.get(
+                   getDetailsByempIdAndorgId +
+                     `/${jsonObj.empId}/${jsonObj.orgId}`
+                 );
+                 const trackingJson = await trackingResponse.json();
 
-                var newLatLng = {
-                  latitude: lastPosition.coords.latitude,
-                  longitude: lastPosition.coords.longitude,
-                };
+                 var newLatLng = {
+                   latitude: lastPosition.coords.latitude,
+                   longitude: lastPosition.coords.longitude,
+                 };
+                 if (trackingJson.length > 0) {
+                   // let dist = getDistanceBetweenTwoPoints(
+                   //   officeLocation.latitude,
+                   //   officeLocation.longitude,
+                   //   lastPosition?.coords?.latitude,
+                   //   lastPosition?.coords?.longitude
+                   // );
+                   // if (dist > officeRadius) {
+                   //   // sendAlertLocalNotification();
+                   // } else {
+                   //   // seteReason(false);
+                   // }
+                   let parsedValue =
+                     trackingJson.length > 0
+                       ? JSON.parse(
+                           trackingJson[trackingJson.length - 1].location
+                         )
+                       : [];
 
-                let parsedValue =
-                  trackingJson.length > 0
-                    ? JSON.parse(trackingJson[trackingJson.length - 1].location)
-                    : null;
-                // if (newLatLng && parsedValue) {
-                //   if (
-                //     objectsEqual(newLatLng, parsedValue[parsedValue.length - 1])
-                //   ) {
-                //     return;
-                //   }
-                // }
-                let x = trackingJson;
-                let y = x[x.length - 1].location;
-                let z = JSON.parse(y);
-                let lastlocation = z[z.length - 1];
-                let dist = getDistanceBetweenTwoPoints(
-                  lastlocation.latitude,
-                  lastlocation.longitude,
-                  lastPosition?.coords?.latitude,
-                  lastPosition?.coords?.longitude
-                );
-                let distance = dist * 1000;
+                   let x = trackingJson;
+                   let y = x[x.length - 1].location;
+                   let z = JSON.parse(y);
+                   let lastlocation = z[z.length - 1];
 
-                let newArray = [...parsedValue, ...[newLatLng]];
-                let date = new Date(
-                  trackingJson[trackingJson.length - 1]?.createdtimestamp
-                );
+                   let dist = getDistanceBetweenTwoPoints(
+                     lastlocation.latitude,
+                     lastlocation.longitude,
+                     lastPosition?.coords?.latitude,
+                     lastPosition?.coords?.longitude
+                   );
+                   let distance = dist * 1000;
 
-                let condition =
-                  new Date(date).getDate() == new Date().getDate();
-                if (trackingJson.length > 0 && condition) {
-                  let tempPayload = {
-                    id: trackingJson[trackingJson.length - 1]?.id,
-                    orgId: jsonObj?.orgId,
-                    empId: jsonObj?.empId,
-                    branchId: jsonObj?.branchId,
-                    currentTimestamp: new Date().getTime(),
-                    updateTimestamp: new Date().getTime(),
-                    purpose: "",
-                    location: JSON.stringify(newArray),
-                    kmph: speed.toString(),
-                    speed: speed.toString(),
-                  };
+                   // if (newLatLng && parsedValue) {
+                   //   // if (
+                   //   //   objectsEqual(
+                   //   //     newLatLng,
+                   //   //     parsedValue[parsedValue.length - 1]
+                   //   //   )
+                   //   // ) {
+                   //   //   return;
+                   //   // }
+                   // }
 
-                  if (speed <= 10 && distance > distanceFilterValue) {
-                    // await AsyncStore.storeJsonData(
-                    //   AsyncStore.Keys.COORDINATES,
-                    //   newArray
-                    // );
-                    const response = await client.put(
-                      locationUpdate +
-                        `/${trackingJson[trackingJson.length - 1].id}`,
-                      tempPayload
-                    );
-                    const json = await response.json();
-                  }
-                } else {
-                  let payload = {
-                    id: 0,
-                    orgId: jsonObj?.orgId,
-                    empId: jsonObj?.empId,
-                    branchId: jsonObj?.branchId,
-                    currentTimestamp: new Date().getTime(),
-                    updateTimestamp: new Date().getTime(),
-                    purpose: "",
-                    location: JSON.stringify([newLatLng]),
-                    kmph: speed.toString(),
-                    speed: speed.toString(),
-                  };
-
-                  if (speed <= 10) {
-                    // await AsyncStore.storeJsonData(
-                    //   AsyncStore.Keys.COORDINATES,
-                    //   newArray
-                    // );
-                    const response = await client.post(saveLocation, payload);
-                    const json = await response.json();
-                  }
-                }
-              }
-            },
-            (error) => {
-              // console.error(error);
-            },
-            {
-              enableHighAccuracy: true,
-              // distanceFilter: distanceFilterValue,
-              // timeout: 2000,
-              // maximumAge: 0,
-              interval: 5000,
-              fastestInterval: 2000,
-              accuracy: {
-                android: "high",
-              },
-              // useSignificantChanges :true,
-            }
-          );
+                   let newArray = [...parsedValue, ...[newLatLng]];
+                   let date = new Date(
+                     trackingJson[trackingJson.length - 1]?.createdtimestamp
+                   );
+                   let condition =
+                     new Date(date).getDate() == new Date().getDate();
+                   if (trackingJson.length > 0 && condition) {
+                     let tempPayload = {
+                       id: trackingJson[trackingJson.length - 1]?.id,
+                       orgId: jsonObj?.orgId,
+                       empId: jsonObj?.empId,
+                       branchId: jsonObj?.branchId,
+                       currentTimestamp: new Date().getTime(),
+                       updateTimestamp: new Date().getTime(),
+                       purpose: "",
+                       location: JSON.stringify(newArray),
+                       kmph: speed.toString(),
+                       speed: speed.toString(),
+                     };
+                     if (speed <= 10 && distance > distanceFilterValue) {
+                       // await AsyncStore.storeJsonData(
+                       //   AsyncStore.Keys.COORDINATES,
+                       //   newArray
+                       // );
+                       // if (speed < 10) {
+                       //   setTimeout(async () => {
+                       //     await client.put(
+                       //       locationUpdate +
+                       //         `/${trackingJson[trackingJson.length - 1].id}`,
+                       //       tempPayload
+                       //     );
+                       //   }, 300000);
+                       // }
+                       const response = await client.put(
+                         locationUpdate +
+                           `/${trackingJson[trackingJson.length - 1].id}`,
+                         tempPayload
+                       );
+                       const json = await response.json();
+                     }
+                   } else {
+                     let payload = {
+                       id: 0,
+                       orgId: jsonObj?.orgId,
+                       empId: jsonObj?.empId,
+                       branchId: jsonObj?.branchId,
+                       currentTimestamp: new Date().getTime(),
+                       updateTimestamp: new Date().getTime(),
+                       purpose: "",
+                       location: JSON.stringify([newLatLng]),
+                       kmph: speed.toString(),
+                       speed: speed.toString(),
+                     };
+                     if (speed <= 10) {
+                       // await AsyncStore.storeJsonData(
+                       //   AsyncStore.Keys.COORDINATES,
+                       //   newArray
+                       // );
+                       const response = await client.post(
+                         saveLocation,
+                         payload
+                       );
+                       const json = await response.json();
+                     }
+                   }
+                 } else {
+                   let payload = {
+                     id: 0,
+                     orgId: jsonObj?.orgId,
+                     empId: jsonObj?.empId,
+                     branchId: jsonObj?.branchId,
+                     currentTimestamp: new Date().getTime(),
+                     updateTimestamp: new Date().getTime(),
+                     purpose: "",
+                     location: JSON.stringify([newLatLng]),
+                     kmph: speed.toString(),
+                     speed: speed.toString(),
+                   };
+                   if (speed <= 10) {
+                     // await AsyncStore.storeJsonData(
+                     //   AsyncStore.Keys.COORDINATES,
+                     //   newArray
+                     // );
+                     const response = await client.post(saveLocation, payload);
+                     const json = await response.json();
+                   }
+                 }
+               }
+             },
+             (error) => {
+               // console.error("ssss", error);
+             },
+             {
+               enableHighAccuracy: true,
+               //  distanceFilter: distanceFilterValue,
+               //  timeout: 2000,
+               //  maximumAge: 0,
+               //  interval: 5000,
+               //  fastestInterval: 2000,
+               accuracy: {
+                 android: "high",
+               },
+               // useSignificantChanges: true,
+             }
+           );
           setSubscriptionId(watchID);
           // }, 5000);
         }
@@ -452,13 +499,13 @@ const LoginScreen = ({ navigation }) => {
           <View
             style={{
               width: "100%",
-              height: ScreenHeight * 0.23,
+              height: getHeight(23),
               alignItems: "center",
               justifyContent: "center",
             }}
           >
             <Image
-              style={{ width: 200, height: ScreenHeight * 0.4 }}
+              style={{ width: 200, height: getHeight(40) }}
               resizeMode={"center"}
               source={require("../../assets/images/logo.png")}
             />
@@ -470,7 +517,7 @@ const LoginScreen = ({ navigation }) => {
             position: "absolute",
             paddingHorizontal: 20,
             paddingTop: 30,
-            marginTop: ScreenHeight * 0.18,
+            marginTop: getHeight(18),
             backgroundColor: Colors.WHITE,
             borderTopEndRadius: 4,
           }}
@@ -521,7 +568,7 @@ const LoginScreen = ({ navigation }) => {
           </Pressable> */}
           {/* <ButtonComp
             title={"Login to Account"}
-            width={ScreenWidth - 40}
+            width={getWidth(100) - 40}
             onPress={loginClicked}
             disabled={selector.isLoading ? true : false}
           /> */}
@@ -608,7 +655,7 @@ const styles = StyleSheet.create({
   loginButton: {
     backgroundColor: "#f81567",
     height: 50,
-    width: ScreenWidth - 40,
+    width: getWidth(100) - 40,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 8,
@@ -619,7 +666,7 @@ const styles = StyleSheet.create({
     color: Colors.WHITE,
   },
   loginImage: {
-    width: ScreenWidth - 40,
+    width: getWidth(100) - 40,
     height: 100,
     marginTop: 30,
   },

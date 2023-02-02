@@ -38,6 +38,7 @@ import {
   getEventConfigList,
   getPreEnquiryDetails,
   getCustomerTypesApi,
+  getEnquiryTypesApi,
 } from "../../../redux/addPreEnquiryReducer";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -67,7 +68,7 @@ import {
 } from "../../../utils/helperFunctions";
 import moment from "moment";
 import { EmsTopTabNavigatorIdentifiers } from "../../../navigations/emsTopTabNavigator";
-import Fontisto from "react-native-vector-icons/Fontisto"
+import Fontisto from "react-native-vector-icons/Fontisto";
 import { client } from "../../../networking/client";
 
 const screenWidth = Dimensions.get("window").width;
@@ -77,9 +78,8 @@ let EventListData = [
     eventLocation: "Ahmedabad",
     Startdate: "10/12/2022",
     Enddate: "10/12/2022",
-    isSelected:false,
-    id:0
-
+    isSelected: false,
+    id: 0,
   },
   {
     eventName: "omega thon22",
@@ -87,16 +87,7 @@ let EventListData = [
     Startdate: "10/12/2022",
     Enddate: "10/12/2022",
     isSelected: false,
-    id: 1
-  },
-  {
-    eventName: "omega thon22",
-    eventLocation: "Ahmedabad",
-    Startdate: "10/12/2022",
-    Enddate: "10/12/2022",
-    isSelected: false
-    ,
-    id: 2
+    id: 1,
   },
   {
     eventName: "omega thon22",
@@ -104,7 +95,7 @@ let EventListData = [
     Startdate: "10/12/2022",
     Enddate: "10/12/2022",
     isSelected: false,
-    id: 3
+    id: 2,
   },
   {
     eventName: "omega thon22",
@@ -112,10 +103,17 @@ let EventListData = [
     Startdate: "10/12/2022",
     Enddate: "10/12/2022",
     isSelected: false,
-    id: 4
+    id: 3,
   },
-  
-]
+  {
+    eventName: "omega thon22",
+    eventLocation: "Ahmedabad",
+    Startdate: "10/12/2022",
+    Enddate: "10/12/2022",
+    isSelected: false,
+    id: 4,
+  },
+];
 const AddPreEnquiryScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.addPreEnquiryReducer);
   const homeSelector = useSelector((state) => state.homeReducer);
@@ -170,15 +168,12 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
   const [isSubmitPress, setIsSubmitPress] = useState(false);
   const [isEventListModalVisible, setisEventListModalVisible] = useState(false);
 
+  const [eventListdata, seteventListData] = useState([]);
+  const [selectedEventData, setSelectedEventData] = useState([]);
+  const [eventConfigRes, setEventConfigRes] = useState([]);
 
-  const [eventListdata,seteventListData] = useState([])
-  const [selectedEventData, setSelectedEventData] = useState([])
-  const [eventConfigRes, setEventConfigRes] = useState([])
-
-
-  useEffect(() => {
-    getAsyncstoreData();
-    setExistingData();
+  useEffect(async () => {
+     getAsyncstoreData();
     getBranchId();
     getAuthToken();
     // getCustomerTypeListFromDB();
@@ -195,7 +190,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     const employeeData = await AsyncStore.getData(
       AsyncStore.Keys.LOGIN_EMPLOYEE
     );
-      
+
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
       setUserData({
@@ -206,7 +201,16 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       setOrganizationId(jsonObj.orgId);
       setEmployeeName(jsonObj.empName);
       getCarModelListFromServer(jsonObj.orgId);
-      dispatch(getCustomerTypesApi(jsonObj.orgId));
+      Promise.all([
+        dispatch(getCustomerTypesApi(jsonObj.orgId)),
+        dispatch(getEnquiryTypesApi(jsonObj.orgId)),
+      ])
+        .then(() => {
+          setExistingData();
+        })
+        .catch(() => {
+          setExistingData();
+        });
 
       if (jsonObj.hrmsRole === "Reception") {
         const resultAry = homeSelector.source_of_enquiry_list.filter(
@@ -238,7 +242,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     }
   };
 
-  const setExistingData = () => {
+  const setExistingData = async () => {
     if (route.params?.fromEdit != null && route.params.fromEdit === true) {
       const preEnquiryDetails = route.params.preEnquiryDetails;
       const fromEdit = route.params.fromEdit;
@@ -269,7 +273,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
           style: "cancel",
           onPress: () => {
             navigation.navigate(EmsTopTabNavigatorIdentifiers.preEnquiry, {
-              isContactRefresh: true
+              isContactRefresh: true,
             });
           },
         },
@@ -358,8 +362,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
           }
           setDataForCarModels([...modalList]);
         },
-        (rejected) => {
-        }
+        (rejected) => {}
       )
       .finally(() => {
         // Get Enquiry Details
@@ -392,19 +395,18 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       itemData.universalId = dms.crmUniversalId;
       itemData.referencenumber = dms.referencenumber;
       if (selectedEventData.length > 0) {
-          itemData.eventId= selectedEventData[0].eventId,
-          itemData.eventName= selectedEventData[0].name,
-          itemData.eventLocation= selectedEventData[0].location,
-            itemData.eventStartDate = selectedEventData[0].startdate,
-            itemData.eventEndDate = selectedEventData[0].enddate
-        }
-         else {
-          itemData.eventId = "",
-          itemData.eventName = "",
-          itemData.eventLocation = "",
-            itemData.eventStartDate = "",
-            itemData.eventEndDate = ""
-        }
+        (itemData.eventId = selectedEventData[0].eventId),
+          (itemData.eventName = selectedEventData[0].name),
+          (itemData.eventLocation = selectedEventData[0]?.location),
+          (itemData.eventStartDate = selectedEventData[0].startdate),
+          (itemData.eventEndDate = selectedEventData[0].enddate);
+      } else {
+        (itemData.eventId = ""),
+          (itemData.eventName = ""),
+          (itemData.eventLocation = ""),
+          (itemData.eventStartDate = ""),
+          (itemData.eventEndDate = "");
+      }
       if (!fromEdit) {
         showSucessAlert(itemData);
       } else {
@@ -421,7 +423,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     }
   };
 
-  proceedToCreateLeadMethod = (data) => {
+  const proceedToCreateLeadMethod = (data) => {
     let formData = {
       branchId: branchId,
       createdBy: employeeName,
@@ -481,7 +483,6 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
   };
 
   const submitClicked = async () => {
-  
     Keyboard.dismiss();
     setIsSubmitPress(true);
     // if (
@@ -625,21 +626,20 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       }
     }
 
-    
-    // check if events are selected 
+    // check if events are selected
     if (selector.sourceOfEnquiry === "Events") {
       if (selectedEventData.length <= 0) {
         showToast("Please select event details");
         return;
       }
     }
-   
+
     setIsSubmitEnable(false);
     if (fromEdit) {
       updatePreEneuquiryDetails();
       return;
     }
-  
+
     GetPincodeDetails(selector.pincode)
       .then((data) => {
         // Genereate new ref number
@@ -673,7 +673,6 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       orgid: userData.orgId,
     };
 
-
     // await fetch(URL.CUSTOMER_LEAD_REFERENCE(), {
     //   method: "POST",
     //   headers: {
@@ -683,7 +682,8 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     //   },
     //   body: JSON.stringify(bodyObj),
     // })
-    await client.post(URL.CUSTOMER_LEAD_REFERENCE(),bodyObj)
+    await client
+      .post(URL.CUSTOMER_LEAD_REFERENCE(), bodyObj)
       .then((response) => response.json())
       .then((jsonObj) => {
         if (jsonObj.success == true) {
@@ -722,6 +722,19 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       pincode: selector.pincode,
     };
 
+    let dmsLeadEventDto;
+    if (selectedEventData.length > 0) {
+      dmsLeadEventDto = {
+        eventId: selectedEventData[0].eventId,
+        eventName: selectedEventData[0].name,
+        eventLocation: selectedEventData[0]?.location,
+        startDate: selectedEventData[0].startdate,
+        endDate: selectedEventData[0].enddate,
+      };
+    } else {
+      dmsLeadEventDto = {};
+    }
+
     const dmsLeadDtoObj = {
       branchId: Number(branchId),
       createdBy: employeeName,
@@ -735,7 +748,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       model: selector.carModel,
       sourceOfEnquiry: selector.sourceOfEnquiryId,
       subSource: selector.subSourceOfEnquiry,
-      eventCode: selector.eventName,
+      eventCode: dmsLeadEventDto.eventId,
       referencenumber: refNumber,
       pincode: selector.pincode,
       dmsAddresses: [
@@ -769,21 +782,6 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         },
       ],
     };
-    let dmsLeadEventDto;
-    if(selectedEventData.length >0){
-       dmsLeadEventDto = {
-        eventId: selectedEventData[0].eventId,
-        eventName: selectedEventData[0].name,
-        eventLocation: selectedEventData[0].location,
-        startDate: selectedEventData[0].startdate,
-        endDate: selectedEventData[0].enddate
-      }
-    } else{
-       dmsLeadEventDto = {
-        
-      }
-    }
-   
 
     // http://ec2-3-7-117-218.ap-south-1.compute.amazonaws.com:8081
 
@@ -794,17 +792,17 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       formData = {
         dmsContactDto: dmsContactDtoObj,
         dmsLeadDto: dmsLeadDtoObj,
-        dmsLeadEventDto: dmsLeadEventDto
+        dmsLeadEventDto: dmsLeadEventDto,
       };
     } else {
       url = url + "/account?allocateDse=" + selector.create_enquiry_checked;
       formData = {
         dmsAccountDto: dmsContactDtoObj,
         dmsLeadDto: dmsLeadDtoObj,
-        dmsLeadEventDto: dmsLeadEventDto
+        dmsLeadEventDto: dmsLeadEventDto,
       };
     }
-    
+
     let dataObj = {
       url: url,
       body: formData,
@@ -858,26 +856,24 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     }
   }, [selector.updateEnquiryStatus, selector.create_enquiry_response_obj]);
 
-  useEffect(()=>{
-    if (selector.event_list_response_Config_status === "success"){
+  useEffect(() => {
+    if (selector.event_list_response_Config_status === "success") {
       //todo
-     
+
       let data = selector.event_list_Config;
-      
-      if(data){
-        let addSelectedFlag = data.content.map(i => ({ ...i, isSelected: false }) );
 
+      if (data) {
+        let addSelectedFlag = data.content.map((i) => ({
+          ...i,
+          isSelected: false,
+        }));
 
-       
         // setEventConfigRes(addSelectedFlag)
-        seteventListData(addSelectedFlag)
-        setisEventListModalVisible(true)
+        seteventListData(addSelectedFlag);
+        setisEventListModalVisible(true);
       }
-     
-
     }
-  }, [selector.event_list_response_Config_status])
-
+  }, [selector.event_list_response_Config_status]);
 
   const updatePreEneuquiryDetails = () => {
     const { dmsAddressList } = route.params.preEnquiryDetails;
@@ -977,35 +973,40 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
           showToast("No Enquiry Types found");
           return;
         }
-        if (organizationId == 21) {
-          setDataForDropDown([...selector.enquiry_type_list21]);
-
-        } else if (organizationId == 22) {
-          setDataForDropDown([...selector.enquiry_type_list22]);
-        }
-        //  else if(organizationId ==22){
-        //
-        //  }
-        else {
-          setDataForDropDown([...selector.enquiry_type_list]);
-        }
+        let eData = selector.enquiry_type_list;
+        let eNewData = eData?.map((val) => {
+          return {
+            ...val,
+            name: val?.segment_type,
+          };
+        });
+        setDataForDropDown([...eNewData] || []);
+        // }
         break;
 
       case "CUSTOMER_TYPE":
-        if (selector.customer_type_list.length === 0) {
+        if (
+          selector.customer_type_list?.length === 0 ||
+          !selector.enquiryType
+        ) {
           showToast("No Customer Types found");
           return;
         }
-
-        setDataForDropDown([...selector.customer_type_list]);
+        let cData = selector.customer_type_list;
+        let cNewData = cData?.map((val) => {
+          return {
+            ...val,
+            name: val?.customer_type,
+          };
+        });
+        setDataForDropDown([...cNewData]);
 
         break;
       case "SOURCE_OF_ENQUIRY":
         if (homeSelector.source_of_enquiry_list.length === 0) {
           showToast("No data found");
           return;
-        }
-        else {
+        } else {
         }
         setDataForDropDown([...homeSelector.source_of_enquiry_list]);
         break;
@@ -1077,7 +1078,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     }
   }, [selector.eventStartDate, selector.eventEndDate]);
 
-  updateSubSourceData = (item) => {
+  const updateSubSourceData = (item) => {
     if (item.subsource && item.subsource.length > 0) {
       const updatedData = [];
       item.subsource.forEach((subItem, index) => {
@@ -1094,71 +1095,88 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
   };
 
   const addSelectedEvent = () => {
-    // todo add api call 
- 
-    let findSelected = eventListdata.filter(item => {
+    // todo add api call
+
+    let findSelected = eventListdata.filter((item) => {
       if (item.isSelected === true) {
         return item;
       }
-    })
-   
+    });
+
     if (findSelected.length > 0) {
       setSelectedEventData(findSelected);
       setisEventListModalVisible(false);
     } else {
       showToast("Please select event");
     }
+  };
 
+  const eventListTableRow = useCallback(
+    (
+      txt1,
+      txt2,
+      txt3,
+      txt4,
+      isDisplayRadio,
+      isRadioSelected,
+      isClickable,
+      itemMain,
+      index
+    ) => {
+      return (
+        <>
+          <TouchableOpacity
+            style={styles.eventTouchable}
+            disabled={isClickable}
+            onPress={() => {
+              // let temp = [...eventListdata].filter(item => item.id === itemMain.id).map(i => i.isSelected = true)
+              let temp = eventListdata.map((i) =>
+                i.id === itemMain.id
+                  ? { ...i, isSelected: true }
+                  : { ...i, isSelected: false }
+              );
 
-  }
+              seteventListData(temp);
+            }}
+          >
+            {/* todo */}
+            {isDisplayRadio ? (
+              <Fontisto
+                name={
+                  itemMain.isSelected ? "radio-btn-active" : "radio-btn-passive"
+                }
+                size={12}
+                color={Colors.RED}
+                style={{ marginEnd: 10 }}
+              />
+            ) : (
+              <View style={{ marginEnd: 10, width: 12 }}>{}</View>
+            )}
 
-  const eventListTableRow = useCallback ((txt1, txt2, txt3, txt4, isDisplayRadio, isRadioSelected, isClickable,itemMain,index) => {
-
-    return (
-      <>
-
-        <TouchableOpacity style={styles.eventTouchable}
-          disabled={isClickable}
-          onPress={  ()=>{
-           
-            // let temp = [...eventListdata].filter(item => item.id === itemMain.id).map(i => i.isSelected = true)
-            let temp = eventListdata.map(i => 
-              i.id === itemMain.id ? { ...i, isSelected: true } : { ...i, isSelected: false }
-            )
-           
-             seteventListData(temp);
-            
-            
-           
-          }}
-        >
-          {/* todo */}
-          {isDisplayRadio ?
-            <Fontisto name={itemMain.isSelected ? "radio-btn-active" : "radio-btn-passive"}
-              size={12} color={Colors.RED}
-              style={{ marginEnd: 10 }}
-            /> :
-            <View style={{ marginEnd: 10, width: 12, }}  >{ }</View>}
-
-          <Text numberOfLines={1} style={styles.eventText}  >{txt1}</Text>
-          <Text numberOfLines={1} style={styles.eventText} >{txt2}</Text>
-          <Text numberOfLines={1} style={styles.eventText} >{txt3}</Text>
-          <Text numberOfLines={1} style={styles.eventText} >{txt4}</Text>
-
-        </TouchableOpacity>
-
-      </>)
-  })
+            <Text numberOfLines={1} style={styles.eventText}>
+              {txt1}
+            </Text>
+            <Text numberOfLines={1} style={styles.eventText}>
+              {txt2}
+            </Text>
+            <Text numberOfLines={1} style={styles.eventText}>
+              {txt3}
+            </Text>
+            <Text numberOfLines={1} style={styles.eventText}>
+              {txt4}
+            </Text>
+          </TouchableOpacity>
+        </>
+      );
+    }
+  );
 
   const addEventListModal = () => {
-
     return (
       <Modal
         animationType="fade"
         visible={isEventListModalVisible}
-        onRequestClose={() => {
-
-        }}
+        onRequestClose={() => {}}
         transparent={true}
       >
         <View
@@ -1167,93 +1185,118 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             justifyContent: "center",
             alignItems: "center",
             backgroundColor: "rgba(0,0,0,0.7)",
-
-
           }}
         >
-          <View style={styles.modelView}
-
-          >
+          <View style={styles.modelView}>
             <Text style={styles.selectTitle}>Select Event</Text>
-            <ScrollView style={{
-              width: '100%',
-
-            }}
+            <ScrollView
+              style={{
+                width: "100%",
+              }}
               horizontal={true}
             >
               <View style={{ flexDirection: "column" }}>
-
                 <Text style={GlobalStyle.underline} />
-                <View style={{
-                  height: 30, borderBottomColor: 'rgba(208, 212, 214, 0.7)',
-                  borderBottomWidth: 2,
-
-                }}>
-                  {eventListTableRow("Event Name", "Event location", "Start Date", "End Date", false, false, true,0,0)}
+                <View
+                  style={{
+                    height: 30,
+                    borderBottomColor: "rgba(208, 212, 214, 0.7)",
+                    borderBottomWidth: 2,
+                  }}
+                >
+                  {eventListTableRow(
+                    "Event Name",
+                    "Event location",
+                    "Start Date",
+                    "End Date",
+                    false,
+                    false,
+                    true,
+                    0,
+                    0
+                  )}
                   {/* <Text style={GlobalStyle.underline} /> */}
                 </View>
                 <View>
                   <FlatList
                     key={"EVENT_LIST"}
                     data={eventListdata}
-                    style={{ height: '80%' }}
+                    style={{ height: "80%" }}
                     keyExtractor={(item, index) => index.toString()}
                     ListEmptyComponent={() => {
-                      return (<View style={{ alignItems: 'center', marginVertical: 20 }}><Text>{"Data Not Available"}</Text></View>)
+                      return (
+                        <View
+                          style={{ alignItems: "center", marginVertical: 20 }}
+                        >
+                          <Text>{"Data Not Available"}</Text>
+                        </View>
+                      );
                     }}
-
                     renderItem={({ item, index }) => {
-                    
                       return (
                         <>
-                          <View style={{
-                            height: 35, borderBottomColor: 'rgba(208, 212, 214, 0.7)',
-                            borderBottomWidth: 4, marginTop: 5
-                          }}>
-                            {eventListTableRow(item.name, item.location, moment(item.startdate).format("DD-MM-YYYY"), moment(item.enddate).format("DD-MM-YYYY"), true, false, false,item,index)}
-
+                          <View
+                            style={{
+                              height: 35,
+                              borderBottomColor: "rgba(208, 212, 214, 0.7)",
+                              borderBottomWidth: 4,
+                              marginTop: 5,
+                            }}
+                          >
+                            {eventListTableRow(
+                              item.name,
+                              item?.location,
+                              moment(item.startdate).format("DD-MM-YYYY"),
+                              moment(item.enddate).format("DD-MM-YYYY"),
+                              true,
+                              false,
+                              false,
+                              item,
+                              index
+                            )}
                           </View>
-
                         </>
                       );
                     }}
                   />
-
                 </View>
               </View>
-
             </ScrollView>
-            <View style={{ flexDirection: "row", alignSelf: "flex-end", marginTop: 10 }}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignSelf: "flex-end",
+                marginTop: 10,
+              }}
+            >
               <Button
                 mode="contained"
-
                 style={{ flex: 1, marginRight: 10 }}
                 color={Colors.GRAY}
                 labelStyle={{ textTransform: "none" }}
-                onPress={() =>{ 
-                  setisEventListModalVisible(false)
+                onPress={() => {
+                  setisEventListModalVisible(false);
                   // todo
                   seteventListData([]);
-                  }}>
+                }}
+              >
                 Cancel
               </Button>
               <Button
                 mode="contained"
-
                 style={{ flex: 1 }}
                 color={Colors.PINK}
                 labelStyle={{ textTransform: "none" }}
-                onPress={() => addSelectedEvent()}>
+                onPress={() => addSelectedEvent()}
+              >
                 Add
               </Button>
             </View>
-
           </View>
-
         </View>
       </Modal>
-    )
-  }
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -1264,12 +1307,13 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         data={dataForDropDown}
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
-          
           if (dropDownKey === "SOURCE_OF_ENQUIRY") {
-            setSelectedEventData([])
+            setSelectedEventData([]);
             if (item.name === "Events") {
-              const startOfMonth = moment().startOf('month').format('YYYY-MM-DD');
-              const endOfMonth = moment().endOf('month').format('YYYY-MM-DD');
+              const startOfMonth = moment()
+                .startOf("month")
+                .format("YYYY-MM-DD");
+              const endOfMonth = moment().endOf("month").format("YYYY-MM-DD");
               getEventConfigListFromServer(startOfMonth, endOfMonth);
               // setisEventListModalVisible(true);
             }
@@ -1353,64 +1397,12 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
           </View>
 
           <View style={[{ borderRadius: 6, backgroundColor: Colors.WHITE }]}>
-            <DropDownSelectionItem
-              label={"Enquiry Segment*"}
-              value={selector.enquiryType}
-              onPress={() =>
-                showDropDownModelMethod(
-                  "ENQUIRY_SEGMENT",
-                  "Select Enquiry Segment",
-                  organizationId
-                )
-              }
-            />
-            <Text
-              style={[
-                GlobalStyle.underline,
-                {
-                  backgroundColor:
-                    isSubmitPress && selector.enquiryType === ""
-                      ? "red"
-                      : "rgba(208, 212, 214, 0.7)",
-                },
-              ]}
-            ></Text>
-            <DropDownSelectionItem
-              label={"Customer Type*"}
-              value={selector.customerType}
-              onPress={() =>
-                showDropDownModelMethod("CUSTOMER_TYPE", "Select Customer Type")
-              }
-            />
-            <Text
-              style={[
-                GlobalStyle.underline,
-                {
-                  backgroundColor:
-                    isSubmitPress && selector.customerType === ""
-                      ? "red"
-                      : "rgba(208, 212, 214, 0.7)",
-                },
-              ]}
-            ></Text>
             <TextinputComp
               style={styles.textInputComp}
               value={selector.firstName}
               autoCapitalize="words"
               label={"First Name*"}
-              editable={
-                selector.enquiryType.length > 0 &&
-                  selector.customerType.length > 0
-                  ? true
-                  : false
-              }
               maxLength={30}
-              disabled={
-                selector.enquiryType.length > 0 &&
-                  selector.customerType.length > 0
-                  ? false
-                  : true
-              }
               keyboardType={"default"}
               error={firstNameErrorHandler.showError}
               errorMsg={firstNameErrorHandler.msg}
@@ -1440,19 +1432,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               value={selector.lastName}
               autoCapitalize="words"
               label={"Last Name*"}
-              editable={
-                selector.enquiryType.length > 0 &&
-                  selector.customerType.length > 0
-                  ? true
-                  : false
-              }
               maxLength={30}
-              disabled={
-                selector.enquiryType.length > 0 &&
-                  selector.customerType.length > 0
-                  ? false
-                  : true
-              }
               keyboardType={"default"}
               error={lastNameErrorHandler.showError}
               errorMsg={lastNameErrorHandler.msg}
@@ -1544,47 +1524,6 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                 },
               ]}
             ></Text>
-            {selector.customerType === "Corporate" ||
-              selector.customerType === "Government" ||
-              selector.customerType === "Retired" ||
-              selector.customerType === "Fleet" ||
-              selector.customerType === "Institution" ? (
-              <View>
-                <TextinputComp
-                  style={styles.textInputComp}
-                  value={selector.companyName}
-                  autoCapitalize="words"
-                  label={"Company Name"}
-                  maxLength={50}
-                  keyboardType={"default"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setPreEnquiryDetails({
-                        key: "COMPANY_NAME",
-                        text: text,
-                      })
-                    )
-                  }
-                />
-                <Text style={styles.devider}></Text>
-              </View>
-            ) : null}
-
-            {selector.customerType === "Other" ? (
-              <View>
-                <TextinputComp
-                  style={styles.textInputComp}
-                  value={selector.other}
-                  label={"Other"}
-                  maxLength={50}
-                  keyboardType={"default"}
-                  onChangeText={(text) =>
-                    dispatch(setPreEnquiryDetails({ key: "OTHER", text: text }))
-                  }
-                />
-                <Text style={styles.devider}></Text>
-              </View>
-            ) : null}
 
             <DropDownSelectionItem
               label={"Source of Lead*"}
@@ -1648,6 +1587,89 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                         text: text,
                       })
                     )
+                  }
+                />
+                <Text style={styles.devider}></Text>
+              </View>
+            ) : null}
+
+            <DropDownSelectionItem
+              label={"Enquiry Segment*"}
+              value={selector.enquiryType}
+              onPress={() =>
+                showDropDownModelMethod(
+                  "ENQUIRY_SEGMENT",
+                  "Select Enquiry Segment",
+                  organizationId
+                )
+              }
+            />
+            <Text
+              style={[
+                GlobalStyle.underline,
+                {
+                  backgroundColor:
+                    isSubmitPress && selector.enquiryType === ""
+                      ? "red"
+                      : "rgba(208, 212, 214, 0.7)",
+                },
+              ]}
+            ></Text>
+            <DropDownSelectionItem
+              label={"Customer Type*"}
+              value={selector.customerType}
+              onPress={() =>
+                showDropDownModelMethod("CUSTOMER_TYPE", "Select Customer Type")
+              }
+            />
+            <Text
+              style={[
+                GlobalStyle.underline,
+                {
+                  backgroundColor:
+                    isSubmitPress && selector.customerType === ""
+                      ? "red"
+                      : "rgba(208, 212, 214, 0.7)",
+                },
+              ]}
+            ></Text>
+
+            {selector.customerType === "Corporate" ||
+            selector.customerType === "Government" ||
+            selector.customerType === "Retired" ||
+            selector.customerType === "Fleet" ||
+            selector.customerType === "Institution" ? (
+              <View>
+                <TextinputComp
+                  style={styles.textInputComp}
+                  value={selector.companyName}
+                  autoCapitalize="words"
+                  label={"Company Name"}
+                  maxLength={50}
+                  keyboardType={"default"}
+                  onChangeText={(text) =>
+                    dispatch(
+                      setPreEnquiryDetails({
+                        key: "COMPANY_NAME",
+                        text: text,
+                      })
+                    )
+                  }
+                />
+                <Text style={styles.devider}></Text>
+              </View>
+            ) : null}
+
+            {selector.customerType === "Other" ? (
+              <View>
+                <TextinputComp
+                  style={styles.textInputComp}
+                  value={selector.other}
+                  label={"Other"}
+                  maxLength={50}
+                  keyboardType={"default"}
+                  onChangeText={(text) =>
+                    dispatch(setPreEnquiryDetails({ key: "OTHER", text: text }))
                   }
                 />
                 <Text style={styles.devider}></Text>
@@ -1775,20 +1797,30 @@ const styles = StyleSheet.create({
     alignItems: "center",
     // height: '15%',
     alignContent: "center",
-    width: '100%',
-    marginTop: 5
-
-
+    width: "100%",
+    marginTop: 5,
   },
-  eventText:{ fontSize: 12, color: Colors.BLACK, textAlign: "left", marginEnd: 10, width: 100, },
-  modelView:{
-    width: '90%',
+  eventText: {
+    fontSize: 12,
+    color: Colors.BLACK,
+    textAlign: "left",
+    marginEnd: 10,
+    width: 100,
+  },
+  modelView: {
+    width: "90%",
     backgroundColor: Colors.WHITE,
     padding: 10,
     borderWidth: 2,
     borderColor: Colors.BLACK,
     flexDirection: "column",
-    height: '40%',
+    height: "40%",
   },
-  selectTitle:{ color: Colors.BLACK, fontSize: 16, fontWeight: "700", textAlign: "left", margin: 5 }
+  selectTitle: {
+    color: Colors.BLACK,
+    fontSize: 16,
+    fontWeight: "700",
+    textAlign: "left",
+    margin: 5,
+  },
 });

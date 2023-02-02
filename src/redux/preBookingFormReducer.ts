@@ -2,9 +2,7 @@ import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import { client } from "../networking/client";
 import URL from "../networking/endpoints";
 
-import {
-  Form_Types,
-} from "../jsonData/prebookingFormScreenJsonData";
+import { Form_Types } from "../jsonData/prebookingFormScreenJsonData";
 import {
   Salutation_Types,
   Enquiry_Segment_Data,
@@ -16,7 +14,7 @@ import moment from "moment";
 import {
   CustomerTypesObj,
   CustomerTypesObj21,
-  CustomerTypesObj22
+  CustomerTypesObj22,
 } from "../jsonData/preEnquiryScreenJsonData";
 
 const dropDownData = [
@@ -38,257 +36,405 @@ const dropDownData = [
   },
 ];
 
-export const getPrebookingDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getPrebookingDetailsApi", async (universalId, { rejectWithValue }) => {
+export const getPrebookingDetailsApi = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/getPrebookingDetailsApi",
+  async (universalId, { rejectWithValue }) => {
+    const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
+    try {
+      const json = await response.json();
 
-  const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
-  try {
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.error(
+        "getPrebookingDetailsApi JSON parse error: ",
+        error + " : " + JSON.stringify(response)
+      );
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
+    }
+  }
+);
+
+export const getRulesConfiguration = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/getRulesConfiguration",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.get(
+      URL.GET_RULES_CONFIG(
+        payload["model"],
+        payload["variant"],
+        payload["fuel"],
+        payload["orgId"]
+      )
+    );
+    try {
+      const json = await response.json();
+
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.error(
+        "getRulesConfiguration JSON parse error: ",
+        error + " : " + JSON.stringify(response)
+      );
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
+    }
+  }
+);
+
+export const updatePrebookingDetailsApi = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/updatePrebookingDetailsApi",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
+    try {
+      const json = await response.json();
+
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.error(
+        "updatePrebookingDetailsApi JSON parse error: ",
+        error + " : " + JSON.stringify(response)
+      );
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
+    }
+  }
+);
+
+export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/getOnRoadPriceAndInsurenceDetailsApi",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.get(
+      URL.GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS(
+        payload["varientId"],
+        payload["orgId"]
+      )
+    );
+    try {
+      const json = await response.json();
+
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      showToastRedAlert(
+        `Value not found for varient id: ${payload["varientId"]} and org id: ${payload["orgId"]}`
+      );
+      console.error(
+        "PRE-BOOKING getOnRoadPriceAndInsurenceDetailsApi JSON parse error: ",
+        error + " : " + JSON.stringify(response)
+      );
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
+    }
+  }
+);
+
+export const dropPreBooingApi = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/dropPreBooingApi",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.DROP_ENQUIRY(), payload);
+    try {
+      const json = await response.json();
+
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.error(
+        "dropPreBooingApi JSON parse error: ",
+        error + " : " + JSON.stringify(response)
+      );
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
+    }
+  }
+);
+export const sendEditedOnRoadPriceDetails = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/sendEditedOnRoadPriceDetails",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.put(
+      URL.SEND_ON_ROAD_PRICE_DETAILS(),
+      payload
+    );
+    try {
+      const json = await response.json();
+
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.error(
+        "sendOnRoadPriceDetails JSON parse error: ",
+        error + " : " + JSON.stringify(response)
+      );
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
+    }
+  }
+);
+
+export const sendOnRoadPriceDetails = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/sendOnRoadPriceDetails",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(
+      URL.SEND_ON_ROAD_PRICE_DETAILS(),
+      payload
+    );
+    try {
+      const json = await response.json();
+
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.error(
+        "sendOnRoadPriceDetails JSON parse error: ",
+        error + " : " + JSON.stringify(response)
+      );
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
+    }
+  }
+);
+
+export const getEnquiryTypesApi = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/getEnquiryTypesApi",
+  async (orgId, { rejectWithValue }) => {
+    const response = await client.get(URL.GET_ENQUIRY_TYPE(orgId));
     const json = await response.json();
-
-    if (response.status != 200) {
+    if (!response.ok) {
       return rejectWithValue(json);
     }
     return json;
-  } catch (error) {
-    console.error("getPrebookingDetailsApi JSON parse error: ", error + " : " + JSON.stringify(response));
-    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
   }
-})
+);
 
-export const getRulesConfiguration = createAsyncThunk("PREBOONING_FORMS_SLICE/getRulesConfiguration", async (payload, { rejectWithValue }) => {
-  const response = await client.get(URL.GET_RULES_CONFIG(payload["model"], payload["variant"], payload["fuel"], payload["orgId"]));
-  try {
-    const json = await response.json();
-  
-    if (response.status != 200) {
-      return rejectWithValue(json);
+export const getCustomerTypesApi = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/getCustomerTypesApi",
+  async (orgId, { rejectWithValue }) => {
+    const response = await client.get(URL.GET_CUSTOMER_TYPES(orgId));
+    try {
+      const json = await response.json();
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.error(
+        "getCustomerTypesApi JSON parse error: ",
+        error + " : " + JSON.stringify(response)
+      );
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
     }
-    return json;
-  } catch (error) {
-    console.error("getRulesConfiguration JSON parse error: ", error + " : " + JSON.stringify(response));
-    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
   }
-})
+);
 
-export const updatePrebookingDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/updatePrebookingDetailsApi", async (payload, { rejectWithValue }) => {
-  const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
-  try {
-    const json = await response.json();
+export const getDropDataApi = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/getDropDataApi",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.GET_DROP_DATA(), payload);
+    try {
+      const json = await response.json();
 
-    if (response.status != 200) {
-      return rejectWithValue(json);
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.error(
+        "getDropDataApi JSON parse error: ",
+        error + " : " + JSON.stringify(response)
+      );
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
     }
-    return json;
-  } catch (error) {
-    console.error("updatePrebookingDetailsApi JSON parse error: ", error + " : " + JSON.stringify(response));
-    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
   }
-})
+);
 
-export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getOnRoadPriceAndInsurenceDetailsApi", async (payload, { rejectWithValue }) => {
-
-  const response = await client.get(URL.GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS(payload["varientId"], payload["orgId"]));
-  try {
-    const json = await response.json();
-
-    if (response.status != 200) {
-      return rejectWithValue(json);
+export const getDropSubReasonDataApi = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/getDropSubReasonDataApi",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.GET_DROP_DATA(), payload);
+    try {
+      const json = await response.json();
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.error(
+        "getDropSubReasonDataApi JSON parse error: ",
+        error + " : " + JSON.stringify(response)
+      );
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
     }
-    return json;
-  } catch (error) {
-    showToastRedAlert(`Value not found for varient id: ${payload["varientId"]} and org id: ${payload["orgId"]}`)
-    console.error("PRE-BOOKING getOnRoadPriceAndInsurenceDetailsApi JSON parse error: ", error + " : " + JSON.stringify(response));
-    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
   }
-})
+);
 
-export const dropPreBooingApi = createAsyncThunk("PREBOONING_FORMS_SLICE/dropPreBooingApi", async (payload, { rejectWithValue }) => {
-
-
-  const response = await client.post(URL.DROP_ENQUIRY(), payload);
-  try {
-    const json = await response.json();
-
-    if (response.status != 200) {
-      return rejectWithValue(json);
+export const getOnRoadPriceDtoListApi = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/getOnRoadPriceDtoListApi",
+  async (leadId, { rejectWithValue }) => {
+    const response = await client.get(URL.GET_ON_ROAD_PRICE_DTO_LIST(leadId));
+    try {
+      const json = await response.json();
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.error(
+        "getOnRoadPriceDtoListApi JSON parse error: ",
+        error + " : " + JSON.stringify(response)
+      );
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
     }
-    return json;
-  } catch (error) {
-    console.error("dropPreBooingApi JSON parse error: ", error + " : " + JSON.stringify(response));
-    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
   }
-})
-export const sendEditedOnRoadPriceDetails = createAsyncThunk("PREBOONING_FORMS_SLICE/sendEditedOnRoadPriceDetails", async (payload, { rejectWithValue }) => {
+);
 
-  const response = await client.put(URL.SEND_ON_ROAD_PRICE_DETAILS(), payload);
-  try {
-    const json = await response.json();
+export const preBookingPaymentApi = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/preBookingPaymentApi",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.PRE_BOOKING_PAYMENT(), payload);
+    try {
+      const json = await response.json();
 
-    if (response.status != 200) {
-      return rejectWithValue(json);
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.error(
+        "preBookingPaymentApi JSON parse error: ",
+        error + " : " + JSON.stringify(response)
+      );
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
     }
-    return json;
-  } catch (error) {
-    console.error("sendOnRoadPriceDetails JSON parse error: ", error + " : " + JSON.stringify(response));
-    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
   }
-})
+);
 
-export const sendOnRoadPriceDetails = createAsyncThunk("PREBOONING_FORMS_SLICE/sendOnRoadPriceDetails", async (payload, { rejectWithValue }) => {
+export const postBookingAmountApi = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/postBookingAmountApi",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.BOOKING_AMOUNT(), payload);
+    try {
+      const json = await response.json();
 
-  const response = await client.post(URL.SEND_ON_ROAD_PRICE_DETAILS(), payload);
-  try {
-    const json = await response.json();
-
-    if (response.status != 200) {
-      return rejectWithValue(json);
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.error(
+        "postBookingAmountApi JSON parse error: ",
+        error + " : " + JSON.stringify(response)
+      );
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
     }
-    return json;
-  } catch (error) {
-    console.error("sendOnRoadPriceDetails JSON parse error: ", error + " : " + JSON.stringify(response));
-    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
   }
-})
+);
 
-export const getCustomerTypesApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getCustomerTypesApi", async (orgId, { rejectWithValue }) => {
-
-  const response = await client.get(URL.GET_CUSTOMER_TYPES(orgId));
-  try {
-    const json = await response.json();
-    if (response.status != 200) {
-      return rejectWithValue(json);
+export const getPaymentDetailsApi = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/getPaymentDetailsApi",
+  async (leadId, { rejectWithValue }) => {
+    const response = await client.get(
+      URL.GET_PRE_BOOKING_PAYMENT_DETAILS(leadId)
+    );
+    try {
+      const json = await response.json();
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.error(
+        "getPaymentDetailsApi JSON parse error: ",
+        error + " : " + JSON.stringify(response)
+      );
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
     }
-    return json;
-  } catch (error) {
-    console.error("getCustomerTypesApi JSON parse error: ", error + " : " + JSON.stringify(response));
-    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
   }
-})
+);
 
-export const getDropDataApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getDropDataApi", async (payload, { rejectWithValue }) => {
-
-  const response = await client.post(URL.GET_DROP_DATA(), payload);
-  try {
-    const json = await response.json();
-
-    if (response.status != 200) {
-      return rejectWithValue(json);
+export const getBookingAmountDetailsApi = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/getBookingAmountDetailsApi",
+  async (leadId, { rejectWithValue }) => {
+    const response = await client.get(URL.GET_BOOKING_AMOUNT_DETAILS(leadId));
+    try {
+      const json = await response.json();
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.error(
+        "getBookingAmountDetailsApi JSON parse error: ",
+        error + " : " + JSON.stringify(response)
+      );
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
     }
-    return json;
-  } catch (error) {
-    console.error("getDropDataApi JSON parse error: ", error + " : " + JSON.stringify(response));
-    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
   }
-})
+);
 
-export const getDropSubReasonDataApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getDropSubReasonDataApi", async (payload, { rejectWithValue }) => {
-
-  const response = await client.post(URL.GET_DROP_DATA(), payload);
-  try {
-    const json = await response.json();
-    if (response.status != 200) {
-      return rejectWithValue(json);
+export const getAssignedTasksApi = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/getAssignedTasksApi",
+  async (universalId, { rejectWithValue }) => {
+    const url = URL.TASKS_PRE_ENQUIRY() + universalId;
+    const response = await client.get(url);
+    try {
+      const json = await response.json();
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.error(
+        "getAssignedTasksApi JSON parse error: ",
+        error + " : " + JSON.stringify(response)
+      );
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
     }
-    return json;
-  } catch (error) {
-    console.error("getDropSubReasonDataApi JSON parse error: ", error + " : " + JSON.stringify(response));
-    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
   }
-})
+);
 
-export const getOnRoadPriceDtoListApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getOnRoadPriceDtoListApi", async (leadId, { rejectWithValue }) => {
-
-  const response = await client.get(URL.GET_ON_ROAD_PRICE_DTO_LIST(leadId));
-  try {
-    const json = await response.json();
-    if (response.status != 200) {
-      return rejectWithValue(json);
-    }
-    return json;
-  } catch (error) {
-    console.error("getOnRoadPriceDtoListApi JSON parse error: ", error + " : " + JSON.stringify(response));
-    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
-  }
-})
-
-export const preBookingPaymentApi = createAsyncThunk("PREBOONING_FORMS_SLICE/preBookingPaymentApi", async (payload, { rejectWithValue }) => {
-
-
-  const response = await client.post(URL.PRE_BOOKING_PAYMENT(), payload);
-  try {
-    const json = await response.json();
-
-    if (response.status != 200) {
-      return rejectWithValue(json);
-    }
-    return json;
-  } catch (error) {
-    console.error("preBookingPaymentApi JSON parse error: ", error + " : " + JSON.stringify(response));
-    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
-  }
-})
-
-export const postBookingAmountApi = createAsyncThunk("PREBOONING_FORMS_SLICE/postBookingAmountApi", async (payload, { rejectWithValue }) => {
-
-  const response = await client.post(URL.BOOKING_AMOUNT(), payload);
-  try {
-    const json = await response.json();
-
-    if (response.status != 200) {
-      return rejectWithValue(json);
-    }
-    return json;
-  } catch (error) {
-    console.error("postBookingAmountApi JSON parse error: ", error + " : " + JSON.stringify(response));
-    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
-  }
-})
-
-export const getPaymentDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getPaymentDetailsApi", async (leadId, { rejectWithValue }) => {
-  const response = await client.get(URL.GET_PRE_BOOKING_PAYMENT_DETAILS(leadId));
-  try {
-    const json = await response.json();
-    if (response.status != 200) {
-      return rejectWithValue(json);
-    }
-    return json;
-  } catch (error) {
-    console.error("getPaymentDetailsApi JSON parse error: ", error + " : " + JSON.stringify(response));
-    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
-  }
-})
-
-export const getBookingAmountDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getBookingAmountDetailsApi", async (leadId, { rejectWithValue }) => {
-
-  const response = await client.get(URL.GET_BOOKING_AMOUNT_DETAILS(leadId));
-  try {
-    const json = await response.json();
-    if (response.status != 200) {
-      return rejectWithValue(json);
-    }
-    return json;
-  } catch (error) {
-    console.error("getBookingAmountDetailsApi JSON parse error: ", error + " : " + JSON.stringify(response));
-    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
-  }
-})
-
-export const getAssignedTasksApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getAssignedTasksApi", async (universalId, { rejectWithValue }) => {
-
-  const url = URL.TASKS_PRE_ENQUIRY() + universalId;
-  const response = await client.get(url);
-  try {
-    const json = await response.json();
-    if (response.status != 200) {
-      return rejectWithValue(json);
-    }
-    return json;
-  } catch (error) {
-    console.error("getAssignedTasksApi JSON parse error: ", error + " : " + JSON.stringify(response));
-    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
-  }
-})
-
-export const updateRef = createAsyncThunk("ENQUIRY_FORM_SLICE/updateRef",
+export const updateRef = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/updateRef",
   async (payload, { rejectWithValue }) => {
     const response = await client.post(URL.UPDATE_REF(), payload);
     try {
@@ -300,7 +446,9 @@ export const updateRef = createAsyncThunk("ENQUIRY_FORM_SLICE/updateRef",
       return response;
     } catch (error) {
       console.error(JSON.stringify(response));
-      return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
     }
   }
 );
@@ -344,7 +492,7 @@ const prebookingFormSlice = createSlice({
     showDropDownpicker: false,
     dropDownData: dropDownData,
     pre_booking_details_response: null,
-    customer_types_response: null,
+    customer_types_response: [],
     vehicle_on_road_price_insurence_details_response: null,
     pre_booking_drop_response_status: null,
     update_pre_booking_details_response: "",
@@ -487,14 +635,15 @@ const prebookingFormSlice = createSlice({
     isAddressSet: false,
     registrationCharges: 0,
     configureRulesResponse: "",
-    configureRulesResponse_status:"",
+    configureRulesResponse_status: "",
     otherPricesDropDown: [],
+    enquiry_type_list: [],
   },
   reducers: {
     clearState: (state, action) => {
       state.isLoading = false;
       state.pre_booking_details_response = null;
-      state.customer_types_response = null;
+      state.customer_types_response = [];
       state.vehicle_on_road_price_insurence_details_response = null;
       state.pre_booking_drop_response_status = null;
       state.update_pre_booking_details_response = null;
@@ -623,6 +772,7 @@ const prebookingFormSlice = createSlice({
       state.configureRulesResponse = "";
       state.configureRulesResponse_status = "";
       state.otherPricesDropDown = [];
+      state.enquiry_type_list = [];
     },
     updateStatus: (state, action) => {
       state.pre_booking_payment_response_status = "";
@@ -645,17 +795,18 @@ const prebookingFormSlice = createSlice({
           break;
         case "ENQUIRY_SEGMENT":
           state.enquiry_segment = value;
+          let data = state.customer_types_response;
+          let newData = data?.filter((val) => val?.enquiry_segment == value);
+          state.customer_types_data = newData;
           state.customer_type = "";
-          // if (state.customer_types_response) {
-          //   state.customer_types_data = state.customer_types_response[value.toLowerCase()];
+
+          // if (+orgId == 21) {
+          //   state.customer_types_data = CustomerTypesObj21[value.toLowerCase()];
+          // } else if (+orgId == 22) {
+          //   state.customer_types_data = CustomerTypesObj22[value.toLowerCase()];
+          // } else {
+          //   state.customer_types_data = CustomerTypesObj[value.toLowerCase()];
           // }
-          if (+orgId == 21) {
-            state.customer_types_data = CustomerTypesObj21[value.toLowerCase()];
-          } else if (+orgId == 22) {
-            state.customer_types_data = CustomerTypesObj22[value.toLowerCase()];
-          } else {
-            state.customer_types_data = CustomerTypesObj[value.toLowerCase()];
-          }
 
           break;
         case "BUYER_TYPE":
@@ -1115,19 +1266,17 @@ const prebookingFormSlice = createSlice({
       ///state.buyer_type = dms_C_Or_A_Dto.buyerType? dms_C_Or_A_Dto.buyerType:"";
     },
     updateDmsLeadDtoData: (state, action) => {
-
       const dmsLeadDto = action.payload;
       state.enquiry_segment = dmsLeadDto.enquirySegment
         ? dmsLeadDto.enquirySegment
         : "";
-      if (state.customer_types_response && state.enquiry_segment) {
-        state.customer_types_data =
-          state.customer_types_response[state.enquiry_segment.toLowerCase()];
+      if (state.customer_types_response?.length && state.enquiry_segment) {
+        let data = state.customer_types_response;
+        let newData = data?.filter(
+          (val: any) => val?.enquiry_segment == state.enquiry_segment
+        );
+        state.customer_types_data = newData;
       }
-      // state.buyer_type = dmsLeadDto.enquiry_segment ? dmsLeadDto.buyerType :"";
-      // if(state.customer_types_response && state){
-      //   state.customer_types_data = state.customer_types_response[state.buyer_type.toLowerCase()]
-      // }
       state.buyer_type = dmsLeadDto.buyerType ? dmsLeadDto.buyerType : "";
       state.marital_status = dmsLeadDto.maritalStatus
         ? dmsLeadDto.maritalStatus
@@ -1389,7 +1538,10 @@ const prebookingFormSlice = createSlice({
         : "";
       state.warranty = dataObj?.warrantyName ? dataObj.warrantyName : "";
 
-      if (dataObj?.insuranceAddonData && dataObj?.insuranceAddonData.length > 0) {
+      if (
+        dataObj?.insuranceAddonData &&
+        dataObj?.insuranceAddonData.length > 0
+      ) {
         let addOnNames = "";
         dataObj.insuranceAddonData.forEach((element, index) => {
           addOnNames +=
@@ -1400,7 +1552,7 @@ const prebookingFormSlice = createSlice({
       } else {
         state.add_on_insurance = "";
       }
-      
+
       state.consumer_offer = dataObj?.specialScheme
         ? `${dataObj.specialScheme}`
         : "";
@@ -1662,27 +1814,7 @@ const prebookingFormSlice = createSlice({
     });
     builder.addCase(getCustomerTypesApi.fulfilled, (state, action) => {
       if (action.payload) {
-        const customerTypes = action.payload;
-        let personalTypes = [];
-        let commercialTypes = [];
-        let companyTypes = [];
-        customerTypes.forEach((customer) => {
-          const obj = { id: customer.id, name: customer.customerType };
-          if (customer.customerType === "Fleet") {
-            commercialTypes.push(obj);
-          } else if (customer.customerType === "Institution") {
-            companyTypes.push(obj);
-          } else {
-            personalTypes.push(obj);
-          }
-        });
-        const obj = {
-          personal: personalTypes,
-          commercial: commercialTypes,
-          company: companyTypes,
-          handicapped: companyTypes,
-        };
-        state.customer_types_response = obj;
+        state.customer_types_response = action.payload;
       }
       state.isLoading = false;
     });
@@ -1690,6 +1822,20 @@ const prebookingFormSlice = createSlice({
       state.customer_types_response = [];
       state.isLoading = false;
     });
+
+    builder.addCase(getEnquiryTypesApi.pending, (state, action) => {
+      state.enquiry_type_list = [];
+      state.isLoading = true;
+    });
+    builder.addCase(getEnquiryTypesApi.fulfilled, (state, action) => {
+      state.enquiry_type_list = action.payload;
+      state.isLoading = false;
+    });
+    builder.addCase(getEnquiryTypesApi.rejected, (state, action) => {
+      state.enquiry_type_list = [];
+      state.isLoading = false;
+    });
+
     // Get Drop Down Data
     builder.addCase(getDropDataApi.pending, (state, action) => {
       state.drop_reasons_list = [];
@@ -1783,7 +1929,6 @@ const prebookingFormSlice = createSlice({
     });
     builder.addCase(getPaymentDetailsApi.fulfilled, (state, action) => {
       if (action.payload) {
-
         state.existing_payment_details_response = action.payload;
         state.type_of_upi = action.payload.typeUpi
           ? action.payload.typeUpi
@@ -1877,24 +2022,21 @@ const prebookingFormSlice = createSlice({
       state.isLoading = true;
     });
     builder.addCase(getRulesConfiguration.fulfilled, (state, action) => {
-    
       state.isLoading = false;
-      
-      if(action.payload){
+
+      if (action.payload) {
         state.configureRulesResponse = action.payload;
         state.configureRulesResponse_status = "fulfilled";
       }
-      
     });
     builder.addCase(getRulesConfiguration.rejected, (state, action) => {
       state.configureRulesResponse = "";
       state.configureRulesResponse_status = "rejected";
       state.isLoading = false;
     });
-    
+
     //Get Other prices drop down data
-    builder.addCase(getOtherPricesDropDown.pending, (state, action) => {
-    });
+    builder.addCase(getOtherPricesDropDown.pending, (state, action) => {});
     builder.addCase(getOtherPricesDropDown.fulfilled, (state, action) => {
       if (action.payload) {
         let data = [];
@@ -1908,8 +2050,7 @@ const prebookingFormSlice = createSlice({
         state.otherPricesDropDown = Object.assign([], data);
       }
     });
-    builder.addCase(getOtherPricesDropDown.rejected, (state, action) => {
-    });
+    builder.addCase(getOtherPricesDropDown.rejected, (state, action) => {});
   },
 });
 

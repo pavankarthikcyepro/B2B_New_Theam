@@ -76,6 +76,7 @@ import {
   updateAddressByPincode2,
   getRulesConfiguration,
   getOtherPricesDropDown,
+  getEnquiryTypesApi,
 } from "../../../redux/preBookingFormReducer";
 import {
   clearBookingState,
@@ -406,6 +407,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [configureRuleData, setConfigureRuleData] = useState("");
   const [isMiniAmountCheck, setisMiniAmountCheck] = useState(true);
   const [otherPriceDropDownIndex, setOtherPriceDropDownIndex] = useState(null);
+  const [isSelectOption, setIsSelectOption] = useState(false);
 
   // Edit buttons shows
   useEffect(() => {
@@ -578,7 +580,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     setComponentAppear(true);
     getAsyncstoreData();
     getBranchId();
-    getCustomerType();
+    getCustomerEnquiryType();
 
     BackHandler.addEventListener("hardwareBackPress", handleBackButtonClick);
     // return () => {
@@ -688,11 +690,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     setIsEdit(false);
   };
 
-  const getCustomerType = async () => {
+  const getCustomerEnquiryType = async () => {
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
       dispatch(getCustomerTypesApi(jsonObj.orgId));
+      dispatch(getEnquiryTypesApi(jsonObj.orgId));
     }
   };
 
@@ -1530,6 +1533,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
   const showDropDownModelMethod = (key, headerText) => {
     Keyboard.dismiss();
+    setIsSelectOption(false);
     const orgId = +userData.orgId;
 
     switch (key) {
@@ -1537,38 +1541,31 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         setDataForDropDown([...Salutation_Types]);
         break;
       case "ENQUIRY_SEGMENT":
-        let segments = [...Enquiry_Segment_Data];
-        if (orgId === 21) {
-          segments = [...EnquiryTypes21];
-        } else if (orgId === 22) {
-          segments = [...EnquiryTypes22];
+        if (selector.enquiry_type_list?.length === 0) {
+          showToast("No Enquiry Types found");
+          return;
         }
-        setDataForDropDown(segments);
-        // setDataForDropDown([...Enquiry_Segment_Data]);
+        let eData = selector.enquiry_type_list;
+        let eNewData = eData?.map((val) => ({
+          ...val,
+          name: val?.segment_type || "",
+        }));
+        setDataForDropDown([...eNewData]);
         break;
       case "BUYER_TYPE":
         setDataForDropDown([...Buyer_Type_Data]);
         break;
       case "CUSTOMER_TYPE":
-        // setDataForDropDown([...selector.customer_types_data]);
-
-        let customerTypes = [];
-        customerTypes =
-          CustomerTypesObj21[selector.enquiry_segment.toLowerCase()];
-        if (orgId === 21) {
-          customerTypes =
-            CustomerTypesObj21[selector.enquiry_segment.toLowerCase()];
-          selector.customerType = "";
-        } else if (orgId === 22) {
-          customerTypes =
-            CustomerTypesObj22[selector.enquiry_segment.toLowerCase()];
-          selector.customerType = "";
-        } else {
-          customerTypes =
-            CustomerTypesObj[selector.enquiry_segment.toLowerCase()];
-          selector.customerType = "";
+          if (selector.customer_types_data?.length === 0) {
+          showToast("No Customer Types found");
+          return;
         }
-        setDataForDropDown([...customerTypes]);
+        let cData = selector.customer_types_data;
+        let cNewData = cData.map((val) => ({
+          ...val,
+          name: val?.customer_type || "",
+        }));
+        setDataForDropDown([...cNewData]);
         break;
 
       case "GENDER":
@@ -1615,6 +1612,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           showToast("No Insurence Types Data Found");
           return;
         }
+        setIsSelectOption(true);
         setDataForDropDown([...insurenceVarientTypes]);
         break;
       case "WARRANTY":
@@ -1622,6 +1620,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           showToast("No Warranty Data Found");
           return;
         }
+        setIsSelectOption(true);
         setDataForDropDown([...warrentyTypes]);
         break;
       case "INSURENCE_ADD_ONS":
@@ -1629,6 +1628,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           showToast("No AddOns Insurence Data Found");
           return;
         }
+        setIsSelectOption(true);
         setDataForDropDown([...insurenceAddOnTypes]);
         setShowMultipleDropDownData(true);
         break;
@@ -1636,6 +1636,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         setDataForDropDown([...Vehicle_Types]);
         break;
       case "REGISTRATION_CHARGES":
+        setIsSelectOption(true);
         setDataForDropDown([...registrationChargesType]);
         break;
       case "CUSTOMER_TYPE_CATEGORY":
@@ -3761,6 +3762,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         headerTitle={dropDownTitle}
         data={dataForDropDown}
         disabledData={addNewInput}
+        isSelectOption={isSelectOption}
         multiple={showMultipleDropDownData}
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
@@ -3786,27 +3788,40 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             };
             dispatch(getDropSubReasonDataApi(payload));
           } else if (dropDownKey === "INSURENCE_ADD_ONS") {
-            let totalCost = 0;
-            let names = "";
-            let insurenceAddOns = [];
-            if (item.length > 0) {
-              item.forEach((obj, index) => {
-                totalCost += Number(obj.cost);
-                names += obj.name + (index + 1 < item.length ? ", " : "");
-                insurenceAddOns.push({
-                  insuranceAmount: obj.cost,
-                  insuranceAddonName: obj.name,
+            if (item.name == "Select") {
+              setSelectedAddOnsPrice(0);
+              setSelectedInsurenceAddons([]);
+              dispatch(
+                setDropDownData({ key: dropDownKey, value: names, id: "" })
+              );
+            } else {
+              setSelectedRegistrationCharges(item);
+              let totalCost = 0;
+              let names = "";
+              let insurenceAddOns = [];
+              if (item.length > 0) {
+                item.forEach((obj, index) => {
+                  totalCost += Number(obj.cost);
+                  names += obj.name + (index + 1 < item.length ? ", " : "");
+                  insurenceAddOns.push({
+                    insuranceAmount: obj.cost,
+                    insuranceAddonName: obj.name,
+                  });
                 });
-              });
+              }
+              setSelectedAddOnsPrice(totalCost);
+              setSelectedInsurenceAddons([...insurenceAddOns]);
+              dispatch(
+                setDropDownData({ key: dropDownKey, value: names, id: "" })
+              );
             }
-            setSelectedAddOnsPrice(totalCost);
-            setSelectedInsurenceAddons([...insurenceAddOns]);
-            dispatch(
-              setDropDownData({ key: dropDownKey, value: names, id: "" })
-            );
             return;
           } else if (dropDownKey === "REGISTRATION_CHARGES") {
-            setSelectedRegistrationCharges(item);
+            if (item.name == "Select") {
+              setSelectedRegistrationCharges({});
+            } else {
+              setSelectedRegistrationCharges(item);
+            }
           } else if (dropDownKey === "OTHER_PRICES") {
             inputHandlerName(item.name, otherPriceDropDownIndex);
           }
@@ -3824,13 +3839,23 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             );
           }
 
-          dispatch(
-            setDropDownData({
-              key: dropDownKey,
-              value: item.name,
-              id: item.id,
-            })
-          );
+          if (item.name == "Select") {
+            dispatch(
+              setDropDownData({
+                key: dropDownKey,
+                value: "",
+                id: "",
+              })
+            );
+          } else {
+            dispatch(
+              setDropDownData({
+                key: dropDownKey,
+                value: item.name,
+                id: item.id,
+              })
+            );
+          }
         }}
       />
 
@@ -4799,7 +4824,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 <FlatList
                   data={carModelsList}
                   extraData={carModelsList}
-                  keyExtractor={(item, index) => item && item.id ? item.id.toString() : index.toString()}
+                  keyExtractor={(item, index) =>
+                    item && item.id ? item.id.toString() : index.toString()
+                  }
                   renderItem={({ item, index }) => {
                     return (
                       // <Pressable onPress={() => selectedItem(item, index)}>

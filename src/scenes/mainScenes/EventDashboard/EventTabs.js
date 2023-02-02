@@ -195,38 +195,6 @@ const EventDashBoardTargetScreen = ({ route }) => {
     },
   ];
 
-  const crmMetaData = [
-    // 'Enquiry', 'Test Drive', 'Home Visit', 'Booking', 'INVOICE', 'Finance', 'Insurance', 'Exchange', 'EXTENDEDWARRANTY', 'Accessories'
-    {
-      color: "#FA03B9",
-      paramName: "Enquiry",
-      shortName: "Enq",
-      initial: "E",
-      toggleIndex: 0,
-    },
-    {
-      color: "#1C95A6",
-      paramName: "Booking",
-      shortName: "Bkg",
-      initial: "B",
-      toggleIndex: 0,
-    },
-    {
-      color: "#C62159",
-      paramName: "INVOICE",
-      shortName: "Retail",
-      initial: "R",
-      toggleIndex: 0,
-    },
-    {
-      color: "#C62159",
-      paramName: "DROPPED",
-      shortName: "Lost",
-      initial: "DRP",
-      toggleIndex: 0,
-    },
-  ];
-
   useEffect(() => {
     const dateFormat = "YYYY-MM-DD";
     const currentDate = moment().format(dateFormat);
@@ -380,7 +348,7 @@ const EventDashBoardTargetScreen = ({ route }) => {
         branchs: jsonObj.branchs,
       });
       if (true) {
-        getReceptionManagerTeam(jsonObj);
+        // getReceptionManagerTeam(jsonObj);
       }
       if (
         selector.login_employee_details.hasOwnProperty("roles") &&

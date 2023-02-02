@@ -98,6 +98,9 @@ import Carousel, { Pagination } from "react-native-snap-carousel";
 import { monthNamesCap } from "../Attendance/AttendanceTop";
 import { getNotificationList } from "../../../redux/notificationReducer";
 import AttendanceFromSelf from "../../../components/AttendanceFromSelf";
+import Orientation from "react-native-orientation-locker";
+import { useIsFocused } from "@react-navigation/native";
+import { useIsDrawerOpen } from "@react-navigation/drawer";
 
 const officeLocation = {
   latitude: 37.33233141,
@@ -138,6 +141,15 @@ const HomeScreen = ({ route, navigation }) => {
     hrmsRole: "",
     orgId: 0,
   });
+
+    const isFocused = useIsFocused();
+  const isDrawerOpen = useIsDrawerOpen();
+
+  useEffect(() => {
+    if (isFocused || (isFocused && isDrawerOpen)) {
+      Orientation.unlockAllOrientations();
+    }
+  }, [isFocused, isDrawerOpen]);
 
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {
@@ -1026,6 +1038,26 @@ const HomeScreen = ({ route, navigation }) => {
     }
   };
 
+  function navigateToEMS(params) {
+    navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
+    setTimeout(() => {
+      navigation.navigate("LEADS", {
+        // param: param === "INVOICE" ? "Retail" : param,
+        // moduleType: "home",
+        // employeeDetail: "",
+      });
+    }, 1000);
+  }
+  function navigateToContact(params) {
+    navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
+    setTimeout(() => {
+      navigation.navigate("PRE_ENQUIRY", {
+        // param: param === "INVOICE" ? "Retail" : param,
+        // moduleType: "home",
+        // employeeDetail: "",
+      });
+    }, 1000);
+  }
   const getFileExtention = (fileUrl) => {
     // To get the file extension
     return /[.]/.exec(fileUrl) ? /[^.]+$/.exec(fileUrl) : undefined;
@@ -1347,7 +1379,7 @@ const HomeScreen = ({ route, navigation }) => {
               <TouchableOpacity
                 onPress={() => {
                   selector.receptionistData.contactsCount > 0 &&
-                    navigateToEMS();
+                    navigateToContact();
                 }}
                 style={styles.view8}
               >
@@ -1362,7 +1394,7 @@ const HomeScreen = ({ route, navigation }) => {
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
-                  selector.receptionistData.totalDroppedCount > 0 &&
+                  selector.receptionistData.totalLostCount > 0 &&
                     navigateToEMS();
                 }}
                 style={styles.view8}
@@ -1375,7 +1407,7 @@ const HomeScreen = ({ route, navigation }) => {
                 </Text>
                 <View style={styles.cardView}>
                   <Text style={{ ...styles.rankText, color: "blue" }}>
-                    {selector.receptionistData?.totalDroppedCount || 0}
+                    {selector.receptionistData?.totalLostCount || 0}
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -1791,7 +1823,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginTop: 20,
     alignItems: "center",
-    marginBottom:20
+    marginBottom: 20,
   },
   view8: { flexDirection: "column", alignItems: "center" },
   view9: {

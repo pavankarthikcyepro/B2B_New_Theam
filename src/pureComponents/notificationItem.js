@@ -4,8 +4,10 @@ import { IconButton } from "react-native-paper";
 import { Colors, GlobalStyle } from "../styles";
 
 export const NotificationItem = ({ title, date, onPress, icon, style, isFlag }) => {
-  const conversionIndex = title.indexOf("Conversion:") + 12;
-  const perIndex = title.indexOf("%,");
+  const conversionIndex = title.includes("Conversion :")
+    ? title.indexOf("Conversion :") + 13
+    : title.indexOf("Conversion:") + 12;
+  const perIndex = title.indexOf("%");
 
   let firstStr = "";
   let secStr = "";
@@ -22,7 +24,7 @@ export const NotificationItem = ({ title, date, onPress, icon, style, isFlag }) 
       <View style={styles.subRow}>
         <Image source={icon} style={styles.iconContainer} />
         <View style={{ margin: 5, flex: 1 }}>
-          {firstStr && secStr && thirdStr ? (
+          {secStr ? (
             <Text style={styles.title}>
               {firstStr}
               <Text
