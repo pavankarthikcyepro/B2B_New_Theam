@@ -82,7 +82,7 @@ const AttendanceDashboard = ({ route, navigation }) => {
   useEffect(() => {
     // setFromDateState(lastMonthFirstDate);
     // setToDateState(currentDate);
-    // getEmployeeList(lastMonthFirstDate, currentDate);
+    getEmployeeList(lastMonthFirstDate, currentDate);
   }, []);
 
   useEffect(() => {
@@ -98,9 +98,10 @@ const AttendanceDashboard = ({ route, navigation }) => {
           route?.params?.params?.selectedID,
           route?.params?.params?.orgId
         );
-      } else {
-        getEmployeeList(currentDate);
-      }
+      } 
+      // else {
+      //   getEmployeeList(currentDate);
+      // }
     });
   }, [route.params]);
 
