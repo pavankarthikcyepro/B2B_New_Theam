@@ -680,6 +680,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                                                 mobileNo={item.mobileNumber}
                                                 isCheckboxVisible={true}
                                                 isRefresh={isRefresh}
+                                                navigation ={navigation}
                                             />
                                         </View>
                                     </>
@@ -741,6 +742,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                                                 dropStatus={item.status}
                                                 mobileNo={item.mobileNumber}
                                                 isCheckboxVisible = {false}
+                                                navigation={navigation}
                                             />
                                         </View>
                                     </>
@@ -802,6 +804,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                                                 dropStatus={item.status}
                                                 mobileNo={item.mobileNumber}
                                                 isCheckboxVisible={false}
+                                                navigation={navigation}
                                             />
                                         </View>
                                     </>

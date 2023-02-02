@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity,Image } from 'react-native';
 import { Colors } from '../../../../styles';
 import { convertTimeStampToDateString, callNumber, navigatetoCallWebView } from '../../../../utils/helperFunctions';
 import { Checkbox, IconButton } from "react-native-paper";
@@ -7,6 +7,7 @@ import moment from "moment";
 import { AppNavigator, AuthNavigator } from "../../../../navigations";
 import * as AsyncStore from '../../../../asyncStore';
 import { CHECKBOX_SELECTED } from '../../../../assets/svg';
+
 
 
 
@@ -52,7 +53,7 @@ const IconComp = ({ iconName, onPress,bgColor }) => {
 
 
 
-export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId, uniqueId, enqCat, leadStage, name, status, created, dmsLead, lostReason, isManager = false, dropStatus = '', mobileNo, isCheckboxVisible, isRefresh =false}) => {
+export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId, uniqueId, enqCat, leadStage, name, status, created, dmsLead, lostReason, isManager = false, dropStatus = '', mobileNo, isCheckboxVisible, isRefresh = false, navigation }) => {
   const [isItemSelected, setisItemSelected] = useState("unchecked")
  
    
@@ -112,44 +113,55 @@ export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId
     }
 
     return (
-      <TouchableOpacity  style={styles.section} >
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            position: "relative",
-          }}
-        >
-          <View style={{ width: "70%" }}>
-            {isManager && isCheckboxVisible &&
-               <Checkbox
-                 onPress={() => {
-                     checkboxSelected()
-                }}
-                   status={isItemSelected}
+    <View style={{flexDirection:"row",alignItems:"center"}}>
+        <TouchableOpacity style={styles.section} >
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              position: "relative",
+            }}
+          >
+            {true && (
+              <View
+                style={styles.btn3}
+
+              >
+                <Text style={styles.txt7}>3</Text>
+              </View>
+            )}
+            <View style={{ width: "60%" }}>
+
+              {isManager && isCheckboxVisible &&
+                <Checkbox.Android
+                  onPress={() => {
+                    checkboxSelected()
+                  }}
+                  status={isItemSelected}
                   color={Colors.YELLOW}
                   uncheckedColor={Colors.YELLOW} />}
-                              
-            <View style={{ flexDirection: "row", marginLeft: 10 }}>
-              <View style={{ maxWidth: "73%" }}>
-                <Text style={styles.text1}>{name}</Text>
+
+              <View style={{ flexDirection: "row", marginLeft: 10 }}>
+                <View style={{ maxWidth: "73%" }}>
+
+                  <Text style={styles.text1}>{name}</Text>
+                </View>
+                <Text style={styles.catText}>{enqCat}</Text>
               </View>
-              <Text style={styles.catText}>{enqCat}</Text>
-            </View>
-            <Text style={styles.text2}>{lostReason + " - " + dmsLead}</Text>
-            <Text style={styles.text2}>{mobileNo}</Text>
-            <Text style={styles.text3}>{date}</Text>
-            {/* {needStatus === "YES" &&
+              <Text style={styles.text2}>{lostReason + " - " + dmsLead}</Text>
+              <Text style={styles.text2}>{mobileNo}</Text>
+              <Text style={styles.text3}>{date}</Text>
+              {/* {needStatus === "YES" &&
                         <View style={{ height: 15, width: 15, borderRadius: 10, backgroundColor: leadStatus === 'PREENQUIRYCOMPLETED' || (leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY') || (leadStatus === 'PREBOOKINGCOMPLETED' && leadStage === 'PREBOOKING') || leadStatus === 'BOOKINGCOMPLETED' ? '#18a835' : '#f29a22', position: 'absolute', top: 0, right: 0 }}></View>
                     } */}
-          </View>
-          <View style={{ width: "30%", alignItems: "center" }}>
-            <View style={styles.modal}>
-              <Text style={styles.text4}>{checkForStageName(leadStage)}</Text>
             </View>
-            {/* <View style={{ height: 8 }}></View> */}
-            {/* {isManager && dropStatus === "DROPPED" && (
+            <View style={{ width: "30%", alignItems: "center" }}>
+              <View style={styles.modal}>
+                <Text style={styles.text4}>{checkForStageName(leadStage)}</Text>
+              </View>
+              {/* <View style={{ height: 8 }}></View> */}
+              {/* {isManager && dropStatus === "DROPPED" && (
               <View
                 style={{
                   flexDirection: "row",
@@ -183,13 +195,13 @@ export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId
                 </View>
               </View>
             )} */}
-            
-            {/*{(!isManager || (isManager && dropStatus === 'REJECTED')) &&*/}
-            {/*    <View style={{ flexDirection: "row", width: "100%", justifyContent: "space-evenly" }}>*/}
-            {/*    <Text style={{ color: dropStatus === 'DROPPED' ? '#18a835' : '#f29a22', fontSize: 16, fontWeight: 'bold'}}>{dropStatus}</Text>*/}
-            {/*    </View>*/}
-            {/*}*/}
-            {/* {!isManager && ( */}
+
+              {/*{(!isManager || (isManager && dropStatus === 'REJECTED')) &&*/}
+              {/*    <View style={{ flexDirection: "row", width: "100%", justifyContent: "space-evenly" }}>*/}
+              {/*    <Text style={{ color: dropStatus === 'DROPPED' ? '#18a835' : '#f29a22', fontSize: 16, fontWeight: 'bold'}}>{dropStatus}</Text>*/}
+              {/*    </View>*/}
+              {/*}*/}
+              {/* {!isManager && ( */}
               <View
                 style={{
                   flexDirection: "row",
@@ -199,7 +211,7 @@ export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId
               >
                 <Text
                   style={{
-                  color: dropStatus === "DROPPED" ? "#18a835" : Colors.YELLOW,
+                    color: dropStatus === "DROPPED" ? "#18a835" : Colors.YELLOW,
                     fontSize: 14,
                     fontWeight: "bold",
                   }}
@@ -207,10 +219,32 @@ export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId
                   {dropStatus}
                 </Text>
               </View>
-            {/* )} */}
+              {/* )} */}
+            </View>
           </View>
-        </View>
-      </TouchableOpacity>
+        </TouchableOpacity>
+        {true ? (
+          <TouchableOpacity
+          style={{flex:1}}
+            onPress={() =>
+              navigation.navigate(
+                "DROP_ANALYSIS_HISTORY",
+                {
+                  
+                  title: dropStatus,
+                  universalId:uniqueId,
+                }
+              )
+            }
+          >
+            <Image
+              source={require("./../../../../assets/images/dots.png")}
+              resizeMode="contain"
+              style={styles.dotContainer}
+            />
+          </TouchableOpacity>
+        ) : null}
+    </View>
     );
 }
 
@@ -250,7 +284,8 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         elevation: 3,
         marginHorizontal: 5,
-        marginVertical: 6
+        marginVertical: 6,
+        width:'90%'
     },
     modal: {
         backgroundColor: Colors.RED,
@@ -269,4 +304,24 @@ const styles = StyleSheet.create({
         marginLeft: 5,
         textTransform: 'uppercase'
     },
+  txt7: { fontSize: 16, fontWeight: "500", color: Colors.RED },
+  btn3: {
+    width: 35,
+    height: 35,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#d1d1d1",
+    borderRadius: 5,
+    // backgroundColor:Colors.PINK,  
+    alignSelf: "flex-end",
+    alignSelf:"flex-start",
+    marginBottom: -5
+    // marginEnd:10
+
+  },
+  dotContainer: {
+    height: 45,
+    width: 25,
+  },
 })

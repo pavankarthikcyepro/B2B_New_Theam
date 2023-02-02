@@ -400,6 +400,7 @@ export const EmsStackIdentifiers = {
   webViewComp: "webViewComp",
   ProformaScreen: "PROFORMA_SCREEN",
   newEnquiry: "NEW_ENQUIRY",
+  testDriveHistory: "TEST_HISTORY"
 };
 
 export const PreBookingStackIdentifiers = {
@@ -654,6 +655,14 @@ const EmsStackNavigator = ({ navigation }) => {
         name={EmsStackIdentifiers.ProformaScreen}
         component={ProformaScreen}
         options={{ title: "Proforma Invoice" }}
+      />
+      <EmsStack.Screen
+        name={EmsStackIdentifiers.testDriveHistory}
+        component={TestDriveHistory}
+        options={{
+          title: "Test Drive History",
+          // headerRight: () => <TestDriveHistoryIcon navigation={navigation} />,
+        }}
       />
     </EmsStack.Navigator>
   );
@@ -1030,6 +1039,13 @@ const DropAnalysisStackNavigator = ({ navigation }) => {
               </View>
             );
           },
+        }}
+      />
+      <DropAnalysisStack.Screen
+        name={"DROP_ANALYSIS_HISTORY"}
+        component={TaskThreeSixtyHistory}
+        options={{
+         
         }}
       />
     </DropAnalysisStack.Navigator>

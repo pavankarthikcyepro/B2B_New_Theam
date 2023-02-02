@@ -266,6 +266,10 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                         }
 
                         let isHistory = section.title == "Planned Tasks";
+                      let isDotVisible = item.taskName.includes("Follow Up");
+                      let isDotVisibleForClosed = item.taskName.includes("Follow Up") || item.taskName.includes("Test Drive");
+                      // let isDotVisible = item.taskName == "Pre Enquiry Follow Up" || item.taskName == "Enquiry Follow Up" 
+                      //   || item.taskName == "Pre Booking Follow Up" || item.taskName == "Enquiry Follow Up" ;
 
                         return (
                           <>
@@ -448,10 +452,11 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                 </View>
                                 <View
                                   style={{
-                                    width: isHistory ? "67%" : "75%",
+                                      width: isHistory ? "67%" : "67%",
                                     padding: 5,
                                   }}
                                 >
+                                    
                                   <View
                                     style={[
                                       { backgroundColor: Colors.WHITE },
@@ -472,6 +477,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                             justifyContent: "space-between",
                                           }}
                                         >
+                                            
                                           {TaskNameView(item.taskName)}
                                           {item.lat && item.lon && (
                                             <TouchableOpacity
@@ -497,29 +503,51 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                           {"Assignee: " +
                                             item.assignee?.empName}
                                         </Text>
-                                        {item?.taskUpdatedBy?.empName ? (
-                                          <Text style={styles.followUpText}>
-                                            Follow-up by:{" "}
-                                            {item.taskUpdatedBy.empName}
-                                          </Text>
-                                        ) : null}
-                                        <Text
-                                          style={{
-                                            fontSize: 14,
-                                            fontWeight: "400",
-                                            color: Colors.GRAY,
-                                          }}
-                                        >
-                                          {"Remarks: " +
-                                            (item.employeeRemarks
-                                              ? item.employeeRemarks
-                                              : "")}
-                                        </Text>
+                                          {item?.taskUpdatedBy?.empName ? (
+                                            <Text style={styles.followUpText}>
+                                              Follow-up by:{" "}
+                                              {item.taskUpdatedBy.empName}
+                                            </Text>
+                                          ) : null}
+                                          <View style={{flexDirection:"row" ,justifyContent:"space-between"}}>
+                                            <Text
+                                              style={{
+                                                fontSize: 14,
+                                                fontWeight: "400",
+                                                color: Colors.GRAY,
+                                                flex:1
+                                              }}
+                                            >
+                                              {"Remarks: " +
+                                                (item.employeeRemarks
+                                                  ? item.employeeRemarks
+                                                  : "")}
+                                            </Text>
+                                            {/* Bubble count UI  */}
+
+                                            {isDotVisibleForClosed && !isHistory && (
+                                              <View
+                                                style={styles.btn3}
+
+                                              >
+                                                <Text style={styles.txt7}>3</Text>
+                                              </View>
+                                            )}
+                                            {isDotVisible && isHistory && (
+                                              <View
+                                                style={styles.btn3}
+
+                                              >
+                                                <Text style={styles.txt7}>3</Text>
+                                              </View>
+                                            )}
+                                          </View>
+                                        
                                       </View>
                                     </TouchableOpacity>
                                   </View>
                                 </View>
-                                {isHistory ? (
+                                  {isHistory && isDotVisible ? (
                                   <TouchableOpacity
                                     onPress={() =>
                                       navigation.navigate(
@@ -542,6 +570,38 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                     />
                                   </TouchableOpacity>
                                 ) : null}
+                                  {!isHistory && isDotVisibleForClosed ? (
+                                    <TouchableOpacity
+                                      onPress={() =>
+                                        {
+                                        if (item.taskName !== "Test Drive"){
+                                            navigation.navigate(
+                                              EmsStackIdentifiers.task360History,
+                                              {
+                                                identifier:
+                                                  mytasksIdentifires.task360History,
+                                                title: checkForTaskNames(
+                                                  item.taskName
+                                                ),
+                                                universalId: item.universalId,
+                                              }
+                                            )
+                                        } else {
+                                          navigation.navigate("TEST_HISTORY", {
+                                            universalId: universalId,
+
+                                          })
+                                        }
+                                        }
+                                      }
+                                    >
+                                      <Image
+                                        source={require("./../../../assets/images/dots.png")}
+                                        resizeMode="contain"
+                                        style={styles.dotContainer}
+                                      />
+                                    </TouchableOpacity>
+                                  ) : null}
                               </View>
                             )}
                           </>
@@ -639,5 +699,20 @@ const styles = StyleSheet.create({
     borderColor: "#d1d1d1",
     borderRadius: 5,
   },
-  txt4:{ fontSize: 18, fontWeight: "700", marginBottom: 5 }
+  btn3: {
+    width: 35,
+    height: 35,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#d1d1d1",
+    borderRadius: 5,
+    // backgroundColor:Colors.PINK,  
+    alignSelf:"flex-end",
+    marginBottom:-5
+    // marginEnd:10
+   
+  },
+  txt4: { fontSize: 18, fontWeight: "700", marginBottom: 5 },
+  txt7: { fontSize: 16, fontWeight: "500", color:Colors.RED }
 });

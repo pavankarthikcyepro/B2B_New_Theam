@@ -106,10 +106,17 @@ const TaskThreeSixtyHistory = (props) => {
     const taskNameView = (taskName) => {
       const name = checkForTaskNames(taskName);
       return (
+        // <Text style={styles.taskNameText} numberOfLines={2}>
+        //   {`${name} ${
+        //     item?.taskUpdatedBy?.designationName
+        //       ? `- ${item?.taskUpdatedBy?.designationName}`
+        //       : ""
+        //   } `}
+        // </Text>
         <Text style={styles.taskNameText} numberOfLines={2}>
-          {`${name} ${
+          {`${
             item?.taskUpdatedBy?.designationName
-              ? `- ${item?.taskUpdatedBy?.designationName}`
+              ? `${item?.taskUpdatedBy?.designationName}`
               : ""
           } `}
         </Text>
@@ -160,17 +167,39 @@ const TaskThreeSixtyHistory = (props) => {
         <View style={styles.taskMainContainer}>
           <View style={styles.taskContainer}>
             {taskNameView(item?.taskName)}
-            <Text style={styles.assigneeText}>
-              {"Assignee: " + item?.assignee?.empName ?? ""}
-            </Text>
-            {item?.taskUpdatedBy?.empName ? (
+            <View style={{ flexDirection: "row" }}>
+              <View style={{ flexDirection: "column" }}>
+                <Text style={styles.assigneeText}>
+                  {"Reason: "}
+                </Text>
+                <Text style={styles.assigneeText}>
+                  {"Customer Remarks: "}
+                </Text>
+                <Text style={styles.assigneeText}>
+                  {"Employee Remarks: "}
+                </Text>
+              </View>
+              <View style={{ flexDirection: "column" }}>
+                <Text style={styles.assigneeTextV2}>
+                  {item?.reason ?? ""}
+                </Text>
+                <Text style={styles.assigneeTextV2}>
+                  {item?.customerRemarks ?? ""}
+                </Text>
+                <Text style={styles.assigneeTextV2}>
+                  {item?.employeeRemarks ?? ""}
+                </Text>
+              </View>
+            </View>
+            
+            {/* {item?.taskUpdatedBy?.empName ? (
               <Text style={styles.followUpText}>
                 Follow-up by: {item.taskUpdatedBy.empName}
               </Text>
             ) : null}
             <Text style={styles.remarksText}>
               {"Remarks: " + (item?.employeeRemarks ?? "")}
-            </Text>
+            </Text> */}
           </View>
         </View>
       </View>
@@ -326,7 +355,16 @@ const styles = StyleSheet.create({
   },
   assigneeText: {
     fontSize: 14,
+    fontWeight: "bold",
+    marginVertical: 5,
+    flex: 1
+  },
+  assigneeTextV2: {
+    fontSize: 14,
     fontWeight: "400",
+    color:Colors.GRAY_LIGHT,
+    marginVertical:5  ,
+    flex:1
   },
   followUpText: {
     fontSize: 14,
