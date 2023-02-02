@@ -1156,7 +1156,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     if (selector.enquiry_segment?.length == 0) {
       scrollToPos(2);
       setOpenAccordian("1");
-      showToast("Please select enquery segment");
+      showToast("Please select enquiry segment");
       return;
     }
 
@@ -2355,7 +2355,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       selector.enquiry_drop_response_status === "success" &&
       selector.refNo !== ""
     ) {
-      Alert.alert("Sent For Approval", `Enquery Number: ${selector.refNo}`, [
+      Alert.alert("Sent For Approval", `Enquiry Number: ${selector.refNo}`, [
         {
           text: "OK",
           onPress: () => {

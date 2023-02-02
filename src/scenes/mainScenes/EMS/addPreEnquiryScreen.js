@@ -499,7 +499,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     //     return;
     // }
     if (selector.enquiryType.length == 0) {
-      showToastRedAlert("Please select enquery segment");
+      showToastRedAlert("Please select enquiry segment");
       return;
     }
     if (selector.customerType.length == 0) {
