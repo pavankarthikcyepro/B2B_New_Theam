@@ -348,7 +348,7 @@ const EventDashBoardTargetScreen = ({ route }) => {
         branchs: jsonObj.branchs,
       });
       if (true) {
-        getReceptionManagerTeam(jsonObj);
+        // getReceptionManagerTeam(jsonObj);
       }
       if (
         selector.login_employee_details.hasOwnProperty("roles") &&
