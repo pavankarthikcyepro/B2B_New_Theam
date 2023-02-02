@@ -2942,10 +2942,11 @@ const TargetScreen = ({ route }) => {
                                   color:
                                     Math.floor(
                                       (parseInt(
-                                        selector.receptionistData.enquirysCount
+                                        selector.receptionistData.RetailCount
                                       ) /
                                         parseInt(
-                                          selector.receptionistData.RetailCount
+                                          selector.receptionistData
+                                            .enquirysCount
                                         )) *
                                         100
                                     ) > 40
@@ -2964,10 +2965,11 @@ const TargetScreen = ({ route }) => {
                                   ? 0
                                   : Math.round(
                                       (parseInt(
-                                        selector.receptionistData.enquirysCount
+                                        selector.receptionistData.RetailCount
                                       ) /
                                         parseInt(
-                                          selector.receptionistData.RetailCount
+                                          selector.receptionistData
+                                            .enquirysCount
                                         )) *
                                         100
                                     )}

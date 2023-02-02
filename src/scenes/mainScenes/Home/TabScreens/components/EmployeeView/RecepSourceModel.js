@@ -312,6 +312,53 @@ const RecepSourceModel = ({ route, navigation }) => {
     );
   };
 
+  const renderTitleView = () => {
+    const keys = isSourceIndex === 0 ? leadSourceKeys : vehicleModelKeys;
+    const data = isSourceIndex === 0 ? leadSource : vehicleModel;
+    const newData =
+      isSourceIndex === 0
+        ? selector.receptionistSource
+        : selector.receptionistModel;
+    return (
+      <>
+        {
+          // keys &&
+          //   keys.length > 0 &&
+          newData.map((x, index) => {
+            return (
+              <View
+                style={{
+                  flexDirection: "row",
+                  // backgroundColor: "#D7EAF9",
+                  // backgroundColor: "#FAAFBA",
+                  backgroundColor: "rgba(223,228,231,0.67)",
+                  // paddingVertical: 6,
+                  height: 35,
+                  alignItems: "center",
+                  marginVertical: 5,
+                }}
+              >
+                <View style={{ width: 175 }}>
+                  <Text
+                    style={{
+                      color: Colors.BLACK,
+                      fontSize: 13,
+                      fontWeight: "500",
+                    }}
+                  >
+                    {x?.source && x?.subsource
+                      ? x?.source + " - " + x?.subsource
+                      : x?.model}
+                  </Text>
+                </View>
+              </View>
+            );
+          })
+        }
+      </>
+    );
+  };
+
   return (
     <>
       <ScrollView nestedScrollEnabled showsVerticalScrollIndicator={false}>
@@ -401,38 +448,7 @@ const RecepSourceModel = ({ route, navigation }) => {
             >
               <View style={{ width: 175, height: 35 }} />
             </View>
-            {isSourceIndex === 0
-              ? selector.receptionistSource
-              : selector.receptionistModel.map((x, index) => {
-                  return (
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        // backgroundColor: "#D7EAF9",
-                        // backgroundColor: "#FAAFBA",
-                        backgroundColor: "rgba(223,228,231,0.67)",
-                        // paddingVertical: 6,
-                        height: 35,
-                        alignItems: "center",
-                        marginVertical: 5,
-                      }}
-                    >
-                      <View style={{ width: 175 }}>
-                        <Text
-                          style={{
-                            color: Colors.BLACK,
-                            fontSize: 13,
-                            fontWeight: "500",
-                          }}
-                        >
-                          {x?.source && x?.subsource
-                            ? x?.source + " - " + x?.subsource
-                            : x?.model}
-                        </Text>
-                      </View>
-                    </View>
-                  );
-                })}
+            {renderTitleView()}
             <View
               style={{
                 flexDirection: "row",
@@ -531,7 +547,7 @@ const RecepSourceModel = ({ route, navigation }) => {
                               color: Colors.WHITE,
                               fontSize: 13,
                               fontWeight: "600",
-                              textDecorationLine: "underline",
+                              // textDecorationLine: "underline",
                             }}
                           >
                             {sourceModelTotals[param?.initial?.toLowerCase()]}
