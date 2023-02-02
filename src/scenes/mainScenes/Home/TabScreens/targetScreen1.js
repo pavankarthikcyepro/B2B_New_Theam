@@ -51,7 +51,7 @@ const color = [
   "#1f93ab",
   "#ec3466",
 ];
-const receptionistRole = ["Reception", "CRM"];
+const receptionistRole = ["Reception", "CRM", "Tele Caller"];
 const TargetScreen = ({ route }) => {
   const navigation = useNavigation();
   const selector = useSelector((state) => state.homeReducer);
