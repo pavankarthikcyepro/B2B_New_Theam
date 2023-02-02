@@ -19,10 +19,8 @@ const ChildComp = ({ route, navigation, }) => {
 
 
     useEffect(async () => {
-
         const selectedAccessory = accessorylist.filter(x => x.selected);
-        await addItemInAsyncStorage(key, selectedAccessory).then(r => {});
-
+        await addItemInAsyncStorage(key, selectedAccessory, true).then(r => {});
         setTableData([...accessorylist]);
         setSearchedData([...accessorylist]);
     }, [accessorylist])
@@ -47,17 +45,16 @@ const ChildComp = ({ route, navigation, }) => {
         setSearchedData([...searchData]);
     }
 
-    const addItemInAsyncStorage = async (key, item) => {
-
-        const existingData = await AsyncStorage.getData(key);
-        let data = [];
-        if (!existingData) {
-            data = item;
-        } else {
-            data = [...JSON.parse(existingData), item];
-        }
-        await AsyncStorage.storeData(key, JSON.stringify(data))
-    }
+    const addItemInAsyncStorage = async (key, item, initial) => {
+      const existingData = await AsyncStorage.getData(key);
+      let data = [];
+      if (!existingData || initial) {
+        data = item;
+      } else {
+        data = [...JSON.parse(existingData), item];
+      }
+      await AsyncStorage.storeData(key, JSON.stringify(data));
+    };
 
     const removeItemInAsyncStorage = async (key, item) => {
 

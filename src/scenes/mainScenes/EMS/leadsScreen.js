@@ -36,26 +36,30 @@ import { updateIsSearch, updateSearchKey } from "../../../redux/appReducer";
 import { getPreBookingData } from "../../../redux/preBookingReducer";
 import DateRangePicker from "../../../utils/DateRangePicker";
 import {
-  getLeadsList,
+  
   getMenu,
   getStatus,
   getSubMenu,
 } from "../../../redux/leaddropReducer";
 import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 import Entypo from "react-native-vector-icons/FontAwesome";
-
+import { getLeadsList } from "../../../redux/enquiryReducer";
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().add(0, "day").endOf("month").format(dateFormat);
 const lastMonthFirstDate = moment(currentDate, dateFormat)
   .subtract(0, "months")
   .startOf("month")
   .format(dateFormat);
+const lastMonthLastDate = moment(currentDate, dateFormat)
+  .subtract(0, "months")
+  .endOf("month")
+  .format(dateFormat);
 
 const LeadsScreen = ({ route, navigation }) => {
   const isFocused = useIsFocused();
   const selector = useSelector((state) => state.enquiryReducer);
   const appSelector = useSelector((state) => state.appReducer);
-  const { vehicle_model_list_for_filters, source_of_enquiry_list } =
+  const { vehicle_model_list_for_filters, source_of_enquiry_list, filterIds } =
     useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
   const [vehicleModelList, setVehicleModelList] = useState(
@@ -343,15 +347,18 @@ const LeadsScreen = ({ route, navigation }) => {
   ) => {
     // const type = {enq: "ENQUIRY", bkgAprvl: 'PRE_BOOKING', bkg: 'BOOKING'}
     return {
-      startdate: startDate,
-      enddate: endDate,
+      startdate: selectedFromDate,
+      enddate: selectedToDate,
       model: modelFilters,
       categoryType: categoryFilters,
       sourceOfEnquiry: sourceFilters,
-      empId: empId,
-      status: leadType,
+      empId: employeeId,
+      status: "",
       offset: offSet,
-      limit: 50000,
+      limit: 50,
+       "leadStage": defualtLeadStage,
+      "leadStatus": defualtLeadStatus
+
     };
   };
 
@@ -359,13 +366,15 @@ const LeadsScreen = ({ route, navigation }) => {
     if (selector.isLoadingExtraData) {
       return;
     }
-    if (employeeId && selector.pageNumber + 1 < selector.totalPages) {
+   
+    if (employeeId && ((selector.pageNumber + 1) < selector.totalPages)) {
       const payload = getPayloadData(
         employeeId,
         selectedFromDate,
-        selectedToDate,
+        selectedToDate,"",
         selector.pageNumber + 1
       );
+      
       dispatch(getMoreEnquiryList(payload));
     }
   };
@@ -682,7 +691,7 @@ const LeadsScreen = ({ route, navigation }) => {
   ) => {
     setSearchedData([]);
     setLeadsList([]);
-    setSelectedToDate(moment().add(0, "day").endOf("month").format(dateFormat));
+    // setSelectedToDate(moment().add(0, "day").endOf("month").format(dateFormat));
     setLoader(true);
     const employeeData = await AsyncStore.getData(
       AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -784,9 +793,28 @@ const LeadsScreen = ({ route, navigation }) => {
         isLive = true;
         from = "2021-01-01";
       } else if (route?.params?.param && route?.params?.moduleType == "home") {
-        from = lastMonthFirstDate;
+        // todo
+        if (filterIds?.startDate && filterIds.endDate){
+          setFromDateState(filterIds.startDate)
+          setToDateState(filterIds.endDate)
+          from = await filterIds.startDate ? filterIds.startDate : lastMonthFirstDate;
+          to = await filterIds.endDate ? filterIds.endDate : lastMonthLastDate
+        }else{
+          setFromDateState(lastMonthFirstDate)
+          setToDateState(lastMonthLastDate)
+        }
+       
       } else {
       }
+      if (from){
+        setSelectedFromDate(from);
+        setSelectedToDate(to)
+      }else{
+        setSelectedFromDate(selectedFromDate);
+        setSelectedToDate(selectedToDate)  
+      }
+
+//todo
       let newPayload = {
         startdate: from ? from : selectedFromDate,
         enddate: to ? to : selectedToDate,
@@ -798,7 +826,7 @@ const LeadsScreen = ({ route, navigation }) => {
           : jsonObj.empId,
         status: "",
         offset: 0,
-        limit: 50000,
+        limit: 50,
         leadStage: leadStages,
         leadStatus: defLeadStatus
           ? defLeadStatus
@@ -810,18 +838,32 @@ const LeadsScreen = ({ route, navigation }) => {
         newPayload,
         isLive,
       };
+      
       Promise.all([dispatch(getLeadsList(data))])
         .then((response) => {
           setLoader(false);
-          let newData = response[0].payload?.dmsEntity?.leadDtoPage?.content;
-          setSearchedData(newData);
-          setLeadsList(newData);
+          // let newData = response[0].payload?.dmsEntity?.leadDtoPage?.content;
+          // setSearchedData(newData);
+          // setLeadsList(newData);
         })
         .catch((error) => {
           setLoader(false);
         });
     }
   };
+  useEffect(() => {
+    if (selector.leadList_status === "success"){
+      let newData = selector.leadList;
+      if(newData.length > 0){
+        setSearchedData(newData);
+        setLeadsList(newData);
+      }
+    
+    }
+    
+  
+  }, [selector.leadList])
+  
 
   const renderFooter = () => {
     if (!selector.isLoadingExtraData) {
@@ -858,7 +900,8 @@ const LeadsScreen = ({ route, navigation }) => {
   }
 
   const onRefresh = async () => {
-    setSelectedFromDate(lastMonthFirstDate);
+    // setSelectedFromDate(lastMonthFirstDate);
+    // setSelectedToDate(lastMonthLastDate)
     Promise.all([dispatch(getMenu()), dispatch(getStatus())])
       .then(async ([res, res2]) => {
         let path = res.payload;
@@ -1186,11 +1229,13 @@ const LeadsScreen = ({ route, navigation }) => {
             }
             showsVerticalScrollIndicator={false}
             onEndReachedThreshold={0}
-            // onEndReached={() => {
-            //     if (appSelector.searchKey === '') {
-            //         getMoreEnquiryListFromServer()
-            //     }
-            // }}
+            onEndReached={() => {
+              
+              if (searchQuery === '') {
+                 
+                    getMoreEnquiryListFromServer()
+                }
+            }}
             ListFooterComponent={renderFooter}
             renderItem={renderItem}
           />

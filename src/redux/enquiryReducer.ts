@@ -15,13 +15,32 @@ export const getEnquiryList = createAsyncThunk("ENQUIRY/getEnquiryList", async (
 
 export const getMoreEnquiryList = createAsyncThunk("ENQUIRY/getMoreEnquiryList", async (payload, { rejectWithValue }) => {
 
-  const response = await client.post(URL.LEADS_LIST_API_FILTER(), payload);
+  const response = await client.post(URL.GET_LEAD_LIST_2(), payload);
+  
   const json = await response.json()
   if (!response.ok) {
     return rejectWithValue(json);
   }
   return json;
 })
+
+
+export const getLeadsList = createAsyncThunk(
+  "ENQUIRY/getLeadsList",
+  async (payload, { rejectWithValue }) => {
+    let url = URL.GET_LEAD_LIST_2();
+    if (payload?.isLive) {
+      url = url + "Live";
+    }
+    const response = await client.post(url, payload.newPayload);
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
 
 const enquirySlice = createSlice({
   name: "ENQUIRY",
@@ -31,7 +50,10 @@ const enquirySlice = createSlice({
     totalPages: 1,
     isLoading: false,
     isLoadingExtraData: false,
-    status: ""
+    status: "",
+    leadList:[],
+    leadList_status:"",
+    leadList_totoalElemntData: []
   },
   reducers: {
     clearEnqState: (state, action) => {
@@ -40,7 +62,10 @@ const enquirySlice = createSlice({
       state.totalPages =  1,
       state.isLoading =  false,
       state.isLoadingExtraData =  false,
-      state.status =  ""
+      state.status =  "",
+      state.leadList = [],
+        state.leadList_status = "",
+        state.leadList_totoalElemntData = []
     },
   },
   extraReducers: (builder) => {
@@ -71,8 +96,8 @@ const enquirySlice = createSlice({
       state.status = "failed";
     })
     builder.addCase(getMoreEnquiryList.pending, (state) => {
-      state.totalPages = 1
-      state.pageNumber = 0
+      // state.totalPages = 1
+      // state.pageNumber = 0
       state.isLoadingExtraData = true;
     })
     builder.addCase(getMoreEnquiryList.fulfilled, (state, action) => {
@@ -83,7 +108,7 @@ const enquirySlice = createSlice({
         state.totalPages = dmsEntityObj.leadDtoPage.totalPages;
         state.pageNumber = dmsEntityObj.leadDtoPage.pageable.pageNumber;
         const content = dmsEntityObj.leadDtoPage.content;
-        // state.enquiry_list = [...state.enquiry_list, ...content];
+        state.leadList = [...state.leadList, ...content];
       }
       state.status = "sucess";
       state.isLoadingExtraData = false;
@@ -93,6 +118,28 @@ const enquirySlice = createSlice({
       state.isLoadingExtraData = false;
       state.status = "failed";
     })
+
+    builder.addCase(getLeadsList.pending, (state, action) => {
+      state.leadList = [];
+      state.leadList_status ="pending";
+    });
+    builder.addCase(getLeadsList.fulfilled, (state, action) => {
+      const dmsEntityObj = action.payload?.dmsEntity;
+      if (dmsEntityObj) {
+        state.totalPages = dmsEntityObj.leadDtoPage.totalPages;
+      //   state.pageNumber = dmsEntityObj.leadDtoPage.pageable.pageNumber;
+        const content = dmsEntityObj.leadDtoPage.content;
+        state.leadList = content;
+        state.leadList_totoalElemntData = action.payload;
+        state.leadList_status = "success";
+        // state.enquiry_list = [...state.enquiry_list, ...content];
+      }
+    
+    });
+    builder.addCase(getLeadsList.rejected, (state, action) => {
+      state.leadList = [];
+      state.leadList_status = "rejected";
+    });
   }
 });
 

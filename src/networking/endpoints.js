@@ -120,6 +120,8 @@ export const getLeaderBoardData =
   baseUrl + "dfd/dashboard/v2/get_emp_target_Dealer_ranking";
 export const getBranchRankingData =
   baseUrl + "dfd/dashboard/v2/get_emp_target_ranking";
+export const getDealerRankingData =
+  baseUrl + "dfd/dashboard/v2/get_emp_target_ranking";
 export const getBranchRankingDataV2 =
   baseUrl + "dfd/dashboard/v2/get_emp_target_Branch_ranking";
 
@@ -255,7 +257,10 @@ const URL = {
     );
   },
   GET_CUSTOMER_TYPES: (orgId) => {
-    return sales_url + `/master-data/customertype/${orgId}`;
+    return dfGetAll + `/${orgId}/%22Active%22/${orgId}/costomerType`;
+  },
+   GET_ENQUIRY_TYPE: (orgId) => {
+    return dfGetAll + `/${orgId}/%22Active%22/${orgId}/enquerySegment`;
   },
   DROP_ENQUIRY: () => sales_url + "/lead-drop",
   UPLOAD_DOCUMENT: () => sales_url + "/documents",
@@ -608,6 +613,9 @@ const URL = {
   },
   GET_BRANCH_RANKING_DATA: (orgId, branchId) => {
     return getBranchRankingData + "/org/" + orgId + "/branch/" + branchId;
+  },
+  GET_DEALER_RANKING_DATA: (orgId) => {
+    return getDealerRankingData + "/org/" + orgId;
   },
   GET_BRANCH_RANKING_DATA_branch: (orgId, branchId) => {
     return getBranchRankingDataV2 + "/org/" + orgId + "/branchName/" + branchId;
