@@ -42,7 +42,10 @@ const lastMonthFirstDate = moment(currentDate, dateFormat)
   .subtract(0, "months")
   .startOf("month")
   .format(dateFormat);
-
+const lastMonthLastDate = moment(currentDate, dateFormat)
+  .subtract(0, "months")
+  .endOf("month")
+  .format(dateFormat);
 const officeLocation = {
   latitude: 37.33233141,
   longitude: -122.0312186,
@@ -121,7 +124,7 @@ const AttendanceTeamMemberScreen = ({ route, navigation }) => {
       setToDateState(
         selector.selectedDate.endDate
           ? selector.selectedDate.endDate
-          : currentDate
+          : lastMonthLastDate
       );
       GetCountByMonth(
         selector.selectedDate.startDate
@@ -129,7 +132,7 @@ const AttendanceTeamMemberScreen = ({ route, navigation }) => {
           : lastMonthFirstDate,
         selector.selectedDate.endDate
           ? selector.selectedDate.endDate
-          : currentDate
+          : lastMonthLastDate
       );
       getAttendanceByMonth(
         selector.selectedDate.startDate
@@ -137,7 +140,7 @@ const AttendanceTeamMemberScreen = ({ route, navigation }) => {
           : lastMonthFirstDate,
         selector.selectedDate.endDate
           ? selector.selectedDate.endDate
-          : currentDate
+          : lastMonthLastDate
       );
       selector.selectedDate.startDate && SetFilterStart(true);
 
@@ -534,6 +537,8 @@ const AttendanceTeamMemberScreen = ({ route, navigation }) => {
           )
         );
         const json = await response.json();
+        const response1 = await client.get(URL.GET_HOLIDAYS(jsonObj.orgId));
+        const json1 = await response1.json();
         if (json) {
           let newArray = [];
           let dateArray = [];
@@ -574,6 +579,30 @@ const AttendanceTeamMemberScreen = ({ route, navigation }) => {
             dateArray.push(formatedDate);
             newArray.push(format);
             weekArray.push(weekReport);
+          }
+          if (json1.length > 0) {
+            for (let i = 0; i <= json1.length - 1; i++) {
+              let format = {
+                customStyles: {
+                  container: {
+                    backgroundColor: Colors.DARK_GRAY,
+                  },
+                  text: {
+                    color: Colors.WHITE,
+                    fontWeight: "bold",
+                  },
+                },
+              };
+              let date = new Date(json1[i].date);
+              let formatedDate = moment(date).format(dateFormat);
+              dateArray.push(formatedDate);
+              newArray.push(format);
+            }
+          }
+          var obj = {};
+          for (let i = 0; i < newArray.length; i++) {
+            const element = newArray[i];
+            obj[dateArray[i]] = element;
           }
           var obj = {};
           for (let i = 0; i < newArray.length; i++) {
