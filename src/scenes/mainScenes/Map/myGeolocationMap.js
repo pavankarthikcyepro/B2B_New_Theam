@@ -380,26 +380,30 @@ const GeolocationMapScreen = ({ route }) => {
       <View style={styles.bottomView}>
         {/* <View
           style={{
-            flexDirection: "row",
-            justifyContent: "space-around",
+            flexDirection: "column",
+            // justifyContent: "space-around",
             marginBottom: 15,
           }}
         >
-          <View style={{ width: "15%" }}>
-            <Text style={{ ...styles.columnsTitle, marginVertical: 15 }}>
-              {"Start"}
-            </Text>
-            <Text style={{ ...styles.columnsTitle, marginVertical: 15 }}>
-              {"Goal"}
-            </Text>
+          <View style={{ flexDirection: "row", marginVertical: 10 }}>
+            <View style={{ width: "15%" }}>
+              <Text style={{ ...styles.columnsTitle }}>{"Start"}</Text>
+            </View>
+            <View style={{ width: "85%" }}>
+              <Text style={{ ...styles.valueTxt }}>{startAddress}</Text>
+            </View>
           </View>
-          <View style={{ width: "85%" }}>
-            <Text style={{ ...styles.valueTxt, marginVertical: 15 }}>
-              {startAddress}
-            </Text>
-            <Text style={{ ...styles.valueTxt, marginVertical: 15 }}>
-              {endAddress}
-            </Text>
+          <View style={{ flexDirection: "row", marginVertical: 10 }}>
+            <View style={{ width: "15%" }}>
+              <Text style={{ ...styles.columnsTitle, marginVertical: 15 }}>
+                {"Goal"}
+              </Text>
+            </View>
+            <View style={{ width: "85%" }}>
+              <Text style={{ ...styles.valueTxt, marginVertical: 15 }}>
+                {endAddress}
+              </Text>
+            </View>
           </View>
         </View> */}
         <View style={styles.tableRow}>
