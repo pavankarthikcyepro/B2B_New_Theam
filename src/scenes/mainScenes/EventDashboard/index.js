@@ -99,6 +99,9 @@ import { monthNamesCap } from "../Attendance/AttendanceTop";
 import { getNotificationList } from "../../../redux/notificationReducer";
 import AttendanceFromSelf from "../../../components/AttendanceFromSelf";
 import EventDashBoardTargetScreen from "./EventTabs";
+import Orientation from "react-native-orientation-locker";
+import { useIsFocused } from "@react-navigation/native";
+import { useIsDrawerOpen } from "@react-navigation/drawer";
 
 const officeLocation = {
   latitude: 37.33233141,
@@ -140,6 +143,15 @@ const EventDashBoardScreen = ({ route, navigation }) => {
     orgId: 0,
     branchs: [],
   });
+
+  const isFocused = useIsFocused();
+  const isDrawerOpen = useIsDrawerOpen();
+
+  useEffect(() => {
+    if (isFocused || (isFocused && isDrawerOpen)) {
+      Orientation.unlockAllOrientations();
+    }
+  }, [isFocused, isDrawerOpen]);
 
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {
@@ -426,7 +438,7 @@ const EventDashBoardScreen = ({ route, navigation }) => {
       >
         <View>
           {isTeamPresent && !selector.isDSE && (
-        //   {true && (
+            //   {true && (
             <View style={{ ...styles.view9, marginTop: 25 }}>
               <View style={styles.view10}>
                 <TouchableOpacity

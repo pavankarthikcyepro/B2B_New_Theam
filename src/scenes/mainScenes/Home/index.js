@@ -98,6 +98,9 @@ import Carousel, { Pagination } from "react-native-snap-carousel";
 import { monthNamesCap } from "../Attendance/AttendanceTop";
 import { getNotificationList } from "../../../redux/notificationReducer";
 import AttendanceFromSelf from "../../../components/AttendanceFromSelf";
+import Orientation from "react-native-orientation-locker";
+import { useIsFocused } from "@react-navigation/native";
+import { useIsDrawerOpen } from "@react-navigation/drawer";
 
 const officeLocation = {
   latitude: 37.33233141,
@@ -138,6 +141,15 @@ const HomeScreen = ({ route, navigation }) => {
     hrmsRole: "",
     orgId: 0,
   });
+
+    const isFocused = useIsFocused();
+  const isDrawerOpen = useIsDrawerOpen();
+
+  useEffect(() => {
+    if (isFocused || (isFocused && isDrawerOpen)) {
+      Orientation.unlockAllOrientations();
+    }
+  }, [isFocused, isDrawerOpen]);
 
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {

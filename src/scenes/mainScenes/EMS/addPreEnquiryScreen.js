@@ -722,6 +722,19 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       pincode: selector.pincode,
     };
 
+    let dmsLeadEventDto;
+    if (selectedEventData.length > 0) {
+      dmsLeadEventDto = {
+        eventId: selectedEventData[0].eventId,
+        eventName: selectedEventData[0].name,
+        eventLocation: selectedEventData[0]?.location,
+        startDate: selectedEventData[0].startdate,
+        endDate: selectedEventData[0].enddate,
+      };
+    } else {
+      dmsLeadEventDto = {};
+    }
+
     const dmsLeadDtoObj = {
       branchId: Number(branchId),
       createdBy: employeeName,
@@ -735,7 +748,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       model: selector.carModel,
       sourceOfEnquiry: selector.sourceOfEnquiryId,
       subSource: selector.subSourceOfEnquiry,
-      eventCode: selector.eventName,
+      eventCode: dmsLeadEventDto.eventId,
       referencenumber: refNumber,
       pincode: selector.pincode,
       dmsAddresses: [
@@ -769,18 +782,6 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         },
       ],
     };
-    let dmsLeadEventDto;
-    if (selectedEventData.length > 0) {
-      dmsLeadEventDto = {
-        eventId: selectedEventData[0].eventId,
-        eventName: selectedEventData[0].name,
-        eventLocation: selectedEventData[0]?.location,
-        startDate: selectedEventData[0].startdate,
-        endDate: selectedEventData[0].enddate,
-      };
-    } else {
-      dmsLeadEventDto = {};
-    }
 
     // http://ec2-3-7-117-218.ap-south-1.compute.amazonaws.com:8081
 
