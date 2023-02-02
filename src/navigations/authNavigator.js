@@ -7,6 +7,7 @@ import WelcomeScreen from '../scenes/loginScenes/welcomeComp';
 import LoginScreen from '../scenes/loginScenes/loginComp';
 import ForgotScreen from '../scenes/loginScenes/forgotComp';
 import SelectBranchComp from '../scenes/loginScenes/selectBranchComp';
+import Orientation from 'react-native-orientation-locker';
 
 const AuthStackIdentifiers = {
     WELCOME: 'WELCOME',
@@ -18,6 +19,7 @@ const AuthStackIdentifiers = {
 const Stack = createStackNavigator();
 
 const AuthStackNavigator = () => {
+    Orientation.lockToPortrait()
     return (
         <Stack.Navigator
             initialRouteName={AuthStackIdentifiers.WELCOME}
