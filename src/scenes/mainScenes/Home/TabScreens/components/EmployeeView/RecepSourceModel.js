@@ -132,7 +132,7 @@ const RecepSourceModel = ({ route, navigation }) => {
       orgId: orgId,
       branchList: branchList,
     };
-    if (role == "Reception") {
+    if (role == "Reception" || role == "Tele Caller") {
       dispatch(getReceptionistSource(newPayload));
       dispatch(getReceptionistModel(newPayload));
     } else if (role == "CRM") {

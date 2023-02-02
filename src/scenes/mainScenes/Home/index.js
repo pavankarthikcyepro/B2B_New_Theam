@@ -106,7 +106,7 @@ const officeLocation = {
   latitude: 37.33233141,
   longitude: -122.0312186,
 };
-const receptionistRole = ["Reception", "CRM"];
+const receptionistRole = ["Reception", "CRM", "Tele Caller"];
 
 const HomeScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
@@ -260,7 +260,10 @@ const HomeScreen = ({ route, navigation }) => {
   };
 
   useEffect(async () => {
-    if (userData.hrmsRole === "Reception") {
+    if (
+      userData.hrmsRole === "Reception" ||
+      userData.hrmsRole === "Tele Caller"
+    ) {
       let payload = {
         orgId: userData.orgId,
         loggedInEmpId: userData.empId,
