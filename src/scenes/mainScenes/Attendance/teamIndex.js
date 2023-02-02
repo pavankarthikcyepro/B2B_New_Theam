@@ -604,11 +604,6 @@ const AttendanceTeamMemberScreen = ({ route, navigation }) => {
             const element = newArray[i];
             obj[dateArray[i]] = element;
           }
-          var obj = {};
-          for (let i = 0; i < newArray.length; i++) {
-            const element = newArray[i];
-            obj[dateArray[i]] = element;
-          }
           setLoading(false);
           setWeeklyRecord(weekArray);
           setMarker(obj);
@@ -799,7 +794,9 @@ const AttendanceTeamMemberScreen = ({ route, navigation }) => {
               )[0];
               if (newData?.status == "Absent" || newData?.status == "WFH") {
                 setHoverReasons(newData?.reason || "");
-                setStatus(newData?.status);
+                setStatus(
+                  newData?.status == "Absent" ? "Leave" : newData?.status
+                );
                 setNotes(newData?.note || "");
                 setAttendance(true);
               }

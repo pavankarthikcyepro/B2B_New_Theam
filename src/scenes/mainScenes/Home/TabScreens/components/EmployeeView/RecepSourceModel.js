@@ -271,29 +271,18 @@ const RecepSourceModel = ({ route, navigation }) => {
           newData.map((x, index) => {
             return (
               <>
-                <View style={{ flexDirection: "row", marginTop: 10 }}></View>
                 <View
                   style={{
                     flexDirection: "row",
                     // backgroundColor: "#D7EAF9",
                     // backgroundColor: "#FAAFBA",
                     backgroundColor: "rgba(223,228,231,0.67)",
-                    paddingVertical: 6,
+                    // paddingVertical: 6,
+                    height: 35,
+                    alignItems: "center",
+                    marginVertical: 5,
                   }}
                 >
-                  <View style={{ width: 175 }}>
-                    <Text
-                      style={{
-                        color: Colors.BLACK,
-                        fontSize: 13,
-                        fontWeight: "500",
-                      }}
-                    >
-                      {x?.source && x?.subsource
-                        ? x?.source + " - " + x?.subsource
-                        : x?.model}
-                    </Text>
-                  </View>
                   {toggleParamsMetaData.map((param, i) => {
                     return (
                       <View
@@ -397,13 +386,8 @@ const RecepSourceModel = ({ route, navigation }) => {
         <View style={styles.percentageToggleView}>
           <PercentageToggleControl toggleChange={(x) => setDisplayType(x)} />
         </View>
-        <ScrollView
-          style={{ marginLeft: 10 }}
-          showsHorizontalScrollIndicator={false}
-          nestedScrollEnabled
-          horizontal
-        >
-          <View style={{ flexDirection: "column" }}>
+        <View style={{ marginLeft: 10, flexDirection: "row" }}>
+          <View style={{ flexDirection: "column", width: 175 }}>
             <View
               style={{
                 flexDirection: "row",
@@ -411,92 +395,156 @@ const RecepSourceModel = ({ route, navigation }) => {
                 borderColor: "#CECECE",
                 borderWidth: 2,
                 paddingVertical: 1,
-                marginTop: 10,
+                marginVertical: 10,
+                borderRightWidth: 0,
               }}
             >
-              <View style={{ width: 175 }} />
-              {toggleParamsMetaData.map((item) => {
-                if (item.paramName !== "PreEnquiry") {
+              <View style={{ width: 175, height: 35 }} />
+            </View>
+            {isSourceIndex === 0
+              ? selector.receptionistSource
+              : selector.receptionistModel.map((x, index) => {
                   return (
                     <View
                       style={{
-                        width: 50,
+                        flexDirection: "row",
+                        // backgroundColor: "#D7EAF9",
+                        // backgroundColor: "#FAAFBA",
+                        backgroundColor: "rgba(223,228,231,0.67)",
+                        // paddingVertical: 6,
+                        height: 35,
                         alignItems: "center",
-                        justifyContent: "center",
-                        paddingVertical: 5,
+                        marginVertical: 5,
                       }}
                     >
-                      <Text
-                        style={{
-                          color: item.color,
-                          fontSize: 14,
-                          fontWeight: "500",
-                        }}
-                      >
-                        {item.shortName}
-                      </Text>
+                      <View style={{ width: 175 }}>
+                        <Text
+                          style={{
+                            color: Colors.BLACK,
+                            fontSize: 13,
+                            fontWeight: "500",
+                          }}
+                        >
+                          {x?.source && x?.subsource
+                            ? x?.source + " - " + x?.subsource
+                            : x?.model}
+                        </Text>
+                      </View>
                     </View>
                   );
-                }
-              })}
+                })}
+            <View
+              style={{
+                flexDirection: "row",
+                marginTop: 15,
+                marginBottom: 40,
+                backgroundColor: Colors.RED,
+                // paddingVertical: 10,
+                height: 40,
+                alignItems: "center",
+              }}
+            >
+              <Text
+                style={{
+                  color: Colors.WHITE,
+                  fontSize: 13,
+                  fontWeight: "500",
+                  width: 112,
+                }}
+              >
+                {" Total"}
+              </Text>
             </View>
-            {isLoading && (
-              <ActivityIndicator size={"large"} color={Colors.RED} />
-            )}
-            {renderDataView()}
-            <>
+          </View>
+          <ScrollView nestedScrollEnabled horizontal>
+            <View style={{ flexDirection: "column" }}>
               <View
                 style={{
                   flexDirection: "row",
-                  marginTop: 15,
-                  marginBottom: 40,
-                  backgroundColor: Colors.RED,
-                  paddingVertical: 10,
+                  backgroundColor: "#fff",
+                  borderColor: "#CECECE",
+                  borderWidth: 2,
+                  paddingVertical: 1,
+                  marginVertical: 10,
+                  borderLeftWidth: 0,
                 }}
               >
-                <Text
-                  style={{
-                    color: Colors.WHITE,
-                    fontSize: 13,
-                    fontWeight: "500",
-                    width: 112,
-                  }}
-                >
-                  {" Total"}
-                </Text>
-                <View
-                  style={{
-                    flexDirection: "row",
-                  }}
-                >
-                  <View style={{ width: 65 }} />
-                  {toggleParamsMetaData.map((param, i) => {
+                {toggleParamsMetaData.map((item) => {
+                  if (item.paramName !== "PreEnquiry") {
                     return (
                       <View
                         style={{
                           width: 50,
                           alignItems: "center",
                           justifyContent: "center",
+                          paddingVertical: 5,
+                          height: 35,
                         }}
                       >
                         <Text
                           style={{
-                            color: Colors.WHITE,
+                            color: item.color,
                             fontSize: 14,
-                            fontWeight: "600",
-                            textDecorationLine: "underline",
+                            fontWeight: "500",
                           }}
                         >
-                          {sourceModelTotals[param?.initial?.toLowerCase()]}
+                          {item.shortName}
                         </Text>
                       </View>
                     );
-                  })}
-                </View>
+                  }
+                })}
               </View>
-            </>
-          </View>
-        </ScrollView>
+              {isLoading && (
+                <ActivityIndicator size={"large"} color={Colors.RED} />
+              )}
+              {renderDataView()}
+              <>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    marginTop: 15,
+                    marginBottom: 40,
+                    backgroundColor: Colors.RED,
+                    // paddingVertical: 10,
+                    height: 40,
+                    alignItems: "center",
+                  }}
+                >
+                  <View
+                    style={{
+                      flexDirection: "row",
+                    }}
+                  >
+                    <View />
+                    {toggleParamsMetaData.map((param, i) => {
+                      return (
+                        <View
+                          style={{
+                            width: 50,
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <Text
+                            style={{
+                              color: Colors.WHITE,
+                              fontSize: 13,
+                              fontWeight: "600",
+                              textDecorationLine: "underline",
+                            }}
+                          >
+                            {sourceModelTotals[param?.initial?.toLowerCase()]}
+                          </Text>
+                        </View>
+                      );
+                    })}
+                  </View>
+                </View>
+              </>
+            </View>
+          </ScrollView>
+        </View>
       </ScrollView>
     </>
   );

@@ -50,7 +50,6 @@ const itemWidth = baseItemWidth - 10;
 
 const series = [60, 40];
 const sliceColor = ["#5BBD66", Colors.RED];
-const image = "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg";
 const chartHeight = itemWidth - 20;
 const overlayViewHeight = chartHeight - 10;
 
@@ -83,23 +82,26 @@ const AttendanceDashboard = ({ route, navigation }) => {
   useEffect(() => {
     // setFromDateState(lastMonthFirstDate);
     // setToDateState(currentDate);
-    getEmployeeList(lastMonthFirstDate, currentDate);
+    // getEmployeeList(lastMonthFirstDate, currentDate);
   }, []);
 
   useEffect(() => {
     // setFromDateState(lastMonthFirstDate);
     // setToDateState(currentDate);
     // getEmployeeList(lastMonthFirstDate, currentDate);
-    
-    if (route?.params?.params) {
-      setFromDateState(route?.params?.params?.fromDate);
-      getChartData(
-        route?.params?.params?.fromDate,
-        route?.params?.params?.fromDate,
-        route?.params?.params?.selectedID,
-        route?.params?.params?.orgId
-      );
-    }
+    navigation.addListener("focus", () => {
+      if (route?.params?.params) {
+        setFromDateState(route?.params?.params?.fromDate);
+        getChartData(
+          route?.params?.params?.fromDate,
+          route?.params?.params?.fromDate,
+          route?.params?.params?.selectedID,
+          route?.params?.params?.orgId
+        );
+      } else {
+        getEmployeeList(currentDate);
+      }
+    });
   }, [route.params]);
 
   useEffect(() => {
@@ -134,8 +136,7 @@ const AttendanceDashboard = ({ route, navigation }) => {
         let newPayload = {
           userId: id ? id : jsonObj.empId,
           orgId: orgId ? orgId : jsonObj.orgId,
-          startDate: start,
-          endDate: end,
+          date: start,
         };
         const response2 = await client.post(
           URL.GET_TEAM_ATTENDANCE_COUNT(),
@@ -144,25 +145,23 @@ const AttendanceDashboard = ({ route, navigation }) => {
         const json = await response2.json();
         if (json) {
           let newData = [
-            { label: "Present", value: json?.todayData?.totalPresent || 0 },
-            { label: "Leave", value: json?.todayData?.totalAbsent || 0 },
-            { label: "WFH", value: json?.todayData?.totalWFH || 0 },
+            { label: "Present", value: json?.data?.totalPresent || 0 },
+            { label: "Leave", value: json?.data?.totalAbsent || 0 },
+            { label: "WFH", value: json?.data?.totalWFH || 0 },
             {
               label: "No Logged",
-              value: json?.todayData?.totalNotLoggedIn || 0,
+              value: json?.data?.totalNotLoggedIn || 0,
             },
           ];
           setChartData(newData);
-          let todaysPresent = json.todayData.users.filter(
+          let todaysPresent = json.data.users.filter(
             (e) => e.status == "PRESENT"
           );
-          let todaysLeave = json.todayData.users.filter(
-            (e) => e.status == "ABSENT"
-          );
-          let todaysNoLogged = json.todayData.users.filter(
+          let todaysLeave = json.data.users.filter((e) => e.status == "ABSENT");
+          let todaysNoLogged = json.data.users.filter(
             (e) => e.status == "NOT LOGGED IN"
           );
-          let todaysWFH = json.todayData.users.filter(
+          let todaysWFH = json.data.users.filter(
             (e) => e.status == "WORK FROM HOME"
           );
           setTodaysPresent(todaysPresent);
@@ -178,7 +177,7 @@ const AttendanceDashboard = ({ route, navigation }) => {
     }
   };
 
-  const getEmployeeList = async (start, end) => {
+  const getEmployeeList = async (start) => {
     try {
       setLoading(true);
       let employeeData = await AsyncStore.getData(
@@ -189,8 +188,7 @@ const AttendanceDashboard = ({ route, navigation }) => {
         let newPayload = {
           userId: jsonObj.empId,
           orgId: jsonObj.orgId,
-          startDate: "",
-          endDate: "",
+          date: start,
         };
         const response2 = await client.post(
           URL.GET_TEAM_ATTENDANCE_COUNT(),
@@ -199,25 +197,23 @@ const AttendanceDashboard = ({ route, navigation }) => {
         const json = await response2.json();
         if (json) {
           let newData = [
-            { label: "Present", value: json?.todayData?.totalPresent || 0 },
-            { label: "Leave", value: json?.todayData?.totalAbsent || 0 },
-            { label: "WFH", value: json?.todayData?.totalWFH || 0 },
+            { label: "Present", value: json?.data?.totalPresent || 0 },
+            { label: "Leave", value: json?.data?.totalAbsent || 0 },
+            { label: "WFH", value: json?.data?.totalWFH || 0 },
             {
               label: "No Logged",
-              value: json?.todayData?.totalNotLoggedIn || 0,
+              value: json?.data?.totalNotLoggedIn || 0,
             },
           ];
           setChartData(newData);
-          let todaysPresent = json.todayData.users.filter(
+          let todaysPresent = json.data.users.filter(
             (e) => e.status == "PRESENT"
           );
-          let todaysLeave = json.todayData.users.filter(
-            (e) => e.status == "ABSENT"
-          );
-          let todaysNoLogged = json.todayData.users.filter(
+          let todaysLeave = json.data.users.filter((e) => e.status == "ABSENT");
+          let todaysNoLogged = json.data.users.filter(
             (e) => e.status == "NOT LOGGED IN"
           );
-          let todaysWFH = json.todayData.users.filter(
+          let todaysWFH = json.data.users.filter(
             (e) => e.status == "WORK FROM HOME"
           );
           setTodaysPresent(todaysPresent);

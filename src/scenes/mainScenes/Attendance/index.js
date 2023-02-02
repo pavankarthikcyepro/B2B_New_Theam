@@ -537,8 +537,8 @@ const AttendanceScreen = ({ route, navigation }) => {
             weekArray.push(weekReport);
           }
 
-          // setLoading(false);
-          // setWeeklyRecord(weekArray);
+          setLoading(false);
+          setWeeklyRecord(weekArray);
           if (json1.length > 0) {
             for (let i = 0; i <= json1.length - 1; i++) {
               let format = {
@@ -777,9 +777,12 @@ const AttendanceScreen = ({ route, navigation }) => {
                 let newData = weeklyRecord.filter(
                   (e) => e.start === day.dateString
                 )[0];
+                console.log(newData);
                 if (newData?.status == "Absent" || newData?.status == "WFH") {
                   setHoverReasons(newData?.reason || "");
-                  setStatus(newData?.status);
+                  setStatus(
+                    newData?.status == "Absent" ? "Leave" : newData?.status
+                  );
                   setNotes(newData?.note || "");
                   setAttendance(true);
                 }

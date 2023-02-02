@@ -912,7 +912,7 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
-                  selector.receptionistData.totalDroppedCount > 0 &&
+                  selector.receptionistData.totalLostCount > 0 &&
                     navigateToEMS();
                 }}
                 style={styles.view8}
@@ -925,7 +925,7 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
                 </Text>
                 <View style={styles.cardView}>
                   <Text style={{ ...styles.rankText, color: "blue" }}>
-                    {selector.receptionistData?.totalDroppedCount || 0}
+                    {selector.receptionistData?.totalLostCount || 0}
                   </Text>
                 </View>
               </TouchableOpacity>
