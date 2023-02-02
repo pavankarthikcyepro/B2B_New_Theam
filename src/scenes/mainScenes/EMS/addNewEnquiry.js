@@ -1393,7 +1393,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
             organizationId: jsonObj.orgId,
             phone: selector.mobile,
             sourceOfEnquiry: sourceData,
-            eventCode: selector.event_code,
+            eventCode: dmsLeadEventDto.eventId,
             email: selector.email,
             referencenumber: "",
             buyerType: selector.buyer_type,
@@ -3080,7 +3080,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     dispatch(getEventConfigList(payload));
   };
 
-  updateSubSourceData = (item) => {
+  const updateSubSourceData = (item) => {
     if (item.subsource && item.subsource.length > 0) {
       const updatedData = [];
       item.subsource.forEach((subItem, index) => {

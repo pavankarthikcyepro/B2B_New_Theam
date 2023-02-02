@@ -354,7 +354,7 @@ const URL = {
   GET_EVENTS_NEW: (startDate, endDate, empId) => {
     return (
       ops_url +
-      `/dms/getAllServiceEventsByFilter?startdate=${startDate}&enddate=${endDate}&organiserid=${empId}`
+      `/dms/getAllServiceEventsByFilterPreEnq?startdate=${startDate}&enddate=${endDate}&organiserid=${empId}`
     );
   },
 
