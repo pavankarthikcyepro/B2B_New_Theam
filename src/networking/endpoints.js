@@ -354,7 +354,7 @@ const URL = {
   GET_EVENTS_NEW: (startDate, endDate, empId) => {
     return (
       ops_url +
-      `/dms/getAllServiceEventsByFilter?startdate=${startDate}&enddate=${endDate}&organiserid=${empId}`
+      `/dms/getAllServiceEventsByFilterPreEnq?startdate=${startDate}&enddate=${endDate}&organiserid=${empId}`
     );
   },
 
@@ -644,6 +644,8 @@ const URL = {
   UPDATE_TEAM_TARGET_PARAMS: () => {
     return `${salesGap}/target-update`;
   },
+  EVENT_DASHBOARD: () =>
+    `${dashboard}/v2/get_target_params_events`,
   MODEL_SOURCE_SELF: () =>
     `${dashboard}/v2/get_target_params_for_emp_model_source`,
   GET_LIVE_LEADS_MODEL_SOURCE_SELF: () =>

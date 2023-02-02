@@ -331,6 +331,7 @@ const AttendanceFromSelf = ({
       transparent={true}
       visible={visible}
       onRequestClose={onRequestClose}
+      supportedOrientations={["portrait", "landscape-left", "landscape-right"]}
     >
       <View style={styles.container}>
         <TouchableOpacity

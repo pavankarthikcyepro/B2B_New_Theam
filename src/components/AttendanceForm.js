@@ -24,8 +24,6 @@ import { AppNavigator } from "../navigations";
 import moment from "moment";
 import { monthNamesCap } from "../scenes/mainScenes/Attendance/AttendanceTop";
 
-const screenWidth = Dimensions.get("window").width;
-
 const LocalButtonComp = ({ title, onPress, disabled }) => {
   return (
     <Button

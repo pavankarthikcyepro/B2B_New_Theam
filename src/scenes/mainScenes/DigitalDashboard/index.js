@@ -99,6 +99,8 @@ import { monthNamesCap } from "../Attendance/AttendanceTop";
 import { getNotificationList } from "../../../redux/notificationReducer";
 import AttendanceFromSelf from "../../../components/AttendanceFromSelf";
 import DigitalDashBoardTargetScreen from "./targetScreen";
+import { useIsFocused } from "@react-navigation/native";
+import { useIsDrawerOpen } from "@react-navigation/drawer";
 
 const officeLocation = {
   latitude: 37.33233141,
@@ -140,6 +142,15 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
     orgId: 0,
     branchs: [],
   });
+
+  const isFocused = useIsFocused();
+  const isDrawerOpen = useIsDrawerOpen();
+
+  useEffect(() => {
+    if (isFocused || (isFocused && isDrawerOpen)) {
+      Orientation.unlockAllOrientations();
+    }
+  }, [isFocused, isDrawerOpen]);
 
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {
