@@ -242,6 +242,7 @@ export const ProformaComp = ({
   const [otherPriceErrorNameIndex, setOtherPriceErrorNameIndex] = useState(null);
   const [otherPriceErrorAmountIndexInput, setOtherPriceErrorAmountIndex] = useState(null);
   const [otherPrices, setOtherPrices] = useState(0);
+  const [otherPricesV2, setOtherPricesV2] = useState(0);
 
   useEffect(() => {
     getUserData();
@@ -362,10 +363,10 @@ export const ProformaComp = ({
 
   useEffect(() => {
     if (selector.getTermsNConditions_res_status === "success") {
+      let data = 'If users abuse your website or mobile app in any way, you can terminate their account. Your "Termination" clause can inform users that their accounts would be terminated if they abuse your service.\n If users abuse your website or mobile app in any way, you can terminate their account. Your "Termination" clause can inform users that their accounts would be terminated if they abuse your service.';
 
-
-      settermsNConditionData(selector.getTermsNConditions_res.configData.split(/\r?\n/))
-
+      // settermsNConditionData(selector.getTermsNConditions_res.configData.split(/\r?\n/))
+      settermsNConditionData(data.split(/\r?\n/));
 
     }
 
@@ -666,12 +667,16 @@ export const ProformaComp = ({
   }, [selector.proforma_API_response])
 
   useEffect(() => {
+    let tempOtherPrice = 0;
     if (addNewInput.length > 0) {
       var totalprice = 0;
       for (let data of addNewInput) {
         totalprice = totalprice + Number(data.amount);
+        tempOtherPrice = tempOtherPrice + Number(data.amount);
         setOtherPrices(totalprice);
+     
       }
+      setOtherPricesV2(tempOtherPrice)
     }
   }, [addNewInput]);
 
@@ -915,7 +920,7 @@ export const ProformaComp = ({
         '</tr>' +
         '<tr>' +
         '<td>Other Charges</td>' +
-        '<td style="text-align: right;"> 0 </td>' +
+        '<td style="text-align: right;">' +otherPricesV2 +'</td>' +
         '<td></td>' +
         '<td style="text-align: right;"></td>' +
         '</tr>' +
@@ -927,19 +932,23 @@ export const ProformaComp = ({
         '</tr>' +
         '<tr>' +
         '<td class="tCenter" style="background-color: #4d4f51; color: #fff !important;"><strong>NET ON ROAD PRICE</strong></td>' +
-        '<td style="background-color: #4d4f51; color: #fff !important; text-align: right;"><strong>12833</strong></td>' +
+        '<td style="background-color: #4d4f51; color: #fff !important; text-align: right;"><strong>' + totalOnRoadPrice.toString() + ' </strong></td>' +
         '<td class="tCenter" style="background-color: #4d4f51; color: #fff !important;"><strong>NET ON ROAD PRICE AFTER DISCOUNT</strong></td>' +
-        '<td style="background-color: #4d4f51; color: #fff !important; text-align: right;"><strong>12833</strong></td>' +
+        '<td style="background-color: #4d4f51; color: #fff !important; text-align: right;"><strong>' + totalOnRoadPriceAfterDiscount.toString() + '</strong></td>' +
         '</tr>' +
         '<tr>' +
         '<td colspan="4">' +
         '<p style="text-decoration: underline">TERMS AND CONDITIONS</p>' +
-                           
+        '<div       class="ng-star-inserted">' + termNconditionData.map((item, index) => {
+
+          return '<div style="padding:4px">' + `${index + 1}` + " ) " + `${item}` + '</div>'
+
+        }).join(' ') + '</div>' +               
         '</td>' +
         '</tr>' +
         '</table>' +
         '<div style="text-align: right; padding-top:20px;">' +
-        '<div style="padding-bottom:30px;"><b>For, PPS Jeep</b></div>' +
+        '<div style="padding-bottom:30px;"><b>For,' + selector.proforma_orgName + '</b></div>' +
         '<div> <b>Authorised Signatory</b></div>' +
         '</div>' +
         '</div>' +
