@@ -14,23 +14,11 @@ import {
   FlatList,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-
-import {
-  DatePickerComponent,
-  DateRangeComp,
-  DropDownComponant,
-} from "../../../components";
 import { Colors, GlobalStyle } from "../../../styles";
 import { client } from "../../../networking/client";
 import URL from "../../../networking/endpoints";
-import { ActivityIndicator, Button, IconButton } from "react-native-paper";
 import * as AsyncStore from "../../../asyncStore";
 import moment from "moment";
-import { DropDownSelectionItem } from "../../../pureComponents";
-import { AttendanceTopTabNavigatorIdentifiers } from "../../../navigations/attendanceTopTabNavigator";
-import PieChart from "react-native-pie-chart";
-import { SceneMap, TabBar, TabView } from "react-native-tab-view";
-import { DateRangeCompOne } from "../../../components/dateRangeComp";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
@@ -38,59 +26,62 @@ const lastMonthFirstDate = moment(currentDate, dateFormat)
   .subtract(0, "months")
   .startOf("month")
   .format(dateFormat);
-
 const screenWidth = Dimensions.get("window").width;
-const profileWidth = screenWidth / 8;
-const profileBgWidth = profileWidth + 5;
 
-const item1Width = screenWidth - 10;
-const item2Width = item1Width - 10;
-const baseItemWidth = item2Width / 3.4;
-const itemWidth = baseItemWidth - 10;
-
-const series = [60, 40];
-const sliceColor = ["#5BBD66", Colors.RED];
-const chartHeight = itemWidth - 20;
-const overlayViewHeight = chartHeight - 10;
 
 const OverviewScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.homeReducer);
-  const [loading, setLoading] = useState(false);
-  const [chartData, setChartData] = useState([]);
-  const [todaysLeave, setTodaysLeave] = useState([]);
-  const [todaysPresent, setTodaysPresent] = useState([]);
-  const [todaysWFH, setTodaysWFH] = useState([]);
-  const [todaysNoLogged, setTodaysNoLogged] = useState([]);
-  const [selectedFromDate, setSelectedFromDate] = useState(currentDate);
-  const [selectedToDate, setSelectedToDate] = useState("");
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [datePickerId, setDatePickerId] = useState("");
 
-  const fromDateRef = useRef(selectedFromDate);
-  const toDateRef = useRef(selectedToDate);
-  const layout = useWindowDimensions();
+  const data = [
+    { title: "Hyderabad", value: "15" },
+    { title: "Pune", value: "20" },
+  ];
+  const tableData = [
+    { title: ">90", value: "5" },
+    { title: ">60", value: "5" },
+    { title: ">30", value: "5" },
+    { title: ">15", value: "5" },
+    { title: "<15", value: "5" },
+  ];
+  const total = [{ title: "Total", value: "35" }];
 
-  const [index, setIndex] = React.useState(0);
-  const [routes] = React.useState([
-    { key: "first", title: "Present" },
-    { key: "second", title: "Leave" },
-    { key: "third", title: "WFH" },
-    { key: "fourth", title: "No Logged" },
-  ]);
-
-  const renderData = () => {
+  const renderData = (item) => {
     return (
       <View style={styles.boxView}>
         <View>
-          <Text style={styles.locationTxt}>{"Hyderabad"}</Text>
+          <Text style={styles.locationTxt}>{item.title}</Text>
         </View>
         <View style={styles.valueBox}>
-          <Text style={styles.valueTxt}>{"15"}</Text>
+          <Text style={styles.valueTxt}>{item.value}</Text>
         </View>
       </View>
     );
   };
+
+  const renderTableData = (item, index) => {
+    return (
+      <View style={{ ...styles.tableTitleView, marginTop: 2.5 }}>
+        <View
+          style={{
+            ...styles.tableTitle,
+            backgroundColor: index % 2 == 0 ? "#FF9999" : "pink",
+          }}
+        >
+          <Text style={styles.tableTitleTxt}>{item.title}</Text>
+        </View>
+        <View
+          style={{
+            ...styles.tableTitle,
+            backgroundColor: index % 2 == 0 ? "#FF9999" : "pink",
+          }}
+        >
+          <Text style={styles.tableTitleTxt}>{item.value}</Text>
+        </View>
+      </View>
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
@@ -99,14 +90,23 @@ const OverviewScreen = ({ route, navigation }) => {
             <Text style={styles.titleText}>{"Location"}</Text>
             <Text style={styles.titleText}>{"Car Stock"}</Text>
           </View>
-          <View style={styles.boxView}>
-            <View>
-              <Text style={styles.locationTxt}>{"Hyderabad"}</Text>
+          {data.map((item) => {
+            return renderData(item);
+          })}
+          <View style={{ marginTop: 10 }}>{renderData(total[0])}</View>
+        </View>
+        <View style={styles.mainView}>
+          <View style={styles.tableTitleView}>
+            <View style={styles.tableTitle}>
+              <Text style={styles.tableTitleTxt}>{"Aging"}</Text>
             </View>
-            <View style={styles.valueBox}>
-              <Text style={styles.valueTxt}>{"15"}</Text>
+            <View style={styles.tableTitle}>
+              <Text style={styles.tableTitleTxt}>{"Stock"}</Text>
             </View>
           </View>
+          {tableData.map((item, index) => {
+            return renderTableData(item, index);
+          })}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -159,6 +159,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginVertical: 5,
   },
   titleView: {
     flex: 1,
@@ -166,4 +167,17 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginVertical: 10,
   },
+  tableTitle: {
+    width: "49.5%",
+    backgroundColor: Colors.RED,
+    paddingVertical: 5,
+    alignContent: "center",
+    paddingLeft: 10,
+  },
+  tableTitleTxt: {
+    color: Colors.WHITE,
+    fontSize: 17,
+    fontWeight: "600",
+  },
+  tableTitleView: { flexDirection: "row", justifyContent: "space-between" },
 });
