@@ -115,6 +115,7 @@ import EventSourceModel from "../scenes/mainScenes/EventDashboard/EventSourceMod
 import LeaderShipFilter from "../scenes/mainScenes/Home/TabScreens/leaderShipFilter";
 import Orientation from "react-native-orientation-locker";
 import { detectIsOrientationLock } from "../utils/helperFunctions";
+import { MyStockTopTabNavigator } from "./myStockNavigator";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -362,6 +363,7 @@ export const DrawerStackIdentifiers = {
   attendance: "Attendance",
   geolocation: "Geolocation",
   digitalDashboard: "DIGITAL_DASHBOARD",
+  myStock: "MY_STOCK"
 };
 
 export const TabStackIdentifiers = {
@@ -1235,6 +1237,21 @@ const MainStackDrawerNavigator = ({ navigation }) => {
             // headerTitleStyle: screeOptionStyle.headerTitleStyle,
             // headerTintColor: screeOptionStyle.headerTintColor,
             // headerBackTitleVisible: screeOptionStyle.headerBackTitleVisible,
+          }
+        }
+      />
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.myStock}
+        component={MyStockTopTabNavigator}
+        options={
+          {
+            title: "My Stock",
+            headerLeft: () => <MenuIcon navigation={navigation} />,
+            headerShown: true,
+            headerStyle: screeOptionStyle.headerStyle,
+            headerTitleStyle: screeOptionStyle.headerTitleStyle,
+            headerTintColor: screeOptionStyle.headerTintColor,
+            headerBackTitleVisible: screeOptionStyle.headerBackTitleVisible,
           }
         }
       />

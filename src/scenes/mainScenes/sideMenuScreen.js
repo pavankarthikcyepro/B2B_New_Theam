@@ -131,6 +131,7 @@ const MDMenu = [
   "Event Dashboard",
   "Target Planning",
   "My Attendance",
+  "My Stock",
   "Helpdesk",
   // "Task Management",
   "Task Transfer",
@@ -145,6 +146,7 @@ const SalesConsultant = [
   "Target Planning",
   "Event Dashboard",
   "My Attendance",
+  "My Stock",
   "Geolocation",
   "Drop/Lost/Cancel",
   "Task Transfer",
@@ -162,6 +164,7 @@ const SalesManager = [
   "My Attendance",
   "Digital Dashboard",
   "Geolocation",
+  "My Stock",
   "Drop/Lost/Cancel",
   "Task Transfer",
   "Helpdesk",
@@ -421,10 +424,15 @@ const SideMenuScreen = ({ navigation }) => {
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.geolocation);
         break;
       case 118:
-        navigation.navigate(AppNavigator.DrawerStackIdentifiers.digitalDashboard);
+        navigation.navigate(
+          AppNavigator.DrawerStackIdentifiers.digitalDashboard
+        );
         break;
       case 119:
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.eventDashboard);
+        break;
+      case 120:
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.myStock);
         break;
       case 112:
         signOutClicked();
