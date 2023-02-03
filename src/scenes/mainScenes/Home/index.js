@@ -1161,6 +1161,9 @@ const HomeScreen = ({ route, navigation }) => {
       />
     );
   };
+  function navigateToDropLostCancel(params) {
+    navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis);
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -1398,7 +1401,8 @@ const HomeScreen = ({ route, navigation }) => {
               <TouchableOpacity
                 onPress={() => {
                   selector.receptionistData.totalLostCount > 0 &&
-                    navigateToEMS();
+                    navigateToDropLostCancel();
+                    //todo
                 }}
                 style={styles.view8}
               >
@@ -1406,7 +1410,7 @@ const HomeScreen = ({ route, navigation }) => {
                   numberOfLines={1}
                   style={{ ...styles.rankHeadingText, width: 50 }}
                 >
-                  {"Drops"}
+                  {"Drop"}
                 </Text>
                 <View style={styles.cardView}>
                   <Text style={{ ...styles.rankText, color: "blue" }}>

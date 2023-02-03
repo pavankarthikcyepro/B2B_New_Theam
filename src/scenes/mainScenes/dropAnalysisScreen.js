@@ -3,7 +3,7 @@ import { SafeAreaView, StyleSheet, View, TouchableOpacity, FlatList, ActivityInd
 import { PageControlItem } from "../../../pureComponents/pageControlItem";
 import { Button, IconButton } from "react-native-paper";
 import {  EmptyListView } from "../../pureComponents";
-import { DateRangeComp, DatePickerComponent, SortAndFilterComp, ButtonComp } from "../../components";
+import { DateRangeComp, DatePickerComponent, SortAndFilterComp, ButtonComp, SingleLeadSelectComp, LeadsFilterComp } from "../../components";
 import { useDispatch, useSelector } from "react-redux";
 import { Colors, GlobalStyle } from "../../styles";
 import { AppNavigator } from '../../navigations';
@@ -56,6 +56,17 @@ const DropAnalysisScreen = ({ navigation }) => {
     const [toggleParamsIndex, setToggleParamsIndex] = useState(0);
     const [toggelparamdata, setToggelparamdata] = useState([]);
     const [ isRefresh,setIsResfresh] = useState(false)
+
+    const [leadsFilterVisible, setLeadsFilterVisible] = useState(false);
+    const [leadsFilterData, setLeadsFilterData] = useState([]);
+    const [leadsSubMenuFilterVisible, setLeadsSubMenuFilterVisible] =
+        useState(false);
+    const [subMenu, setSubMenu] = useState([]);
+    const [leadsFilterDropDownText, setLeadsFilterDropDownText] = useState("All");
+    const [leadsSubMenuFilterDropDownText, setLeadsSubMenuFilterDropDownText] =
+        useState("All");
+    const [tempFilterPayload, setTempFilterPayload] = useState([]);
+
     // const setMyState = data => {
     //     empIdStateRef.current = data.empId;
     //     orgIdStateRef.current = data.orgId;
@@ -239,7 +250,8 @@ const DropAnalysisScreen = ({ navigation }) => {
        await setbranchId(branchId)
         const dateFormat = "YYYY-MM-DD";
         const currentDate = moment().add(0, "day").format(dateFormat)
-        const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+        const CurrentMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+        const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
         if (employeeData) {
             const jsonObj = await JSON.parse(employeeData);
             // await setOrgId(jsonObj.orgId)
@@ -257,7 +269,7 @@ const DropAnalysisScreen = ({ navigation }) => {
             // await setEmployeeId(jsonObj.empId)
             // getDropListFromServer(jsonObj.empId, jsonObj.empName, branchId, jsonObj.orgId, lastMonthFirstDate, currentDate);
             setisApprovalUIVisible(false)
-            const payload = getPayloadData(jsonObj.empId, jsonObj.empName, branchId, jsonObj.orgId, lastMonthFirstDate, currentDate,0)
+            const payload = getPayloadData(jsonObj.empId, jsonObj.empName, branchId, jsonObj.orgId, CurrentMonthFirstDate, currentMonthLastDate,0)
             dispatch(getLeadDropList(payload)); 
         }
     }
@@ -542,6 +554,8 @@ const DropAnalysisScreen = ({ navigation }) => {
         setToggelparamdata(temp)
     }
 
+    const liveLeadsEndDate = currentDate;
+
     return (
 
             <SafeAreaView style={styles.container}>
@@ -588,6 +602,169 @@ const DropAnalysisScreen = ({ navigation }) => {
                     </View>
                 </View> */}
 
+
+
+            <DatePickerComponent
+                visible={showDatePicker}
+                mode={"date"}
+                maximumDate={new Date(liveLeadsEndDate.toString())}
+                value={new Date()}
+                onChange={(event, selectedDate) => {
+
+                    setShowDatePicker(false);
+                    if (Platform.OS === "android") {
+                        if (selectedDate) {
+                            updateSelectedDate(selectedDate, datePickerId);
+                        }
+                    } else {
+                        updateSelectedDate(selectedDate, datePickerId);
+                    }
+                }}
+                onRequestClose={() => setShowDatePicker(false)}
+            />
+            <View>
+                <SingleLeadSelectComp
+                    visible={leadsFilterVisible}
+                    modelList={leadsFilterData}
+                    submitCallback={(x) => {
+                        setLeadsFilterData([...x]);
+                        setLeadsFilterVisible(false);
+                        const data = x.filter((y) => y.checked);
+                        if (data.length === 3) {
+                            setLeadsFilterDropDownText("All");
+                        } else {
+                            const names = data.map((y) => y.menu);
+                            //   getSubMenuList(names.toString());
+                            setLeadsFilterDropDownText(names.toString());
+                        }
+                    }}
+                    cancelClicked={() => {
+                        setLeadsFilterVisible(false);
+                    }}
+                    selectAll={async () => {
+                        setSubMenu([]);
+                    }}
+                />
+                <LeadsFilterComp
+                    visible={leadsSubMenuFilterVisible}
+                    modelList={subMenu}
+                    submitCallback={(x) => {
+                        setSubMenu([...x]);
+                        setTempFilterPayload(x);
+                        setLeadsSubMenuFilterVisible(false);
+                        const data = x.filter((y) => y.checked);
+                        if (data.length === subMenu.length) {
+                            setLeadsSubMenuFilterDropDownText("All");
+                        } else {
+                            const names = data.map((y) => y?.subMenu);
+                            setLeadsSubMenuFilterDropDownText(
+                                names.toString() ? names.toString() : "Select Sub Menu"
+                            );
+                        }
+                    }}
+                    cancelClicked={() => {
+                        setLeadsSubMenuFilterVisible(false);
+                    }}
+                    onChange={(x) => {
+
+                    }}
+                />
+            </View>
+            <View style={styles.view1}>
+                <View style={{ width: "50%" }}>
+                    <DateRangeComp
+                        fromDate={selectedFromDate}
+                        toDate={selectedToDate}
+                        fromDateClicked={() => showDatePickerMethod("FROM_DATE")}
+                        toDateClicked={() => showDatePickerMethod("TO_DATE")}
+                    />
+                </View>
+                <View style={styles.fliterView}>
+                    <View style={{ width: "49%" }}>
+                        <Pressable
+                            onPress={() => {
+                                setLeadsFilterVisible(true);
+                            }}
+                        >
+                            <View
+                                style={{
+                                    borderWidth: 0.5,
+                                    borderColor: Colors.BORDER_COLOR,
+                                    borderRadius: 4,
+                                    flexDirection: "row",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                }}
+                            >
+                                <Text
+                                    style={{
+                                        width: "65%",
+                                        paddingHorizontal: 5,
+                                        paddingVertical: 2,
+                                        fontSize: 12,
+                                        fontWeight: "600",
+                                    }}
+                                    numberOfLines={2}
+                                >
+                                    {leadsFilterDropDownText}
+                                </Text>
+                                <IconButton
+                                    icon={leadsFilterVisible ? "chevron-up" : "chevron-down"}
+                                    size={20}
+                                    color={Colors.BLACK}
+                                    style={{ margin: 0, padding: 0 }}
+                                />
+                            </View>
+                        </Pressable>
+                    </View>
+                    <View
+                        style={{
+                            width: "49%",
+                        }}
+                    >
+                        <Pressable
+                            onPress={() => {
+                                setLeadsSubMenuFilterVisible(true);
+                            }}
+                        >
+                            <View
+                                style={{
+                                    borderWidth: 0.5,
+                                    borderColor: Colors.BORDER_COLOR,
+                                    borderRadius: 4,
+                                    flexDirection: "row",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                }}
+                            >
+                                <Text
+                                    style={{
+                                        width: "65%",
+                                        paddingHorizontal: 5,
+                                        paddingVertical: 2,
+                                        fontSize: 12,
+                                        fontWeight: "600",
+                                    }}
+                                    numberOfLines={2}
+                                >
+                                    {leadsSubMenuFilterDropDownText}
+                                </Text>
+                                <IconButton
+                                    icon={
+                                        leadsSubMenuFilterVisible ? "chevron-up" : "chevron-down"
+                                    }
+                                    size={20}
+                                    color={Colors.BLACK}
+                                    style={{
+                                        margin: 0,
+                                        padding: 0,
+                                    }}
+                                />
+                            </View>
+                        </Pressable>
+                    </View>
+                </View>
+            </View>
 
             <SegmentedControl
                 style={{
@@ -681,6 +858,8 @@ const DropAnalysisScreen = ({ navigation }) => {
                                                 isCheckboxVisible={true}
                                                 isRefresh={isRefresh}
                                                 navigation ={navigation}
+                                                showBubble={true}
+                                                showThreeDots={true}
                                             />
                                         </View>
                                     </>
@@ -743,6 +922,8 @@ const DropAnalysisScreen = ({ navigation }) => {
                                                 mobileNo={item.mobileNumber}
                                                 isCheckboxVisible = {false}
                                                 navigation={navigation}
+                                                showBubble={false}
+                                                showThreeDots={false}
                                             />
                                         </View>
                                     </>
@@ -805,6 +986,8 @@ const DropAnalysisScreen = ({ navigation }) => {
                                                 mobileNo={item.mobileNumber}
                                                 isCheckboxVisible={false}
                                                 navigation={navigation}
+                                                showBubble={false}
+                                                showThreeDots={false}
                                             />
                                         </View>
                                     </>
@@ -939,5 +1122,16 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         padding:5
-    }
+    },
+    fliterView: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        borderColor: Colors.LIGHT_GRAY,
+        paddingHorizontal: 6,
+        paddingBottom: 4,
+        backgroundColor: Colors.WHITE,
+        marginTop: -6,
+        width: "50%",
+        alignItems: "center",
+    },
 });

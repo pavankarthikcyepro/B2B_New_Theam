@@ -252,7 +252,8 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                   fontSize: 16,
                                   fontWeight: "700",
                                   marginBottom: 5,
-                                  width: "80%",
+                                  // flex:1
+                                  width: "60%",
                                 }}
                               >
                                 {name}
@@ -452,18 +453,20 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                 </View>
                                 <View
                                   style={{
-                                      width: isHistory ? "67%" : "67%",
+                                      // width: isHistory ? "80%" : "80%",
                                     padding: 5,
+                                    flex:1
                                   }}
                                 >
                                     
                                   <View
                                     style={[
-                                      { backgroundColor: Colors.WHITE },
-                                      GlobalStyle.shadow,
+                                      { backgroundColor: Colors.RED,flexDirection:"row" },
+                                        GlobalStyle.shadow, styles.view1,
                                     ]}
                                   >
                                     <TouchableOpacity
+                                    style={{flex:1}}
                                       onPress={() => itemClicked(item)}
                                     >
                                       <View
@@ -475,10 +478,29 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                           style={{
                                             flexDirection: "row",
                                             justifyContent: "space-between",
+                                            // backgroundColor:"red"
                                           }}
                                         >
                                             
                                           {TaskNameView(item.taskName)}
+                                            {/* Bubble count UI  */}
+
+                                            {isDotVisibleForClosed && !isHistory && (
+                                              <View
+                                                style={styles.btn3}
+
+                                              >
+                                                <Text style={styles.txt7}>3</Text>
+                                              </View>
+                                            )}
+                                            {isDotVisible && isHistory && (
+                                              <View
+                                                style={styles.btn3}
+
+                                              >
+                                                <Text style={styles.txt7}>3</Text>
+                                              </View>
+                                            )}
                                           {item.lat && item.lon && (
                                             <TouchableOpacity
                                               style={styles.btn2}
@@ -490,9 +512,10 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                                 style={{
                                                   height: 25,
                                                   width: 15,
+                                                  color:Colors.PINK
                                                 }}
                                                 source={require("../../../assets/images/location-pin.png")}
-                                                tintColor={Colors.PINK}
+                                                  tintColor={Colors.PINK}
                                               />
                                             </TouchableOpacity>
                                           )}
@@ -523,58 +546,16 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                                   ? item.employeeRemarks
                                                   : "")}
                                             </Text>
-                                            {/* Bubble count UI  */}
-
-                                            {isDotVisibleForClosed && !isHistory && (
-                                              <View
-                                                style={styles.btn3}
-
-                                              >
-                                                <Text style={styles.txt7}>3</Text>
-                                              </View>
-                                            )}
-                                            {isDotVisible && isHistory && (
-                                              <View
-                                                style={styles.btn3}
-
-                                              >
-                                                <Text style={styles.txt7}>3</Text>
-                                              </View>
-                                            )}
+                                           
                                           </View>
                                         
                                       </View>
                                     </TouchableOpacity>
-                                  </View>
-                                </View>
-                                  {isHistory && isDotVisible ? (
-                                  <TouchableOpacity
-                                    onPress={() =>
-                                      navigation.navigate(
-                                        EmsStackIdentifiers.task360History,
-                                        {
-                                          identifier:
-                                            mytasksIdentifires.task360History,
-                                          title: checkForTaskNames(
-                                            item.taskName
-                                          ),
-                                          universalId: item.universalId,
-                                        }
-                                      )
-                                    }
-                                  >
-                                    <Image
-                                      source={require("./../../../assets/images/dots.png")}
-                                      resizeMode="contain"
-                                      style={styles.dotContainer}
-                                    />
-                                  </TouchableOpacity>
-                                ) : null}
-                                  {!isHistory && isDotVisibleForClosed ? (
-                                    <TouchableOpacity
-                                      onPress={() =>
-                                        {
-                                        if (item.taskName !== "Test Drive"){
+
+                                      {isHistory && isDotVisible ? (
+                                        <TouchableOpacity
+                                        style={{justifyContent:"center"}}
+                                          onPress={() =>
                                             navigation.navigate(
                                               EmsStackIdentifiers.task360History,
                                               {
@@ -586,22 +567,51 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                                 universalId: item.universalId,
                                               }
                                             )
-                                        } else {
-                                          navigation.navigate("TEST_HISTORY", {
-                                            universalId: universalId,
+                                          }
+                                        >
+                                          <Image
+                                            source={require("./../../../assets/images/dots.png")}
+                                            resizeMode="contain"
+                                            style={styles.dotContainer}
+                                          />
+                                        </TouchableOpacity>
+                                      ) : null}
+                                      {!isHistory && isDotVisibleForClosed ? (
+                                        <TouchableOpacity
+                                          style={{ justifyContent: "center",}}
+                                          onPress={() => {
+                                            if (item.taskName !== "Test Drive") {
+                                              navigation.navigate(
+                                                EmsStackIdentifiers.task360History,
+                                                {
+                                                  identifier:
+                                                    mytasksIdentifires.task360History,
+                                                  title: checkForTaskNames(
+                                                    item.taskName
+                                                  ),
+                                                  universalId: item.universalId,
+                                                }
+                                              )
+                                            } else {
+                                              navigation.navigate("TEST_HISTORY", {
+                                                universalId: universalId,
 
-                                          })
-                                        }
-                                        }
-                                      }
-                                    >
-                                      <Image
-                                        source={require("./../../../assets/images/dots.png")}
-                                        resizeMode="contain"
-                                        style={styles.dotContainer}
-                                      />
-                                    </TouchableOpacity>
-                                  ) : null}
+                                              })
+                                            }
+                                          }
+                                          }
+                                        >
+                                          <Image
+                                            source={require("./../../../assets/images/dots.png")}
+                                            resizeMode="contain"
+                                            style={styles.dotContainer}
+                                          />
+                                        </TouchableOpacity>
+                                      ) : null}
+                                  </View>
+                                </View>
+                                  
+                                  
                               </View>
                             )}
                           </>
@@ -638,8 +648,10 @@ const styles = StyleSheet.create({
   },
 
   dotContainer:{
-    height: 45,
-    width: 25,
+    height: 55,
+    width: 30,
+    // backgroundColor:"red",
+    marginTop:40
   },
   view1:{
     paddingVertical: 5,
@@ -698,8 +710,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#d1d1d1",
     borderRadius: 5,
+    marginEnd:-15
   },
   btn3: {
+    alignSelf: "flex-start",
+    marginTop: -5,
     width: 35,
     height: 35,
     justifyContent: "center",
@@ -707,10 +722,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#d1d1d1",
     borderRadius: 5,
-    // backgroundColor:Colors.PINK,  
-    alignSelf:"flex-end",
-    marginBottom:-5
-    // marginEnd:10
+     marginEnd: -15
    
   },
   txt4: { fontSize: 18, fontWeight: "700", marginBottom: 5 },

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Dimensions, FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { IconButton } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
+import { EmsStackIdentifiers } from '../../../navigations/appNavigator';
 import { getTaskThreeSixtyHistory } from '../../../redux/taskThreeSixtyReducer';
 import { Colors, GlobalStyle } from '../../../styles';
 
@@ -167,30 +168,52 @@ const TaskThreeSixtyHistory = (props) => {
         <View style={styles.taskMainContainer}>
           <View style={styles.taskContainer}>
             {taskNameView(item?.taskName)}
-            <View style={{ flexDirection: "row" }}>
-              <View style={{ flexDirection: "column" }}>
-                <Text style={styles.assigneeText}>
+
+            <View style={{ flexDirection: "column" }}>
+              <View style={styles.view6}>
+                <Text
+                  style={styles.txt5}
+                >
                   {"Reason: "}
                 </Text>
-                <Text style={styles.assigneeText}>
-                  {"Customer Remarks: "}
-                </Text>
-                <Text style={styles.assigneeText}>
-                  {"Employee Remarks: "}
-                </Text>
-              </View>
-              <View style={{ flexDirection: "column" }}>
-                <Text style={styles.assigneeTextV2}>
+                <Text
+                  style={styles.txt3}
+                >
                   {item?.reason ?? ""}
                 </Text>
-                <Text style={styles.assigneeTextV2}>
+
+              </View>
+              <View style={styles.view6}>
+                <Text
+                  style={styles.txt5}
+                >
+                  {"Customer Remarks: "}
+                </Text>
+                <Text
+                  style={styles.txt3}
+                >
                   {item?.customerRemarks ?? ""}
                 </Text>
-                <Text style={styles.assigneeTextV2}>
+
+              </View>
+              <View style={styles.view6}>
+                <Text
+                  style={styles.txt5}
+                >
+                  {"Employee Remarks: "}
+                </Text>
+                <Text
+                  style={styles.txt3}
+                >
                   {item?.employeeRemarks ?? ""}
                 </Text>
+
               </View>
+             
+            
+
             </View>
+            
             
             {/* {item?.taskUpdatedBy?.empName ? (
               <Text style={styles.followUpText}>
@@ -237,7 +260,12 @@ const TaskThreeSixtyHistory = (props) => {
           style={{ padding: 0, margin: 0 }}
           color={Colors.BLACK}
           size={20}
-          onPress={() => {}}
+          onPress={() => {
+            props.navigation.navigate(EmsStackIdentifiers.task360HistoryFilter, {
+              isFromLogin: false,
+              fromScreen: "TASK360_HISTORY",
+            });
+          }}
         />
       </View>
 
@@ -348,6 +376,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "700",
     marginBottom: 5,
+    margin: 5
   },
   sideTitle: {
     fontSize: 14,
@@ -357,13 +386,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "bold",
     marginVertical: 5,
-    flex: 1
+    // flex: 1
   },
   assigneeTextV2: {
     fontSize: 14,
     fontWeight: "400",
     color:Colors.GRAY_LIGHT,
-    marginVertical:5  ,
+    // marginVertical:5  ,
     flex:1
   },
   followUpText: {
@@ -387,6 +416,41 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     fontSize: 14,
   },
+  txt5: {
+    fontSize: 14,
+    fontWeight: "400",
+    color: Colors.GRAY,
+    flex: 1
+  },
+  view4: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  view5: {
+    alignItems: "center",
+    flexDirection: "row",
+    position: "absolute",
+  },
+  view2: {
+    width: "100%",
+    flexDirection: "row",
+  },
+  view3: {
+    width: "25%",
+    justifyContent: "center",
+  },
+  txt2: {
+    fontSize: 12,
+    fontWeight: "400",
+  },
+  txt3: {
+    fontSize: 14,
+    fontWeight: "400",
+    color: Colors.BLACK,
+    flex: 1
+  },
+  view6: { flexDirection: "row", margin: 5 }
 });
 
 export default TaskThreeSixtyHistory;

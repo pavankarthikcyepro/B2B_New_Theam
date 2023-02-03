@@ -115,6 +115,7 @@ import EventSourceModel from "../scenes/mainScenes/EventDashboard/EventSourceMod
 import LeaderShipFilter from "../scenes/mainScenes/Home/TabScreens/leaderShipFilter";
 import Orientation from "react-native-orientation-locker";
 import { detectIsOrientationLock } from "../utils/helperFunctions";
+import TaskthreeSixtyhistoryFilter from "../scenes/mainScenes/EMS/components/TaskthreeSixtyhistoryFilter";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -406,7 +407,8 @@ export const EmsStackIdentifiers = {
   webViewComp: "webViewComp",
   ProformaScreen: "PROFORMA_SCREEN",
   newEnquiry: "NEW_ENQUIRY",
-  testDriveHistory: "TEST_HISTORY"
+  testDriveHistory: "TEST_HISTORY",
+  task360HistoryFilter: "TASK_360_HISTORY_FILTER",
 };
 
 export const PreBookingStackIdentifiers = {
@@ -623,7 +625,13 @@ const EmsStackNavigator = ({ navigation }) => {
           headerTitle: route?.params?.title ?? "History",
         })}
       />
-
+      <EmsStack.Screen
+        name={EmsStackIdentifiers.task360HistoryFilter}
+        component={TaskthreeSixtyhistoryFilter}
+        options={({ route }) => ({
+          headerTitle: "History Filter",
+        })}
+      />
       <EmsStack.Screen
         name={EmsStackIdentifiers.homeVisit}
         component={HomeVisitScreen}
@@ -1033,7 +1041,7 @@ const DropAnalysisStackNavigator = ({ navigation }) => {
         name={"DROP_ANALYSIS"}
         component={DropAnalysisScreen}
         options={{
-          title: "Lead Drop List",
+          title: "Drop List",
           headerLeft: () => <MenuIcon navigation={navigation} />,
           headerRight: () => {
             return (
@@ -1049,9 +1057,9 @@ const DropAnalysisStackNavigator = ({ navigation }) => {
       <DropAnalysisStack.Screen
         name={"DROP_ANALYSIS_HISTORY"}
         component={TaskThreeSixtyHistory}
-        options={{
-         
-        }}
+        options={({ route }) => ({
+          headerTitle: route?.params?.title ?? "History",
+        })}
       />
     </DropAnalysisStack.Navigator>
   );
