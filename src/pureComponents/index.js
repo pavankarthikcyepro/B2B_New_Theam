@@ -12,6 +12,7 @@ import { ComplaintsItem } from "./complaintsItem";
 import { EventManagementItem } from "./eventmanagementItem";
 import { ChartNameList } from "./chartNameList";
 import { TargetDropdown } from "./targetDropdown";
+import { DropDownSelectionItemV2 } from "./dropDownSelectionItemV2";
 import { DropDownSelectionItemV3 } from "./dropDownSelectionItemv3";
 
 export {
@@ -28,5 +29,6 @@ export {
     ChartNameList,
     TargetDropdown,
     DateSelectItemForTargetSettings,
+    DropDownSelectionItemV2,
     DropDownSelectionItemV3
 };
