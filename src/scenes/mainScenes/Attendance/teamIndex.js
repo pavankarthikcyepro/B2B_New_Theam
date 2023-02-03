@@ -638,15 +638,24 @@ const AttendanceTeamMemberScreen = ({ route, navigation }) => {
 
   const downloadReport = async () => {
     try {
-      const payload = {
-        orgId: userData.orgId,
-        fromDate: selectedFromDate,
-        toDate: selectedToDate,
-      };
-      const response = await client.post(URL.GET_ATTENDANCE_REPORT(), payload);
-      const json = await response.json();
-      if (json.downloadUrl) {
-        downloadInLocal(URL.GET_DOWNLOAD_URL(json.downloadUrl));
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        const payload = {
+          orgId: jsonObj.orgId,
+          fromDate: selectedFromDate,
+          toDate: selectedToDate,
+        };
+        const response = await client.post(
+          URL.GET_ATTENDANCE_REPORT(),
+          payload
+        );
+        const json = await response.json();
+        if (json.downloadUrl) {
+          downloadInLocal(URL.GET_DOWNLOAD_URL(json.downloadUrl));
+        }
       }
     } catch (error) {
       alert("Something went wrong");
