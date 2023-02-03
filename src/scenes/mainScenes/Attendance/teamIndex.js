@@ -291,7 +291,16 @@ const AttendanceTeamMemberScreen = ({ route, navigation }) => {
               note: element.comments,
               reason: element.reason,
               color: element.isPresent === 1 ? Colors.GREEN : "#ff5d68",
-              status: element.isPresent === 1 ? "Present" : "Absent",
+              status:
+                element.isPresent === 1
+                  ? element.wfh === 1
+                    ? "WFH"
+                    : "Present"
+                  : element.holiday === 1
+                  ? "Holiday"
+                  : element.wfh === 1
+                  ? "WFH"
+                  : "Absent",
             };
             dateArray.push(formatedDate);
             newArray.push(format);
@@ -400,7 +409,11 @@ const AttendanceTeamMemberScreen = ({ route, navigation }) => {
               color: element.isPresent === 1 ? Colors.GREEN : "#ff5d68",
               status:
                 element.isPresent === 1
-                  ? "Present"
+                  ? element.wfh === 1
+                    ? "WFH"
+                    : "Present"
+                  : element.holiday === 1
+                  ? "Holiday"
                   : element.wfh === 1
                   ? "WFH"
                   : "Absent",
@@ -574,7 +587,16 @@ const AttendanceTeamMemberScreen = ({ route, navigation }) => {
               note: element.comments,
               reason: element.reason,
               color: element.isPresent === 1 ? Colors.GREEN : "#ff5d68",
-              status: element.isPresent === 1 ? "Present" : "Absent",
+              status:
+                element.isPresent === 1
+                  ? element.wfh === 1
+                    ? "WFH"
+                    : "Present"
+                  : element.holiday === 1
+                  ? "Holiday"
+                  : element.wfh === 1
+                  ? "WFH"
+                  : "Absent",
             };
             dateArray.push(formatedDate);
             newArray.push(format);
