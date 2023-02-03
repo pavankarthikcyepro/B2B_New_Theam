@@ -1,11 +1,17 @@
 import React from "react";
-import {StyleSheet, Text, View} from "react-native";
-import {Colors} from "../../../../../styles";
-import {achievementPercentage} from "../../../../../utils/helperFunctions";
+import { StyleSheet, Text, View } from "react-native";
+import { Colors } from "../../../../../styles";
+import { achievementPercentage } from "../../../../../utils/helperFunctions";
 
 export const RenderGrandTotal = (parameter) => {
   // const paramsData = ['Enquiry', 'Test Drive', 'Home Visit', 'Booking', 'INVOICE', 'Finance', 'Insurance', 'Exchange', 'EXTENDEDWARRANTY', 'Accessories'];
-  const { params, totalParams, displayType = 0, moduleType } = parameter;
+  const {
+    params,
+    totalParams,
+    displayType = 0,
+    moduleType,
+    hideTgt = false,
+  } = parameter;
   const paramsData = params.map(({ paramName }) => paramName);
   return (
     <>
@@ -42,7 +48,11 @@ export const RenderGrandTotal = (parameter) => {
             <Text
               style={[
                 styles.totalText1,
-                { marginBottom: 0, color: Colors.WHITE },
+                {
+                  marginBottom: 0,
+                  color: Colors.WHITE,
+                  paddingTop: hideTgt ? 0 : 3,
+                },
               ]}
             >
               {displayType === 0
@@ -62,8 +72,10 @@ export const RenderGrandTotal = (parameter) => {
                     acc
                   )}%`}
             </Text>
+
             {moduleType !== "live-leads" &&
             selectedParameter &&
+            !hideTgt &&
             selectedParameter?.paramName !== "DROPPED" ? (
               <Text
                 style={[
@@ -89,7 +101,6 @@ export const RenderGrandTotal = (parameter) => {
     </>
   );
 };
-
 
 const styles = StyleSheet.create({
   itemBox: {

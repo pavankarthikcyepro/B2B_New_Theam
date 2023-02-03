@@ -11,7 +11,7 @@ import { Colors } from "../../../styles";
 import moment from "moment/moment";
 import URL from "../../../networking/endpoints";
 import { useDispatch, useSelector } from "react-redux";
-import { getSourceModelDataForSelf } from "../../../redux/homeReducer";
+import { getEventSourceModelForSelf } from "../../../redux/homeReducer";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
 import { ActivityIndicator, IconButton } from "react-native-paper";
 import { AppNavigator } from "../../../navigations";
@@ -24,9 +24,7 @@ const EventSourceModel = ({ route, navigation }) => {
   const { empId, loggedInEmpId, headerTitle, orgId, type, moduleType } =
     route.params;
   const [leadSource, setLeadSource] = useState([]);
-  const [vehicleModel, setVehicleModel] = useState([]);
   const [leadSourceKeys, setLeadSourceKeys] = useState([]);
-  const [vehicleModelKeys, setVehicleModelKeys] = useState([]);
   const [isSourceIndex, setIsSourceIndex] = useState(0);
   const [displayType, setDisplayType] = useState(0);
   const [sourceModelTotals, setSourceModelTotals] = useState({});
@@ -74,55 +72,17 @@ const EventSourceModel = ({ route, navigation }) => {
       .format(dateFormat);
 
     let payload = {
-      // endDate: monthLastDate,
-      endDate: moduleType === "live-leads" ? monthLastDate : monthLastDate,
+      endDate: monthLastDate,
       loggedInEmpId: empId,
-      empId: empId,
-      // startDate: monthFirstDate,
-      startDate: moduleType === "live-leads" ? "2021-01-01" : monthFirstDate,
+      startDate: monthFirstDate,
       levelSelected: null,
+      empId: empId,
       pageNo: 0,
       size: 100,
-      orgId: orgId,
-      pageNo: 0,
-      selectedEmpId: empId,
     };
 
-    const urlSelf = URL.MODEL_SOURCE_SELF();
-    const urlInsights = URL.MODEL_SOURCE_INSIGHTS();
-    const urlTeam = URL.MODEL_SOURCE_TEAM();
-    let url = "";
-    switch (type) {
-      case "SELF":
-        url = urlSelf;
-        break;
-      case "INSIGHTS":
-        url = urlInsights;
-        break;
-      case "TEAM":
-        url = urlTeam;
-        const data = {
-          // orgId: orgId,
-          // selectedEmpId: empId,
-        };
-        payload = {
-          ...payload,
-          ...data,
-        };
-        break;
-    }
-    let tempPayload = {
-      orgId: orgId,
-      endDate: moduleType === "live-leads" ? currentDate : monthLastDate,
-      loggedInEmpId: loggedInEmpId,
-      empId: empId,
-      startDate: moduleType === "live-leads" ? "2021-01-01" : monthFirstDate,
-      levelSelected: null,
-      pageNo: 0,
-      size: 100,
-    };
     let key = moduleType !== "live-leads" ? "" : "LIVE-LEADS";
-    dispatch(getSourceModelDataForSelf({ type, payload, key }));
+    dispatch(getEventSourceModelForSelf({ type, payload, key }));
   }, [empId, navigation]);
 
   useEffect(() => {
@@ -133,75 +93,43 @@ const EventSourceModel = ({ route, navigation }) => {
   }, [isSourceIndex]);
 
   useEffect(() => {
-    if (selector.sourceModelData) {
+    if (selector.eventSourceModelForSelf) {
       setIsLoading(true);
-      const json = selector.sourceModelData;
-      const sourceData = [];
-      const modelData = [];
-      const data = type === "TEAM" ? json : json;
-      data &&
-        data.length > 0 &&
-        data.filter((x) => {
-          if (x.model) {
-            modelData.push(x);
-          }
-          if (x.source) {
-            sourceData.push(x);
-          }
-        });
+      const json = selector.eventSourceModelForSelf;
+      let data = Object.assign([], json);
+
       for (let i = 0; i < paramsMetadata.length; i++) {
-        for (let j = 0; j < sourceData.length; j++) {
-          if (sourceData[j].paramName === paramsMetadata[i].paramName) {
-            let temp = Object.assign({}, sourceData[j]);
-            temp["toggleIndex"] = paramsMetadata[i].toggleIndex;
-            sourceData[j] = temp;
+        for (let j = 0; j < data.length; j++) {
+          if (data[j].paramName === paramsMetadata[i].paramName) {
+            let tmpIndex = Object.assign({}, json[j]);
+            tmpIndex.toggleIndex = paramsMetadata[i].toggleIndex;
+            data[j] = Object.assign({}, tmpIndex);
           }
         }
       }
 
-      for (let i = 0; i < paramsMetadata.length; i++) {
-        for (let j = 0; j < modelData.length; j++) {
-          if (modelData[j].paramName === paramsMetadata[i].paramName) {
-            let temp = Object.assign({}, modelData[j]);
-            temp["toggleIndex"] = paramsMetadata[i].toggleIndex;
-            modelData[j] = temp;
-          }
-        }
-      }
-
-      let newSourceData = [...sourceData];
-      let newModelData = [...modelData];
+      let newData = [...data];
       if (toggleParamsIndex !== 2) {
-        newSourceData = newSourceData.filter(
-          (x) => x.toggleIndex === toggleParamsIndex
-        );
-        newModelData = newModelData.filter(
-          (x) => x.toggleIndex === toggleParamsIndex
-        );
+        newData = newData.filter((x) => x.toggleIndex === toggleParamsIndex);
       }
 
-      const sourceUnique = new Set(newSourceData.map((x) => x.source));
-      const modelUnique = new Set(newModelData.map((x) => x.model));
+      const sourceUnique = new Set(newData.map((x) => x.event));
       setLeadSourceKeys([...sourceUnique]);
-      setVehicleModelKeys([...modelUnique]);
-      const groupedSources = getData([...newSourceData], 0);
+      const groupedSources = getData([...newData]);
       setLeadSource(groupedSources);
-      const groupedModels = getData([...newModelData], 1);
-      setVehicleModel(groupedModels);
-      // getTotal(0);
       setIsLoading(false);
     }
-  }, [selector.sourceModelData, toggleParamsIndex]);
+  }, [selector.eventSourceModelForSelf, toggleParamsIndex]);
 
   useEffect(() => {
     if (leadSource) {
-      getTotal(isSourceIndex);
+      getTotal();
     }
   }, [leadSource]);
 
-  const getTotal = (type) => {
-    const keys = type === 0 ? leadSourceKeys : vehicleModelKeys;
-    let data = type === 0 ? leadSource : vehicleModel;
+  const getTotal = () => {
+    const keys = leadSourceKeys;
+    let data = leadSource;
     let newData = paramsMetadata;
     if (toggleParamsIndex !== 2) {
       newData = newData.filter((x) => x.toggleIndex === toggleParamsIndex);
@@ -314,7 +242,7 @@ const EventSourceModel = ({ route, navigation }) => {
     return (
       data &&
       data.reduce((r, a) => {
-        const key = a[type === 0 ? "source" : "model"];
+        const key = a["event"];
         r[key] = r[key] || [];
         r[key].push(a);
         return r;
@@ -323,8 +251,8 @@ const EventSourceModel = ({ route, navigation }) => {
   };
 
   const renderDataView = () => {
-    const keys = isSourceIndex === 0 ? leadSourceKeys : vehicleModelKeys;
-    const data = isSourceIndex === 0 ? leadSource : vehicleModel;
+    const keys = leadSourceKeys;
+    const data = leadSource;
     return (
       <>
         {keys &&
@@ -350,7 +278,7 @@ const EventSourceModel = ({ route, navigation }) => {
   };
 
   function renderTitleColumn() {
-    const keys = isSourceIndex === 0 ? leadSourceKeys : vehicleModelKeys;
+    const keys = leadSourceKeys;
     return (
       <>
         {keys &&
@@ -373,68 +301,6 @@ const EventSourceModel = ({ route, navigation }) => {
   return (
     <>
       <View>
-        <View
-          style={[
-            styles.flexRow,
-            styles.justifyAlignCenter,
-            { marginBottom: 8 },
-          ]}
-        >
-          <View style={[styles.flexRow, styles.toggleButtonView]}>
-            <TouchableOpacity
-              onPress={() => {
-                if (isSourceIndex !== 0) {
-                  setIsSourceIndex(0);
-                  getTotal(0);
-                  setToggleParamsIndex(0);
-                }
-              }}
-              style={[
-                styles.toggleViewButtons,
-                styles.justifyAlignCenter,
-                {
-                  backgroundColor:
-                    isSourceIndex === 1 ? Colors.WHITE : Colors.RED,
-                },
-              ]}
-            >
-              <Text
-                style={[
-                  styles.toggleButtonText,
-                  { color: isSourceIndex === 1 ? Colors.BLACK : Colors.WHITE },
-                ]}
-              >
-                Lead Source
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                if (isSourceIndex === 0) {
-                  setIsSourceIndex(1);
-                  getTotal(1);
-                  setToggleParamsIndex(0);
-                }
-              }}
-              style={[
-                styles.toggleViewButtons,
-                styles.justifyAlignCenter,
-                {
-                  backgroundColor:
-                    isSourceIndex === 1 ? Colors.RED : Colors.WHITE,
-                },
-              ]}
-            >
-              <Text
-                style={[
-                  styles.toggleButtonText,
-                  { color: isSourceIndex === 1 ? Colors.WHITE : Colors.BLACK },
-                ]}
-              >
-                Vehicle Model
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
         <View style={styles.sourceModelContainer}>
           <View
             style={{
@@ -497,7 +363,15 @@ const EventSourceModel = ({ route, navigation }) => {
               <ScrollView>
                 <View style={[styles.flexRow, { paddingHorizontal: 6 }]}>
                   <View>
-                    <View style={{ height: 20 }}></View>
+                    <View
+                      style={{
+                        height: 20,
+                        justifyContent: "center",
+                        marginLeft: 10,
+                      }}
+                    >
+                      <Text>Events</Text>
+                    </View>
                     {renderTitleColumn()}
                     <View style={[styles.flexRow, styles.totalTextView]}>
                       <Text style={styles.totalTitleText}>Total</Text>

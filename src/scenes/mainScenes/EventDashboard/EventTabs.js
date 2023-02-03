@@ -27,7 +27,7 @@ import {
   getUserWiseTargetParameters,
   updateEmployeeDataBasedOnDelegate,
 } from "../../../redux/homeReducer";
-import { useNavigation } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { AppNavigator } from "../../../navigations";
 import { ActivityIndicator, IconButton } from "react-native-paper";
 import { client } from "../../../networking/client";
@@ -51,9 +51,9 @@ const color = [
   "#1f93ab",
   "#ec3466",
 ];
-const receptionistRole = ["Reception", "CRM"];
 const EventDashBoardTargetScreen = ({ route }) => {
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
   const selector = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
 
@@ -74,30 +74,13 @@ const EventDashBoardTargetScreen = ({ route }) => {
   const [dateDiff, setDateDiff] = useState(null);
   const [isTeamPresent, setIsTeamPresent] = useState(false);
   const [isTeam, setIsTeam] = useState(false);
-  const [showShuffleModal, setShowShuffleModal] = useState(false);
-  const [delegateButtonClick, setDelegateButtonClick] = useState(false);
-  const [headerTitle, setHeaderTitle] = useState(
-    "Selected employee has Active tasks. Please delegate to another employee"
-  );
   const [dropDownPlaceHolder, setDropDownPlaceHolder] = useState("Employees");
   const [allParameters, setAllParameters] = useState([]);
   const [receptionistTeamParameters, setReceptionistTeamParameters] = useState(
     []
   );
   const [totalOfTeam, setTotalofTeam] = useState([]);
-  const [myParameters, setMyParameters] = useState([]);
-
-  const [selectedName, setSelectedName] = useState("");
-
-  const [employeeListDropdownItem, setEmployeeListDropdownItem] = useState(0);
   const [employeeDropdownList, setEmployeeDropdownList] = useState([]);
-  const [
-    reoprtingManagerListDropdownItem,
-    setReoprtingManagerListDropdownItem,
-  ] = useState(0);
-  const [reoprtingManagerDropdownList, setReoprtingManagerDropdownList] =
-    useState([]);
-  const [selectedUser, setSelectedUser] = useState(null);
 
   const [branches, setBranches] = useState([]);
   const [togglePercentage, setTogglePercentage] = useState(0);
@@ -106,6 +89,7 @@ const EventDashBoardTargetScreen = ({ route }) => {
   const [isLoading, setIsLoading] = useState(false);
   const translation = useRef(new Animated.Value(0)).current;
   const [slideRight, setSlideRight] = useState();
+  const [leadSource, setLeadSource] = useState([]);
   const [userData, setUserData] = useState({
     empId: 0,
     empName: "",
@@ -336,6 +320,60 @@ const EventDashBoardTargetScreen = ({ route }) => {
     selector.insights_target_parameters_data,
   ]); //selector.self_target_parameters_data]
 
+  const getFormattedInitialData = async (empId, initial) => {
+    const url = URL.EVENT_DASHBOARD();
+    const response = await client.post(url, getTotalPayload(empId));
+    const newJson = await response.json();
+    if (response.ok && newJson.length > 0) {
+      if (initial) {
+        setLeadSource(newJson);
+      }
+      return getFormattedIndividualData(newJson);
+    }
+    return null;
+  };
+
+  const getFormattedIndividualData = (value) => {
+    const json = value;
+    let data = Object.assign([], json);
+
+    for (let i = 0; i < paramsMetadata.length; i++) {
+      for (let j = 0; j < data.length; j++) {
+        if (data[j].paramName === paramsMetadata[i].paramName) {
+          let tmpIndex = Object.assign({}, json[j]);
+          tmpIndex.toggleIndex = paramsMetadata[i].toggleIndex;
+          data[j] = Object.assign({}, tmpIndex);
+        }
+      }
+    }
+
+    let newData = [...data];
+    let tmpArr = [];
+    for (let i = 0; i < newData.length; i++) {
+      if (tmpArr.length > 0) {
+        let existIndex = -1;
+        for (let j = 0; j < tmpArr.length; j++) {
+          if (tmpArr[j].paramName == newData[i].paramName) {
+            existIndex = j;
+            break;
+          }
+        }
+        if (existIndex > -1) {
+          tmpArr[existIndex].achievment =
+            Number(tmpArr[existIndex].achievment) +
+            Number(newData[i].achievment);
+        } else {
+          tmpArr.push(newData[i]);
+        }
+      } else {
+        tmpArr.push(newData[i]);
+      }
+    }
+
+    const groupedSources = Object.assign([], tmpArr);
+    return groupedSources;
+  };
+
   useEffect(async () => {
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     if (employeeData) {
@@ -430,7 +468,7 @@ const EventDashBoardTargetScreen = ({ route }) => {
             ...myParams[0],
             isOpenInner: false,
             employeeTargetAchievements: [],
-            targetAchievements: selector.totalParameters,
+            targetAchievements: await getFormattedInitialData(jsonObj.empId, true),
             tempTargetAchievements: myParams[0]?.targetAchievements,
           };
           setAllParameters(myParams);
@@ -440,7 +478,7 @@ const EventDashBoardTargetScreen = ({ route }) => {
     } catch (error) {
       setIsLoading(false);
     }
-  }, [selector.all_emp_parameters_data]);
+  }, [selector.all_emp_parameters_data, isFocused]);
 
   useEffect(() => {
     navigation.addListener("focus", () => {
@@ -503,23 +541,7 @@ const EventDashBoardTargetScreen = ({ route }) => {
       }
     } catch (error) {}
   };
-  const getColor = (ach, tar) => {
-    if (ach > 0 && tar === 0) {
-      return "#1C95A6";
-    } else if (ach === 0 || tar === 0) {
-      return "#FA03B9";
-    } else {
-      if ((ach / tar) * 100 === 50) {
-        return "#EC3466";
-      } else if ((ach / tar) * 100 > 50) {
-        return "#1C95A6";
-      } else if ((ach / tar) * 100 < 50) {
-        return "#FA03B9";
-      }
-    }
-  };
-  // Main Dashboard params Data
-
+  
   const getBranchName = (branchId) => {
     let branchName = "";
     if (branches.length > 0) {
@@ -531,8 +553,7 @@ const EventDashBoardTargetScreen = ({ route }) => {
     return branchName;
   };
 
-  const getTotalPayload = (employeeData, item) => {
-    const jsonObj = JSON.parse(employeeData);
+  const getTotalPayload = (item) => {
     const dateFormat = "YYYY-MM-DD";
     const currentDate = moment().format(dateFormat);
     const monthFirstDate = moment(currentDate, dateFormat)
@@ -546,14 +567,11 @@ const EventDashBoardTargetScreen = ({ route }) => {
     return {
       endDate: monthLastDate,
       loggedInEmpId: item,
-      empId: item,
       startDate: monthFirstDate,
-      // empSelected: item,
-      pageNo: 0,
-      size: 100,
-      orgId: jsonObj.orgId,
-      selectedEmpId: item,
       levelSelected: null,
+      empId: item,
+      pageNo: 0,
+      size: 5,
     };
   };
 
@@ -582,32 +600,11 @@ const EventDashBoardTargetScreen = ({ route }) => {
     };
   };
 
-  const getNewPayloadForTotal = (employeeData, item, employeeIds) => {
-    const jsonObj = JSON.parse(employeeData);
-    const dateFormat = "YYYY-MM-DD";
-    const currentDate = moment().format(dateFormat);
-    const monthFirstDate = moment(currentDate, dateFormat)
-      .subtract(0, "months")
-      .startOf("month")
-      .format(dateFormat);
-    const monthLastDate = moment(currentDate, dateFormat)
-      .subtract(0, "months")
-      .endOf("month")
-      .format(dateFormat);
-    return {
-      endDate: monthLastDate,
-      loggedInEmpId: employeeIds,
-      startDate: monthFirstDate,
-      levelSelected: null,
-      pageNo: 0,
-      size: 100,
-      orgId: jsonObj.orgId,
-      empSelected: employeeIds,
-      selectedEmpId: employeeIds,
-    };
-  };
-
   const onEmployeeNameClick = async (item, index, lastParameter) => {
+    if (item.childCount == 0) {
+      return;
+    }
+
     let localData = [...allParameters];
     let current = lastParameter[index].isOpenInner;
     for (let i = 0; i < lastParameter.length; i++) {
@@ -616,6 +613,7 @@ const EventDashBoardTargetScreen = ({ route }) => {
         lastParameter[index].isOpenInner = !current;
       }
     }
+
     if (!current) {
       let employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -644,21 +642,19 @@ const EventDashBoardTargetScreen = ({ route }) => {
                 if (i === tempRawData.length - 1) {
                   lastParameter[index].employeeTargetAchievements = tempRawData;
                   let newIds = tempRawData.map((emp) => emp.empId);
-                  if (true) {
-                    // if (newIds.length >= 2) {
-                    for (let i = 0; i < newIds.length; i++) {
-                      const element = newIds[i].toString();
-                      let tempPayload = getTotalPayload(employeeData, element);
-                      const response = await client.post(
-                        URL.GET_TOTAL_TARGET_PARAMS(),
-                        tempPayload
-                      );
-                      const json = await response.json();
-                      if (Array.isArray(json)) {
-                        lastParameter[index].employeeTargetAchievements[
-                          i
-                        ].targetAchievements = json;
-                      }
+                  // if (newIds.length >= 2) {
+                  for (let i = 0; i < newIds.length; i++) {
+                    const element = newIds[i].toString();
+                    let tempPayload = getTotalPayload(element);
+                    const response = await client.post(
+                      URL.EVENT_DASHBOARD(),
+                      tempPayload
+                    );
+                    const json = await response.json();
+                    if (Array.isArray(json)) {
+                      lastParameter[index].employeeTargetAchievements[
+                        i
+                      ].targetAchievements = getFormattedIndividualData(json);
                     }
                   }
                 }
@@ -711,6 +707,7 @@ const EventDashBoardTargetScreen = ({ route }) => {
             params={toggleParamsMetaData}
             navigation={navigation}
             moduleType={"home"}
+            hideTgt={true}
           />
         </View>
       );
@@ -1985,7 +1982,7 @@ const EventDashBoardTargetScreen = ({ route }) => {
                               Total
                             </Text>
                           </View>
-                          <View style={{ alignSelf: "flex-end" }}>
+                          <View style={{ alignSelf: "center" }}>
                             <View
                               style={{
                                 paddingRight: 2,
@@ -1994,15 +1991,6 @@ const EventDashBoardTargetScreen = ({ route }) => {
                               }}
                             >
                               <Text style={styles.txt7}>ACH</Text>
-                            </View>
-
-                            <View
-                              style={{
-                                height: 20,
-                                justifyContent: "center",
-                              }}
-                            >
-                              <Text style={styles.txt7}>TGT</Text>
                             </View>
                           </View>
                         </View>
@@ -2019,9 +2007,10 @@ const EventDashBoardTargetScreen = ({ route }) => {
                             }}
                           >
                             <RenderGrandTotal
-                              totalParams={selector.totalParameters}
+                              totalParams={getFormattedIndividualData(leadSource)}
                               displayType={togglePercentage}
                               params={toggleParamsMetaData}
+                              hideTgt={true}
                             />
                           </View>
                         </View>
@@ -2061,7 +2050,7 @@ export const SourceModelView = ({ style = null, onClick }) => {
             textDecorationLine: "underline",
           }}
         >
-          Source/Model
+          Events
         </Text>
       </Pressable>
     </Animated.View>
@@ -2141,9 +2130,6 @@ export const RenderLevel1NameView = ({
       >
         <Text style={{ fontSize: 10, fontWeight: "bold" }}>
           {receptionManager ? "" : "ACH"}
-        </Text>
-        <Text style={{ fontSize: 10, fontWeight: "bold" }}>
-          {receptionManager ? "" : "TGT"}
         </Text>
       </View>
     </View>
