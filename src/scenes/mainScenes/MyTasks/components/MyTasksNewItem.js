@@ -5,6 +5,7 @@ import {
   convertTimeStampToDateString,
   callNumber,
   navigatetoCallWebView,
+  sendWhatsApp,
 } from "../../../../utils/helperFunctions";
 import { IconButton } from "react-native-paper";
 import moment from "moment";
@@ -292,6 +293,13 @@ export const MyTaskNewItem = ({
             <IconComp
               iconName={"phone-outline"}
               onPress={() => {
+                callWebViewRecord({
+                  navigator,
+                  phone,
+                  uniqueId,
+                  type,
+                });
+                return;
                 if (onlylead) {
                   let user = userData.toLowerCase();
                   if (EmployeesRoles.includes(user)) {
@@ -330,20 +338,21 @@ export const MyTaskNewItem = ({
               iconName={"whatsapp"}
               onPress={
                 () => {
-                  if (onlylead) {
-                    let user = userData.toLowerCase();
-                    if (EmployeesRoles.includes(user)) {
-                      if (stageAccess[0]?.viewStage?.includes(leadStage)) {
-                        sendWhatsApp(phone);
-                      } else {
-                        alert("No Access");
-                      }
-                    } else {
-                      sendWhatsApp(phone);
-                    }
-                  } else {
-                    sendWhatsApp(phone);
-                  }
+                  sendWhatsApp(phone);
+                  // if (onlylead) {
+                  //   let user = userData.toLowerCase();
+                  //   if (EmployeesRoles.includes(user)) {
+                  //     if (stageAccess[0]?.viewStage?.includes(leadStage)) {
+                  //       sendWhatsApp(phone);
+                  //     } else {
+                  //       alert("No Access");
+                  //     }
+                  //   } else {
+                  //     sendWhatsApp(phone);
+                  //   }
+                  // } else {
+                  //   sendWhatsApp(phone);
+                  // }
                 }
 
                 // cannotEditLead() ? showToastRedAlert("You don't have Permission") :
@@ -418,6 +427,6 @@ const styles = StyleSheet.create({
   testDriveIconImage: {
     height: 30,
     width: 30,
-    borderRadius: 15
-  }
+    borderRadius: 15,
+  },
 });
