@@ -84,6 +84,7 @@ const teleCollerMenu = [
   "Home",
   "Settings",
   "Digital Payment",
+  "Live Leads",
   "Target Planning",
   "My Attendance",
   "Helpdesk",
