@@ -1,12 +1,15 @@
 import qs from "qs";
-import { Linking, Alert, Platform, PermissionsAndroid } from "react-native";
+import { Linking, Alert, Platform, PermissionsAndroid, Dimensions } from "react-native";
 import moment from "moment";
 import URL from "../networking/endpoints";
-import { showToastRedAlert } from '../utils/toast';
+import { showToastRedAlert } from "../utils/toast";
 import { client } from "../networking/client";
 import store from "../redux/reduxStore";
 import * as AsyncStore from "../asyncStore";
-import { updateSelectedBranchId, updateSelectedBranchName } from "../redux/targetSettingsReducer";
+import {
+  updateSelectedBranchId,
+  updateSelectedBranchName,
+} from "../redux/targetSettingsReducer";
 
 export const isMobileNumber = (mobile) => {
   // var regex = /^[1-9]{1}[0-9]{9}$/; // /^\d{10}$/
@@ -85,16 +88,15 @@ export const isValidateAplhaNumeric = (text) => {
   return false;
 };
 export const navigatetoCallWebView = async () => {
-
   const requestMicroPhonePermission = async () => {
-    if (Platform.OS === 'android') {
+    if (Platform.OS === "android") {
       try {
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
           {
-            title: 'Record Permission',
-            message: 'App needs record audio permission',
-          },
+            title: "Record Permission",
+            message: "App needs record audio permission",
+          }
         );
         // If CAMERA Permission is granted
         return granted === PermissionsAndroid.RESULTS.GRANTED;
@@ -105,36 +107,30 @@ export const navigatetoCallWebView = async () => {
     } else return true;
   };
   const requestCameraPermission = async () => {
-
     if (Platform.OS === "android") {
       try {
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.CAMERA,
           {
-            title: 'Camers Permission',
-            message: 'App needs camera permission',
-          },
+            title: "Camers Permission",
+            message: "App needs camera permission",
+          }
         );
         return granted === PermissionsAndroid.RESULTS.GRANTED;
-
       } catch (error) {
         return false;
       }
     } else return true;
-
-  }
+  };
   //return requestCameraPermission()
-  var granted = await requestCameraPermission()
-  var granted2 = await requestMicroPhonePermission()
-  if (granted && granted2)
-    return true
-  else return false
+  var granted = await requestCameraPermission();
+  var granted2 = await requestMicroPhonePermission();
+  if (granted && granted2) return true;
+  else return false;
 
   // (granted)
   //  navigation.navigate(AuthNavigator.AuthStackIdentifiers.WebComp)
-
-
-}
+};
 
 export const callNumber = (phone) => {
   let phoneNumber = phone;
@@ -155,26 +151,28 @@ export const callNumber = (phone) => {
     .catch((err) => {});
 };
 
-sendWhatsApp = (phone) => {
-  let msg = 'Say Something';
-  let phoneWithCountryCode = '+91' + phone;
+export const sendWhatsApp = (phone) => {
+  let msg = "Say Something";
+  let phoneWithCountryCode = "+91" + phone;
 
-  let mobile = Platform.OS == 'ios' ? phoneWithCountryCode : '+' + phoneWithCountryCode;
+  let mobile =
+    Platform.OS == "ios" ? phoneWithCountryCode : "+" + phoneWithCountryCode;
   if (mobile) {
     if (msg) {
-      let url = 'whatsapp://send?text=' + msg + '&phone=' + mobile;
-      Linking.openURL(url).then((data) => {
-      }).catch(() => {
-        // alert('Make sure WhatsApp installed on your device');
-        showToastRedAlert('Make sure WhatsApp is installed on your device');
-      });
+      let url = "whatsapp://send?text=" + msg + "&phone=" + mobile;
+      Linking.openURL(url)
+        .then((data) => {})
+        .catch(() => {
+          // alert('Make sure WhatsApp installed on your device');
+          showToastRedAlert("Make sure WhatsApp is installed on your device");
+        });
     } else {
-      alert('Please insert message to send');
+      alert("Please insert message to send");
     }
   } else {
-    alert('Please insert mobile no');
+    alert("Please insert mobile no");
   }
-}
+};
 
 export async function sendEmail(to, subject, body, options = {}) {
   const { cc, bcc } = options;
@@ -209,7 +207,7 @@ export const convertToTime = (isoDate) => {
 };
 
 export const convertToDate = (isoDate, format = "DD/MM/YYYY") => {
-  const date = moment(isoDate).format(format)
+  const date = moment(isoDate).format(format);
   return date;
 };
 
@@ -331,7 +329,7 @@ export const PincodeDetailsNew = async (pincode) => {
       .then((json) => json.json())
       .then((res) => {
         if (res != undefined && res.length > 0) {
-          resolve(res[0].PostOffice)
+          resolve(res[0].PostOffice);
         } else {
           reject({});
         }
@@ -343,15 +341,16 @@ export const PincodeDetailsNew = async (pincode) => {
 export const GetCarModelList = async (orgId, token = "") => {
   return await new Promise((resolve, reject) => {
     const url = URL.VEHICLE_MODELS(orgId);
-    client.get(url)
-    // fetch(url, {
-    //   method: "GET",
-    //   headers: {
-    //     Accept: "application/json",
-    //     "Content-Type": "application/json",
-    //     "auth-token": token,
-    //   },
-    // })
+    client
+      .get(url)
+      // fetch(url, {
+      //   method: "GET",
+      //   headers: {
+      //     Accept: "application/json",
+      //     "Content-Type": "application/json",
+      //     "auth-token": token,
+      //   },
+      // })
       .then((json) => json.json())
       .then((res) => {
         if (res != undefined && res.length > 0) {
@@ -367,15 +366,16 @@ export const GetCarModelList = async (orgId, token = "") => {
 export const GetEnquiryCarModelList = async (orgId, token = "") => {
   return await new Promise((resolve, reject) => {
     const url = URL.ENQUIRY_VEHICLE_MODELS(orgId);
-    client.get(url)
-    // fetch(url, {
-    //   method: "GET",
-    //   headers: {
-    //     Accept: "application/json",
-    //     "Content-Type": "application/json",
-    //     "auth-token": token,
-    //   },
-    // })
+    client
+      .get(url)
+      // fetch(url, {
+      //   method: "GET",
+      //   headers: {
+      //     Accept: "application/json",
+      //     "Content-Type": "application/json",
+      //     "auth-token": token,
+      //   },
+      // })
       .then((json) => json.json())
       .then((res) => {
         if (res != undefined && res.length > 0) {
@@ -386,20 +386,21 @@ export const GetEnquiryCarModelList = async (orgId, token = "") => {
       })
       .catch((err) => reject([]));
   });
-}; 
+};
 
 export const GetFinanceBanksList = async (orgId, token) => {
   return await new Promise((resolve, reject) => {
     const url = URL.GET_BANK_DETAILS(orgId);
-    client.get(url)
-    // fetch(url, {
-    //   method: "GET",
-    //   headers: {
-    //     Accept: "application/json",
-    //     "Content-Type": "application/json",
-    //     "auth-token": token,
-    //   },
-    // })
+    client
+      .get(url)
+      // fetch(url, {
+      //   method: "GET",
+      //   headers: {
+      //     Accept: "application/json",
+      //     "Content-Type": "application/json",
+      //     "auth-token": token,
+      //   },
+      // })
       .then((json) => json.json())
       .then((res) => {
         if (res != undefined && res.length > 0) {
@@ -416,23 +417,23 @@ export const GetPaidAccessoriesList = async (vehicleId, orgId, token) => {
   return await new Promise((resolve, reject) => {
     // const url = URL.GET_PAID_ACCESSORIES_LIST(vehicleId);
     const url = URL.GET_PAID_ACCESSORIES_LIST2(vehicleId, orgId);
-    client.get(url)
-    // fetch(url, {
-    //   method: "GET",
-    //   headers: {
-    //     Accept: "application/json",
-    //     "Content-Type": "application/json",
-    //     "auth-token": token,
-    //     // orgId: orgId,
-    //   },
-    // })
+    client
+      .get(url)
+      // fetch(url, {
+      //   method: "GET",
+      //   headers: {
+      //     Accept: "application/json",
+      //     "Content-Type": "application/json",
+      //     "auth-token": token,
+      //     // orgId: orgId,
+      //   },
+      // })
       .then((json) => json.json())
       .then((res) => {
         if (res != undefined) {
           if (res != undefined && res.length > 0) {
             resolve(res);
-          }
-          else {
+          } else {
             resolve([]);
           }
         } else {
@@ -443,20 +444,20 @@ export const GetPaidAccessoriesList = async (vehicleId, orgId, token) => {
   });
 };
 
-
 export const GetPaidAccessoriesList2 = async (vehicleId, orgId, token) => {
   return await new Promise((resolve, reject) => {
     const url = URL.GET_PAID_ACCESSORIES_LIST(vehicleId);
-    client.get(url)
-    // fetch(url, {
-    //   method: "GET",
-    //   headers: {
-    //     Accept: "application/json",
-    //     "Content-Type": "application/json",
-    //     "auth-token": token,
-    //     orgId: orgId,
-    //   },
-    // })
+    client
+      .get(url)
+      // fetch(url, {
+      //   method: "GET",
+      //   headers: {
+      //     Accept: "application/json",
+      //     "Content-Type": "application/json",
+      //     "auth-token": token,
+      //     orgId: orgId,
+      //   },
+      // })
       .then((json) => json.json())
       .then((res) => {
         if (res.success == true) {
@@ -476,29 +477,30 @@ export const GetPaidAccessoriesList2 = async (vehicleId, orgId, token) => {
 export const GetDropList = async (orgId, token, type) => {
   return await new Promise((resolve, reject) => {
     const url = URL.GET_DROP_LIST(orgId, type);
-    client.get(url)
-    // fetch(url, {
-    //   method: "GET",
-    //   headers: {
-    //     Accept: "application/json",
-    //     "Content-Type": "application/json",
-    //     "Authorization": token
-    //   },
-    // })
+    client
+      .get(url)
+      // fetch(url, {
+      //   method: "GET",
+      //   headers: {
+      //     Accept: "application/json",
+      //     "Content-Type": "application/json",
+      //     "Authorization": token
+      //   },
+      // })
       .then((json) => json.json())
       .then((res) => {
         if (res != undefined && res.length > 0) {
           const updatedData = [];
-          res.forEach(obj => {
+          res.forEach((obj) => {
             const newObj = { ...obj };
             if (newObj.status === "Active") {
               newObj.name = newObj.lostReason;
-              newObj.sublostreasons.forEach(subObj => {
-                subObj.name = subObj.subReason
-              })
-              updatedData.push(newObj)
+              newObj.sublostreasons.forEach((subObj) => {
+                subObj.name = subObj.subReason;
+              });
+              updatedData.push(newObj);
             }
-          })
+          });
           resolve(updatedData);
         } else {
           resolve([]);
@@ -508,7 +510,14 @@ export const GetDropList = async (orgId, token, type) => {
   });
 };
 
-export const achievementPercentage = (achievement, tgt, paramName, enq = {}, ret = {}, acc = {}) => {
+export const achievementPercentage = (
+  achievement,
+  tgt,
+  paramName,
+  enq = {},
+  ret = {},
+  acc = {}
+) => {
   const enqCal = ["Enquiry", "PreEnquiry"];
   const retCal = ["Exchange", "Finance", "Insurance", "EXTENDEDWARRANTY"];
   const accCal = ["Accessories"];
@@ -543,7 +552,7 @@ export const sourceModelPercentage = (achievement, target) => {
   } else {
     achievement = 0;
   }
-  
+
   if (target) {
     target = Number(target);
   } else {
@@ -581,4 +590,47 @@ export const setBranchId = async (value) => {
 export const setBranchName = async (value) => {
   store.dispatch(updateSelectedBranchName(value));
   await AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_NAME, value);
+};
+
+export const detectIsOrientationLock = (navigation) => {
+  const state = navigation.dangerouslyGetState();
+  let innerState = state?.routes?.length ? state?.routes[0]?.state : {};
+  let screen = innerState?.routes[innerState?.index];
+  let screenName = screen?.name || 'HOME_SCREEN' ;
+  if (screen?.state?.routes?.length) {
+    let innerState2 = screen?.state;
+    let screen2 = innerState2?.routes[innerState2?.index];
+    screenName = screen2?.name;
+    if (screen2?.state?.routes?.length) {
+      let innerState3 = screen2?.state;
+      let screen3 = innerState3?.routes[innerState3?.index];
+      screenName = screen3?.name;
+    }
+  }
+  if (
+    screenName !== "Home" &&
+    screenName !== "HOME_SCREEN" &&
+    screenName !== "LIVE_LEADS" &&
+    screenName !== "MONTHLY_TARGET_SCREEN" &&
+    screenName !== "MONTHLY_TARGET" &&
+    screenName !== "EVENT_DASHBOARD" &&
+    screenName !== "DIGITAL_DASHBOARD"
+  ) {
+    return true;
+  }
+  return false;
+};
+
+export const getWidth = (percentage = 0) => {
+  if (Dimensions.get('window').width > Dimensions.get('window').height) {
+    return (Dimensions.get('window').height * percentage) / 100;
+  }
+  return (Dimensions.get('window').width * percentage) / 100;
+};
+
+export const getHeight = (percentage = 0) => {
+  if (Dimensions.get('window').width > Dimensions.get('window').height) {
+    return (Dimensions.get('window').width * percentage) / 100;
+  }
+  return (Dimensions.get('window').height * percentage) / 100;
 };

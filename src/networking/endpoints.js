@@ -259,7 +259,7 @@ const URL = {
   GET_CUSTOMER_TYPES: (orgId) => {
     return dfGetAll + `/${orgId}/%22Active%22/${orgId}/costomerType`;
   },
-   GET_ENQUIRY_TYPE: (orgId) => {
+  GET_ENQUIRY_TYPE: (orgId) => {
     return dfGetAll + `/${orgId}/%22Active%22/${orgId}/enquerySegment`;
   },
   DROP_ENQUIRY: () => sales_url + "/lead-drop",
@@ -307,11 +307,16 @@ const URL = {
   },
 
   GET_TEST_HISTORY_COUNT: (universalId) => {
-    return sales_url + `/task-history/get-count-audit?customerId=${universalId}`;
+    return (
+      sales_url + `/task-history/get-count-audit?customerId=${universalId}`
+    );
   },
 
   GET_TEST_HISTORY_DETAILS: (universalId) => {
-    return sales_url + `/task-history/get-testdrive-history?customerId=${universalId}`;
+    return (
+      sales_url +
+      `/task-history/get-testdrive-history?customerId=${universalId}`
+    );
   },
 
   GET_TEST_DRIVE_VEHICLES: (branchId, orgId) => {
@@ -349,7 +354,7 @@ const URL = {
   GET_EVENTS_NEW: (startDate, endDate, empId) => {
     return (
       ops_url +
-      `/dms/getAllServiceEventsByFilter?startdate=${startDate}&enddate=${endDate}&organiserid=${empId}`
+      `/dms/getAllServiceEventsByFilterPreEnq?startdate=${startDate}&enddate=${endDate}&organiserid=${empId}`
     );
   },
 
@@ -600,7 +605,7 @@ const URL = {
   GET_EMPLOYEE_DETAILS: (orgId, branchId, deptId, desigId) => {
     return `${getEmployeeData}?orgId=${orgId}&branchId=${branchId}&deptId=${deptId}&desigId=${desigId}`;
   },
-  GET_LEADERBOARD_DATA: (orgId,branchId) => {
+  GET_LEADERBOARD_DATA: (orgId, branchId) => {
     return getLeaderBoardData + "/org/" + orgId + "/branch/" + branchId;
   },
   GET_LEADERBOARD_DATA_branch: (orgId, branchId) => {
@@ -639,6 +644,8 @@ const URL = {
   UPDATE_TEAM_TARGET_PARAMS: () => {
     return `${salesGap}/target-update`;
   },
+  EVENT_DASHBOARD: () =>
+    `${dashboard}/v2/get_target_params_events`,
   MODEL_SOURCE_SELF: () =>
     `${dashboard}/v2/get_target_params_for_emp_model_source`,
   GET_LIVE_LEADS_MODEL_SOURCE_SELF: () =>
@@ -684,6 +691,13 @@ const URL = {
       sales_url +
       "/employeeAttendance/filterattendanceCount" +
       `/${empId}/${orgId}/${start}/${end}`
+    );
+  },
+  GET_HOLIDAYS: (orgId) => {
+    return (
+      sales_url +
+      "/employeeHolidayList/getAllHolidayDetails/" +
+      `${orgId}`
     );
   },
   NOTIFICATION_LIST: (empId) => {
@@ -748,9 +762,9 @@ const URL = {
   CALL_DEALLOCATE: (empId) => {
     return roleManagement_url + "/dms/emp-update/" + empId;
   },
-  ADDRESS_NAME:(lat,long)=>{
+  ADDRESS_NAME: (lat, long) => {
     return `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${long}&key=${GoogleMapKey}`;
-  }
+  },
 };
 
 // bankFinancier, incuranceCompany, enqueryCategory, deliveryCheckList, sublostReason

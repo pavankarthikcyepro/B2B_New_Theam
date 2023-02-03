@@ -227,7 +227,9 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
     }
     setShowDropDownModel(true);
   };
-
+  function isEmpty(obj) {
+    return Object.keys(obj).length === 0;
+  }
   return (
     <SafeAreaView style={styles.container}>
       <DropDownComponant
@@ -261,7 +263,19 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
           flexDirection: "row",
         }}
       >
-        <View style={{ flexDirection: "column", width: "80%" }}>
+        <View
+          style={{
+            flexDirection: "column",
+            width: "80%",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Text style={{ fontSize: 14, fontWeight: "600", color: Colors.RED }}>
+            {
+            // isEmpty(employeeList) &&
+              "Please select the Criteria using filter option "}
+          </Text>
           {/* <View style={{ marginVertical: 5 }}>
             <DropDownSelectionItem
               label={"Location"}

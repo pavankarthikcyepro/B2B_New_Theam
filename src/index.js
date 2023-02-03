@@ -35,6 +35,7 @@ import { Platform, AppState } from "react-native";
 import PushNotification from "react-native-push-notification";
 import { enableScreens } from "react-native-screens";
 import { showToastRedAlert } from "./utils/toast";
+import Orientation from "react-native-orientation-locker";
 
 enableScreens();
 
@@ -44,6 +45,10 @@ const officeLocation = {
 };
 
 const AppScreen = () => {
+
+  useEffect(()=>{
+    Orientation.lockToPortrait()
+  },[])
   const [state, dispatch] = React.useReducer(
     (prevState, action) => {
       switch (action.type) {
@@ -381,6 +386,7 @@ const AppScreen = () => {
         dispatch({ type: "SIGN_IN", token: token });
       },
       signOut: () => {
+        Orientation.lockToPortrait()
         AsyncStore.storeData(AsyncStore.Keys.USER_TOKEN, "");
         dispatch({ type: "SIGN_OUT" });
       },

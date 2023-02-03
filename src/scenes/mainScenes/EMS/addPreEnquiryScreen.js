@@ -499,7 +499,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     //     return;
     // }
     if (selector.enquiryType.length == 0) {
-      showToastRedAlert("Please select enquery segment");
+      showToastRedAlert("Please select enquiry segment");
       return;
     }
     if (selector.customerType.length == 0) {
@@ -722,6 +722,19 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       pincode: selector.pincode,
     };
 
+    let dmsLeadEventDto;
+    if (selectedEventData.length > 0) {
+      dmsLeadEventDto = {
+        eventId: selectedEventData[0].eventId,
+        eventName: selectedEventData[0].name,
+        eventLocation: selectedEventData[0]?.location,
+        startDate: selectedEventData[0].startdate,
+        endDate: selectedEventData[0].enddate,
+      };
+    } else {
+      dmsLeadEventDto = {};
+    }
+
     const dmsLeadDtoObj = {
       branchId: Number(branchId),
       createdBy: employeeName,
@@ -735,7 +748,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       model: selector.carModel,
       sourceOfEnquiry: selector.sourceOfEnquiryId,
       subSource: selector.subSourceOfEnquiry,
-      eventCode: selector.eventName,
+      eventCode: dmsLeadEventDto.eventId,
       referencenumber: refNumber,
       pincode: selector.pincode,
       dmsAddresses: [
@@ -769,18 +782,6 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         },
       ],
     };
-    let dmsLeadEventDto;
-    if (selectedEventData.length > 0) {
-      dmsLeadEventDto = {
-        eventId: selectedEventData[0].eventId,
-        eventName: selectedEventData[0].name,
-        eventLocation: selectedEventData[0]?.location,
-        startDate: selectedEventData[0].startdate,
-        endDate: selectedEventData[0].enddate,
-      };
-    } else {
-      dmsLeadEventDto = {};
-    }
 
     // http://ec2-3-7-117-218.ap-south-1.compute.amazonaws.com:8081
 
@@ -1396,64 +1397,12 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
           </View>
 
           <View style={[{ borderRadius: 6, backgroundColor: Colors.WHITE }]}>
-            <DropDownSelectionItem
-              label={"Enquiry Segment*"}
-              value={selector.enquiryType}
-              onPress={() =>
-                showDropDownModelMethod(
-                  "ENQUIRY_SEGMENT",
-                  "Select Enquiry Segment",
-                  organizationId
-                )
-              }
-            />
-            <Text
-              style={[
-                GlobalStyle.underline,
-                {
-                  backgroundColor:
-                    isSubmitPress && selector.enquiryType === ""
-                      ? "red"
-                      : "rgba(208, 212, 214, 0.7)",
-                },
-              ]}
-            ></Text>
-            <DropDownSelectionItem
-              label={"Customer Type*"}
-              value={selector.customerType}
-              onPress={() =>
-                showDropDownModelMethod("CUSTOMER_TYPE", "Select Customer Type")
-              }
-            />
-            <Text
-              style={[
-                GlobalStyle.underline,
-                {
-                  backgroundColor:
-                    isSubmitPress && selector.customerType === ""
-                      ? "red"
-                      : "rgba(208, 212, 214, 0.7)",
-                },
-              ]}
-            ></Text>
             <TextinputComp
               style={styles.textInputComp}
               value={selector.firstName}
               autoCapitalize="words"
               label={"First Name*"}
-              editable={
-                selector.enquiryType.length > 0 &&
-                selector.customerType.length > 0
-                  ? true
-                  : false
-              }
               maxLength={30}
-              disabled={
-                selector.enquiryType.length > 0 &&
-                selector.customerType.length > 0
-                  ? false
-                  : true
-              }
               keyboardType={"default"}
               error={firstNameErrorHandler.showError}
               errorMsg={firstNameErrorHandler.msg}
@@ -1483,19 +1432,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               value={selector.lastName}
               autoCapitalize="words"
               label={"Last Name*"}
-              editable={
-                selector.enquiryType.length > 0 &&
-                selector.customerType.length > 0
-                  ? true
-                  : false
-              }
               maxLength={30}
-              disabled={
-                selector.enquiryType.length > 0 &&
-                selector.customerType.length > 0
-                  ? false
-                  : true
-              }
               keyboardType={"default"}
               error={lastNameErrorHandler.showError}
               errorMsg={lastNameErrorHandler.msg}
@@ -1587,47 +1524,6 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                 },
               ]}
             ></Text>
-            {selector.customerType === "Corporate" ||
-            selector.customerType === "Government" ||
-            selector.customerType === "Retired" ||
-            selector.customerType === "Fleet" ||
-            selector.customerType === "Institution" ? (
-              <View>
-                <TextinputComp
-                  style={styles.textInputComp}
-                  value={selector.companyName}
-                  autoCapitalize="words"
-                  label={"Company Name"}
-                  maxLength={50}
-                  keyboardType={"default"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setPreEnquiryDetails({
-                        key: "COMPANY_NAME",
-                        text: text,
-                      })
-                    )
-                  }
-                />
-                <Text style={styles.devider}></Text>
-              </View>
-            ) : null}
-
-            {selector.customerType === "Other" ? (
-              <View>
-                <TextinputComp
-                  style={styles.textInputComp}
-                  value={selector.other}
-                  label={"Other"}
-                  maxLength={50}
-                  keyboardType={"default"}
-                  onChangeText={(text) =>
-                    dispatch(setPreEnquiryDetails({ key: "OTHER", text: text }))
-                  }
-                />
-                <Text style={styles.devider}></Text>
-              </View>
-            ) : null}
 
             <DropDownSelectionItem
               label={"Source of Lead*"}
@@ -1691,6 +1587,89 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                         text: text,
                       })
                     )
+                  }
+                />
+                <Text style={styles.devider}></Text>
+              </View>
+            ) : null}
+
+            <DropDownSelectionItem
+              label={"Enquiry Segment*"}
+              value={selector.enquiryType}
+              onPress={() =>
+                showDropDownModelMethod(
+                  "ENQUIRY_SEGMENT",
+                  "Select Enquiry Segment",
+                  organizationId
+                )
+              }
+            />
+            <Text
+              style={[
+                GlobalStyle.underline,
+                {
+                  backgroundColor:
+                    isSubmitPress && selector.enquiryType === ""
+                      ? "red"
+                      : "rgba(208, 212, 214, 0.7)",
+                },
+              ]}
+            ></Text>
+            <DropDownSelectionItem
+              label={"Customer Type*"}
+              value={selector.customerType}
+              onPress={() =>
+                showDropDownModelMethod("CUSTOMER_TYPE", "Select Customer Type")
+              }
+            />
+            <Text
+              style={[
+                GlobalStyle.underline,
+                {
+                  backgroundColor:
+                    isSubmitPress && selector.customerType === ""
+                      ? "red"
+                      : "rgba(208, 212, 214, 0.7)",
+                },
+              ]}
+            ></Text>
+
+            {selector.customerType === "Corporate" ||
+            selector.customerType === "Government" ||
+            selector.customerType === "Retired" ||
+            selector.customerType === "Fleet" ||
+            selector.customerType === "Institution" ? (
+              <View>
+                <TextinputComp
+                  style={styles.textInputComp}
+                  value={selector.companyName}
+                  autoCapitalize="words"
+                  label={"Company Name"}
+                  maxLength={50}
+                  keyboardType={"default"}
+                  onChangeText={(text) =>
+                    dispatch(
+                      setPreEnquiryDetails({
+                        key: "COMPANY_NAME",
+                        text: text,
+                      })
+                    )
+                  }
+                />
+                <Text style={styles.devider}></Text>
+              </View>
+            ) : null}
+
+            {selector.customerType === "Other" ? (
+              <View>
+                <TextinputComp
+                  style={styles.textInputComp}
+                  value={selector.other}
+                  label={"Other"}
+                  maxLength={50}
+                  keyboardType={"default"}
+                  onChangeText={(text) =>
+                    dispatch(setPreEnquiryDetails({ key: "OTHER", text: text }))
                   }
                 />
                 <Text style={styles.devider}></Text>

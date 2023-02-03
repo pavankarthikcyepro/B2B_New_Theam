@@ -42,7 +42,10 @@ const lastMonthFirstDate = moment(currentDate, dateFormat)
   .subtract(0, "months")
   .startOf("month")
   .format(dateFormat);
-
+const lastMonthLastDate = moment(currentDate, dateFormat)
+  .subtract(0, "months")
+  .endOf("month")
+  .format(dateFormat);
 const officeLocation = {
   latitude: 37.33233141,
   longitude: -122.0312186,
@@ -108,10 +111,9 @@ const AttendanceScreen = ({ route, navigation }) => {
   }, [navigation]);
 
   useEffect(() => {
-    
     if (route?.params) {
       setFromDateState(lastMonthFirstDate);
-      setToDateState(currentDate);
+      setToDateState(lastMonthLastDate);
       // getAttendanceFilter(route?.params);
     }
   }, [route.params]);
@@ -120,9 +122,9 @@ const AttendanceScreen = ({ route, navigation }) => {
     navigation.addListener("focus", () => {
       // getCurrentLocation();
       setFromDateState(lastMonthFirstDate);
-      setToDateState(currentDate);
-      GetCountByMonth(lastMonthFirstDate, currentDate);
-      getAttendanceByMonth(lastMonthFirstDate, currentDate);
+      setToDateState(lastMonthLastDate);
+      GetCountByMonth(lastMonthFirstDate, lastMonthLastDate);
+      getAttendanceByMonth(lastMonthFirstDate, lastMonthLastDate);
       getProfilePic();
       // setLoading(true);
       // getAttendance();
@@ -490,6 +492,9 @@ const AttendanceScreen = ({ route, navigation }) => {
           URL.GET_ATTENDANCE_EMPID2(jsonObj.empId, jsonObj.orgId, start, end)
         );
         const json = await response.json();
+        const response1 = await client.get(URL.GET_HOLIDAYS(jsonObj.orgId));
+        const json1 = await response1.json();
+        // console.log(json1);
         if (json) {
           let newArray = [];
           let dateArray = [];
@@ -531,13 +536,57 @@ const AttendanceScreen = ({ route, navigation }) => {
             newArray.push(format);
             weekArray.push(weekReport);
           }
+
+          setLoading(false);
+          setWeeklyRecord(weekArray);
+          if (json1.length > 0) {
+            for (let i = 0; i <= json1.length - 1; i++) {
+              let format = {
+                customStyles: {
+                  container: {
+                    backgroundColor: Colors.DARK_GRAY,
+                  },
+                  text: {
+                    color: Colors.WHITE,
+                    fontWeight: "bold",
+                  },
+                },
+              };
+              let date = new Date(json1[i].date);
+              let formatedDate = moment(date).format(dateFormat);
+              dateArray.push(formatedDate);
+              newArray.push(format);
+            }
+          }
           var obj = {};
           for (let i = 0; i < newArray.length; i++) {
             const element = newArray[i];
             obj[dateArray[i]] = element;
           }
-          setLoading(false);
-          setWeeklyRecord(weekArray);
+          // for (let i = 1; i <= 31; i++) {
+          //   const date = new Date(
+          //     new Date(start).getFullYear(),
+          //     new Date(start).getMonth(),
+          //     i
+          //   );
+          //   if (date.getDay() === 0 || date.getDay() === 6) {
+          //     obj[
+          //       moment(date).format(dateFormat)
+          //     ] = {
+          //       // disabled: true,
+          //       //  let format = {
+          //     customStyles: {
+          //       container: {
+          //         backgroundColor: Colors.GRAY_LIGHT
+          //       },
+          //       text: {
+          //         color: Colors.WHITE,
+          //         fontWeight: "bold",
+          //       },
+          //     },
+          //     };
+          //   }
+          // }
           setMarker(obj);
         }
       }
@@ -545,7 +594,7 @@ const AttendanceScreen = ({ route, navigation }) => {
       setLoading(false);
     }
   };
-  
+
   const downloadReport = async () => {
     try {
       const payload = {
@@ -556,7 +605,6 @@ const AttendanceScreen = ({ route, navigation }) => {
       const response = await client.post(URL.GET_ATTENDANCE_REPORT(), payload);
       const json = await response.json();
       if (json.downloadUrl) {
-        
         downloadInLocal(URL.GET_DOWNLOAD_URL(json.downloadUrl));
       }
     } catch (error) {
@@ -685,9 +733,7 @@ const AttendanceScreen = ({ route, navigation }) => {
         userName={route?.params?.empName ? route?.params?.empName : userName}
       />
       <ScrollView showsVerticalScrollIndicator={false}>
-        <View
-          style={styles.DatePickerView}
-        >
+        <View style={styles.DatePickerView}>
           <DateRangeComp
             fromDate={selectedFromDate}
             toDate={selectedToDate}
@@ -721,17 +767,25 @@ const AttendanceScreen = ({ route, navigation }) => {
         </View>
         <View>
           <Calendar
-            disabledDaysIndexes={[6, 7]}
+            // disabledDaysIndexes={[6, 7]}
             onDayPress={(day) => {
               // isCurrentDate(day);
-              let newData = weeklyRecord.filter(
-                (e) => e.start === day.dateString
-              )[0];
-              if (newData?.status == "Absent" || newData?.status == "WFH") {
-                setHoverReasons(newData?.reason || "");
-                setStatus(newData?.status);
-                setNotes(newData?.note || "");
-                setAttendance(true);
+              if (
+                new Date(day.timestamp).getDay() !== 6 ||
+                new Date(day.timestamp).getDay() !== 0
+              ) {
+                let newData = weeklyRecord.filter(
+                  (e) => e.start === day.dateString
+                )[0];
+                console.log(newData);
+                if (newData?.status == "Absent" || newData?.status == "WFH") {
+                  setHoverReasons(newData?.reason || "");
+                  setStatus(
+                    newData?.status == "Absent" ? "Leave" : newData?.status
+                  );
+                  setNotes(newData?.note || "");
+                  setAttendance(true);
+                }
               }
             }}
             onDayLongPress={(day) => {
