@@ -37,7 +37,6 @@ const NotificationScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.notificationReducer);
 
-  const [notificationList, setNotificationList] = useState([]);
   const [loading, setLoading] = useState(selector.loading);
   const [isInitial, setIsInitial] = useState(true);
   const [empId, setEmpId] = useState("");
@@ -56,16 +55,6 @@ const NotificationScreen = ({ navigation }) => {
       setIsInitial(true);
     };
   }, []);
-
-  useEffect(() => {
-    const nonReadData = selector.notificationList.filter((item, index) => {
-      return item.isRead == "N";
-    });
-    const readData = selector.notificationList.filter((item, index) => {
-      return item.isRead == "Y";
-    });
-    setNotificationList([...nonReadData, ...readData]);
-  }, [selector.notificationList]);
   
   useEffect(() => {
     if (selector.readNotificationResponseStatus == "success"){
@@ -82,7 +71,7 @@ const NotificationScreen = ({ navigation }) => {
     }
   }, [selector.loading]);
 
-  const navigateTo = (screenName, data) => {
+  const navigateTo = (screenName, item) => {
     if (screenName) {
       if (screenName == AppNavigator.TabStackIdentifiers.myTask) {
         dispatch(setNotificationMyTaskAllFilter(true));
@@ -94,15 +83,14 @@ const NotificationScreen = ({ navigation }) => {
         }, 750);
       }
     }
-    readingNotification(data.item.id);
+    readingNotification(item.id);
   };
 
   const readingNotification = (notificationId) => {
     dispatch(readNotification(notificationId));
   };
 
-  const RenderList = (props) => {
-    const { item, index } = props.item;
+  const renderList = ({ item, index }) => {
     const { notificationName } = item;
     let icon = LEAD_ALLOCATION;
     let screenName = "";
@@ -151,7 +139,7 @@ const NotificationScreen = ({ navigation }) => {
       <View>
         <NotificationItem
           title={item.eventNotificationsMessage}
-          onPress={() => navigateTo(screenName, props.item)}
+          onPress={() => navigateTo(screenName, item)}
           icon={icon}
           style={{ backgroundColor: bg }}
           isFlag={item.isFlag}
@@ -163,16 +151,18 @@ const NotificationScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
-        data={notificationList}
-        renderItem={(item) => <RenderList item={item} />}
+        data={selector.notificationList}
+        renderItem={renderList}
         keyExtractor={(item, index) => index.toString()}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           ...styles.listStyle,
-          justifyContent: !notificationList.length ? "center" : "flex-start",
+          justifyContent: !selector.notificationList.length
+            ? "center"
+            : "flex-start",
         }}
         ListEmptyComponent={() =>
-          !notificationList.length ? (
+          !selector.notificationList.length ? (
             loading ? (
               <ActivityIndicator size="large" color={Colors.RED} />
             ) : (

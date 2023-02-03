@@ -259,7 +259,7 @@ const URL = {
   GET_CUSTOMER_TYPES: (orgId) => {
     return dfGetAll + `/${orgId}/%22Active%22/${orgId}/costomerType`;
   },
-   GET_ENQUIRY_TYPE: (orgId) => {
+  GET_ENQUIRY_TYPE: (orgId) => {
     return dfGetAll + `/${orgId}/%22Active%22/${orgId}/enquerySegment`;
   },
   DROP_ENQUIRY: () => sales_url + "/lead-drop",
@@ -354,7 +354,7 @@ const URL = {
   GET_EVENTS_NEW: (startDate, endDate, empId) => {
     return (
       ops_url +
-      `/dms/getAllServiceEventsByFilter?startdate=${startDate}&enddate=${endDate}&organiserid=${empId}`
+      `/dms/getAllServiceEventsByFilterPreEnq?startdate=${startDate}&enddate=${endDate}&organiserid=${empId}`
     );
   },
 
@@ -691,6 +691,13 @@ const URL = {
       sales_url +
       "/employeeAttendance/filterattendanceCount" +
       `/${empId}/${orgId}/${start}/${end}`
+    );
+  },
+  GET_HOLIDAYS: (orgId) => {
+    return (
+      sales_url +
+      "/employeeHolidayList/getAllHolidayDetails/" +
+      `${orgId}`
     );
   },
   NOTIFICATION_LIST: (empId) => {

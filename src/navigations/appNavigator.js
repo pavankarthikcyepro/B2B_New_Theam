@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import {
   View,
   Linking,
@@ -10,7 +10,9 @@ import {
 } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
-import { createDrawerNavigator } from "@react-navigation/drawer";
+import {
+  createDrawerNavigator,
+} from "@react-navigation/drawer";
 import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 import { IconButton, Searchbar } from "react-native-paper";
 import { useRoute } from "@react-navigation/native";
@@ -111,6 +113,8 @@ import DigitalDashBoardScreen from "../scenes/mainScenes/DigitalDashboard";
 import EventDashBoardScreen from "../scenes/mainScenes/EventDashboard";
 import EventSourceModel from "../scenes/mainScenes/EventDashboard/EventSourceModel";
 import LeaderShipFilter from "../scenes/mainScenes/Home/TabScreens/leaderShipFilter";
+import Orientation from "react-native-orientation-locker";
+import { detectIsOrientationLock } from "../utils/helperFunctions";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -142,7 +146,9 @@ export const TestDriveHistoryIcon = ({ navigation }) => {
       icon="history"
       color={Colors.WHITE}
       size={30}
-      onPress={() => navigation.navigate(MyTasksStackIdentifiers.testDriveHistory)}
+      onPress={() =>
+        navigation.navigate(MyTasksStackIdentifiers.testDriveHistory)
+      }
     />
   );
 };
@@ -352,7 +358,7 @@ export const DrawerStackIdentifiers = {
   dropAnalysis: "DROP_ANALYSIS",
   liveLeads: "LIVE_LEADS",
   dropLostCancel: "DROP_LOST_CANCEL",
-  eventDashboard:"EVENT_DASHBOARD",
+  eventDashboard: "EVENT_DASHBOARD",
   attendance: "Attendance",
   geolocation: "Geolocation",
   digitalDashboard: "DIGITAL_DASHBOARD",
@@ -376,7 +382,7 @@ export const HomeStackIdentifiers = {
   home: "HOME_SCREEN",
   location: "MAP_TRACKER",
   receptionistFilter: "REECEPTION_FILTER",
-  laderfilterScreen:"LEADER_FLITER_SCREEN"
+  laderfilterScreen: "LEADER_FLITER_SCREEN",
 };
 
 export const EmsStackIdentifiers = {
@@ -425,7 +431,7 @@ export const MyTasksStackIdentifiers = {
   createEnquiry: "CREATE_ENQUIRY",
   tasksListScreen: "TASKS_LIST_SCREEN",
   myTaskFilterScreen: "MYTASK_FILTER",
-  testDriveHistory:"TEST_HISTORY"
+  testDriveHistory: "TEST_HISTORY",
 };
 
 export const PriceStackIdentifiers = {
@@ -435,7 +441,7 @@ export const PriceStackIdentifiers = {
 export const EventDashboardStackIdentifiers = {
   home: "EVENT_DASHBOARD",
   event: "EVENT",
-  sourceModel: "EVENT_SOURCE_MODEL"
+  sourceModel: "EVENT_SOURCE_MODEL",
 };
 
 const HomeStack = createStackNavigator();
@@ -671,7 +677,6 @@ const EmsStackNavigator = ({ navigation }) => {
 const MyTaskStack = createStackNavigator();
 
 const MyTaskStackNavigator = ({ navigation }) => {
-
   return (
     <MyTaskStack.Navigator
       initialRouteName={MyTasksStackIdentifiers.mytasks}
@@ -1204,7 +1209,11 @@ const BookingStackNavigator = ({ navigation }) => {
 
 const MainDrawerNavigator = createDrawerNavigator();
 
-const MainStackDrawerNavigator = () => {
+const MainStackDrawerNavigator = ({ navigation }) => {
+  const isLock = detectIsOrientationLock(navigation);
+  if (isLock) {
+    Orientation.lockToPortrait();
+  } 
   return (
     <MainDrawerNavigator.Navigator
       drawerStyle={{

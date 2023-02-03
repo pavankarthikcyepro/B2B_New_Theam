@@ -61,16 +61,13 @@ import {
   saveLocation,
 } from "../../networking/endpoints";
 import { client } from "../../networking/client";
-import { setBranchId, setBranchName } from "../../utils/helperFunctions";
+import { getHeight, getWidth, setBranchId, setBranchName } from "../../utils/helperFunctions";
 
 // import { TextInput } from 'react-native-paper';
 const officeLocation = {
   latitude: 37.33233141,
   longitude: -122.0312186,
 };
-
-const ScreenWidth = Dimensions.get("window").width;
-const ScreenHeight = Dimensions.get("window").height;
 
 const LoginScreen = ({ navigation }) => {
   const selector = useSelector((state) => state.loginReducer);
@@ -502,13 +499,13 @@ const LoginScreen = ({ navigation }) => {
           <View
             style={{
               width: "100%",
-              height: ScreenHeight * 0.23,
+              height: getHeight(23),
               alignItems: "center",
               justifyContent: "center",
             }}
           >
             <Image
-              style={{ width: 200, height: ScreenHeight * 0.4 }}
+              style={{ width: 200, height: getHeight(40) }}
               resizeMode={"center"}
               source={require("../../assets/images/logo.png")}
             />
@@ -520,7 +517,7 @@ const LoginScreen = ({ navigation }) => {
             position: "absolute",
             paddingHorizontal: 20,
             paddingTop: 30,
-            marginTop: ScreenHeight * 0.18,
+            marginTop: getHeight(18),
             backgroundColor: Colors.WHITE,
             borderTopEndRadius: 4,
           }}
@@ -571,7 +568,7 @@ const LoginScreen = ({ navigation }) => {
           </Pressable> */}
           {/* <ButtonComp
             title={"Login to Account"}
-            width={ScreenWidth - 40}
+            width={getWidth(100) - 40}
             onPress={loginClicked}
             disabled={selector.isLoading ? true : false}
           /> */}
@@ -658,7 +655,7 @@ const styles = StyleSheet.create({
   loginButton: {
     backgroundColor: "#f81567",
     height: 50,
-    width: ScreenWidth - 40,
+    width: getWidth(100) - 40,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 8,
@@ -669,7 +666,7 @@ const styles = StyleSheet.create({
     color: Colors.WHITE,
   },
   loginImage: {
-    width: ScreenWidth - 40,
+    width: getWidth(100) - 40,
     height: 100,
     marginTop: 30,
   },

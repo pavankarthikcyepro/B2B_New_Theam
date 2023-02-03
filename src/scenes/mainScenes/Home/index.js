@@ -98,12 +98,15 @@ import Carousel, { Pagination } from "react-native-snap-carousel";
 import { monthNamesCap } from "../Attendance/AttendanceTop";
 import { getNotificationList } from "../../../redux/notificationReducer";
 import AttendanceFromSelf from "../../../components/AttendanceFromSelf";
+import Orientation from "react-native-orientation-locker";
+import { useIsFocused } from "@react-navigation/native";
+import { useIsDrawerOpen } from "@react-navigation/drawer";
 
 const officeLocation = {
   latitude: 37.33233141,
   longitude: -122.0312186,
 };
-const receptionistRole = ["Reception", "CRM"];
+const receptionistRole = ["Reception", "CRM", "Tele Caller"];
 
 const HomeScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
@@ -138,6 +141,15 @@ const HomeScreen = ({ route, navigation }) => {
     hrmsRole: "",
     orgId: 0,
   });
+
+    const isFocused = useIsFocused();
+  const isDrawerOpen = useIsDrawerOpen();
+
+  useEffect(() => {
+    if (isFocused || (isFocused && isDrawerOpen)) {
+      Orientation.unlockAllOrientations();
+    }
+  }, [isFocused, isDrawerOpen]);
 
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {
@@ -248,7 +260,10 @@ const HomeScreen = ({ route, navigation }) => {
   };
 
   useEffect(async () => {
-    if (userData.hrmsRole === "Reception") {
+    if (
+      userData.hrmsRole === "Reception" ||
+      userData.hrmsRole === "Tele Caller"
+    ) {
       let payload = {
         orgId: userData.orgId,
         loggedInEmpId: userData.empId,
@@ -1382,7 +1397,7 @@ const HomeScreen = ({ route, navigation }) => {
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
-                  selector.receptionistData.totalDroppedCount > 0 &&
+                  selector.receptionistData.totalLostCount > 0 &&
                     navigateToEMS();
                 }}
                 style={styles.view8}
@@ -1395,7 +1410,7 @@ const HomeScreen = ({ route, navigation }) => {
                 </Text>
                 <View style={styles.cardView}>
                   <Text style={{ ...styles.rankText, color: "blue" }}>
-                    {selector.receptionistData?.totalDroppedCount || 0}
+                    {selector.receptionistData?.totalLostCount || 0}
                   </Text>
                 </View>
               </TouchableOpacity>

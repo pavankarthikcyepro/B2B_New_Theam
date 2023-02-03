@@ -457,13 +457,13 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         };
         customerLeadReference(payload);
 
-        if (
-          jsonObj.hrmsRole === "Reception" ||
-          jsonObj.hrmsRole === "Tele Caller"
-        ) {
-            goToParentScreen();
-            return;
-        }
+        // if (
+        //   jsonObj.hrmsRole === "Reception" ||
+        //   jsonObj.hrmsRole === "Tele Caller"
+        // ) {
+        //     goToParentScreen();
+        //     return;
+        // }
       }
 
       goToEnquiry();

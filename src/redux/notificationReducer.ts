@@ -54,8 +54,13 @@ export const notificationSlice = createSlice({
         state.loading = true;
       })
       .addCase(getNotificationList.fulfilled, (state, action) => {
-        const dataObj = action.payload;
-        state.notificationList = dataObj;
+        const nonReadData = action.payload.filter((item, index) => {
+          return item.isRead == "N";
+        });
+        const readData = action.payload.filter((item, index) => {
+          return item.isRead == "Y";
+        });
+        state.notificationList = [...nonReadData, ...readData];
         state.loading = false;
       })
       .addCase(getNotificationList.rejected, (state, action) => {
