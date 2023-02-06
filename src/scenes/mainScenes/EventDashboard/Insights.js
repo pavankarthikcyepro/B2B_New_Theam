@@ -90,30 +90,7 @@ const EventInsights = ({ route, navigation }) => {
           pageNo: 0,
           size: 5,
         };
-
-        const urlSelf = URL.MODEL_SOURCE_SELF();
-        const urlInsights = URL.MODEL_SOURCE_INSIGHTS();
-        const urlTeam = URL.MODEL_SOURCE_TEAM();
-        let url = "";
-        switch ("SELF") {
-          case "SELF":
-            url = urlSelf;
-            break;
-          case "INSIGHTS":
-            url = urlInsights;
-            break;
-          case "TEAM":
-            url = urlTeam;
-            const data = {
-              // orgId: orgId,
-              // selectedEmpId: empId,
-            };
-            payload = {
-              ...payload,
-              ...data,
-            };
-            break;
-        }
+        
         let key = moduleType !== "live-leads" ? "" : "LIVE-LEADS";
         dispatch(getEventSourceModel({ type, payload, key }));
       }
