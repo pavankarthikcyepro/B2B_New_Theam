@@ -243,7 +243,12 @@ const AttendanceScreen = ({ route, navigation }) => {
               note: element.comments,
               reason: element.reason,
               color: element.isPresent === 1 ? Colors.GREEN : Colors.RED,
-              status: element.isPresent === 1 ? "Present" : "Absent",
+              status:
+                element.isPresent === 1
+                  ? "Present"
+                  : element.wfh === 1
+                  ? "WFH"
+                  : "Absent",
             };
             dateArray.push(formatedDate);
             newArray.push(format);
@@ -265,6 +270,7 @@ const AttendanceScreen = ({ route, navigation }) => {
   };
 
   const getAttendance = async (newUser) => {
+    console.log("KKKK");
     try {
       let employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -326,11 +332,21 @@ const AttendanceScreen = ({ route, navigation }) => {
               color: element.isPresent === 1 ? Colors.GREEN : Colors.RED,
               status:
                 element.isPresent === 1
-                  ? "Present"
+                  ? element.wfh === 1
+                    ? "WFH"
+                    : "Present"
+                  : element.holiday === 1
+                  ? "Holiday"
                   : element.wfh === 1
                   ? "WFH"
                   : "Absent",
+              // element.isPresent === 1
+              //   ? "Present"
+              //   : element.wfh === 1
+              //   ? "WFH"
+              //   : "Absent",
             };
+            console.log(element);
             dateArray.push(formatedDate);
             newArray.push(format);
             weekArray.push(weekReport);
@@ -530,7 +546,16 @@ const AttendanceScreen = ({ route, navigation }) => {
               note: element.comments,
               reason: element.reason,
               color: element.isPresent === 1 ? Colors.GREEN : Colors.RED,
-              status: element.isPresent === 1 ? "Present" : "Absent",
+              status:
+                element.isPresent === 1
+                  ? element.wfh === 1
+                    ? "WFH"
+                    : "Present"
+                  : element.holiday === 1
+                  ? "Holiday"
+                  : element.wfh === 1
+                  ? "WFH"
+                  : "Absent",
             };
             dateArray.push(formatedDate);
             newArray.push(format);
@@ -597,15 +622,24 @@ const AttendanceScreen = ({ route, navigation }) => {
 
   const downloadReport = async () => {
     try {
-      const payload = {
-        orgId: userData.orgId,
-        fromDate: selectedFromDate,
-        toDate: selectedToDate,
-      };
-      const response = await client.post(URL.GET_ATTENDANCE_REPORT(), payload);
-      const json = await response.json();
-      if (json.downloadUrl) {
-        downloadInLocal(URL.GET_DOWNLOAD_URL(json.downloadUrl));
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        const payload = {
+          orgId: jsonObj.orgId,
+          fromDate: selectedFromDate,
+          toDate: selectedToDate,
+        };
+        const response = await client.post(
+          URL.GET_ATTENDANCE_REPORT(),
+          payload
+        );
+        const json = await response.json();
+        if (json.downloadUrl) {
+          downloadInLocal(URL.GET_DOWNLOAD_URL(json.downloadUrl));
+        }
       }
     } catch (error) {
       alert("Something went wrong");
@@ -618,6 +652,8 @@ const AttendanceScreen = ({ route, navigation }) => {
   };
 
   const downloadInLocal = async (url) => {
+    console.log("token");
+
     const { config, fs } = RNFetchBlob;
     let downloadDir = Platform.select({
       ios: fs.dirs.DocumentDir,
@@ -641,17 +677,23 @@ const AttendanceScreen = ({ route, navigation }) => {
           description: "Downloading image.",
         },
       };
-      config(options)
-        .fetch("GET", url)
-        .then((res) => {
-          setLoading(false);
-          RNFetchBlob.android.actionViewIntent(res.path());
-          // do some magic here
-        })
-        .catch((err) => {
-          console.error(err);
-          setLoading(false);
-        });
+      AsyncStore.getData(AsyncStore.Keys.ACCESS_TOKEN).then((token) => {
+        config(options)
+          .fetch("GET", url, {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          })
+          .then((res) => {
+            setLoading(false);
+            RNFetchBlob.android.actionViewIntent(res.path());
+            // do some magic here
+          })
+          .catch((err) => {
+            console.error(err);
+            setLoading(false);
+          });
+      });
     }
     if (Platform.OS === "ios") {
       options = {
@@ -661,26 +703,31 @@ const AttendanceScreen = ({ route, navigation }) => {
           "/ATTENDANCE_" +
           Math.floor(date.getTime() + date.getSeconds() / 2) +
           file_ext,
-        // mime: 'application/xlsx',
+        mime: "application/xlsx",
         // appendExt: 'xlsx',
         //path: filePath,
         //appendExt: fileExt,
         notification: true,
       };
-
-      config(options)
-        .fetch("GET", url)
-        .then((res) => {
-          setLoading(false);
-          setTimeout(() => {
-            // RNFetchBlob.ios.previewDocument('file://' + res.path());   //<---Property to display iOS option to save file
-            RNFetchBlob.ios.openDocument(res.data); //<---Property to display downloaded file on documaent viewer
-            // Alert.alert(CONSTANTS.APP_NAME,'File download successfully');
-          }, 300);
-        })
-        .catch((errorMessage) => {
-          setLoading(false);
-        });
+      AsyncStore.getData(AsyncStore.Keys.ACCESS_TOKEN).then((token) => {
+        config(options)
+          .fetch("GET", url, {
+            Accept: "application/octet-stream",
+            "Content-Type": "application/octet-stream",
+            Authorization: "Bearer " + token,
+          })
+          .then((res) => {
+            setLoading(false);
+            setTimeout(() => {
+              // RNFetchBlob.ios.previewDocument('file://' + res.path());   //<---Property to display iOS option to save file
+              RNFetchBlob.ios.openDocument(res.data); //<---Property to display downloaded file on documaent viewer
+              // Alert.alert(CONSTANTS.APP_NAME,'File download successfully');
+            }, 300);
+          })
+          .catch((errorMessage) => {
+            setLoading(false);
+          });
+      });
     }
   };
 
@@ -780,9 +827,8 @@ const AttendanceScreen = ({ route, navigation }) => {
                 console.log(newData);
                 if (newData?.status == "Absent" || newData?.status == "WFH") {
                   setHoverReasons(newData?.reason || "");
-                  setStatus(
-                    newData?.status == "Absent" ? "Leave" : newData?.status
-                  );
+                  setStatus(newData?.status == "Absent" ? "Leave" : "WFH");
+                  console.log(newData?.status);
                   setNotes(newData?.note || "");
                   setAttendance(true);
                 }

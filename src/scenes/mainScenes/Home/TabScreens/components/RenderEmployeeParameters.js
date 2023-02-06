@@ -27,7 +27,7 @@ export const RenderEmployeeParameters = (parameter) => {
     }
   };
 
-  const { params, item, color, displayType, navigation, moduleType } =
+  const { params, item, color, displayType, navigation, moduleType, hideTgt = false } =
     parameter;
   const paramsData = params.map(({ paramName }) => paramName);
   const navigableParams = [
@@ -169,7 +169,7 @@ export const RenderEmployeeParameters = (parameter) => {
                       : 0}
                   </Text>
                 </View>
-                {selectedParameter &&
+                {selectedParameter && !hideTgt &&
                 selectedParameter?.paramName !== "DROPPED" ? (
                   <Text
                     style={[

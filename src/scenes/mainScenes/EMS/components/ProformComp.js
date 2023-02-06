@@ -1,21 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Keyboard, Text, TextInput, Pressable, Image, Alert, Platform, TouchableOpacity, FlatList } from "react-native";
+import { View, StyleSheet, Keyboard, Text, Pressable, Image, Alert, Platform, TouchableOpacity, FlatList } from "react-native";
 import { DropDownSelectionItem } from "../../../../pureComponents";
+import { DropDownSelectionItemV2 } from "../../../../pureComponents";
 import { TextinputComp, DropDownComponant } from "../../../../components";
 import { GlobalStyle, Colors } from "../../../../styles";
 import { showToast } from "../../../../utils/toast";
 import { useDispatch, useSelector } from "react-redux";
-import { Checkbox, List, Button, IconButton, Switch } from "react-native-paper";
+import { Checkbox, List, Button, IconButton, Switch, TextInput } from "react-native-paper";
 import moment from "moment";
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import Mailer from 'react-native-mail';
 var RNFS = require('react-native-fs');
-
-
+import { ProformaTextinputOffers } from "../../../../components";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import * as AsyncStore from "../../../../asyncStore";
 import {
   getLogoNameApi, getOnRoadPriceAndInsurenceDetailsApi, setDropDownData,
-   postProformaInvoiceDetails, getProformaListingDetailsApi, setOfferPriceDetails,
+  postProformaInvoiceDetails, getProformaListingDetailsApi, setOfferPriceDetails,
   setOfferPriceDataForSelectedProforma, clearOfferPriceData, clearStateData, getTermsAndConditionsOrgwise
 } from "../../../../redux/enquiryFormReducer";
 import { getFocusedRouteNameFromRoute, useNavigation } from "@react-navigation/native";
@@ -25,6 +26,7 @@ import {
 import { PriceStackIdentifiers } from "../../../../navigations/appNavigator";
 import { AppNavigator } from "../../../../navigations";
 import { color } from "react-native-reanimated";
+import AntDesign from "react-native-vector-icons/AntDesign"
 
 const lostToCompetitor = "Lost to Competitor".replace(/\s/g, "").toLowerCase();
 const lostToUsedCarsFromCoDelear = "Lost to Used Cars from Co-Dealer".replace(/\s/g, "").toLowerCase();
@@ -49,7 +51,7 @@ const CheckboxTextAndAmountComp = ({
         <Checkbox.Android
           style={{ padding: 0, margin: 0 }}
           status={isChecked ? "checked" : "unchecked"}
-          color={Colors.BLUE}
+          color={Colors.PINK}
           uncheckedColor={Colors.GRAY}
           onPress={onPress}
         />
@@ -80,12 +82,13 @@ const TextAndAmountComp = ({
   text,
   titleStyle = {},
   amoutStyle = {},
+  componentStyle = {}
 }) => {
   return (
-    <View style={styles.textAndAmountView}>
+    <View style={[styles.textAndAmountView,  componentStyle ]}>
       <Text style={[styles.leftLabel, titleStyle]}>{title}</Text>
 
-      {text && text != '' ? <Text style={[{ fontSize: 16, fontWeight: "400", width: '50%', }, amoutStyle]}>
+      {text && text != '' ? <Text style={[{ fontSize: 16, fontWeight: "400", width: '50%' }, amoutStyle]}>
         {text}
       </Text> : <Text style={[{ fontSize: 14, fontWeight: "400" }, amoutStyle]}>
         {rupeeSymbol + " " + amount}
@@ -131,7 +134,7 @@ export const ProformaComp = ({
 }) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  
+
   const selector = useSelector((state) => state.enquiryFormReducer);
   const [orgId, setOrgId] = useState("");
   const [selectedVarientId, setSelectedVarientId] = useState(0);
@@ -189,7 +192,7 @@ export const ProformaComp = ({
   const [selectedPaidAccessoriesList, setSelectedPaidAccessoriesList] =
     useState([]);
   const [selectedInsurenceAddons, setSelectedInsurenceAddons] = useState([]);
-  const [showApproveRejectBtn, setShowApproveRejectBtn] = useState(false); 
+  const [showApproveRejectBtn, setShowApproveRejectBtn] = useState(false);
   const [showSendForApprovBtn, setshowSendForApprovBtn] = useState(false);
   const [showSaveBtn, setshowSaveBtn] = useState(false);
 
@@ -212,7 +215,7 @@ export const ProformaComp = ({
   const [proformaNo, setProformaNo] = useState("");
   const [selectedVehicleID, setselectedVehicleID] = useState("");
   const [selectedProformaID, setselectedProformaID] = useState("");
-  
+
   const [selectedvehicleImageId, setselectedvehicleImageId] = useState("");
   const [selectedRegistrationCharges, setSelectedRegistrationCharges] = useState({});
   const [registrationChargesType, setRegistrationChargesType] = useState([]);
@@ -226,7 +229,7 @@ export const ProformaComp = ({
     isPreBookingApprover: false,
     isSelfManager: ""
   });
-  const [selectedDate, setSelectedDate] = useState(moment().format("DD/MM/YYYY"));
+  const [selectedDate, setSelectedDate] = useState(moment().format("DD-MMM-YYYY"));
 
   const [selectedCarVarientsData, setSelectedCarVarientsData] = useState({
     varientList: [],
@@ -234,74 +237,75 @@ export const ProformaComp = ({
   });
   const [carColorsData, setCarColorsData] = useState([]);
   const [isDownLoadVisible, setisDownLoadVisible] = useState(false);
-  const [termNconditionData,settermsNConditionData] =useState([]);
+  const [termNconditionData, settermsNConditionData] = useState([]);
   const [addNewInput, setAddNewInput] = useState([]);
   const [otherPriceErrorNameIndex, setOtherPriceErrorNameIndex] = useState(null);
   const [otherPriceErrorAmountIndexInput, setOtherPriceErrorAmountIndex] = useState(null);
   const [otherPrices, setOtherPrices] = useState(0);
+  const [otherPricesV2, setOtherPricesV2] = useState(0);
 
   useEffect(() => {
     getUserData();
     dispatch(getProformaListingDetailsApi(universalId));
-    
-    
+
+
   }, []);
 
   useEffect(() => {
-    if (selector.proforma_listingdata){
+    if (selector.proforma_listingdata) {
       const proformaList =
         selector.proforma_listingdata || [];
       if (proformaList.length > 0) {
         let newProformaList = [];
         proformaList.forEach((item) => {
-         
-          
+
+
           newProformaList.push({
-           id : item.id,
+            id: item.id,
             name: moment(item.created_date).format("DD/MM/YYYY h:mm")
           });
-         
+
         });
         setproformaDataForDropdown([...newProformaList])
-     
+
       }
     }
-  
-    
+
+
   }, [selector.proforma_listingdata])
-  
-  const formateLesseName = () =>{
+
+  const formateLesseName = () => {
     if (!selector.enquiry_details_response) {
       return;
     }
-   
+
     let tempDmsdata = "";
     const dmsEntity = selector.enquiry_details_response;
     if (dmsEntity.hasOwnProperty("dmsContactDto"))
       tempDmsdata = selector.enquiry_details_response.dmsContactDto;
-    else if (dmsEntity.hasOwnProperty("dmsAccountDto")){
+    else if (dmsEntity.hasOwnProperty("dmsAccountDto")) {
       tempDmsdata = selector.enquiry_details_response.dmsAccountDto;
     }
-    
-     
-    let salutationTemp = 
-      tempDmsdata.salutation ? 
-        tempDmsdata.salutation+" " : "";
 
-        
-    let firstNameTemp = 
-    tempDmsdata.firstName ? 
+
+    let salutationTemp =
+      tempDmsdata.salutation ?
+        tempDmsdata.salutation + " " : "";
+
+
+    let firstNameTemp =
+      tempDmsdata.firstName ?
         tempDmsdata.firstName + " " : "";
 
 
-    let lastNametemp = 
-      tempDmsdata.lastName  ?
+    let lastNametemp =
+      tempDmsdata.lastName ?
         tempDmsdata.lastName : "";
 
-      return salutationTemp+firstNameTemp+lastNametemp
-      // selector.enquiry_details_response.dmsAccountDto.firstName + " " +
-      // selector.enquiry_details_response.dmsAccountDto.lastName
-  } 
+    return salutationTemp + firstNameTemp + lastNametemp
+    // selector.enquiry_details_response.dmsAccountDto.firstName + " " +
+    // selector.enquiry_details_response.dmsAccountDto.lastName
+  }
 
   const getUserData = async () => {
     try {
@@ -311,12 +315,12 @@ export const ProformaComp = ({
       AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
         setUserToken(token);
       });
-      
+
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
 
         let isManager = false,
-            editEnable = false;
+          editEnable = false;
         let isPreBookingApprover = false;
         if (
           jsonObj.hrmsRole === "MD" ||
@@ -327,7 +331,7 @@ export const ProformaComp = ({
           isManager = true;
         }
         if (jsonObj.roles.includes("PreBooking Approver")) {
-         
+
           editEnable = true;
           isPreBookingApprover = true;
         }
@@ -341,7 +345,7 @@ export const ProformaComp = ({
           isSelfManager: jsonObj.isSelfManager
         });
 
-        
+
         const data = {
           branchId: branchId,
           orgId: jsonObj.orgId,
@@ -358,17 +362,17 @@ export const ProformaComp = ({
   };
 
   useEffect(() => {
-    if (selector.getTermsNConditions_res_status ==="success"){
-     
-      
-      settermsNConditionData(selector.getTermsNConditions_res.configData.split(/\r?\n/))
-    
-      
+    if (selector.getTermsNConditions_res_status === "success") {
+      let data = 'If users abuse your website or mobile app in any way, you can terminate their account. Your "Termination" clause can inform users that their accounts would be terminated if they abuse your service.\n If users abuse your website or mobile app in any way, you can terminate their account. Your "Termination" clause can inform users that their accounts would be terminated if they abuse your service.';
+
+      // settermsNConditionData(selector.getTermsNConditions_res.configData.split(/\r?\n/))
+      settermsNConditionData(data.split(/\r?\n/));
+
     }
-  
-   
+
+
   }, [selector.getTermsNConditions_res_status])
-  
+
 
   useEffect(() => {
     calculateOnRoadPrice(handlingChargSlctd, essentialKitSlctd, fastTagSlctd);
@@ -404,7 +408,7 @@ export const ProformaComp = ({
   useEffect(() => {
     if (route.params?.accessoriesList) {
       updatePaidAccessroies(route.params?.accessoriesList);
-     
+
     }
   }, [route.params?.accessoriesList]);
 
@@ -417,7 +421,7 @@ export const ProformaComp = ({
       let handlingChargeSlctdLocal = handlingChargSlctd;
       let essentialKitSlctdLocal = essentialKitSlctd;
       let fastTagSlctdLocal = fastTagSlctd;
-      
+
       // if (
       //   dmsOnRoadPriceDtoObj.handling_charges &&
       //   dmsOnRoadPriceDtoObj.handling_charges > 0
@@ -453,8 +457,8 @@ export const ProformaComp = ({
         // setSelectedAddOnsPrice(addOnPrice);
       }
 
-      
-        if (dmsOnRoadPriceDtoObj.lifeTaxPercentage) {
+
+      if (dmsOnRoadPriceDtoObj.lifeTaxPercentage) {
         setTaxPercent(
           (
             (Number(dmsOnRoadPriceDtoObj.lifeTaxPercentage) * 1000) /
@@ -486,8 +490,8 @@ export const ProformaComp = ({
     if (selector.enquiry_details_response) {
       // Update Paid Accesories
       const dmsLeadDto = selector.enquiry_details_response.dmsLeadDto;
-     
-      
+
+
       if (dmsLeadDto.dmsAccessories.length > 0) {
         let initialValue = 0;
         let totalPrice = 0,
@@ -504,7 +508,7 @@ export const ProformaComp = ({
           }
         }
       }
-    
+
       setSelectedPaidAccessoriesList([...dmsLeadDto.dmsAccessories]);
       setPaidAccessoriesListNew([
         ...dmsLeadDto.dmsAccessories.filter(
@@ -527,7 +531,7 @@ export const ProformaComp = ({
             ...item,
             name: item.policy_name,
           });
-        
+
           if (selector.insurance_type === item.policy_name) {
             setSelectedInsurencePrice(item.cost);
           }
@@ -605,7 +609,7 @@ export const ProformaComp = ({
         }
         setRegistrationChargesType(newArray);
       }
-      
+
       setPriceInformationData({
         ...selector.vehicle_on_road_price_insurence_details_response,
       });
@@ -615,7 +619,7 @@ export const ProformaComp = ({
 
   useEffect(() => {
     // setTotalOnRoadPriceAfterDiscount(totalOnRoadPriceAfterDiscount - focPrice)
-   
+
     dispatch(
       setOfferPriceDetails({
         key: "FOR_ACCESSORIES",
@@ -625,12 +629,12 @@ export const ProformaComp = ({
   }, [focPrice]);
 
   useEffect(() => {
-    if (selector.proforma_API_response === "fullfilled"){
-        // goParentScreen();
+    if (selector.proforma_API_response === "fullfilled") {
+      // goParentScreen();
     }
     var key = selector.proforma_API_response;
     var response = selector.proforma_API_respData
-    switch(key){
+    switch (key) {
 
       case "ENQUIRYCOMPLETED":
         setshowSendForApprovBtn(true);
@@ -650,7 +654,7 @@ export const ProformaComp = ({
         setShowApproveRejectBtn(false)
         setProformaNo(response.performaUUID)
         break;
-      case "REJECTED" :
+      case "REJECTED":
         setshowSaveBtn(true)
         setselectedProformaID(response.id)
         setShowApproveRejectBtn(false);
@@ -658,22 +662,26 @@ export const ProformaComp = ({
         break;
       // default:
     }
-  
-  
+
+
   }, [selector.proforma_API_response])
-  
+
   useEffect(() => {
+    let tempOtherPrice = 0;
     if (addNewInput.length > 0) {
       var totalprice = 0;
       for (let data of addNewInput) {
         totalprice = totalprice + Number(data.amount);
+        tempOtherPrice = tempOtherPrice + Number(data.amount);
         setOtherPrices(totalprice);
+     
       }
+      setOtherPricesV2(tempOtherPrice)
     }
   }, [addNewInput]);
 
   const updatePaidAccessroies = (tableData) => {
-    
+
     let totalPrice = 0,
       totFoc = 0,
       totMrp = 0;
@@ -696,7 +704,7 @@ export const ProformaComp = ({
             dmsAccessoriesType: item.item,
           });
 
-        
+
           // dispatch(
           //   setOfferPriceDetails({
           //     key: "FOR_ACCESSORIES",
@@ -735,11 +743,11 @@ export const ProformaComp = ({
       setFocPrice(totFoc)
     }
     else {
-      
+
       dispatch(
         setOfferPriceDetails({
           key: "FOR_ACCESSORIES",
-          text: selector.foc_accessoriesFromServer.toString() ? selector.foc_accessoriesFromServer.toString() :"",
+          text: selector.foc_accessoriesFromServer.toString() ? selector.foc_accessoriesFromServer.toString() : "",
         })
       )
     }
@@ -765,9 +773,10 @@ export const ProformaComp = ({
     setselectedvehicleImageId("");
     setShowApproveRejectBtn(false);
     setProformaNo("");
-    setSelectedDate(moment().format("DD/MM/YYYY"));
+    setSelectedDate(moment().format("DD-MMM-YYYY"));
     setisDownLoadVisible(false);
-    
+    setSelectedPaidAccessoriesList([])
+
   }
   const selectPerformaClick = () => {
     setisSelectPerformaClick(true)
@@ -775,224 +784,177 @@ export const ProformaComp = ({
     showDropDownModelMethod("SELECTPERFORMA", "Select Proforma")
   }
 
-  const downloadPdf2 = async (from) => {
-    
+  const downloadPdf3 = async (from) => {
+     
     try {
       let siteTypeName =
-        (await '<div  >') +
-            '<div>' +
-             '<div    id="proforma" style="margin: 0px; width: 1100px; height: 100%;">' +
-        
-        '<table  class="ttable" style=" border: 1px solid black;width:100%;  color: black; font - size: 12px; " >' + 
-        " <tr>" +
-              '<td   class="tCenter" colspan="4" style="background: #7e7b7b; text-align: center; border: 1px solid black; border - collapse: collapse;">' +
-                  '<strong>PROFORMA INVOICE</strong>' +
-              "</td>" +
-         "</tr>" +
- 
-      "<tr >" +
-        // '<td   colspan="2" rowspan="5">' +
-          // '<div   class="row align-items-center">' +
-          //   '<div   class="col-md-2 col-2">' +
-        '<td style="border: 1px solid black; border - collapse: collapse; padding-left: 20px; ">' + '<img   style="width: 100px; height: auto" src=' +
-              selector.proforma_logo +
-              ">" +
-         '</td>'+
-        
-            // '</div>' +
-        '<td style="border: 1px solid black; border - collapse: collapse; padding:10px;">' +
-          '<div   class="col-md-8 orgname" style="font-size: 12px; font - weight: bold; margin - left: 30px; border - left: 1px solid black; ">' +
-            '<p  style="color:#00165c; ">' +
-            selector.proforma_orgName +
-            '</p>' +
-            '<p   class="orgname-pad" style=" margin-top: -10px; color:#00165c; "> GSTN: ' +
-            selector.proforma_gstnNumber + '</p>' +
-            '<p style="color:#00165c; " >' + selector.proforma_houseNo + '</p>' +
-            '<p   class="orgaddr-pad" style=" margin-top: -10px; color:#00165c; ">' + selector.profprma_street + '</p> ' +
-            '<p   class="orgaddr-pad" style=" margin-top: -10px; color:#00165c; ">' + selector.proforma_branch + '</p> ' +
-            '<p   class="orgaddr-pad" style=" margin-top: -10px; color:#00165c; ">' + selector.proforma_city + selector.proforma_pincode + '</p> ' +
-            '<p   class="orgaddr-pad" style=" margin-top: -10px; color:#00165c; ">' + selector.proforma_state + '</p> ' +
-          '</div>' +
-
-         '</td>'+
-          '<td  style="border: 1px solid black; border - collapse: collapse;  ">' +
-              '<table   style="border: 1px solid black; border - collapse: collapse; width:100%;";>' +
-                    '<tr  " >' +
-                    '<td   style=" color:#00165c; border: 1px solid black; border - collapse: collapse; width:50%;" >PROFORMA NO :</td>' +
-                    '<td   style=" color:#00165c; border: 1px solid black; border - collapse: collapse; text-align: right; width:50%;"  "> ' + proformaNo + ' </td>' +
-                    '</tr>' +
-                    '</table>' +
-              '<table  style="border: 1px solid black; border - collapse: collapse; width:100%;">' +
-                    '<tr   >' +
-                    '<td style=" color:#00165c; border: 1px solid black; border - collapse: collapse; width:50%;"  >DATE :</td>' +
-                    '<td  style=" color:#00165c; border: 1px solid black; border - collapse: collapse; text-align: right; width:50%;" >' + selectedDate + '</td>' +
-                    '</tr>' +
-              '</table>' +
-              '<table  style="border: 1px solid black; border - collapse: collapse; width:100%;">' +
-                    '<tr   >' +
-                    '<td  style=" color:#00165c;border: 1px solid black; border - collapse: collapse; width:50%;" >PAN NO :</td>' +
-                    '<td    style="text-transform: uppercase; color:#00165c; text-align: right; border: 1px solid black; border - collapse: collapse; width:50%;"> ' + selector.pan_number + ' </td>' +
-                    '</tr>' +
-              '</table>' +
-              '<table  style="border: 1px solid black; border - collapse: collapse; width:100%;">' +
-                    '<tr   >' +
-                    '<td  style=" color:#00165c; border: 1px solid black; border - collapse: collapse; width:50%;" >GST NO :</td>' +
-                    '<td    style="text-transform: uppercase; color:#00165c; text-align: right; border: 1px solid black; border - collapse: collapse; width:50%;"> ' + selector.proforma_gstnNumber + ' </td>' +
-                    '</tr>' +
-              '</table>' +
-         '</td>' +
-        
-        
-          // '</div>'+
-        // '</td>'+
-      "</tr>"+
-
- 
-
-
-
-
-
-     '<tr      class="tCenter" >  ' +
-        '<td      colspan="4" style="border: 1px solid black; border - collapse: collapse; color:#00165c; text-align: center;"> <strong     >' + carModel+" " +"Model"+" "+ carVariant +'</strong></td>' +
-    '</tr>' +
-    '<tr      class="tCenter">  '+
-        '<td     style="border: 1px solid black; border - collapse: collapse; color:#00165c; text-align: center; " colspan="4"><strong    >' + carColor +'</strong></td>' +
-    '</tr>' +
-    '<tr >' +
-       '<td    style="border: 1px solid black; border - collapse: collapse; "><strong   >PARTICULARS</strong></td>' +
-       '<td      style="text-align: right; border: 1px solid black; border - collapse: collapse;" width="25%"><strong     >AMOUNT</strong></td>' +
-       '<td      style="border: 1px solid black; border - collapse: collapse; " > <strong     >DISCOUNT</strong></td>' +
-       '<td      style="text-align: right; border: 1px solid black; border - collapse: collapse;" width="25%"><strong     >AMOUNT</strong></td>' +
-    '</tr>' +
-
-    
-   '<tr>' +
-       '<td       style="border: 1px solid black; border - collapse: collapse; ">Ex-Showroom Price</td>' +
-          '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;" width="25%"> ' + priceInfomationData.ex_showroom_price.toString()  +'</td>' +
-       '<td       style="border: 1px solid black; border - collapse: collapse; ">Consumer Offer</td>' +
-          '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;" width="25%"> ' + selector.consumer_offer.toString() +' </td>' +
-    '</tr>' +
-    '<tr >' +
-       '<td      style="border: 1px solid black; border - collapse: collapse; ">Life Tax</td>' +
-        '<td      class="talign" width="25%" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + lifeTaxAmount.toString() +' </td>' +
-       '<td      style="border: 1px solid black; border - collapse: collapse; ">Exchange Offer</td>' +
-          '<td      class="talign" width="25%" style="text-align: right; border: 1px solid black; border - collapse: collapse;" > ' + selector.exchange_offer.toString() +' </td>' +
-    '</tr>' +
-    '<tr>' +
-       '<td   style="border: 1px solid black; border - collapse: collapse; "  >Registration Charges</td>' +
-        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + `${selectedRegistrationCharges?.cost ? selectedRegistrationCharges?.cost : "0.00"}`
-          +' </td>' + 
-       '<td     style="border: 1px solid black; border - collapse: collapse; ">Corporate Offer</td>' +
-            '<td      class="talign" width="25%" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + selector.corporate_offer.toString() +' </td>' +
-    '</tr>' +
-    '<tr>' +
-       '<td   style="border: 1px solid black; border - collapse: collapse; "  >Insurance ()</td>' +
-            '<td      class="talign"style="text-align: right; border: 1px solid black; border - collapse: collapse;">' + selectedInsurencePrice.toString() + '</td>' +
-       '<td   style="border: 1px solid black; border - collapse: collapse; "  >Promotional Offers</td>' +
-            '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + selector.promotional_offer.toString() +' </td>' +
-    '</tr>' +
-    '<tr >' +
-       '<td   style="border: 1px solid black; border - collapse: collapse; "  >Add-on Insurance</td>' +
-            '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;">' + selectedAddOnsPrice.toString() + '</td>' +
-       '<td   style="border: 1px solid black; border - collapse: collapse; "  >Cash Discount</td>' +
-            '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + selector.cash_discount.toString() + ' </td>' +
-    '</tr>' +
-    '<tr     >'+
-       '<td  style="border: 1px solid black; border - collapse: collapse; "   >Warranty ()</td>' +
-            '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + selectedWarrentyPrice.toString()  + ' </td>' +
-       '<td  style="border: 1px solid black; border - collapse: collapse; "   >FOC Accessories</td>' +
-            '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + selector.for_accessories.toString() + ' </td>' +
-    '</tr>' +
-    '<tr     >' +
-       '<td  style="border: 1px solid black; border - collapse: collapse; "   >Handling Charges:</td>' +
-          '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + `${handlingChargSlctd ? priceInfomationData.handling_charges.toFixed(2): 0}` + ' </td>' +
-       '<td   style="border: 1px solid black; border - collapse: collapse; "  >Insurance Discount</td>' +
-            '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;">' + selector.insurance_discount.toString() + ' </td>' +
-    '</tr>' +
-    '<tr     >' +
-       '<td style="border: 1px solid black; border - collapse: collapse; "    >Essential Kit:</td>' +
-          '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;">' + `${essentialKitSlctd ? priceInfomationData.essential_kit.toFixed(2) : 0}`  + '</td>' +
-       '<td   style="border: 1px solid black; border - collapse: collapse; "  >Accessories Discount</td>' +
-              '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + selector.accessories_discount.toString() + ' </td>' +
-    '</tr>' +
-    '<tr >' +
-       '<td   style="border: 1px solid black; border - collapse: collapse; "  >TCS(&gt;10Lakhs -&gt; 1%):</td>' +
-              '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;">' + tcsAmount.toString()  +'</td>' +
-        '<td   style="border: 1px solid black; border - collapse: collapse; "  >Additional Offer 1</td>' +
-              '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + selector.additional_offer_1.toString() + ' </td>' +
-    '</tr>' +
-        '<tr     >' +
-        '<td  style="border: 1px solid black; border - collapse: collapse; "   >Paid Accessories:</td>' +
-              '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + selectedPaidAccessoriesPrice.toString()  + ' </td>' +
-        '<td  style="border: 1px solid black; border - collapse: collapse; "   >Additional Offer 2</td>' +
-              '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;">' + selector.additional_offer_2.toString() + '</td>' +
-    '</tr>'+
-        '<tr     >' +
-        '<td   style="border: 1px solid black; border - collapse: collapse; "  >Fast Tag</td>' +
-        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + `${fastTagSlctd ? priceInfomationData?.fast_tag?.toFixed(2) : 0}` + ' </td>' +
-        '<td   style="border: 1px solid black; border - collapse: collapse; "  > </td>' +
-        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"></td>' +
+        (await '<body style="padding:0; margin:0;">') +
+        '<div style="border-left: 10px solid #FF156B; padding: 25px; font-family: Arial, Helvetica, sans-serif; ">' +
+        '<div style="padding-bottom:30px;">' +
+        // '<img width="100" height="100" src="http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com/assets/media/logos/Automate-Final-Logo.jpg">'+
+        '</div>' +
+        '<table style="width:100%;" border="1" cellpadding="4" cellspacing="0" bordercolor="#ddd">' +
+        '<tr>' +
+        '<td colspan="4" style="background-color: #4d4f51; font-size: 16px; color: #fff !important; text-align:center;">' +
+        '<strong>PROFORMA INVOICE</strong></td>' +
         '</tr>' +
-
-        addNewInput.map((item) => {
-          return '<tr     >' +
-            '<td    style="border: 1px solid black; border - collapse: collapse; "  >' + item.name +'</td>' +
-            '<td      class="taligns" style="text-align: right; border: 1px solid black; border - collapse: collapse;">' + item.amount +'</td>' +
-            '<td  style="border: 1px solid black; border - collapse: collapse; "    ></td>' +
-            '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"></td>' +
-            '</tr > ' 
-        }).join(' ') +
-
-    '<tr     >' +
-        '<td    style="border: 1px solid black; border - collapse: collapse; "  ></td>' +
-        '<td      class="taligns" style="text-align: right; border: 1px solid black; border - collapse: collapse;"></td>' +
-        '<td  style="border: 1px solid black; border - collapse: collapse; "    ></td>' +
-        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"></td>' +
-    '</tr > ' +
-
-
-
-        '<tr      >' +
-          '<td       class="tCenter" style="background-color: rgb(228, 212, 190); text-align: center; border: 1px solid black; border - collapse: collapse;"><strong      >NET ON ROAD PRICE</strong></td>' +
-                '<td       class="talign" style="background-color: rgb(228, 212, 190); text-align: right; border: 1px solid black; border - collapse: collapse;"><strong      >' + totalOnRoadPrice.toString() + '</strong></td>' +
-        '<td       class="tCenter" style="background-color: rgb(228, 212, 190); text-align: center; border: 1px solid black; border - collapse: collapse;"><strong      >NET ON ROAD PRICE AFTER DISCOUNT</strong></td>' +
-                  '<td       class="talign" style="background-color: rgb(228, 212, 190); text-align: right; border: 1px solid black; border - collapse: collapse;"><strong      >' + totalOnRoadPriceAfterDiscount.toString() + '</strong></td>' +
+        '<tr>' +
+        '<td colspan="2" rowspan="5">' +
+        '<table style="width:100%;">' +
+        '<tr>' +
+        '<td width="120px" style="text-align:center;">' +
+        '<img  style="max-width:100%;" src=' +
+        selector.proforma_logo +
+        ">" +
+        '</td>' +
+        '<td  style="border-left:1px solid #ddd; padding-left:20px;">' +
+        '<div>'+
+      selector.proforma_orgName +'</div>' +
+        '<div > GSTN: ' +
+        selector.proforma_gstnNumber + '</div>' +
+        '<div>' + selector.proforma_houseNo + '</div>' +
+        '<div >' + selector.profprma_street + '</div>' +
+        '<div >' + selector.proforma_branch + '</div>' +
+        '<div >' + selector.proforma_city + selector.proforma_pincode + '</div>' +
+        '<div >' + selector.proforma_state + '</div>' +
+        '</td>' +
         '</tr>' +
+        '</table>' +
 
-
-        '<tr      >' +
-        '<td       colspan="4">' +
-        '<p       style="text-decoration: underline">TERMS AND CONDITIONS</p>' +
-        
+        '</td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td>PROFORMA NO :</td>' +
+        '<td> ' + proformaNo +' </td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td>DATE</td>' +
+        '<td>' + selectedDate + '</td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td>PAN NO :</td>' +
+        '<td style="text-transform: uppercase"> ' + selector.pan_number + '</td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td>GST NO :</td>' +
+        '<td style="text-transform: uppercase">' + selector.proforma_gstnNumber + '</td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td colspan="4" style="text-align:center;"><strong>' + carModel + " " + "Model" + " " + carVariant + '</strong></td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td colspan="4" style="text-align:center;"><strong>' + carColor +'</strong></td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td width="25%"><strong>PARTICULARS</strong></td>' +
+        '<td style="text-align: right" width="25%"><strong>AMOUNT</strong></td>' +
+        '<td width="25%"><strong>DISCOUNT</strong></td>' +
+        '<td style="text-align: right;" width="25%"><strong>AMOUNT</strong></td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td width="25%">Ex-Showroom Price</td>' +
+        '<td width="25%" style="text-align: right;"> ' + priceInfomationData.ex_showroom_price.toString() + ' </td>' +
+        '<td width="25%">Consumer Offer</td>' +
+        '<td width="25%" style="text-align: right;"> ' + selector.consumer_offer.toString() + ' </td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td width="25%">Life Tax</td>' +
+        '<td width="25%" style="text-align: right;"> ' + lifeTaxAmount.toString() + '</td>' +
+        '<td width="25%">Exchange Offer</td>' +
+        '<td width="25%" style="text-align: right;">' + selector.exchange_offer.toString() + ' </td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td>Registration Charges</td>' +
+        '<td style="text-align: right;">  ' + `${selectedRegistrationCharges?.cost ? selectedRegistrationCharges?.cost : "0.00"}`
+        + '  </td>' +
+        '<td width="25%">Corporate Offer</td>' +
+        '<td width="25%" style="text-align: right;"> ' + selector.corporate_offer.toString() + ' </td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td>Insurance ()</td>' +
+        '<td style="text-align: right;"> ' + selectedInsurencePrice.toString() + ' </td>' +
+        '<td>Promotional Offers</td>' +
+        '<td style="text-align: right;"> ' + selector.promotional_offer.toString() + ' </td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td>Add-on Insurance</td>' +
+        '<td style="text-align: right;">' + selectedAddOnsPrice.toString() + ' </td>' +
+        '<td>Cash Discount</td>' +
+        '<td style="text-align: right;">' + selector.cash_discount.toString() + ' </td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td>Warranty ()</td>' +
+        '<td style="text-align: right;"> ' + selectedWarrentyPrice.toString() + ' </td>' +
+        '<td>FOC Accessories</td>' +
+        '<td style="text-align: right;"> ' + selector.for_accessories.toString() + ' </td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td>Handling Charges:</td>' +
+        '<td style="text-align: right;"> ' + `${handlingChargSlctd ? priceInfomationData.handling_charges.toFixed(2) : 0}` + '</td>' +
+        '<td>Insurance Discount</td>' +
+        '<td style="text-align: right;"> ' + selector.insurance_discount.toString() + ' </td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td>Essential Kit:</td>' +
+        '<td style="text-align: right;">' + `${essentialKitSlctd ? priceInfomationData.essential_kit.toFixed(2) : 0}` + '</td>' +
+        '<td>Accessories Discount</td>' +
+        '<td style="text-align: right;"> ' + selector.accessories_discount.toString() + '</td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td>TCS(&gt;10Lakhs -&gt; 1%):</td>' +
+        '<td style="text-align: right;"> ' + tcsAmount.toString() + ' </td>' +
+        '<td>Additional Offer 1</td>' +
+        '<td style="text-align: right;">' + selector.additional_offer_1.toString() + ' </td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td>Paid Accessories:</td>' +
+        '<td style="text-align: right;"> ' + selectedPaidAccessoriesPrice.toString() + ' </td>' +
+        ' <td>Additional Offer 2</td>' +
+        '<td style="text-align: right;">' + selector.additional_offer_2.toString() + '</td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td>Fast Tag</td>' +
+        '<td style="text-align: right;"> ' + `${fastTagSlctd ? priceInfomationData?.fast_tag?.toFixed(2) : 0}` + ' </td>' +
+        '<td></td>' +
+        '<td style="text-align: right;"></td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td>Other Charges</td>' +
+        '<td style="text-align: right;">' +otherPricesV2 +'</td>' +
+        '<td></td>' +
+        '<td style="text-align: right;"></td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td></td>' +
+        '<td style="text-align: right;"></td>' +
+        '<td></td>' +
+        '<td style="text-align: right;"></td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td class="tCenter" style="background-color: #4d4f51; color: #fff !important;"><strong>NET ON ROAD PRICE</strong></td>' +
+        '<td style="background-color: #4d4f51; color: #fff !important; text-align: right;"><strong>' + totalOnRoadPrice.toString() + ' </strong></td>' +
+        '<td class="tCenter" style="background-color: #4d4f51; color: #fff !important;"><strong>NET ON ROAD PRICE AFTER DISCOUNT</strong></td>' +
+        '<td style="background-color: #4d4f51; color: #fff !important; text-align: right;"><strong>' + totalOnRoadPriceAfterDiscount.toString() + '</strong></td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td colspan="4">' +
+        '<p style="text-decoration: underline">TERMS AND CONDITIONS</p>' +
         '<div       class="ng-star-inserted">' + termNconditionData.map((item, index) => {
-        
-          return '<div style="padding:4px">' + `${index+1}`+ " ) "+ `${item}` +'</div>'
 
-        }).join(' ') +'</div>' +
-    
+          return '<div style="padding:4px">' + `${index + 1}` + " ) " + `${item}` + '</div>'
+
+        }).join(' ') + '</div>' +               
         '</td>' +
         '</tr>' +
-
-        '<tr      >' +
-        '<td    style="border: 1px solid black; border - collapse: collapse;"   colspan="4">' +
-        '<div       class="row">' +
-        '<div       class="col-md-12"><span       class="pull-right" style="float: right;"><b      >For,'+selector.proforma_orgName+'</b></span></div>' +
+        '</table>' +
+        '<div style="text-align: right; padding-top:20px;">' +
+        '<div style="padding-bottom:30px;"><b>For,' + selector.proforma_orgName + '</b></div>' +
+        '<div> <b>Authorised Signatory</b></div>' +
         '</div>' +
-        '<div       class="row" style="margin-top: 20px">' +
-        '<div       class="col-md-12"><span       class="pull-right" style="float: right;"><b      >Authorised Signatory</b></span></div>' +
         '</div>' +
-        '</td>' +
-        '</tr>' +
+        '</body>';
 
 
-
-        "</table>" +
- '</div >' +
-    '</div >' +
- '</div >';
-
-        
       let bottomPitch =
         (await '<div style="padding-top:10px;" >') +
         "<p>" +
@@ -1017,7 +979,7 @@ export const ProformaComp = ({
 
       // RNFS.copyFile(file.filePath + "/ProformaInvoice.pdf", RNFS.DocumentDirectoryPath + "/ProformaInvoice2.pdf")
 
-    
+
       // downloadInLocal(file.filePath);
       if (from === "email") {
         await Mailer.mail(
@@ -1054,7 +1016,291 @@ export const ProformaComp = ({
         { cancelable: false },
       );
     } catch (error) {
-     
+
+      alert(error);
+    }
+  };
+
+  const downloadPdf2 = async (from) => {
+
+    try {
+      let siteTypeName =
+        (await '<div  >') +
+        '<div>' +
+        '<div    id="proforma" style="margin: 0px; width: 1100px; height: 100%;">' +
+
+        '<table  class="ttable" style=" border: 1px solid black;width:100%;  color: black; font - size: 12px; " >' +
+        " <tr>" +
+        '<td   class="tCenter" colspan="4" style="background: #7e7b7b; text-align: center; border: 1px solid black; border - collapse: collapse;">' +
+        '<strong>PROFORMA INVOICE</strong>' +
+        "</td>" +
+        "</tr>" +
+
+        "<tr >" +
+        // '<td   colspan="2" rowspan="5">' +
+        // '<div   class="row align-items-center">' +
+        //   '<div   class="col-md-2 col-2">' +
+        '<td style="border: 1px solid black; border - collapse: collapse; padding-left: 20px; ">' + '<img   style="width: 100px; height: auto" src=' +
+        selector.proforma_logo +
+        ">" +
+        '</td>' +
+
+        // '</div>' +
+        '<td style="border: 1px solid black; border - collapse: collapse; padding:10px;">' +
+        '<div   class="col-md-8 orgname" style="font-size: 12px; font - weight: bold; margin - left: 30px; border - left: 1px solid black; ">' +
+        '<p  style="color:#00165c; ">' +
+        selector.proforma_orgName +
+        '</p>' +
+        '<p   class="orgname-pad" style=" margin-top: -10px; color:#00165c; "> GSTN: ' +
+        selector.proforma_gstnNumber + '</p>' +
+        '<p style="color:#00165c; " >' + selector.proforma_houseNo + '</p>' +
+        '<p   class="orgaddr-pad" style=" margin-top: -10px; color:#00165c; ">' + selector.profprma_street + '</p> ' +
+        '<p   class="orgaddr-pad" style=" margin-top: -10px; color:#00165c; ">' + selector.proforma_branch + '</p> ' +
+        '<p   class="orgaddr-pad" style=" margin-top: -10px; color:#00165c; ">' + selector.proforma_city + selector.proforma_pincode + '</p> ' +
+        '<p   class="orgaddr-pad" style=" margin-top: -10px; color:#00165c; ">' + selector.proforma_state + '</p> ' +
+        '</div>' +
+
+        '</td>' +
+        '<td  style="border: 1px solid black; border - collapse: collapse;  ">' +
+        '<table   style="border: 1px solid black; border - collapse: collapse; width:100%;";>' +
+        '<tr  " >' +
+        '<td   style=" color:#00165c; border: 1px solid black; border - collapse: collapse; width:50%;" >PROFORMA NO :</td>' +
+        '<td   style=" color:#00165c; border: 1px solid black; border - collapse: collapse; text-align: right; width:50%;"  "> ' + proformaNo + ' </td>' +
+        '</tr>' +
+        '</table>' +
+        '<table  style="border: 1px solid black; border - collapse: collapse; width:100%;">' +
+        '<tr   >' +
+        '<td style=" color:#00165c; border: 1px solid black; border - collapse: collapse; width:50%;"  >DATE :</td>' +
+        '<td  style=" color:#00165c; border: 1px solid black; border - collapse: collapse; text-align: right; width:50%;" >' + selectedDate + '</td>' +
+        '</tr>' +
+        '</table>' +
+        '<table  style="border: 1px solid black; border - collapse: collapse; width:100%;">' +
+        '<tr   >' +
+        '<td  style=" color:#00165c;border: 1px solid black; border - collapse: collapse; width:50%;" >PAN NO :</td>' +
+        '<td    style="text-transform: uppercase; color:#00165c; text-align: right; border: 1px solid black; border - collapse: collapse; width:50%;"> ' + selector.pan_number + ' </td>' +
+        '</tr>' +
+        '</table>' +
+        '<table  style="border: 1px solid black; border - collapse: collapse; width:100%;">' +
+        '<tr   >' +
+        '<td  style=" color:#00165c; border: 1px solid black; border - collapse: collapse; width:50%;" >GST NO :</td>' +
+        '<td    style="text-transform: uppercase; color:#00165c; text-align: right; border: 1px solid black; border - collapse: collapse; width:50%;"> ' + selector.proforma_gstnNumber + ' </td>' +
+        '</tr>' +
+        '</table>' +
+        '</td>' +
+
+
+        // '</div>'+
+        // '</td>'+
+        "</tr>" +
+
+
+
+
+
+
+
+        '<tr      class="tCenter" >  ' +
+        '<td      colspan="4" style="border: 1px solid black; border - collapse: collapse; color:#00165c; text-align: center;"> <strong     >' + carModel + " " + "Model" + " " + carVariant + '</strong></td>' +
+        '</tr>' +
+        '<tr      class="tCenter">  ' +
+        '<td     style="border: 1px solid black; border - collapse: collapse; color:#00165c; text-align: center; " colspan="4"><strong    >' + carColor + '</strong></td>' +
+        '</tr>' +
+        '<tr >' +
+        '<td    style="border: 1px solid black; border - collapse: collapse; "><strong   >PARTICULARS</strong></td>' +
+        '<td      style="text-align: right; border: 1px solid black; border - collapse: collapse;" width="25%"><strong     >AMOUNT</strong></td>' +
+        '<td      style="border: 1px solid black; border - collapse: collapse; " > <strong     >DISCOUNT</strong></td>' +
+        '<td      style="text-align: right; border: 1px solid black; border - collapse: collapse;" width="25%"><strong     >AMOUNT</strong></td>' +
+        '</tr>' +
+
+
+        '<tr>' +
+        '<td       style="border: 1px solid black; border - collapse: collapse; ">Ex-Showroom Price</td>' +
+        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;" width="25%"> ' + priceInfomationData.ex_showroom_price.toString() + '</td>' +
+        '<td       style="border: 1px solid black; border - collapse: collapse; ">Consumer Offer</td>' +
+        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;" width="25%"> ' + selector.consumer_offer.toString() + ' </td>' +
+        '</tr>' +
+        '<tr >' +
+        '<td      style="border: 1px solid black; border - collapse: collapse; ">Life Tax</td>' +
+        '<td      class="talign" width="25%" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + lifeTaxAmount.toString() + ' </td>' +
+        '<td      style="border: 1px solid black; border - collapse: collapse; ">Exchange Offer</td>' +
+        '<td      class="talign" width="25%" style="text-align: right; border: 1px solid black; border - collapse: collapse;" > ' + selector.exchange_offer.toString() + ' </td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td   style="border: 1px solid black; border - collapse: collapse; "  >Registration Charges</td>' +
+        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + `${selectedRegistrationCharges?.cost ? selectedRegistrationCharges?.cost : "0.00"}`
+        + ' </td>' +
+        '<td     style="border: 1px solid black; border - collapse: collapse; ">Corporate Offer</td>' +
+        '<td      class="talign" width="25%" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + selector.corporate_offer.toString() + ' </td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td   style="border: 1px solid black; border - collapse: collapse; "  >Insurance ()</td>' +
+        '<td      class="talign"style="text-align: right; border: 1px solid black; border - collapse: collapse;">' + selectedInsurencePrice.toString() + '</td>' +
+        '<td   style="border: 1px solid black; border - collapse: collapse; "  >Promotional Offers</td>' +
+        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + selector.promotional_offer.toString() + ' </td>' +
+        '</tr>' +
+        '<tr >' +
+        '<td   style="border: 1px solid black; border - collapse: collapse; "  >Add-on Insurance</td>' +
+        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;">' + selectedAddOnsPrice.toString() + '</td>' +
+        '<td   style="border: 1px solid black; border - collapse: collapse; "  >Cash Discount</td>' +
+        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + selector.cash_discount.toString() + ' </td>' +
+        '</tr>' +
+        '<tr     >' +
+        '<td  style="border: 1px solid black; border - collapse: collapse; "   >Warranty ()</td>' +
+        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + selectedWarrentyPrice.toString() + ' </td>' +
+        '<td  style="border: 1px solid black; border - collapse: collapse; "   >FOC Accessories</td>' +
+        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + selector.for_accessories.toString() + ' </td>' +
+        '</tr>' +
+        '<tr     >' +
+        '<td  style="border: 1px solid black; border - collapse: collapse; "   >Handling Charges:</td>' +
+        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + `${handlingChargSlctd ? priceInfomationData.handling_charges.toFixed(2) : 0}` + ' </td>' +
+        '<td   style="border: 1px solid black; border - collapse: collapse; "  >Insurance Discount</td>' +
+        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;">' + selector.insurance_discount.toString() + ' </td>' +
+        '</tr>' +
+        '<tr     >' +
+        '<td style="border: 1px solid black; border - collapse: collapse; "    >Essential Kit:</td>' +
+        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;">' + `${essentialKitSlctd ? priceInfomationData.essential_kit.toFixed(2) : 0}` + '</td>' +
+        '<td   style="border: 1px solid black; border - collapse: collapse; "  >Accessories Discount</td>' +
+        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + selector.accessories_discount.toString() + ' </td>' +
+        '</tr>' +
+        '<tr >' +
+        '<td   style="border: 1px solid black; border - collapse: collapse; "  >TCS(&gt;10Lakhs -&gt; 1%):</td>' +
+        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;">' + tcsAmount.toString() + '</td>' +
+        '<td   style="border: 1px solid black; border - collapse: collapse; "  >Additional Offer 1</td>' +
+        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + selector.additional_offer_1.toString() + ' </td>' +
+        '</tr>' +
+        '<tr     >' +
+        '<td  style="border: 1px solid black; border - collapse: collapse; "   >Paid Accessories:</td>' +
+        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + selectedPaidAccessoriesPrice.toString() + ' </td>' +
+        '<td  style="border: 1px solid black; border - collapse: collapse; "   >Additional Offer 2</td>' +
+        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;">' + selector.additional_offer_2.toString() + '</td>' +
+        '</tr>' +
+        '<tr     >' +
+        '<td   style="border: 1px solid black; border - collapse: collapse; "  >Fast Tag</td>' +
+        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + `${fastTagSlctd ? priceInfomationData?.fast_tag?.toFixed(2) : 0}` + ' </td>' +
+        '<td   style="border: 1px solid black; border - collapse: collapse; "  > </td>' +
+        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"></td>' +
+        '</tr>' +
+
+        addNewInput.map((item) => {
+          return '<tr     >' +
+            '<td    style="border: 1px solid black; border - collapse: collapse; "  >' + item.name + '</td>' +
+            '<td      class="taligns" style="text-align: right; border: 1px solid black; border - collapse: collapse;">' + item.amount + '</td>' +
+            '<td  style="border: 1px solid black; border - collapse: collapse; "    ></td>' +
+            '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"></td>' +
+            '</tr > '
+        }).join(' ') +
+
+        '<tr     >' +
+        '<td    style="border: 1px solid black; border - collapse: collapse; "  ></td>' +
+        '<td      class="taligns" style="text-align: right; border: 1px solid black; border - collapse: collapse;"></td>' +
+        '<td  style="border: 1px solid black; border - collapse: collapse; "    ></td>' +
+        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"></td>' +
+        '</tr > ' +
+
+
+
+        '<tr      >' +
+        '<td       class="tCenter" style="background-color: rgb(228, 212, 190); text-align: center; border: 1px solid black; border - collapse: collapse;"><strong      >NET ON ROAD PRICE</strong></td>' +
+        '<td       class="talign" style="background-color: rgb(228, 212, 190); text-align: right; border: 1px solid black; border - collapse: collapse;"><strong      >' + totalOnRoadPrice.toString() + '</strong></td>' +
+        '<td       class="tCenter" style="background-color: rgb(228, 212, 190); text-align: center; border: 1px solid black; border - collapse: collapse;"><strong      >NET ON ROAD PRICE AFTER DISCOUNT</strong></td>' +
+        '<td       class="talign" style="background-color: rgb(228, 212, 190); text-align: right; border: 1px solid black; border - collapse: collapse;"><strong      >' + totalOnRoadPriceAfterDiscount.toString() + '</strong></td>' +
+        '</tr>' +
+
+
+        '<tr      >' +
+        '<td       colspan="4">' +
+        '<p       style="text-decoration: underline">TERMS AND CONDITIONS</p>' +
+
+        '<div       class="ng-star-inserted">' + termNconditionData.map((item, index) => {
+
+          return '<div style="padding:4px">' + `${index + 1}` + " ) " + `${item}` + '</div>'
+
+        }).join(' ') + '</div>' +
+
+        '</td>' +
+        '</tr>' +
+
+        '<tr      >' +
+        '<td    style="border: 1px solid black; border - collapse: collapse;"   colspan="4">' +
+        '<div       class="row">' +
+        '<div       class="col-md-12"><span       class="pull-right" style="float: right;"><b      >For,' + selector.proforma_orgName + '</b></span></div>' +
+        '</div>' +
+        '<div       class="row" style="margin-top: 20px">' +
+        '<div       class="col-md-12"><span       class="pull-right" style="float: right;"><b      >Authorised Signatory</b></span></div>' +
+        '</div>' +
+        '</td>' +
+        '</tr>' +
+
+
+
+        "</table>" +
+        '</div >' +
+        '</div >' +
+        '</div >';
+
+
+      let bottomPitch =
+        (await '<div style="padding-top:10px;" >') +
+        "<p>" +
+        "Thank you for using our LED Savings Calculator. Energy Lighting Services is based in Nashville, Tennessee, and has been retrofitting commercial buildings all over North America with LED lighting systems since 2010. We would be honored to help you with your project needs.Please reach out to us if you have any questions.www.energylightingservices.com  855.270.3300  info@elsco.org" +
+        "<p>" +
+        "</div>";
+      let finalHtmlText = await siteTypeName;
+      let directoryPath = "";
+      if (Platform.OS === "android") {
+        directoryPath = "Download";
+      }
+      else {
+        directoryPath = "Documents";
+      }
+      let options = {
+        html: finalHtmlText,
+        fileName: 'ProformaInvoice' + `${selectedProformaID}`,
+        directory: directoryPath,
+      };
+      let file = await RNHTMLtoPDF.convert(options);
+      var PdfData = await RNFS.readFile(file.filePath, "base64").then();
+
+      // RNFS.copyFile(file.filePath + "/ProformaInvoice.pdf", RNFS.DocumentDirectoryPath + "/ProformaInvoice2.pdf")
+
+
+      // downloadInLocal(file.filePath);
+      if (from === "email") {
+        await Mailer.mail(
+          {
+            subject: "Invoice",
+            //  recipients: ['radhadevi8958@gmail.com'],
+            body: "",
+            attachments: [
+              {
+                path: file.filePath, // The absolute path of the file from which to read data.
+                type: "pdf", // Mime Type: jpg, png, doc, ppt, html, pdf
+                name: "ProformaInvoice.pdf", // Optional: Custom filename for attachment
+              },
+            ],
+          },
+          (error, event) => {
+            if (error) {
+              AlertIOS.alert(
+                "Error",
+                "Could not send mail. Please send a mail to support@example.com"
+              );
+            }
+          }
+        );
+      }
+
+      // alert(file.filePath);
+      Alert.alert(
+        'File Downloaded to following location',
+        `${file.filePath}`, // <- this part is optional, you can pass an empty string
+        [
+          { text: 'OK', onPress: () => console.log('OK Pressed') },
+        ],
+        { cancelable: false },
+      );
+    } catch (error) {
+
       alert(error);
     }
   };
@@ -1230,7 +1476,7 @@ export const ProformaComp = ({
 
   //     // RNFS.copyFile(file.filePath + "/ProformaInvoice.pdf", RNFS.DocumentDirectoryPath + "/ProformaInvoice2.pdf")
 
-  
+
   //     // downloadInLocal(file.filePath);
   //     if (from === "email") {
   //       await Mailer.mail(
@@ -1272,17 +1518,17 @@ export const ProformaComp = ({
   // };
   const saveProformaDetails = async (from) => {
     var proformaStatus = "";
-    
+    console.log("manthan---fff ",from)
     if (from === "save") {
       proformaStatus = "ENQUIRYCOMPLETED";
       const data1 = {
         vehicleId: selectedVehicleID,
         varientId: selectedVarientId,
         vehicleImageId: selectedvehicleImageId,
-        performaUUID: proformaNo ? proformaNo: "",
+        performaUUID: proformaNo ? proformaNo : "",
 
         crmUniversalId: universalId,
-        id: selectedProformaID ? selectedProformaID :"",
+        id: selectedProformaID ? selectedProformaID : "",
         performa_status: proformaStatus,
         performa_comments: "xyz",
         oth_performa_column: {
@@ -1302,7 +1548,7 @@ export const ProformaComp = ({
           paid_access: selectedPaidAccessoriesPrice,
           fast_tag: `${fastTagSlctd ? priceInfomationData?.fast_tag?.toFixed(2) : 0}`,
           on_road_price: totalOnRoadPrice,
-          otherPricesData : addNewInput,
+          otherPricesData: addNewInput,
 
           cgstsgstTaxPercentage: "",
           cessTaxPercentage: "",
@@ -1326,7 +1572,7 @@ export const ProformaComp = ({
       }
       dispatch(postProformaInvoiceDetails(data1));
     }
-    else if (from ==="APPROVED"){
+    else if (from === "APPROVED") {
       proformaStatus = "APPROVED";
       const data1 = {
         vehicleId: selectedVehicleID,
@@ -1381,8 +1627,7 @@ export const ProformaComp = ({
       dispatch(postProformaInvoiceDetails(data1));
     }
 
-    else if (from === "REJECTED")
-    {
+    else if (from === "REJECTED") {
       proformaStatus = "REJECTED";
       const data1 = {
         vehicleId: selectedVehicleID,
@@ -1404,7 +1649,7 @@ export const ProformaComp = ({
           add_on_covers: selectedAddOnsPrice,
           waranty_name: selector.waranty_name,
           waranty_value: selectedWarrentyPrice,
-          handling_charges: `${handlingChargSlctd ? priceInfomationData.handling_charges.toFixed(2): 0}`,
+          handling_charges: `${handlingChargSlctd ? priceInfomationData.handling_charges.toFixed(2) : 0}`,
           essential_kit: `${essentialKitSlctd ? priceInfomationData.essential_kit.toFixed(2) : 0}`,
           tcs_amount: tcsAmount,
           paid_access: selectedPaidAccessoriesPrice,
@@ -1437,9 +1682,9 @@ export const ProformaComp = ({
     else {
       proformaStatus = "SENTFORAPPROVAL";
       // todo
-     
+
       const data = {
-        vehicleId:selectedVehicleID,
+        vehicleId: selectedVehicleID,
         varientId: selectedVarientId,
         vehicleImageId: selectedvehicleImageId,
         performaUUID: proformaNo ? proformaNo : "",
@@ -1449,7 +1694,7 @@ export const ProformaComp = ({
         performa_status: proformaStatus,
         performa_comments: "xyz",
         oth_performa_column: {
-         
+
           ex_showroom_price: priceInfomationData.ex_showroom_price,
           lifeTaxPercentage: taxPercent,
           life_tax: lifeTaxAmount,
@@ -1468,23 +1713,23 @@ export const ProformaComp = ({
           on_road_price: totalOnRoadPrice,
           otherPricesData: addNewInput,
 
-          cgstsgstTaxPercentage : "",
-          cessTaxPercentage : "",
-          cgstsgst_tax : 0,
-          cess_tax : 0,
-      
-          insurance_addon_data:"",
+          cgstsgstTaxPercentage: "",
+          cessTaxPercentage: "",
+          cgstsgst_tax: 0,
+          cess_tax: 0,
+
+          insurance_addon_data: "",
           accessory_items: [...selectedPaidAccessoriesList],
-          promotional_offers : selector.promotional_offer,
-          special_scheme : selector.consumer_offer,
-          exchange_offers : selector.exchange_offer,
-          corporate_offer : selector.corporate_offer,
-          cash_discount : selector.cash_discount,
-          insurance_discount : selector.insurance_discount,
-          accessories_discount : selector.accessories_discount,
-          foc_accessories : selector.for_accessories,
-          additional_offer1 : selector.additional_offer_1,
-          additional_offer2 : selector.additional_offer_2
+          promotional_offers: selector.promotional_offer,
+          special_scheme: selector.consumer_offer,
+          exchange_offers: selector.exchange_offer,
+          corporate_offer: selector.corporate_offer,
+          cash_discount: selector.cash_discount,
+          insurance_discount: selector.insurance_discount,
+          accessories_discount: selector.accessories_discount,
+          foc_accessories: selector.for_accessories,
+          additional_offer1: selector.additional_offer_1,
+          additional_offer2: selector.additional_offer_2
 
         },
       };
@@ -1580,7 +1825,7 @@ export const ProformaComp = ({
       .finally(() => { });
   };
   const updateVariantModelsData = (selectedModelName, orgId, modalList) => {
-   
+
     if (!selectedModelName || selectedModelName.length === 0) {
       return;
     }
@@ -1635,7 +1880,7 @@ export const ProformaComp = ({
       let mArray = carModelObj.vehicleImages;
       const varientId = carModelObj.id;
       setSelectedVarientId(varientId);
-      if(mArray.length >0){
+      if (mArray.length > 0) {
         mArray.map((item) => {
           newArray.push({
             id: item.id,
@@ -1645,12 +1890,12 @@ export const ProformaComp = ({
 
         setCarColorsData([...newArray]);
       }
-      
+
       // alert("variant id")
 
       // alert("success" + orgId + " varientId" + varientId)
       dispatch(
-        getOnRoadPriceAndInsurenceDetailsApi({ 
+        getOnRoadPriceAndInsurenceDetailsApi({
           varientId: varientId,
           orgId: orgId
         })
@@ -1765,33 +2010,34 @@ export const ProformaComp = ({
     let arrTemp = proformaData.filter(function (obj) {
       return obj.id === id;
     });
-   
+
     let tempArrr = arrTemp.length > 0 ? arrTemp[0] : undefined;
     if (tempArrr !== undefined) {
       let newSelectedProforma = [];
       let mArray = selector.proforma_listingdata;
-   
-        
+
+
       if (mArray.length > 0) {
-         newSelectedProforma = mArray.filter((item) => item.id === id);
-         // todo
-          
+        newSelectedProforma = mArray.filter((item) => item.id === id);
+        // todo
+        console.log("manthan---> ", newSelectedProforma[0])
         if (newSelectedProforma[0].performa_status === "PENDING_APPROVAL" ||
           newSelectedProforma[0].performa_status === "SENTFORAPPROVAL") {
+          console.log("manthn---dd ", newSelectedProforma[0].performa_status)
           setShowApproveRejectBtn(true);
           setshowSendForApprovBtn(false);
           setshowSaveBtn(false);
         }
-        if (newSelectedProforma[0].performa_status === "APPROVED" || newSelectedProforma[0].performa_status === "APPROVE"){
+        if (newSelectedProforma[0].performa_status === "APPROVED" || newSelectedProforma[0].performa_status === "APPROVE") {
           setisDownLoadVisible(true);
-          
-        }else{
+
+        } else {
           // setisDownLoadVisible(false);
         }
         if (newSelectedProforma[0].performa_status === "ENQUIRYCOMPLETED") {
-            setshowSaveBtn(true);
-            setshowSendForApprovBtn(true);
-          }
+          setshowSaveBtn(true);
+          setshowSendForApprovBtn(true);
+        }
 
         if (newSelectedProforma[0].performa_status === "REJECT" || newSelectedProforma[0].performa_status === "REJECTED") {
           setisDownLoadVisible(false);
@@ -1800,7 +2046,7 @@ export const ProformaComp = ({
         } else {
           // setisDownLoadVisible();
         }
-        setSelectedDate(moment(newSelectedProforma[0].created_date).format("DD/MM/YYYY"));
+        setSelectedDate(moment(newSelectedProforma[0].created_date).format("DD-MMM-YYYY"));
         setProformaNo(newSelectedProforma[0].performaUUID);
         setselectedVehicleID(newSelectedProforma[0].vehicleId);
         setSelectedVarientId(newSelectedProforma[0].varientId);
@@ -1808,17 +2054,17 @@ export const ProformaComp = ({
         setselectedProformaID(newSelectedProforma[0].id);
 
         let oth_performa_column = JSON.parse(newSelectedProforma[0].oth_performa_column)
-        
-        
-          dispatch(setOfferPriceDataForSelectedProforma(oth_performa_column))
 
-          setSelectedWarrentyPrice(Number(oth_performa_column.waranty_value));
-          dispatch(
-            setDropDownData({ key: "WARRANTY", value: oth_performa_column.waranty_name, id: "" })
-          );
+
+        dispatch(setOfferPriceDataForSelectedProforma(oth_performa_column))
+
+        setSelectedWarrentyPrice(Number(oth_performa_column.waranty_value));
+        dispatch(
+          setDropDownData({ key: "WARRANTY", value: oth_performa_column.waranty_name, id: "" })
+        );
         setTaxPercent(oth_performa_column.lifeTaxPercentage.toString());
         setLifeTaxAmount(getLifeTaxNew(Number(oth_performa_column.lifeTaxPercentage)));
-       
+
         let tempRegistrationCharge = {
           cost: oth_performa_column.registration_charges,
           name: oth_performa_column.registrationType
@@ -1827,48 +2073,48 @@ export const ProformaComp = ({
         dispatch(
           setDropDownData({ key: "INSURANCE_TYPE", value: oth_performa_column.insurance_type, id: "" })
         );
-        if (Number(oth_performa_column.insurance_value) > 0){
+        if (Number(oth_performa_column.insurance_value) > 0) {
           setSelectedInsurencePrice(Number(oth_performa_column.insurance_value));
-        }else{
+        } else {
           setSelectedInsurencePrice(0);
         }
-        
+
         // let tempAddonData = {
         //   cost: oth_performa_column.add_on_covers,
         //   document_name: "Zero Dip",
         //   name: "Zero Dip",
         //   selected: true
         // }
-        if (Number(oth_performa_column.add_on_covers) > 0 ){
+        if (Number(oth_performa_column.add_on_covers) > 0) {
           setSelectedAddOnsPrice(Number(oth_performa_column.add_on_covers));
-        }else{
+        } else {
           setSelectedAddOnsPrice(0);
         }
-       
-        
-        if (Number(oth_performa_column.handling_charges) > 0 ){
+
+
+        if (Number(oth_performa_column.handling_charges) > 0) {
           setHandlingChargSlctd(true);
-        }else{
+        } else {
           setHandlingChargSlctd(false);
         }
-        if (Number(oth_performa_column.essential_kit) > 0){
+        if (Number(oth_performa_column.essential_kit) > 0) {
           setEssentialKitSlctd(true);
-        }else{
+        } else {
           setEssentialKitSlctd(false);
         }
-     
-        if (Number(oth_performa_column.paid_access) > 0){
+
+        if (Number(oth_performa_column.paid_access) > 0) {
           setSelectedPaidAccessoriesPrice(oth_performa_column.paid_access)
-        }else{
+        } else {
           setSelectedPaidAccessoriesPrice(0)
         }
 
-      
-        if (oth_performa_column.accessory_items.length > 0){
+
+        if (oth_performa_column.accessory_items.length > 0) {
           let tempAccessoryArr = [];
-         
+
           oth_performa_column.accessory_items.forEach((item) => {
-         
+
             tempAccessoryArr.push({
               "id": item.id,
               "vehicleId": "",
@@ -1885,18 +2131,18 @@ export const ProformaComp = ({
               "modifiedDate": null,
               "selected": true
             })
-            
+
           })
 
           updatePaidAccessroies(tempAccessoryArr);
-        }  
-        
-        if (Number(oth_performa_column.fast_tag) > 0){
+        }
+
+        if (Number(oth_performa_column.fast_tag) > 0) {
           setFastTagSlctd(true);
-        }else{
+        } else {
           setFastTagSlctd(false);
         }
-        
+
 
         // other price data 
         if (oth_performa_column.otherPricesData?.length > 0) {
@@ -1916,8 +2162,8 @@ export const ProformaComp = ({
           }
           setAddNewInput(Object.assign([], newArr));
         }
-        
-        
+
+
         // todo need to figurout how to do auto fill for warranty etc 
         // setPriceInformationData({
         //   ex_showroom_price: oth_performa_column.ex_showroom_price,
@@ -1932,30 +2178,30 @@ export const ProformaComp = ({
         // });
       }
       setSelectedProfromaData(newSelectedProforma)
-     
-   
+
+
       let carmodalObj = [...carModelsData];
-      
-     // filter for selected proforma car details 
-     let carModalNameTemp = "";
-     let carModalVarientNameTemp = "";
-     let carModalColorTemp = "";
+
+      // filter for selected proforma car details 
+      let carModalNameTemp = "";
+      let carModalVarientNameTemp = "";
+      let carModalColorTemp = "";
       carmodalObj.filter((item) => {
-        if (item.vehicleId === newSelectedProforma[0].vehicleId){
-          [item].map((carModalName)=>{
-           
+        if (item.vehicleId === newSelectedProforma[0].vehicleId) {
+          [item].map((carModalName) => {
+
             carModalNameTemp = carModalName.model;
-            carModalName.varients.filter((variantItems)=>{
-             
-              if (variantItems.id === newSelectedProforma[0].varientId){
-                
+            carModalName.varients.filter((variantItems) => {
+
+              if (variantItems.id === newSelectedProforma[0].varientId) {
+
                 carModalVarientNameTemp = variantItems.name;
 
-                variantItems.vehicleImages.filter((carColor)=>{
-              
-                  if (carColor.vehicleImageId === newSelectedProforma[0].vehicleImageId){
+                variantItems.vehicleImages.filter((carColor) => {
+
+                  if (carColor.vehicleImageId === newSelectedProforma[0].vehicleImageId) {
                     carModalColorTemp = carColor.color;
-                   
+
                   }
                 })
               }
@@ -1969,12 +2215,12 @@ export const ProformaComp = ({
         orgId,
         userToken
       );
-     
+
       setCarModel(carModalNameTemp);
       setCarVariant(carModalVarientNameTemp);
-   
+
       setCarColor(carModalColorTemp);
-      
+
       dispatch(
         getOnRoadPriceAndInsurenceDetailsApi({
           varientId: newSelectedProforma[0].varientId,
@@ -2052,12 +2298,15 @@ export const ProformaComp = ({
     dispatch(
       setDropDownData({ key: "WARRANTY", value: "", id: "" })
     );
+    dispatch(
+      setDropDownData({ key: "INSURENCE_ADD_ONS", value: "", id: "" })
+    );
 
   };
 
   // Check for lead created by manager
   const isLeadCreatedBySelf = () => {
-   
+
     let isCreatedBy = false;
     if (
       userData &&
@@ -2065,7 +2314,7 @@ export const ProformaComp = ({
       selector.enquiry_details_response &&
       selector.enquiry_details_response.dmsLeadDto
     ) {
-      
+
       if (
         userData.employeeName ==
         selector.enquiry_details_response.dmsLeadDto.createdBy
@@ -2073,7 +2322,7 @@ export const ProformaComp = ({
         isCreatedBy = true;
       }
     }
-    
+
     return isCreatedBy;
   }
 
@@ -2163,8 +2412,11 @@ export const ProformaComp = ({
     return amount;
   };
 
+
+
+
   return (
-    <View>
+    <View style={{}}>
       <DropDownComponant
         visible={showDropDownModel}
         headerTitle={dropDownTitle}
@@ -2179,12 +2431,12 @@ export const ProformaComp = ({
             setCarVariant("")
             setCarColor("")
             setselectedVehicleID(item.id);
-       
+
             updateVariantModelsData(item.name, orgId, carModelsData);
           } else if (dropDownKey === "VARIENT") {
             setCarVariant(item.name)
             setCarColor("")
-            
+
             updateColorsDataForSelectedVarient(
               item.name,
               selectedCarVarientsData.varientList
@@ -2196,12 +2448,12 @@ export const ProformaComp = ({
             // updateColor(item);
           }
           else if (dropDownKey === "SELECTPERFORMA") {
-           
+
             setSelectedProfroma(item.name)
             updateProformaDataforSelectedValue(item.id, item.name, [...proformaDataForDropdown]);
 
           } else if (dropDownKey === "INSURANCE_TYPE") {
-            
+
             setSelectedInsurencePrice(item.cost);
           } else if (dropDownKey === "WARRANTY") {
             setSelectedWarrentyPrice(Number(item.cost));
@@ -2213,7 +2465,7 @@ export const ProformaComp = ({
             };
             dispatch(getDropSubReasonDataApi(payload));
           } else if (dropDownKey === "INSURENCE_ADD_ONS") {
-           
+
             let totalCost = 0;
             let names = "";
             let insurenceAddOns = [];
@@ -2246,10 +2498,10 @@ export const ProformaComp = ({
           );
         }}
       />
-    
-     
 
-      <View style={{ flexDirection: "row", alignSelf: "flex-end", marginTop: '2%' }}>
+
+
+      {/* <View style={{ flexDirection: "row", alignSelf: "flex-end", marginTop: '2%' }}>
         <Button
           mode="contained"
           style={{ flex: 1, marginRight: 10 }}
@@ -2268,10 +2520,69 @@ export const ProformaComp = ({
           onPress={() => newProformaClick()}>
           New Proforma
         </Button>
+      </View> */}
+      <View style={{
+        flexDirection: "column", alignSelf: "flex-end", marginTop: '2%',
+        width: '100%',
+      }}>
+
+        <View style={{}}>
+          {selectedProfroma == "" && !isnewProformaClicked ?
+            <>
+              {proformaDataForDropdown.length > 0 ? <Text style={{
+                color: Colors.BLACK,
+                fontSize: 16,
+                fontWeight: "700"
+
+              }}>Select Invoice</Text>: <></> }
+              <FlatList
+                key={"PROFORMA_LIST"}
+                data={proformaDataForDropdown}
+                ListEmptyComponent={() => {
+                  return (<View style={{ alignItems: 'center',marginVertical:20 }}><Text>{"Data Not Available"}</Text></View>)
+                }}
+                keyExtractor={(item, index) => index.toString()}
+                style={{
+                  // height:'70%'
+                }}
+                showsVerticalScrollIndicator
+                renderItem={({ item, index }) => {
+
+                  return (
+                    <TouchableOpacity
+                      onPress={() => {
+                        setSelectedProfroma(item.name)
+                        updateProformaDataforSelectedValue(item.id, item.name, [...proformaDataForDropdown]);
+                      }}
+                      style={styles.proforMlistTochable}
+                    >
+                      <Text style={styles.proformList}>{item.name}</Text>
+                      <MaterialIcons name="chevron-right" size={30} color={Colors.BLACK} />
+                    </TouchableOpacity>
+                  );
+
+                }}
+              />
+            </>
+            : <></>}
+
+
+
+        </View>
+
+        <Button
+          mode="contained"
+          style={{ width: '80%', borderRadius: 5, alignSelf: "center", marginTop: '2%' }}
+          color={Colors.PINK}
+          labelStyle={{ textTransform: "none", fontSize: 16 }}
+          onPress={() => newProformaClick()}>
+          New Proforma
+        </Button>
       </View>
 
       <View>
-        {isnewProformaClicked ? <List.AccordionGroup
+        {/* {isnewProformaClicked ? 
+        <List.AccordionGroup
           expandedId={openAccordian}
           onAccordionPress={(expandedId) => updateAccordian(expandedId)}
         >
@@ -2305,67 +2616,122 @@ export const ProformaComp = ({
               label={"Variant"}
               value={carVariant}
               onPress={() => {
-                if(carModel != "" ){
+                if (carModel != "") {
                   showDropDownModelMethod("VARIENT", "Select Variant")
-                }else{
+                } else {
                   showToast("Please Select Vehicle")
                 }
-                
+
               }
-              
+
               }
             />
 
             <DropDownSelectionItem
               label={"Color"}
               value={carColor}
-              onPress={() =>{
+              onPress={() => {
                 if (carModel != "" && carVariant != "") {
                   showDropDownModelMethod("COLOR", "Select Color")
                 } else {
                   showToast("Please Select Variant")
                 }
-                
+
               }
-               
+
               }
             />
-          
-          </List.Accordion>
-        </List.AccordionGroup> : null}
 
+          </List.Accordion>
+        </List.AccordionGroup> : null} */}
+
+
+        {isnewProformaClicked ?
+          <>
+            <Text style={{
+              color: Colors.BLACK,
+              fontSize: 16,
+              fontWeight: "700",
+              marginVertical: 10
+
+            }}>New Proforma Invoice</Text>
+            <DropDownSelectionItem
+              label={"Vehicle"}
+              value={carModel}
+              onPress={() =>
+                showDropDownModelMethod("MODEL", "Select Vehicle")
+              }
+            />
+
+            <DropDownSelectionItem
+              label={"Variant"}
+              value={carVariant}
+              onPress={() => {
+                if (carModel != "") {
+                  showDropDownModelMethod("VARIENT", "Select Variant")
+                } else {
+                  showToast("Please Select Vehicle")
+                }
+
+              }
+
+              }
+            />
+
+            <DropDownSelectionItem
+              label={"Color"}
+              value={carColor}
+              onPress={() => {
+                if (carModel != "" && carVariant != "") {
+                  showDropDownModelMethod("COLOR", "Select Color")
+                } else {
+                  showToast("Please Select Variant")
+                }
+
+              }
+
+              }
+            />
+          </>
+          : null}
       </View>
 
       {/* main view to manage visibility  */}
       <View>
         {selectedProfroma != "" || carModel != "" ?
           <>
-            
+
 
             {/* Proforma Invoice section */}
             <View
               style={{
-                margin: 10,
-                borderRadius: 5,
-                borderWidth: 1,
-                borderColor: Colors.BLACK,
-                paddingBottom: 10,
+                backgroundColor: Colors.WHITE,
+                marginVertical: 10,
               }}>
-              <Text
-                style={{
-                  fontSize: 18,
-                  color: Colors.PINK,
-                  textAlign: "center",
-                  margin: 10,
-                }}>
-                Proforma Invoice
-              </Text>
+              <View style={{
+
+                backgroundColor: Colors.PINK, padding: 5
+              }}>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    color: Colors.WHITE,
+                    textAlign: "center",
+                    fontWeight: '700'
+                  }}>
+                  PROFORMA INVOICE
+                </Text>
+
+              </View>
+
               <View
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
                   justifyContent: "center",
-                  // padding: 5,
+                  backgroundColor: Colors.LIGHT_GRAY,
+                  margin: 10,
+                  padding: 5,
                 }}>
                 <Image
                   style={styles.ImageStyleS}
@@ -2382,34 +2748,49 @@ export const ProformaComp = ({
                   {selector.proforma_orgName}
                 </Text> */}
               </View>
-              <Text
+              <TextAndAmountComp title={"Bldg no. :"} text={
+
+                selector.proforma_houseNo
+              } />
+              {/* <Text
                 style={{
                   fontSize: 14,
                   color: Colors.BLACK,
                   textAlign: "center",
                   marginLeft: 10,
                   marginBottom: 10,
-                  marginTop:10
+                  marginTop: 10
                 }}>
-                {/* {selector.proforma_address} */}
-                {selector.proforma_houseNo + ", " +selector.proforma_branch +
+               
+                {selector.proforma_houseNo + ", " + selector.proforma_branch +
                   ", " +
                   selector.proforma_city +
                   ", " +
                   selector.proforma_state + ", " + selector.proforma_pincode}
-              </Text>
-              
-              <TextAndAmountComp title={"LESSEE"} text={
-                 
+              </Text> */}
+              <TextAndAmountComp title={"Location :"} text={
+
+                selector.profprma_street +
+                ", " +
+                selector.proforma_branch +
+                ", " +
+                selector.proforma_state + ", " + selector.proforma_pincode
+              }
+                titleStyle={{
+                  alignSelf: 'flex-start'
+                }}
+              />
+              <TextAndAmountComp title={"Lessee :"} text={
+
                 formateLesseName()
-                } />
-              <TextAndAmountComp title={"LESSOR"} text={
-              selector.proforma_orgName
               } />
-              {selector.proforma_gstnNumber && <TextAndAmountComp title={"GSTN"} text={
+              <TextAndAmountComp title={"Lessor :"} text={
+                selector.proforma_orgName
+              } />
+              {selector.proforma_gstnNumber && <TextAndAmountComp title={"GSTN :"} text={
                 selector.proforma_gstnNumber
               } />}
-            
+
               {/* <TextAndAmountComp title={"Name"} text={modelDetails?.model} /> */}
               <TextAndAmountComp
                 title={"Date"}
@@ -2418,19 +2799,19 @@ export const ProformaComp = ({
               {/* <TextAndAmountComp title={"Name"} text={modelDetails?.model} />
               <TextAndAmountComp title={"Model"} text={modelDetails?.variant} />
               <TextAndAmountComp title={"Color"} text={modelDetails?.color} /> */}
-              {carModel != "" && <TextAndAmountComp title={"Name"} text={carModel} /> } 
-              {carVariant != "" && <TextAndAmountComp title={"Model"} text={carVariant} />}  
-              {carColor != "" && <TextAndAmountComp title={"Color"} text={carColor} />} 
+              {carModel != "" && <TextAndAmountComp title={"Name :"} text={carModel} />}
+              {carVariant != "" && <TextAndAmountComp title={"Model :"} text={carVariant} />}
+              {carColor != "" && <TextAndAmountComp title={"Color:"} text={carColor} />}
               {proformaNo != "" && <TextAndAmountComp
-                title={"PROFORMA NO:"}
+                title={"Proforma no:"}
                 text={proformaNo}
-              /> }
+              />}
               {selector.pan_number != "" &&
-               <TextAndAmountComp
-                title={"PAN NO :"}
-                text={selector.pan_number}
-              /> }
-              
+                <TextAndAmountComp
+                  title={"PAN NO :"}
+                  text={selector.pan_number}
+                />}
+
               {/* <TextAndAmountComp
                 title={"Amount"}
                 text={totalOnRoadPrice.toFixed(2)}
@@ -2439,21 +2820,28 @@ export const ProformaComp = ({
 
             <View
               style={{
-                margin: 10,
-                borderRadius: 5,
-                borderWidth: 1,
-                borderColor: Colors.BLACK,
+
+                borderColor: Colors.PINK,
                 paddingBottom: 10,
+                backgroundColor: Colors.LIGHT_GRAY
               }}>
-              <Text
-                style={{
-                  fontSize: 18,
-                  color: Colors.PINK,
-                  textAlign: "center",
-                  margin: 10,
-                }}>
-                Description
-              </Text>
+              <View style={{
+
+                backgroundColor: Colors.DARK_GRAY, padding: 5
+              }}>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    color: Colors.WHITE,
+                    textAlign: "center",
+                    fontWeight:'700'
+
+                  }}>
+                  PRICE CONFIRMATION
+                </Text>
+
+              </View>
+
 
               <TextAndAmountComp
                 title={"Ex-Showroom Price:"}
@@ -2492,25 +2880,39 @@ export const ProformaComp = ({
                                     title={"Life Tax:"}
                                     amount={lifeTaxAmount.toFixed(2)}
                                 /> */}
-              <View style={styles.textAndAmountView}>
-                {/* <View style={{width: '60%', flexDirection: 'row'}}> */}
-                <Text style={[styles.leftLabel]}>{"Life Tax:"}</Text>
-                {/* </View> */}
+              <View style={[{
+                flexDirection: "column",
+                justifyContent: "space-between",
+                paddingHorizontal: 12,
+                minHeight: 40,
+                paddingVertical: 0,
+                alignItems: "flex-start",
+                backgroundColor: Colors.WHITE,
+              }]}>
+
+                <Text style={[styles.leftLabel, { textAlign: "left" }]}>{"Life Tax:"}</Text>
+
                 <View
                   style={{
-                    width: 100,
-                    // height: 30,
-                    // justifyContent: 'center',
-                    paddingHorizontal: 10,
-                    borderBottomWidth: 1,
-                    borderBottomColor: "#d1d1d1",
+                    width: '100%',
+                    justifyContent: 'space-between',
+                    flexDirection: "row",
+                    alignItems: "center"
                   }}>
                   <TextInput
                     value={taxPercent}
-                    style={[{ fontSize: 14, fontWeight: "400",color:Colors.BLACK }]}
+                    style={[{
+                      fontSize: 14,
+                      fontWeight: "400",
+                      borderBottomWidth: 1,
+                      borderBottomColor: "#d1d1d1",
+                      width: '50%',
+                      backgroundColor: Colors.WHITE,
+                      paddingHorizontal: 0,paddingVertical:0
+                    }]}
                     keyboardType={"number-pad"}
                     onChangeText={(text) => {
-                    
+
                       setTaxPercent(text);
                       if (text !== "") {
                         setLifeTaxAmount(getLifeTaxNew(Number(text)));
@@ -2518,18 +2920,27 @@ export const ProformaComp = ({
                         setLifeTaxAmount(0);
                       }
                     }}
+                    label={"Enter"}
+                    selectionColor={Colors.BLACK}
+                    underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
+                    underlineColor={Colors.LIGHT_GRAY}
+                    outlineColor={Colors.BLACK}
+                    theme={{ colors: { primary: Colors.BLACK, underlineColor: 'transparent' } }}
                   />
+
+
+                  <Text style={{ fontSize: 14, fontWeight: "400" }}>
+                    {rupeeSymbol + " " + lifeTaxAmount.toFixed(2)}
+                  </Text>
                 </View>
-                <Text style={{ fontSize: 14, fontWeight: "400" }}>
-                  {rupeeSymbol + " " + lifeTaxAmount.toFixed(2)}
-                </Text>
+
               </View>
 
-              <Text style={GlobalStyle.underline}></Text>
+              {/* <Text style={GlobalStyle.underline}></Text> */}
 
               <View style={styles.symbolview}>
-                <View style={{ width: "70%" }}>
-                  <DropDownSelectionItem
+                <View style={{ width: "70%",paddingVertical:0 }}>
+                  <DropDownSelectionItemV2
                     disabled={!isInputsEditable()}
                     label={"Registration Charges:"}
                     value={selectedRegistrationCharges?.name}
@@ -2555,12 +2966,12 @@ export const ProformaComp = ({
                 title={"Registration Charges:"}
                 amount={priceInfomationData.registration_charges.toFixed(2)}
               /> */}
-              <Text style={GlobalStyle.underline}></Text>
+              {/* <Text style={GlobalStyle.underline}></Text> */}
 
               <View style={styles.symbolview}>
                 <View style={{ width: "70%" }}>
-                  <DropDownSelectionItem
-                    label={"Insurance Type"}
+                  <DropDownSelectionItemV2
+                    label={"Insurance Type:"}
                     value={selector.insurance_type}
                     onPress={() =>
                       showDropDownModelMethod("INSURANCE_TYPE", "Insurance Type")
@@ -2573,8 +2984,8 @@ export const ProformaComp = ({
               </View>
               <View style={styles.symbolview}>
                 <View style={{ width: "70%" }}>
-                  <DropDownSelectionItem
-                    label={"Add-on Insurance"}
+                  <DropDownSelectionItemV2
+                    label={"Add-on Insurance:"}
                     value={
                       selector.insurance_type !== "" ? selector.add_on_insurance : ""
                     }
@@ -2594,8 +3005,8 @@ export const ProformaComp = ({
               </View>
               <View style={styles.symbolview}>
                 <View style={{ width: "70%" }}>
-                  <DropDownSelectionItem
-                    label={"Warranty"}
+                  <DropDownSelectionItemV2
+                    label={"Warranty:"}
                     value={selector.warranty}
                     onPress={() => showDropDownModelMethod("WARRANTY", "Warranty")}
                   />
@@ -2711,26 +3122,32 @@ export const ProformaComp = ({
                 <Text style={styles.otherPriceTextStyle}>
                   Add Other Prices
                 </Text>
+              
 
-                <TouchableOpacity 
+                <TouchableOpacity
                   style={[
                     styles.addIcon,
                     {
-                      backgroundColor: isInputsEditable()
-                        ? Colors.RED
-                        : Colors.GRAY,
+                      // backgroundColor: isInputsEditable()
+                      //   ? Colors.RED
+                      //   : Colors.GRAY,
+                      alignItems:"center",
+                      alignSelf:"flex-end"
+
                     },
                   ]}
                   disabled={!isInputsEditable()}
                   onPress={() => addHandler()}
                 >
+                  <AntDesign name="pluscircleo" size={12} color={Colors.RED} />
                   <Text
                     style={{
-                      color: Colors.WHITE,
-                      fontSize: 13,
+                      color: Colors.RED,
+                      fontSize: 14,
+                      marginStart:4
                     }}
                   >
-                    +
+                    Add
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -2758,9 +3175,43 @@ export const ProformaComp = ({
                           justifyContent: "space-between",
                           alignItems: "center",
                           paddingHorizontal: 10,
+                          backgroundColor:Colors.WHITE,
+                          width:'100%',
+                          marginVertical:4
                         }}
                       >
-                        <TextInput
+                        <View style={{
+                          backgroundColor:Colors.LIGHT_GRAY,width:'90%',
+                          flexDirection:'row',
+                          justifyContent:"space-between",
+                          padding:10
+                          }}>
+                          <TextInput
+                            style={[{
+                              fontSize: 14,
+                              fontWeight: "400",
+                              borderBottomWidth: 1,
+                              borderBottomColor: "#d1d1d1",
+                              width: '44%',
+                              backgroundColor: Colors.LIGHT_GRAY,
+                              paddingHorizontal: 0,
+                              height: 40,
+                              paddingVertical: 0
+                            }]}
+                            keyboardType={"default"}
+
+                            placeholder={"Name"}
+                            onChangeText={(name) =>
+                              inputHandlerName(name, index)
+                            }
+                            value={item.name}
+                            selectionColor={Colors.BLACK}
+                            underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
+                            underlineColor={Colors.LIGHT_GRAY}
+                            outlineColor={Colors.BLACK}
+                            theme={{ colors: { primary: Colors.BLACK, underlineColor: 'transparent' } }}
+                          />
+                          {/* <TextInput
                           editable={isInputsEditable()}
                           style={[
                             styles.otherPriceInput,
@@ -2768,6 +3219,8 @@ export const ProformaComp = ({
                               borderColor: checkIsError("name", index)
                                 ? Colors.RED
                                 : null,
+                              borderBottomWidth: 1,
+                              borderBottomColor: "#d1d1d1",
                             },
                           ]}
                           placeholder={"Name"}
@@ -2775,34 +3228,67 @@ export const ProformaComp = ({
                             inputHandlerName(name, index)
                           }
                           value={item.name}
-                        />
-                        <TextInput
-                          editable={isInputsEditable()}
-                          style={[
-                            styles.otherPriceInput,
-                            {
-                              marginLeft: 20,
-                              borderColor: checkIsError("amount", index)
-                                ? Colors.RED
-                                : null,
-                            },
-                          ]}
-                          placeholder={"Amount"}
-                          keyboardType={"decimal-pad"}
-                          onChangeText={(value) =>
-                            inputHandlerPrice(value, index)
-                          }
-                          value={`${item.amount}`}
-                        />
+                          selectionColor={Colors.BLACK}
+                          underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
+                          underlineColor={Colors.LIGHT_GRAY}
+                          outlineColor={Colors.BLACK}
+                        /> */}
+
+
+                          {/* <TextInput
+                            editable={isInputsEditable()}
+                            style={[
+                              styles.otherPriceInput,
+                              {
+                                marginLeft: 20,
+                                borderColor: checkIsError("amount", index)
+                                  ? Colors.RED
+                                  : null,
+                              },
+                            ]}
+                            placeholder={"Amount"}
+                            keyboardType={"decimal-pad"}
+                            onChangeText={(value) =>
+                              inputHandlerPrice(value, index)
+                            }
+                            value={`${item.amount}`}
+                          /> */}
+
+                          <TextInput
+                            style={[{
+                              fontSize: 14,
+                              fontWeight: "400",
+                              borderBottomWidth: 1,
+                              borderBottomColor: "#d1d1d1",
+                              width: '44%',
+                              backgroundColor: Colors.LIGHT_GRAY,
+                              paddingHorizontal: 0,
+                              height: 40,
+                              paddingVertical: 0
+                            }]}
+                            placeholder={"Amount"}
+                            keyboardType={"decimal-pad"}
+                            onChangeText={(value) =>
+                              inputHandlerPrice(value, index)
+                            }
+                            value={`${item.amount}`}
+                            selectionColor={Colors.BLACK}
+                            underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
+                            underlineColor={Colors.LIGHT_GRAY}
+                            outlineColor={Colors.BLACK}
+                            theme={{ colors: { primary: Colors.BLACK, underlineColor: 'transparent' } }}
+                          />
+                        </View>
+                        
                         <TouchableOpacity
                           disabled={!isInputsEditable()}
                           onPress={() => deleteHandler(index)}
-                          style={{ marginLeft: 10 }}
+                          style={{ width:'10%' }}
                         >
                           <IconButton
                             icon="trash-can-outline"
                             color={Colors.PINK}
-                            size={25}
+                            size={20}
                             disabled={!isInputsEditable()}
                           />
                         </TouchableOpacity>
@@ -2812,13 +3298,7 @@ export const ProformaComp = ({
                 />
               </View>
 
-              <TextAndAmountComp
-                title={"On Road Price:"}
-                // amount={totalOnRoadPrice.toFixed(2)}
-                amount={getActualPrice().toFixed(2)}
-                titleStyle={{ fontSize: 18, fontWeight: "800" }}
-                amoutStyle={{ fontSize: 18, fontWeight: "800" }}
-              />
+              
               {/* <Text style={GlobalStyle.underline}></Text> */}
 
 
@@ -2848,152 +3328,410 @@ export const ProformaComp = ({
                   styles.accordianBorder,
                 ]}
               > */}
-                <TextinputComp
-                  disabled={!isInputsEditable()}
-                  style={styles.offerPriceTextInput}
-                  label={"Consumer Offer:"}
-                  value={selector.consumer_offer}
-                  showLeftAffixText={true}
-                  leftAffixText={rupeeSymbol}
-                  keyboardType="number-pad"
-                  onChangeText={(text) =>
-                    dispatch(
-                      setOfferPriceDetails({
-                        key: "CONSUMER_OFFER",
-                        text: text,
-                      })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  disabled={!isInputsEditable()}
-                  style={styles.offerPriceTextInput}
-                  label={"Exchange Offer:"}
-                  value={selector.exchange_offer}
-                  showLeftAffixText={true}
-                  keyboardType="number-pad"
-                  leftAffixText={rupeeSymbol}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setOfferPriceDetails({
-                        key: "EXCHANGE_OFFER",
-                        text: text,
-                      })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  disabled={!isInputsEditable()}
-                  style={styles.offerPriceTextInput}
-                  label={"Corporate Offer:"}
-                  value={selector.corporate_offer}
-                  showLeftAffixText={true}
-                  leftAffixText={rupeeSymbol}
-                  keyboardType="number-pad"
-                  onChangeText={(text) =>
-                    dispatch(
-                      setOfferPriceDetails({
-                        key: "CORPORATE_OFFER",
-                        text: text,
-                      })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  disabled={!isInputsEditable()}
-                  style={styles.offerPriceTextInput}
-                  label={"Promotional Offer:"}
-                  value={selector.promotional_offer}
-                  showLeftAffixText={true}
-                  keyboardType="number-pad"
-                  leftAffixText={rupeeSymbol}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setOfferPriceDetails({
-                        key: "PROMOTIONAL_OFFER",
-                        text: text,
-                      })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  disabled={!isInputsEditable()}
-                  style={styles.offerPriceTextInput}
-                  label={"Cash Discount:"}
-                  value={selector.cash_discount}
-                  showLeftAffixText={true}
-                  keyboardType="number-pad"
-                  leftAffixText={rupeeSymbol}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setOfferPriceDetails({
-                        key: "CASH_DISCOUNT",
-                        text: text,
-                      })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  disabled={!isInputsEditable()}
-                  style={styles.offerPriceTextInput}
-                  label={"Foc Accessories:"}
-                  value={selector.for_accessories}
-                  showLeftAffixText={true}
-                  keyboardType="number-pad"
-                  leftAffixText={rupeeSymbol}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setOfferPriceDetails({
-                        key: "FOR_ACCESSORIES",
-                        text: text,
-                      })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  disabled={!isInputsEditable()}
-                  style={styles.offerPriceTextInput}
-                  label={"Insurance Discount:"}
-                  value={selector.insurance_discount}
-                  showLeftAffixText={true}
-                  keyboardType="number-pad"
-                  leftAffixText={rupeeSymbol}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setOfferPriceDetails({
-                        key: "INSURANCE_DISCOUNT",
-                        text: text,
-                      })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  disabled={!isInputsEditable()}
-                  style={styles.offerPriceTextInput}
-                  label={"Accessories Discount:"}
-                  value={selector.accessories_discount}
-                  showLeftAffixText={true}
-                  keyboardType="number-pad"
-                  leftAffixText={rupeeSymbol}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setOfferPriceDetails({
-                        key: "ACCESSORIES_DISCOUNT",
-                        text: text,
-                      })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
 
-                {/* <View style={styles.textAndAmountView}>
+              <ProformaTextinputOffers
+                containerStyle={{
+                  flexDirection:"row",
+                  backgroundColor:Colors.WHITE,
+                  alignItems:"center",
+                  paddingHorizontal: 10,
+                  justifyContent:"space-between",
+                 
+                }}
+                placeholder={"Amount"}
+                underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
+                underlineColor={Colors.LIGHT_GRAY}
+                TitleText={"Consumer Offer:"}
+                disabled={!isInputsEditable()}
+                style={styles.offerPriceTextInput}
+                // label={"Consumer Offer:"}
+                value={selector.consumer_offer}
+                showLeftAffixText={true}
+                leftAffixText={rupeeSymbol}
+                showRightIcon={true}
+                keyboardType="number-pad"
+                onChangeText={(text) =>
+                  dispatch(
+                    setOfferPriceDetails({
+                      key: "CONSUMER_OFFER",
+                      text: text,
+                    })
+                  )
+                }
+              />
+             
+              {/* <TextinputComp
+                disabled={!isInputsEditable()}
+                style={styles.offerPriceTextInput}
+                label={"Consumer Offer:"}
+                value={selector.consumer_offer}
+                showLeftAffixText={true}
+                leftAffixText={rupeeSymbol}
+                keyboardType="number-pad"
+                onChangeText={(text) =>
+                  dispatch(
+                    setOfferPriceDetails({
+                      key: "CONSUMER_OFFER",
+                      text: text,
+                    })
+                  )
+                }
+              /> */}
+              {/* <Text style={GlobalStyle.underline}></Text> */}
+              {/* <TextinputComp
+                disabled={!isInputsEditable()}
+                style={styles.offerPriceTextInput}
+                label={"Exchange Offer:"}
+                value={selector.exchange_offer}
+                showLeftAffixText={true}
+                keyboardType="number-pad"
+                leftAffixText={rupeeSymbol}
+                onChangeText={(text) =>
+                  dispatch(
+                    setOfferPriceDetails({
+                      key: "EXCHANGE_OFFER",
+                      text: text,
+                    })
+                  )
+                }
+              /> */}
+
+              <ProformaTextinputOffers
+                containerStyle={{
+                  flexDirection: "row",
+                  backgroundColor: Colors.WHITE,
+                  alignItems: "center",
+                  paddingHorizontal: 10,
+                  justifyContent: "space-between"
+                }}
+                placeholder={"Amount"}
+                underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
+                underlineColor={Colors.LIGHT_GRAY}
+                
+                disabled={!isInputsEditable()}
+                style={styles.offerPriceTextInput}
+                // label={"Consumer Offer:"}
+             
+                showLeftAffixText={true}
+                leftAffixText={rupeeSymbol}
+                showRightIcon={true}
+                keyboardType="number-pad"
+                value={selector.exchange_offer}
+                TitleText={"Exchange Offer:"}
+                onChangeText={(text) =>
+                  dispatch(
+                    setOfferPriceDetails({
+                      key: "EXCHANGE_OFFER",
+                      text: text,
+                    })
+                  )
+                }
+              />
+              {/* <Text style={GlobalStyle.underline}></Text> */}
+              {/* <TextinputComp
+                disabled={!isInputsEditable()}
+                style={styles.offerPriceTextInput}
+                label={"Corporate Offer:"}
+                value={selector.corporate_offer}
+                showLeftAffixText={true}
+                leftAffixText={rupeeSymbol}
+                keyboardType="number-pad"
+                onChangeText={(text) =>
+                  dispatch(
+                    setOfferPriceDetails({
+                      key: "CORPORATE_OFFER",
+                      text: text,
+                    })
+                  )
+                }
+              /> */}
+
+              <ProformaTextinputOffers
+                containerStyle={{
+                  flexDirection: "row",
+                  backgroundColor: Colors.WHITE,
+                  alignItems: "center",
+                  paddingHorizontal: 10,
+                  justifyContent: "space-between"
+                }}
+                placeholder={"Amount"}
+                underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
+                underlineColor={Colors.LIGHT_GRAY}
+
+                disabled={!isInputsEditable()}
+                style={styles.offerPriceTextInput}
+                // label={"Consumer Offer:"}
+
+                showLeftAffixText={true}
+                leftAffixText={rupeeSymbol}
+                showRightIcon={true}
+                keyboardType="number-pad"
+                value={selector.corporate_offer}
+                TitleText={"Corporate Offer:"}
+                onChangeText={(text) =>
+                  dispatch(
+                    setOfferPriceDetails({
+                      key: "CORPORATE_OFFER",
+                      text: text,
+                    })
+                  )
+                }
+              />
+              {/* <Text style={GlobalStyle.underline}></Text> */}
+              {/* <TextinputComp
+                disabled={!isInputsEditable()}
+                style={styles.offerPriceTextInput}
+                label={"Promotional Offer:"}
+                value={selector.promotional_offer}
+                showLeftAffixText={true}
+                keyboardType="number-pad"
+                leftAffixText={rupeeSymbol}
+                onChangeText={(text) =>
+                  dispatch(
+                    setOfferPriceDetails({
+                      key: "PROMOTIONAL_OFFER",
+                      text: text,
+                    })
+                  )
+                }
+              /> */}
+
+              <ProformaTextinputOffers
+                containerStyle={{
+                  flexDirection: "row",
+                  backgroundColor: Colors.WHITE,
+                  alignItems: "center",
+                  paddingHorizontal: 10,
+                  justifyContent: "space-between"
+                }}
+                placeholder={"Amount"}
+                underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
+                underlineColor={Colors.LIGHT_GRAY}
+
+                disabled={!isInputsEditable()}
+                style={styles.offerPriceTextInput}
+                // label={"Consumer Offer:"}
+
+                showLeftAffixText={true}
+                leftAffixText={rupeeSymbol}
+                showRightIcon={true}
+                keyboardType="number-pad"
+                value={selector.promotional_offer}
+                TitleText={"Promotional Offer:"}
+                onChangeText={(text) =>
+                  dispatch(
+                    setOfferPriceDetails({
+                      key: "PROMOTIONAL_OFFER",
+                      text: text,
+                    })
+                  )
+                }
+              />
+              {/* <Text style={GlobalStyle.underline}></Text> */}
+
+              {/* <TextinputComp
+                disabled={!isInputsEditable()}
+                style={styles.offerPriceTextInput}
+                label={"Cash Discount:"}
+                value={selector.cash_discount}
+                showLeftAffixText={true}
+                keyboardType="number-pad"
+                leftAffixText={rupeeSymbol}
+                onChangeText={(text) =>
+                  dispatch(
+                    setOfferPriceDetails({
+                      key: "CASH_DISCOUNT",
+                      text: text,
+                    })
+                  )
+                }
+              /> */}
+
+              <ProformaTextinputOffers
+                containerStyle={{
+                  flexDirection: "row",
+                  backgroundColor: Colors.WHITE,
+                  alignItems: "center",
+                  paddingHorizontal: 10,
+                  justifyContent: "space-between"
+                }}
+                placeholder={"Amount"}
+                underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
+                underlineColor={Colors.LIGHT_GRAY}
+
+                disabled={!isInputsEditable()}
+                style={styles.offerPriceTextInput}
+                // label={"Consumer Offer:"}
+
+                showLeftAffixText={true}
+                leftAffixText={rupeeSymbol}
+                showRightIcon={true}
+                keyboardType="number-pad"
+                value={selector.cash_discount}
+                TitleText={"Cash Discount:"}
+                onChangeText={(text) =>
+                  dispatch(
+                    setOfferPriceDetails({
+                      key: "CASH_DISCOUNT",
+                      text: text,
+                    })
+                  )
+                }
+              />
+
+              {/* <Text style={GlobalStyle.underline}></Text> */}
+              {/* <TextinputComp
+                disabled={!isInputsEditable()}
+                style={styles.offerPriceTextInput}
+                label={"Foc Accessories:"}
+                value={selector.for_accessories}
+                showLeftAffixText={true}
+                keyboardType="number-pad"
+                leftAffixText={rupeeSymbol}
+                onChangeText={(text) =>
+                  dispatch(
+                    setOfferPriceDetails({
+                      key: "FOR_ACCESSORIES",
+                      text: text,
+                    })
+                  )
+                }
+              /> */}
+
+              <ProformaTextinputOffers
+                containerStyle={{
+                  flexDirection: "row",
+                  backgroundColor: Colors.WHITE,
+                  alignItems: "center",
+                  paddingHorizontal: 10,
+                  justifyContent: "space-between"
+                }}
+                placeholder={"Amount"}
+                underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
+                underlineColor={Colors.LIGHT_GRAY}
+
+                disabled={!isInputsEditable()}
+                style={styles.offerPriceTextInput}
+                // label={"Consumer Offer:"}
+
+                showLeftAffixText={true}
+                leftAffixText={rupeeSymbol}
+                showRightIcon={true}
+                keyboardType="number-pad"
+                value={selector.for_accessories}
+                TitleText={"Foc Accessories:"}
+                onChangeText={(text) =>
+                  dispatch(
+                    setOfferPriceDetails({
+                      key: "FOR_ACCESSORIES",
+                      text: text,
+                    })
+                  )
+                }
+              />
+              {/* <Text style={GlobalStyle.underline}></Text> */}
+
+              {/* <TextinputComp
+                disabled={!isInputsEditable()}
+                style={styles.offerPriceTextInput}
+                label={"Insurance Discount:"}
+                value={selector.insurance_discount}
+                showLeftAffixText={true}
+                keyboardType="number-pad"
+                leftAffixText={rupeeSymbol}
+                onChangeText={(text) =>
+                  dispatch(
+                    setOfferPriceDetails({
+                      key: "INSURANCE_DISCOUNT",
+                      text: text,
+                    })
+                  )
+                }
+              /> */}
+              <ProformaTextinputOffers
+                containerStyle={{
+                  flexDirection: "row",
+                  backgroundColor: Colors.WHITE,
+                  alignItems: "center",
+                  paddingHorizontal: 10,
+                  justifyContent: "space-between"
+                }}
+                placeholder={"Amount"}
+                underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
+                underlineColor={Colors.LIGHT_GRAY}
+
+                disabled={!isInputsEditable()}
+                style={styles.offerPriceTextInput}
+                // label={"Consumer Offer:"}
+
+                showLeftAffixText={true}
+                leftAffixText={rupeeSymbol}
+                showRightIcon={true}
+                keyboardType="number-pad"
+                value={selector.insurance_discount}
+                TitleText={"Insurance Discount:"}
+                onChangeText={(text) =>
+                  dispatch(
+                    setOfferPriceDetails({
+                      key: "INSURANCE_DISCOUNT",
+                      text: text,
+                    })
+                  )
+                }
+              />
+              {/* <Text style={GlobalStyle.underline}></Text> */}
+              {/* <TextinputComp
+                disabled={!isInputsEditable()}
+                style={styles.offerPriceTextInput}
+                label={"Accessories Discount:"}
+                value={selector.accessories_discount}
+                showLeftAffixText={true}
+                keyboardType="number-pad"
+                leftAffixText={rupeeSymbol}
+                onChangeText={(text) =>
+                  dispatch(
+                    setOfferPriceDetails({
+                      key: "ACCESSORIES_DISCOUNT",
+                      text: text,
+                    })
+                  )
+                }
+              /> */}
+
+              <ProformaTextinputOffers
+                containerStyle={{
+                  flexDirection: "row",
+                  backgroundColor: Colors.WHITE,
+                  alignItems: "center",
+                  paddingHorizontal: 10,
+                  justifyContent: "space-between"
+                }}
+                placeholder={"Amount"}
+                underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
+                underlineColor={Colors.LIGHT_GRAY}
+
+                disabled={!isInputsEditable()}
+                style={styles.offerPriceTextInput}
+                // label={"Consumer Offer:"}
+
+                showLeftAffixText={true}
+                leftAffixText={rupeeSymbol}
+                showRightIcon={true}
+                keyboardType="number-pad"
+                value={selector.accessories_discount}
+                TitleText={"Accessories Discount:"}
+                onChangeText={(text) =>
+                  dispatch(
+                    setOfferPriceDetails({
+                      key: "ACCESSORIES_DISCOUNT",
+                      text: text,
+                    })
+                  )
+                }
+              />
+              {/* <Text style={GlobalStyle.underline}></Text> */}
+
+              {/* <View style={styles.textAndAmountView}>
                                     <Text style={{ fontSize: 16, fontWeight: '400', color: Colors.GRAY }}>{"Insurance Discount:"}</Text>
                                     <View style={{ width: 80, height: 30, justifyContent: 'center', paddingHorizontal: 10, borderBottomWidth: 1, borderBottomColor: '#d1d1d1' }}>
                                         <TextInput
@@ -3006,7 +3744,7 @@ export const ProformaComp = ({
                                         />
                                     </View>
                                 </View> */}
-                {/* <View style={styles.textAndAmountView}>
+              {/* <View style={styles.textAndAmountView}>
                                     <Text style={{ fontSize: 16, fontWeight: '400', color: Colors.GRAY }}>{"Accessories Discount:"}</Text>
                                     <View style={{ width: 80, height: 30, justifyContent: 'center', paddingHorizontal: 10, borderBottomWidth: 1, borderBottomColor: '#d1d1d1' }}>
                                         <TextInput
@@ -3019,113 +3757,227 @@ export const ProformaComp = ({
                                         />
                                     </View>
                                 </View> */}
-                <TextinputComp
-                  disabled={!isInputsEditable()}
-                  style={styles.offerPriceTextInput}
-                  label={"Additional Offer 1:"}
-                  value={selector.additional_offer_1}
-                  showLeftAffixText={true}
-                  keyboardType="number-pad"
-                  leftAffixText={rupeeSymbol}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setOfferPriceDetails({
-                        key: "ADDITIONAL_OFFER_1",
-                        text: text,
-                      })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  disabled={!isInputsEditable()}
-                  style={styles.offerPriceTextInput}
-                  label={"Additional Offer 2:"}
-                  value={selector.additional_offer_2}
-                  showLeftAffixText={true}
-                  keyboardType="number-pad"
-                  leftAffixText={rupeeSymbol}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setOfferPriceDetails({
-                        key: "ADDITIONAL_OFFER_2",
-                        text: text,
-                      })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
+              {/* <TextinputComp
+                disabled={!isInputsEditable()}
+                style={styles.offerPriceTextInput}
+                label={"Additional Offer 1:"}
+                value={selector.additional_offer_1}
+                showLeftAffixText={true}
+                keyboardType="number-pad"
+                leftAffixText={rupeeSymbol}
+                onChangeText={(text) =>
+                  dispatch(
+                    setOfferPriceDetails({
+                      key: "ADDITIONAL_OFFER_1",
+                      text: text,
+                    })
+                  )
+                }
+              /> */}
 
-                <TextAndAmountComp
-                  title={"On Road Price After Discount:"}
-                  // amount={totalOnRoadPriceAfterDiscount.toFixed(2)}
+              <ProformaTextinputOffers
+                containerStyle={{
+                  flexDirection: "row",
+                  backgroundColor: Colors.WHITE,
+                  alignItems: "center",
+                  paddingHorizontal: 10,
+                  justifyContent: "space-between"
+                }}
+                placeholder={"Amount"}
+                underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
+                underlineColor={Colors.LIGHT_GRAY}
+
+                disabled={!isInputsEditable()}
+                style={styles.offerPriceTextInput}
+                // label={"Consumer Offer:"}
+
+                showLeftAffixText={true}
+                leftAffixText={rupeeSymbol}
+                showRightIcon={true}
+                keyboardType="number-pad"
+                value={selector.additional_offer_1}
+                TitleText={"Additional Offer 1:"}
+                onChangeText={(text) =>
+                  dispatch(
+                    setOfferPriceDetails({
+                      key: "ADDITIONAL_OFFER_1",
+                      text: text,
+                    })
+                  )
+                }
+              />
+              {/* <Text style={GlobalStyle.underline}></Text> */}
+              {/* <TextinputComp
+                disabled={!isInputsEditable()}
+                style={styles.offerPriceTextInput}
+                label={"Additional Offer 2:"}
+                value={selector.additional_offer_2}
+                showLeftAffixText={true}
+                keyboardType="number-pad"
+                leftAffixText={rupeeSymbol}
+                onChangeText={(text) =>
+                  dispatch(
+                    setOfferPriceDetails({
+                      key: "ADDITIONAL_OFFER_2",
+                      text: text,
+                    })
+                  )
+                }
+              /> */}
+
+              <ProformaTextinputOffers
+                containerStyle={{
+                  flexDirection: "row",
+                  backgroundColor: Colors.WHITE,
+                  alignItems: "center",
+                  paddingHorizontal: 10,
+                  justifyContent: "space-between",
+                }}
+                placeholder={"Amount"}
+                underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
+                underlineColor={Colors.LIGHT_GRAY}
+
+                disabled={!isInputsEditable()}
+                style={styles.offerPriceTextInput}
+                // label={"Consumer Offer:"}
+
+                showLeftAffixText={true}
+                leftAffixText={rupeeSymbol}
+                showRightIcon={true}
+                keyboardType="number-pad"
+                value={selector.additional_offer_2}
+                TitleText={"Additional Offer 2:"}
+                onChangeText={(text) =>
+                  dispatch(
+                    setOfferPriceDetails({
+                      key: "ADDITIONAL_OFFER_2",
+                      text: text,
+                    })
+                  )
+                }
+              />
+
+              {/* <Text style={GlobalStyle.underline}></Text> */}
+              <View style={{backgroundColor:Colors.WHITE, padding:10 }}>
+              <TextAndAmountComp
+                title={"On Road Price:"}
+                // amount={totalOnRoadPrice.toFixed(2)}
+                amount={getActualPrice().toFixed(2)}
+                titleStyle={{ fontSize: 18, fontWeight: "800" }}
+                amoutStyle={{ fontSize: 18, fontWeight: "800" }}
+                componentStyle={{backgroundColor:Colors.LIGHT_GRAY}}
+              />
+              <TextAndAmountComp
+                title={"On Road Price After Discount:"}
+                // amount={totalOnRoadPriceAfterDiscount.toFixed(2)}
                 amount={getActualPriceAfterDiscount().toFixed(2)}
-                  titleStyle={{ fontSize: 18, fontWeight: "800" }}
-                  amoutStyle={{ fontSize: 18, fontWeight: "800" }}
-                />
-                {/* <Text style={GlobalStyle.underline}></Text> */}
+                titleStyle={{ fontSize: 18, fontWeight: "800" }}
+                amoutStyle={{ fontSize: 18, fontWeight: "800" }}
+                  componentStyle={{ backgroundColor: Colors.LIGHT_GRAY }}
+              />
+              </View>
+              {/* <Text style={GlobalStyle.underline}></Text> */}
               {/* </List.Accordion> */}
             </View>
             {/* {showApproveRejectBtn && */}
-              <View
-                style={{
-                  flexDirection: "row", alignSelf: "flex-end"
-                  
-                }}>
+            <View
+              style={{
+                flexDirection: "row", alignSelf: "flex-end"
+
+              }}>
+              {showSaveBtn && !showSendForApprovBtn && <Button
+                mode="contained"
+                style={{ flex: 1, marginRight: 10 }}
+                // style={{ width: '30%', marginRight: 10 }}
+                color={Colors.GRAY}
+                labelStyle={{ textTransform: "none", color: Colors.WHITE }}
+                onPress={() => newProformaClick()}>
+                Cancel
+              </Button>}
               {showSaveBtn &&
+              
                   <Button
                     mode="contained"
-                    style={{ flex:1,marginRight: showSendForApprovBtn?  10: 0 }}
+                    style={{ flex: 1, }}
+                    // style={{ width: '30%', }}
                     color={Colors.PINK}
                     labelStyle={{ textTransform: "none" }}
                     onPress={() => saveProformaDetails("save")}>
                     Save
                   </Button>
-                  }
+              
+              }
 
-                {showSendForApprovBtn &&
-                  <Button
-                    mode="contained"
-                    style={{ flex: 1 }}
-                    color={Colors.PINK}
-                    labelStyle={{ textTransform: "none" }}
+              {showSendForApprovBtn &&
+                <Button
+                  mode="contained"
+                  style={{ flex: 1, marginStart:10 }}
+                  color={Colors.PINK}
+                  labelStyle={{ textTransform: "none" }}
                   onPress={() => saveProformaDetails("SENTFORAPPROVAL")}>
-                    Send For Approval
-                  </Button>}
+                  Send For Approval
+                </Button>}
 
-              </View>
+            </View>
             {/* } */}
-           
+
 
             {showApproveRejectBtn &&
               // !isLeadCreatedBySelf() &&
               userData.isPreBookingApprover &&
-               (
+              (
+                // <View style={styles.actionBtnView}>
+                //   {!isRejectSelected && (
+                //     <Button
+                //       mode="contained"
+                //       style={{ flex: 1, marginRight: 10 }}
+                //       color={Colors.GREEN}
+                //       labelStyle={{ textTransform: "none" }}
+                //       onPress={() => saveProformaDetails("APPROVED")}
+                //     >
+                //       Approve
+                //     </Button>
+                //   )}
+                //   {!isRejectSelected && <Button
+                //     mode="contained"
+                //     style={{ flex: 1, }}
+                //     color={Colors.RED}
+                //     labelStyle={{ textTransform: "none" }}
+                //     onPress={() =>
+                //       isRejectSelected
+                //         ? saveProformaDetails("REJECTED")
+                //         : setIsRejectSelected(true)
+                //     }
+                //   >
+                //     {isRejectSelected ? "Submit" : "Reject"}
+                //   </Button>}
+                // </View>
+
                 <View style={styles.actionBtnView}>
-                  {!isRejectSelected && (
+                
                     <Button
                       mode="contained"
-                    style={{ flex: 1, marginRight: 10 }}
+                      style={{ flex: 1, marginRight: 10 }}
                       color={Colors.GREEN}
                       labelStyle={{ textTransform: "none" }}
-                    onPress={() => saveProformaDetails("APPROVED")}
+                      onPress={() => saveProformaDetails("APPROVED")}
                     >
                       Approve
                     </Button>
-                  )}
-                {!isRejectSelected && <Button
-                  mode="contained"
-                  style={{ flex: 1, }}
-                  color={Colors.RED}
-                  labelStyle={{ textTransform: "none" }}
-                  onPress={() =>
-                    isRejectSelected
-                      ? saveProformaDetails("REJECTED")
-                      : setIsRejectSelected(true)
-                  }
-                >
-                  {isRejectSelected ? "Submit" : "Reject"}
-                </Button>}
+                 
+                  <Button
+                    mode="contained"
+                    style={{ flex: 1, }}
+                    color={Colors.RED}
+                    labelStyle={{ textTransform: "none" }}
+                    onPress={() =>
+                     saveProformaDetails("REJECTED")
+                        
+                    }
+                  >
+                  Reject
+                  </Button>
+              
                 </View>
               )}
             {isDownLoadVisible &&
@@ -3136,7 +3988,7 @@ export const ProformaComp = ({
                   // style={{ width: '30%', marginRight: 10 }}
                   color={Colors.PINK}
                   labelStyle={{ textTransform: "none" }}
-                  onPress={() => downloadPdf2("downlaod")}>
+                  onPress={() => downloadPdf3("downlaod")}>
                   Download
                 </Button>
                 <Button
@@ -3145,7 +3997,7 @@ export const ProformaComp = ({
                   // style={{ width: '30%', }}
                   color={Colors.PINK}
                   labelStyle={{ textTransform: "none" }}
-                  onPress={() => downloadPdf2("email")}>
+                  onPress={() => downloadPdf3("email")}>
                   Email
                 </Button>
               </View>}
@@ -3202,8 +4054,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.WHITE,
   },
   offerPriceTextInput: {
-    height: 55,
-    width: "100%",
+    height: 35,
+    width: "40%",
   },
   actionBtnView: {
     paddingTop: 10,
@@ -3230,8 +4082,8 @@ const styles = StyleSheet.create({
   ImageStyleS: {
     width: 100,
     height: 100,
-   
-    alignSelf:"center"
+
+    alignSelf: "center"
   },
   accordianBorder: {
     borderWidth: 0.5,
@@ -3258,11 +4110,12 @@ const styles = StyleSheet.create({
     paddingTop: 7
   },
   addIcon: {
-    backgroundColor: Colors.RED,
+    // backgroundColor: Colors.RED,
     paddingVertical: 4,
     paddingHorizontal: 12,
     borderRadius: 5,
-    marginRight: 20,
+    // marginRight: 20,
+    flexDirection:"row"
   },
   otherPriceTextStyle: {
     fontSize: 14,
@@ -3270,4 +4123,17 @@ const styles = StyleSheet.create({
     color: Colors.GRAY,
     paddingLeft: 12,
   },
+  proformList: {
+    fontSize: 14, color: Colors.BLACK, fontWeight: '700'
+  },
+  proforMlistTochable: {
+    marginVertical: 5,
+    width: "100%",
+    backgroundColor: Colors.WHITE,
+    padding: 10,
+    justifyContent: 'space-between',
+    flexDirection: "row",
+
+    alignItems: "center"
+  }
 })

@@ -485,7 +485,7 @@ const URL = {
   },
   GET_DOWNLOAD_URL: (file) => {
     // return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8081/sales/reports/downloadFile/${file}`;
-    return sales_url + `reports/downloadFile/${file}`;
+    return sales_url + `/reports/downloadFile/${file}`;
   },
   GET_TEAM_ATTENDANCE_COUNT: () => {
     return sales_url + `/employeeAttendance/userAttendance`;
