@@ -703,7 +703,7 @@ const AttendanceScreen = ({ route, navigation }) => {
           "/ATTENDANCE_" +
           Math.floor(date.getTime() + date.getSeconds() / 2) +
           file_ext,
-        mime: 'application/xlsx',
+        mime: "application/xlsx",
         // appendExt: 'xlsx',
         //path: filePath,
         //appendExt: fileExt,
