@@ -170,6 +170,6 @@ const styles = StyleSheet.create({
   parameterTitleView: {
     width: "60%",
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "space-around",
   },
 });

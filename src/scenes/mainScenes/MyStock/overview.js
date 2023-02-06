@@ -36,7 +36,7 @@ const OverviewScreen = ({ route, navigation }) => {
 
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {
-     dispatch(updateCurrentScreen("OVERVIEW"));
+      dispatch(updateCurrentScreen("OVERVIEW"));
     });
   }, [navigation]);
 
@@ -46,10 +46,10 @@ const OverviewScreen = ({ route, navigation }) => {
   ];
   const tableData = [
     { title: ">90", value: "5" },
-    { title: ">60", value: "5" },
-    { title: ">30", value: "5" },
-    { title: ">15", value: "5" },
-    { title: "<15", value: "5" },
+    { title: ">60", value: "15" },
+    { title: ">30", value: "25" },
+    { title: ">15", value: "35" },
+    { title: "<15", value: "55" },
   ];
   const total = [{ title: "Total", value: "35" }];
 
@@ -81,7 +81,7 @@ const OverviewScreen = ({ route, navigation }) => {
         <View
           style={{
             ...styles.tableTitle,
-            backgroundColor: index % 2 == 0 ? "#FF9999" : "pink",
+            backgroundColor: index % 2 !== 0 ? Colors.LIGHT_GRAY2 : Colors.GRAY,
           }}
         >
           <Text style={styles.tableTitleTxt}>{item.title}</Text>
@@ -89,7 +89,7 @@ const OverviewScreen = ({ route, navigation }) => {
         <View
           style={{
             ...styles.tableTitle,
-            backgroundColor: index % 2 == 0 ? "#FF9999" : "pink",
+            backgroundColor: index % 2 !== 0 ? Colors.LIGHT_GRAY2 : Colors.GRAY,
           }}
         >
           <Text style={styles.tableTitleTxt}>{item.value}</Text>
@@ -192,8 +192,8 @@ const styles = StyleSheet.create({
   },
   tableTitleTxt: {
     color: Colors.WHITE,
-    fontSize: 17,
-    fontWeight: "600",
+    fontSize: 18,
+    fontWeight: "700",
   },
   tableTitleView: { flexDirection: "row", justifyContent: "space-between" },
 });

@@ -64,28 +64,28 @@ const OverviewDetailScreen = ({ route, navigation }) => {
     );
   };
 
-  const renderTableData = (item, index) => {
-    return (
-      <View style={{ ...styles.tableTitleView, marginTop: 2.5 }}>
-        <View
-          style={{
-            ...styles.tableTitle,
-            backgroundColor: index % 2 == 0 ? "#FF9999" : "pink",
-          }}
-        >
-          <Text style={styles.tableTitleTxt}>{item.title}</Text>
-        </View>
-        <View
-          style={{
-            ...styles.tableTitle,
-            backgroundColor: index % 2 == 0 ? "#FF9999" : "pink",
-          }}
-        >
-          <Text style={styles.tableTitleTxt}>{item.value}</Text>
-        </View>
+const renderTableData = (item, index) => {
+  return (
+    <View style={{ ...styles.tableTitleView, marginTop: 2.5 }}>
+      <View
+        style={{
+          ...styles.tableTitle,
+          backgroundColor: index % 2 !== 0 ? Colors.LIGHT_GRAY2 : Colors.GRAY,
+        }}
+      >
+        <Text style={styles.tableTitleTxt}>{item.title}</Text>
       </View>
-    );
-  };
+      <View
+        style={{
+          ...styles.tableTitle,
+          backgroundColor: index % 2 !== 0 ? Colors.LIGHT_GRAY2 : Colors.GRAY,
+        }}
+      >
+        <Text style={styles.tableTitleTxt}>{item.value}</Text>
+      </View>
+    </View>
+  );
+};
 
   return (
     <SafeAreaView style={styles.container}>
@@ -180,8 +180,8 @@ const styles = StyleSheet.create({
   },
   tableTitleTxt: {
     color: Colors.WHITE,
-    fontSize: 17,
-    fontWeight: "600",
+    fontSize: 18,
+    fontWeight: "700",
   },
   tableTitleView: { flexDirection: "row", justifyContent: "space-between" },
 });

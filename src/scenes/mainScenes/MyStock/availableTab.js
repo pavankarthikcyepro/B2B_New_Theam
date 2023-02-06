@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
   },
   valueTxt: {
     fontSize: 17,
-    color: Colors.RED,
+    color: Colors.BLACK,
     fontWeight: "600",
     // textDecorationLine: "underline",
   },
@@ -167,6 +167,6 @@ const styles = StyleSheet.create({
   parameterTitleView: {
     width: "60%",
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent:"space-around",
   },
 });
