@@ -975,6 +975,7 @@ const HomeScreen = ({ route, navigation }) => {
   };
 
   const downloadInLocal = async (url) => {
+    console.log(url);
     const { config, fs } = RNFetchBlob;
     let downloadDir = Platform.select({
       ios: fs.dirs.DocumentDir,

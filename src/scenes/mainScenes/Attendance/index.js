@@ -638,6 +638,7 @@ const AttendanceScreen = ({ route, navigation }) => {
         );
         const json = await response.json();
         if (json.downloadUrl) {
+          console.log(URL.GET_DOWNLOAD_URL(json.downloadUrl));
           downloadInLocal(URL.GET_DOWNLOAD_URL(json.downloadUrl));
         }
       }
