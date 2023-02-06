@@ -122,9 +122,10 @@ const AttendanceScreen = ({ route, navigation }) => {
     navigation.addListener("focus", () => {
       // getCurrentLocation();
       setFromDateState(lastMonthFirstDate);
-      setToDateState(lastMonthLastDate);
+      setToDateState(currentDate);
       GetCountByMonth(lastMonthFirstDate, lastMonthLastDate);
       getAttendanceByMonth(lastMonthFirstDate, lastMonthLastDate);
+      SetFilterStart(false);
       getProfilePic();
       // setLoading(true);
       // getAttendance();
@@ -155,6 +156,12 @@ const AttendanceScreen = ({ route, navigation }) => {
     setPayRoll(moment(toDate).format(dateFormat));
   }, [selectedFromDate]);
 
+  useEffect(() => {
+    if (filterStart) {
+      getAttendanceFilter();
+    }
+  }, [selectedFromDate, selectedToDate]);
+
   const setFromDateState = (date) => {
     fromDateRef.current = date;
     setSelectedFromDate((x) => date);
@@ -176,13 +183,13 @@ const AttendanceScreen = ({ route, navigation }) => {
       case "FROM_DATE":
         setFromDateState(formatDate);
         setLoading(true);
-        getAttendanceFilter(route?.params);
+        // getAttendanceFilter(route?.params);
         SetFilterStart(true);
         break;
       case "TO_DATE":
         setToDateState(formatDate);
         setLoading(true);
-        getAttendanceFilter(route?.params);
+        // getAttendanceFilter(route?.params);
         SetFilterStart(true);
         break;
     }
@@ -208,6 +215,10 @@ const AttendanceScreen = ({ route, navigation }) => {
           )
         );
         const json = await response.json();
+        const response1 = await client.get(
+          URL.GET_HOLIDAYS(newUser ? newUser.orgId : jsonObj.orgId)
+        );
+        const json1 = await response1.json();
         if (json) {
           let newArray = [];
           let dateArray = [];
@@ -254,6 +265,25 @@ const AttendanceScreen = ({ route, navigation }) => {
             newArray.push(format);
             weekArray.push(weekReport);
           }
+          if (json1.length > 0) {
+            for (let i = 0; i <= json1.length - 1; i++) {
+              let format = {
+                customStyles: {
+                  container: {
+                    backgroundColor: Colors.DARK_GRAY,
+                  },
+                  text: {
+                    color: Colors.WHITE,
+                    fontWeight: "bold",
+                  },
+                },
+              };
+              let date = new Date(json1[i].date);
+              let formatedDate = moment(date).format(dateFormat);
+              dateArray.push(formatedDate);
+              newArray.push(format);
+            }
+          }
           var obj = {};
           for (let i = 0; i < newArray.length; i++) {
             const element = newArray[i];
@@ -270,7 +300,6 @@ const AttendanceScreen = ({ route, navigation }) => {
   };
 
   const getAttendance = async (newUser) => {
-    console.log("KKKK");
     try {
       let employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -346,7 +375,6 @@ const AttendanceScreen = ({ route, navigation }) => {
               //   ? "WFH"
               //   : "Absent",
             };
-            console.log(element);
             dateArray.push(formatedDate);
             newArray.push(format);
             weekArray.push(weekReport);
@@ -510,7 +538,6 @@ const AttendanceScreen = ({ route, navigation }) => {
         const json = await response.json();
         const response1 = await client.get(URL.GET_HOLIDAYS(jsonObj.orgId));
         const json1 = await response1.json();
-        // console.log(json1);
         if (json) {
           let newArray = [];
           let dateArray = [];
@@ -652,8 +679,6 @@ const AttendanceScreen = ({ route, navigation }) => {
   };
 
   const downloadInLocal = async (url) => {
-    console.log("token");
-
     const { config, fs } = RNFetchBlob;
     let downloadDir = Platform.select({
       ios: fs.dirs.DocumentDir,
@@ -754,7 +779,8 @@ const AttendanceScreen = ({ route, navigation }) => {
       <DatePickerComponent
         visible={showDatePicker}
         mode={"date"}
-        maximumDate={payRoll != "" ? new Date(payRoll) : new Date()}
+        // maximumDate={payRoll != "" ? new Date(payRoll) : new Date()}
+        maximumDate={new Date()}
         value={new Date()}
         onChange={(event, selectedDate) => {
           setShowDatePicker(false);
@@ -814,7 +840,7 @@ const AttendanceScreen = ({ route, navigation }) => {
         </View>
         <View>
           <Calendar
-            // disabledDaysIndexes={[6, 7]}
+            disabledDaysIndexes={[6, 7]}
             onDayPress={(day) => {
               // isCurrentDate(day);
               if (
@@ -824,11 +850,9 @@ const AttendanceScreen = ({ route, navigation }) => {
                 let newData = weeklyRecord.filter(
                   (e) => e.start === day.dateString
                 )[0];
-                console.log(newData);
                 if (newData?.status == "Absent" || newData?.status == "WFH") {
                   setHoverReasons(newData?.reason || "");
                   setStatus(newData?.status == "Absent" ? "Leave" : "WFH");
-                  console.log(newData?.status);
                   setNotes(newData?.note || "");
                   setAttendance(true);
                 }

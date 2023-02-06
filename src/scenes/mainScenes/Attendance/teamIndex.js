@@ -691,17 +691,23 @@ const AttendanceTeamMemberScreen = ({ route, navigation }) => {
           description: "Downloading image.",
         },
       };
-      config(options)
-        .fetch("GET", url)
-        .then((res) => {
-          setLoading(false);
-          RNFetchBlob.android.actionViewIntent(res.path());
-          // do some magic here
-        })
-        .catch((err) => {
-          console.error(err);
-          setLoading(false);
-        });
+      AsyncStore.getData(AsyncStore.Keys.ACCESS_TOKEN).then((token) => {
+        config(options)
+          .fetch("GET", url, {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          })
+          .then((res) => {
+            setLoading(false);
+            RNFetchBlob.android.actionViewIntent(res.path());
+            // do some magic here
+          })
+          .catch((err) => {
+            console.error(err);
+            setLoading(false);
+          });
+      });
     }
     if (Platform.OS === "ios") {
       options = {
@@ -711,26 +717,31 @@ const AttendanceTeamMemberScreen = ({ route, navigation }) => {
           "/ATTENDANCE_" +
           Math.floor(date.getTime() + date.getSeconds() / 2) +
           file_ext,
-        // mime: 'application/xlsx',
+        mime: "application/xlsx",
         // appendExt: 'xlsx',
         //path: filePath,
         //appendExt: fileExt,
         notification: true,
       };
-
-      config(options)
-        .fetch("GET", url)
-        .then((res) => {
-          setLoading(false);
-          setTimeout(() => {
-            // RNFetchBlob.ios.previewDocument('file://' + res.path());   //<---Property to display iOS option to save file
-            RNFetchBlob.ios.openDocument(res.data); //<---Property to display downloaded file on documaent viewer
-            // Alert.alert(CONSTANTS.APP_NAME,'File download successfully');
-          }, 300);
-        })
-        .catch((errorMessage) => {
-          setLoading(false);
-        });
+      AsyncStore.getData(AsyncStore.Keys.ACCESS_TOKEN).then((token) => {
+        config(options)
+          .fetch("GET", url, {
+            Accept: "application/octet-stream",
+            "Content-Type": "application/octet-stream",
+            Authorization: "Bearer " + token,
+          })
+          .then((res) => {
+            setLoading(false);
+            setTimeout(() => {
+              // RNFetchBlob.ios.previewDocument('file://' + res.path());   //<---Property to display iOS option to save file
+              RNFetchBlob.ios.openDocument(res.data); //<---Property to display downloaded file on documaent viewer
+              // Alert.alert(CONSTANTS.APP_NAME,'File download successfully');
+            }, 300);
+          })
+          .catch((errorMessage) => {
+            setLoading(false);
+          });
+      });
     }
   };
 
@@ -757,7 +768,8 @@ const AttendanceTeamMemberScreen = ({ route, navigation }) => {
       <DatePickerComponent
         visible={showDatePicker}
         mode={"date"}
-        maximumDate={payRoll != "" ? new Date(payRoll) : new Date()}
+        // maximumDate={payRoll != "" ? new Date(payRoll) : new Date()}
+        maximumDate={new Date()}
         value={new Date()}
         onChange={(event, selectedDate) => {
           setShowDatePicker(false);
