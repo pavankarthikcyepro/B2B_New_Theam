@@ -478,6 +478,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                           style={{
                                             flexDirection: "row",
                                             justifyContent: "space-between",
+                                            alignItems:"center"
                                             // backgroundColor:"red"
                                           }}
                                         >
@@ -487,19 +488,43 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
 
                                             {isDotVisibleForClosed && !isHistory && (
                                               <View
-                                                style={styles.btn3}
+                                                style={[styles.btn4, { marginEnd: item.lat && item.lon ? 10 : 0, }]}
 
                                               >
-                                                <Text style={styles.txt7}>3</Text>
+                                                <Image
+                                                  source={require("./../../../assets/images/check-list.png")}
+                                                  resizeMode="contain"
+                                                  tintColor={Colors.GRAY}
+                                                  style={[styles.countCointaner]}
+                                                />
+                                                <Text style={styles.txt8}>3</Text>
                                               </View>
+                                              // <View
+                                              //   style={styles.btn3}
+
+                                              // >
+                                              //   <Text style={styles.txt7}>3</Text>
+                                              // </View>
                                             )}
                                             {isDotVisible && isHistory && (
                                               <View
-                                                style={styles.btn3}
+                                                style={[styles.btn4, { marginEnd: item.lat && item.lon? 10: 0, }]}
 
                                               >
-                                                <Text style={styles.txt7}>3</Text>
+                                                <Image
+                                                  source={require("./../../../assets/images/check-list.png")}
+                                                  resizeMode="contain"
+                                                  tintColor={Colors.GRAY}
+                                                  style={[styles.countCointaner]}
+                                                />
+                                                <Text style={styles.txt8}>3</Text>
                                               </View>
+                                              // <View
+                                              //   style={styles.btn3}
+
+                                              // >
+                                              //   <Text style={styles.txt7}>3</Text>
+                                              // </View>
                                             )}
                                           {item.lat && item.lon && (
                                             <TouchableOpacity
@@ -512,7 +537,6 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                                 style={{
                                                   height: 25,
                                                   width: 15,
-                                                  color:Colors.PINK
                                                 }}
                                                 source={require("../../../assets/images/location-pin.png")}
                                                   tintColor={Colors.PINK}
@@ -710,7 +734,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#d1d1d1",
     borderRadius: 5,
-    marginEnd:-15
+    // marginEnd:-15
   },
   btn3: {
     alignSelf: "flex-start",
@@ -726,5 +750,38 @@ const styles = StyleSheet.create({
    
   },
   txt4: { fontSize: 18, fontWeight: "700", marginBottom: 5 },
-  txt7: { fontSize: 16, fontWeight: "500", color:Colors.RED }
+  txt7: { fontSize: 16, fontWeight: "500", color:Colors.RED },
+  countCointaner: {
+    height: 25,
+    width: 25,
+
+  },
+  txt8: {
+    fontSize: 12,
+    fontWeight: "500",
+    color: Colors.WHITE,
+    position: "absolute",
+    left: 28,
+    top: -3,
+    backgroundColor: Colors.PINK,
+    borderWidth: 1,
+    borderColor: Colors.PINK,
+    borderRadius: 5,
+    textAlign: "center",
+    width: 15,
+
+  },
+  btn4: {
+    alignSelf: "flex-start",
+    // marginTop: -5,
+    width: 35,
+    height: 35,
+    justifyContent: "center",
+    alignItems: "center",
+    // borderWidth: 1,
+    // borderColor: "#d1d1d1",
+    // borderRadius: 5,
+    
+    
+  },
 });
