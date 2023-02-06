@@ -243,7 +243,12 @@ const AttendanceScreen = ({ route, navigation }) => {
               note: element.comments,
               reason: element.reason,
               color: element.isPresent === 1 ? Colors.GREEN : Colors.RED,
-              status: element.isPresent === 1 ? "Present" : "Absent",
+              status:
+                element.isPresent === 1
+                  ? "Present"
+                  : element.wfh === 1
+                  ? "WFH"
+                  : "Absent",
             };
             dateArray.push(formatedDate);
             newArray.push(format);
@@ -265,6 +270,7 @@ const AttendanceScreen = ({ route, navigation }) => {
   };
 
   const getAttendance = async (newUser) => {
+    console.log("KKKK");
     try {
       let employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -326,11 +332,21 @@ const AttendanceScreen = ({ route, navigation }) => {
               color: element.isPresent === 1 ? Colors.GREEN : Colors.RED,
               status:
                 element.isPresent === 1
-                  ? "Present"
+                  ? element.wfh === 1
+                    ? "WFH"
+                    : "Present"
+                  : element.holiday === 1
+                  ? "Holiday"
                   : element.wfh === 1
                   ? "WFH"
                   : "Absent",
+              // element.isPresent === 1
+              //   ? "Present"
+              //   : element.wfh === 1
+              //   ? "WFH"
+              //   : "Absent",
             };
+            console.log(element);
             dateArray.push(formatedDate);
             newArray.push(format);
             weekArray.push(weekReport);
@@ -530,7 +546,16 @@ const AttendanceScreen = ({ route, navigation }) => {
               note: element.comments,
               reason: element.reason,
               color: element.isPresent === 1 ? Colors.GREEN : Colors.RED,
-              status: element.isPresent === 1 ? "Present" : "Absent",
+              status:
+                element.isPresent === 1
+                  ? element.wfh === 1
+                    ? "WFH"
+                    : "Present"
+                  : element.holiday === 1
+                  ? "Holiday"
+                  : element.wfh === 1
+                  ? "WFH"
+                  : "Absent",
             };
             dateArray.push(formatedDate);
             newArray.push(format);
@@ -597,15 +622,24 @@ const AttendanceScreen = ({ route, navigation }) => {
 
   const downloadReport = async () => {
     try {
-      const payload = {
-        orgId: userData.orgId,
-        fromDate: selectedFromDate,
-        toDate: selectedToDate,
-      };
-      const response = await client.post(URL.GET_ATTENDANCE_REPORT(), payload);
-      const json = await response.json();
-      if (json.downloadUrl) {
-        downloadInLocal(URL.GET_DOWNLOAD_URL(json.downloadUrl));
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        const payload = {
+          orgId: jsonObj.orgId,
+          fromDate: selectedFromDate,
+          toDate: selectedToDate,
+        };
+        const response = await client.post(
+          URL.GET_ATTENDANCE_REPORT(),
+          payload
+        );
+        const json = await response.json();
+        if (json.downloadUrl) {
+          downloadInLocal(URL.GET_DOWNLOAD_URL(json.downloadUrl));
+        }
       }
     } catch (error) {
       alert("Something went wrong");
@@ -780,9 +814,8 @@ const AttendanceScreen = ({ route, navigation }) => {
                 console.log(newData);
                 if (newData?.status == "Absent" || newData?.status == "WFH") {
                   setHoverReasons(newData?.reason || "");
-                  setStatus(
-                    newData?.status == "Absent" ? "Leave" : newData?.status
-                  );
+                  setStatus(newData?.status == "Absent" ? "Leave" : "WFH");
+                  console.log(newData?.status);
                   setNotes(newData?.note || "");
                   setAttendance(true);
                 }
