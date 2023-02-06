@@ -101,6 +101,7 @@ import AttendanceFromSelf from "../../../components/AttendanceFromSelf";
 import DigitalDashBoardTargetScreen from "./targetScreen";
 import { useIsFocused } from "@react-navigation/native";
 import { useIsDrawerOpen } from "@react-navigation/drawer";
+import Orientation from "react-native-orientation-locker";
 
 const officeLocation = {
   latitude: 37.33233141,
