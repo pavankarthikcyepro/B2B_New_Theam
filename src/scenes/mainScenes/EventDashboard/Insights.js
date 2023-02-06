@@ -22,6 +22,7 @@ import PercentageToggleControl from "../Home/TabScreens/components/EmployeeView/
 import { RenderSourceModelParameters } from "../Home/TabScreens/components/RenderSourceModelParameters";
 import { sampleData } from "./data";
 import * as AsyncStore from "../../../asyncStore";
+import { useIsFocused } from "@react-navigation/native";
 
 const EventInsights = ({ route, navigation }) => {
   const dispatch = useDispatch();
@@ -41,6 +42,7 @@ const EventInsights = ({ route, navigation }) => {
   const [toggleParamsIndex, setToggleParamsIndex] = useState(0);
   const [toggleParamsMetaData, setToggleParamsMetaData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const isFocused = useIsFocused();
   const scrollViewRef = useRef();
 
   //   useEffect(() => {
@@ -90,12 +92,12 @@ const EventInsights = ({ route, navigation }) => {
           pageNo: 0,
           size: 5,
         };
-        
+
         let key = moduleType !== "live-leads" ? "" : "LIVE-LEADS";
         dispatch(getEventSourceModel({ type, payload, key }));
       }
     } catch (error) {}
-  }, []);
+  }, [isFocused]);
 
   useEffect(() => {
     setToggleParamsIndex(0);
