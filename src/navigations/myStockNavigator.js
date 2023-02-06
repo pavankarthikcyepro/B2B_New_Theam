@@ -17,11 +17,22 @@ import AttendanceDashboard from "../scenes/mainScenes/Attendance/Dashboard";
 import FilterAttendanceDashBoardScreen from "../scenes/mainScenes/Attendance/DashboardFilter";
 
 import OverviewScreen from "../scenes/mainScenes/MyStock/overview";
+import OverviewDetailScreen from "../scenes/mainScenes/MyStock/overviewDetail";
+import AvailableScreen from "../scenes/mainScenes/MyStock/availableTab";
+import VariantDetailScreen from "../scenes/mainScenes/MyStock/variantDetail";
+import InTransitScreen from "../scenes/mainScenes/MyStock/inTransitTab";
+import MyStockFilter from "../scenes/mainScenes/MyStock/filter";
+import InTransitDetailScreen from "../scenes/mainScenes/MyStock/inTransitDetails";
 
 export const MyStockTopTabNavigatorIdentifiers = {
   overview: "OVERVIEW",
   available: "AVAILABLE",
   inTransit: "IN_TRANSIT",
+  filter: "FILTER",
+  myStock: "MY_STOCK",
+  detail: "DETAIL",
+  variant: "VARIANT",
+  inTransitDetail: "IN_TRANSIT_DETAIL",
 };
 
 const screeOptionStyle = {
@@ -50,97 +61,100 @@ const tabBarOptions = {
   },
 };
 
-// const MyAttendanceTopTab = createStackNavigator();
+const MyStockMainTopTab = createStackNavigator();
 
-// const MyAttendanceTopTabNavigatorOne = ({ navigation }) => {
-//   const selector = useSelector((state) => state.homeReducer);
-
-//   const [handleTabDisplay, setHandleTabDisplay] = useState(0);
-
-//   useEffect(async () => {
-//     const employeeData = await AsyncStore.getData(
-//       AsyncStore.Keys.LOGIN_EMPLOYEE
-//     );
-//     if (employeeData) {
-//       const jsonObj = JSON.parse(employeeData);
-//       if (
-//         jsonObj.hrmsRole === "branch manager" ||
-//         jsonObj.hrmsRole === "MD" ||
-//         jsonObj.hrmsRole === "Sales Manager"
-//       ) {
-//         setHandleTabDisplay(2);
-//       } else {
-//         setHandleTabDisplay(1);
-//       }
-//     }
-//   }, []);
-
-//   return (
-//     <MyAttendanceTopTab.Navigator
-//       initialRouteName={AttendanceTopTabNavigatorIdentifiers.myattendance}
-//       tabBarOptions={tabBarOptions}
-//       screenOptions={{ headerShown: false }}
-//     >
-//       <MyAttendanceTopTab.Screen
-//         name={AttendanceTopTabNavigatorIdentifiers.myattendance}
-//         component={
-//           selector?.isDSE
-//             ? AttendanceTopTabNavigatorTwo
-//             : AttendanceTopTabNavigatorTeams
-//         }
-//         options={{
-//           title: "My Attendance",
-//           headerShown: true,
-//           headerLeft: () => <MenuIcon navigation={navigation} />,
-//           // headerRight: () =>
-//           //   selector?.isDSE ? null : (
-//           //     <IconButton
-//           //       icon="filter-outline"
-//           //       style={{ padding: 0, margin: 0 }}
-//           //       color={Colors.WHITE}
-//           //       size={30}
-//           //       onPress={() =>
-//           //         navigation.navigate(
-//           //           AttendanceTopTabNavigatorIdentifiers.filter
-//           //         )
-//           //       }
-//           //     />
-//           //   ),
-//           headerStyle: screeOptionStyle.headerStyle,
-//           headerTitleStyle: screeOptionStyle.headerTitleStyle,
-//           headerTintColor: screeOptionStyle.headerTintColor,
-//           headerBackTitleVisible: screeOptionStyle.headerBackTitleVisible,
-//         }}
-//       />
-//       <MyAttendanceTopTab.Screen
-//         name={AttendanceTopTabNavigatorIdentifiers.filter}
-//         component={AttendanceFilter}
-//         options={{
-//           title: "Filter",
-//           headerShown: true,
-//           headerStyle: screeOptionStyle.headerStyle,
-//           headerTitleStyle: screeOptionStyle.headerTitleStyle,
-//           headerTintColor: screeOptionStyle.headerTintColor,
-//           headerBackTitleVisible: screeOptionStyle.headerBackTitleVisible,
-//         }}
-//       />
-//       <MyDashboardTeamTab.Screen
-//         name={AttendanceTopTabNavigatorIdentifiers.dashboardFilter}
-//         component={FilterAttendanceDashBoardScreen}
-//         options={{
-//           title: "Filter",
-//           headerShown: true,
-//           headerStyle: screeOptionStyle.headerStyle,
-//           headerTitleStyle: screeOptionStyle.headerTitleStyle,
-//           headerTintColor: screeOptionStyle.headerTintColor,
-//           headerBackTitleVisible: screeOptionStyle.headerBackTitleVisible,
-//         }}
-//       />
-//     </MyAttendanceTopTab.Navigator>
-//   );
-// };
+const MyStockMainTopTabNavigator = ({ navigation }) => {
+  return (
+    <MyStockMainTopTab.Navigator
+      initialRouteName={MyStockTopTabNavigatorIdentifiers.myStock}
+      tabBarOptions={tabBarOptions}
+      screenOptions={{ headerShown: false }}
+    >
+      <MyStockMainTopTab.Screen
+        name={MyStockTopTabNavigatorIdentifiers.myStock}
+        component={MyStockTopTabNavigator}
+        options={{
+          title: "My Stock",
+          headerShown: true,
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+          headerRight: () => <MyTaskFilter navigation={navigation} />,
+          headerStyle: screeOptionStyle.headerStyle,
+          headerTitleStyle: screeOptionStyle.headerTitleStyle,
+          headerTintColor: screeOptionStyle.headerTintColor,
+          headerBackTitleVisible: screeOptionStyle.headerBackTitleVisible,
+        }}
+      />
+      <MyStockMainTopTab.Screen
+        name={MyStockTopTabNavigatorIdentifiers.detail}
+        component={OverviewDetailScreen}
+        options={{
+          title: "Detail",
+          headerShown: true,
+          headerStyle: screeOptionStyle.headerStyle,
+          headerTitleStyle: screeOptionStyle.headerTitleStyle,
+          headerTintColor: screeOptionStyle.headerTintColor,
+          headerBackTitleVisible: screeOptionStyle.headerBackTitleVisible,
+        }}
+      />
+      <MyStockMainTopTab.Screen
+        name={MyStockTopTabNavigatorIdentifiers.variant}
+        component={VariantDetailScreen}
+        options={{
+          title: "Detail",
+          headerShown: true,
+          headerStyle: screeOptionStyle.headerStyle,
+          headerTitleStyle: screeOptionStyle.headerTitleStyle,
+          headerTintColor: screeOptionStyle.headerTintColor,
+          headerBackTitleVisible: screeOptionStyle.headerBackTitleVisible,
+        }}
+      />
+      <MyStockMainTopTab.Screen
+        name={MyStockTopTabNavigatorIdentifiers.inTransitDetail}
+        component={InTransitDetailScreen}
+        options={{
+          title: "Detail",
+          headerShown: true,
+          headerStyle: screeOptionStyle.headerStyle,
+          headerTitleStyle: screeOptionStyle.headerTitleStyle,
+          headerTintColor: screeOptionStyle.headerTintColor,
+          headerBackTitleVisible: screeOptionStyle.headerBackTitleVisible,
+        }}
+      />
+      <MyStockMainTopTab.Screen
+        name={MyStockTopTabNavigatorIdentifiers.filter}
+        component={MyStockFilter}
+        options={{
+          title: "Filter",
+          headerShown: true,
+          headerStyle: screeOptionStyle.headerStyle,
+          headerTitleStyle: screeOptionStyle.headerTitleStyle,
+          headerTintColor: screeOptionStyle.headerTintColor,
+          headerBackTitleVisible: screeOptionStyle.headerBackTitleVisible,
+        }}
+      />
+    </MyStockMainTopTab.Navigator>
+  );
+};
 
 const Badge = ({ focused, title, countList }) => {
+  return (
+    <View style={styles.tabContainer}>
+      <Text
+        style={[
+          styles.titleText,
+          { color: focused ? Colors.RED : Colors.DARK_GRAY },
+        ]}
+      >
+        {title}
+      </Text>
+      <View style={styles.badgeContainer}>
+        <Text style={styles.badgeText}>{25}</Text>
+      </View>
+    </View>
+  );
+};
+
+const Badge1 = ({ focused, title, countList }) => {
   return (
     <View style={styles.tabContainer}>
       <Text
@@ -155,32 +169,6 @@ const Badge = ({ focused, title, countList }) => {
   );
 };
 
-// const AttendanceTopTabNavigatorTwo = () => {
-//   return (
-//     <AttendanceTopTab.Navigator
-//       initialRouteName={AttendanceTopTabNavigatorIdentifiers.attendance}
-//       tabBarOptions={tabBarOptions}
-//     >
-//       <AttendanceTopTab.Screen
-//         name={AttendanceTopTabNavigatorIdentifiers.attendance}
-//         component={AttendanceTopTabScreen}
-//         options={{
-//           title: ({ focused }) => (
-//             <Badge title={"Attendance"} focused={focused} />
-//           ),
-//         }}
-//       />
-//       <AttendanceTopTab.Screen
-//         name={AttendanceTopTabNavigatorIdentifiers.leave}
-//         component={AttendanceScreen}
-//         options={{
-//           title: ({ focused }) => <Badge title={"Leaves"} focused={focused} />,
-//         }}
-//       />
-//     </AttendanceTopTab.Navigator>
-//   );
-// };
-
 const MyStockTopTabNavigator = () => {
   return (
     <MyStockTopTab.Navigator
@@ -189,16 +177,16 @@ const MyStockTopTabNavigator = () => {
     >
       <MyStockTopTab.Screen
         name={MyStockTopTabNavigatorIdentifiers.overview}
-        component={OverviewScreen}
+        component={OverviewTopTabNavigatorTeamsNav}
         options={{
           title: ({ focused }) => (
-            <Badge title={"Overview"} focused={focused} />
+            <Badge1 title={"Overview"} focused={focused} />
           ),
         }}
       />
       <MyStockTopTab.Screen
         name={MyStockTopTabNavigatorIdentifiers.available}
-        component={OverviewScreen}
+        component={AvailableScreen}
         options={{
           title: ({ focused }) => (
             <Badge title={"Available"} focused={focused} />
@@ -207,7 +195,7 @@ const MyStockTopTabNavigator = () => {
       />
       <MyStockTopTab.Screen
         name={MyStockTopTabNavigatorIdentifiers.inTransit}
-        component={OverviewScreen}
+        component={InTransitScreen}
         options={{
           title: ({ focused }) => (
             <Badge title={"InTransit"} focused={focused} />
@@ -218,35 +206,40 @@ const MyStockTopTabNavigator = () => {
   );
 };
 
-// const MyAttendanceTeamTab = createStackNavigator();
+const OverviewTab = createStackNavigator();
 
-// const AttendanceTopTabNavigatorTeamsNav = () => {
-//   return (
-//     <MyAttendanceTeamTab.Navigator
-//       initialRouteName={AttendanceTopTabNavigatorIdentifiers.team}
-//       tabBarOptions={tabBarOptions}
-//       screenOptions={{ headerShown: false }}
-//     >
-//       <MyAttendanceTeamTab.Screen
-//         name={AttendanceTopTabNavigatorIdentifiers.team}
-//         component={TeamAttendanceScreen}
-//         options={{
-//           headerShown: false,
-//           // title: ({ focused }) => <Badge title={"Team"} focused={focused} />,
-//         }}
-//       />
-//       <MyAttendanceTeamTab.Screen
-//         name={AttendanceTopTabNavigatorIdentifiers.team_attendance}
-//         component={AttendanceTeamMemberScreen}
-//         options={{
-//           headerShown: false,
-//           // title: ({ focused }) => <Badge title={"Leaves"} focused={focused} />,
-//         }}
-//       />
-//     </MyAttendanceTeamTab.Navigator>
-//   );
-// };
-
+const OverviewTopTabNavigatorTeamsNav = () => {
+  return (
+    <OverviewTab.Navigator
+      initialRouteName={MyStockTopTabNavigatorIdentifiers}
+      tabBarOptions={tabBarOptions}
+      screenOptions={{ headerShown: false }}
+    >
+      <OverviewTab.Screen
+        name={MyStockTopTabNavigatorIdentifiers.overview}
+        component={OverviewScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+    </OverviewTab.Navigator>
+  );
+};
+const MyTaskFilter = ({ navigation }) => {
+  const screen = useSelector((state) => state.myStockReducer.currentScreen);
+  if (screen === "OVERVIEW") return <React.Fragment></React.Fragment>;
+  return (
+    <IconButton
+      icon="filter-outline"
+      style={{ paddingHorizontal: 0, marginHorizontal: 0 }}
+      color={Colors.WHITE}
+      size={25}
+      onPress={() =>
+        navigation.navigate(MyStockTopTabNavigatorIdentifiers.filter)
+      }
+    />
+  );
+};
 // const MyDashboardTeamTab = createStackNavigator();
 
 // const DAshboardTopTabNavigatorTeamsNav = () => {
@@ -295,4 +288,4 @@ const styles = StyleSheet.create({
   badgeText: { fontSize: 13, color: Colors.PINK, fontWeight: "bold" },
 });
 
-export { MyStockTopTabNavigator };
+export { MyStockTopTabNavigator, MyStockMainTopTabNavigator };

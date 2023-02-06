@@ -115,7 +115,7 @@ import EventSourceModel from "../scenes/mainScenes/EventDashboard/EventSourceMod
 import LeaderShipFilter from "../scenes/mainScenes/Home/TabScreens/leaderShipFilter";
 import Orientation from "react-native-orientation-locker";
 import { detectIsOrientationLock } from "../utils/helperFunctions";
-import { MyStockTopTabNavigator } from "./myStockNavigator";
+import { MyStockMainTopTabNavigator, MyStockTopTabNavigator } from "./myStockNavigator";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -155,7 +155,7 @@ export const TestDriveHistoryIcon = ({ navigation }) => {
 };
 
 const MyTaskFilter = ({ navigation }) => {
-  const screen = useSelector((state) => state.mytaskReducer.currentScreen);
+  const screen = useSelector((state) => state.myStockReducer.currentScreen);
   if (screen === "TODAY") return <React.Fragment></React.Fragment>;
   return (
     <IconButton
@@ -1242,18 +1242,7 @@ const MainStackDrawerNavigator = ({ navigation }) => {
       />
       <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.myStock}
-        component={MyStockTopTabNavigator}
-        options={
-          {
-            title: "My Stock",
-            headerLeft: () => <MenuIcon navigation={navigation} />,
-            headerShown: true,
-            headerStyle: screeOptionStyle.headerStyle,
-            headerTitleStyle: screeOptionStyle.headerTitleStyle,
-            headerTintColor: screeOptionStyle.headerTintColor,
-            headerBackTitleVisible: screeOptionStyle.headerBackTitleVisible,
-          }
-        }
+        component={MyStockMainTopTabNavigator}
       />
       <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.geolocation}

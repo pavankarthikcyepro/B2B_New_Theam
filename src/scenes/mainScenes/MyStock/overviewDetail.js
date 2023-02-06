@@ -19,8 +19,6 @@ import { client } from "../../../networking/client";
 import URL from "../../../networking/endpoints";
 import * as AsyncStore from "../../../asyncStore";
 import moment from "moment";
-import { MyStockTopTabNavigatorIdentifiers } from "../../../navigations/myStockNavigator";
-import { updateCurrentScreen } from "../../../redux/myStockReducer";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
@@ -30,19 +28,19 @@ const lastMonthFirstDate = moment(currentDate, dateFormat)
   .format(dateFormat);
 const screenWidth = Dimensions.get("window").width;
 
-const OverviewScreen = ({ route, navigation }) => {
+const OverviewDetailScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.homeReducer);
-
-  useLayoutEffect(() => {
-    navigation.addListener("focus", () => {
-     dispatch(updateCurrentScreen("OVERVIEW"));
+  useEffect(() => {
+    navigation.setOptions({
+      title: route?.params?.headerTitle ? route?.params?.headerTitle : "Detail",
     });
   }, [navigation]);
 
   const data = [
-    { title: "Hyderabad", value: "15" },
-    { title: "Pune", value: "20" },
+    { title: "Gopanpally-S5237", value: "10" },
+    { title: "Gachhibowli-S5239", value: "5" },
+    { title: "Nampally-S5238", value: "10" },
   ];
   const tableData = [
     { title: ">90", value: "5" },
@@ -60,16 +58,7 @@ const OverviewScreen = ({ route, navigation }) => {
           <Text style={styles.locationTxt}>{item.title}</Text>
         </View>
         <View style={styles.valueBox}>
-          <Text
-            onPress={() => {
-              navigation.navigate(MyStockTopTabNavigatorIdentifiers.detail, {
-                headerTitle: item.title,
-              });
-            }}
-            style={styles.valueTxt}
-          >
-            {item.value}
-          </Text>
+          <Text style={styles.valueTxt}>{item.value}</Text>
         </View>
       </View>
     );
@@ -103,13 +92,12 @@ const OverviewScreen = ({ route, navigation }) => {
       <ScrollView>
         <View style={styles.mainView}>
           <View style={styles.titleView}>
-            <Text style={styles.titleText}>{"Location"}</Text>
+            <Text style={styles.titleText}>{"Dealer Code"}</Text>
             <Text style={styles.titleText}>{"Car Stock"}</Text>
           </View>
           {data.map((item) => {
             return renderData(item);
           })}
-          <View style={{ marginTop: 10 }}>{renderData(total[0])}</View>
         </View>
         <View style={styles.mainView}>
           <View style={styles.tableTitleView}>
@@ -129,7 +117,7 @@ const OverviewScreen = ({ route, navigation }) => {
   );
 };
 
-export default OverviewScreen;
+export default OverviewDetailScreen;
 
 const styles = StyleSheet.create({
   container: {

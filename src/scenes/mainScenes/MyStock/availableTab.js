@@ -30,69 +30,44 @@ const lastMonthFirstDate = moment(currentDate, dateFormat)
   .format(dateFormat);
 const screenWidth = Dimensions.get("window").width;
 
-const OverviewScreen = ({ route, navigation }) => {
+const AvailableScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.homeReducer);
 
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {
-     dispatch(updateCurrentScreen("OVERVIEW"));
+      dispatch(updateCurrentScreen("AVAILABLE"));
     });
   }, [navigation]);
 
   const data = [
-    { title: "Hyderabad", value: "15" },
-    { title: "Pune", value: "20" },
+    { title: "Creta", value: "15" },
+    { title: "Venue", value: "20" },
+    { title: "Aura", value: "15" },
+    { title: "i20", value: "20" },
+    { title: "Grand i10 Nios", value: "15" },
+    { title: "Kona", value: "20" },
   ];
-  const tableData = [
-    { title: ">90", value: "5" },
-    { title: ">60", value: "5" },
-    { title: ">30", value: "5" },
-    { title: ">15", value: "5" },
-    { title: "<15", value: "5" },
-  ];
-  const total = [{ title: "Total", value: "35" }];
 
   const renderData = (item) => {
     return (
       <View style={styles.boxView}>
-        <View>
-          <Text style={styles.locationTxt}>{item.title}</Text>
-        </View>
-        <View style={styles.valueBox}>
+        <View style={{ width: "40%" }}>
           <Text
             onPress={() => {
-              navigation.navigate(MyStockTopTabNavigatorIdentifiers.detail, {
+              navigation.navigate(MyStockTopTabNavigatorIdentifiers.variant, {
                 headerTitle: item.title,
               });
             }}
-            style={styles.valueTxt}
+            style={styles.locationTxt}
           >
-            {item.value}
+            {item.title}
           </Text>
         </View>
-      </View>
-    );
-  };
-
-  const renderTableData = (item, index) => {
-    return (
-      <View style={{ ...styles.tableTitleView, marginTop: 2.5 }}>
-        <View
-          style={{
-            ...styles.tableTitle,
-            backgroundColor: index % 2 == 0 ? "#FF9999" : "pink",
-          }}
-        >
-          <Text style={styles.tableTitleTxt}>{item.title}</Text>
-        </View>
-        <View
-          style={{
-            ...styles.tableTitle,
-            backgroundColor: index % 2 == 0 ? "#FF9999" : "pink",
-          }}
-        >
-          <Text style={styles.tableTitleTxt}>{item.value}</Text>
+        <View style={styles.parameterTitleView}>
+          <Text style={styles.valueTxt}>{item.value}</Text>
+          <Text style={styles.valueTxt}>{item.value}</Text>
+          <Text style={styles.valueTxt}>{item.value}</Text>
         </View>
       </View>
     );
@@ -103,25 +78,17 @@ const OverviewScreen = ({ route, navigation }) => {
       <ScrollView>
         <View style={styles.mainView}>
           <View style={styles.titleView}>
-            <Text style={styles.titleText}>{"Location"}</Text>
-            <Text style={styles.titleText}>{"Car Stock"}</Text>
+            <View style={{ width: "40%" }}>
+              <Text style={styles.titleText}>{"Model"}</Text>
+            </View>
+            <View style={styles.parameterTitleView}>
+              <Text style={styles.titleText}>{"Petrol"}</Text>
+              <Text style={styles.titleText}>{"Diesel"}</Text>
+              <Text style={styles.titleText}>{"Electric"}</Text>
+            </View>
           </View>
           {data.map((item) => {
             return renderData(item);
-          })}
-          <View style={{ marginTop: 10 }}>{renderData(total[0])}</View>
-        </View>
-        <View style={styles.mainView}>
-          <View style={styles.tableTitleView}>
-            <View style={styles.tableTitle}>
-              <Text style={styles.tableTitleTxt}>{"Aging"}</Text>
-            </View>
-            <View style={styles.tableTitle}>
-              <Text style={styles.tableTitleTxt}>{"Stock"}</Text>
-            </View>
-          </View>
-          {tableData.map((item, index) => {
-            return renderTableData(item, index);
           })}
         </View>
       </ScrollView>
@@ -129,7 +96,7 @@ const OverviewScreen = ({ route, navigation }) => {
   );
 };
 
-export default OverviewScreen;
+export default AvailableScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -152,7 +119,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
     color: Colors.RED,
     fontWeight: "600",
-    textDecorationLine: "underline",
+    // textDecorationLine: "underline",
   },
   valueBox: {
     borderWidth: 1,
@@ -166,6 +133,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
     color: Colors.BLACK,
     fontWeight: "600",
+    textDecorationLine: "underline",
   },
   boxView: {
     borderWidth: 1,
@@ -196,4 +164,9 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   tableTitleView: { flexDirection: "row", justifyContent: "space-between" },
+  parameterTitleView: {
+    width: "60%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
 });

@@ -33,7 +33,7 @@ import taskTransferReducer from "./taskTransferReducer";
 import leaddropReducer from "./leaddropReducer";
 import liveLeadsReducer from "./liveLeadsReducer";
 import settingReducer from "./settingReducer";
-
+import myStockReducer from "./myStockReducer";
 
 const reducer = combineReducers({
   routeReducer,
@@ -68,6 +68,7 @@ const reducer = combineReducers({
   taskTransferReducer,
   liveLeadsReducer,
   settingReducer,
+  myStockReducer,
 });
 
 const createDebugger = require("redux-flipper").default;
