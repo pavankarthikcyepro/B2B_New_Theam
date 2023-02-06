@@ -725,6 +725,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     let dmsLeadEventDto;
     if (selectedEventData.length > 0) {
       dmsLeadEventDto = {
+        id: selectedEventData[0].id,
         eventId: selectedEventData[0].eventId,
         eventName: selectedEventData[0].name,
         eventLocation: selectedEventData[0]?.location,
@@ -748,7 +749,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       model: selector.carModel,
       sourceOfEnquiry: selector.sourceOfEnquiryId,
       subSource: selector.subSourceOfEnquiry,
-      eventCode: dmsLeadEventDto.eventId,
+      eventCode: dmsLeadEventDto.id,
       referencenumber: refNumber,
       pincode: selector.pincode,
       dmsAddresses: [
