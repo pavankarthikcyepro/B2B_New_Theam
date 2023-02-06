@@ -146,7 +146,7 @@ const SalesConsultant = [
   "Event Dashboard",
   "My Attendance",
   "Geolocation",
-  "Drop/Lost/Cancel",
+  // "Drop/Lost/Cancel",
   "Task Transfer",
   "Helpdesk",
   "Settings",

@@ -603,7 +603,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                 </View> */}
 
 
-
+          
             <DatePickerComponent
                 visible={showDatePicker}
                 mode={"date"}
@@ -670,8 +670,29 @@ const DropAnalysisScreen = ({ navigation }) => {
                     }}
                 />
             </View>
+          
+
+            <SegmentedControl
+                style={{
+                    marginHorizontal: 4,
+                    justifyContent: "center",
+                    alignSelf: "flex-end",
+                    height: 34,
+                    marginTop: 8,
+                    width: "100%",
+                    backgroundColor: "rgb(211,211,211,0.65)",
+                }}
+                // values={["ETVBRL", "Allied", "View All"]}
+                values={['DROPPED ' + `${(droppedData.length)}`, 'APPROVED ' + `${(approvedData.length)}`, 'REJECTED ' + `${(rejectedData.length)}`]}
+                selectedIndex={toggleParamsIndex}
+                tintColor={Colors.RED}
+                fontStyle={{ color: Colors.BLACK, fontSize: 10 }}
+                activeFontStyle={{ color: Colors.WHITE, fontSize: 10 }}
+                onChange={(event) => toggleParamsView(event)}
+            />
+            {/* date and other filters UI start*/}
             <View style={styles.view1}>
-                <View style={{ width: "50%" }}>
+                <View style={{ width: "100%" }}>
                     <DateRangeComp
                         fromDate={selectedFromDate}
                         toDate={selectedToDate}
@@ -680,7 +701,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                     />
                 </View>
                 <View style={styles.fliterView}>
-                    <View style={{ width: "49%" }}>
+                    <View style={{ width:'49%'}}>
                         <Pressable
                             onPress={() => {
                                 setLeadsFilterVisible(true);
@@ -765,25 +786,8 @@ const DropAnalysisScreen = ({ navigation }) => {
                     </View>
                 </View>
             </View>
-
-            <SegmentedControl
-                style={{
-                    marginHorizontal: 4,
-                    justifyContent: "center",
-                    alignSelf: "flex-end",
-                    height: 34,
-                    marginTop: 8,
-                    width: "100%",
-                    backgroundColor: "rgb(211,211,211,0.65)",
-                }}
-                // values={["ETVBRL", "Allied", "View All"]}
-                values={['DROPPED ' + `${(droppedData.length)}`, 'APPROVED ' + `${(approvedData.length)}`, 'REJECTED ' + `${(rejectedData.length)}`]}
-                selectedIndex={toggleParamsIndex}
-                tintColor={Colors.RED}
-                fontStyle={{ color: Colors.BLACK, fontSize: 10 }}
-                activeFontStyle={{ color: Colors.WHITE, fontSize: 10 }}
-                onChange={(event) => toggleParamsView(event)}
-            />
+            {/* date and other filters UI END*/}
+            
             {toggleParamsIndex === 0 && <>
                 {droppedData.length === 0 ? <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} /> :
                     <View style={[{ backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10, marginTop: 10 }]}>
@@ -1067,7 +1071,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
     },
     view1: {
-        flexDirection: 'row',
+        flexDirection: 'column',
         justifyContent: "space-between",
         alignItems: "center",
         marginVertical: 5,
@@ -1131,7 +1135,7 @@ const styles = StyleSheet.create({
         paddingBottom: 4,
         backgroundColor: Colors.WHITE,
         marginTop: -6,
-        width: "50%",
+        width: "100%",
         alignItems: "center",
     },
 });

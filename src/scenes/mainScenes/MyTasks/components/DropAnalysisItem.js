@@ -122,24 +122,35 @@ export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId
               position: "relative",
             }}
           >
-            {showBubble && (
-              <View
-                style={styles.btn3}
-
-              >
-                <Text style={styles.txt7}>3</Text>
-              </View>
-            )}
+          
             <View style={{ width: "60%" }}>
+              <View style={{flexDirection:"row",}}>
+                
+                {isManager && isCheckboxVisible &&
+                  <Checkbox.Android
+                    onPress={() => {
+                      checkboxSelected()
+                    }}
+                    status={isItemSelected}
+                    color={Colors.YELLOW}
+                    uncheckedColor={Colors.YELLOW} />}
 
-              {isManager && isCheckboxVisible &&
-                <Checkbox.Android
-                  onPress={() => {
-                    checkboxSelected()
-                  }}
-                  status={isItemSelected}
-                  color={Colors.YELLOW}
-                  uncheckedColor={Colors.YELLOW} />}
+                {showBubble && (
+                  <View
+                    style={styles.btn3}
+
+                  >
+                    <Image
+                      source={require("./../../../../assets/images/check-list.png")}
+                      resizeMode="contain"
+                      tintColor={Colors.GRAY}
+                      style={[styles.countCointaner]}
+                    />
+                    <Text style={styles.txt7}>3</Text>
+                  </View>
+                )}
+              </View>
+              
 
               <View style={{ flexDirection: "row", marginLeft: 10 }}>
                 <View style={{ maxWidth: "73%" }}>
@@ -242,6 +253,7 @@ export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId
             <Image
               source={require("./../../../../assets/images/dots.png")}
               resizeMode="contain"
+              tintColor={Colors.GRAY}
               style={styles.dotContainer}
             />
           </TouchableOpacity>
@@ -308,19 +320,37 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     textTransform: 'uppercase'
   },
-  txt7: { fontSize: 16, fontWeight: "500", color: Colors.RED },
+  txt7: { fontSize: 12,
+     fontWeight: "500",
+      color: Colors.WHITE,
+      position:"absolute",
+      left:28,
+      top:-3,
+      backgroundColor:Colors.PINK,
+     borderWidth: 1,
+    borderColor: Colors.PINK,
+    borderRadius: 5,
+    textAlign:"center",
+    width:15,
+    
+   },
   btn3: {
-    width: 35,
-    height: 35,
+    // width: 35,
+    // height: 30,
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#d1d1d1",
-    borderRadius: 5,
+    // borderWidth: 1,
+    // borderColor: "#d1d1d1",
+    // borderRadius: 5,
     // backgroundColor:Colors.PINK,  
     alignSelf: "flex-end",
-    alignSelf: "flex-start",
-    marginBottom: -5
+ 
+    padding:2,
+    marginEnd:5,
+    marginStart:6
+    // marginHorizontal:10
+    
+    // marginBottom: -5
     // marginEnd:10
 
   },
@@ -348,5 +378,10 @@ const styles = StyleSheet.create({
      shadowOpacity: 0.5,
     // padding:10,
     // flex:1
+  },
+  countCointaner:{
+    height: 30,
+    width: 25,
+
   }
 })
