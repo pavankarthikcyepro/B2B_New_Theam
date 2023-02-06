@@ -703,24 +703,22 @@ const AttendanceScreen = ({ route, navigation }) => {
           "/ATTENDANCE_" +
           Math.floor(date.getTime() + date.getSeconds() / 2) +
           file_ext,
-        // mime: 'application/xlsx',
+        mime: 'application/xlsx',
         // appendExt: 'xlsx',
         //path: filePath,
         //appendExt: fileExt,
         notification: true,
       };
       AsyncStore.getData(AsyncStore.Keys.ACCESS_TOKEN).then((token) => {
-        console.log("LLLL", token);
         config(options)
           .fetch("GET", url, {
-            Accept: "application/json",
-            "Content-Type": "application/json",
+            Accept: "application/octet-stream",
+            "Content-Type": "application/octet-stream",
             Authorization: "Bearer " + token,
           })
           .then((res) => {
             setLoading(false);
             setTimeout(() => {
-              console.log(res);
               // RNFetchBlob.ios.previewDocument('file://' + res.path());   //<---Property to display iOS option to save file
               RNFetchBlob.ios.openDocument(res.data); //<---Property to display downloaded file on documaent viewer
               // Alert.alert(CONSTANTS.APP_NAME,'File download successfully');
