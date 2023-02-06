@@ -563,8 +563,25 @@ export const  getBranchRanksList = createAsyncThunk(
     return json;
   }
 );
+
 export const getEventSourceModel = createAsyncThunk(
   "HOME/getEventSourceModel",
+  async (data: any, { rejectWithValue }) => {
+    const { type, payload, key } = data;
+    const url = URL.EVENT_DASHBOARD();
+
+    const response = await client.post(url, payload);
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+export const getEventSourceModelForSelf = createAsyncThunk(
+  "HOME/getEventSourceModelForSelf",
   async (data: any, { rejectWithValue }) => {
     const { type, payload, key } = data;
     const url = URL.EVENT_DASHBOARD();
@@ -789,6 +806,7 @@ export const homeSlice = createSlice({
     designationList: [],
     deptList: [],
     sourceModelData: [],
+    eventSourceModelForSelf: [],
     isModalVisible: false,
     bannerList: [],
     receptionistData: {
@@ -799,7 +817,7 @@ export const homeSlice = createSlice({
       totalDroppedCount: 0,
       contactsCount: 0,
       enquirysCount: 0,
-      totalLostCount:0,
+      totalLostCount: 0,
     },
     receptionistModel: [],
     receptionistSource: [],
@@ -1377,6 +1395,21 @@ export const homeSlice = createSlice({
       .addCase(getSourceModelDataForSelf.rejected, (state, action) => {
         state.isLoading = false;
       })
+      
+      .addCase(getEventSourceModelForSelf.pending, (state, action) => {
+        state.isLoading = true;
+        state.eventSourceModelForSelf = [];
+      })
+      .addCase(getEventSourceModelForSelf.fulfilled, (state, action) => {
+        state.isLoading = false;
+        if (action.payload) {
+          state.eventSourceModelForSelf = action.payload;
+        }
+      })
+      .addCase(getEventSourceModelForSelf.rejected, (state, action) => {
+        state.isLoading = false;
+      })
+
       .addCase(getEventSourceModel.pending, (state, action) => {
         state.isLoading = true;
         state.sourceModelData = [];
