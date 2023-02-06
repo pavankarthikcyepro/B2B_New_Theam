@@ -601,7 +601,7 @@ const EventDashBoardTargetScreen = ({ route }) => {
   };
 
   const onEmployeeNameClick = async (item, index, lastParameter) => {
-    if (item.childCount == 0) {
+    if (item.childCount < 1) {
       return;
     }
 

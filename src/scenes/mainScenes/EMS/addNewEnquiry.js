@@ -1327,6 +1327,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
         let dmsLeadEventDto;
         if (selectedEventData.length > 0) {
           dmsLeadEventDto = {
+            id: selectedEventData[0].id,
             eventId: selectedEventData[0].eventId,
             eventName: selectedEventData[0].name,
             eventLocation: selectedEventData[0].location,
@@ -1393,7 +1394,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
             organizationId: jsonObj.orgId,
             phone: selector.mobile,
             sourceOfEnquiry: sourceData,
-            eventCode: dmsLeadEventDto.eventId,
+            eventCode: dmsLeadEventDto.id,
             email: selector.email,
             referencenumber: "",
             buyerType: selector.buyer_type,

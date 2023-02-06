@@ -122,9 +122,10 @@ const AttendanceScreen = ({ route, navigation }) => {
     navigation.addListener("focus", () => {
       // getCurrentLocation();
       setFromDateState(lastMonthFirstDate);
-      setToDateState(lastMonthLastDate);
+      setToDateState(currentDate);
       GetCountByMonth(lastMonthFirstDate, lastMonthLastDate);
       getAttendanceByMonth(lastMonthFirstDate, lastMonthLastDate);
+      SetFilterStart(false);
       getProfilePic();
       // setLoading(true);
       // getAttendance();
@@ -155,6 +156,12 @@ const AttendanceScreen = ({ route, navigation }) => {
     setPayRoll(moment(toDate).format(dateFormat));
   }, [selectedFromDate]);
 
+  useEffect(() => {
+    if (filterStart) {
+      getAttendanceFilter();
+    }
+  }, [selectedFromDate, selectedToDate]);
+
   const setFromDateState = (date) => {
     fromDateRef.current = date;
     setSelectedFromDate((x) => date);
@@ -176,13 +183,13 @@ const AttendanceScreen = ({ route, navigation }) => {
       case "FROM_DATE":
         setFromDateState(formatDate);
         setLoading(true);
-        getAttendanceFilter(route?.params);
+        // getAttendanceFilter(route?.params);
         SetFilterStart(true);
         break;
       case "TO_DATE":
         setToDateState(formatDate);
         setLoading(true);
-        getAttendanceFilter(route?.params);
+        // getAttendanceFilter(route?.params);
         SetFilterStart(true);
         break;
     }
@@ -208,6 +215,10 @@ const AttendanceScreen = ({ route, navigation }) => {
           )
         );
         const json = await response.json();
+        const response1 = await client.get(
+          URL.GET_HOLIDAYS(newUser ? newUser.orgId : jsonObj.orgId)
+        );
+        const json1 = await response1.json();
         if (json) {
           let newArray = [];
           let dateArray = [];
@@ -254,6 +265,25 @@ const AttendanceScreen = ({ route, navigation }) => {
             newArray.push(format);
             weekArray.push(weekReport);
           }
+          if (json1.length > 0) {
+            for (let i = 0; i <= json1.length - 1; i++) {
+              let format = {
+                customStyles: {
+                  container: {
+                    backgroundColor: Colors.DARK_GRAY,
+                  },
+                  text: {
+                    color: Colors.WHITE,
+                    fontWeight: "bold",
+                  },
+                },
+              };
+              let date = new Date(json1[i].date);
+              let formatedDate = moment(date).format(dateFormat);
+              dateArray.push(formatedDate);
+              newArray.push(format);
+            }
+          }
           var obj = {};
           for (let i = 0; i < newArray.length; i++) {
             const element = newArray[i];
@@ -270,7 +300,6 @@ const AttendanceScreen = ({ route, navigation }) => {
   };
 
   const getAttendance = async (newUser) => {
-    console.log("KKKK");
     try {
       let employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -346,7 +375,6 @@ const AttendanceScreen = ({ route, navigation }) => {
               //   ? "WFH"
               //   : "Absent",
             };
-            console.log(element);
             dateArray.push(formatedDate);
             newArray.push(format);
             weekArray.push(weekReport);
@@ -510,7 +538,6 @@ const AttendanceScreen = ({ route, navigation }) => {
         const json = await response.json();
         const response1 = await client.get(URL.GET_HOLIDAYS(jsonObj.orgId));
         const json1 = await response1.json();
-        // console.log(json1);
         if (json) {
           let newArray = [];
           let dateArray = [];
@@ -676,17 +703,23 @@ const AttendanceScreen = ({ route, navigation }) => {
           description: "Downloading image.",
         },
       };
-      config(options)
-        .fetch("GET", url)
-        .then((res) => {
-          setLoading(false);
-          RNFetchBlob.android.actionViewIntent(res.path());
-          // do some magic here
-        })
-        .catch((err) => {
-          console.error(err);
-          setLoading(false);
-        });
+      AsyncStore.getData(AsyncStore.Keys.ACCESS_TOKEN).then((token) => {
+        config(options)
+          .fetch("GET", url, {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          })
+          .then((res) => {
+            setLoading(false);
+            RNFetchBlob.android.actionViewIntent(res.path());
+            // do some magic here
+          })
+          .catch((err) => {
+            console.error(err);
+            setLoading(false);
+          });
+      });
     }
     if (Platform.OS === "ios") {
       options = {
@@ -696,26 +729,31 @@ const AttendanceScreen = ({ route, navigation }) => {
           "/ATTENDANCE_" +
           Math.floor(date.getTime() + date.getSeconds() / 2) +
           file_ext,
-        // mime: 'application/xlsx',
+        mime: "application/xlsx",
         // appendExt: 'xlsx',
         //path: filePath,
         //appendExt: fileExt,
         notification: true,
       };
-
-      config(options)
-        .fetch("GET", url)
-        .then((res) => {
-          setLoading(false);
-          setTimeout(() => {
-            // RNFetchBlob.ios.previewDocument('file://' + res.path());   //<---Property to display iOS option to save file
-            RNFetchBlob.ios.openDocument(res.data); //<---Property to display downloaded file on documaent viewer
-            // Alert.alert(CONSTANTS.APP_NAME,'File download successfully');
-          }, 300);
-        })
-        .catch((errorMessage) => {
-          setLoading(false);
-        });
+      AsyncStore.getData(AsyncStore.Keys.ACCESS_TOKEN).then((token) => {
+        config(options)
+          .fetch("GET", url, {
+            Accept: "application/octet-stream",
+            "Content-Type": "application/octet-stream",
+            Authorization: "Bearer " + token,
+          })
+          .then((res) => {
+            setLoading(false);
+            setTimeout(() => {
+              // RNFetchBlob.ios.previewDocument('file://' + res.path());   //<---Property to display iOS option to save file
+              RNFetchBlob.ios.openDocument(res.data); //<---Property to display downloaded file on documaent viewer
+              // Alert.alert(CONSTANTS.APP_NAME,'File download successfully');
+            }, 300);
+          })
+          .catch((errorMessage) => {
+            setLoading(false);
+          });
+      });
     }
   };
 
@@ -742,7 +780,8 @@ const AttendanceScreen = ({ route, navigation }) => {
       <DatePickerComponent
         visible={showDatePicker}
         mode={"date"}
-        maximumDate={payRoll != "" ? new Date(payRoll) : new Date()}
+        // maximumDate={payRoll != "" ? new Date(payRoll) : new Date()}
+        maximumDate={new Date()}
         value={new Date()}
         onChange={(event, selectedDate) => {
           setShowDatePicker(false);
@@ -802,7 +841,7 @@ const AttendanceScreen = ({ route, navigation }) => {
         </View>
         <View>
           <Calendar
-            // disabledDaysIndexes={[6, 7]}
+            disabledDaysIndexes={[6, 7]}
             onDayPress={(day) => {
               // isCurrentDate(day);
               if (
@@ -812,11 +851,9 @@ const AttendanceScreen = ({ route, navigation }) => {
                 let newData = weeklyRecord.filter(
                   (e) => e.start === day.dateString
                 )[0];
-                console.log(newData);
                 if (newData?.status == "Absent" || newData?.status == "WFH") {
                   setHoverReasons(newData?.reason || "");
                   setStatus(newData?.status == "Absent" ? "Leave" : "WFH");
-                  console.log(newData?.status);
                   setNotes(newData?.note || "");
                   setAttendance(true);
                 }
