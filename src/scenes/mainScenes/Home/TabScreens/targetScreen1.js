@@ -3373,7 +3373,6 @@ export const RenderLevel1NameView = ({
             disabled={stopLocation}
             onPress={() => {
               if (item.roleName !== "MD" && item.roleName !== "CEO") {
-                console.log(item.roleName);
                 navigation.navigate(
                   AppNavigator.HomeStackIdentifiers.location,
                   {
