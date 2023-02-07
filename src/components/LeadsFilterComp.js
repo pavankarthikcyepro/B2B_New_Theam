@@ -26,7 +26,7 @@ const LeadsFilterComp = ({
     useEffect(() => {
         setLocalModelList([...modelList]);
     }, [visible]);
-
+    
     const itemSelected = (selectedItem, itemIndex) => {
         let modelList = [...localModelList];
         let selectedObject = { ...modelList[itemIndex] };
@@ -84,6 +84,7 @@ const LeadsFilterComp = ({
                                                     style={[styles.radioText, { color: Colors.BLACK }]}
                                                 >
                                                     {item?.subMenu}
+                                                    {/* {item?.subMenu === "Retail" ? "Invoice" : item?.subMenu} */}
                                                 </Text>
                                             </View>
                                         </TouchableOpacity>
