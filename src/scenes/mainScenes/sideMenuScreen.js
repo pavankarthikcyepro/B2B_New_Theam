@@ -249,15 +249,15 @@ const SideMenuScreen = ({ navigation }) => {
         receptionTelCallerMenu.includes(item.title)
       );
     } else if (
-      jsonObj.hrmsRole.toLowerCase().includes("dse") ||
-      jsonObj.hrmsRole.toLowerCase().includes("sales consultant")
+      jsonObj?.hrmsRole?.toLowerCase().includes("dse") ||
+      jsonObj?.hrmsRole?.toLowerCase().includes("sales consultant")
     ) {
       newFilterData = selector.tableData.filter((item) =>
         salesMenu.includes(item.title)
       );
     } else if (
-      jsonObj.hrmsRole.toLowerCase().includes("manager") ||
-      jsonObj.hrmsRole == "MD"
+      jsonObj?.hrmsRole?.toLowerCase().includes("manager") ||
+      jsonObj?.hrmsRole == "MD"
     ) {
       newFilterData = selector.tableData.filter((item) =>
         managerMdMenu.includes(item.title)
