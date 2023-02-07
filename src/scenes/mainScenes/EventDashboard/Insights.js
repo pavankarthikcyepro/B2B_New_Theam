@@ -269,47 +269,74 @@ const EventInsights = ({ route, navigation }) => {
   const renderDataView = () => {
     const keys = leadSourceKeys;
     const data = leadSource;
-    return (
-      <>
-        {keys &&
-          keys.length > 0 &&
-          keys.map((x, index) => {
-            return (
-              <View key={`${index}`}>
-                <View style={styles.flexRow}>
-                  {data[x] && (
-                    <RenderSourceModelParameters
-                      item={{ targetAchievements: data[x] }}
-                      displayType={displayType}
-                      moduleType={moduleType}
-                      sourceModelTotals={sourceModelTotals}
-                    />
-                  )}
+
+    if (leadSource.length > 0) {
+      return (
+        <>
+          {keys &&
+            keys.length > 0 &&
+            keys.map((x, index) => {
+              return (
+                <View key={`${index}`}>
+                  <View style={styles.flexRow}>
+                    {data[x] && (
+                      <RenderSourceModelParameters
+                        item={{ targetAchievements: data[x] }}
+                        displayType={displayType}
+                        moduleType={moduleType}
+                        sourceModelTotals={sourceModelTotals}
+                      />
+                    )}
+                  </View>
                 </View>
-              </View>
-            );
-          })}
-      </>
-    );
+              );
+            })}
+        </>
+      );
+    } else {
+      return (
+        <Text
+          style={{
+            alignSelf: "center",
+            marginVertical: 10,
+            color: Colors.DARK_GRAY,
+            fontSize: 16,
+            fontWeight: "500",
+          }}
+        >
+          No Events
+        </Text>
+      );
+    }
   };
 
   function renderTitleColumn() {
     const keys = leadSourceKeys;
-    return (
-      <>
-        {keys &&
-          keys.length > 0 &&
-          keys.map((x, index) => {
-            return (
-              <View key={`${index}`} style={styles.titleColumnView}>
-                <Text style={styles.titleColumnText} numberOfLines={2}>
-                  {x}
-                </Text>
-              </View>
-            );
-          })}
-      </>
-    );
+    if (leadSource.length > 0) {
+      return (
+        <>
+          {keys &&
+            keys.length > 0 &&
+            keys.map((x, index) => {
+              return (
+                <View key={`${index}`} style={styles.titleColumnView}>
+                  <Text style={styles.titleColumnText} numberOfLines={2}>
+                    {x}
+                  </Text>
+                </View>
+              );
+            })}
+        </>
+      );
+    } else {
+      return (
+        <View key={`0`} style={[styles.titleColumnView, {backgroundColor: Colors.WHITE, height: 27}]}>
+          <Text style={styles.titleColumnText} numberOfLines={2}>
+            {""}
+          </Text>
+        </View>
+      );
+    }
   }
   function isEmpty(obj) {
     return Object.keys(obj).length === 0;
@@ -407,58 +434,60 @@ const EventInsights = ({ route, navigation }) => {
                       {/* TOP Header view */}
                       <View key={"headers"} style={[styles.flexRow]}>
                         <View style={[styles.flexRow, { height: 20 }]}>
-                          {toggleParamsMetaData.map((param, i) => {
-                            if (moduleType === "live-leads") {
-                              if (
-                                param.paramName === "INVOICE" ||
-                                param.paramName === "Enquiry" ||
-                                param.paramName === "Booking" ||
-                                param.paramName === "PreEnquiry"
-                              ) {
-                                return (
-                                  <View
-                                    key={`${param.paramName}__${i}`}
-                                    style={[
-                                      styles.flexRow,
-                                      styles.justifyAlignCenter,
-                                      {
-                                        width:
-                                          param.paramName === "Accessories"
-                                            ? 80
-                                            : 60,
-                                      },
-                                    ]}
-                                  >
-                                    <Text style={{ color: param.color }}>
-                                      {param.shortName}
-                                    </Text>
-                                  </View>
-                                );
-                              }
-                            } else {
-                              if (param.paramName !== "PreEnquiry") {
-                                return (
-                                  <View
-                                    key={`${param.paramName}__${i}`}
-                                    style={[
-                                      styles.flexRow,
-                                      styles.justifyAlignCenter,
-                                      {
-                                        width:
-                                          param.paramName === "Accessories"
-                                            ? 80
-                                            : 60,
-                                      },
-                                    ]}
-                                  >
-                                    <Text style={{ color: param.color }}>
-                                      {param.shortName}
-                                    </Text>
-                                  </View>
-                                );
+                          {toggleParamsMetaData.map(
+                            (param, i) => {
+                              if (moduleType === "live-leads") {
+                                if (
+                                  param.paramName === "INVOICE" ||
+                                  param.paramName === "Enquiry" ||
+                                  param.paramName === "Booking" ||
+                                  param.paramName === "PreEnquiry"
+                                ) {
+                                  return (
+                                    <View
+                                      key={`${param.paramName}__${i}`}
+                                      style={[
+                                        styles.flexRow,
+                                        styles.justifyAlignCenter,
+                                        {
+                                          width:
+                                            param.paramName === "Accessories"
+                                              ? 80
+                                              : 60,
+                                        },
+                                      ]}
+                                    >
+                                      <Text style={{ color: param.color }}>
+                                        {param.shortName}
+                                      </Text>
+                                    </View>
+                                  );
+                                }
+                              } else {
+                                if (param.paramName !== "PreEnquiry") {
+                                  return (
+                                    <View
+                                      key={`${param.paramName}__${i}`}
+                                      style={[
+                                        styles.flexRow,
+                                        styles.justifyAlignCenter,
+                                        {
+                                          width:
+                                            param.paramName === "Accessories"
+                                              ? 80
+                                              : 60,
+                                        },
+                                      ]}
+                                    >
+                                      <Text style={{ color: param.color }}>
+                                        {param.shortName}
+                                      </Text>
+                                    </View>
+                                  );
+                                }
                               }
                             }
-                          })}
+                          )}
                         </View>
                       </View>
                       <View>{renderDataView()}</View>
@@ -514,7 +543,7 @@ const EventInsights = ({ route, navigation }) => {
                         </View>
                       </View>
                     </View>
-                  </ScrollView> 
+                  </ScrollView>
                 </View>
               </ScrollView>
             )}
