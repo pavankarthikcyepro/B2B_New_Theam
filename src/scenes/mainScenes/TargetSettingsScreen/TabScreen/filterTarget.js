@@ -137,10 +137,10 @@ const FilterTargetScreen = ({ route, navigation }) => {
     navigation.addListener("focus", () => {
       if (!isEmpty(targetSelector.filterSelectedData)) {
         const temp = {...targetSelector.filterSelectedData};
-        setEmployeeDropDownDataLocal(temp);
+        setEmployeeDropDownDataLocal({...temp});
       }
     });
-  }, [targetSelector.filterSelectedData]);
+  }, [navigation]);
 
   useEffect(() => {
     navigation.addListener("focus", () => {
@@ -485,8 +485,11 @@ const FilterTargetScreen = ({ route, navigation }) => {
         }
         newDataObj[key] = newArray;
       }
-      setName(names, newDataObj);
-    }
+if (!isEmpty(names) && !isEmpty(newDataObj)) {
+  setEmloyeeTitleNameList(names);
+  setEmployeeDropDownDataLocal(newDataObj);
+  setIsLoading(false);
+}    }
   }, [selector.employees_drop_down_data]);
 
   const setName = useCallback(
@@ -556,7 +559,7 @@ const FilterTargetScreen = ({ route, navigation }) => {
       );
     });
 
-    dispatch(updateFilterSelectedData(employeeDropDownDataLocal));
+    dispatch(updateFilterSelectedData({...employeeDropDownDataLocal}));
     if (temp.length > 0) {
       navigation.navigate("MONTHLY_TARGET_SCREEN", {
         params: {
