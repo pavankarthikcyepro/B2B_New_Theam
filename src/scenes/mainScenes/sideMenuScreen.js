@@ -272,7 +272,7 @@ const SideMenuScreen = ({ navigation }) => {
     switch (item.screen) {
       case 99:
         // navigation.navigate(AppNavigator.DrawerStackIdentifiers.home);
-        navigation.navigate(MDMenu[0]);
+        navigation.navigate(managerMdMenu[0]);
         break;
       case 100:
         navigation.navigate(

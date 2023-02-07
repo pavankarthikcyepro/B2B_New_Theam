@@ -84,17 +84,17 @@ export const RenderEmployeeParameters = (parameter) => {
             ? item?.tempTargetAchievements?.filter(
                 (x) => x.paramName === param
               )[0]
-            : item.targetAchievements.filter((x) => x.paramName === param)[0]
-          : item.targetAchievements.filter((x) => x.paramName === param)[0];
+            : item?.targetAchievements?.filter((x) => x.paramName === param)[0]
+          : item?.targetAchievements?.filter((x) => x.paramName === param)[0];
         const enq = item?.isOpenInner
           ? item?.tempTargetAchievements
             ? item?.tempTargetAchievements?.filter(
                 (item) => item.paramName === "Enquiry"
               )[0]
-            : item.targetAchievements.filter(
+            : item?.targetAchievements?.filter(
                 (item) => item.paramName === "Enquiry"
               )[0]
-          : item.targetAchievements.filter(
+          : item?.targetAchievements?.filter(
               (item) => item.paramName === "Enquiry"
             )[0];
         const ret = item?.isOpenInner
@@ -102,10 +102,10 @@ export const RenderEmployeeParameters = (parameter) => {
             ? item?.tempTargetAchievements?.filter(
                 (item) => item.paramName === "INVOICE"
               )[0]
-            : item.targetAchievements.filter(
+            : item?.targetAchievements?.filter(
                 (item) => item.paramName === "INVOICE"
               )[0]
-          : item.targetAchievements.filter(
+          : item?.targetAchievements?.filter(
               (item) => item.paramName === "INVOICE"
             )[0];
         const acc = item?.isOpenInner
@@ -113,10 +113,10 @@ export const RenderEmployeeParameters = (parameter) => {
             ? item?.tempTargetAchievements?.filter(
                 (item) => item.paramName === "Accessories"
               )[0]
-            : item.targetAchievements.filter(
+            : item?.targetAchievements?.filter(
                 (item) => item.paramName === "Accessories"
               )[0]
-          : item.targetAchievements.filter(
+          : item?.targetAchievements?.filter(
               (item) => item.paramName === "Accessories"
             )[0];
         // const elementColor = getColor(Number(selectedParameter.achievment), Number(selectedParameter.target));
