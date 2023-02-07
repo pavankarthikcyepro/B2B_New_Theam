@@ -964,16 +964,6 @@ const TargetScreen = ({ route }) => {
                                 >
                                   <View style={{ flexDirection: "row" }}>
                                     <Text
-                                      onPress={() => {
-                                        navigation.navigate(
-                                          AppNavigator.HomeStackIdentifiers
-                                            .location,
-                                          {
-                                            empId: item.empId,
-                                            orgId: item.orgId,
-                                          }
-                                        );
-                                      }}
                                       style={{
                                         fontSize: 12,
                                         fontWeight: "600",
@@ -1012,6 +1002,7 @@ const TargetScreen = ({ route }) => {
                                         navigation={navigation}
                                         titleClick={async () => {}}
                                         roleName={item.roleName}
+                                        stopLocation={true}
                                       />
                                       <View
                                         style={{
@@ -1292,16 +1283,6 @@ const TargetScreen = ({ route }) => {
                                 >
                                   <View style={{ flexDirection: "row" }}>
                                     <Text
-                                      onPress={() => {
-                                        navigation.navigate(
-                                          AppNavigator.HomeStackIdentifiers
-                                            .location,
-                                          {
-                                            empId: item.empId,
-                                            orgId: item.orgId,
-                                          }
-                                        );
-                                      }}
                                       style={{
                                         fontSize: 12,
                                         fontWeight: "600",
@@ -1395,6 +1376,7 @@ const TargetScreen = ({ route }) => {
                                         )}
                                         color={"#C62159"}
                                         navigation={navigation}
+                                        stopLocation={true}
                                         titleClick={async () => {
                                           let localData = [...allParameters];
                                           await onEmployeeNameClick(
@@ -1441,19 +1423,6 @@ const TargetScreen = ({ route }) => {
                                                   <View style={styles.view9}>
                                                     <View style={styles.view10}>
                                                       <Text
-                                                        onPress={() => {
-                                                          navigation.navigate(
-                                                            AppNavigator
-                                                              .HomeStackIdentifiers
-                                                              .location,
-                                                            {
-                                                              empId:
-                                                                innerItem1.empId,
-                                                              orgId:
-                                                                innerItem1.orgId,
-                                                            }
-                                                          );
-                                                        }}
                                                         style={{
                                                           fontSize: 10,
                                                           fontWeight: "500",
@@ -1635,19 +1604,6 @@ const TargetScreen = ({ route }) => {
                                                               }}
                                                             >
                                                               <Text
-                                                                onPress={() => {
-                                                                  navigation.navigate(
-                                                                    AppNavigator
-                                                                      .HomeStackIdentifiers
-                                                                      .location,
-                                                                    {
-                                                                      empId:
-                                                                        innerItem2.empId,
-                                                                      orgId:
-                                                                        innerItem2.orgId,
-                                                                    }
-                                                                  );
-                                                                }}
                                                                 style={{
                                                                   fontSize: 10,
                                                                   fontWeight:
@@ -1828,19 +1784,6 @@ const TargetScreen = ({ route }) => {
                                                                         }}
                                                                       >
                                                                         <Text
-                                                                          onPress={() => {
-                                                                            navigation.navigate(
-                                                                              AppNavigator
-                                                                                .HomeStackIdentifiers
-                                                                                .location,
-                                                                              {
-                                                                                empId:
-                                                                                  innerItem3.empId,
-                                                                                orgId:
-                                                                                  innerItem3.orgId,
-                                                                              }
-                                                                            );
-                                                                          }}
                                                                           style={{
                                                                             fontSize: 10,
                                                                             fontWeight:
@@ -2030,19 +1973,6 @@ const TargetScreen = ({ route }) => {
                                                                                 }
                                                                               >
                                                                                 <Text
-                                                                                  onPress={() => {
-                                                                                    navigation.navigate(
-                                                                                      AppNavigator
-                                                                                        .HomeStackIdentifiers
-                                                                                        .location,
-                                                                                      {
-                                                                                        empId:
-                                                                                          innerItem4.empId,
-                                                                                        orgId:
-                                                                                          innerItem4.orgId,
-                                                                                      }
-                                                                                    );
-                                                                                  }}
                                                                                   style={{
                                                                                     fontSize: 10,
                                                                                     fontWeight:
@@ -2147,19 +2077,6 @@ const TargetScreen = ({ route }) => {
                                                                                           }
                                                                                         >
                                                                                           <Text
-                                                                                            onPress={() => {
-                                                                                              navigation.navigate(
-                                                                                                AppNavigator
-                                                                                                  .HomeStackIdentifiers
-                                                                                                  .location,
-                                                                                                {
-                                                                                                  empId:
-                                                                                                    innerItem5.empId,
-                                                                                                  orgId:
-                                                                                                    innerItem5.orgId,
-                                                                                                }
-                                                                                              );
-                                                                                            }}
                                                                                             style={{
                                                                                               fontSize: 10,
                                                                                               fontWeight:
@@ -2267,19 +2184,6 @@ const TargetScreen = ({ route }) => {
                                                                                                     }
                                                                                                   >
                                                                                                     <Text
-                                                                                                      onPress={() => {
-                                                                                                        navigation.navigate(
-                                                                                                          AppNavigator
-                                                                                                            .HomeStackIdentifiers
-                                                                                                            .location,
-                                                                                                          {
-                                                                                                            empId:
-                                                                                                              innerItem6.empId,
-                                                                                                            orgId:
-                                                                                                              innerItem6.orgId,
-                                                                                                          }
-                                                                                                        );
-                                                                                                      }}
                                                                                                       style={{
                                                                                                         fontSize: 10,
                                                                                                         fontWeight:
@@ -3425,6 +3329,7 @@ export const RenderLevel1NameView = ({
   navigation,
   disable = false,
   receptionManager = false,
+  stopLocation=false,
 }) => {
   return (
     <View
@@ -3464,7 +3369,16 @@ export const RenderLevel1NameView = ({
         </TouchableOpacity>
         {/* {level === 0 && !!branchName && ( */}
         {branchName ? (
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <TouchableOpacity
+            disabled={stopLocation}
+            onPress={() => {
+              navigation.navigate(AppNavigator.HomeStackIdentifiers.location, {
+                empId: item.empId,
+                orgId: item.orgId,
+              });
+            }}
+            style={{ flexDirection: "row", alignItems: "center" }}
+          >
             <IconButton
               icon="map-marker"
               style={{ padding: 0, margin: 0 }}
@@ -3474,7 +3388,7 @@ export const RenderLevel1NameView = ({
             <Text style={{ fontSize: 8 }} numberOfLines={2}>
               {branchName}
             </Text>
-          </View>
+          </TouchableOpacity>
         ) : null}
         {/* )} */}
       </View>
