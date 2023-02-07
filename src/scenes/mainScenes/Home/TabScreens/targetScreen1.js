@@ -3329,7 +3329,7 @@ export const RenderLevel1NameView = ({
   navigation,
   disable = false,
   receptionManager = false,
-  stopLocation=false,
+  stopLocation = false,
 }) => {
   return (
     <View
@@ -3372,10 +3372,16 @@ export const RenderLevel1NameView = ({
           <TouchableOpacity
             disabled={stopLocation}
             onPress={() => {
-              navigation.navigate(AppNavigator.HomeStackIdentifiers.location, {
-                empId: item.empId,
-                orgId: item.orgId,
-              });
+              if (item.roleName !== "MD" && item.roleName !== "CEO") {
+                console.log(item.roleName);
+                navigation.navigate(
+                  AppNavigator.HomeStackIdentifiers.location,
+                  {
+                    empId: item.empId,
+                    orgId: item.orgId,
+                  }
+                );
+              }
             }}
             style={{ flexDirection: "row", alignItems: "center" }}
           >
