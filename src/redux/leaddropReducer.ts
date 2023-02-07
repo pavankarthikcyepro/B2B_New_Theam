@@ -162,6 +162,20 @@ export const updateBulkApproval = createAsyncThunk(
     return json;
   }
 );
+
+export const getDropAnalysisFilter = createAsyncThunk(
+  "DROPANALYSIS/getDropAnalysisFilter",
+  async (payload, { rejectWithValue }) => {
+
+    const response = await client.post(URL.DROP_ANALYSIS_LIST_FILTER(), payload);
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
 const leaddropListSlice = createSlice({
   name: "DROPANALYSIS",
   initialState: {
@@ -319,6 +333,36 @@ const leaddropListSlice = createSlice({
     });
     builder.addCase(updateBulkApproval.rejected, (state, action) => {
       state.approvalStatus = "failed";
+    });
+
+    builder.addCase(getDropAnalysisFilter.pending, (state) => {
+      state.totalPages = 1;
+      state.pageNumber = 0;
+      state.leadDropList = [];
+      state.isLoading = true;
+    });
+    builder.addCase(getDropAnalysisFilter.fulfilled, (state, action) => {
+      const dmsLeadDropInfos = action.payload.dmsLeadDropInfos;
+
+      state.totalPages = 1;
+      state.pageNumber = 0;
+      state.leadDropList = [];
+      if (dmsLeadDropInfos) {
+        state.totalPages = dmsLeadDropInfos.totalPages;
+        state.pageNumber = dmsLeadDropInfos.pageable.pageNumber;
+        state.leadDropList = dmsLeadDropInfos.content;
+
+      }
+      state.isLoading = false;
+      state.status = "sucess";
+      
+    });
+    builder.addCase(getDropAnalysisFilter.rejected, (state, action) => {
+      state.totalPages = 1;
+      state.pageNumber = 0;
+      state.leadDropList = [];
+      state.isLoading = false;
+      state.status = "failed";
     });
   },
 });

@@ -407,6 +407,9 @@ const URL = {
     return sales_url + "/lead-drop";
   },
   LEAD_DROPPED: () => sales_url + "/lead",
+
+  DROP_ANALYSIS_LIST_FILTER: () => sales_url + "/lead-drop/leadlist",
+
   UPDATE_BULKAPPROVAL: () => {
     return sales_url + "/lead-drop/bulkdrop";
   },

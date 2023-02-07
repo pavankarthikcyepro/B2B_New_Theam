@@ -332,7 +332,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     textAlign:"center",
     width:15,
-    
+    overflow:"hidden"
    },
   btn3: {
     // width: 35,

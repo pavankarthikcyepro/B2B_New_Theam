@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Colors, GlobalStyle } from "../../styles";
 import { AppNavigator } from '../../navigations';
 import * as AsyncStore from '../../asyncStore';
-import { getLeadDropList, getMoreLeadDropList, updateSingleApproval, updateBulkApproval, revokeDrop, leadStatusDropped, clearLeadDropState } from "../../redux/leaddropReducer";
+import { getLeadDropList, getMoreLeadDropList, updateSingleApproval, updateBulkApproval, revokeDrop, leadStatusDropped, clearLeadDropState, getDropAnalysisFilter } from "../../redux/leaddropReducer";
 import { callNumber } from "../../utils/helperFunctions";
 import moment from "moment";
 import { Category_Type_List_For_Filter } from '../../jsonData/enquiryFormScreenJsonData';
@@ -84,6 +84,12 @@ const DropAnalysisScreen = ({ navigation }) => {
         setSelectedToDate(date);
     }
 
+    useEffect(()=>{
+        getDropAnalysisWithFilterFromServer()
+       
+    },[])
+   
+
     useEffect(() => {
         if (selector.leadDropList.length > 0) {
             // let data = [...selector.leadDropList];
@@ -111,6 +117,26 @@ const DropAnalysisScreen = ({ navigation }) => {
             setSearchedData([])
         }
     }, [selector.leadDropList])
+
+    const payloadForDropAnalysisFilter =(isInitialCall,stages,status)=>{
+
+        let obj = {
+            "offset": "0",
+            "limit": "1000",
+            "orgId": "18",
+            "loginUser": "Chetan",
+            "startDate": isInitialCall ? null : selectedFromDate,
+            "endDate": isInitialCall ? null :selectedToDate ,
+            "stages": isInitialCall ? null : stages,
+            "status": isInitialCall ? null : status
+        }
+        return obj;
+    }
+
+    const getDropAnalysisWithFilterFromServer = ()=>{
+        let payload = payloadForDropAnalysisFilter(true,[],[])
+        dispatch(getDropAnalysisFilter(payload))
+    }
 
     const filterData = () => {
 
@@ -270,7 +296,7 @@ const DropAnalysisScreen = ({ navigation }) => {
             // getDropListFromServer(jsonObj.empId, jsonObj.empName, branchId, jsonObj.orgId, lastMonthFirstDate, currentDate);
             setisApprovalUIVisible(false)
             const payload = getPayloadData(jsonObj.empId, jsonObj.empName, branchId, jsonObj.orgId, CurrentMonthFirstDate, currentMonthLastDate,0)
-            dispatch(getLeadDropList(payload)); 
+            // dispatch(getLeadDropList(payload)); 
         }
     }
 
@@ -283,7 +309,7 @@ const DropAnalysisScreen = ({ navigation }) => {
     const getDropListFromServerV2 = (empId, empName, branchId, orgId, startDate, endDate) => {
         setisApprovalUIVisible(false)
         const payload = getPayloadData(empId,empName, branchId,orgId, startDate, endDate, 0)
-        dispatch(getLeadDropList(payload));
+        // dispatch(getLeadDropList(payload));
         setIsResfresh(true)
     }
 
