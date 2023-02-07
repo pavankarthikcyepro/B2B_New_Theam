@@ -65,111 +65,26 @@ const screenWidth = Dimensions.get("window").width;
 const profileWidth = screenWidth / 6;
 const profileBgWidth = profileWidth + 5;
 
-const receptionMenu = [
+const commonMenu = [
   "Home",
-  "Upcoming Deliveries",
-  "Live Leads",
-  "Settings",
-  "Drop/Lost/Cancel",
-  "Digital Payment",
-  "My Attendance",
-  "Helpdesk",
-  // "Task Management",
-  "Drop Analysis",
-  "QR Code",
   "Sign Out",
-];
-
-const teleCollerMenu = [
-  "Home",
-  "Settings",
-  "Digital Payment",
   "Live Leads",
-  "Target Planning",
-  "My Attendance",
+  "Settings",
   "Helpdesk",
-  // "Task Management",
   "QR Code",
   "Drop Analysis",
-  "Sign Out",
-];
-
-const ShowRoomMenu = [
-  "Home",
-  "Live Leads",
-  "Settings",
-  "Digital Payment",
-  "Target Planning",
   "My Attendance",
   "Geolocation",
-  "Helpdesk",
-  // "Task Management",
-  "QR Code",
-  "Drop Analysis",
-  "Sign Out",
 ];
-
-const FieldDSEMenu = [
-  "Home",
-  "Live Leads",
-  "Settings",
-  "Digital Payment",
-  "Target Planning",
-  "My Attendance",
-  "Geolocation",
-  "Helpdesk",
-  // "Task Management",
-  "QR Code",
-  "Drop Analysis",
-  "Sign Out",
-];
-const MDMenu = [
-  "Home",
-  "Live Leads",
-  "Settings",
+const salesMenu = [...commonMenu, "Target Planning", "Event Dashboard"];
+const receptionTelCallerMenu = [...commonMenu, "Digital Payment"];
+const managerMdMenu = [
+  ...commonMenu,
+  "Event Dashboard",
   "Digital Payment",
   "Digital Dashboard",
-  "Event Dashboard",
   "Target Planning",
-  "My Attendance",
-  "Helpdesk",
-  // "Task Management",
   "Task Transfer",
-  "QR Code",
-  "Drop Analysis",
-  "Sign Out",
-];
-
-const SalesConsultant = [
-  "Home",
-  "Live Leads",
-  "Target Planning",
-  "Event Dashboard",
-  "My Attendance",
-  "Geolocation",
-  "Drop/Lost/Cancel",
-  "Task Transfer",
-  "Helpdesk",
-  "Settings",
-  "QR Code",
-  "Drop Analysis",
-  "Sign Out",
-];
-
-const SalesManager = [
-  "Home",
-  "Live Leads",
-  "Target Planning",
-  "My Attendance",
-  "Digital Dashboard",
-  "Geolocation",
-  "Drop/Lost/Cancel",
-  "Task Transfer",
-  "Helpdesk",
-  "Settings",
-  "QR Code",
-  "Drop Analysis",
-  "Sign Out",
 ];
 
 const SideMenuScreen = ({ navigation }) => {
@@ -325,37 +240,27 @@ const SideMenuScreen = ({ navigation }) => {
     // setUserData(jsonObj)
     getProfilePic(jsonObj);
     let newFilterData = [];
-    if (jsonObj.hrmsRole === "Reception" || jsonObj.hrmsRole === "CRM") {
-      newFilterData = selector.tableData.filter((item) =>
-        receptionMenu.includes(item.title)
-      );
-    } else if (jsonObj.hrmsRole === "Tele Caller") {
-      newFilterData = selector.tableData.filter((item) =>
-        teleCollerMenu.includes(item.title)
-      );
-    } else if (jsonObj.hrmsRole === "Showroom DSE") {
-      newFilterData = selector.tableData.filter((item) =>
-        ShowRoomMenu.includes(item.title)
-      );
-    } else if (jsonObj.hrmsRole === "Field DSE") {
-      newFilterData = selector.tableData.filter((item) =>
-        FieldDSEMenu.includes(item.title)
-      );
-    } else if (jsonObj.hrmsRole === "Walkin DSE") {
-      newFilterData = selector.tableData.filter((item) =>
-        SalesConsultant.includes(item.title)
-      );
-    } else if (
-      jsonObj.hrmsRole == "Sales Manager" ||
-      jsonObj.hrmsRole == "Manager" ||
-      jsonObj.hrmsRole == "branch manager"
+    if (
+      jsonObj.hrmsRole === "Reception" ||
+      jsonObj.hrmsRole === "CRM" ||
+      jsonObj.hrmsRole === "Tele Caller"
     ) {
       newFilterData = selector.tableData.filter((item) =>
-        SalesManager.includes(item.title)
+        receptionTelCallerMenu.includes(item.title)
       );
-    } else if (jsonObj.hrmsRole === "MD") {
+    } else if (
+      jsonObj?.hrmsRole?.toLowerCase().includes("dse") ||
+      jsonObj?.hrmsRole?.toLowerCase().includes("sales consultant")
+    ) {
       newFilterData = selector.tableData.filter((item) =>
-        MDMenu.includes(item.title)
+        salesMenu.includes(item.title)
+      );
+    } else if (
+      jsonObj?.hrmsRole?.toLowerCase().includes("manager") ||
+      jsonObj?.hrmsRole == "MD"
+    ) {
+      newFilterData = selector.tableData.filter((item) =>
+        managerMdMenu.includes(item.title)
       );
     } else {
       newFilterData = selector.tableData;
@@ -367,7 +272,7 @@ const SideMenuScreen = ({ navigation }) => {
     switch (item.screen) {
       case 99:
         // navigation.navigate(AppNavigator.DrawerStackIdentifiers.home);
-        navigation.navigate(MDMenu[0]);
+        navigation.navigate(managerMdMenu[0]);
         break;
       case 100:
         navigation.navigate(
@@ -564,7 +469,7 @@ const SideMenuScreen = ({ navigation }) => {
             setInitialData(newInitial);
             setImageUri(
               saveProfile.dmsEntity.employeeProfileDtos[0].documentPath ||
-                "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
+              "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
             );
           }
           // setDataList(json);
@@ -591,9 +496,9 @@ const SideMenuScreen = ({ navigation }) => {
       const saveProfile = await response.json();
       setImageUri(
         saveProfile.dmsEntity.employeeProfileDtos[0].documentPath ||
-          "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
+        "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
       );
-    } catch (err) {}
+    } catch (err) { }
   };
 
   const deleteProfilePic = async () => {
@@ -679,7 +584,7 @@ const SideMenuScreen = ({ navigation }) => {
         <View style={styles.newModalContainer}>
           <TouchableWithoutFeedback
             style={styles.actionButtonContainer}
-            onPress={() => {}}
+            onPress={() => { }}
           >
             <>
               <Button
@@ -792,8 +697,8 @@ const SideMenuScreen = ({ navigation }) => {
               source={{
                 uri: imageUri,
               }}
-              // source={imageUri}
-              //  source={require("../../assets/images/bently.png")}
+            // source={imageUri}
+            //  source={require("../../assets/images/bently.png")}
             />
           </TouchableOpacity>
           <View style={styles.profilDetailes}>

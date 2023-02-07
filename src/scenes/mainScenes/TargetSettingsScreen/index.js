@@ -155,10 +155,8 @@ const TargetSettingsScreen = ({ route, navigation }) => {
       isEmpty(selector.dealerFilter) &&
       isEmpty(selector.filterSelectedData)
     ) {
-      console.log("EMPTY");
       dispatch(saveFilterPayload({}));
     } else {
-      console.log("DATA");
       dispatch(saveFilterPayload(route.params));
     }
   }, [route.params, selector.filterSelectedData, selector.dealerFilter]);

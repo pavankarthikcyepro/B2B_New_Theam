@@ -281,7 +281,6 @@ const MainParamScreen = ({ route, navigation }) => {
                 //todo
                 if (json1) {
                   let newArr = json1?.data;
-                  console.log("sss",newArr);
                   newArr[0] = {
                     ...newArr[0],
                     isOpenInner: true,

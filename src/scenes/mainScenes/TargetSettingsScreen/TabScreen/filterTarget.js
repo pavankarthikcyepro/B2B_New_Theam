@@ -43,6 +43,7 @@ import {
   updateDealerFilterData,
   updateFilterSelectedData,
 } from "../../../../redux/targetSettingsReducer";
+import { useIsFocused } from "@react-navigation/native";
 
 const screenWidth = Dimensions.get("window").width;
 const buttonWidth = (screenWidth - 100) / 2;
@@ -89,7 +90,7 @@ const FilterTargetScreen = ({ route, navigation }) => {
   );
   const [dropDownFrom, setDropDownFrom] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
+  const isFocused = useIsFocused();
   useEffect(() => {
     getAsyncData();
   }, []);
@@ -134,13 +135,13 @@ const FilterTargetScreen = ({ route, navigation }) => {
   }, [selector.filter_drop_down_data]);
 
   useEffect(() => {
-    navigation.addListener("focus", () => {
-      if (!isEmpty(targetSelector.filterSelectedData)) {
-        const temp = {...targetSelector.filterSelectedData};
-        setEmployeeDropDownDataLocal({...temp});
-      }
-    });
-  }, [navigation]);
+    // navigation.addListener("focus", () => {
+    // if (!isEmpty(targetSelector.filterSelectedData)) {
+    //   const temp = { ...targetSelector.filterSelectedData };
+    //   setEmployeeDropDownDataLocal(temp);
+    // }
+    // });
+  }, [isFocused]);
 
   useEffect(() => {
     navigation.addListener("focus", () => {
@@ -338,23 +339,21 @@ const FilterTargetScreen = ({ route, navigation }) => {
     index == 4 && submitBtnClicked(totalDataObjLocal);
   };
 
-  const updateSelectedItemsForEmployeeDropDown = (data, index) => {
+  
+
+  const updateSelectedItemsForEmployeeDropDown = (data, index,index1) => {
     let key = employeeTitleNameList[index];
-    const newTotalDataObjLocal = { ...employeeDropDownDataLocal };
-    console.log("newTotalDataObjLocal", newTotalDataObjLocal);
-    let objIndex = newTotalDataObjLocal[key].findIndex((obj) => obj.id == data.id);
-    console.log("objIndex", objIndex);
-    for (let i = 0; i < newTotalDataObjLocal[key].length; i++) {
-      if (objIndex === i) {
-        console.log("i",i);
-        newTotalDataObjLocal[key][i].selected = true;
-      } else {
-        newTotalDataObjLocal[key][i].selected = false;
-      }
-    }
-    console.log("LLLL", newTotalDataObjLocal[key]);
-    // dispatch(updateFilterSelectedData({ ...newTotalDataObjLocal }));
-    setEmployeeDropDownDataLocal({ ...newTotalDataObjLocal });
+    const newTotalDataObjLocal =Object.assign(employeeDropDownDataLocal);
+    let objIndex = newTotalDataObjLocal[key].findIndex(
+      (obj) => obj.id == data.id
+    );
+   const a= newTotalDataObjLocal[key].map((data, index) =>
+      index === objIndex
+        ? { ...newTotalDataObjLocal[key][index], selected: true }
+        : { ...newTotalDataObjLocal[key][index], selected: false }
+    );
+    newTotalDataObjLocal[key] = a
+    setEmployeeDropDownDataLocal(newTotalDataObjLocal);
   };
 
   const clearBtnClicked = () => {
@@ -485,11 +484,8 @@ const FilterTargetScreen = ({ route, navigation }) => {
         }
         newDataObj[key] = newArray;
       }
-if (!isEmpty(names) && !isEmpty(newDataObj)) {
-  setEmloyeeTitleNameList(names);
-  setEmployeeDropDownDataLocal(newDataObj);
-  setIsLoading(false);
-}    }
+      setName(names, newDataObj);
+    }
   }, [selector.employees_drop_down_data]);
 
   const setName = useCallback(
@@ -499,7 +495,12 @@ if (!isEmpty(names) && !isEmpty(newDataObj)) {
       }
       if (!isEmpty(names) && !isEmpty(newDataObj)) {
         setEmloyeeTitleNameList(names);
-        setEmployeeDropDownDataLocal(newDataObj);
+        if (!isEmpty(targetSelector.filterSelectedData)) {
+          const temp = { ...targetSelector.filterSelectedData };
+          setEmployeeDropDownDataLocal(temp);
+        } else {
+          setEmployeeDropDownDataLocal(newDataObj);
+        }
         setIsLoading(false);
       }
     },
@@ -559,7 +560,7 @@ if (!isEmpty(names) && !isEmpty(newDataObj)) {
       );
     });
 
-    dispatch(updateFilterSelectedData({...employeeDropDownDataLocal}));
+    dispatch(updateFilterSelectedData(employeeDropDownDataLocal));
     if (temp.length > 0) {
       navigation.navigate("MONTHLY_TARGET_SCREEN", {
         params: {
@@ -606,11 +607,11 @@ if (!isEmpty(names) && !isEmpty(newDataObj)) {
         headerTitle={"Select"}
         data={dropDownData}
         onRequestClose={() => setShowDropDownModel(false)}
-        selectedItems={(item) => {
+        selectedItems={(item,o,index) => {
           if (dropDownFrom === "ORG_TABLE") {
             updateSelectedItems(item, selectedItemIndex);
           } else {
-            updateSelectedItemsForEmployeeDropDown(item, selectedItemIndex);
+            updateSelectedItemsForEmployeeDropDown(item,selectedItemIndex, index);
           }
           setShowDropDownModel(false);
         }}

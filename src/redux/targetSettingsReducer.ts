@@ -259,8 +259,6 @@ export const targetSettingsSlice = createSlice({
       state.selectedBranchName = "";
     },
     updateFilterSelectedData: (state, action) => {
-      console.log("ssssssss");
-      
       state.filterSelectedData = action.payload;
     },
     updateDealerFilterData: (state, action) => {
