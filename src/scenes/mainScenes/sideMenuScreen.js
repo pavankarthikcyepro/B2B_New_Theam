@@ -74,11 +74,28 @@ const commonMenu = [
   "QR Code",
   "Drop Analysis",
   "My Attendance",
+];
+const salesMenu = [
+  ...commonMenu,
+  "Target Planning",
+  "Event Dashboard",
   "Geolocation",
 ];
-const salesMenu = [...commonMenu, "Target Planning", "Event Dashboard"];
-const receptionTelCallerMenu = [...commonMenu, "Digital Payment"];
-const managerMdMenu = [
+const receptionTelCallerMenu = [
+  ...commonMenu,
+  "Digital Payment",
+  "Geolocation",
+];
+const managerMenu = [
+  ...commonMenu,
+  "Event Dashboard",
+  "Digital Payment",
+  "Digital Dashboard",
+  "Target Planning",
+  "Task Transfer",
+  "Geolocation",
+];
+const mdMenu = [
   ...commonMenu,
   "Event Dashboard",
   "Digital Payment",
@@ -256,11 +273,16 @@ const SideMenuScreen = ({ navigation }) => {
         salesMenu.includes(item.title)
       );
     } else if (
-      jsonObj?.hrmsRole?.toLowerCase().includes("manager") ||
-      jsonObj?.hrmsRole == "MD"
+      jsonObj?.hrmsRole == "MD" ||
+      jsonObj?.hrmsRole == "CEO" ||
+      jsonObj?.hrmsRole == "General Manager"
     ) {
       newFilterData = selector.tableData.filter((item) =>
-        managerMdMenu.includes(item.title)
+        mdMenu.includes(item.title)
+      );
+    } else if (jsonObj?.hrmsRole?.toLowerCase().includes("manager")) {
+      newFilterData = selector.tableData.filter((item) =>
+        managerMenu.includes(item.title)
       );
     } else {
       newFilterData = selector.tableData;
@@ -272,7 +294,7 @@ const SideMenuScreen = ({ navigation }) => {
     switch (item.screen) {
       case 99:
         // navigation.navigate(AppNavigator.DrawerStackIdentifiers.home);
-        navigation.navigate(managerMdMenu[0]);
+        navigation.navigate(managerMenu[0]);
         break;
       case 100:
         navigation.navigate(
