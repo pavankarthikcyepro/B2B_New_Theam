@@ -246,63 +246,67 @@ const MainParamScreen = ({ route, navigation }) => {
     return Object.keys(obj).length === 0;
   }
   useEffect(async () => {
-    try {
-   
-      if (!isEmpty(selector.filterPayload)) {
-        let filterData = selector.filterPayload.params;
-        let employeeData = await AsyncStore.getData(
-          AsyncStore.Keys.LOGIN_EMPLOYEE
-        );
-        if (employeeData) {
-         
-          const jsonObj = JSON.parse(employeeData);
-          const payload = getEmployeePayloadV2(
-            employeeData,
-            filterData?.selectedID
+      try {
+        if (!isEmpty(selector.filterPayload)) {
+          let filterData = selector.filterPayload.params;
+          let employeeData = await AsyncStore.getData(
+            AsyncStore.Keys.LOGIN_EMPLOYEE
           );
-          Promise.all([dispatch(getUserWiseTargetParameters(payload))])
-            .then(async (res) => {
-              let input = res[0].payload.employeeTargetAchievements[0];
-              let payload1 = getEmployeePayloadTotal(
-                employeeData,
-                [filterData?.selectedID],
-                [input.branchId],
-                filterData?.fromDate,
-                filterData?.toDate
-              );
-              const response1 = await client.post(
-                URL.GET_ALL_TARGET_MAPPING_SEARCH(),
-                payload1
-              );
-              const json1 = await response1.json();
-              //todo
-              if (json1) {
-                let newArr = json1?.data;
-                newArr[0] = {
-                  ...newArr[0],
-                  isOpenInner: true,
-                  employeeTargetAchievements: [],
-                  department: json1?.data[0]?.department,
-                  designation: json1?.data[0]?.designation,
-                  targetAchievements: getDataFormat(json1?.data[0]),
-                  tempTargetAchievements: getDataFormat(json1?.data[0]),
-                  branchName: json1?.data[0]?.branchName || input.branchName,
-                  branch: json1?.data[0]?.branch || input.branchId,
-                  recordId: json1?.data[0]?.id,
-                  empName: json1?.data[0]?.empName || input.empName,
-                
-                };
-                
-                setFilterParameters(newArr);
-              }
-            })
-            .catch();
+          if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            const payload = getEmployeePayloadV2(
+              employeeData,
+              filterData?.selectedID
+            );
+            Promise.all([dispatch(getUserWiseTargetParameters(payload))])
+              .then(async (res) => {
+                let tempRawData =
+                  res[0]?.payload?.employeeTargetAchievements.filter(
+                    (emp) => emp.empId == filterData?.selectedID
+                  );
+                // let input = res[0].payload.employeeTargetAchievements[0];
+                let input = tempRawData[0];
+                let payload1 = getEmployeePayloadTotal(
+                  employeeData,
+                  [filterData?.selectedID],
+                  [input.branchId],
+                  filterData?.fromDate,
+                  filterData?.toDate
+                );
+                const response1 = await client.post(
+                  URL.GET_ALL_TARGET_MAPPING_SEARCH(),
+                  payload1
+                );
+                const json1 = await response1.json();
+                //todo
+                if (json1) {
+                  let newArr = json1?.data;
+                  console.log("sss",newArr);
+                  newArr[0] = {
+                    ...newArr[0],
+                    isOpenInner: true,
+                    employeeTargetAchievements: [],
+                    department: json1?.data[0]?.department,
+                    designation: json1?.data[0]?.designation,
+                    targetAchievements: getDataFormat(json1?.data[0]),
+                    tempTargetAchievements: getDataFormat(json1?.data[0]),
+                    branchName: json1?.data[0]?.branchName || input.branchName,
+                    branch: json1?.data[0]?.branch || input.branchId,
+                    recordId: json1?.data[0]?.id,
+                    empName: json1?.data[0]?.empName || input.empName,
+                  };
+
+                  setFilterParameters(newArr);
+                }
+              })
+              .catch();
+          }
+        } else {
+          getInitialParameters();
         }
-      } else {
-        getInitialParameters();
-      }
-    } catch (error) { }
-  }, [selector.filterPayload]);
+      } catch (error) {}
+    
+  }, [selector.filterPayload, navigation]);
 
   useEffect(() => {
     Animated.timing(translation, {
@@ -393,7 +397,7 @@ const MainParamScreen = ({ route, navigation }) => {
     }
     return branchName;
   };
-  
+
   const clearOwnData = () => {
     setIsNoTargetAvailable(true);
     setOwnData({
@@ -438,7 +442,7 @@ const MainParamScreen = ({ route, navigation }) => {
             );
           });
         }
-    
+
         if (ownDataArray.length > 0) {
           setAllOwnData(ownDataArray);
           let ownDataArray2 = [];
@@ -457,9 +461,8 @@ const MainParamScreen = ({ route, navigation }) => {
               );
             });
           }
-        
+
           if (ownDataArray2.length > 0) {
-         
             setIsNoTargetAvailable(false);
             setOwnData(ownDataArray2[0]);
             if (ownDataArray2[0]?.targetName) {
@@ -528,7 +531,6 @@ const MainParamScreen = ({ route, navigation }) => {
     };
     setUpdatedSelfParameters({ ...data });
     setMasterSelfParameters({ ...data });
-    
   };
 
   const getTargetParamValue = (param) => {
@@ -732,7 +734,7 @@ const MainParamScreen = ({ route, navigation }) => {
                   [jsonObj.empId],
                   [jsonObj.branchId]
                 );
-                // need to check  api call 
+                // need to check  api call
                 const response = await client.post(
                   URL.GET_TARGET_PLANNING_COUNT(),
                   payload
@@ -780,7 +782,7 @@ const MainParamScreen = ({ route, navigation }) => {
         setIsLoading(false);
       }
     }
-  }
+  };
 
   const getEmployeePayloadTotal = (employeeData, newIds, branch, from, to) => {
     const jsonObj = JSON.parse(employeeData);
@@ -904,11 +906,11 @@ const MainParamScreen = ({ route, navigation }) => {
 
         Promise.all([dispatch(addTargetMapping(payload))]).then(() => {
           setSelectedUser(null);
-         
+
           setRetail("");
           setSelectedBranch(null);
           setDefaultBranch(null);
-       
+
           setIsNoTargetAvailable(false);
           const payload2 = {
             empId: jsonObj.empId,
@@ -929,7 +931,6 @@ const MainParamScreen = ({ route, navigation }) => {
     } else if (retail === "") {
       showToast("Please enter retail value");
     } else {
-     
       setOpenRetail(false);
       let employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -955,11 +956,11 @@ const MainParamScreen = ({ route, navigation }) => {
         Promise.all([dispatch(editTargetMapping(payload))])
           .then((response) => {
             setSelectedUser(null);
-          
+
             setRetail("");
             setSelectedBranch(null);
             setDefaultBranch(null);
-          
+
             setIsNoTargetAvailable(false);
             const payload2 = {
               empId: jsonObj.empId,
@@ -970,10 +971,10 @@ const MainParamScreen = ({ route, navigation }) => {
               endDate: selector.endDate,
             };
             getInitialParameters();
-           
+
             dispatch(getAllTargetMapping(payload2));
           })
-          .catch((error) => { });
+          .catch((error) => {});
       }
     }
   };
@@ -1081,35 +1082,35 @@ const MainParamScreen = ({ route, navigation }) => {
         designation: `${ownData.designation}`,
         start_date: selector.startDate,
         end_date: selector.endDate,
-        loggedInEmpId: `${empId}`
+        loggedInEmpId: `${empId}`,
       };
       Promise.all([dispatch(saveSelfTargetParams(payload))])
-        .then((x) => { })
-        .catch((y) => { });
+        .then((x) => {})
+        .catch((y) => {});
     }
   }
 
   function isEmptyData(param, matchWith) {
-    let data = param.filter(
-      (e) => e.paramName === matchWith
-    )[0].target || "0"
+    let data = param.filter((e) => e.paramName === matchWith)[0].target || "0";
     if (data == "0") {
-      return true
+      return true;
     } else {
-      return false
+      return false;
     }
   }
 
   function pathCondition(path) {
-    if (isEmptyData(path, 'Enquiry') &&
-      isEmptyData(path, 'Retail') &&
-      isEmptyData(path, 'Test Drive') &&
-      isEmptyData(path, 'Visit') &&
-      isEmptyData(path, 'Exchange') &&
-      isEmptyData(path, 'Finance') &&
-      isEmptyData(path, 'Insurance') &&
-      isEmptyData(path, 'Exwarranty') &&
-      isEmptyData(path, 'Accessories')) {
+    if (
+      isEmptyData(path, "Enquiry") &&
+      isEmptyData(path, "Retail") &&
+      isEmptyData(path, "Test Drive") &&
+      isEmptyData(path, "Visit") &&
+      isEmptyData(path, "Exchange") &&
+      isEmptyData(path, "Finance") &&
+      isEmptyData(path, "Insurance") &&
+      isEmptyData(path, "Exwarranty") &&
+      isEmptyData(path, "Accessories")
+    ) {
       return false;
     } else {
       return true;
@@ -1422,7 +1423,6 @@ const MainParamScreen = ({ route, navigation }) => {
       .subtract(0, "months")
       .endOf("month")
       .format(dateFormat);
-   
 
     return {
       orgId: jsonObj.orgId,
@@ -1543,7 +1543,7 @@ const MainParamScreen = ({ route, navigation }) => {
       } else {
         setAllParameters([...localData]);
       }
-    } catch (error) { }
+    } catch (error) {}
   };
 
   function removeDuplicates(arr) {
@@ -1641,7 +1641,7 @@ const MainParamScreen = ({ route, navigation }) => {
             if (item?.targetName) {
               setTargetName(item?.targetName);
             }
-           
+
             // if (x === "0" || x === 0) {
             //   setIsNoTargetAvailable(true);
             // } else {
@@ -1652,7 +1652,7 @@ const MainParamScreen = ({ route, navigation }) => {
             } else {
               setIsNoTargetAvailable(true);
             }
-           
+
             setRetail(x);
             setSelectedUser(item);
             setOpenRetail(true);
@@ -1697,8 +1697,7 @@ const MainParamScreen = ({ route, navigation }) => {
             if (
               item?.retailTarget !== null &&
               selector?.endDate === item?.endDate &&
-              selector?.startDate ===
-              item?.startDate
+              selector?.startDate === item?.startDate
             ) {
               setSelectedBranch({
                 label: branchName,
@@ -1713,7 +1712,7 @@ const MainParamScreen = ({ route, navigation }) => {
             if (item?.targetName) {
               setTargetName(item?.targetName);
             }
-           
+
             // if (x === "0" || x === 0){
             //   setIsNoTargetAvailable(true);
             // }else{
@@ -1724,7 +1723,7 @@ const MainParamScreen = ({ route, navigation }) => {
             } else {
               setIsNoTargetAvailable(true);
             }
-           
+
             setRetail(x);
             setSelectedUser(item);
             setOpenRetail(true);

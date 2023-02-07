@@ -139,7 +139,7 @@ export const saveTeamTargetParams = createAsyncThunk(
 
 export const saveFilterPayload = createAsyncThunk(
   "TARGET_SETTINGS/saveFilterPayload",
-   async (payload: any) => {
+  async (payload: any) => {
     return payload;
   }
 );
@@ -226,6 +226,8 @@ export const targetSettingsSlice = createSlice({
     selectedSpecial: null,
     team_target_data_saved: false,
     filterPayload: {},
+    filterSelectedData: {},
+    dealerFilter: {},
   },
   reducers: {
     updateStartDate: (state, action) => {
@@ -255,6 +257,14 @@ export const targetSettingsSlice = createSlice({
     clearTargetState: (state, action) => {
       state.selectedBranchId = "";
       state.selectedBranchName = "";
+    },
+    updateFilterSelectedData: (state, action) => {
+      console.log("ssssssss");
+      
+      state.filterSelectedData = action.payload;
+    },
+    updateDealerFilterData: (state, action) => {
+      state.dealerFilter = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -296,7 +306,6 @@ export const targetSettingsSlice = createSlice({
       .addCase(getAllTargetMapping.fulfilled, (state, action) => {
         state.isLoading = false;
         state.targetMapping = [];
-        
 
         state.targetMapping = action.payload.data ? action.payload.data : [];
         state.isDataLoaded = true;
@@ -413,5 +422,7 @@ export const {
   updateSelectedBranchId,
   updateSelectedBranchName,
   clearTargetState,
+  updateFilterSelectedData,
+  updateDealerFilterData,
 } = targetSettingsSlice.actions;
 export default targetSettingsSlice.reducer;
