@@ -26,6 +26,11 @@ const SingleLeadSelectComp = ({
     }, []);
 
     useEffect(() => {
+        // modelList.forEach(element => {
+        //     if (element.menu === "Retail"){
+        //         element.menu = "Invoice"
+        //     }
+        // });
         setLocalModelList([...modelList]);
     }, [visible]);
 
@@ -94,6 +99,7 @@ const SingleLeadSelectComp = ({
                                                         style={[styles.radioText, { color: Colors.BLACK }]}
                                                     >
                                                         {item?.menu}
+                                                        {/* {item?.menu === "Retail" ? "Invoice" : item?.menu} */}
                                                     </Text>
                                                 </View>
                                             </TouchableOpacity>
