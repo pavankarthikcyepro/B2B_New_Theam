@@ -292,8 +292,9 @@ export default function branchRankingScreen(props) {
 
     const getEmpName = (value) => {
       let name = value;
-      name = name.split(" ");
-      return name[0];
+      // name = name.split(" ");
+      // return name[0];
+      return name;
     };
 
     const getBranchName = (value) => {

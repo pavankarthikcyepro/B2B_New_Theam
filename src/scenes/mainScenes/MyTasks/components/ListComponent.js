@@ -188,8 +188,7 @@ const ListComponent = ({ route, navigation }) => {
   }, [index]);
 
   const initialTask = async (selectedFilterLocal,fromClick) => {
-    console.log("manthan selecccc ", selectedFilterLocal);
-    console.log("manthan selecccc fromClick", fromClick);
+   
     try {
       const employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -872,8 +871,7 @@ const ListComponent = ({ route, navigation }) => {
               endDate = moment(lastday).format(dateFormat);
             }
           }
-          console.log("manthaneeeeee startDate ", startDate);
-          console.log("manthaneeeeee index ", endDate);
+        
           
 
 
