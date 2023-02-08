@@ -491,7 +491,7 @@ const SideMenuScreen = ({ navigation }) => {
             setInitialData(newInitial);
             setImageUri(
               saveProfile.dmsEntity.employeeProfileDtos[0].documentPath ||
-                "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
+              "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
             );
           }
           // setDataList(json);
@@ -518,9 +518,9 @@ const SideMenuScreen = ({ navigation }) => {
       const saveProfile = await response.json();
       setImageUri(
         saveProfile.dmsEntity.employeeProfileDtos[0].documentPath ||
-          "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
+        "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
       );
-    } catch (err) {}
+    } catch (err) { }
   };
 
   const deleteProfilePic = async () => {
@@ -606,7 +606,7 @@ const SideMenuScreen = ({ navigation }) => {
         <View style={styles.newModalContainer}>
           <TouchableWithoutFeedback
             style={styles.actionButtonContainer}
-            onPress={() => {}}
+            onPress={() => { }}
           >
             <>
               <Button
@@ -719,8 +719,8 @@ const SideMenuScreen = ({ navigation }) => {
               source={{
                 uri: imageUri,
               }}
-              // source={imageUri}
-              //  source={require("../../assets/images/bently.png")}
+            // source={imageUri}
+            //  source={require("../../assets/images/bently.png")}
             />
           </TouchableOpacity>
           <View style={styles.profilDetailes}>

@@ -66,7 +66,7 @@ const DropDown = ({
     setMultipleData(updatedMultipleData);
   };
 
-  const closeModalWithSelectedItem = (item) => {
+  const closeModalWithSelectedItem = (item, index) => {
     if (multiple) {
       // let itemsSelected = [];
       // multipleData.forEach((value, index) => {
@@ -76,7 +76,7 @@ const DropDown = ({
       // })
       selectedItems(multipleData, keyId);
     } else {
-      selectedItems(item, keyId);
+      selectedItems(item, keyId, index);
     }
   };
 
@@ -167,7 +167,7 @@ const DropDown = ({
                   renderItem={({ item, index }) => {
                     return (
                       <Pressable
-                        onPress={() => closeModalWithSelectedItem(item)}
+                        onPress={() => closeModalWithSelectedItem(item, index)}
                       >
                         <View>
                           <List.Item
