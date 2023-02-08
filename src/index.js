@@ -36,7 +36,10 @@ import PushNotification from "react-native-push-notification";
 import { enableScreens } from "react-native-screens";
 import { showToastRedAlert } from "./utils/toast";
 import Orientation from "react-native-orientation-locker";
-
+import SpInAppUpdates, {
+  IAUUpdateKind,
+  StartUpdateOptions,
+} from "sp-react-native-in-app-updates";
 enableScreens();
 
 const officeLocation = {
@@ -348,6 +351,7 @@ const AppScreen = () => {
   };
 
   useEffect(async () => {
+    checkAppUpdate();
     if (Platform.OS === "ios") {
       PushNotificationIOS.checkPermissions((item) => {
         if (!item.alert) {
@@ -356,14 +360,14 @@ const AppScreen = () => {
       });
       // sendLocalNotification();
     }
-    if (Platform.OS === "android") {
-      PushNotification.checkPermissions((item) => {
-        if (!item.alert) {
-          PushNotification.requestPermissions();
-        }
-      });
-      // sendLocalNotification();
-    }
+    // if (Platform.OS === "android") {
+    //   PushNotification.checkPermissions((item) => {
+    //     if (!item.alert) {
+    //       PushNotification.requestPermissions();
+    //     }
+    //   });
+    //   // sendLocalNotification();
+    // }
 
     const checkUserToken = async () => {
       await BackgroundService.stop();
@@ -388,6 +392,43 @@ const AppScreen = () => {
 
     checkUserToken();
   }, []);
+
+  const checkAppUpdate = async () => {
+    try {
+      // curVersion is optional if you don't provide it will automatically take from the app using rn-device-info
+      const inAppUpdates = new SpInAppUpdates(
+        false // isDebug
+      );
+      console.log("LLLL");
+      await inAppUpdates
+        .checkNeedsUpdate({ curVersion: '1.0(1)' })
+        .then((result) => {
+          console.log("result", result);
+          try {
+            if (result.shouldUpdate) {
+              //add update options
+              let updateOptions: StartUpdateOptions = {};
+               if (Platform.OS === "android") {
+                updateOptions = {
+                  updateType: IAUUpdateKind.IMMEDIATE,
+                };
+              } else if (Platform.OS === "ios") {
+                var title = "Please Update to Latest Version";
+                updateOptions = {
+                  forceUpgrade: true,
+                  title: title,
+                  message: "UPDATE",
+                  buttonUpgradeText: "UPDATE2",
+                };
+              }
+              inAppUpdates.startUpdate(updateOptions);
+            } else {
+            }
+          } catch (e) {}
+        })
+        .catch((error) => {console.log("KOOOOOO",error);});
+    } catch (e) {}
+  };
 
   const authContext = React.useMemo(
     () => ({
