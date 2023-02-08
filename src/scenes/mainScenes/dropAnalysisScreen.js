@@ -127,7 +127,7 @@ const DropAnalysisScreen = ({ navigation }) => {
         const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
        
         const payload = getPayloadDataV3(CurrentMonthFirstDate, currentMonthLastDate, null, null, jsonObj.orgId, jsonObj.empName)
-        console.log("manthansss ",payload);
+    
         dispatch(getDropAnalysisFilter(payload))
     }
 
@@ -143,7 +143,7 @@ const DropAnalysisScreen = ({ navigation }) => {
         // const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
 
         const payload = getPayloadDataV3(startDate, endDate, stage, status, jsonObj.orgId, jsonObj.empName,)
-        console.log("manthansss 22", payload);
+        
         dispatch(getDropAnalysisFilter(payload))
     }
 
@@ -252,7 +252,7 @@ const DropAnalysisScreen = ({ navigation }) => {
 
 
     useEffect(() => {
-    
+        getDataFromDB();
         getDropAnalysisWithFilterFromServer()
         dispatch(getdropstagemenu());
       return () => {
@@ -261,7 +261,7 @@ const DropAnalysisScreen = ({ navigation }) => {
     }, [])
     
     useEffect(() => {
-        // console.log("manthan ---f ", selector.dropStageMenus);
+        
         if (selector.dropStageMenus){
             let path = selector.dropStageMenus;
 
@@ -278,12 +278,12 @@ const DropAnalysisScreen = ({ navigation }) => {
        
        
         if (selector.dropStageSubMenus.length >0 ){
-            console.log("manthan ---f ", selector.dropStageSubMenus[0].dropStageListSubMenu);
+           
             let path = selector.dropStageSubMenus[0].dropStageListSubMenu;
             const newArr = path.map((v) => ({ ...v, checked: false }));
             // setTempStore(newArr);
             setSubMenu(newArr);
-            // console.log("manthan ---fnewArr ", newArr);
+           
 
         }
         
@@ -459,7 +459,9 @@ const DropAnalysisScreen = ({ navigation }) => {
         // dispatch(getLeadDropList(payload2));
     }
     const updateBulkStatus = async (status)=>{
+        
         if(status === 'reject'){
+            
             const arr = await selectedItemIds.map(item =>
                 {
                 const dmsLeadDropInfo =
@@ -471,16 +473,19 @@ const DropAnalysisScreen = ({ navigation }) => {
                 return { dmsLeadDropInfo }
 
                 })
-                
+           
             await dispatch(updateBulkApproval(arr));
         } else dispatch(updateBulkApproval(selectedItemIds));
 
     }
     const onItemSelected = async (uniqueId, leadDropId, type, operation) => {
+      
       try {
        
         if (type === "multi") {
+            
           if (operation === "add") {
+           
             const data = {
               dmsLeadDropInfo: {
                 leadId: uniqueId,
@@ -491,6 +496,7 @@ const DropAnalysisScreen = ({ navigation }) => {
             await setSelectedItemIds([...selectedItemIds, data]);
             await setisApprovalUIVisible(true);
           } else {
+             
             let arr = await [...selectedItemIds];
             const data = {
               dmsLeadDropInfo: {
@@ -507,7 +513,9 @@ const DropAnalysisScreen = ({ navigation }) => {
             }
           }
         } else {
+            
           if (operation === "approve") {
+            
             // approve apic
             const data = {
               dmsLeadDropInfo: {
@@ -527,6 +535,7 @@ const DropAnalysisScreen = ({ navigation }) => {
             //   getDataFromDB();
             });
           } else if (operation === "reject") {
+         
             //reject api
             const data = {
               dmsLeadDropInfo: {
@@ -540,6 +549,7 @@ const DropAnalysisScreen = ({ navigation }) => {
             //   getDataFromDB();
             });
           } else {
+            
             //reject api
             const data = {
               leadId: uniqueId,
@@ -733,7 +743,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                         setTempFilterPayload(x);
                         setLeadsSubMenuFilterVisible(false);
                         const data = x.filter((y) => y.checked);
-                        console.log("manthanddddd ", data);
+                    
                         // if (data.length === subMenu.length) {
                         //     setLeadsSubMenuFilterDropDownText("All");
                         // } else {
@@ -742,11 +752,11 @@ const DropAnalysisScreen = ({ navigation }) => {
                                 names.toString() ? names.toString() : "Select Sub Menu"
                             );
                             let tmpArr=[] ;
-                        const leadstages = data.map((item) => 
+                       data.map((item) => 
                             tmpArr.push(item.leadStage)
                         )
-                        console.log("manthanddddd leadstages ", tmpArr.toString().replace(/[\[\]']+/g, ''));
-                            getDropAnalysisWithFilterFromServerFilterApply(selectedFromDate, selectedToDate, data[0].leadStage,null)
+                     
+                        getDropAnalysisWithFilterFromServerFilterApply(selectedFromDate, selectedToDate, [tmpArr.toString().replace(/[\[\]']+/g, '')],null)
                         // }
                     }}
                     cancelClicked={() => {
