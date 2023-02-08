@@ -443,6 +443,14 @@ const URL = {
   GET_SUB_MENU: (stage) => {
     return sales_url + "/lead/stagedropdown?menu=" + stage;
   },
+  GET_DROP_SUBMENU: (stage) => {
+    return sales_url + "/lead/dropstagesubmenu?menu=" + stage;
+  },
+
+  GET_DROPSTAGE_MENU: (stage) => {
+    return sales_url + "/lead/dropstagemenu";
+  },
+
   GET_LEAD_LIST: (branchId, empName, empId, offSet, limit) => {
     return (
       sales_url +

@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Colors, GlobalStyle } from "../../styles";
 import { AppNavigator } from '../../navigations';
 import * as AsyncStore from '../../asyncStore';
-import { getLeadDropList, getMoreLeadDropList, updateSingleApproval, updateBulkApproval, revokeDrop, leadStatusDropped, clearLeadDropState, getDropAnalysisFilter } from "../../redux/leaddropReducer";
+import { getLeadDropList, getMoreLeadDropList, updateSingleApproval, updateBulkApproval, revokeDrop, leadStatusDropped, clearLeadDropState, getDropAnalysisFilter, getdropstagemenu, getDropstagesubmenu } from "../../redux/leaddropReducer";
 import { callNumber } from "../../utils/helperFunctions";
 import moment from "moment";
 import { Category_Type_List_For_Filter } from '../../jsonData/enquiryFormScreenJsonData';
@@ -16,6 +16,7 @@ import { DropAnalysisItem } from './MyTasks/components/DropAnalysisItem';
 import { updateTAB, updateIsSearch, updateSearchKey } from '../../redux/appReducer';
 import { showToast } from "../../utils/toast";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
+import { current } from "@reduxjs/toolkit";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().add(0, "day").format(dateFormat)
@@ -84,11 +85,6 @@ const DropAnalysisScreen = ({ navigation }) => {
         setSelectedToDate(date);
     }
 
-    useEffect(()=>{
-        getDropAnalysisWithFilterFromServer()
-       
-    },[])
-   
 
     useEffect(() => {
         if (selector.leadDropList.length > 0) {
@@ -114,27 +110,40 @@ const DropAnalysisScreen = ({ navigation }) => {
             
         }
         else {
-            setSearchedData([])
+           
+            filterData();
         }
     }, [selector.leadDropList])
 
-    const payloadForDropAnalysisFilter =(isInitialCall,stages,status)=>{
 
-        let obj = {
-            "offset": "0",
-            "limit": "1000",
-            "orgId": "18",
-            "loginUser": "Chetan",
-            "startDate": isInitialCall ? null : selectedFromDate,
-            "endDate": isInitialCall ? null :selectedToDate ,
-            "stages": isInitialCall ? null : stages,
-            "status": isInitialCall ? null : status
-        }
-        return obj;
+    const getDropAnalysisWithFilterFromServer = async()=>{
+        const employeeData = await AsyncStore.getData(
+            AsyncStore.Keys.LOGIN_EMPLOYEE
+        );
+        const jsonObj = await JSON.parse(employeeData);
+        const dateFormat = "YYYY-MM-DD";
+        const currentDate = moment().add(0, "day").format(dateFormat)
+        const CurrentMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+        const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+       
+        const payload = getPayloadDataV3(CurrentMonthFirstDate, currentMonthLastDate, null, null, jsonObj.orgId, jsonObj.empName)
+        console.log("manthansss ",payload);
+        dispatch(getDropAnalysisFilter(payload))
     }
 
-    const getDropAnalysisWithFilterFromServer = ()=>{
-        let payload = payloadForDropAnalysisFilter(true,[],[])
+
+    const getDropAnalysisWithFilterFromServerFilterApply = async (startDate,endDate,stage,status) => {
+        const employeeData = await AsyncStore.getData(
+            AsyncStore.Keys.LOGIN_EMPLOYEE
+        );
+        const jsonObj = await JSON.parse(employeeData);
+        // const dateFormat = "YYYY-MM-DD";
+        // const currentDate = moment().add(0, "day").format(dateFormat)
+        // const CurrentMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+        // const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+
+        const payload = getPayloadDataV3(startDate, endDate, stage, status, jsonObj.orgId, jsonObj.empName,)
+        console.log("manthansss 22", payload);
         dispatch(getDropAnalysisFilter(payload))
     }
 
@@ -221,9 +230,12 @@ const DropAnalysisScreen = ({ navigation }) => {
 
         // Get Data From Server
         let isMounted = true;
-        setFromDateState(lastMonthFirstDate);
-        const tomorrowDate = moment().add(1, "day").format(dateFormat)
-        setToDateState(currentDate);
+        const dateFormat = "YYYY-MM-DD";
+        const currentDate = moment().add(0, "day").format(dateFormat)
+        const CurrentMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+        const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+        setFromDateState(CurrentMonthFirstDate);
+        setToDateState(currentMonthLastDate);
 
         const employeeData = await AsyncStore.getData(
             AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -234,37 +246,54 @@ const DropAnalysisScreen = ({ navigation }) => {
             setOrgId(jsonObj.orgId);
             setEmployeeName(jsonObj.empName)
         }
-        // getAsyncData().then(data => {
-        //     if (isMounted) {
-        //         setMyState(data);
-        //         getEnquiryListFromServer(empIdStateRef.current, lastMonthFirstDate, currentDate);
-        //     }
-        // });
-
-        // return () => { isMounted = false };
+       
     }, [])
 
-    // Navigation Listner to Auto Referesh
-    useEffect(() => {
-        navigation.addListener('focus', () => {
-            // getDataFromDB()
-        });
 
-        // return () => {
-        //     unsubscribe;
-        // };
-    }, [navigation]);
 
     useEffect(() => {
-      getDataFromDB();
-        
+    
+        getDropAnalysisWithFilterFromServer()
+        dispatch(getdropstagemenu());
       return () => {
           dispatch(clearLeadDropState())
       }
     }, [])
     
-   
+    useEffect(() => {
+        // console.log("manthan ---f ", selector.dropStageMenus);
+        if (selector.dropStageMenus){
+            let path = selector.dropStageMenus;
+
+            const newArr = path.map((v) => ({ ...v, checked: false }));
+            // setTempStore(newArr);
+            setLeadsFilterData(newArr);
+        }
+        
     
+      
+    }, [selector.dropStageMenus])
+    
+    useEffect(() => {
+       
+       
+        if (selector.dropStageSubMenus.length >0 ){
+            console.log("manthan ---f ", selector.dropStageSubMenus[0].dropStageListSubMenu);
+            let path = selector.dropStageSubMenus[0].dropStageListSubMenu;
+            const newArr = path.map((v) => ({ ...v, checked: false }));
+            // setTempStore(newArr);
+            setSubMenu(newArr);
+            // console.log("manthan ---fnewArr ", newArr);
+
+        }
+        
+
+
+    }, [selector.dropStageSubMenus])
+   
+    const getSubMenuList=(name)=>{
+        dispatch(getDropstagesubmenu(name));
+    }
 
     const getDataFromDB = async () => {
         const employeeData = await AsyncStore.getData(
@@ -308,12 +337,15 @@ const DropAnalysisScreen = ({ navigation }) => {
     }
     const getDropListFromServerV2 = (empId, empName, branchId, orgId, startDate, endDate) => {
         setisApprovalUIVisible(false)
-        const payload = getPayloadData(empId,empName, branchId,orgId, startDate, endDate, 0)
+        // const payload = getPayloadData(empId,empName, branchId,orgId, startDate, endDate, 0)
         // dispatch(getLeadDropList(payload));
+        setLeadsFilterDropDownText("All")
+        setLeadsSubMenuFilterDropDownText("All");
+        getDropAnalysisWithFilterFromServer()
         setIsResfresh(true)
     }
 
-    const getPayloadData = (empId,empName, branchId,orgId, startDate, endDate, offSet, modelFilters = [], categoryFilters = [], sourceFilters = []) => {
+    const getPayloadData = (empId, empName, branchId, orgId, startDate, endDate, offSet, modelFilters = [], categoryFilters = [], sourceFilters = []) => {
         const payload = {
             "startdate": startDate,
             "enddate": endDate,
@@ -327,6 +359,23 @@ const DropAnalysisScreen = ({ navigation }) => {
             "offset": offSet,
             "orgId":orgId,
             "limit": 100,
+        }
+        return payload;
+
+        
+    }
+    const getPayloadDataV3 = (CurrentMonthFirstDate, currentMonthLastDate,stages,status,orgId,empName) => {
+       
+
+        const payload = {
+            "offset": "0",
+            "limit": "1000",
+            "orgId": orgId,
+            "loginUser": empName,
+            "startDate": CurrentMonthFirstDate,
+            "endDate": currentMonthLastDate,
+            "stages":  stages,
+            "status": status
         }
         return payload;
     }
@@ -354,11 +403,13 @@ const DropAnalysisScreen = ({ navigation }) => {
         switch (key) {
             case "FROM_DATE":
                 setFromDateState(formatDate);
-                getDropListFromServer(employeeId,employeeName, branchId,orgId, formatDate, selectedToDate);
+                getDropAnalysisWithFilterFromServerFilterApply(formatDate,selectedToDate)
+                // getDropListFromServer(employeeId,employeeName, branchId,orgId, formatDate, selectedToDate);
                 break;
             case "TO_DATE":
                 setToDateState(formatDate);
-                getDropListFromServer(employeeId,employeeName, branchId,orgId, selectedFromDate, formatDate);
+                getDropAnalysisWithFilterFromServerFilterApply(selectedFromDate, formatDate)
+                // getDropListFromServer(employeeId,employeeName, branchId,orgId, selectedFromDate, formatDate);
                 break;
         }
     }
@@ -660,7 +711,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                             setLeadsFilterDropDownText("All");
                         } else {
                             const names = data.map((y) => y.menu);
-                            //   getSubMenuList(names.toString());
+                              getSubMenuList(names.toString());
                             setLeadsFilterDropDownText(names.toString());
                         }
                     }}
@@ -669,6 +720,9 @@ const DropAnalysisScreen = ({ navigation }) => {
                     }}
                     selectAll={async () => {
                         setSubMenu([]);
+                        getDropAnalysisWithFilterFromServer();
+                        setLeadsFilterDropDownText("All")
+                        setLeadsSubMenuFilterDropDownText("All");
                     }}
                 />
                 <LeadsFilterComp
@@ -679,14 +733,21 @@ const DropAnalysisScreen = ({ navigation }) => {
                         setTempFilterPayload(x);
                         setLeadsSubMenuFilterVisible(false);
                         const data = x.filter((y) => y.checked);
-                        if (data.length === subMenu.length) {
-                            setLeadsSubMenuFilterDropDownText("All");
-                        } else {
+                        console.log("manthanddddd ", data);
+                        // if (data.length === subMenu.length) {
+                        //     setLeadsSubMenuFilterDropDownText("All");
+                        // } else {
                             const names = data.map((y) => y?.subMenu);
                             setLeadsSubMenuFilterDropDownText(
                                 names.toString() ? names.toString() : "Select Sub Menu"
                             );
-                        }
+                            let tmpArr=[] ;
+                        const leadstages = data.map((item) => 
+                            tmpArr.push(item.leadStage)
+                        )
+                        console.log("manthanddddd leadstages ", tmpArr.toString().replace(/[\[\]']+/g, ''));
+                            getDropAnalysisWithFilterFromServerFilterApply(selectedFromDate, selectedToDate, data[0].leadStage,null)
+                        // }
                     }}
                     cancelClicked={() => {
                         setLeadsSubMenuFilterVisible(false);

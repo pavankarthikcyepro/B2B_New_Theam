@@ -176,6 +176,37 @@ export const getDropAnalysisFilter = createAsyncThunk(
     return json;
   }
 );
+
+export const getdropstagemenu = createAsyncThunk(
+  "DROPANALYSIS/getdropstagemenu",
+  async (payload, { rejectWithValue }) => {
+
+    const response = await client.get(URL.GET_DROPSTAGE_MENU(payload));
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+
+export const getDropstagesubmenu = createAsyncThunk(
+  "DROPANALYSIS/getDropstagesubmenu",
+  async (payload, { rejectWithValue }) => {
+
+    const response = await client.get(URL.GET_DROP_SUBMENU(payload));
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+
 const leaddropListSlice = createSlice({
   name: "DROPANALYSIS",
   initialState: {
@@ -190,6 +221,8 @@ const leaddropListSlice = createSlice({
     menu: [],
     leadList: [],
     defualtStatus: [],
+    dropStageMenus:[],
+    dropStageSubMenus: [],
   },
   reducers: {
     clearLeadDropState :(state, action) => {
@@ -203,7 +236,9 @@ const leaddropListSlice = createSlice({
       state.subMenu= [],
       state.menu= [],
       state.leadList= [],
-      state.defualtStatus= []
+      state.defualtStatus= [],
+        state.dropStageMenus = [],
+        state.dropStageSubMenus = []
     },
   },
   extraReducers: (builder) => {
@@ -364,6 +399,32 @@ const leaddropListSlice = createSlice({
       state.isLoading = false;
       state.status = "failed";
     });
+
+
+    builder.addCase(getdropstagemenu.pending, (state) => {
+      state.dropStageMenus =[];
+    });
+    builder.addCase(getdropstagemenu.fulfilled, (state, action) => {
+      state.dropStageMenus = action.payload;
+
+    });
+    builder.addCase(getdropstagemenu.rejected, (state, action) => {
+      state.dropStageMenus =[];
+    });
+
+
+    builder.addCase(getDropstagesubmenu.pending, (state) => {
+      state.dropStageSubMenus = [];
+    });
+    builder.addCase(getDropstagesubmenu.fulfilled, (state, action) => {
+      state.dropStageSubMenus = action.payload;
+
+    });
+    builder.addCase(getDropstagesubmenu.rejected, (state, action) => {
+      state.dropStageSubMenus = [];
+    });
+
+
   },
 });
 
