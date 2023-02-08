@@ -262,6 +262,9 @@ const LoginScreen = ({ navigation }) => {
                );
                if (employeeData) {
                  const jsonObj = JSON.parse(employeeData);
+                 if (jsonObj.hrmsRole == "MD" || jsonObj.hrmsRole == "CEO") {
+                  BackgroundService.stop()
+                 }
                  const trackingResponse = await client.get(
                    getDetailsByempIdAndorgId +
                      `/${jsonObj.empId}/${jsonObj.orgId}`

@@ -45,10 +45,9 @@ const officeLocation = {
 };
 
 const AppScreen = () => {
-
-  useEffect(()=>{
-    Orientation.lockToPortrait()
-  },[])
+  useEffect(() => {
+    Orientation.lockToPortrait();
+  }, []);
   const [state, dispatch] = React.useReducer(
     (prevState, action) => {
       switch (action.type) {
@@ -370,10 +369,20 @@ const AppScreen = () => {
       await BackgroundService.stop();
       let userToken = await AsyncStore.getData(AsyncStore.Keys.USER_TOKEN);
       dispatch({ type: "RESTORE_TOKEN", token: userToken });
-      if (userToken) {
-        startTracking();
-      } else {
-        await BackgroundService.stop();
+      const employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        if (jsonObj.hrmsRole == "MD" || jsonObj.hrmsRole == "CEO") {
+          BackgroundService.stop();
+        } else {
+          if (userToken) {
+            startTracking();
+          } else {
+            await BackgroundService.stop();
+          }
+        }
       }
     };
 
@@ -386,7 +395,7 @@ const AppScreen = () => {
         dispatch({ type: "SIGN_IN", token: token });
       },
       signOut: () => {
-        Orientation.lockToPortrait()
+        Orientation.lockToPortrait();
         AsyncStore.storeData(AsyncStore.Keys.USER_TOKEN, "");
         dispatch({ type: "SIGN_OUT" });
       },

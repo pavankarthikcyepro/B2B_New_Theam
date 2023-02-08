@@ -146,9 +146,20 @@ const TargetSettingsScreen = ({ route, navigation }) => {
     }
   }, [isFocused, isDrawerOpen]);
 
+  function isEmpty(obj = {}) {
+    return Object.keys(obj).length === 0;
+  }
+
   useEffect(() => {
-    dispatch(saveFilterPayload(route.params));
-  }, [route.params]);
+    if (
+      isEmpty(selector.dealerFilter) &&
+      isEmpty(selector.filterSelectedData)
+    ) {
+      dispatch(saveFilterPayload({}));
+    } else {
+      dispatch(saveFilterPayload(route.params));
+    }
+  }, [route.params, selector.filterSelectedData, selector.dealerFilter]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
