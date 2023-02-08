@@ -287,6 +287,7 @@ const LeadsScreen = ({ route, navigation }) => {
           leadStage = leadStage.filter(function (item, index, inputArray) {
             return inputArray.indexOf(item) == index;
           });
+       
           setDefualtLeadStage(leadStage);
           setdefualtLeadStatus(leadStatus);
           const newArr = path.map((v) => ({ ...v, checked: false }));
@@ -322,6 +323,7 @@ const LeadsScreen = ({ route, navigation }) => {
           leadStage = leadStage.filter(function (item, index, inputArray) {
             return inputArray.indexOf(item) == index;
           });
+          //todo
           setDefualtLeadStage(leadStage);
           setdefualtLeadStatus(leadStatus);
           const newArr = path.map((v) => ({ ...v, checked: false }));
@@ -628,8 +630,10 @@ const LeadsScreen = ({ route, navigation }) => {
     getAllData = false,
     employeeDetail = {}
   ) => {
+    
     Promise.all([dispatch(getSubMenu(item.toUpperCase()))])
       .then((response) => {
+        
         let path = response[0]?.payload[0]?.allLeadsSubstagesEntity;
         if (getAllData) {
           setSearchedData([]);
@@ -807,17 +811,26 @@ const LeadsScreen = ({ route, navigation }) => {
         : leadStage.length === 0
         ? defualtLeadStage
         : leadStage;
+
       if (
         leadStages &&
         leadStages.length > 0 &&
         route?.params?.param !== "Retail"
       ) {
-        const invoiceIndex = leadStages.findIndex(
-          (x) => x === "INVOICECOMPLETED"
-        );
-        if (invoiceIndex !== -1) {
-          leadStages.splice(invoiceIndex, 1);
+        if (leadStages[0] === "INVOICECOMPLETED") {
+          leadStages[0] = "INVOICE"
+          return
+        } else {
+          const invoiceIndex = leadStages.findIndex(
+            (x) => x === "INVOICECOMPLETED"
+          );
+
+          if (invoiceIndex !== -1) {
+            leadStages.splice(invoiceIndex, 1);
+          }
         }
+
+
       }
 
       let isLive = false;
@@ -1210,7 +1223,7 @@ const LeadsScreen = ({ route, navigation }) => {
               onPress={() => {
                 setLeadsSubMenuFilterVisible(true);
               }}
-              disabled={true ? true : false}
+              disabled={subMenu.length<=0 ? true : false}
             >
               <View
                 style={{

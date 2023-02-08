@@ -1518,7 +1518,7 @@ export const ProformaComp = ({
   // };
   const saveProformaDetails = async (from) => {
     var proformaStatus = "";
-    console.log("manthan---fff ",from)
+    
     if (from === "save") {
       proformaStatus = "ENQUIRYCOMPLETED";
       const data1 = {
@@ -2020,10 +2020,10 @@ export const ProformaComp = ({
       if (mArray.length > 0) {
         newSelectedProforma = mArray.filter((item) => item.id === id);
         // todo
-        console.log("manthan---> ", newSelectedProforma[0])
+       
         if (newSelectedProforma[0].performa_status === "PENDING_APPROVAL" ||
           newSelectedProforma[0].performa_status === "SENTFORAPPROVAL") {
-          console.log("manthn---dd ", newSelectedProforma[0].performa_status)
+          
           setShowApproveRejectBtn(true);
           setshowSendForApprovBtn(false);
           setshowSaveBtn(false);

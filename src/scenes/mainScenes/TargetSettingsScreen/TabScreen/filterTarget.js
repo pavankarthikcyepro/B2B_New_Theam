@@ -38,6 +38,12 @@ import {
 import { showAlertMessage, showToast } from "../../../../utils/toast";
 import { AppNavigator } from "../../../../navigations";
 import { DropDown } from "./dropDown";
+import {
+  saveFilterPayload,
+  updateDealerFilterData,
+  updateFilterSelectedData,
+} from "../../../../redux/targetSettingsReducer";
+import { useIsFocused } from "@react-navigation/native";
 
 const screenWidth = Dimensions.get("window").width;
 const buttonWidth = (screenWidth - 100) / 2;
@@ -61,7 +67,7 @@ const AcitivityLoader = () => {
 const FilterTargetScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
-
+  const targetSelector = useSelector((state) => state.targetSettingsReducer);
   const [totalDataObj, setTotalDataObj] = useState([]);
   const [showDropDownModel, setShowDropDownModel] = useState(false);
   const [dropDownData, setDropDownData] = useState([]);
@@ -84,7 +90,7 @@ const FilterTargetScreen = ({ route, navigation }) => {
   );
   const [dropDownFrom, setDropDownFrom] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
+  const isFocused = useIsFocused();
   useEffect(() => {
     getAsyncData();
   }, []);
@@ -128,11 +134,31 @@ const FilterTargetScreen = ({ route, navigation }) => {
     setToDate(monthLastDate);
   }, [selector.filter_drop_down_data]);
 
+  useEffect(() => {
+    // navigation.addListener("focus", () => {
+    // if (!isEmpty(targetSelector.filterSelectedData)) {
+    //   const temp = { ...targetSelector.filterSelectedData };
+    //   setEmployeeDropDownDataLocal(temp);
+    // }
+    // });
+  }, [isFocused]);
+
+  useEffect(() => {
+    navigation.addListener("focus", () => {
+      if (!isEmpty(targetSelector.dealerFilter)) {
+        const temp = { ...targetSelector.dealerFilter };
+        setTotalDataObj(temp);
+      }
+    });
+  }, [navigation]);
   //   useEffect(() => {
   //     if (nameKeyList.length > 0) {
   //       dropDownItemClicked(4, true);
   //     }
   //   }, [nameKeyList, userData]);
+  function isEmpty(obj = {}) {
+    return Object.keys(obj).length === 0;
+  }
 
   const dropDownItemClicked = async (index, initalCall = false) => {
     const topRowSelectedIds = [];
@@ -144,7 +170,7 @@ const FilterTargetScreen = ({ route, navigation }) => {
         }
       });
     }
-    
+
     let data = [];
     if (topRowSelectedIds.length > 0) {
       const subLevels = totalDataObj[nameKeyList[index]].sublevels;
@@ -174,9 +200,8 @@ const FilterTargetScreen = ({ route, navigation }) => {
         }
       }
     }
-   
+
     if (index === 4) {
-     
       setDropDownData([...newData]);
       if (initalCall) {
         let updatedMultipleData = [...newData];
@@ -193,7 +218,6 @@ const FilterTargetScreen = ({ route, navigation }) => {
       }
       //   submitBtnClicked(null)
     } else {
-      
       setDropDownData([...data]);
     }
     setSelectedItemIndex(index);
@@ -230,7 +254,6 @@ const FilterTargetScreen = ({ route, navigation }) => {
   };
 
   const updateSelectedItems = (data, index, initalCall = false) => {
-    
     const totalDataObjLocal = { ...totalDataObj };
     if (index > 0) {
       let selectedParendIds = [];
@@ -311,24 +334,26 @@ const FilterTargetScreen = ({ route, navigation }) => {
       sublevels: result,
     };
     totalDataObjLocal[key] = newOBJ;
+    dispatch(updateDealerFilterData({ ...totalDataObjLocal }));
     setTotalDataObj({ ...totalDataObjLocal });
     index == 4 && submitBtnClicked(totalDataObjLocal);
   };
 
-  const updateSelectedItemsForEmployeeDropDown = (data, index) => {
+  
+
+  const updateSelectedItemsForEmployeeDropDown = (data, index,index1) => {
     let key = employeeTitleNameList[index];
-    const newTotalDataObjLocal = { ...employeeDropDownDataLocal };
+    const newTotalDataObjLocal =Object.assign(employeeDropDownDataLocal);
     let objIndex = newTotalDataObjLocal[key].findIndex(
       (obj) => obj.id == data.id
     );
-    for (let i = 0; i < newTotalDataObjLocal[key].length; i++) {
-      if (objIndex === i) {
-        newTotalDataObjLocal[key][i].selected = true;
-      } else {
-        newTotalDataObjLocal[key][i].selected = false;
-      }
-    }
-    setEmployeeDropDownDataLocal({ ...newTotalDataObjLocal });
+   const a= newTotalDataObjLocal[key].map((data, index) =>
+      index === objIndex
+        ? { ...newTotalDataObjLocal[key][index], selected: true }
+        : { ...newTotalDataObjLocal[key][index], selected: false }
+    );
+    newTotalDataObjLocal[key] = a
+    setEmployeeDropDownDataLocal(newTotalDataObjLocal);
   };
 
   const clearBtnClicked = () => {
@@ -470,7 +495,12 @@ const FilterTargetScreen = ({ route, navigation }) => {
       }
       if (!isEmpty(names) && !isEmpty(newDataObj)) {
         setEmloyeeTitleNameList(names);
-        setEmployeeDropDownDataLocal(newDataObj);
+        if (!isEmpty(targetSelector.filterSelectedData)) {
+          const temp = { ...targetSelector.filterSelectedData };
+          setEmployeeDropDownDataLocal(temp);
+        } else {
+          setEmployeeDropDownDataLocal(newDataObj);
+        }
         setIsLoading(false);
       }
     },
@@ -478,6 +508,7 @@ const FilterTargetScreen = ({ route, navigation }) => {
   );
 
   const clearBtnForEmployeeData = () => {
+    clearBtnClicked();
     let newDataObj = {};
     for (let key in employeeDropDownDataLocal) {
       const arrayData = employeeDropDownDataLocal[key];
@@ -492,6 +523,9 @@ const FilterTargetScreen = ({ route, navigation }) => {
       }
       newDataObj[key] = newArray;
     }
+    dispatch(saveFilterPayload({}));
+    dispatch(updateFilterSelectedData({}));
+    dispatch(updateDealerFilterData({}));
     setEmployeeDropDownDataLocal(newDataObj);
   };
 
@@ -507,7 +541,7 @@ const FilterTargetScreen = ({ route, navigation }) => {
         });
       }
     }
-    
+
     let x =
       employeeDropDownDataLocal[
         Object.keys(employeeDropDownDataLocal)[
@@ -515,16 +549,30 @@ const FilterTargetScreen = ({ route, navigation }) => {
         ]
       ];
     let selectedID = x.filter((e) => e.selected == true);
-    
-    // return
-    navigation.navigate("MONTHLY_TARGET_SCREEN", {
-      params: {
-        from: "Filter",
-        selectedID: selectedIds[selectedIds.length - 1],
-        fromDate: fromDate,
-        toDate: toDate,
-      },
+    let temp = [];
+    Object.keys(employeeDropDownDataLocal).map(function (key, index) {
+      Object.values(employeeDropDownDataLocal)[index].map(
+        (innerItem, innerIndex) => {
+          if (innerItem.selected == true) {
+            temp.push(innerItem);
+          }
+        }
+      );
     });
+
+    dispatch(updateFilterSelectedData(employeeDropDownDataLocal));
+    if (temp.length > 0) {
+      navigation.navigate("MONTHLY_TARGET_SCREEN", {
+        params: {
+          from: "Filter",
+          // selectedID: selectedIds[selectedIds.length - 1],
+          selectedID: temp[temp.length - 1].id,
+          fromDate: fromDate,
+          toDate: toDate,
+        },
+      });
+    }
+
     // let selectedID = x[x-1];
     // return;
     // if (selectedIds.length > 0) {
@@ -559,12 +607,11 @@ const FilterTargetScreen = ({ route, navigation }) => {
         headerTitle={"Select"}
         data={dropDownData}
         onRequestClose={() => setShowDropDownModel(false)}
-        selectedItems={(item) => {
+        selectedItems={(item,o,index) => {
           if (dropDownFrom === "ORG_TABLE") {
-         
             updateSelectedItems(item, selectedItemIndex);
           } else {
-            updateSelectedItemsForEmployeeDropDown(item, selectedItemIndex);
+            updateSelectedItemsForEmployeeDropDown(item,selectedItemIndex, index);
           }
           setShowDropDownModel(false);
         }}
@@ -627,8 +674,7 @@ const FilterTargetScreen = ({ route, navigation }) => {
                 </View>
               );
             } else if (index === 1) {
-
-              // todo country list 
+              // todo country list
               return (
                 <View>
                   <View
@@ -640,13 +686,11 @@ const FilterTargetScreen = ({ route, navigation }) => {
                       scrollEnabled={false}
                       keyExtractor={(item, index) => index.toString()}
                       renderItem={({ item, index }) => {
-                       
                         const data = totalDataObj[item].sublevels;
-                     
+
                         let selectedNames = "";
                         let disabletemp = false;
                         data.forEach((obj, index) => {
-                         
                           if (
                             obj.selected != undefined &&
                             obj.selected == true
@@ -654,8 +698,8 @@ const FilterTargetScreen = ({ route, navigation }) => {
                             selectedNames += obj.name + ", ";
                           }
 
-                          if (obj.disabled === "Y"){
-                            disabletemp= true;
+                          if (obj.disabled === "Y") {
+                            disabletemp = true;
                           }
                         });
 
@@ -665,7 +709,7 @@ const FilterTargetScreen = ({ route, navigation }) => {
                             selectedNames.length - 1
                           );
                         }
-                        
+
                         return (
                           <View>
                             <DropDownSelectionItem
