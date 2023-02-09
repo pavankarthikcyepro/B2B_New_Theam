@@ -811,21 +811,26 @@ const LeadsScreen = ({ route, navigation }) => {
         : leadStage.length === 0
         ? defualtLeadStage
         : leadStage;
+
       if (
         leadStages &&
         leadStages.length > 0 &&
         route?.params?.param !== "Retail"
       ) {
-        // const invoiceIndex = leadStages.findIndex(
-        //   (x) => x === "INVOICECOMPLETED"
-        // );
-     
-        // if (invoiceIndex !== -1) {
-        //   leadStages.splice(invoiceIndex, 1);
-        // }
-        if (leadStages[0] === "INVOICECOMPLETED"){
-          leadStages[0] ="INVOICE"
+        if (leadStages[0] === "INVOICECOMPLETED") {
+          leadStages[0] = "INVOICE"
+          return
+        } else {
+          const invoiceIndex = leadStages.findIndex(
+            (x) => x === "INVOICECOMPLETED"
+          );
+
+          if (invoiceIndex !== -1) {
+            leadStages.splice(invoiceIndex, 1);
+          }
         }
+
+
       }
 
       let isLive = false;

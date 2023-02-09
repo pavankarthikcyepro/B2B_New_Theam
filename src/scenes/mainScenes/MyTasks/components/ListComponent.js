@@ -233,6 +233,8 @@ const ListComponent = ({ route, navigation }) => {
                 dataType: "todaysData",
                 // "startDate": startDate,
                 // "endDate": endDate,
+                salesConsultantId: selector.filterIds?.empSelectedIds || [],
+                branchCodes: selector.filterIds?.dealerCodes || [],
               };
             } else {
               payload = {
@@ -240,6 +242,8 @@ const ListComponent = ({ route, navigation }) => {
                 loggedInEmpId: jsonObj.empId,
                 onlyForEmp: true,
                 dataType: "todaysData",
+                salesConsultantId: selector.filterIds?.empSelectedIds || [],
+                branchCodes: selector.filterIds?.dealerCodes || [],
               };
             }
             Promise.all([dispatch(getTodayMyTasksListApi(payload))]).then(
@@ -282,6 +286,8 @@ const ListComponent = ({ route, navigation }) => {
                 dataType: "todaysData",
                 // "startDate": startDate,
                 // "endDate": endDate,
+                salesConsultantId: selector.filterIds?.empSelectedIds || [],
+                branchCodes: selector.filterIds?.dealerCodes || [],
               };
             } else {
               payload = {
@@ -289,6 +295,8 @@ const ListComponent = ({ route, navigation }) => {
                 loggedInEmpId: jsonObj.empId,
                 onlyForEmp: false,
                 dataType: "todaysData",
+                salesConsultantId: selector.filterIds?.empSelectedIds || [],
+                branchCodes: selector.filterIds?.dealerCodes || [],
               };
             }
             Promise.all([dispatch(getTodayTeamTasksListApi(payload))]).then(
