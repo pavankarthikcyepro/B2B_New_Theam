@@ -869,12 +869,12 @@ const AttendanceScreen = ({ route, navigation }) => {
       />
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.DatePickerView}>
-          <DateRangeComp
+          {/* <DateRangeComp
             fromDate={selectedFromDate}
             toDate={selectedToDate}
             fromDateClicked={() => showDatePickerMethod("FROM_DATE")}
             toDateClicked={() => showDatePickerMethod("TO_DATE")}
-          />
+          /> */}
         </View>
         <View style={styles.profilePicView}>
           <View style={styles.profileView}>
@@ -944,6 +944,12 @@ const AttendanceScreen = ({ route, navigation }) => {
                 .endOf("month")
                 .format(dateFormat);
               setDisplayingMonths(startDate);
+              setFromDateState(startDate);
+              if (lastMonthFirstDate == startDate) {
+                setToDateState(currentDate);
+              } else {
+                setToDateState(endDate);
+              }
               if (!filterStart) {
                 GetCountByMonth(startDate, endDate);
                 getAttendanceByMonth(startDate, endDate);

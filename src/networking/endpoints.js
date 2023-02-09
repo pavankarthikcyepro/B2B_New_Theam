@@ -550,7 +550,10 @@ const URL = {
     return downloadFile2;
   },
   LOCATION_LIST: (orgId) => {
-    return `${baseUrl} + "dfd/oh/data-nodes?orgId=${orgId}&levelCode=Level4`;
+    return `${baseUrl}dfd/oh/data-nodes?orgId=${orgId}&levelCode=Level4`;
+  },
+  DEALER_CODE_LIST1: (orgId) => {
+    return `${baseUrl}dfd/oh/data-nodes?orgId=${orgId}&levelCode=Level5`;
   },
   DEALER_CODE_LIST: (orgId) => {
     return `${baseUrl} + "dfd/oh/data-nodes?orgId=1&levelCode=Level5`;
@@ -644,8 +647,7 @@ const URL = {
   UPDATE_TEAM_TARGET_PARAMS: () => {
     return `${salesGap}/target-update`;
   },
-  EVENT_DASHBOARD: () =>
-    `${dashboard}/v2/get_target_params_events`,
+  EVENT_DASHBOARD: () => `${dashboard}/v2/get_target_params_events`,
   MODEL_SOURCE_SELF: () =>
     `${dashboard}/v2/get_target_params_for_emp_model_source`,
   GET_LIVE_LEADS_MODEL_SOURCE_SELF: () =>
@@ -695,9 +697,7 @@ const URL = {
   },
   GET_HOLIDAYS: (orgId) => {
     return (
-      sales_url +
-      "/employeeHolidayList/getAllHolidayDetails/" +
-      `${orgId}`
+      sales_url + "/employeeHolidayList/getAllHolidayDetails/" + `${orgId}`
     );
   },
   NOTIFICATION_LIST: (empId) => {

@@ -115,6 +115,7 @@ import EventSourceModel from "../scenes/mainScenes/EventDashboard/EventSourceMod
 import LeaderShipFilter from "../scenes/mainScenes/Home/TabScreens/leaderShipFilter";
 import Orientation from "react-native-orientation-locker";
 import { detectIsOrientationLock } from "../utils/helperFunctions";
+import DownloadReportScreen from "../scenes/mainScenes/Attendance/DownloadReport";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -362,6 +363,7 @@ export const DrawerStackIdentifiers = {
   attendance: "Attendance",
   geolocation: "Geolocation",
   digitalDashboard: "DIGITAL_DASHBOARD",
+  reportDownload:"REPORT_DOWNLOAD"
 };
 
 export const TabStackIdentifiers = {
@@ -1298,7 +1300,10 @@ const MainStackDrawerNavigator = ({ navigation }) => {
         name={DrawerStackIdentifiers.digitalDashboard}
         component={DigitalDashBoardScreen}
       />
-
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.reportDownload}
+        component={DownloadReportNavigator}
+      />
       {/* <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.preBooking}
         component={PreBookingStackNavigator}
@@ -1308,6 +1313,26 @@ const MainStackDrawerNavigator = ({ navigation }) => {
         component={TargetSettingsScreen}
       />
     </MainDrawerNavigator.Navigator>
+  );
+};
+const DownloadReportStack = createStackNavigator();
+
+const DownloadReportNavigator = ({ navigation }) => {
+  return (
+    <DownloadReportStack.Navigator
+      initialRouteName={"REPORT_DOWNLOAD"}
+      screenOptions={screeOptionStyle}
+    >
+      <DownloadReportStack.Screen
+        name={"REPORT_DOWNLOAD"}
+        component={DownloadReportScreen}
+        options={{
+          title: "Download Report",
+          headerShown: true,
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+    </DownloadReportStack.Navigator>
   );
 };
 
