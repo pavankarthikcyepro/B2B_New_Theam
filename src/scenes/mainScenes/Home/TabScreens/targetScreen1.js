@@ -874,7 +874,7 @@ const TargetScreen = ({ route }) => {
   }
 
   function navigateToDropLostCancel(params) {
-    navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropLostCancel);
+    navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis);
   }
   return (
     <React.Fragment>
