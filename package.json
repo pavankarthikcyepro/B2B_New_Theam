@@ -33,6 +33,7 @@
     "@react-navigation/stack": "^5.14.9",
     "@reduxjs/toolkit": "^1.6.0",
     "link": "^1.4.0",
+    "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "patch-package": "^6.5.0",
     "prop-types": "^15.7.2",
