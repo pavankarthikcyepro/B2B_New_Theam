@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Colors, GlobalStyle } from "../../styles";
 import { AppNavigator } from '../../navigations';
 import * as AsyncStore from '../../asyncStore';
-import { getLeadDropList, getMoreLeadDropList, updateSingleApproval, updateBulkApproval, revokeDrop, leadStatusDropped, clearLeadDropState, getDropAnalysisFilter, getdropstagemenu, getDropstagesubmenu } from "../../redux/leaddropReducer";
+import { getLeadDropList, getMoreLeadDropList, updateSingleApproval, updateBulkApproval, revokeDrop, leadStatusDropped, clearLeadDropState, getDropAnalysisFilter, getdropstagemenu, getDropstagesubmenu, updateLeadStage } from "../../redux/leaddropReducer";
 import { callNumber } from "../../utils/helperFunctions";
 import moment from "moment";
 import { Category_Type_List_For_Filter } from '../../jsonData/enquiryFormScreenJsonData';
@@ -67,6 +67,7 @@ const DropAnalysisScreen = ({ navigation }) => {
     const [leadsSubMenuFilterDropDownText, setLeadsSubMenuFilterDropDownText] =
         useState("All");
     const [tempFilterPayload, setTempFilterPayload] = useState([]);
+    const [updateLeadStageArray, setupdateLeadStageArray] = useState([]);
 
     // const setMyState = data => {
     //     empIdStateRef.current = data.empId;
@@ -174,11 +175,12 @@ const DropAnalysisScreen = ({ navigation }) => {
         if (selector.approvalStatus === "sucess") {
            selector.approvalStatus = ""
            
-           
+            
            setisApprovalUIVisible(false)
-            getDropListFromServerV2(employeeId, employeeName, branchId, orgId, selectedFromDate, selectedToDate)
-            setIsResfresh(true);
-            dispatch(clearLeadDropState())
+            dispatch(updateLeadStage(updateLeadStageArray))
+            // getDropListFromServerV2(employeeId, employeeName, branchId, orgId, selectedFromDate, selectedToDate)
+            // setIsResfresh(true);
+            // dispatch(clearLeadDropState())
             
         }
         else {
@@ -190,6 +192,17 @@ const DropAnalysisScreen = ({ navigation }) => {
             // getDropListFromServerV2(employeeId, employeeName, branchId, orgId, selectedFromDate, selectedToDate)
         }
     }, [selector.approvalStatus])
+
+    useEffect(() => {
+      
+        if (selector.updateLeadStage === "sucess") {
+            getDropListFromServerV2(employeeId, employeeName, branchId, orgId, selectedFromDate, selectedToDate)
+            setIsResfresh(true);
+            dispatch(clearLeadDropState())
+        }
+      
+    }, [selector.updateLeadStage])
+    
 
     useEffect(() => {
         if (appSelector.isSearch) {
@@ -249,12 +262,18 @@ const DropAnalysisScreen = ({ navigation }) => {
        
     }, [])
 
-
+    useEffect(() => {
+        navigation.addListener("focus", () => {
+            getDataFromDB();
+            setLeadsFilterDropDownText("All")
+            setLeadsSubMenuFilterDropDownText("All");
+            getDropAnalysisWithFilterFromServer()
+            dispatch(getdropstagemenu());
+        });
+    }, [navigation]);
 
     useEffect(() => {
-        getDataFromDB();
-        getDropAnalysisWithFilterFromServer()
-        dispatch(getdropstagemenu());
+       
       return () => {
           dispatch(clearLeadDropState())
       }
@@ -475,7 +494,15 @@ const DropAnalysisScreen = ({ navigation }) => {
                 })
            
             await dispatch(updateBulkApproval(arr));
-        } else dispatch(updateBulkApproval(selectedItemIds));
+        } else {
+           
+            let tempObj = {
+                "dropLeadIdList": selectedItemIds.map(item => item.dmsLeadDropInfo.leadDropId)
+            }
+            setupdateLeadStageArray(tempObj)
+            dispatch(updateBulkApproval(selectedItemIds));
+            
+        } 
 
     }
     const onItemSelected = async (uniqueId, leadDropId, type, operation) => {
@@ -711,9 +738,11 @@ const DropAnalysisScreen = ({ navigation }) => {
             />
             <View>
                 <SingleLeadSelectComp
+                    isContactVisible={true}
                     visible={leadsFilterVisible}
                     modelList={leadsFilterData}
                     submitCallback={(x) => {
+                        setLeadsSubMenuFilterDropDownText("All")
                         setLeadsFilterData([...x]);
                         setLeadsFilterVisible(false);
                         const data = x.filter((y) => y.checked);
@@ -961,6 +990,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                                                 navigation ={navigation}
                                                 showBubble={true}
                                                 showThreeDots={true}
+                                                universalId={item.crmUniversalId}
                                             />
                                         </View>
                                     </>

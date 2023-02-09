@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { SafeAreaView, View, Text, StyleSheet, FlatList, SectionList, ActivityIndicator, TouchableOpacity, Image, Platform, Linking } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { getWorkFlow, getEnquiryDetails, getLeadAge } from "../../../redux/taskThreeSixtyReducer";
+import { getWorkFlow, getEnquiryDetails, getLeadAge, getFollowUPCount } from "../../../redux/taskThreeSixtyReducer";
 import { Colors, GlobalStyle } from "../../../styles"
 import moment from "moment";
 import { AppNavigator } from "../../../navigations";
@@ -34,6 +34,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
   const [dataForSectionList, setDataForSectionList] = useState([]);
   const [userRole, setUserRole] = useState('');
   const [isApprovar, setIsApprovar] = useState(false);
+  const [dataForFOllowUpCount, setdataForFOllowUpCount] = useState([]);
 
   useEffect(async () => {
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
@@ -50,10 +51,19 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
   useEffect(() => {
     navigation.addListener('focus', () => {
       dispatch(getLeadAge(universalId));
+      dispatch(getFollowUPCount(universalId));
     })
   }, [navigation])
 
-
+  useEffect(() => {
+    if (selector.followUpcount_Status ==="fulfilled")  {
+      
+      setdataForFOllowUpCount(selector.followUpCount);
+    }
+  
+    
+  }, [selector.followUpCount])
+  
 
   // Handle enquiry Details response
   useEffect(() => {
@@ -95,7 +105,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
 
       if (closedData.length > 0)
         data.push({ title: "Closed Tasks", data: closedData });
-
+      
       setDataForSectionList(data)
     }
   }, [selector.wrokflow_response_status, selector.wrokflow_response])
@@ -508,7 +518,12 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                     tintColor={Colors.GRAY}
                                     style={[styles.countCointaner]}
                                   />
-                                  <Text style={styles.txt8}>3</Text>
+                                  <Text style={styles.txt8}>
+                                      {item.taskName === "Pre Enquiry Follow Up" ? dataForFOllowUpCount.conntactFollowUpCount
+                                        : item.taskName === "Enquiry Follow Up" ? dataForFOllowUpCount.enquiryFollowUpCount :
+                                          item.taskName === "Pre Booking Follow Up" ? dataForFOllowUpCount.preBookingFollowUpCount :
+                                            item.taskName === "Booking Follow Up" ? dataForFOllowUpCount.bookingFollowUpCount : 0}
+                                  </Text>
                                 </View>
                                 // <View
                                 //   style={styles.btn3}
@@ -528,7 +543,11 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                     tintColor={Colors.GRAY}
                                     style={[styles.countCointaner]}
                                   />
-                                  <Text style={styles.txt8}>3</Text>
+                                    <Text style={styles.txt8}>  {item.taskName === "Pre Enquiry Follow Up" ? dataForFOllowUpCount.conntactFollowUpCount
+                                      : item.taskName === "Enquiry Follow Up" ? dataForFOllowUpCount.enquiryFollowUpCount :
+                                        item.taskName === "Pre Booking Follow Up" ? dataForFOllowUpCount.preBookingFollowUpCount :
+                                          item.taskName === "Booking Follow Up" ? dataForFOllowUpCount.bookingFollowUpCount : 0}
+                                    </Text>
                                 </View>
                                 // <View
                                 //   style={styles.btn3}
@@ -596,9 +615,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                 {
                                   identifier:
                                     mytasksIdentifires.task360History,
-                                  title: checkForTaskNames(
-                                    item.taskName
-                                  ),
+                                  title: item.taskName,
                                   universalId: item.universalId,
                                 }
                               )
@@ -621,9 +638,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                   {
                                     identifier:
                                       mytasksIdentifires.task360History,
-                                    title: checkForTaskNames(
-                                      item.taskName
-                                    ),
+                                    title: item.taskName,
                                     universalId: item.universalId,
                                   }
                                 )

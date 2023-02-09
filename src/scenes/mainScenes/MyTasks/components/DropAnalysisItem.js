@@ -53,7 +53,7 @@ const IconComp = ({ iconName, onPress, bgColor }) => {
 
 
 
-export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId, uniqueId, enqCat, leadStage, name, status, created, dmsLead, lostReason, isManager = false, dropStatus = '', mobileNo, isCheckboxVisible, isRefresh = false, navigation, showBubble = false, showThreeDots =false }) => {
+export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId, uniqueId, enqCat, leadStage, name, status, created, dmsLead, lostReason, isManager = false, dropStatus = '', mobileNo, isCheckboxVisible, isRefresh = false, navigation, showBubble = false, showThreeDots = false, universalId }) => {
   const [isItemSelected, setisItemSelected] = useState("unchecked")
 
 
@@ -83,6 +83,29 @@ export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId
 
   }
 
+  const navigateToDropHistory =()=>{
+   
+    let tempLeadStagre = leadStage;
+    if (tempLeadStagre ==="PREENQUIRY"){
+      tempLeadStagre = "Pre Enquiry Follow Up"
+    } else if (tempLeadStagre === "ENQUIRY"){
+      tempLeadStagre = "Enquiry Follow Up"
+    } else if (tempLeadStagre === "PREBOOKING") {
+      tempLeadStagre = "Pre Booking Follow Up"
+    } else if (tempLeadStagre === "BOOKING") {
+      tempLeadStagre = "Booking Follow Up"
+    }
+   
+    navigation.navigate(
+      "DROP_ANALYSIS_HISTORY",
+      {
+
+        title: tempLeadStagre,
+        universalId: universalId,
+      }
+    )
+  }
+
   let date = "";
   if (from == "MY_TASKS") {
     date = moment(created, "YYYY-MM-DD hh-mm-s").format("DD/MM/YYYY h:mm a");
@@ -97,17 +120,17 @@ export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId
     statusName = statusBgColors[status].title;
   }
 
-  function checkForStageName(taskName) {
-    if (taskName?.toLowerCase() === 'preenquiry') {
-      taskName = 'CONTACTS';
-    } else if (taskName?.toLowerCase() === 'prebooking') {
-      taskName = 'Booking Approval';
+    function checkForStageName(taskName) {
+      if (taskName?.toLowerCase() === 'preenquiry') {
+        taskName = 'CONTACTS';
+      } else if (taskName?.toLowerCase() === 'prebooking') {
+        taskName = 'Booking Approval';
+      }
+      // else if (taskName.includes('Booking')) {
+      //     taskName = taskName.replace('Booking', 'Booking View');
+      // }
+      return taskName
     }
-    // else if (taskName.includes('Booking')) {
-    //     taskName = taskName.replace('Booking', 'Booking View');
-    // }
-    return taskName
-  }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.LIGHT_GRAY, }}>
@@ -240,14 +263,7 @@ export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId
 
             style={{ flex: 1 }}
             onPress={() =>
-              navigation.navigate(
-                "DROP_ANALYSIS_HISTORY",
-                {
-
-                  title: leadStage,
-                  universalId: uniqueId,
-                }
-              )
+              navigateToDropHistory()
             }
           >
             <Image

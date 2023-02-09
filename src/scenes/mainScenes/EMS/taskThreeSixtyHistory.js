@@ -4,7 +4,7 @@ import { ActivityIndicator, Dimensions, FlatList, RefreshControl, StyleSheet, Te
 import { IconButton } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import { EmsStackIdentifiers } from '../../../navigations/appNavigator';
-import { getTaskThreeSixtyHistory } from '../../../redux/taskThreeSixtyReducer';
+import { getTaskThreeSixtyHistory ,clearState} from '../../../redux/taskThreeSixtyReducer';
 import { Colors, GlobalStyle } from '../../../styles';
 
 const TaskThreeSixtyHistory = (props) => {
@@ -13,10 +13,25 @@ const TaskThreeSixtyHistory = (props) => {
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [history, setHistory] = useState([]);
+  const [historyFiltered, setHistoryFiltered] = useState([]);
 
+  // useEffect(() => {
+  //   getAllHistory();
+  //   return dispatch(clearState())
+  // }, []);
   useEffect(() => {
-    getAllHistory();
-  }, []);
+    props.navigation.addListener("focus", () => {
+      setHistory([])
+      // dispatch(clearState())
+      props.rout
+      getAllHistory();
+    });
+
+    props.navigation.setOptions({
+      headerTitle: checkForTaskNames(props.route.params.title)
+    });
+ 
+  }, [props.navigation]);
 
   const getAllHistory = () => {
     // dispatch(
@@ -24,8 +39,11 @@ const TaskThreeSixtyHistory = (props) => {
     // );
     dispatch(getTaskThreeSixtyHistory(props.route.params.universalId));
   };
+
+  
   
   useEffect(() => {
+  
     if (selector.taskThreeSixtyHistory.length) {
       if (activeIndex == 0) checkThisWeek();
       if (activeIndex == 1) checkCurrentMonth();
@@ -58,20 +76,46 @@ const TaskThreeSixtyHistory = (props) => {
   };
   
   const allHistory = () => {
-    setHistory(Object.assign(selector.taskThreeSixtyHistory));
+   
+    const temp = selector.taskThreeSixtyHistory.filter(item => {
+     
+      return item.taskName === props.route.params.title
+    })
+    setHistoryFiltered(temp)
+   
+    setHistory(Object.assign(temp));
   };
 
   const setHistoryData = (firstDate, lastDate) => {
-    let tmpArray = [];
-    for (let i = 0; i < selector.taskThreeSixtyHistory.length; i++) {
+    // let tmpArray = [];
+    // for (let i = 0; i < selector.taskThreeSixtyHistory.length; i++) {
+    //   if (
+    //     selector.taskThreeSixtyHistory[i].taskUpdatedTime > firstDate &&
+    //     selector.taskThreeSixtyHistory[i].taskUpdatedTime < lastDate
+    //   ) {
+    //     tmpArray.push(selector.taskThreeSixtyHistory[i]);
+    //   }
+    // }
+     // setHistory(Object.assign(tmpArray));
+
+
+    const temp = selector.taskThreeSixtyHistory.filter(item => {
+    
+      return item.taskName === props.route.params.title
+    })
+    setHistoryFiltered(temp)
+   
+      let tmpArray = [];
+    for (let i = 0; i < temp.length; i++) {
       if (
-        selector.taskThreeSixtyHistory[i].taskUpdatedTime > firstDate &&
-        selector.taskThreeSixtyHistory[i].taskUpdatedTime < lastDate
+        temp[i].taskUpdatedTime > firstDate &&
+        temp[i].taskUpdatedTime < lastDate
       ) {
-        tmpArray.push(selector.taskThreeSixtyHistory[i]);
+        tmpArray.push(temp[i]);
       }
     }
     setHistory(Object.assign(tmpArray));
+   
   };
 
   const renderTitles = ({ item, index }) => {
@@ -116,8 +160,8 @@ const TaskThreeSixtyHistory = (props) => {
         // </Text>
         <Text style={styles.taskNameText} numberOfLines={2}>
           {`${
-            item?.taskUpdatedBy?.designationName
-              ? `${item?.taskUpdatedBy?.designationName}`
+            item?.taskUpdatedBy?.hrmsRole
+            ? `${item?.taskUpdatedBy?.hrmsRole}`
               : ""
           } `}
         </Text>
@@ -130,11 +174,15 @@ const TaskThreeSixtyHistory = (props) => {
 
     let topBcgColor = Colors.LIGHT_GRAY;
     let bottomBcgColor = Colors.LIGHT_GRAY;
-    if (selector.taskThreeSixtyHistory[index - 1] !== undefined) {
+    const temp = selector.taskThreeSixtyHistory.filter(item => {
+      
+      return item.taskName === props.route.params.title
+    })
+    if (temp[index - 1] !== undefined) {
       topBcgColor = Colors.GRAY;
     }
 
-    if (selector.taskThreeSixtyHistory[index + 1] !== undefined) {
+    if (temp[index + 1] !== undefined) {
       bottomBcgColor = Colors.GRAY;
     }
 
@@ -255,7 +303,7 @@ const TaskThreeSixtyHistory = (props) => {
           contentContainerStyle={styles.titleRow}
           bounces={false}
         />
-        <IconButton
+        {/* <IconButton
           icon="filter-outline"
           style={{ padding: 0, margin: 0 }}
           color={Colors.BLACK}
@@ -266,7 +314,7 @@ const TaskThreeSixtyHistory = (props) => {
               fromScreen: "TASK360_HISTORY",
             });
           }}
-        />
+        /> */}
       </View>
 
       <FlatList

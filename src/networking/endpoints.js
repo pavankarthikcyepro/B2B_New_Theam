@@ -413,6 +413,9 @@ const URL = {
   UPDATE_BULKAPPROVAL: () => {
     return sales_url + "/lead-drop/bulkdrop";
   },
+  UPDATE_DROP_STAGE: () => {
+    return sales_url + "/lead/updateDropStage";
+  },
   REVOKE: (id) => {
     return sales_url + "/lead-drop/updateStatusEnquire/ENQUIRY/" + id;
   },
@@ -769,6 +772,9 @@ const URL = {
   },
   GET_TASK_360_HISTORY: (universalId) => {
     return sales_url + "/workflow/universalId/" + universalId;
+  },
+   GET_FOLLOWUP_COUNT: (universalId) => {
+     return sales_url + "/workflow/followupCounts/" + universalId;
   },
   CALL_DEALLOCATE: (empId) => {
     return roleManagement_url + "/dms/emp-update/" + empId;

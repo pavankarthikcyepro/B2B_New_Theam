@@ -255,7 +255,7 @@ PODS:
     - React-jsi (= 0.64.4)
     - React-perflogger (= 0.64.4)
   - React-jsinspector (0.64.4)
-  - react-native-background-actions (2.6.9):
+  - react-native-background-actions (2.6.7):
     - React-Core
   - react-native-flipper (0.146.1):
     - React-Core
@@ -265,7 +265,7 @@ PODS:
     - React
   - react-native-html-to-pdf (0.12.0):
     - React-Core
-  - react-native-image-picker (4.10.3):
+  - react-native-image-picker (4.10.1):
     - React-Core
   - react-native-mail (6.1.1):
     - React-Core
@@ -286,7 +286,7 @@ PODS:
     - Toast (~> 4.0.0)
   - react-native-switch-audio-output (1.1.2):
     - React
-  - react-native-webview (11.26.0):
+  - react-native-webview (11.23.1):
     - React-Core
   - React-perflogger (0.64.4)
   - React-RCTActionSheet (0.64.4):
@@ -373,12 +373,12 @@ PODS:
     - React-Core
   - RNReanimated (1.13.4):
     - React-Core
-  - RNScreens (3.19.0):
+  - RNScreens (3.18.2):
     - React-Core
     - React-RCTImage
   - RNSnackbar (2.4.0):
     - React-Core
-  - RNSVG (12.5.0):
+  - RNSVG (12.4.4):
     - React-Core
   - RNVectorIcons (8.1.0):
     - React-Core
@@ -608,7 +608,7 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
   FBLazyVector: fa8275d5086566e22a26ddc385ab5772e7f9b1bd
-  FBReactNativeSpec: 31da7dbb2452fbc9427dc5ed832e8d4ebcf45b2f
+  FBReactNativeSpec: 04e813c04af79218bbc08461355930768fa5571c
   Flipper: d3da1aa199aad94455ae725e9f3aa43f3ec17021
   Flipper-DoubleConversion: 38631e41ef4f9b12861c67d17cb5518d06badc41
   Flipper-Folly: 755929a4f851b2fb2c347d533a23f191b008554c
@@ -631,12 +631,12 @@ SPEC CHECKSUMS:
   React-jsi: 64f80675a66899bf0f4a58b8e3908966fa516234
   React-jsiexecutor: 8c077bef1c64430b6034f27df1000d194551e2eb
   React-jsinspector: d4f6973dd474357dbaaf6f52f31ffc713bf3e766
-  react-native-background-actions: bfb2b818ae96e752b42fb335b3427ab6b050d0f6
+  react-native-background-actions: 2c251c986f23347f9c1722f05fd296938f60edb1
   react-native-flipper: 4bfe0a324e663f1ae2f76ad0da75673de6895efe
   react-native-geolocation: 69f4fd37650b8e7fee91816d395e62dd16f5ab8d
   react-native-geolocation-service: 608e1da71a1ac31b4de64d9ef2815f697978c55b
   react-native-html-to-pdf: 4c5c6e26819fe202971061594058877aa9b25265
-  react-native-image-picker: 60f4246eb5bb7187fc15638a8c1f13abd3820695
+  react-native-image-picker: f2ab1215d17bcfe27b0eb6417cc236fd1f4775e7
   react-native-mail: 8fdcd3aef007c33a6877a18eb4cf7447a1d4ce4a
   react-native-maps: 7135a33610202745d08fdf151ce6b0d01952a99c
   react-native-netinfo: 2517ad504b3d303e90d7a431b0fcaef76d207983
@@ -646,7 +646,7 @@ SPEC CHECKSUMS:
   react-native-segmented-control: 06607462630512ff8eef652ec560e6235a30cc3e
   react-native-simple-toast: 8ee5d23f0b92b935ab7434cdb65159ce12dfb4b7
   react-native-switch-audio-output: d435f857bfe73f9b6263c7101432ea2785b854d7
-  react-native-webview: 994b9f8fbb504d6314dc40d83f94f27c6831b3bf
+  react-native-webview: d33e2db8925d090871ffeb232dfa50cb3a727581
   React-perflogger: 5a890ca0911669421b7611661e9b58f91c805f5c
   React-RCTActionSheet: bd180e0879f8424a73650c5c28fbef4f3b5b27fb
   React-RCTAnimation: 1004d2b4be1f2cedfdc4cb2326adc95b989e6c6b
@@ -669,9 +669,9 @@ SPEC CHECKSUMS:
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
   RNGestureHandler: 62232ba8f562f7dea5ba1b3383494eb5bf97a4d3
   RNReanimated: c1b56d030d1616239861534d9adb531f8cffab68
-  RNScreens: ea4cd3a853063cda19a4e3c28d2e52180c80f4eb
+  RNScreens: 34cc502acf1b916c582c60003dc3089fa01dc66d
   RNSnackbar: be3333a21a453ccc272f41a8add5a71f7d44dfcd
-  RNSVG: 6adc5c52d2488a476248413064b7f2832e639057
+  RNSVG: ecd661f380a07ba690c9c5929c475a44f432d674
   RNVectorIcons: 31cebfcf94e8cf8686eb5303ae0357da64d7a5a4
   Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
   Yoga: d1fc3575b8b68891ff5ef3c276daa855e841eb32

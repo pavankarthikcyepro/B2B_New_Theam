@@ -163,6 +163,20 @@ export const updateBulkApproval = createAsyncThunk(
   }
 );
 
+export const updateLeadStage = createAsyncThunk(
+  "DROPANALYSIS/updateLeadStage",
+  async (payload, { rejectWithValue }) => {
+
+    const response = await client.post(URL.UPDATE_DROP_STAGE(), payload);
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 export const getDropAnalysisFilter = createAsyncThunk(
   "DROPANALYSIS/getDropAnalysisFilter",
   async (payload, { rejectWithValue }) => {
@@ -223,6 +237,7 @@ const leaddropListSlice = createSlice({
     defualtStatus: [],
     dropStageMenus:[],
     dropStageSubMenus: [],
+    updateLeadStage:""
   },
   reducers: {
     clearLeadDropState :(state, action) => {
@@ -238,7 +253,8 @@ const leaddropListSlice = createSlice({
       state.leadList= [],
       state.defualtStatus= [],
         state.dropStageMenus = [],
-        state.dropStageSubMenus = []
+        state.dropStageSubMenus = [],
+        state.updateLeadStage = ""
     },
   },
   extraReducers: (builder) => {
@@ -368,6 +384,25 @@ const leaddropListSlice = createSlice({
     });
     builder.addCase(updateBulkApproval.rejected, (state, action) => {
       state.approvalStatus = "failed";
+    });
+
+
+    builder.addCase(updateLeadStage.pending, (state) => { state.updateLeadStage = "pending"; });
+    builder.addCase(updateLeadStage.fulfilled, (state, action) => {
+
+      // if (action.payload.length > 0) {
+        showToast("Successfully updated");
+        state.updateLeadStage = "sucess";
+      // }
+      // const status = action.payload?.status;
+      // if (status === 'SUCCESS') {
+
+      // }
+      // state.isLoadingExtraData = false;
+
+    });
+    builder.addCase(updateLeadStage.rejected, (state, action) => {
+      state.updateLeadStage = "failed";
     });
 
     builder.addCase(getDropAnalysisFilter.pending, (state) => {
