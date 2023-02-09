@@ -664,43 +664,43 @@ const AttendanceScreen = ({ route, navigation }) => {
             }
           }
 
-          let index = currentMonthDates.findIndex(function checkAge(age) {
-            return age === currentDate;
-          });
-          if (index !== -1) {
-            let storeCurrentMonth = currentMonthDates.slice(0, index + 1);
-            let x = _.difference(storeCurrentMonth, selectedDates);
-            for (let i = 0; i <= x.length; i++) {
-              const date = new Date(x[i]);
-              obj[moment(date).format(dateFormat)] = {
-                customStyles: {
-                  container: {
-                    backgroundColor: Colors.YELLOW,
-                  },
-                  text: {
-                    color: Colors.WHITE,
-                    fontWeight: "bold",
-                  },
-                },
-              };
-            }
-          } else {
-            let x = _.difference(currentMonthDates, selectedDates);
-            for (let i = 0; i <= x.length; i++) {
-              const date = new Date(x[i]);
-              obj[moment(date).format(dateFormat)] = {
-                customStyles: {
-                  container: {
-                    backgroundColor: Colors.YELLOW,
-                  },
-                  text: {
-                    color: Colors.WHITE,
-                    fontWeight: "bold",
-                  },
-                },
-              };
-            }
-          }
+          // let index = currentMonthDates.findIndex(function checkAge(age) {
+          //   return age === currentDate;
+          // });
+          // if (index !== -1) {
+          //   let storeCurrentMonth = currentMonthDates.slice(0, index + 1);
+          //   let x = _.difference(storeCurrentMonth, selectedDates);
+          //   for (let i = 0; i <= x.length; i++) {
+          //     const date = new Date(x[i]);
+          //     obj[moment(date).format(dateFormat)] = {
+          //       customStyles: {
+          //         container: {
+          //           backgroundColor: Colors.YELLOW,
+          //         },
+          //         text: {
+          //           color: Colors.WHITE,
+          //           fontWeight: "bold",
+          //         },
+          //       },
+          //     };
+          //   }
+          // } else {
+          //   let x = _.difference(currentMonthDates, selectedDates);
+          //   for (let i = 0; i <= x.length; i++) {
+          //     const date = new Date(x[i]);
+          //     obj[moment(date).format(dateFormat)] = {
+          //       customStyles: {
+          //         container: {
+          //           backgroundColor: Colors.YELLOW,
+          //         },
+          //         text: {
+          //           color: Colors.WHITE,
+          //           fontWeight: "bold",
+          //         },
+          //       },
+          //     };
+          //   }
+          // }
           setMarker(obj);
         }
       }
