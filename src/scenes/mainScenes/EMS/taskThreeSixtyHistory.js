@@ -160,8 +160,8 @@ const TaskThreeSixtyHistory = (props) => {
         // </Text>
         <Text style={styles.taskNameText} numberOfLines={2}>
           {`${
-            item?.taskUpdatedBy?.hrmsRole
-            ? `${item?.taskUpdatedBy?.hrmsRole}`
+            item?.taskUpdatedBy?.designationName
+            ? `${item?.taskUpdatedBy?.designationName}`
               : ""
           } `}
         </Text>

@@ -52,8 +52,8 @@ const IconComp = ({ iconName, onPress, bgColor }) => {
 
 
 
-
-export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId, uniqueId, enqCat, leadStage, name, status, created, dmsLead, lostReason, isManager = false, dropStatus = '', mobileNo, isCheckboxVisible, isRefresh = false, navigation, showBubble = false, showThreeDots = false, universalId }) => {
+let isVisible= false;
+export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId, uniqueId, enqCat, leadStage, name, status, created, dmsLead, lostReason, isManager = false, dropStatus = '', mobileNo, isCheckboxVisible, isRefresh = false, navigation, showBubble = false, showThreeDots = false, universalId, count = 0, isThreeBtnClickable = false, leadStatus }) => {
   const [isItemSelected, setisItemSelected] = useState("unchecked")
 
 
@@ -82,6 +82,7 @@ export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId
 
 
   }
+
 
   const navigateToDropHistory =()=>{
    
@@ -131,6 +132,17 @@ export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId
       // }
       return taskName
     }
+  function getStageColor(leadStage, leadStatus) {
+    return leadStatus === "PREENQUIRYCOMPLETED" ||
+      (leadStatus === "ENQUIRYCOMPLETED" && leadStage === "ENQUIRY") ||
+      (leadStatus === "PREBOOKINGCOMPLETED" && leadStage === "PREBOOKING") ||
+      (leadStatus === "PREDELIVERYCOMPLETED" && leadStage === "PREDELIVERY") ||
+      (leadStatus === "INVOICECOMPLETED" && leadStage === "INVOICE") ||
+      (leadStatus === "DELIVERYCOMPLETED" && leadStage === "DELIVERY") ||
+      (leadStatus === "BOOKINGCOMPLETED" && leadStage === "BOOKING")
+      ? "#18a835"
+      : "#f29a22";
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.LIGHT_GRAY, }}>
@@ -158,18 +170,19 @@ export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId
                     color={Colors.YELLOW}
                     uncheckedColor={Colors.YELLOW} />}
 
-                {showBubble && (
+                {showBubble &&  (
                   <View
                     style={styles.btn3}
 
                   >
+                    
                     <Image
                       source={require("./../../../../assets/images/check-list.png")}
                       resizeMode="contain"
                       tintColor={Colors.GRAY}
                       style={[styles.countCointaner]}
                     />
-                    <Text style={styles.txt7}>3</Text>
+                    <Text style={styles.txt7}>{count}</Text>
                   </View>
                 )}
               </View>
@@ -243,9 +256,19 @@ export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId
                   justifyContent: "space-evenly",
                 }}
               >
-                <Text
+                {/* <Text
                   style={{
                     color: dropStatus === "DROPPED" ? "#18a835" : Colors.YELLOW,
+                    fontSize: 14,
+                    fontWeight: "bold",
+                  }}
+                >
+                  {dropStatus}
+                </Text> */}
+
+                <Text
+                  style={{
+                    color: getStageColor(leadStage, leadStatus) ,
                     fontSize: 14,
                     fontWeight: "bold",
                   }}
@@ -260,7 +283,7 @@ export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId
         </TouchableOpacity>
         {showThreeDots ? (
           <TouchableOpacity
-
+            disabled={!isThreeBtnClickable}
             style={{ flex: 1 }}
             onPress={() =>
               navigateToDropHistory()

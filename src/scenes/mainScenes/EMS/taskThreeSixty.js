@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { SafeAreaView, View, Text, StyleSheet, FlatList, SectionList, ActivityIndicator, TouchableOpacity, Image, Platform, Linking } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { getWorkFlow, getEnquiryDetails, getLeadAge, getFollowUPCount } from "../../../redux/taskThreeSixtyReducer";
+import { getWorkFlow, getEnquiryDetails, getLeadAge, getFollowUPCount, getTestDriveHistoryCount } from "../../../redux/taskThreeSixtyReducer";
 import { Colors, GlobalStyle } from "../../../styles"
 import moment from "moment";
 import { AppNavigator } from "../../../navigations";
@@ -52,6 +52,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
     navigation.addListener('focus', () => {
       dispatch(getLeadAge(universalId));
       dispatch(getFollowUPCount(universalId));
+      dispatch(getTestDriveHistoryCount(universalId));
     })
   }, [navigation])
 
@@ -290,6 +291,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
               || item.taskName.includes("Booking Follow Up - DSE")
               || item.taskName.includes("Enquiry Follow Up")
               || item.taskName.includes("Pre Enquiry Follow Up") || item.taskName.includes("Test Drive");
+            
             // let isDotVisible = item.taskName == "Pre Enquiry Follow Up" || item.taskName == "Enquiry Follow Up" 
             //   || item.taskName == "Pre Booking Follow Up" || item.taskName == "Enquiry Follow Up" ;
 
@@ -518,12 +520,12 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                     tintColor={Colors.GRAY}
                                     style={[styles.countCointaner]}
                                   />
-                                  <Text style={styles.txt8}>
-                                      {item.taskName === "Pre Enquiry Follow Up" ? dataForFOllowUpCount.conntactFollowUpCount
-                                        : item.taskName === "Enquiry Follow Up" ? dataForFOllowUpCount.enquiryFollowUpCount :
-                                          item.taskName === "Pre Booking Follow Up" ? dataForFOllowUpCount.preBookingFollowUpCount :
-                                            item.taskName === "Booking Follow Up" ? dataForFOllowUpCount.bookingFollowUpCount : 0}
-                                  </Text>
+                                    {dataForFOllowUpCount !== undefined ? <Text style={styles.txt8}>{item.taskName === "Pre Enquiry Follow Up" ?
+                                      dataForFOllowUpCount?.conntactFollowUpCount.toString().trim()
+                                      : item.taskName === "Enquiry Follow Up" ? dataForFOllowUpCount?.enquiryFollowUpCount.toString().trim() :
+                                        item.taskName === "Pre Booking Follow Up" ? dataForFOllowUpCount?.preBookingFollowUpCount.toString().trim() :
+                                          item.taskName === "Booking Follow Up" ? dataForFOllowUpCount?.bookingFollowUpCount.toString().trim() : item.taskName === "Test Drive" ? selector.testDrivCount : 0}
+                                    </Text> : null}
                                 </View>
                                 // <View
                                 //   style={styles.btn3}
@@ -543,11 +545,13 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                     tintColor={Colors.GRAY}
                                     style={[styles.countCointaner]}
                                   />
-                                    <Text style={styles.txt8}>  {item.taskName === "Pre Enquiry Follow Up" ? dataForFOllowUpCount.conntactFollowUpCount
-                                      : item.taskName === "Enquiry Follow Up" ? dataForFOllowUpCount.enquiryFollowUpCount :
-                                        item.taskName === "Pre Booking Follow Up" ? dataForFOllowUpCount.preBookingFollowUpCount :
-                                          item.taskName === "Booking Follow Up" ? dataForFOllowUpCount.bookingFollowUpCount : 0}
-                                    </Text>
+                                    {dataForFOllowUpCount !== undefined ? <Text style={styles.txt8}>{item.taskName === "Pre Enquiry Follow Up" ?
+                                      dataForFOllowUpCount?.conntactFollowUpCount.toString().trim()
+                                      : item.taskName === "Enquiry Follow Up" ? dataForFOllowUpCount?.enquiryFollowUpCount.toString().trim() :
+                                        item.taskName === "Pre Booking Follow Up" ? dataForFOllowUpCount?.preBookingFollowUpCount.toString().trim() :
+                                          item.taskName === "Booking Follow Up" ? dataForFOllowUpCount?.bookingFollowUpCount.toString().trim() : 0}
+                                    </Text> : null }
+                                    
                                 </View>
                                 // <View
                                 //   style={styles.btn3}
@@ -795,7 +799,25 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     textAlign: "center",
     width: 15,
-    overflow:"hidden"
+    overflow:"hidden",
+    
+
+  },
+  txt9: {
+    fontSize: 12,
+    fontWeight: "500",
+    color: Colors.WHITE,
+    position: "absolute",
+    left: 28,
+    top: -3,
+    backgroundColor: Colors.PINK,
+    borderWidth: 1,
+    borderColor: Colors.PINK,
+    borderRadius: 5,
+    textAlign: "center",
+    width: 15,
+    overflow: "hidden",
+    height:15
 
   },
   btn4: {

@@ -343,7 +343,7 @@ const DropAnalysisScreen = ({ navigation }) => {
             // await setEmployeeId(jsonObj.empId)
             // getDropListFromServer(jsonObj.empId, jsonObj.empName, branchId, jsonObj.orgId, lastMonthFirstDate, currentDate);
             setisApprovalUIVisible(false)
-            const payload = getPayloadData(jsonObj.empId, jsonObj.empName, branchId, jsonObj.orgId, CurrentMonthFirstDate, currentMonthLastDate,0)
+            // const payload = getPayloadData(jsonObj.empId, jsonObj.empName, branchId, jsonObj.orgId, CurrentMonthFirstDate, currentMonthLastDate,0)
             // dispatch(getLeadDropList(payload)); 
         }
     }
@@ -405,8 +405,8 @@ const DropAnalysisScreen = ({ navigation }) => {
 
         if (employeeId && ((selector.pageNumber + 1) <= selector.totalPages)) {
             renderFooter()
-            const payload = getPayloadData(employeeId,employeeName, branchId,orgId, selectedFromDate, selectedToDate, (selector.pageNumber + 1))
-            dispatch(getMoreLeadDropList(payload));
+            // const payload = getPayloadData(employeeId,employeeName, branchId,orgId, selectedFromDate, selectedToDate, (selector.pageNumber + 1))
+            // dispatch(getMoreLeadDropList(payload));
         }
 
     }
@@ -422,11 +422,29 @@ const DropAnalysisScreen = ({ navigation }) => {
         switch (key) {
             case "FROM_DATE":
                 setFromDateState(formatDate);
+                setSubMenu([]);
+                getDropAnalysisWithFilterFromServer();
+                setLeadsFilterDropDownText("All")
+                setLeadsSubMenuFilterDropDownText("All");
+                let path = selector.dropStageMenus;
+
+                const newArr = path.map((v) => ({ ...v, checked: false }));
+                setLeadsFilterData(newArr);
+
                 getDropAnalysisWithFilterFromServerFilterApply(formatDate,selectedToDate)
                 // getDropListFromServer(employeeId,employeeName, branchId,orgId, formatDate, selectedToDate);
                 break;
             case "TO_DATE":
                 setToDateState(formatDate);
+                setSubMenu([]);
+                getDropAnalysisWithFilterFromServer();
+                setLeadsFilterDropDownText("All")
+                setLeadsSubMenuFilterDropDownText("All");
+                let path2 = selector.dropStageMenus;
+
+                const newArr1 = path2.map((v) => ({ ...v, checked: false }));
+                setLeadsFilterData(newArr1);
+
                 getDropAnalysisWithFilterFromServerFilterApply(selectedFromDate, formatDate)
                 // getDropListFromServer(employeeId,employeeName, branchId,orgId, selectedFromDate, formatDate);
                 break;
@@ -474,7 +492,7 @@ const DropAnalysisScreen = ({ navigation }) => {
         setSourceList([...sourceData]);
 
         // Make Server call
-        const payload2 = getPayloadData(employeeId, selectedFromDate, selectedToDate, 0, modelFilters, categoryFilters, sourceFilters)
+        // const payload2 = getPayloadData(employeeId, selectedFromDate, selectedToDate, 0, modelFilters, categoryFilters, sourceFilters)
         // dispatch(getLeadDropList(payload2));
     }
     const updateBulkStatus = async (status)=>{
@@ -668,6 +686,29 @@ const DropAnalysisScreen = ({ navigation }) => {
         setToggelparamdata(temp)
     }
 
+    const isCountAndFollowUpVisible = (leadsStage) => {
+        let tempLeadStagre = leadsStage;
+        
+        if (tempLeadStagre === "PREENQUIRY") {
+            tempLeadStagre = "Pre Enquiry Follow Up"
+            return true;
+        } else if (tempLeadStagre === "ENQUIRY") {
+            tempLeadStagre = "Enquiry Follow Up"
+            return true;
+        } else if (tempLeadStagre === "PREBOOKING") {
+
+            tempLeadStagre = "Pre Booking Follow Up"
+            return true;
+        } else if (tempLeadStagre === "BOOKING") {
+            tempLeadStagre = "Booking Follow Up"
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+
     const liveLeadsEndDate = currentDate;
 
     return (
@@ -762,6 +803,17 @@ const DropAnalysisScreen = ({ navigation }) => {
                         getDropAnalysisWithFilterFromServer();
                         setLeadsFilterDropDownText("All")
                         setLeadsSubMenuFilterDropDownText("All");
+                        let path = selector.dropStageMenus;
+
+                        const newArr = path.map((v) => ({ ...v, checked: false }));
+                        setLeadsFilterData(newArr);
+
+                        const dateFormat = "YYYY-MM-DD";
+                        const currentDate = moment().add(0, "day").format(dateFormat)
+                        const CurrentMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+                        const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+                        setFromDateState(CurrentMonthFirstDate);
+                        setToDateState(currentMonthLastDate);
                     }}
                 />
                 <LeadsFilterComp
@@ -780,12 +832,12 @@ const DropAnalysisScreen = ({ navigation }) => {
                             setLeadsSubMenuFilterDropDownText(
                                 names.toString() ? names.toString() : "Select Sub Menu"
                             );
-                            let tmpArr=[] ;
+                            let tmpArr=[];
                        data.map((item) => 
                             tmpArr.push(item.leadStage)
                         )
-                     
-                        getDropAnalysisWithFilterFromServerFilterApply(selectedFromDate, selectedToDate, [tmpArr.toString().replace(/[\[\]']+/g, '')],null)
+                        
+                        getDropAnalysisWithFilterFromServerFilterApply(selectedFromDate, selectedToDate, ...tmpArr,null)
                         // }
                     }}
                     cancelClicked={() => {
@@ -963,7 +1015,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                                 if (index % 2 != 0) {
                                     color = Colors.LIGHT_GRAY;
                                 }
-                            
+                                isCountAndFollowUpVisible(item.stage);
 
                                 return (
                                     <>
@@ -980,7 +1032,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                                                 dmsLead={item.droppedby}
                                                 source={item.enquirySource}
                                                 lostReason={item.lostReason}
-                                                leadStatus={item.status}
+                                                status={item.status}
                                                 leadStage={item.stage}
                                                 isManager={isManager}
                                                 dropStatus={item.status}
@@ -991,6 +1043,10 @@ const DropAnalysisScreen = ({ navigation }) => {
                                                 showBubble={true}
                                                 showThreeDots={true}
                                                 universalId={item.crmUniversalId}
+                                                count = {item.count}
+                                                isThreeBtnClickable={isCountAndFollowUpVisible(item.stage)}
+                                                leadStatus = {item.leadStatus}
+                                                
                                             />
                                         </View>
                                     </>
@@ -1046,7 +1102,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                                                 dmsLead={item.droppedby}
                                                 source={item.enquirySource}
                                                 lostReason={item.lostReason}
-                                                leadStatus={item.status}
+                                                status={item.status}
                                                 leadStage={item.stage}
                                                 isManager={isManager}
                                                 dropStatus={item.status}
@@ -1055,6 +1111,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                                                 navigation={navigation}
                                                 showBubble={false}
                                                 showThreeDots={false}
+                                                leadStatus={item.leadStatus}
                                             />
                                         </View>
                                     </>
@@ -1110,7 +1167,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                                                 dmsLead={item.droppedby}
                                                 source={item.enquirySource}
                                                 lostReason={item.lostReason}
-                                                leadStatus={item.status}
+                                                status={item.status}
                                                 leadStage={item.stage}
                                                 isManager={isManager}
                                                 dropStatus={item.status}
@@ -1119,6 +1176,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                                                 navigation={navigation}
                                                 showBubble={false}
                                                 showThreeDots={false}
+                                                leadStatus={item.leadStatus}
                                             />
                                         </View>
                                     </>
