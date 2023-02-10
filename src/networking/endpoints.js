@@ -93,8 +93,7 @@ import { GoogleMapKey } from "../service";
 //   "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic";
 
 // Dev End Points with JWT
-export const baseUrl =
-  "https://stage-api.cyepro.com/";
+export const baseUrl = "https://stage-api.cyepro.com/";
 export const auth_url = baseUrl + "auth";
 export const hrms_url = baseUrl + "hrms";
 export const inventory_url = baseUrl + "inventory";
@@ -162,7 +161,7 @@ export const reasonDropDown = baseUrl + "dynamic-forms/dropdown";
 export const getDetailsByempIdAndorgId =
   baseUrl + "sales/employeeTracking/getDetailsByempIdAndorgId";
 export const getLocationCoordinates =
-baseUrl + "sales/employeeTracking/getLocationByempIdAndorgId";
+  baseUrl + "sales/employeeTracking/getLocationByempIdAndorgId";
 
 const URL = {
   // LOGIN: () => hrms_url + "/emplogin",
@@ -554,6 +553,12 @@ const URL = {
   },
   DEALER_CODE_LIST1: (orgId) => {
     return `${baseUrl}dfd/oh/data-nodes?orgId=${orgId}&levelCode=Level5`;
+  },
+  GET_DESIGNATION: (orgId, branchId) => {
+    return `${sales_url}/employees/get/designations/${orgId}/${branchId}`;
+  },
+  GET_EMPLOYEES: (designationId, branchId) => {
+    return `${sales_url}/employees/getemployee/${designationId}/${branchId}`;
   },
   DEALER_CODE_LIST: (orgId) => {
     return `${baseUrl} + "dfd/oh/data-nodes?orgId=1&levelCode=Level5`;

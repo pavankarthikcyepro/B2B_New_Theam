@@ -1062,7 +1062,7 @@ const AttendanceScreen = ({ route, navigation }) => {
               <Text style={styles.parameterText}>{attendanceCount.wfh}</Text>
             </View>
           </View>
-          {/* <View style={styles.parameterView}>
+          <View style={styles.parameterView}>
             <View
               style={{
                 width: 25,
@@ -1073,7 +1073,7 @@ const AttendanceScreen = ({ route, navigation }) => {
               <Text style={styles.parameterText}>{"No Logged"}</Text>
               <Text style={styles.parameterText}>{attendanceCount.total}</Text>
             </View>
-          </View> */}
+          </View>
           <View style={styles.parameterView}>
             <View
               style={{

@@ -94,6 +94,11 @@ const DownloadReportScreen = ({ route, navigation }) => {
   const [dealerCode, setDealerCode] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState({});
   const [selectedDealerCode, setSelectedDealerCode] = useState({});
+  const [Designation, setDesignation] = useState([]);
+  const [selectedDesignation, setSelectedDesignation] = useState({});
+  const [employees, setEmployees] = useState([]);
+  const [selectedEmployeeName, setSelectedEmployeeName] = useState({});
+
   useEffect(() => {
     getAsyncData();
   }, []);
@@ -124,12 +129,48 @@ const DownloadReportScreen = ({ route, navigation }) => {
   const getDropDown = async (user) => {
     try {
       const response = await client.get(URL.LOCATION_LIST(user.orgId));
-      const response1 = await client.get(URL.DEALER_CODE_LIST1(user.orgId));
+      // const response1 = await client.get(URL.DEALER_CODE_LIST1(user.orgId));
       const json = await response.json();
-      const json1 = await response1.json();
-      if (json && json1) {
+      // const json1 = await response1.json();
+      if (json) {
         setLocation(json);
+        // setDealerCode(json1);
+      }
+    } catch (error) {}
+  };
+
+  const getDealerDropDown = async (user) => {
+    try {
+      const response1 = await client.get(URL.DEALER_CODE_LIST1(user.orgId));
+      const json1 = await response1.json();
+      if (json1) {
         setDealerCode(json1);
+      }
+    } catch (error) {}
+  };
+
+  const getDesignationDropdown = async (item) => {
+    try {
+      const response = await client.get(
+        URL.GET_DESIGNATION(item.orgId, item.id)
+      );
+      const json = await response.json();
+      if (json) {
+        setDesignation(json);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getEmployeesDropdown = async (item) => {
+    try {
+      const response = await client.get(
+        URL.GET_EMPLOYEES(item.dmsDesignationId, selectedDealerCode.id)
+      );
+      const json = await response.json();
+      if (json) {
+        setEmployees(json);
       }
     } catch (error) {
       console.log(error);
@@ -569,7 +610,6 @@ const DownloadReportScreen = ({ route, navigation }) => {
   const dropDownItemClicked3 = (item) => {
     switch (item) {
       case "Location":
-        console.log("location", location);
         setDropDownFrom("Location");
         setDropDownData([...location]);
         setShowDropDownModel(true);
@@ -581,123 +621,134 @@ const DownloadReportScreen = ({ route, navigation }) => {
         setShowDropDownModel(true);
 
         break;
+      case "Designation":
+        setDropDownFrom("Designation");
+        setDropDownData([...Designation]);
+        setShowDropDownModel(true);
+
+        break;
+      case "Employee Name":
+        setDropDownFrom("Employee Name");
+        setDropDownData([...employees]);
+        setShowDropDownModel(true);
+
+        break;
       default:
         break;
     }
   };
 
-    const downloadReport = async () => {
-      try {
-        let employeeData = await AsyncStore.getData(
-          AsyncStore.Keys.LOGIN_EMPLOYEE
-        );
-        if (employeeData) {
-          const jsonObj = JSON.parse(employeeData);
-          const payload = {
-            orgId: jsonObj.orgId,
-            fromDate: fromDate,
-            toDate: toDate,
-          };
-          const response = await client.post(
-            URL.GET_ATTENDANCE_REPORT(),
-            payload
-          );
-          const json = await response.json();
-          if (json.downloadUrl) {
-            downloadInLocal(URL.GET_DOWNLOAD_URL(json.downloadUrl));
-          }
-        }
-      } catch (error) {
-        alert("Something went wrong");
-      }
-    };
-
-    const getFileExtention = (fileUrl) => {
-      // To get the file extension
-      return /[.]/.exec(fileUrl) ? /[^.]+$/.exec(fileUrl) : undefined;
-    };
-
-    const downloadInLocal = async (url) => {
-      const { config, fs } = RNFetchBlob;
-      let downloadDir = Platform.select({
-        ios: fs.dirs.DocumentDir,
-        android: fs.dirs.DownloadDir,
-      });
-      let date = new Date();
-      let file_ext = getFileExtention(url);
-      file_ext = "." + file_ext[0];
-      let options = {};
-      if (Platform.OS === "android") {
-        options = {
-          fileCache: true,
-          addAndroidDownloads: {
-            useDownloadManager: true, // setting it to true will use the device's native download manager and will be shown in the notification bar.
-            notification: true,
-            path:
-              downloadDir +
-              "/ATTENDANCE_" +
-              Math.floor(date.getTime() + date.getSeconds() / 2) +
-              file_ext, // this is the path where your downloaded file will live in
-            description: "Downloading image.",
-          },
+  const downloadReport = async () => {
+    try {
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        const payload = {
+          orgId: jsonObj.orgId,
+          fromDate: fromDate,
+          toDate: toDate,
         };
-        AsyncStore.getData(AsyncStore.Keys.ACCESS_TOKEN).then((token) => {
-          config(options)
-            .fetch("GET", url, {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + token,
-            })
-            .then((res) => {
-              RNFetchBlob.android.actionViewIntent(res.path());
-              // do some magic here
-            })
-            .catch((err) => {
-              console.error(err);
-            });
-        });
+        const response = await client.post(
+          URL.GET_ATTENDANCE_REPORT(),
+          payload
+        );
+        const json = await response.json();
+        if (json.downloadUrl) {
+          downloadInLocal(URL.GET_DOWNLOAD_URL(json.downloadUrl));
+        }
       }
-      if (Platform.OS === "ios") {
-        options = {
-          fileCache: true,
+    } catch (error) {
+      alert("Something went wrong");
+    }
+  };
+
+  const getFileExtention = (fileUrl) => {
+    // To get the file extension
+    return /[.]/.exec(fileUrl) ? /[^.]+$/.exec(fileUrl) : undefined;
+  };
+
+  const downloadInLocal = async (url) => {
+    const { config, fs } = RNFetchBlob;
+    let downloadDir = Platform.select({
+      ios: fs.dirs.DocumentDir,
+      android: fs.dirs.DownloadDir,
+    });
+    let date = new Date();
+    let file_ext = getFileExtention(url);
+    file_ext = "." + file_ext[0];
+    let options = {};
+    if (Platform.OS === "android") {
+      options = {
+        fileCache: true,
+        addAndroidDownloads: {
+          useDownloadManager: true, // setting it to true will use the device's native download manager and will be shown in the notification bar.
+          notification: true,
           path:
             downloadDir +
             "/ATTENDANCE_" +
             Math.floor(date.getTime() + date.getSeconds() / 2) +
-            file_ext,
-          mime: "application/xlsx",
-          // appendExt: 'xlsx',
-          //path: filePath,
-          //appendExt: fileExt,
-          notification: true,
-        };
-        AsyncStore.getData(AsyncStore.Keys.ACCESS_TOKEN).then((token) => {
-          config(options)
-            .fetch("GET", url, {
-              Accept: "application/octet-stream",
-              "Content-Type": "application/octet-stream",
-              Authorization: "Bearer " + token,
-            })
-            .then((res) => {
-              setLoading(false);
-              setTimeout(() => {
-                // RNFetchBlob.ios.previewDocument('file://' + res.path());   //<---Property to display iOS option to save file
-                RNFetchBlob.ios.openDocument(res.data); //<---Property to display downloaded file on documaent viewer
-                // Alert.alert(CONSTANTS.APP_NAME,'File download successfully');
-              }, 300);
-            })
-            .catch((errorMessage) => {
-              setLoading(false);
-            });
-        });
-      }
-    };
+            file_ext, // this is the path where your downloaded file will live in
+          description: "Downloading image.",
+        },
+      };
+      AsyncStore.getData(AsyncStore.Keys.ACCESS_TOKEN).then((token) => {
+        config(options)
+          .fetch("GET", url, {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          })
+          .then((res) => {
+            RNFetchBlob.android.actionViewIntent(res.path());
+            // do some magic here
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+      });
+    }
+    if (Platform.OS === "ios") {
+      options = {
+        fileCache: true,
+        path:
+          downloadDir +
+          "/ATTENDANCE_" +
+          Math.floor(date.getTime() + date.getSeconds() / 2) +
+          file_ext,
+        mime: "application/xlsx",
+        // appendExt: 'xlsx',
+        //path: filePath,
+        //appendExt: fileExt,
+        notification: true,
+      };
+      AsyncStore.getData(AsyncStore.Keys.ACCESS_TOKEN).then((token) => {
+        config(options)
+          .fetch("GET", url, {
+            Accept: "application/octet-stream",
+            "Content-Type": "application/octet-stream",
+            Authorization: "Bearer " + token,
+          })
+          .then((res) => {
+            setLoading(false);
+            setTimeout(() => {
+              // RNFetchBlob.ios.previewDocument('file://' + res.path());   //<---Property to display iOS option to save file
+              RNFetchBlob.ios.openDocument(res.data); //<---Property to display downloaded file on documaent viewer
+              // Alert.alert(CONSTANTS.APP_NAME,'File download successfully');
+            }, 300);
+          })
+          .catch((errorMessage) => {
+            setLoading(false);
+          });
+      });
+    }
+  };
 
-  const clearBtn = ()=>{
+  const clearBtn = () => {
     setSelectedDealerCode({});
     setSelectedLocation({});
-  }
-
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -708,13 +759,29 @@ const DownloadReportScreen = ({ route, navigation }) => {
         data={dropDownData}
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
-          console.log(item);
           if (dropDownFrom === "Location") {
+            setDealerCode([]);
+            setSelectedDealerCode({});
+            setSelectedDesignation({});
+            setDesignation([]);
+            setSelectedEmployeeName({});
+            setEmployees([]);
             setSelectedLocation(item);
+            getDealerDropDown(item);
           } else if (dropDownFrom === "Dealer Code") {
+            setSelectedDesignation({});
+            setDesignation([]);
+            setSelectedEmployeeName({});
+            setEmployees([]);
             setSelectedDealerCode(item);
-          } else {
-            updateSelectedItemsForEmployeeDropDown(item, selectedItemIndex);
+            getDesignationDropdown(item);
+          } else if (dropDownFrom === "Designation") {
+            setSelectedEmployeeName({});
+            setEmployees([]);
+            setSelectedDesignation(item);
+            getEmployeesDropdown(item);
+          } else if (dropDownFrom === "Employee Name") {
+            setSelectedEmployeeName(item);
           }
           setShowDropDownModel(false);
         }}
@@ -805,7 +872,7 @@ const DownloadReportScreen = ({ route, navigation }) => {
                     <View>
                       <DropDownSelectionItem
                         label={"Designation"}
-                        value={selectedLocation?.name}
+                        value={selectedDesignation?.designationName}
                         onPress={() => dropDownItemClicked3("Designation")}
                         takeMinHeight={true}
                         // disabled={disabletemp}
@@ -814,55 +881,12 @@ const DownloadReportScreen = ({ route, navigation }) => {
                     <View>
                       <DropDownSelectionItem
                         label={"Employee Name"}
-                        value={selectedDealerCode?.name}
+                        value={selectedEmployeeName?.empName}
                         onPress={() => dropDownItemClicked3("Employee Name")}
                         takeMinHeight={true}
                         // disabled={disabletemp}
                       />
                     </View>
-                    {/* <FlatList
-                      data={nameKeyList}
-                      listKey="ORG_TABLE"
-                      scrollEnabled={false}
-                      keyExtractor={(item, index) => index.toString()}
-                      renderItem={({ item, index }) => {
-                        const data = totalDataObj[item].sublevels;
-
-                        let selectedNames = "";
-                        let disabletemp = false;
-                        data.forEach((obj, index) => {
-                          if (
-                            obj.selected != undefined &&
-                            obj.selected == true
-                          ) {
-                            selectedNames += obj.name + ", ";
-                          }
-
-                          if (obj.disabled === "Y") {
-                            disabletemp = true;
-                          }
-                        });
-
-                        if (selectedNames.length > 0) {
-                          selectedNames = selectedNames.slice(
-                            0,
-                            selectedNames.length - 1
-                          );
-                        }
-                        console.log("item", item);
-                        return (
-                          <View>
-                            <DropDownSelectionItem
-                              label={item}
-                              value={selectedNames}
-                              onPress={() => dropDownItemClicked(index)}
-                              takeMinHeight={true}
-                              // disabled={disabletemp}
-                            />
-                          </View>
-                        );
-                      }}
-                    /> */}
                   </View>
                   <View style={styles.submitBtnBckVw}>
                     <Button
@@ -889,91 +913,6 @@ const DownloadReportScreen = ({ route, navigation }) => {
                       Download Report
                     </Button>
                   </View>
-                </View>
-              );
-            } else if (index === 2) {
-              return (
-                <View>
-                  {employeeTitleNameList.length > 0 && (
-                    <View>
-                      <View
-                        style={{
-                          borderColor: Colors.BORDER_COLOR,
-                          borderWidth: 1,
-                        }}
-                      >
-                        <FlatList
-                          data={employeeTitleNameList}
-                          listKey="EMPLOYEE_TABLE"
-                          keyExtractor={(item, index) =>
-                            "EMP_" + index.toString()
-                          }
-                          scrollEnabled={false}
-                          renderItem={({ item, index }) => {
-                            const data = employeeDropDownDataLocal[item];
-                            if (item === "Sales Consultant") {
-                              return;
-                            }
-                            let selectedNames = "";
-                            data.forEach((obj, index) => {
-                              if (
-                                obj.selected != undefined &&
-                                obj.selected == true
-                              ) {
-                                selectedNames += obj.name + ", ";
-                              }
-                            });
-
-                            if (selectedNames.length > 0) {
-                              selectedNames = selectedNames.slice(
-                                0,
-                                selectedNames.length - 1
-                              );
-                            }
-
-                            return (
-                              <View>
-                                <DropDownSelectionItem
-                                  label={item}
-                                  value={selectedNames}
-                                  onPress={() => dropDownItemClicked2(index)}
-                                  takeMinHeight={true}
-                                />
-                              </View>
-                            );
-                          }}
-                        />
-                      </View>
-                      <View style={styles.submitBtnBckVw}>
-                        <Button
-                          labelStyle={{
-                            color: Colors.RED,
-                            textTransform: "none",
-                          }}
-                          style={{ width: buttonWidth }}
-                          mode="outlined"
-                          onPress={() => {
-                            clearBtnForEmployeeData();
-                            clearBtnClicked();
-                          }}
-                        >
-                          Clear
-                        </Button>
-                        <Button
-                          labelStyle={{
-                            color: Colors.WHITE,
-                            textTransform: "none",
-                          }}
-                          style={{ width: buttonWidth }}
-                          contentStyle={{ backgroundColor: Colors.BLACK }}
-                          mode="contained"
-                          onPress={submitBtnForEmployeeData}
-                        >
-                          Submit
-                        </Button>
-                      </View>
-                    </View>
-                  )}
                 </View>
               );
             }
