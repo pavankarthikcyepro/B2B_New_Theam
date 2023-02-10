@@ -156,7 +156,7 @@ export const TestDriveHistoryIcon = ({ navigation }) => {
 
 const MyTaskFilter = ({ navigation }) => {
   const screen = useSelector((state) => state.mytaskReducer.currentScreen);
-  if (screen === "TODAY") return <React.Fragment></React.Fragment>;
+  // if (screen === "TODAY") return <React.Fragment></React.Fragment>;
   return (
     <IconButton
       icon="filter-outline"

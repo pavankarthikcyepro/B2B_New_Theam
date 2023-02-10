@@ -1041,15 +1041,19 @@ const HomeScreen = ({ route, navigation }) => {
     }
   };
 
-  function navigateToEMS(params) {
-    navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
-    setTimeout(() => {
-      navigation.navigate("LEADS", {
-        // param: param === "INVOICE" ? "Retail" : param,
-        // moduleType: "home",
-        // employeeDetail: "",
-      });
-    }, 1000);
+  function navigateToEMS(params = {}, screenName = "") {
+    navigation.navigate(
+      screenName ? screenName : AppNavigator.TabStackIdentifiers.ems
+    );
+    if (!screenName){
+      setTimeout(() => {
+        navigation.navigate("LEADS", {
+          // param: param === "INVOICE" ? "Retail" : param,
+          // moduleType: "home",
+          // employeeDetail: "",
+        });
+      }, 1000);
+    }
   }
   function navigateToContact(params) {
     navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
@@ -1401,8 +1405,10 @@ const HomeScreen = ({ route, navigation }) => {
               <TouchableOpacity
                 onPress={() => {
                   selector.receptionistData.totalLostCount > 0 &&
-                    navigateToDropLostCancel();
-                    //todo
+                    navigateToEMS(
+                      {},
+                      AppNavigator.DrawerStackIdentifiers.dropAnalysis
+                    );
                 }}
                 style={styles.view8}
               >

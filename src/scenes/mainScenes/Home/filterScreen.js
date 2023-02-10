@@ -701,7 +701,7 @@ const FilterScreen = ({ route, navigation }) => {
       keys.push(key);
     }
     let localIndex = keys.length - 1;
-    for (let i = localIndex; i >= 0; i--) {
+    for (var i = localIndex; i >= 0; i--) {
       let key = keys[i];
       const arrayData = employeeDropDownDataLocal[key];
       let back = false;
