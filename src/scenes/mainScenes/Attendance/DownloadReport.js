@@ -37,13 +37,18 @@ import {
   getSalesData,
   getSalesComparisonData,
 } from "../../../redux/homeReducer";
-import { showAlertMessage, showToast } from "../../../utils/toast";
+import {
+  showAlertMessage,
+  showToast,
+  showToastRedAlert,
+} from "../../../utils/toast";
 import { AppNavigator } from "../../../navigations";
 import { DropDown } from "../TargetSettingsScreen/TabScreen/dropDown";
 import { AttendanceTopTabNavigatorIdentifiers } from "../../../navigations/attendanceTopTabNavigator";
 import { client } from "../../../networking/client";
 import URL from "../../../networking/endpoints";
 import RNFetchBlob from "rn-fetch-blob";
+import _ from "lodash";
 
 const screenWidth = Dimensions.get("window").width;
 const buttonWidth = (screenWidth - 100) / 2;
@@ -105,6 +110,7 @@ const DownloadReportScreen = ({ route, navigation }) => {
 
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {
+      clearBtn();
       setEmloyeeTitleNameList([]);
     });
   }, [navigation]);
@@ -746,10 +752,48 @@ const DownloadReportScreen = ({ route, navigation }) => {
   };
 
   const clearBtn = () => {
-    setSelectedDealerCode({});
     setSelectedLocation({});
+    setSelectedLocation({});
+    setDealerCode([]);
+    setSelectedDealerCode({});
+    setSelectedDesignation({});
+    setDesignation([]);
+    setSelectedEmployeeName({});
+    setEmployees([]);
   };
 
+  const validation = () => {
+    let error = false;
+    if (_.isEmpty(selectedLocation)) {
+      showToastRedAlert("Please Select a Location");
+      error = true;
+      return true;
+    }
+    if (_.isEmpty(selectedDealerCode)) {
+      showToastRedAlert("Please Select a Dealer Code");
+      error = true;
+      return true;
+    }
+    if (_.isEmpty(selectedDesignation)) {
+      showToastRedAlert("Please Select a Designation");
+      error = true;
+      return true;
+    }
+    if (_.isEmpty(selectedEmployeeName)) {
+      showToastRedAlert("Please Select a Employee Name");
+      error = true;
+      return true;
+    }
+    if (!error) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  const submit = () => {
+    validation();
+  };
   return (
     <SafeAreaView style={styles.container}>
       <DropDown
@@ -908,7 +952,8 @@ const DownloadReportScreen = ({ route, navigation }) => {
                       // style={{ width: buttonWidth }}
                       contentStyle={{ backgroundColor: Colors.RED }}
                       // mode="contained"
-                      onPress={() => downloadReport}
+                      // onPress={() => downloadReport}
+                      onPress={() => submit()}
                     >
                       Download Report
                     </Button>
