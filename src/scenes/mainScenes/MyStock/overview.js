@@ -21,6 +21,8 @@ import * as AsyncStore from "../../../asyncStore";
 import moment from "moment";
 import { MyStockTopTabNavigatorIdentifiers } from "../../../navigations/myStockNavigator";
 import { updateCurrentScreen } from "../../../redux/myStockReducer";
+import { RadioTextItem1 } from "../../../pureComponents/radioTextItem";
+// import { RadioTextItem1 } from "../../../pureComponents";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
@@ -33,6 +35,7 @@ const screenWidth = Dimensions.get("window").width;
 const OverviewScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.homeReducer);
+  const [available, setAvailable] = useState(true);
 
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {
@@ -102,6 +105,27 @@ const OverviewScreen = ({ route, navigation }) => {
     <SafeAreaView style={styles.container}>
       <ScrollView>
         <View style={styles.mainView}>
+          <View style={styles.radioView}>
+            <RadioTextItem1
+              label={"Available"}
+              value={"Available"}
+              disabled={false}
+              status={available}
+              onPress={() => {
+                setAvailable(true);
+              }}
+            />
+            <View style={{ width: 25 }} />
+            <RadioTextItem1
+              label={"In Transit"}
+              value={"In Transit"}
+              disabled={false}
+              status={!available}
+              onPress={() => {
+                setAvailable(false);
+              }}
+            />
+          </View>
           <View style={styles.titleView}>
             <Text style={styles.titleText}>{"Location"}</Text>
             <Text style={styles.titleText}>{"Car Stock"}</Text>
@@ -136,6 +160,11 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     backgroundColor: Colors.LIGHT_GRAY,
+  },
+  radioView: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    alignSelf: "flex-start",
   },
   mainView: {
     flex: 1,

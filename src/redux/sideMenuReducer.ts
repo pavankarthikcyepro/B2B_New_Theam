@@ -58,10 +58,11 @@ const data = [
   },
   {
     title: "My Stock",
-    icon: ATTENDANCE,
+    icon: MY_STOCK,
     screen: 120,
+    pngIcon: require("../assets/images/Target_Planning-01.png"),
   },
-  {    
+  {
     title: "Download Report",
     icon: REPORT_DOWNLOAD,
     screen: 121,

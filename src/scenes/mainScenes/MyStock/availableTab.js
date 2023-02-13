@@ -21,6 +21,7 @@ import * as AsyncStore from "../../../asyncStore";
 import moment from "moment";
 import { MyStockTopTabNavigatorIdentifiers } from "../../../navigations/myStockNavigator";
 import { updateCurrentScreen } from "../../../redux/myStockReducer";
+import { RadioTextItem1 } from "../../../pureComponents/radioTextItem";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
@@ -33,6 +34,7 @@ const screenWidth = Dimensions.get("window").width;
 const AvailableScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.homeReducer);
+  const [available, setAvailable] = useState(true);
 
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {
@@ -77,6 +79,27 @@ const AvailableScreen = ({ route, navigation }) => {
     <SafeAreaView style={styles.container}>
       <ScrollView>
         <View style={styles.mainView}>
+          <View style={styles.radioView}>
+            <RadioTextItem1
+              label={"Available"}
+              value={"Available"}
+              disabled={false}
+              status={available}
+              onPress={() => {
+                setAvailable(true);
+              }}
+            />
+            <View style={{ width: 25 }} />
+            <RadioTextItem1
+              label={"In Transit"}
+              value={"In Transit"}
+              disabled={false}
+              status={!available}
+              onPress={() => {
+                setAvailable(false);
+              }}
+            />
+          </View>
           <View style={styles.titleView}>
             <View style={{ width: "40%" }}>
               <Text style={styles.titleText}>{"Model"}</Text>
@@ -103,6 +126,11 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     backgroundColor: Colors.LIGHT_GRAY,
+  },
+  radioView: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    alignSelf: "flex-start",
   },
   mainView: {
     flex: 1,
@@ -167,6 +195,6 @@ const styles = StyleSheet.create({
   parameterTitleView: {
     width: "60%",
     flexDirection: "row",
-    justifyContent:"space-around",
+    justifyContent: "space-around",
   },
 });

@@ -364,8 +364,8 @@ export const DrawerStackIdentifiers = {
   attendance: "Attendance",
   geolocation: "Geolocation",
   digitalDashboard: "DIGITAL_DASHBOARD",
-  myStock: "MY_STOCK"
-  reportDownload:"REPORT_DOWNLOAD"
+  myStock: "MY_STOCK",
+  reportDownload:"REPORT_DOWNLOAD",
 };
 
 export const TabStackIdentifiers = {

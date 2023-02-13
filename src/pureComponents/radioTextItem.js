@@ -22,7 +22,38 @@ const RadioTextItem = ({ label, value, status = false, disabled = false, onPress
     );
 }
 
-export { RadioTextItem };
+
+const RadioTextItem1 = ({
+  label,
+  value,
+  status = false,
+  disabled = false,
+  onPress,
+}) => {
+  return (
+    <Pressable onPress={onPress} disabled={disabled}>
+      <View style={styles.view}>
+        <RadioButton.Android
+          value={value}
+          status={status ? "checked" : "unchecked"}
+          disabled={disabled}
+          uncheckedColor={Colors.GRAY}
+          color={Colors.RED}
+          onPress={onPress}
+        />
+        <Text
+          style={[
+            styles.text,
+            { color: disabled ? Colors.GRAY : Colors.BLACK },
+          ]}
+        >
+          {label}
+        </Text>
+      </View>
+    </Pressable>
+  );
+};
+export { RadioTextItem, RadioTextItem1 };
 
 const styles = StyleSheet.create({
     view: {

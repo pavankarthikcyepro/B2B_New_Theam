@@ -189,11 +189,20 @@ const MyStockTopTabNavigator = () => {
         component={AvailableScreen}
         options={{
           title: ({ focused }) => (
-            <Badge title={"Available"} focused={focused} />
+            <Badge1 title={"Detailed"} focused={focused} />
           ),
         }}
       />
-      <MyStockTopTab.Screen
+      {/* <MyStockTopTab.Screen
+        name={MyStockTopTabNavigatorIdentifiers.available}
+        component={AvailableScreen}
+        options={{
+          title: ({ focused }) => (
+            <Badge title={"Available"} focused={focused} />
+          ),
+        }}
+      /> */}
+      {/* <MyStockTopTab.Screen
         name={MyStockTopTabNavigatorIdentifiers.inTransit}
         component={InTransitScreen}
         options={{
@@ -201,7 +210,7 @@ const MyStockTopTabNavigator = () => {
             <Badge title={"InTransit"} focused={focused} />
           ),
         }}
-      />
+      /> */}
     </MyStockTopTab.Navigator>
   );
 };
