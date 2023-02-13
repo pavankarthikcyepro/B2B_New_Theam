@@ -46,6 +46,32 @@ export const getTaskThreeSixtyHistory = createAsyncThunk(
   }
 );
 
+
+export const getFollowUPCount  = createAsyncThunk(
+    "TASK_360_SLICE/getFollowUPCount",
+    async (universalId, { rejectWithValue }) => {
+        const response = await client.get(URL.GET_FOLLOWUP_COUNT(universalId));
+        const json = await response.json();
+
+        if (!response.ok) {
+            return rejectWithValue(json);
+        }
+        return json;
+    }
+);
+
+
+export const getTestDriveHistoryCount = createAsyncThunk("TASK_360_SLICE/getTestDriveHistoryCount", async (universalId, { rejectWithValue }) => {
+
+    const response = await client.get(URL.GET_TEST_HISTORY_COUNT(universalId));
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+
 const taskThreeSixtySlice = createSlice({
     name: "TASK_360_SLICE",
     initialState: {
@@ -57,11 +83,16 @@ const taskThreeSixtySlice = createSlice({
         enquiry_leadDto_response_status: "",
         leadAge: 0,
         taskThreeSixtyHistory: [],
+        followUpCount :[],
+        followUpcount_Status : "",
+        testDrivCount:0,
     },
     reducers: {
         clearState: (state, action) => {
             state.leadAge = 0;
             state.taskThreeSixtyHistory = [];
+            state.followUpcount_Status = "",
+            state.testDrivCount = 0
         },
     },
     extraReducers: (builder) => {
@@ -131,6 +162,42 @@ const taskThreeSixtySlice = createSlice({
         builder.addCase(getTaskThreeSixtyHistory.rejected, (state, action) => {
             state.taskThreeSixtyHistory = [];
             state.isLoading = false;
+        })
+
+        builder.addCase(getFollowUPCount.pending, (state, action) => {
+            state.followUpCount = [];
+            state.isLoading = true;
+            state.followUpcount_Status = "pending"
+        })
+        builder.addCase(getFollowUPCount.fulfilled, (state, action) => {
+            
+                state.followUpCount = action.payload;
+            state.followUpcount_Status = "fulfilled"
+            state.isLoading = false;
+        })
+        builder.addCase(getFollowUPCount.rejected, (state, action) => {
+            state.followUpCount = [];
+            state.isLoading = false;
+            state.followUpcount_Status = "rejected"
+        })
+
+
+
+        builder.addCase(getTestDriveHistoryCount.pending, (state, action) => {
+            state.testDrivCount = 0;
+            state.isLoading = true;
+            // state.followUpcount_Status = "pending"
+        })
+        builder.addCase(getTestDriveHistoryCount.fulfilled, (state, action) => {
+
+            state.testDrivCount = action.payload.count;
+            // state.followUpcount_Status = "fulfilled"
+            state.isLoading = false;
+        })
+        builder.addCase(getTestDriveHistoryCount.rejected, (state, action) => {
+            state.testDrivCount = 0;
+            state.isLoading = false;
+            // state.followUpcount_Status = "rejected"
         })
     }
 });

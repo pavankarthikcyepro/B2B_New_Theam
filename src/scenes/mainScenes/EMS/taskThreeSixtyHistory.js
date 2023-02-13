@@ -3,7 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Dimensions, FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { IconButton } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
-import { getTaskThreeSixtyHistory } from '../../../redux/taskThreeSixtyReducer';
+import { EmsStackIdentifiers } from '../../../navigations/appNavigator';
+import { getTaskThreeSixtyHistory ,clearState} from '../../../redux/taskThreeSixtyReducer';
 import { Colors, GlobalStyle } from '../../../styles';
 
 const TaskThreeSixtyHistory = (props) => {
@@ -12,10 +13,25 @@ const TaskThreeSixtyHistory = (props) => {
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [history, setHistory] = useState([]);
+  const [historyFiltered, setHistoryFiltered] = useState([]);
 
+  // useEffect(() => {
+  //   getAllHistory();
+  //   return dispatch(clearState())
+  // }, []);
   useEffect(() => {
-    getAllHistory();
-  }, []);
+    props.navigation.addListener("focus", () => {
+      setHistory([])
+      // dispatch(clearState())
+      props.rout
+      getAllHistory();
+    });
+
+    props.navigation.setOptions({
+      headerTitle: checkForTaskNames(props.route.params.title)
+    });
+ 
+  }, [props.navigation]);
 
   const getAllHistory = () => {
     // dispatch(
@@ -23,8 +39,11 @@ const TaskThreeSixtyHistory = (props) => {
     // );
     dispatch(getTaskThreeSixtyHistory(props.route.params.universalId));
   };
+
+  
   
   useEffect(() => {
+  
     if (selector.taskThreeSixtyHistory.length) {
       if (activeIndex == 0) checkThisWeek();
       if (activeIndex == 1) checkCurrentMonth();
@@ -57,20 +76,46 @@ const TaskThreeSixtyHistory = (props) => {
   };
   
   const allHistory = () => {
-    setHistory(Object.assign(selector.taskThreeSixtyHistory));
+   
+    const temp = selector.taskThreeSixtyHistory.filter(item => {
+     
+      return item.taskName === props.route.params.title
+    })
+    setHistoryFiltered(temp)
+   
+    setHistory(Object.assign(temp));
   };
 
   const setHistoryData = (firstDate, lastDate) => {
-    let tmpArray = [];
-    for (let i = 0; i < selector.taskThreeSixtyHistory.length; i++) {
+    // let tmpArray = [];
+    // for (let i = 0; i < selector.taskThreeSixtyHistory.length; i++) {
+    //   if (
+    //     selector.taskThreeSixtyHistory[i].taskUpdatedTime > firstDate &&
+    //     selector.taskThreeSixtyHistory[i].taskUpdatedTime < lastDate
+    //   ) {
+    //     tmpArray.push(selector.taskThreeSixtyHistory[i]);
+    //   }
+    // }
+     // setHistory(Object.assign(tmpArray));
+
+
+    const temp = selector.taskThreeSixtyHistory.filter(item => {
+    
+      return item.taskName === props.route.params.title
+    })
+    setHistoryFiltered(temp)
+   
+      let tmpArray = [];
+    for (let i = 0; i < temp.length; i++) {
       if (
-        selector.taskThreeSixtyHistory[i].taskUpdatedTime > firstDate &&
-        selector.taskThreeSixtyHistory[i].taskUpdatedTime < lastDate
+        temp[i].taskUpdatedTime > firstDate &&
+        temp[i].taskUpdatedTime < lastDate
       ) {
-        tmpArray.push(selector.taskThreeSixtyHistory[i]);
+        tmpArray.push(temp[i]);
       }
     }
     setHistory(Object.assign(tmpArray));
+   
   };
 
   const renderTitles = ({ item, index }) => {
@@ -106,10 +151,17 @@ const TaskThreeSixtyHistory = (props) => {
     const taskNameView = (taskName) => {
       const name = checkForTaskNames(taskName);
       return (
+        // <Text style={styles.taskNameText} numberOfLines={2}>
+        //   {`${name} ${
+        //     item?.taskUpdatedBy?.designationName
+        //       ? `- ${item?.taskUpdatedBy?.designationName}`
+        //       : ""
+        //   } `}
+        // </Text>
         <Text style={styles.taskNameText} numberOfLines={2}>
-          {`${name} ${
+          {`${
             item?.taskUpdatedBy?.designationName
-              ? `- ${item?.taskUpdatedBy?.designationName}`
+            ? `${item?.taskUpdatedBy?.designationName}`
               : ""
           } `}
         </Text>
@@ -122,11 +174,15 @@ const TaskThreeSixtyHistory = (props) => {
 
     let topBcgColor = Colors.LIGHT_GRAY;
     let bottomBcgColor = Colors.LIGHT_GRAY;
-    if (selector.taskThreeSixtyHistory[index - 1] !== undefined) {
+    const temp = selector.taskThreeSixtyHistory.filter(item => {
+      
+      return item.taskName === props.route.params.title
+    })
+    if (temp[index - 1] !== undefined) {
       topBcgColor = Colors.GRAY;
     }
 
-    if (selector.taskThreeSixtyHistory[index + 1] !== undefined) {
+    if (temp[index + 1] !== undefined) {
       bottomBcgColor = Colors.GRAY;
     }
 
@@ -160,17 +216,61 @@ const TaskThreeSixtyHistory = (props) => {
         <View style={styles.taskMainContainer}>
           <View style={styles.taskContainer}>
             {taskNameView(item?.taskName)}
-            <Text style={styles.assigneeText}>
-              {"Assignee: " + item?.assignee?.empName ?? ""}
-            </Text>
-            {item?.taskUpdatedBy?.empName ? (
+
+            <View style={{ flexDirection: "column" }}>
+              <View style={styles.view6}>
+                <Text
+                  style={styles.txt5}
+                >
+                  {"Reason: "}
+                </Text>
+                <Text
+                  style={styles.txt3}
+                >
+                  {item?.reason ?? ""}
+                </Text>
+
+              </View>
+              <View style={styles.view6}>
+                <Text
+                  style={styles.txt5}
+                >
+                  {"Customer Remarks: "}
+                </Text>
+                <Text
+                  style={styles.txt3}
+                >
+                  {item?.customerRemarks ?? ""}
+                </Text>
+
+              </View>
+              <View style={styles.view6}>
+                <Text
+                  style={styles.txt5}
+                >
+                  {"Employee Remarks: "}
+                </Text>
+                <Text
+                  style={styles.txt3}
+                >
+                  {item?.employeeRemarks ?? ""}
+                </Text>
+
+              </View>
+             
+            
+
+            </View>
+            
+            
+            {/* {item?.taskUpdatedBy?.empName ? (
               <Text style={styles.followUpText}>
                 Follow-up by: {item.taskUpdatedBy.empName}
               </Text>
             ) : null}
             <Text style={styles.remarksText}>
               {"Remarks: " + (item?.employeeRemarks ?? "")}
-            </Text>
+            </Text> */}
           </View>
         </View>
       </View>
@@ -203,13 +303,18 @@ const TaskThreeSixtyHistory = (props) => {
           contentContainerStyle={styles.titleRow}
           bounces={false}
         />
-        <IconButton
+        {/* <IconButton
           icon="filter-outline"
           style={{ padding: 0, margin: 0 }}
           color={Colors.BLACK}
           size={20}
-          onPress={() => {}}
-        />
+          onPress={() => {
+            props.navigation.navigate(EmsStackIdentifiers.task360HistoryFilter, {
+              isFromLogin: false,
+              fromScreen: "TASK360_HISTORY",
+            });
+          }}
+        /> */}
       </View>
 
       <FlatList
@@ -319,6 +424,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "700",
     marginBottom: 5,
+    margin: 5
   },
   sideTitle: {
     fontSize: 14,
@@ -326,7 +432,16 @@ const styles = StyleSheet.create({
   },
   assigneeText: {
     fontSize: 14,
+    fontWeight: "bold",
+    marginVertical: 5,
+    // flex: 1
+  },
+  assigneeTextV2: {
+    fontSize: 14,
     fontWeight: "400",
+    color:Colors.GRAY_LIGHT,
+    // marginVertical:5  ,
+    flex:1
   },
   followUpText: {
     fontSize: 14,
@@ -349,6 +464,41 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     fontSize: 14,
   },
+  txt5: {
+    fontSize: 14,
+    fontWeight: "400",
+    color: Colors.GRAY,
+    flex: 1
+  },
+  view4: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  view5: {
+    alignItems: "center",
+    flexDirection: "row",
+    position: "absolute",
+  },
+  view2: {
+    width: "100%",
+    flexDirection: "row",
+  },
+  view3: {
+    width: "25%",
+    justifyContent: "center",
+  },
+  txt2: {
+    fontSize: 12,
+    fontWeight: "400",
+  },
+  txt3: {
+    fontSize: 14,
+    fontWeight: "400",
+    color: Colors.BLACK,
+    flex: 1
+  },
+  view6: { flexDirection: "row", margin: 5 }
 });
 
 export default TaskThreeSixtyHistory;

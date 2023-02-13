@@ -861,6 +861,11 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
       });
     }, 100);
   }
+
+  function navigateToDropLostCancel(params) {
+    navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis);
+  }
+  
   function navigateToContact(params) {
     navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
     setTimeout(() => {
@@ -933,7 +938,7 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
                   numberOfLines={1}
                   style={{ ...styles.rankHeadingText, width: 50 }}
                 >
-                  {"Drops"}
+                  {"Drop"}
                 </Text>
                 <View style={styles.cardView}>
                   <Text style={{ ...styles.rankText, color: "blue" }}>
