@@ -172,7 +172,7 @@ const DropDown = ({
                         <View>
                           <List.Item
                             titleStyle={{ fontSize: 16, fontWeight: "400" }}
-                            title={item.name}
+                            title={item.name || item.designationName || item.empName}
                             titleNumberOfLines={1}
                             descriptionEllipsizeMode={"tail"}
                             description={""}

@@ -35,6 +35,7 @@ import ReactNativeModal from "react-native-modal";
 import Entypo from "react-native-vector-icons/FontAwesome";
 import RNFetchBlob from "rn-fetch-blob";
 import AttendanceDetail from "../../../components/AttendanceDetail";
+import _ from "lodash";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
@@ -101,6 +102,7 @@ const AttendanceScreen = ({ route, navigation }) => {
     empName: "",
     role: "",
   });
+  const [displayingMonths, setDisplayingMonths] = useState(lastMonthFirstDate);
   const fromDateRef = useRef(selectedFromDate);
   const toDateRef = useRef(selectedToDate);
 
@@ -298,6 +300,20 @@ const AttendanceScreen = ({ route, navigation }) => {
       setLoading(false);
     }
   };
+
+  function getDatesArray(startDate, daysCount) {
+    let datesArray = [];
+    let currentDate = new Date(startDate);
+
+    for (let i = 0; i < daysCount; i++) {
+      let y = currentDate.getFullYear();
+      let m = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+      let d = currentDate.getDate().toString().padStart(2, "0");
+      datesArray.push(`${y}-${m}-${d}`);
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+    return datesArray;
+  }
 
   const getAttendance = async (newUser) => {
     try {
@@ -531,6 +547,9 @@ const AttendanceScreen = ({ route, navigation }) => {
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
         // getProfilePic(jsonObj);
+        const temp = getDatesArray(start, new Date(end).getDate());
+        let currentMonthDates = Object.assign([], temp);
+        let selectedDates = [];
         var d = currentMonth;
         const response = await client.get(
           URL.GET_ATTENDANCE_EMPID2(jsonObj.empId, jsonObj.orgId, start, end)
@@ -567,6 +586,9 @@ const AttendanceScreen = ({ route, navigation }) => {
 
             let date = new Date(element.createdtimestamp);
             let formatedDate = moment(date).format(dateFormat);
+            let day = new Date(element.createdtimestamp).getDate();
+            // currentMonthDates.slice(5,1);
+            selectedDates.push(formatedDate);
             let weekReport = {
               start: formatedDate,
               // duration: "00:20:00",
@@ -606,6 +628,7 @@ const AttendanceScreen = ({ route, navigation }) => {
               };
               let date = new Date(json1[i].date);
               let formatedDate = moment(date).format(dateFormat);
+              selectedDates.push(formatedDate);
               dateArray.push(formatedDate);
               newArray.push(format);
             }
@@ -615,27 +638,66 @@ const AttendanceScreen = ({ route, navigation }) => {
             const element = newArray[i];
             obj[dateArray[i]] = element;
           }
-          // for (let i = 1; i <= 31; i++) {
-          //   const date = new Date(
-          //     new Date(start).getFullYear(),
-          //     new Date(start).getMonth(),
-          //     i
-          //   );
-          //   if (date.getDay() === 0 || date.getDay() === 6) {
-          //     obj[
-          //       moment(date).format(dateFormat)
-          //     ] = {
-          //       // disabled: true,
-          //       //  let format = {
-          //     customStyles: {
-          //       container: {
-          //         backgroundColor: Colors.GRAY_LIGHT
+          for (let i = 1; i <= 31; i++) {
+            const date = new Date(
+              new Date(start).getFullYear(),
+              new Date(start).getMonth(),
+              i
+            );
+            if (date.getDay() === 0 || date.getDay() === 6) {
+              selectedDates.push(moment(date).format(dateFormat));
+              // obj[
+              //   moment(date).format(dateFormat)
+              // ] = {
+              //   // disabled: true,
+              //   //  let format = {
+              // customStyles: {
+              //   container: {
+              //     backgroundColor: Colors.GRAY_LIGHT
+              //   },
+              //   text: {
+              //     color: Colors.WHITE,
+              //     fontWeight: "bold",
+              //   },
+              // },
+              // };
+            }
+          }
+
+          // let index = currentMonthDates.findIndex(function checkAge(age) {
+          //   return age === currentDate;
+          // });
+          // if (index !== -1) {
+          //   let storeCurrentMonth = currentMonthDates.slice(0, index + 1);
+          //   let x = _.difference(storeCurrentMonth, selectedDates);
+          //   for (let i = 0; i <= x.length; i++) {
+          //     const date = new Date(x[i]);
+          //     obj[moment(date).format(dateFormat)] = {
+          //       customStyles: {
+          //         container: {
+          //           backgroundColor: Colors.YELLOW,
+          //         },
+          //         text: {
+          //           color: Colors.WHITE,
+          //           fontWeight: "bold",
+          //         },
           //       },
-          //       text: {
-          //         color: Colors.WHITE,
-          //         fontWeight: "bold",
+          //     };
+          //   }
+          // } else {
+          //   let x = _.difference(currentMonthDates, selectedDates);
+          //   for (let i = 0; i <= x.length; i++) {
+          //     const date = new Date(x[i]);
+          //     obj[moment(date).format(dateFormat)] = {
+          //       customStyles: {
+          //         container: {
+          //           backgroundColor: Colors.YELLOW,
+          //         },
+          //         text: {
+          //           color: Colors.WHITE,
+          //           fontWeight: "bold",
+          //         },
           //       },
-          //     },
           //     };
           //   }
           // }
@@ -807,12 +869,12 @@ const AttendanceScreen = ({ route, navigation }) => {
       />
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.DatePickerView}>
-          <DateRangeComp
+          {/* <DateRangeComp
             fromDate={selectedFromDate}
             toDate={selectedToDate}
             fromDateClicked={() => showDatePickerMethod("FROM_DATE")}
             toDateClicked={() => showDatePickerMethod("TO_DATE")}
-          />
+          /> */}
         </View>
         <View style={styles.profilePicView}>
           <View style={styles.profileView}>
@@ -881,7 +943,13 @@ const AttendanceScreen = ({ route, navigation }) => {
                 .subtract(0, "months")
                 .endOf("month")
                 .format(dateFormat);
-
+              setDisplayingMonths(startDate);
+              setFromDateState(startDate);
+              if (lastMonthFirstDate == startDate) {
+                setToDateState(currentDate);
+              } else {
+                setToDateState(endDate);
+              }
               if (!filterStart) {
                 GetCountByMonth(startDate, endDate);
                 getAttendanceByMonth(startDate, endDate);
@@ -906,7 +974,10 @@ const AttendanceScreen = ({ route, navigation }) => {
             // firstDay={1}
             onPressArrowLeft={(subtractMonth) => subtractMonth()}
             onPressArrowRight={(addMonth) => addMonth()}
-            enableSwipeMonths={true}
+            disableArrowRight={
+              displayingMonths == lastMonthFirstDate ? true : false
+            }
+            // enableSwipeMonths={true}
             theme={{
               "stylesheet.calendar.header": {
                 dayTextAtIndex0: {
@@ -991,7 +1062,7 @@ const AttendanceScreen = ({ route, navigation }) => {
               <Text style={styles.parameterText}>{attendanceCount.wfh}</Text>
             </View>
           </View>
-          {/* <View style={styles.parameterView}>
+          <View style={styles.parameterView}>
             <View
               style={{
                 width: 25,
@@ -1002,7 +1073,7 @@ const AttendanceScreen = ({ route, navigation }) => {
               <Text style={styles.parameterText}>{"No Logged"}</Text>
               <Text style={styles.parameterText}>{attendanceCount.total}</Text>
             </View>
-          </View> */}
+          </View>
           <View style={styles.parameterView}>
             <View
               style={{
