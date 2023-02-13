@@ -120,6 +120,7 @@ const FilterAttendanceDashBoardScreen = ({ route, navigation }) => {
       for (let key in selector.filter_drop_down_data) {
         names.push(key);
       }
+      console.log(names);
       setNameKeyList(names);
       setTotalDataObj(selector.filter_drop_down_data);
     }
@@ -720,9 +721,9 @@ const FilterAttendanceDashBoardScreen = ({ route, navigation }) => {
                           scrollEnabled={false}
                           renderItem={({ item, index }) => {
                             const data = employeeDropDownDataLocal[item];
-                            if (item === "Sales Consultant") {
-                              return;
-                            }
+                            // if (item === "Sales Consultant") {
+                            //   return;
+                            // }
                             let selectedNames = "";
                             data.forEach((obj, index) => {
                               if (

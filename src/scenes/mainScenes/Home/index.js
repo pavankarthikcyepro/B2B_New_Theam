@@ -1404,7 +1404,7 @@ const HomeScreen = ({ route, navigation }) => {
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
-                  selector.receptionistData.totalLostCount > 0 &&
+                  selector.receptionistData.totalDroppedCount > 0 &&
                     navigateToEMS(
                       {},
                       AppNavigator.DrawerStackIdentifiers.dropAnalysis
@@ -1420,7 +1420,7 @@ const HomeScreen = ({ route, navigation }) => {
                 </Text>
                 <View style={styles.cardView}>
                   <Text style={{ ...styles.rankText, color: "blue" }}>
-                    {selector.receptionistData?.totalLostCount || 0}
+                    {selector.receptionistData?.totalDroppedCount || 0}
                   </Text>
                 </View>
               </TouchableOpacity>

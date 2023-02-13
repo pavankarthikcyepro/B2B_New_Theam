@@ -74,6 +74,7 @@ const commonMenu = [
   "QR Code",
   "Drop Analysis",
   "My Attendance",
+  "Download Report",
 ];
 const salesMenu = [
   ...commonMenu,
@@ -349,10 +350,15 @@ const SideMenuScreen = ({ navigation }) => {
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.geolocation);
         break;
       case 118:
-        navigation.navigate(AppNavigator.DrawerStackIdentifiers.digitalDashboard);
+        navigation.navigate(
+          AppNavigator.DrawerStackIdentifiers.digitalDashboard
+        );
         break;
       case 119:
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.eventDashboard);
+        break;
+      case 121:
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.reportDownload);
         break;
       case 112:
         signOutClicked();
