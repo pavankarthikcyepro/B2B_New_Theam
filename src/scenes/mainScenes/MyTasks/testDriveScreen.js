@@ -866,7 +866,8 @@ const TestDriveScreen = ({ route, navigation }) => {
         return;
       }
     }
-    if (userData.isOtp == "Y") {
+    
+    if (userData.isOtp === "Y") {
       generateOtpToCloseTask();
       if (from === "reopen") {
         setIschangeScreen(false)
@@ -875,10 +876,18 @@ const TestDriveScreen = ({ route, navigation }) => {
         setIschangeScreen(true)
       }
     } else {
+    
       if(from==="reopen"){
+      
         setIschangeScreen(true)
+       
         reSubmitClick("ASSIGNED", "Test Drive Approval")
+        setIsCloseSelected(false);
+        isViewMode2("reopen")
+        setIsisReopenSubmitVisible(true)
+        return;
       }else{
+      
         submitClicked("CLOSED", "Test Drive");
       }
     
@@ -1099,13 +1108,14 @@ const TestDriveScreen = ({ route, navigation }) => {
   
   const reSubmitClick = (status,taskName)=>{
     // call API here 
-   
+  
     setIsisReopenSubmitVisible(false)
     setIsSubmitPress(true);
     if (!mobileNumber || mobileNumber.length === 0) {
       showToast("Please enter mobile number");
       return;
     }
+    
     if (selectedVehicleDetails.model.length === 0) {
       showToast("Please select model");
       return;
@@ -1151,7 +1161,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       showToast("Please select time");
       return;
     }
-
+   
     const preferredTime = moment(selector.customer_preferred_time, "HH:mm");
     const startTime = moment(selector.actual_start_time, "HH:mm");
     const endTime = moment(selector.actual_end_time, "HH:mm");
@@ -1174,7 +1184,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       showToast("Actual End Time Should not be less than Actual Start Time");
       return;
     }
-
+   
     if (
       selectedVehicleDetails.vehicleId === 0 ||
       selectedVehicleDetails.varientId === 0
@@ -1210,7 +1220,7 @@ const TestDriveScreen = ({ route, navigation }) => {
     let prefferedTime ;
     let actualStartTime ;
     let actualEndTime ;
-
+    
     if (Platform.OS === "ios") {
       const preffTime = moment(
         selector.customer_preferred_time,
@@ -1232,7 +1242,6 @@ const TestDriveScreen = ({ route, navigation }) => {
     }
     setExpectedStartAndEndTime({ start: actualStartTime, end: actualEndTime });
     setTaskStatusAndName({ status: status, name: taskName });
-
 
     
     let reopenSubmitObj = {
@@ -1268,6 +1277,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       testdriveId: 0,
       customerHaveingDl: customerHavingDrivingLicense === 1
     }
+  
     dispatch(postReOpenTestDrive(reopenSubmitObj));
     
   }
