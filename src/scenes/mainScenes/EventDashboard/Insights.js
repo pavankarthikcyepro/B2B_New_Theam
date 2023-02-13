@@ -35,7 +35,7 @@ const EventInsights = ({ route, navigation }) => {
     type: "SELF",
     moduleType: 0,
   };
-  const [leadSource, setLeadSource] = useState([]);
+  const [leadSource, setLeadSource] = useState({});
   const [leadSourceKeys, setLeadSourceKeys] = useState([]);
   const [displayType, setDisplayType] = useState(0);
   const [sourceModelTotals, setSourceModelTotals] = useState({});
@@ -270,7 +270,7 @@ const EventInsights = ({ route, navigation }) => {
     const keys = leadSourceKeys;
     const data = leadSource;
 
-    if (leadSource.length > 0) {
+    if (Object.keys(data).length > 0) {
       return (
         <>
           {keys &&
@@ -312,7 +312,8 @@ const EventInsights = ({ route, navigation }) => {
 
   function renderTitleColumn() {
     const keys = leadSourceKeys;
-    if (leadSource.length > 0) {
+    const data = leadSource;
+    if (Object.keys(data).length > 0) {
       return (
         <>
           {keys &&
@@ -330,7 +331,13 @@ const EventInsights = ({ route, navigation }) => {
       );
     } else {
       return (
-        <View key={`0`} style={[styles.titleColumnView, {backgroundColor: Colors.WHITE, height: 27}]}>
+        <View
+          key={`0`}
+          style={[
+            styles.titleColumnView,
+            { backgroundColor: Colors.WHITE, height: 27 },
+          ]}
+        >
           <Text style={styles.titleColumnText} numberOfLines={2}>
             {""}
           </Text>

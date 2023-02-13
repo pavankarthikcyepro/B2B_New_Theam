@@ -17,6 +17,7 @@ export const GEOLOCATION = "GEOLOCATION";
 export const DIGITAL_DASHBOARD = "DIGITAL_DASHBOARD";
 export const EVENT_DASHBOARD = "EVENT_DASHBOARD";
 export const MY_STOCK = "MY_STOCK";
+export const REPORT_DOWNLOAD = "REPORT_DOWNLOAD";
 
 const data = [
   {
@@ -59,6 +60,11 @@ const data = [
     title: "My Stock",
     icon: ATTENDANCE,
     screen: 120,
+  },
+  {    
+    title: "Download Report",
+    icon: REPORT_DOWNLOAD,
+    screen: 121,
     pngIcon: require("../assets/images/Target_Planning-01.png"),
   },
   {

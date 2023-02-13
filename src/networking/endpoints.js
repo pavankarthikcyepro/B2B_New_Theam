@@ -549,7 +549,16 @@ const URL = {
     return downloadFile2;
   },
   LOCATION_LIST: (orgId) => {
-    return `${baseUrl} + "dfd/oh/data-nodes?orgId=${orgId}&levelCode=Level4`;
+    return `${baseUrl}dfd/oh/data-nodes?orgId=${orgId}&levelCode=Level4`;
+  },
+  DEALER_CODE_LIST1: (orgId) => {
+    return `${baseUrl}dfd/oh/data-nodes?orgId=${orgId}&levelCode=Level5`;
+  },
+  GET_DESIGNATION: (orgId, branchId) => {
+    return `${sales_url}/employees/get/designations/${orgId}/${branchId}`;
+  },
+  GET_EMPLOYEES: (designationId, branchId) => {
+    return `${sales_url}/employees/getemployee/${designationId}/${branchId}`;
   },
   DEALER_CODE_LIST: (orgId) => {
     return `${baseUrl} + "dfd/oh/data-nodes?orgId=1&levelCode=Level5`;

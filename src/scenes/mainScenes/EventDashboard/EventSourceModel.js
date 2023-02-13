@@ -253,7 +253,7 @@ const EventSourceModel = ({ route, navigation }) => {
   const renderDataView = () => {
     const keys = leadSourceKeys;
     const data = leadSource;
-    if (leadSource.length > 0) {
+    if (Object.keys(data).length > 0) {
       return (
         <>
           {keys &&
@@ -295,7 +295,8 @@ const EventSourceModel = ({ route, navigation }) => {
 
   function renderTitleColumn() {
     const keys = leadSourceKeys;
-    if (leadSource.length > 0) {
+    const data = leadSource;
+    if (Object.keys(data).length > 0) {
       return (
         <>
           {keys &&

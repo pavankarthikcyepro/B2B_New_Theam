@@ -74,6 +74,7 @@ const commonMenu = [
   "QR Code",
   "Drop Analysis",
   "My Attendance",
+  "Download Report",
 ];
 const salesMenu = [
   ...commonMenu,
@@ -358,6 +359,8 @@ const SideMenuScreen = ({ navigation }) => {
         break;
       case 120:
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.myStock);
+      case 121:
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.reportDownload);
         break;
       case 112:
         signOutClicked();

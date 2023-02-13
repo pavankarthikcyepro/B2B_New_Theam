@@ -116,6 +116,7 @@ import LeaderShipFilter from "../scenes/mainScenes/Home/TabScreens/leaderShipFil
 import Orientation from "react-native-orientation-locker";
 import { detectIsOrientationLock } from "../utils/helperFunctions";
 import { MyStockMainTopTabNavigator, MyStockTopTabNavigator } from "./myStockNavigator";
+import DownloadReportScreen from "../scenes/mainScenes/Attendance/DownloadReport";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -155,8 +156,8 @@ export const TestDriveHistoryIcon = ({ navigation }) => {
 };
 
 const MyTaskFilter = ({ navigation }) => {
-  const screen = useSelector((state) => state.myStockReducer.currentScreen);
-  if (screen === "TODAY") return <React.Fragment></React.Fragment>;
+  const screen = useSelector((state) => state.mytaskReducer.currentScreen);
+  // if (screen === "TODAY") return <React.Fragment></React.Fragment>;
   return (
     <IconButton
       icon="filter-outline"
@@ -364,6 +365,7 @@ export const DrawerStackIdentifiers = {
   geolocation: "Geolocation",
   digitalDashboard: "DIGITAL_DASHBOARD",
   myStock: "MY_STOCK"
+  reportDownload:"REPORT_DOWNLOAD"
 };
 
 export const TabStackIdentifiers = {
@@ -1304,7 +1306,10 @@ const MainStackDrawerNavigator = ({ navigation }) => {
         name={DrawerStackIdentifiers.digitalDashboard}
         component={DigitalDashBoardScreen}
       />
-
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.reportDownload}
+        component={DownloadReportNavigator}
+      />
       {/* <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.preBooking}
         component={PreBookingStackNavigator}
@@ -1314,6 +1319,26 @@ const MainStackDrawerNavigator = ({ navigation }) => {
         component={TargetSettingsScreen}
       />
     </MainDrawerNavigator.Navigator>
+  );
+};
+const DownloadReportStack = createStackNavigator();
+
+const DownloadReportNavigator = ({ navigation }) => {
+  return (
+    <DownloadReportStack.Navigator
+      initialRouteName={"REPORT_DOWNLOAD"}
+      screenOptions={screeOptionStyle}
+    >
+      <DownloadReportStack.Screen
+        name={"REPORT_DOWNLOAD"}
+        component={DownloadReportScreen}
+        options={{
+          title: "Download Report",
+          headerShown: true,
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+    </DownloadReportStack.Navigator>
   );
 };
 
