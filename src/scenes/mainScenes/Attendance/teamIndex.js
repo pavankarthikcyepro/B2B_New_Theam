@@ -991,7 +991,7 @@ const AttendanceTeamMemberScreen = ({ route, navigation }) => {
           </View>
         </View>
       </ScrollView>
-      {selector.isDSE ? null : (
+      {/* {selector.isDSE ? null : (
         <TouchableOpacity
           onPress={() => {
             downloadReport();
@@ -1000,7 +1000,7 @@ const AttendanceTeamMemberScreen = ({ route, navigation }) => {
         >
           <Entypo size={30} name="download" color={Colors.WHITE} />
         </TouchableOpacity>
-      )}
+      )} */}
       <LoaderComponent visible={loading} />
     </SafeAreaView>
   );
