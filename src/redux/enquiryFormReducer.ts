@@ -425,6 +425,21 @@ export const getEventConfigList = createAsyncThunk(
   }
 );
 
+
+export const getOtherPricesDropDown = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/getOtherPricesDropDown",
+  async (orgId, { rejectWithValue }) => {
+    const url = URL.GET_OTHER_PRICES_DROP_DOWN(orgId);
+    const response = await client.get(url);
+    const json = await response.json();
+    if (response.status != 200) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+
 interface PersonalIntroModel {
   key: string;
   text: string;
@@ -456,6 +471,7 @@ const initialState = {
   maxDate: null,
 
   //Proforma Invoice
+  otherPricesDropDown: [],
   getTermsNConditions_res: "",
   getTermsNConditions_res_status: "",
   proforma_API_respData: "",
@@ -726,6 +742,7 @@ const enquiryDetailsOverViewSlice = createSlice({
         (state.foc_accessoriesFromServer = ""),
         (state.event_list_Config = []);
       state.event_list_response_Config_status = "";
+      state.otherPricesDropDown= [];
     },
     clearState2: (state, action) => {
       state.enableEdit = false;
@@ -796,6 +813,7 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.additional_offer_1 = "";
       state.additional_offer_2 = "";
       state.foc_accessoriesFromServer = "";
+      state.otherPricesDropDown= [];
     },
     setEditable: (state, action) => {
       state.enableEdit = !state.enableEdit;
@@ -2511,6 +2529,24 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.isLoading = false;
       state.event_list_Config = [];
     });
+
+
+    //Get Other prices drop down data
+    builder.addCase(getOtherPricesDropDown.pending, (state, action) => { });
+    builder.addCase(getOtherPricesDropDown.fulfilled, (state, action) => {
+      if (action.payload) {
+        let data = [];
+        for (let i = 0; i < action.payload.length; i++) {
+          let obj = {
+            id: action.payload[i].id,
+            name: action.payload[i].Name,
+          };
+          data.push(obj);
+        }
+        state.otherPricesDropDown = Object.assign([], data);
+      }
+    });
+    builder.addCase(getOtherPricesDropDown.rejected, (state, action) => { });
   },
 });
 
