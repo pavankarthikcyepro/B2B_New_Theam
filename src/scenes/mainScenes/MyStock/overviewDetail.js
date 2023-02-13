@@ -92,8 +92,8 @@ const renderTableData = (item, index) => {
       <ScrollView>
         <View style={styles.mainView}>
           <View style={styles.titleView}>
-            <Text style={styles.titleText}>{"Dealer Code"}</Text>
-            <Text style={styles.titleText}>{"Car Stock"}</Text>
+            <Text style={styles.titleText}>{"Stock Yard"}</Text>
+            <Text style={styles.titleText}>{"Stock"}</Text>
           </View>
           {data.map((item) => {
             return renderData(item);
