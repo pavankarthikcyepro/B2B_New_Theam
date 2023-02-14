@@ -120,6 +120,7 @@ import DownloadReportScreen from "../scenes/mainScenes/Attendance/DownloadReport
 import ComplaintTrackerMain, { ComplaintsTrackerTopTabNavigator } from "../scenes/mainScenes/ComplaintTracker/ComplaintTrackerMain";
 import ComplaintList from "../scenes/mainScenes/ComplaintTracker/ComplaintList";
 import { ComplaintsTopTabNavigator } from "./complaintsTopTabNavigator";
+import AddEditComplaint from "../scenes/mainScenes/ComplaintTracker/AddEditComplaint";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -456,7 +457,8 @@ export const ComplainTrackerIdentifires = {
   complainTrackerDashboard: "COMPLAIN_TRACKER",
   complainTrackerList: "COMPLAINT_LIST",
   complainTrackerTop:"COMPLAINT_TRACKER_TOP",
-  closedComplainTeackerList:"CLOCSED_LIST"
+  closedComplainTeackerList:"CLOCSED_LIST",
+  addEditComplaint:"ADD_EDIT_COMPLAINT"
   
 };
 
@@ -1136,6 +1138,14 @@ const ComplainTrackgerStackNavigator = ({ navigation }) => {
         component={ComplaintList}
         options={{
           title: "Complaints",
+          // headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+      <ComplainTrackgerStack.Screen
+        name={ComplainTrackerIdentifires.addEditComplaint}
+        component={AddEditComplaint}
+        options={{
+          title: "Complaint Tracker",
           // headerLeft: () => <MenuIcon navigation={navigation} />,
         }}
       />

@@ -72,7 +72,7 @@ export  const ComplaintsTrackerTopTabNavigator = () => {
                 options={{
                     title: ({ focused }) => (
                         <Badge
-                            title={"CONTACTS"}
+                            title={"Active"}
                             focused={focused}
                             countList={"30"}
                         />
@@ -84,7 +84,7 @@ export  const ComplaintsTrackerTopTabNavigator = () => {
                 component={ClosedComplaintList}
                 options={{
                     title: ({ focused }) => (
-                        <Badge title={"LEADS"} focused={focused} countList={"20"} />
+                        <Badge title={"Closed"} focused={focused} countList={"20"} />
                     ),
                 }}
             />
@@ -139,7 +139,7 @@ const ComplaintTrackerMain = ({ route, navigation }) => {
 
             <TouchableOpacity
                 onPress={() => {
-                    // navigation.navigate(AppNavigator.EmsStackIdentifiers.newEnquiry);
+                    navigation.navigate(ComplainTrackerIdentifires.addEditComplaint);
                 }}
                 style={[GlobalStyle.shadow, styles.floatingBtn]}
             >
