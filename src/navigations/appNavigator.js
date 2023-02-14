@@ -117,8 +117,9 @@ import Orientation from "react-native-orientation-locker";
 import { detectIsOrientationLock } from "../utils/helperFunctions";
 import TaskthreeSixtyhistoryFilter from "../scenes/mainScenes/EMS/components/TaskthreeSixtyhistoryFilter";
 import DownloadReportScreen from "../scenes/mainScenes/Attendance/DownloadReport";
-import ComplaintTrackerMain from "../scenes/mainScenes/ComplaintTracker/ComplaintTrackerMain";
+import ComplaintTrackerMain, { ComplaintsTrackerTopTabNavigator } from "../scenes/mainScenes/ComplaintTracker/ComplaintTrackerMain";
 import ComplaintList from "../scenes/mainScenes/ComplaintTracker/ComplaintList";
+import { ComplaintsTopTabNavigator } from "./complaintsTopTabNavigator";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -454,6 +455,8 @@ export const EventDashboardStackIdentifiers = {
 export const ComplainTrackerIdentifires = {
   complainTrackerDashboard: "COMPLAIN_TRACKER",
   complainTrackerList: "COMPLAINT_LIST",
+  complainTrackerTop:"COMPLAINT_TRACKER_TOP",
+  closedComplainTeackerList:"CLOCSED_LIST"
   
 };
 
@@ -1113,7 +1116,23 @@ const ComplainTrackgerStackNavigator = ({ navigation }) => {
         }}
       />
       <ComplainTrackgerStack.Screen
+        name={ComplainTrackerIdentifires.complainTrackerTop}
+        component={ComplaintsTrackerTopTabNavigator}
+        options={{
+          title: "Complaints",
+          // headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+      <ComplainTrackgerStack.Screen
         name={ComplainTrackerIdentifires.complainTrackerList}
+        component={ComplaintList}
+        options={{
+          title: "Complaints",
+          // headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+      <ComplainTrackgerStack.Screen
+        name={ComplainTrackerIdentifires.closedComplainTeackerList}
         component={ComplaintList}
         options={{
           title: "Complaints",

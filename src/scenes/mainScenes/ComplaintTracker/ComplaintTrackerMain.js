@@ -3,6 +3,9 @@ import React from 'react'
 import { Colors, GlobalStyle } from '../../../styles'
 import Entypo from "react-native-vector-icons/FontAwesome";
 import { ComplainTrackerIdentifires } from '../../../navigations/appNavigator';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import ComplaintList from './ComplaintList';
+import ClosedComplaintList from './ClosedComplaintList';
 const data = [
     {
         id: 0,
@@ -13,6 +16,83 @@ const data = [
         name: "Closed"
     }
 ]
+const tabBarOptions = {
+    activeTintColor: Colors.RED,
+    inactiveTintColor: Colors.DARK_GRAY,
+    indicatorStyle: {
+        backgroundColor: Colors.RED,
+    },
+    labelStyle: {
+        fontSize: 12,
+        fontWeight: "600",
+    },
+}
+
+
+const Badge = ({ focused, title, countList }) => {
+    return (
+        <View style={styles.tabContainer}>
+            <Text
+                style={[
+                    styles.titleText,
+                    { color: focused ? Colors.RED : Colors.DARK_GRAY },
+                ]}
+            >
+                {title}
+            </Text>
+            <View style={styles.badgeContainer}>
+                <Text style={styles.badgeText}>
+                    {/* {title == "CONTACTS"
+            ? countList
+              ? countList.length
+              : 0
+            : countList && countList?.dmsEntity?.leadDtoPage?.totalElements > 0
+            ? countList.dmsEntity.leadDtoPage.totalElements
+            : 0} */}
+                    {countList && countList}
+                </Text>
+            </View>
+        </View>
+    );
+};
+
+const ComplaintsTrackerTopTab = createMaterialTopTabNavigator();
+
+
+export  const ComplaintsTrackerTopTabNavigator = () => {
+   
+    return (
+        <ComplaintsTrackerTopTab.Navigator
+            initialRouteName={ComplainTrackerIdentifires.complainTrackerList}
+            tabBarOptions={tabBarOptions}
+        >
+            <ComplaintsTrackerTopTab.Screen
+                name={"Active"}
+                component={ComplaintList}
+                options={{
+                    title: ({ focused }) => (
+                        <Badge
+                            title={"CONTACTS"}
+                            focused={focused}
+                            countList={"30"}
+                        />
+                    ),
+                }}
+            />
+            <ComplaintsTrackerTopTab.Screen
+                name={"Closed"}
+                component={ClosedComplaintList}
+                options={{
+                    title: ({ focused }) => (
+                        <Badge title={"LEADS"} focused={focused} countList={"20"} />
+                    ),
+                }}
+            />
+           
+        </ComplaintsTrackerTopTab.Navigator>
+    );
+};
+
 const ComplaintTrackerMain = ({ route, navigation }) => {
 
     const renderItem = (item, index) => {
@@ -37,7 +117,7 @@ const ComplaintTrackerMain = ({ route, navigation }) => {
                     }}>{item.name}</Text>
 
                     <TouchableOpacity onPress={() => {
-                        navigation.navigate(ComplainTrackerIdentifires.complainTrackerList);
+                        navigation.navigate(ComplainTrackerIdentifires.complainTrackerTop);
                     }}>
                         <Text style={styles.txt1}>{30}</Text>
                     </TouchableOpacity>
@@ -99,5 +179,23 @@ const styles = StyleSheet.create({
         backgroundColor: "rgba(255,21,107,6)",
         borderRadius: 100,
     },
+
+    tabContainer: {
+        flexDirection: "row",
+        alignItems: "flex-end",
+        position: "relative",
+    },
+    titleText: {
+        fontSize: 12,
+        fontWeight: "600",
+    },
+    badgeContainer: {
+        marginLeft: 3,
+        bottom: 4,
+        alignSelf: "flex-start",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    badgeText: { fontSize: 13, color: Colors.PINK, fontWeight: "bold" },
 
 })
