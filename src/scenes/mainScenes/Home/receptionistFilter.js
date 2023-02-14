@@ -314,14 +314,12 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
     setTotalDataObj({ ...totalDataObjLocal });
   };
 
-  const submitBtnClicked = (initialData) => {
+  const submitBtnClicked = () => {
     let i = 0;
     const selectedIds = [];
     for (i; i < nameKeyList.length; i++) {
       let key = nameKeyList[i];
-      const dataArray = initialData
-        ? initialData[key].sublevels
-        : totalDataObj[key].sublevels;
+      const dataArray = totalDataObj[key].sublevels;
       if (dataArray.length > 0) {
         dataArray.forEach((item, index) => {
           if (item.selected != undefined && item.selected == true) {
@@ -396,7 +394,7 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
       }
       // navigation.navigate(AppNavigator.TabStackIdentifiers.home, { screen: "Home", params: { from: 'Filter' }, })
     } else {
-      // navigation.goBack(); // NEED TO COMMENT FOR ASSOCIATE FILTER
+      navigation.goBack(); // NEED TO COMMENT FOR ASSOCIATE FILTER
     }
   };
 
