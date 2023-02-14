@@ -246,8 +246,23 @@ const FilterTargetScreen = ({ route, navigation }) => {
       newArr = [...newList];
     }
     let tempArr = index == 0 ? data : newArr;
+    if (tempArr.length == 0) {
+      const data = employeeDropDownDataLocal[employeeTitleNameList[index]];
+      let newIndex = index == 0 ? 0 : index - 2;
 
-    setDropDownData([...tempArr]);
+      let newItem = Object.keys(employeeDropDownDataLocal)[newIndex];
+      const tempData = employeeDropDownDataLocal[newItem];
+      const isSelected = tempData.filter((e) => e.selected == true);
+      let newArr = [];
+      if (isSelected[0]?.id && index !== 0) {
+        const newList = data.filter((e) => e.parentId == isSelected[0]?.id);
+        newArr = [...newList];
+      }
+      let tempArr = index == 0 ? data : newArr;
+      setDropDownData([...tempArr]);
+    } else {
+      setDropDownData([...tempArr]);
+    }
     setSelectedItemIndex(index);
     setShowDropDownModel(true);
     setDropDownFrom("EMPLOYEE_TABLE");
@@ -339,20 +354,18 @@ const FilterTargetScreen = ({ route, navigation }) => {
     index == 4 && submitBtnClicked(totalDataObjLocal);
   };
 
-  
-
-  const updateSelectedItemsForEmployeeDropDown = (data, index,index1) => {
+  const updateSelectedItemsForEmployeeDropDown = (data, index, index1) => {
     let key = employeeTitleNameList[index];
-    const newTotalDataObjLocal =Object.assign(employeeDropDownDataLocal);
+    const newTotalDataObjLocal = Object.assign(employeeDropDownDataLocal);
     let objIndex = newTotalDataObjLocal[key].findIndex(
       (obj) => obj.id == data.id
     );
-   const a= newTotalDataObjLocal[key].map((data, index) =>
+    const a = newTotalDataObjLocal[key].map((data, index) =>
       index === objIndex
         ? { ...newTotalDataObjLocal[key][index], selected: true }
         : { ...newTotalDataObjLocal[key][index], selected: false }
     );
-    newTotalDataObjLocal[key] = a
+    newTotalDataObjLocal[key] = a;
     setEmployeeDropDownDataLocal(newTotalDataObjLocal);
   };
 
@@ -607,11 +620,15 @@ const FilterTargetScreen = ({ route, navigation }) => {
         headerTitle={"Select"}
         data={dropDownData}
         onRequestClose={() => setShowDropDownModel(false)}
-        selectedItems={(item,o,index) => {
+        selectedItems={(item, o, index) => {
           if (dropDownFrom === "ORG_TABLE") {
             updateSelectedItems(item, selectedItemIndex);
           } else {
-            updateSelectedItemsForEmployeeDropDown(item,selectedItemIndex, index);
+            updateSelectedItemsForEmployeeDropDown(
+              item,
+              selectedItemIndex,
+              index
+            );
           }
           setShowDropDownModel(false);
         }}
@@ -776,6 +793,44 @@ const FilterTargetScreen = ({ route, navigation }) => {
                           renderItem={({ item, index }) => {
                             const data = employeeDropDownDataLocal[item];
                             let selectedNames = "";
+                            if (item) {
+                              for (let i = 1; i < employeeTitleNameList.length; i++) {
+                                let notSelected =
+                                  employeeTitleNameList[index - i];
+                                if (notSelected) {
+                                  const data1 =
+                                    employeeDropDownDataLocal[notSelected];
+                                  const filterData = data1.filter(
+                                    (e) => e.selected == true
+                                  );
+                                  if (filterData.length > 0) {
+                                    const isAnyData = data.filter(
+                                      (e) => e.parentId == filterData[0]?.code
+                                    );
+                                    if (isAnyData.length == 0) {
+                                      return;
+                                    }
+                                  }
+                                }
+                              }
+                              // let notSelected =
+                              //   employeeTitleNameList[index - 1];
+                              // if (notSelected) {
+                              //   const data1 =
+                              //     employeeDropDownDataLocal[notSelected];
+                              //   const filterData = data1.filter(
+                              //     (e) => e.selected == true
+                              //   );
+                              //   if (filterData.length > 0) {
+                              //     const isAnyData = data.filter(
+                              //       (e) => e.parentId == filterData[0]?.code
+                              //     );
+                              //     if (isAnyData.length == 0) {
+                              //       return;
+                              //     }
+                              //   }
+                              // }
+                            }
                             data.forEach((obj, index) => {
                               if (
                                 obj.selected != undefined &&
