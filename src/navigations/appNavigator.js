@@ -116,6 +116,8 @@ import LeaderShipFilter from "../scenes/mainScenes/Home/TabScreens/leaderShipFil
 import Orientation from "react-native-orientation-locker";
 import { detectIsOrientationLock } from "../utils/helperFunctions";
 import DownloadReportScreen from "../scenes/mainScenes/Attendance/DownloadReport";
+import ComplaintTrackerMain from "../scenes/mainScenes/ComplaintTracker/ComplaintTrackerMain";
+import ComplaintList from "../scenes/mainScenes/ComplaintTracker/ComplaintList";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -363,7 +365,8 @@ export const DrawerStackIdentifiers = {
   attendance: "Attendance",
   geolocation: "Geolocation",
   digitalDashboard: "DIGITAL_DASHBOARD",
-  reportDownload:"REPORT_DOWNLOAD"
+  reportDownload:"REPORT_DOWNLOAD",
+  complaintTracker:"COMPLAINT_TRACKER"
 };
 
 export const TabStackIdentifiers = {
@@ -443,6 +446,12 @@ export const EventDashboardStackIdentifiers = {
   home: "EVENT_DASHBOARD",
   event: "EVENT",
   sourceModel: "EVENT_SOURCE_MODEL",
+};
+
+export const ComplainTrackerIdentifires = {
+  complainTrackerDashboard: "COMPLAIN_TRACKER",
+  complainTrackerList: "COMPLAINT_LIST",
+  
 };
 
 const HomeStack = createStackNavigator();
@@ -1063,6 +1072,34 @@ const LiveLeadsStackNavigator = ({ navigation }) => {
   );
 };
 
+const ComplainTrackgerStack = createStackNavigator();
+
+const ComplainTrackgerStackNavigator = ({ navigation }) => {
+  return (
+    <ComplainTrackgerStack.Navigator
+      initialRouteName={ComplainTrackerIdentifires.complainTrackerDashboard}
+      screenOptions={screeOptionStyle}
+    >
+      <ComplainTrackgerStack.Screen
+        name={ComplainTrackerIdentifires.complainTrackerDashboard}
+        component={ComplaintTrackerMain}
+        options={{
+          title: "Complaint Tracker",
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+      <ComplainTrackgerStack.Screen
+        name={ComplainTrackerIdentifires.complainTrackerList}
+        component={ComplaintList}
+        options={{
+          title: "Complaints",
+          // headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+    </ComplainTrackgerStack.Navigator>
+  );
+};
+
 const TaskManagementStack = createStackNavigator();
 
 const TaskManagementStackNavigator = ({ navigation }) => {
@@ -1219,6 +1256,10 @@ const MainStackDrawerNavigator = ({ navigation }) => {
       <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.liveLeads}
         component={LiveLeadsStackNavigator}
+      />
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.complaintTracker}
+        component={ComplainTrackgerStackNavigator}
       />
       <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.monthlyTarget}

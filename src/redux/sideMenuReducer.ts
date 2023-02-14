@@ -17,6 +17,8 @@ export const GEOLOCATION = "GEOLOCATION";
 export const DIGITAL_DASHBOARD = "DIGITAL_DASHBOARD";
 export const EVENT_DASHBOARD = "EVENT_DASHBOARD";
 export const REPORT_DOWNLOAD = "REPORT_DOWNLOAD";
+export const COMPLAINT_TRACKER = "REPORT_DOWNLOAD";
+
 
 const data = [
   {
@@ -139,11 +141,17 @@ const data = [
     pngIcon: require("../assets/images/Settings-01.png"),
   },
   {
+    title: "Complaint Tracker",
+    icon: COMPLAINT_TRACKER,
+    screen: 123,
+    // pngIcon: require("../assets/images/review.png"),
+  },
+  {
     title: "Sign Out",
     icon: CUSTOMER_RELATIONSHIP_STR,
     screen: 112,
     pngIcon: require("../assets/images/Signout-01.png"),
-  },
+  }
 ];
 
 const dataForManager = [
@@ -219,7 +227,14 @@ const dataForManager = [
     icon: DROP_ANALYSIS,
     screen: 113,
   },
+  {
+    title: "Complaint Tracker",
+    icon: COMPLAINT_TRACKER,
+    screen: 123,
+    // pngIcon: require("../assets/images/review.png"),
+  },
   { title: "Sign Out", icon: CUSTOMER_RELATIONSHIP_STR, screen: 112 },
+
 ];
 
 // {
