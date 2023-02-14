@@ -246,65 +246,64 @@ const MainParamScreen = ({ route, navigation }) => {
     return Object.keys(obj).length === 0;
   }
   useEffect(async () => {
-      try {
-        if (!isEmpty(selector.filterPayload)) {
-          let filterData = selector.filterPayload.params;
-          let employeeData = await AsyncStore.getData(
-            AsyncStore.Keys.LOGIN_EMPLOYEE
+    try {
+      if (!isEmpty(selector.filterPayload)) {
+        let filterData = selector.filterPayload.params;
+        let employeeData = await AsyncStore.getData(
+          AsyncStore.Keys.LOGIN_EMPLOYEE
+        );
+        if (employeeData) {
+          const jsonObj = JSON.parse(employeeData);
+          const payload = getEmployeePayloadV2(
+            employeeData,
+            filterData?.selectedID
           );
-          if (employeeData) {
-            const jsonObj = JSON.parse(employeeData);
-            const payload = getEmployeePayloadV2(
-              employeeData,
-              filterData?.selectedID
-            );
-            Promise.all([dispatch(getUserWiseTargetParameters(payload))])
-              .then(async (res) => {
-                let tempRawData =
-                  res[0]?.payload?.employeeTargetAchievements.filter(
-                    (emp) => emp.empId == filterData?.selectedID
-                  );
-                // let input = res[0].payload.employeeTargetAchievements[0];
-                let input = tempRawData[0];
-                let payload1 = getEmployeePayloadTotal(
-                  employeeData,
-                  [filterData?.selectedID],
-                  [input.branchId],
-                  filterData?.fromDate,
-                  filterData?.toDate
+          Promise.all([dispatch(getUserWiseTargetParameters(payload))])
+            .then(async (res) => {
+              let tempRawData =
+                res[0]?.payload?.employeeTargetAchievements.filter(
+                  (emp) => emp.empId == filterData?.selectedID
                 );
-                const response1 = await client.post(
-                  URL.GET_ALL_TARGET_MAPPING_SEARCH(),
-                  payload1
-                );
-                const json1 = await response1.json();
-                //todo
-                if (json1) {
-                  let newArr = json1?.data;
-                  newArr[0] = {
-                    ...newArr[0],
-                    isOpenInner: true,
-                    employeeTargetAchievements: [],
-                    department: json1?.data[0]?.department,
-                    designation: json1?.data[0]?.designation,
-                    targetAchievements: getDataFormat(json1?.data[0]),
-                    tempTargetAchievements: getDataFormat(json1?.data[0]),
-                    branchName: json1?.data[0]?.branchName || input.branchName,
-                    branch: json1?.data[0]?.branch || input.branchId,
-                    recordId: json1?.data[0]?.id,
-                    empName: json1?.data[0]?.empName || input.empName,
-                  };
+              // let input = res[0].payload.employeeTargetAchievements[0];
+              let input = tempRawData[0];
+              let payload1 = getEmployeePayloadTotal(
+                employeeData,
+                [filterData?.selectedID],
+                [input.branchId],
+                filterData?.fromDate,
+                filterData?.toDate
+              );
+              const response1 = await client.post(
+                URL.GET_ALL_TARGET_MAPPING_SEARCH(),
+                payload1
+              );
+              const json1 = await response1.json();
+              //todo
+              if (json1) {
+                let newArr = json1?.data;
+                newArr[0] = {
+                  ...newArr[0],
+                  isOpenInner: true,
+                  employeeTargetAchievements: [],
+                  department: json1?.data[0]?.department,
+                  designation: json1?.data[0]?.designation,
+                  targetAchievements: getDataFormat(json1?.data[0]),
+                  tempTargetAchievements: getDataFormat(json1?.data[0]),
+                  branchName: json1?.data[0]?.branchName || input.branchName,
+                  branch: json1?.data[0]?.branch || input.branchId,
+                  recordId: json1?.data[0]?.id,
+                  empName: json1?.data[0]?.empName || input.empName,
+                };
 
-                  setFilterParameters(newArr);
-                }
-              })
-              .catch();
-          }
-        } else {
-          getInitialParameters();
+                setFilterParameters(newArr);
+              }
+            })
+            .catch();
         }
-      } catch (error) {}
-    
+      } else {
+        getInitialParameters();
+      }
+    } catch (error) {}
   }, [selector.filterPayload, navigation]);
 
   useEffect(() => {
@@ -3362,42 +3361,48 @@ const MainParamScreen = ({ route, navigation }) => {
                 <TouchableOpacity
                   style={styles.textBox}
                   onPress={() => {
-                    setSelectedUser({ ...loggedInEmpDetails });
-                    // if (isNoTargetAvailable) {
-                    //     setAddOrEdit('A')
-                    // }
-                    // else {
-                    //     setAddOrEdit('E')
-                    // }
-                    if (loggedInEmpDetails.primaryDepartment === "Sales") {
-                      if (
+                    // if (ownData.isAccess == "false") {
+                    //   showToastRedAlert(
+                    //     `Target has been already set by ${ownData.updatedUserName}`
+                    //   );
+                    // } else {
+                    //   setSelectedUser({ ...loggedInEmpDetails });
+                      // if (isNoTargetAvailable) {
+                      //     setAddOrEdit('A')
+                      // }
+                      // else {
+                      //     setAddOrEdit('E')
+                      // }
+                      if (loggedInEmpDetails.primaryDepartment === "Sales") {
+                        if (
+                          ownData.retailTarget !== null &&
+                          selector.endDate === ownData.endDate &&
+                          selector.startDate === ownData.startDate
+                        ) {
+                          setSelectedBranch({
+                            label: ownData.branchName,
+                            value: ownData.branch,
+                          });
+                          setDefaultBranch(ownData.branch);
+                          setAddOrEdit("E");
+                        } else {
+                          setDefaultBranch(null);
+                          setAddOrEdit("A");
+                        }
                         ownData.retailTarget !== null &&
                         selector.endDate === ownData.endDate &&
                         selector.startDate === ownData.startDate
-                      ) {
-                        setSelectedBranch({
-                          label: ownData.branchName,
-                          value: ownData.branch,
-                        });
-                        setDefaultBranch(ownData.branch);
-                        setAddOrEdit("E");
-                      } else {
-                        setDefaultBranch(null);
-                        setAddOrEdit("A");
-                      }
-                      ownData.retailTarget !== null &&
-                      selector.endDate === ownData.endDate &&
-                      selector.startDate === ownData.startDate
-                        ? setRetail(ownData.retailTarget.toString())
-                        : setRetail("");
+                          ? setRetail(ownData.retailTarget.toString())
+                          : setRetail("");
 
-                      setOpenRetail(true);
-                      if (ownData.id) {
-                        setIsNoTargetAvailable(false);
-                      } else {
-                        setIsNoTargetAvailable(true);
-                      }
-                    } else showToast("Access Denied");
+                        setOpenRetail(true);
+                        if (ownData.id) {
+                          setIsNoTargetAvailable(false);
+                        } else {
+                          setIsNoTargetAvailable(true);
+                        }
+                      } else showToast("Access Denied");
+                    // }
                   }}
                 >
                   {/* todo */}
@@ -3516,36 +3521,42 @@ const MainParamScreen = ({ route, navigation }) => {
                     // else {
                     //     setAddOrEdit('E')
                     // }
-                    if (loggedInEmpDetails.primaryDepartment === "Sales") {
-                      if (
+                    // if (ownData.isAccess == "false") {
+                    //   showToastRedAlert(
+                    //     `Target has been already set by ${ownData.updatedUserName}`
+                    //   );
+                    // } else {
+                      if (loggedInEmpDetails.primaryDepartment === "Sales") {
+                        if (
+                          ownData.retailTarget !== null &&
+                          selector.endDate === ownData.endDate &&
+                          selector.startDate === ownData.startDate
+                        ) {
+                          setSelectedBranch({
+                            label: ownData.branchName,
+                            value: ownData.branch,
+                          });
+                          setDefaultBranch(ownData.branch);
+                          setAddOrEdit("E");
+                        } else {
+                          setDefaultBranch(null);
+                          setAddOrEdit("A");
+                        }
+                        setSelectedUser({ ...loggedInEmpDetails });
                         ownData.retailTarget !== null &&
                         selector.endDate === ownData.endDate &&
                         selector.startDate === ownData.startDate
-                      ) {
-                        setSelectedBranch({
-                          label: ownData.branchName,
-                          value: ownData.branch,
-                        });
-                        setDefaultBranch(ownData.branch);
-                        setAddOrEdit("E");
-                      } else {
-                        setDefaultBranch(null);
-                        setAddOrEdit("A");
-                      }
-                      setSelectedUser({ ...loggedInEmpDetails });
-                      ownData.retailTarget !== null &&
-                      selector.endDate === ownData.endDate &&
-                      selector.startDate === ownData.startDate
-                        ? setRetail(ownData.retailTarget.toString())
-                        : setRetail("");
+                          ? setRetail(ownData.retailTarget.toString())
+                          : setRetail("");
 
-                      setOpenRetail(true);
-                      if (ownData.id) {
-                        setIsNoTargetAvailable(false);
-                      } else {
-                        setIsNoTargetAvailable(true);
-                      }
-                    } else showToast("Access Denied");
+                        setOpenRetail(true);
+                        if (ownData.id) {
+                          setIsNoTargetAvailable(false);
+                        } else {
+                          setIsNoTargetAvailable(true);
+                        }
+                      } else showToast("Access Denied");
+                    // }
                   }}
                 >
                   <Text style={styles.textInput}>

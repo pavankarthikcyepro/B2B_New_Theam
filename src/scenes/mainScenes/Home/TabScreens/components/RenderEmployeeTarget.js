@@ -4,6 +4,7 @@ import { achievementPercentage } from "../../../../../utils/helperFunctions";
 import { Colors } from "../../../../../styles";
 import { AppNavigator } from "../../../../../navigations";
 import { EmsTopTabNavigatorIdentifiers } from "../../../../../navigations/emsTopTabNavigator";
+import { showToastRedAlert } from "../../../../../utils/toast";
 
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 100) / 5;
@@ -156,6 +157,15 @@ export const RenderEmployeeTarget = (parameter) => {
                       </Text>
                     ) : (
                       <TextInput
+                        // onPressIn={() => {
+                        //   if (editParameters) {
+                        //     if (item?.isAccess == "false") {
+                        //       showToastRedAlert(
+                        //         `Target has been already set by ${item.updatedUserName}`
+                        //       );
+                        //     }
+                        //   }
+                        // }}
                         key={index}
                         numberOfLines={1}
                         editable={editParameters}
