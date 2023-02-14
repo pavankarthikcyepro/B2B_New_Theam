@@ -3,14 +3,16 @@ import { client } from '../networking/client';
 import URL from "../networking/endpoints";
 
 export const getPreEnquiryData = createAsyncThunk('PRE_ENQUIRY/getPreEnquiryData', async (payload, { rejectWithValue }) => {
-
+  
   const response = await client.post(URL.LEADS_LIST_API_FILTER(), payload);
   const json = await response.json()
+  
   if (!response.ok) {
     return rejectWithValue(json);
   }
   return json;
 })
+
 
 export const getMorePreEnquiryData = createAsyncThunk('PRE_ENQUIRY/getMorePreEnquiryData', async (payload, { rejectWithValue }) => {
 
@@ -22,6 +24,7 @@ export const getMorePreEnquiryData = createAsyncThunk('PRE_ENQUIRY/getMorePreEnq
   return json;
 })
 
+
 export const preEnquirySlice = createSlice({
   name: "PRE_ENQUIRY",
   initialState: {
@@ -31,7 +34,8 @@ export const preEnquirySlice = createSlice({
     totalPages: 1,
     isLoading: false,
     isLoadingExtraData: false,
-    status: ""
+    status: "",
+    pre_enquiry_list_TotalElements:0
   },
   reducers: {
     callPressed: (state, action) => {
@@ -43,26 +47,35 @@ export const preEnquirySlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(getPreEnquiryData.pending, (state) => {
+      state.totalPages = 1
+      state.pageNumber = 0
+      state.pre_enquiry_list = [];
       state.isLoading = true;
     })
     builder.addCase(getPreEnquiryData.fulfilled, (state, action) => {
-      console.log('res: ', action.payload);
+      state.totalPages = 1
+      state.pageNumber = 0
+      state.pre_enquiry_list = [];
       const dmsEntityObj = action.payload?.dmsEntity;
       if (dmsEntityObj) {
         state.totalPages = dmsEntityObj.leadDtoPage.totalPages;
         state.pageNumber = dmsEntityObj.leadDtoPage.pageable.pageNumber;
-        state.pre_enquiry_list = dmsEntityObj.leadDtoPage.content;
+        state.pre_enquiry_list_TotalElements= action.payload;
+        state.pre_enquiry_list = dmsEntityObj.leadDtoPage.content.length > 0 ? dmsEntityObj.leadDtoPage.content : [];
+
       }
       state.isLoading = false;
     })
     builder.addCase(getPreEnquiryData.rejected, (state) => {
+      state.totalPages = 1
+      state.pageNumber = 0
+      state.pre_enquiry_list = [];
       state.isLoading = false;
     })
     builder.addCase(getMorePreEnquiryData.pending, (state) => {
       state.isLoadingExtraData = true;
     })
     builder.addCase(getMorePreEnquiryData.fulfilled, (state, action) => {
-      console.log('res: ', action.payload);
       const dmsEntityObj = action.payload?.dmsEntity;
       if (dmsEntityObj) {
         state.pageNumber = dmsEntityObj.leadDtoPage.pageable.pageNumber;

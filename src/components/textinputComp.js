@@ -20,7 +20,7 @@ const TextinputComp = ({ value, mode = 'flat', label, disabled, placeholder, err
     }
 
     return (
-        <View>
+        <View style={{width:'100%'}}>
             <TextInput
                 style={[{ height: 50, width: '100%', fontSize: 16, fontWeight: '400', backgroundColor: Colors.WHITE }, style]}
                 mode={mode}

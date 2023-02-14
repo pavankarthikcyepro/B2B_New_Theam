@@ -3,6 +3,7 @@ import { SafeAreaView, StyleSheet, Modal, View, Dimensions, Platform } from 'rea
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Colors } from '../styles';
 import { Button } from 'react-native-paper';
+import RNDateTimePicker from '@react-native-community/datetimepicker';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -29,46 +30,47 @@ const DatePickerComponent = ({ visible = false, onRequestClose, value, mode = "d
     }
     else if (Platform.OS === 'ios') {
         return (
-            <Modal
-                animationType={Platform.OS === "ios" ? 'slide' : 'fade'}
-                transparent={true}
-                visible={visible}
-                onRequestClose={onRequestClose}
-            >
-                <SafeAreaView style={styles.container}>
-                    <View style={styles.view1}>
-                        <View style={styles.view2}>
-                            {/* <Button
+          <Modal
+            animationType={Platform.OS === "ios" ? "slide" : "fade"}
+            transparent={true}
+            visible={visible}
+            onRequestClose={onRequestClose}
+          >
+            <SafeAreaView style={styles.container}>
+              <View style={styles.view1}>
+                <View style={styles.view2}>
+                  {/* <Button
                                 mode="text"
                                 labelStyle={{ textTransform: 'none', color: Colors.DARK_GRAY }}
                                 onPress={onRequestClose}
                             >
                                 Cancel
                             </Button> */}
-                            <Button
-                                mode="text"
-                                labelStyle={{ textTransform: 'none', color: Colors.RED }}
-                                onPress={onRequestClose}
-                            >
-                                Done
-                            </Button>
-                        </View>
-                        <DateTimePicker
-                            testID="dateTimePicker"
-                            value={value}
-                            mode={mode}
-                            is24Hour={true}
-                            display="default"
-                            onChange={onChange}
-                            style={styles.datePicker}
-                            maximumDate={maximumDate}
-                            minimumDate={minimumDate}
-                            textColor={Colors.RED}
-                        />
-                    </View>
-                </SafeAreaView>
-            </Modal>
-        )
+                  <Button
+                    mode="text"
+                    labelStyle={{ textTransform: "none", color: Colors.RED }}
+                    onPress={onRequestClose}
+                  >
+                    Done
+                  </Button>
+                </View>
+                <RNDateTimePicker
+                  testID="dateTimePicker"
+                  value={value}
+                  mode={mode}
+                  is24Hour={true}
+                  display="default"
+                  onChange={onChange}
+                  style={styles.datePicker}
+                  maximumDate={maximumDate}
+                  minimumDate={minimumDate}
+                  textColor={Colors.RED}
+                  //timeZoneOffsetInSeconds={18000}
+                />
+              </View>
+            </SafeAreaView>
+          </Modal>
+        );
     }
     return null;
 }
@@ -102,14 +104,14 @@ const styles = StyleSheet.create({
     },
 })
 
-// mode :- 
+// mode :-
 
 // "date" (default for iOS and Android and Windows)
 // "time"
 // "datetime" (iOS only)
 // "countdown" (iOS only)
 
-// display :- 
+// display :-
 
 // "default" - Show a default date picker (spinner/calendar/clock) based on mode and Android version.
 // "spinner"

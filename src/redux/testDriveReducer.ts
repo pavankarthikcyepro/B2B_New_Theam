@@ -2,7 +2,7 @@ import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import moment from "moment";
 import { client } from "../networking/client";
 import URL from "../networking/endpoints";
-
+import { showToast, showToastRedAlert, showToastSucess } from "../utils/toast";
 
 interface CustomerDetailModel {
   key: string;
@@ -58,6 +58,7 @@ export const getTestDriveVehicleListApi = createAsyncThunk("TEST_DRIVE_SLICE/get
 export const bookTestDriveAppointmentApi = createAsyncThunk("TEST_DRIVE_SLICE/bookTestDriveAppointmentApi", async (payload, { rejectWithValue }) => {
 
   const response = await client.post(URL.BOOK_TEST_DRIVE_APPOINTMENT(), payload);
+  
   const json = await response.json()
   if (!response.ok) {
     return rejectWithValue(json);
@@ -68,11 +69,23 @@ export const bookTestDriveAppointmentApi = createAsyncThunk("TEST_DRIVE_SLICE/bo
 export const updateTestDriveTaskApi = createAsyncThunk("TEST_DRIVE_SLICE/updateTestDriveTaskApi", async (payload, { rejectWithValue }) => {
 
   const response = await client.post(URL.UPDATE_TEST_DRIVE_TASK(), payload);
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+
+  try {
+    const json = await response.json();
+    if (response.status != 200) {
+      return rejectWithValue(json);
+    }
+    return json;
+  } catch (error) {
+    console.error("JSON parse error: ", error + " : " + JSON.stringify(response));
+    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
   }
-  return json;
+
+  // const json = await response.json()
+  // if (!response.ok) {
+  //   return rejectWithValue(json);
+  // }
+  // return json;
 })
 
 export const getTestDriveAppointmentDetailsApi = createAsyncThunk("TEST_DRIVE_SLICE/getAppointmentDetailsApi", async (payload, { rejectWithValue }) => {
@@ -88,6 +101,61 @@ export const getTestDriveAppointmentDetailsApi = createAsyncThunk("TEST_DRIVE_SL
 export const validateTestDriveApi = createAsyncThunk("TEST_DRIVE_SLICE/validateTestDriveApi", async (payload, { rejectWithValue }) => {
 
   const response = await client.get(URL.VALIDATE_TEST_DRIVE_DATE(payload["date"], payload["vehicleId"]));
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const generateOtpApi = createAsyncThunk("HOME_VISIT_SLICE/generateOtpApi", async (payload, { rejectWithValue }) => {
+  const url = `${URL.GENERATE_OTP()}?type=TEST DRIVE`;
+  const response = await client.post(url, payload);
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const validateOtpApi = createAsyncThunk("HOME_VISIT_SLICE/validateOtpApi", async (payload, { rejectWithValue }) => {
+  
+  const response = await client.post(URL.VALIDATE_OTP(), payload);
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+
+
+export const postReOpenTestDrive = createAsyncThunk("HOME_VISIT_SLICE/postReOpenTestDrive", async (payload, { rejectWithValue }) => {
+
+  const response = await client.post(URL.SAVETESTDRIVE(), payload);
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+
+
+export const getTestDriveHistoryCount = createAsyncThunk("TEST_DRIVE_SLICE/getTestDriveHistoryCount", async (universalId, { rejectWithValue }) => {
+
+  const response = await client.get(URL.GET_TEST_HISTORY_COUNT(universalId));
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+
+export const getTestDriveHistoryDetails = createAsyncThunk("TEST_DRIVE_SLICE/getTestDriveHistoryDetails", async (universalId, { rejectWithValue }) => {
+
+  const response = await client.get(URL.GET_TEST_HISTORY_DETAILS(universalId));
   const json = await response.json()
   if (!response.ok) {
     return rejectWithValue(json);
@@ -114,7 +182,16 @@ const testDriveSlice = createSlice({
     customer_preferred_date: "",
     customer_preferred_time: "",
     actual_start_time: "",
-    actual_end_time: ""
+    actual_end_time: "",
+    driverId: "",
+    generate_otp_response_status: "",
+    otp_session_key: "",
+    validate_otp_response_status: "",
+    reopen_test_drive_res_status:"",
+    test_drive_history_count_statu:"",
+    test_drive_history_count:0,
+     test_drive_history_details_statu:"",
+    test_drive_history_details:"",
   },
   reducers: {
     clearState: (state, action) => {
@@ -127,10 +204,23 @@ const testDriveSlice = createSlice({
       state.task_details_response = null;
       state.test_drive_appointment_details_response = null;
       state.test_drive_date_validate_response = null;
+      state.test_drive_varients_obj_for_drop_down = {}
+      state.test_drive_vehicle_list_for_drop_down = []
+      state.test_drive_vehicle_list = []
+      state.drivers_list = []
+      state.employees_list = []
+      state.driverId = ''
+      state.generate_otp_response_status = "";
+      state.otp_session_key = "";
+      state.validate_otp_response_status = "";
+      state.reopen_test_drive_res_status ="";
+      state.test_drive_history_count_statu="";
+      state.test_drive_history_count=0;
+     state.test_drive_history_details_statu= "";
+        state.test_drive_history_details= "";
     },
     updateSelectedDate: (state, action: PayloadAction<CustomerDetailModel>) => {
       const { key, text } = action.payload;
-      console.log(text);
       switch (key) {
         case "PREFERRED_DATE":
           state.customer_preferred_date = text;
@@ -146,6 +236,11 @@ const testDriveSlice = createSlice({
           break;
       }
     },
+    clearOTP: (state, action) => {
+      state.generate_otp_response_status = "";
+      state.otp_session_key = "";
+      state.validate_otp_response_status = "";
+    },
   },
   extraReducers: (builder) => {
     // Get Task Details Api
@@ -153,7 +248,6 @@ const testDriveSlice = createSlice({
       state.task_details_response = null;
     })
     builder.addCase(getTaskDetailsApi.fulfilled, (state, action) => {
-      console.log("S getTaskDetailsApi: ", JSON.stringify(action.payload));
       if (action.payload.success === true && action.payload.dmsEntity) {
         state.task_details_response = action.payload.dmsEntity.task;
       } else {
@@ -161,7 +255,6 @@ const testDriveSlice = createSlice({
       }
     })
     builder.addCase(getTaskDetailsApi.rejected, (state, action) => {
-      console.log("F getTaskDetailsApi: ", JSON.stringify(action.payload));
       state.task_details_response = null;
     })
     // Get Test Drive Appointment Details
@@ -169,7 +262,6 @@ const testDriveSlice = createSlice({
       state.test_drive_appointment_details_response = null;
     })
     builder.addCase(getTestDriveAppointmentDetailsApi.fulfilled, (state, action) => {
-      console.log("S getTestDriveAppointmentDetailsApi: ", JSON.stringify(action.payload));
       if (action.payload != null && action.payload.statusCode === "200") {
         if (action.payload.testDrives && action.payload.testDrives.length > 0) {
 
@@ -189,7 +281,7 @@ const testDriveSlice = createSlice({
           if (startTimeAry.length > 1) {
             state.actual_start_time = startTimeAry[1];
           }
-
+          state.driverId = testDrivesInfo.driverId;
           const endTime = testDrivesInfo.endTime ? testDrivesInfo.endTime : "";
           const endTimeAry = endTime.split(" ");
           if (endTimeAry.length > 1) {
@@ -200,7 +292,6 @@ const testDriveSlice = createSlice({
       }
     })
     builder.addCase(getTestDriveAppointmentDetailsApi.rejected, (state, action) => {
-      console.log("F getTestDriveAppointmentDetailsApi: ", JSON.stringify(action.payload));
       state.test_drive_appointment_details_response = null;
     })
     // Get Test Drive Vehicle list
@@ -209,7 +300,6 @@ const testDriveSlice = createSlice({
       state.test_drive_vehicle_list_for_drop_down = [];
     })
     builder.addCase(getTestDriveVehicleListApi.fulfilled, (state, action) => {
-      //console.log("S getTestDriveVehicleListApi: ", JSON.stringify(action.payload));
       if (action.payload.status === "SUCCESS" && action.payload.vehicles) {
         const vehicles = action.payload.vehicles;
         state.test_drive_vehicle_list = vehicles;
@@ -220,8 +310,16 @@ const testDriveSlice = createSlice({
         let varientObj = {};
         vehicles.forEach(element => {
           const vehicleInfo = element.vehicleInfo;
-          const vehicleInfoForModel = { ...vehicleInfo, name: vehicleInfo.model, id: vehicleInfo.vehicleId };
-          const vehicleInfoForVarient = { ...vehicleInfo, name: vehicleInfo.varientName, id: vehicleInfo.vehicleId };
+          const vehicleInfoForModel = {
+            ...vehicleInfo,
+            name: vehicleInfo.model,
+            id: element.id,
+          };
+          const vehicleInfoForVarient = {
+            ...vehicleInfo,
+            name: vehicleInfo.varientName,
+            id: element.id,
+          };
 
           if (vehicleNames.includes(vehicleInfo.vehicleId)) {
             const oldData = varientObj[vehicleInfo.model];
@@ -232,7 +330,6 @@ const testDriveSlice = createSlice({
             new_vehicles.push(vehicleInfoForModel)
           }
         });
-        console.log("length: ", new_vehicles.length)
         state.test_drive_vehicle_list_for_drop_down = new_vehicles;
         state.test_drive_varients_obj_for_drop_down = varientObj;
       }
@@ -245,7 +342,6 @@ const testDriveSlice = createSlice({
       state.employees_list = [];
     })
     builder.addCase(getTestDriveDseEmployeeListApi.fulfilled, (state, action) => {
-      // console.log("getTestDriveDseEmployeeListApi S: ", action.payload);
       if (action.payload.dmsEntity) {
         state.employees_list = action.payload.dmsEntity.employees;
       }
@@ -258,7 +354,6 @@ const testDriveSlice = createSlice({
       state.drivers_list = [];
     })
     builder.addCase(getDriversListApi.fulfilled, (state, action) => {
-      //console.log("getDriversListApi S: ", action.payload);
       if (action.payload.dmsEntity) {
         const driversList = action.payload.dmsEntity.employees;
         let newFormatDriversList = [];
@@ -272,7 +367,6 @@ const testDriveSlice = createSlice({
       }
     })
     builder.addCase(getDriversListApi.rejected, (state, action) => {
-      console.log("getDriversListApi F: ", action.payload);
       state.drivers_list = [];
     })
     // Book Test Drive Appointment
@@ -297,6 +391,9 @@ const testDriveSlice = createSlice({
       if (action.payload.success === true) {
         state.test_drive_update_task_response = "success";
       }
+      else {
+        state.test_drive_update_task_response = action.payload.errorMessage;
+      }
       state.isLoading = false;
     })
     builder.addCase(updateTestDriveTaskApi.rejected, (state, action) => {
@@ -313,11 +410,139 @@ const testDriveSlice = createSlice({
     builder.addCase(validateTestDriveApi.rejected, (state, action) => {
       state.test_drive_date_validate_response = null;
     })
+
+    builder.addCase(generateOtpApi.pending, (state, action) => {
+      state.isLoading = true;
+      state.generate_otp_response_status = "";
+      state.otp_session_key = "";
+    })
+    builder.addCase(generateOtpApi.fulfilled, (state, action) => {
+      const status = action.payload.reason ? action.payload.reason : "";
+      if (status === "Success") {
+        showToastSucess("Otp sent successfully");
+      }
+      state.isLoading = false;
+      state.generate_otp_response_status = "successs";
+      state.otp_session_key = action.payload.sessionKey ? action.payload.sessionKey : "";
+    })
+    builder.addCase(generateOtpApi.rejected, (state, action) => {
+      if (action.payload["reason"]) {
+        showToastRedAlert(action.payload["reason"]);
+      }
+      state.isLoading = false;
+      state.generate_otp_response_status = "failed";
+      state.otp_session_key = "";
+    })
+    // Validate OTP
+    builder.addCase(validateOtpApi.pending, (state, action) => {
+      state.isLoading = true;
+      state.validate_otp_response_status = "pending";
+    })
+    builder.addCase(validateOtpApi.fulfilled, (state, action) => {
+      if (action.payload.reason === "Success") {
+        state.validate_otp_response_status = "successs";
+      }
+      else if (action.payload["reason"]) {
+        showToastRedAlert(action.payload["reason"]);
+        state.validate_otp_response_status = "failed";
+      }
+      state.isLoading = false;
+    })
+    builder.addCase(validateOtpApi.rejected, (state, action) => {
+      if (action.payload["reason"]) {
+        showToastRedAlert(action.payload["reason"]);
+      }
+      state.isLoading = false;
+      state.validate_otp_response_status = "failed";
+    })
+
+    // reopen test drive
+    builder.addCase(postReOpenTestDrive.pending, (state, action) => {
+      state.isLoading = true;
+      state.reopen_test_drive_res_status = "pending";
+    })
+    builder.addCase(postReOpenTestDrive.fulfilled, (state, action) => {
+      if (action.payload) {
+        state.reopen_test_drive_res_status = "successs";
+      }
+      // else if (action.payload["reason"]) {
+      //   showToastRedAlert(action.payload["reason"]);
+      //   state.reopen_test_drive_res_status = "failed";
+      // }
+      state.isLoading = false;
+    })
+    builder.addCase(postReOpenTestDrive.rejected, (state, action) => {
+      // if (action.payload["reason"]) {
+      //   showToastRedAlert(action.payload["reason"]);
+      // }
+      state.isLoading = false;
+      state.reopen_test_drive_res_status = "failed";
+    })
+
+
+    // reopen test drive history count 
+    builder.addCase(getTestDriveHistoryCount.pending, (state, action) => {
+      state.isLoading = true;
+      state.test_drive_history_count_statu = "pending";
+      state.test_drive_history_count = 0;
+    })
+    builder.addCase(getTestDriveHistoryCount.fulfilled, (state, action) => {
+      if (action.payload) {
+       
+        state.test_drive_history_count_statu = "successs";
+        state.test_drive_history_count = action.payload.count;
+      }
+      // else if (action.payload["reason"]) {
+      //   showToastRedAlert(action.payload["reason"]);
+      //   state.reopen_test_drive_res_status = "failed";
+      // }
+      state.isLoading = false;
+    })
+    builder.addCase(getTestDriveHistoryCount.rejected, (state, action) => {
+      // if (action.payload["reason"]) {
+      //   showToastRedAlert(action.payload["reason"]);
+      // }
+      state.isLoading = false;
+      state.test_drive_history_count_statu = "failed";
+      state.test_drive_history_count = 0;
+    })
+
+    
+
+
+    // reopen test drive history Details listing 
+    builder.addCase(getTestDriveHistoryDetails.pending, (state, action) => {
+      state.isLoading = true;
+    
+      state.test_drive_history_details_statu = "pending";
+      state.test_drive_history_details = "";
+    })
+    builder.addCase(getTestDriveHistoryDetails.fulfilled, (state, action) => {
+      if (action.payload) {
+        
+        state.test_drive_history_details_statu = "successs";
+        state.test_drive_history_details = action.payload;
+      }
+      // else if (action.payload["reason"]) {
+      //   showToastRedAlert(action.payload["reason"]);
+      //   state.reopen_test_drive_res_status = "failed";
+      // }
+      state.isLoading = false;
+    })
+    builder.addCase(getTestDriveHistoryDetails.rejected, (state, action) => {
+      // if (action.payload["reason"]) {
+      //   showToastRedAlert(action.payload["reason"]);
+      // }
+      state.isLoading = false;
+      state.test_drive_history_details_statu = "failed";
+      state.test_drive_history_details = "";
+    })
   }
 });
 
 export const {
   clearState,
   updateSelectedDate,
+  clearOTP,
 } = testDriveSlice.actions;
 export default testDriveSlice.reducer;

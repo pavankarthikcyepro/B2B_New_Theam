@@ -33,11 +33,12 @@ const dropDownData = [
 ];
 
 export const getPrebookingDetailsApi = createAsyncThunk(
-  "PREBOONING_FORMS_SLICE/getPrebookingDetailsApi",
+  "BOOKING_FORMS_SLICE/getPrebookingDetailsApi",
   async (universalId, { rejectWithValue }) => {
     const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
     try {
       const json = await response.json();
+      
       if (response.status != 200) {
         return rejectWithValue(json);
       }
@@ -55,7 +56,7 @@ export const getPrebookingDetailsApi = createAsyncThunk(
 );
 
 export const updatePrebookingDetailsApi = createAsyncThunk(
-  "PREBOONING_FORMS_SLICE/updatePrebookingDetailsApi",
+  "BOOKING_FORMS_SLICE/updatePrebookingDetailsApi",
   async (payload, { rejectWithValue }) => {
     const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
     try {
@@ -77,7 +78,7 @@ export const updatePrebookingDetailsApi = createAsyncThunk(
 );
 
 export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk(
-  "PREBOONING_FORMS_SLICE/getOnRoadPriceAndInsurenceDetailsApi",
+  "BOOKING_FORMS_SLICE/getOnRoadPriceAndInsurenceDetailsApi",
   async (payload, { rejectWithValue }) => {
     const response = await client.get(
       URL.GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS(
@@ -92,8 +93,9 @@ export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk(
       }
       return json;
     } catch (error) {
+      showToastRedAlert(`Value not found for varient id: ${payload["varientId"]} and org id: ${payload["orgId"]}`)
       console.error(
-        "getOnRoadPriceAndInsurenceDetailsApi JSON parse error: ",
+        "BOOKING getOnRoadPriceAndInsurenceDetailsApi JSON parse error: ",
         error + " : " + JSON.stringify(response)
       );
       return rejectWithValue({
@@ -104,7 +106,7 @@ export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk(
 );
 
 export const dropPreBooingApi = createAsyncThunk(
-  "PREBOONING_FORMS_SLICE/dropPreBooingApi",
+  "BOOKING_FORMS_SLICE/dropPreBooingApi",
   async (payload, { rejectWithValue }) => {
     const response = await client.post(URL.DROP_ENQUIRY(), payload);
     try {
@@ -126,7 +128,7 @@ export const dropPreBooingApi = createAsyncThunk(
 );
 
 export const sendOnRoadPriceDetails = createAsyncThunk(
-  "PREBOONING_FORMS_SLICE/sendOnRoadPriceDetails",
+  "BOOKING_FORMS_SLICE/sendOnRoadPriceDetails",
   async (payload, { rejectWithValue }) => {
     const response = await client.post(
       URL.SEND_ON_ROAD_PRICE_DETAILS(),
@@ -151,11 +153,12 @@ export const sendOnRoadPriceDetails = createAsyncThunk(
 );
 
 export const getCustomerTypesApi = createAsyncThunk(
-  "PREBOONING_FORMS_SLICE/getCustomerTypesApi",
-  async (universalId, { rejectWithValue }) => {
-    const response = await client.get(URL.GET_CUSTOMER_TYPES());
+  "BOOKING_FORMS_SLICE/getCustomerTypesApi",
+  async (orgId, { rejectWithValue }) => {
+    const response = await client.get(URL.GET_CUSTOMER_TYPES(orgId));
     try {
       const json = await response.json();
+      
       if (response.status != 200) {
         return rejectWithValue(json);
       }
@@ -173,7 +176,7 @@ export const getCustomerTypesApi = createAsyncThunk(
 );
 
 export const getDropDataApi = createAsyncThunk(
-  "PREBOONING_FORMS_SLICE/getDropDataApi",
+  "BOOKING_FORMS_SLICE/getDropDataApi",
   async (payload, { rejectWithValue }) => {
     const response = await client.post(URL.GET_DROP_DATA(), payload);
     try {
@@ -195,7 +198,7 @@ export const getDropDataApi = createAsyncThunk(
 );
 
 export const getDropSubReasonDataApi = createAsyncThunk(
-  "PREBOONING_FORMS_SLICE/getDropSubReasonDataApi",
+  "BOOKING_FORMS_SLICE/getDropSubReasonDataApi",
   async (payload, { rejectWithValue }) => {
     const response = await client.post(URL.GET_DROP_DATA(), payload);
     try {
@@ -217,7 +220,7 @@ export const getDropSubReasonDataApi = createAsyncThunk(
 );
 
 export const getOnRoadPriceDtoListApi = createAsyncThunk(
-  "PREBOONING_FORMS_SLICE/getOnRoadPriceDtoListApi",
+  "BOOKING_FORMS_SLICE/getOnRoadPriceDtoListApi",
   async (leadId, { rejectWithValue }) => {
     const response = await client.get(URL.GET_ON_ROAD_PRICE_DTO_LIST(leadId));
     try {
@@ -239,7 +242,7 @@ export const getOnRoadPriceDtoListApi = createAsyncThunk(
 );
 
 export const preBookingPaymentApi = createAsyncThunk(
-  "PREBOONING_FORMS_SLICE/preBookingPaymentApi",
+  "BOOKING_FORMS_SLICE/preBookingPaymentApi",
   async (payload, { rejectWithValue }) => {
     const response = await client.post(URL.BOOKING_PAYMENT(), payload);
     try {
@@ -261,7 +264,7 @@ export const preBookingPaymentApi = createAsyncThunk(
 );
 
 export const postBookingAmountApi = createAsyncThunk(
-  "PREBOONING_FORMS_SLICE/postBookingAmountApi",
+  "BOOKING_FORMS_SLICE/postBookingAmountApi",
   async (payload, { rejectWithValue }) => {
     const response = await client.post(URL.BOOKING_AMOUNT(), payload);
     try {
@@ -283,10 +286,10 @@ export const postBookingAmountApi = createAsyncThunk(
 );
 
 export const getPaymentDetailsApi = createAsyncThunk(
-  "PREBOONING_FORMS_SLICE/getPaymentDetailsApi",
+  "BOOKING_FORMS_SLICE/getPaymentDetailsApi",
   async (leadId, { rejectWithValue }) => {
     const response = await client.get(
-      URL.GET_BOOKING_PAYMENT_DETAILS(leadId)
+      URL.GET_PRE_BOOKING_PAYMENT_DETAILS(leadId)
     );
     try {
       const json = await response.json();
@@ -307,7 +310,7 @@ export const getPaymentDetailsApi = createAsyncThunk(
 );
 
 export const getBookingAmountDetailsApi = createAsyncThunk(
-  "PREBOONING_FORMS_SLICE/getBookingAmountDetailsApi",
+  "BOOKING_FORMS_SLICE/getBookingAmountDetailsApi",
   async (leadId, { rejectWithValue }) => {
     const response = await client.get(URL.GET_BOOKING_AMOUNT_DETAILS(leadId));
     try {
@@ -329,7 +332,7 @@ export const getBookingAmountDetailsApi = createAsyncThunk(
 );
 
 export const getAssignedTasksApi = createAsyncThunk(
-  "PREBOONING_FORMS_SLICE/getAssignedTasksApi",
+  "BOOKING_FORMS_SLICE/getAssignedTasksApi",
   async (universalId, { rejectWithValue }) => {
     const url = URL.TASKS_ENQUIRY() + universalId;
     const response = await client.get(url);
@@ -478,6 +481,7 @@ const bookingFormSlice = createSlice({
     insurance_type: "",
     add_on_insurance: "",
     warranty: "",
+    registrationCharges: "",
     //offerprice
     consumer_offer: "",
     exchange_offer: "",
@@ -508,6 +512,10 @@ const bookingFormSlice = createSlice({
     cheque_date: "",
     dd_number: "",
     dd_date: "",
+    isDataLoaded: false,
+    addOnPrice: 0,
+    accessories_discount: "",
+    insurance_discount: "",
   },
   reducers: {
     clearState: (state, action) => {
@@ -544,7 +552,7 @@ const bookingFormSlice = createSlice({
       state.marital_status = "";
       // Communication Address
       state.pincode = "";
-      state.urban_or_rural = 0; // 1: urban, 2:
+      state.urban_or_rural = 1; // 1: urban, 2:
       state.house_number = "";
       state.street_name = "";
       state.village = "";
@@ -555,7 +563,7 @@ const bookingFormSlice = createSlice({
 
       state.is_permanent_address_same = "";
       state.p_pincode = "";
-      state.p_urban_or_rural = 0; // 1: urban, 2:
+      state.p_urban_or_rural = 1; // 1: urban, 2:
       state.p_houseNum = "";
       state.p_streetName = "";
       state.p_village = "";
@@ -600,6 +608,7 @@ const bookingFormSlice = createSlice({
       state.insurance_type = "";
       state.add_on_insurance = "";
       state.warranty = "";
+      state.registrationCharges = "";
       //offerprice
       state.consumer_offer = "";
       state.exchange_offer = "";
@@ -630,6 +639,10 @@ const bookingFormSlice = createSlice({
       state.cheque_date = "";
       state.dd_number = "";
       state.dd_date = "";
+      state.isDataLoaded = false;
+      state.addOnPrice = 0;
+      state.accessories_discount = "";
+      state.insurance_discount = "";
     },
     setDropDownData: (state, action: PayloadAction<DropDownModelNew>) => {
       const { key, value, id } = action.payload;
@@ -771,7 +784,6 @@ const bookingFormSlice = createSlice({
           state.dd_date = selectedDate;
           break;
         case "NONE":
-          console.log("NONE");
           break;
       }
       state.showDatepicker = !state.showDatepicker;
@@ -955,6 +967,12 @@ const bookingFormSlice = createSlice({
         case "ADDITIONAL_OFFER_2":
           state.additional_offer_2 = text;
           break;
+        case "ACCESSORIES_DISCOUNT":
+          state.accessories_discount = text;
+          break;
+        case "INSURANCE_DISCOUNT":
+          state.insurance_discount = text;
+          break;
       }
     },
     setBookingPaymentDetails: (
@@ -993,6 +1011,7 @@ const bookingFormSlice = createSlice({
           break;
         case "PAN_NUMBER":
           state.pan_number = text;
+          break;
         case "RELATIONSHIP_PROOF":
           state.relationship_proof = text;
           break;
@@ -1066,7 +1085,17 @@ const bookingFormSlice = createSlice({
         "DD/MM/YYYY"
       );
       state.gender = dms_C_Or_A_Dto.gender ? dms_C_Or_A_Dto.gender : "";
-      state.age = dms_C_Or_A_Dto.age ? dms_C_Or_A_Dto.age.toString() : "0";
+      // state.age = dms_C_Or_A_Dto.age ? dms_C_Or_A_Dto.age.toString() : "0";
+      const dob = convertTimeStampToDateString(dateOfBirth, "DD/MM/YYYY");
+      const given = moment(dob, "DD/MM/YYYY");
+      const current = moment().startOf("day");
+      const total = Number(
+        moment.duration(current.diff(given)).asYears()
+      ).toFixed(0);
+
+      if (Number(total) > 0) {
+        state.age = total.toString();
+      }
       state.customer_type = dms_C_Or_A_Dto.customerType
         ? dms_C_Or_A_Dto.customerType
         : "";
@@ -1122,6 +1151,20 @@ const bookingFormSlice = createSlice({
     updateDmsAddressData: (state, action) => {
       const dmsAddresses = action.payload;
       if (dmsAddresses.length == 2) {
+        if (
+          dmsAddresses[0].pincode !== dmsAddresses[1].pincode ||
+          dmsAddresses[0].houseNo !== dmsAddresses[1].houseNo ||
+          dmsAddresses[0].street !== dmsAddresses[1].street ||
+          dmsAddresses[0].village !== dmsAddresses[1].village ||
+          dmsAddresses[0].mandal !== dmsAddresses[1].mandal ||
+          dmsAddresses[0].city !== dmsAddresses[1].city ||
+          dmsAddresses[0].district !== dmsAddresses[1].district ||
+          dmsAddresses[0].state !== dmsAddresses[1].state
+        ) {
+          state.is_permanent_address_same = "NO";
+        } else {
+          state.is_permanent_address_same = "YES";
+        }
         dmsAddresses.forEach((address) => {
           if (address.addressType === "Communication") {
             state.pincode = address.pincode ? address.pincode : "";
@@ -1133,7 +1176,7 @@ const bookingFormSlice = createSlice({
             state.district = address.district ? address.district : "";
             state.state = address.state ? address.state : "";
 
-            let urbanOrRural = 0;
+            let urbanOrRural = 1;
             if (address.urban) {
               urbanOrRural = 1;
             } else if (address.rural) {
@@ -1164,7 +1207,15 @@ const bookingFormSlice = createSlice({
       const dmsLeadProducts = action.payload;
       let dataObj: any = {};
       if (dmsLeadProducts.length > 0) {
-        dataObj = { ...dmsLeadProducts[0] };
+        for (let i = 0; i < dmsLeadProducts.length; i++) {
+          var item = dmsLeadProducts[i];
+          if (
+            dmsLeadProducts[i].isPrimary != null &&
+            dmsLeadProducts[i].isPrimary === "Y"
+          ) {
+            dataObj = { ...dmsLeadProducts[i] };
+          }
+        }
       }
       state.lead_product_id = dataObj.id ? dataObj.id : "";
       state.model = dataObj.model ? dataObj.model : "";
@@ -1242,9 +1293,20 @@ const bookingFormSlice = createSlice({
       if (attachments.length > 0) {
         attachments.forEach((item, index) => {
           if (item.documentType === "pan") {
-            state.pan_number = item.documentNumber;
+            if (item.documentNumber) {
+              state.pan_number = item.documentNumber;
+            }
           } else if (item.documentType === "aadhar") {
-            state.adhaar_number = item.documentNumber;
+            if (item.documentNumber) {
+              state.adhaar_number = item.documentNumber;
+            }
+          } else if (
+            item.documentType === "employeeId" ||
+            item.documentType === "employeeId"
+          ) {
+            if (item.documentNumber) {
+              state.employee_id = item.documentNumber;
+            }
           }
         });
       }
@@ -1266,6 +1328,23 @@ const bookingFormSlice = createSlice({
     builder.addCase(getPrebookingDetailsApi.fulfilled, (state, action) => {
       if (action.payload.dmsEntity) {
         state.pre_booking_details_response = action.payload.dmsEntity;
+        let attachments = action.payload.dmsEntity.dmsLeadDto.dmsAttachments;
+        if (attachments.length > 0) {
+          let panDtls = [];
+          panDtls = attachments.filter((item) => {
+            return item.documentType === "pan";
+          });
+          if (panDtls.length > 0) {
+            state.form_or_pan = "PAN";
+            state.isDataLoaded = true;
+            setDocumentUploadDetails({
+              key: "PAN_NUMBER",
+              text: state.pan_number,
+            });
+          } else {
+            state.isDataLoaded = true;
+          }
+        }
       }
       state.isLoading = false;
     });
@@ -1285,10 +1364,6 @@ const bookingFormSlice = createSlice({
       state.isLoading = false;
     });
     builder.addCase(updatePrebookingDetailsApi.rejected, (state, action) => {
-      console.log(
-        "F updatePrebookingDetailsApi: ",
-        JSON.stringify(action.payload)
-      );
       state.update_pre_booking_details_response = "failed";
       state.isLoading = false;
     });
@@ -1306,6 +1381,20 @@ const bookingFormSlice = createSlice({
         if (action.payload) {
           state.vehicle_on_road_price_insurence_details_response =
             action.payload;
+          if (action.payload.insuranceAddOn.length > 0) {
+            let addOnNames = "",
+              price = 0;
+            action.payload.insuranceAddOn.forEach((element, index) => {
+              addOnNames +=
+                element.add_on_price[0].document_name +
+                (index + 1 < action.payload.insuranceAddOn.length ? ", " : "");
+              price += Number(element.add_on_price[0].cost);
+            });
+            // state.add_on_insurance = addOnNames;
+            if (state.insurance_type !== "" && state.add_on_insurance) {
+              state.addOnPrice = price;
+            }
+          }
         }
         state.isLoading = false;
       }
@@ -1347,11 +1436,11 @@ const bookingFormSlice = createSlice({
     builder.addCase(sendOnRoadPriceDetails.rejected, (state, action) => {
       state.send_onRoad_price_details_response = null;
       state.isLoading = false;
-      if (action.payload["errorMessage"]) {
-        showToastRedAlert(
-          action.payload["errorMessage"] || "Something went wrong"
-        );
-      }
+      // if (action.payload["message"]) {
+      //   showToastRedAlert(
+      //     action.payload["message"] || "Something went wrong"
+      //   );
+      // }
     });
     // Get On Road Price Dto List
     builder.addCase(getOnRoadPriceDtoListApi.pending, (state, action) => {
@@ -1359,7 +1448,6 @@ const bookingFormSlice = createSlice({
       state.isLoading = true;
     });
     builder.addCase(getOnRoadPriceDtoListApi.fulfilled, (state, action) => {
-      // console.log("S getOnRoadPriceDtoListApi: ", JSON.stringify(action.payload));
       if (action.payload.dmsEntity) {
         const dmsOnRoadPriceDtoList =
           action.payload.dmsEntity.dmsOnRoadPriceDtoList;
@@ -1382,9 +1470,36 @@ const bookingFormSlice = createSlice({
                 element.insuranceAddonName +
                 (index + 1 < dataObj.length ? ", " : "");
             });
-            state.add_on_insurance + addOnNames;
+            state.add_on_insurance = addOnNames;
           }
 
+          // state.consumer_offer = dataObj.specialScheme
+          //   ? dataObj.specialScheme.toString()
+          //   : "";
+          // state.exchange_offer = dataObj.exchangeOffers
+          //   ? dataObj.exchangeOffers.toString()
+          //   : "";
+          // state.corporate_offer = dataObj.corporateOffer
+          //   ? dataObj.corporateOffer.toString()
+          //   : "";
+          // state.promotional_offer = dataObj.promotionalOffers
+          //   ? dataObj.promotionalOffers.toString()
+          //   : "";
+          // state.cash_discount = dataObj.cashDiscount
+          //   ? dataObj.cashDiscount.toString()
+          //   : "";
+          // state.for_accessories = dataObj.focAccessories
+          //   ? dataObj.focAccessories.toString()
+          //   : "";
+          // state.additional_offer_1 = dataObj.additionalOffer1
+          //   ? dataObj.additionalOffer1.toString()
+          //   : "";
+          // state.additional_offer_2 = dataObj.additionalOffer2
+          //   ? dataObj.additionalOffer2.toString()
+          //   : "";
+          state.registrationCharges = dataObj.registrationCharges
+            ? dataObj.registrationCharges
+            : "";
           state.consumer_offer = dataObj.specialScheme
             ? dataObj.specialScheme.toString()
             : "";
@@ -1408,6 +1523,12 @@ const bookingFormSlice = createSlice({
             : "";
           state.additional_offer_2 = dataObj.additionalOffer2
             ? dataObj.additionalOffer2.toString()
+            : "";
+          state.insurance_discount = dataObj.insuranceDiscount
+            ? dataObj.insuranceDiscount.toString()
+            : "";
+          state.accessories_discount = dataObj.accessoriesDiscount
+            ? dataObj.accessoriesDiscount.toString()
             : "";
         }
       }
@@ -1508,9 +1629,9 @@ const bookingFormSlice = createSlice({
       state.isLoading = false;
     });
     builder.addCase(preBookingPaymentApi.rejected, (state, action) => {
-      if (action.payload["errorMessage"]) {
-        showToastRedAlert(action.payload["errorMessage"]);
-      }
+      // if (action.payload["message"]) {
+      //   showToastRedAlert(action.payload["message"]);
+      // }
       state.pre_booking_payment_response = null;
       state.pre_booking_payment_response_status = "failed";
       state.isLoading = false;
@@ -1530,9 +1651,9 @@ const bookingFormSlice = createSlice({
       state.isLoading = false;
     });
     builder.addCase(postBookingAmountApi.rejected, (state, action) => {
-      if (action.payload["errorMessage"]) {
-        showToastRedAlert(action.payload["errorMessage"]);
-      }
+      // if (action.payload["message"]) {
+      //   showToastRedAlert(action.payload["message"]);
+      // }
       state.booking_amount_response = null;
       state.booking_amount_response_status = "failed";
       state.isLoading = false;
@@ -1549,12 +1670,14 @@ const bookingFormSlice = createSlice({
         state.type_of_upi = action.payload.typeUpi
           ? action.payload.typeUpi
           : "";
-        state.transfer_from_mobile = action.payload.transferFromMobile
-          ? action.payload.transferFromMobile
-          : "";
-        state.transfer_to_mobile = action.payload.transferToMobile
-          ? action.payload.transferToMobile
-          : "";
+        if (action.payload.transferFromMobile) {
+          state.transfer_from_mobile =
+            action.payload.transferFromMobile.toString();
+        }
+
+        if (action.payload.transferToMobile) {
+          state.transfer_to_mobile = action.payload.transferToMobile.toString();
+        }
         state.utr_no = action.payload.utrNo ? action.payload.utrNo : "";
         state.comapany_bank_name = action.payload.bankName
           ? action.payload.bankName
@@ -1576,9 +1699,9 @@ const bookingFormSlice = createSlice({
       state.isLoading = false;
     });
     builder.addCase(getPaymentDetailsApi.rejected, (state, action) => {
-      if (action.payload["errorMessage"]) {
-        showToastRedAlert(action.payload["errorMessage"]);
-      }
+      // if (action.payload["message"]) {
+      //   showToastRedAlert(action.payload["message"]);
+      // }
       state.existing_payment_details_response = null;
       state.existing_payment_details_status = "failed";
       state.isLoading = false;
@@ -1598,9 +1721,9 @@ const bookingFormSlice = createSlice({
       state.isLoading = false;
     });
     builder.addCase(getBookingAmountDetailsApi.rejected, (state, action) => {
-      if (action.payload["errorMessage"]) {
-        showToastRedAlert(action.payload["errorMessage"]);
-      }
+      // if (action.payload["message"]) {
+      //   showToastRedAlert(action.payload["message"]);
+      // }
       state.existing_booking_amount_response = null;
       state.existing_booking_amount_response_status = "failed";
       state.isLoading = false;
@@ -1619,9 +1742,9 @@ const bookingFormSlice = createSlice({
       state.assigned_tasks_list_status = "success";
     });
     builder.addCase(getAssignedTasksApi.rejected, (state, action) => {
-      if (action.payload["errorMessage"]) {
-        showToastRedAlert(action.payload["errorMessage"]);
-      }
+      // if (action.payload["message"]) {
+      //   showToastRedAlert(action.payload["message"]);
+      // }
       state.assigned_tasks_list = [];
       state.assigned_tasks_list_status = "failed";
       state.isLoading = false;

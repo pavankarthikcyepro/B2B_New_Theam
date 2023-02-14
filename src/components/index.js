@@ -16,6 +16,10 @@ import { TargetListComp } from "./targetListComp";
 import { DashboadFilterModalComp } from "./dashboardFilterModalComp";
 import { LineGraphComp } from "./lineGraphComp";
 import { HeaderComp } from "./headerComp";
+import {LeadsFilterComp} from './LeadsFilterComp';
+import { SingleLeadSelectComp } from "./SingleLeadSelectComp";
+import { ProformaTextinputOffers } from "./proformaTextinputOffers";
+
 export {
     ButtonComp,
     CallUserComponent,
@@ -33,5 +37,8 @@ export {
     TargetListComp,
     DashboadFilterModalComp,
     LineGraphComp,
-    HeaderComp
+    HeaderComp,
+    LeadsFilterComp,
+    SingleLeadSelectComp,
+    ProformaTextinputOffers
 };

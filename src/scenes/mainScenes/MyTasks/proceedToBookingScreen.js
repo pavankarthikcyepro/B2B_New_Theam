@@ -10,13 +10,15 @@ import {
   Alert,
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
+import { LoaderComponent } from '../../../components';
+
 import { TextinputComp, DropDownComponant } from "../../../components";
 import { DropDownSelectionItem } from "../../../pureComponents";
 import { Button, IconButton } from "react-native-paper";
 import * as AsyncStore from "../../../asyncStore";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  clearState,
+  clearBookingState,
   getEnquiryDetailsApi,
   updateEnquiryDetailsApi,
   dropEnquiryApi,
@@ -25,7 +27,10 @@ import {
   changeEnquiryStatusApi,
   getDropDataApi,
   getDropSubReasonDataApi,
-} from "../../../redux/proceedToPreBookingReducer";
+} from "../../../redux/proceedToBookingReducer";
+import {
+  updateStatus
+} from "../../../redux/preBookingFormReducer";
 import {
   showToast,
   showToastRedAlert,
@@ -36,6 +41,14 @@ import {
   getPendingTasksListApi,
 } from "../../../redux/mytaskReducer";
 import URL from "../../../networking/endpoints";
+import { EmsTopTabNavigatorIdentifiers } from "../../../navigations/emsTopTabNavigator";
+import Geolocation from '@react-native-community/geolocation';
+
+
+import {
+  GetDropList,
+} from "../../../utils/helperFunctions";
+import { client } from "../../../networking/client";
 
 const FirstDependencyArray = [
   "Lost To Competition",
@@ -55,6 +68,8 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const [showDropDownModel, setShowDropDownModel] = useState(false);
   const [dataForDropDown, setDataForDropDown] = useState([]);
+  const [dropData, setDropData] = useState([]);
+  const [dropSubReasonData, setdropSubReasonData] = useState([]);
   const [dropDownKey, setDropDownKey] = useState("");
   const [dropDownTitle, setDropDownTitle] = useState("Select Data");
   const [dropReason, setDropReason] = useState("");
@@ -73,15 +88,16 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
   });
   const [typeOfActionDispatched, setTypeOfActionDispatched] = useState("");
   const [authToken, setAuthToken] = useState("");
+  const [currentLocation, setCurrentLocation] = useState(null);
 
   useLayoutEffect(() => {
-    let title = "Pre Booking Task";
+    let title = "Booking Approval Task";
     switch (identifier) {
       case "PROCEED_TO_PRE_BOOKING":
-        title = "Pre Booking Task";
+        title = "Booking Approval Task";
         break;
       case "PROCEED_TO_BOOKING":
-        title = "Booking Task";
+        title = "Booking View Task";
         break;
     }
 
@@ -92,7 +108,7 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
           icon="arrow-left"
           color={Colors.WHITE}
           size={30}
-          onPress={goParentScreen}
+          onPress={() => goParentScreen()}
         />
       ),
     });
@@ -100,15 +116,31 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
 
   const goParentScreen = () => {
     navigation.popToTop();
-    dispatch(clearState());
+    dispatch(clearBookingState());
   };
 
   useEffect(() => {
-    getAuthToken();
-    getAsyncstoreData();
-    dispatch(getTaskDetailsApi(taskId));
-    getPreBookingDetailsFromServer();
-  }, []);
+    navigation.addListener('focus', () => {
+      getCurrentLocation()
+      dispatch(getTaskDetailsApi(taskId));
+      getAuthToken();
+      getAsyncstoreData();
+
+      getPreBookingDetailsFromServer();
+    })
+    navigation.addListener('blur', () => {
+      dispatch(updateStatus())
+    })
+  }, [navigation]);
+
+  const getCurrentLocation = () => {
+    Geolocation.getCurrentPosition(info => {
+      setCurrentLocation({
+        lat: info.coords.latitude,
+        long: info.coords.longitude
+      })
+    });
+  }
 
   const getAsyncstoreData = async () => {
     const employeeData = await AsyncStore.getData(
@@ -132,6 +164,11 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
         parentId: 0,
       };
       dispatch(getDropDataApi(payload));
+
+      AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
+        GetPreBookingDropReasons(jsonObj.orgId, token)
+      });
+
     }
   };
 
@@ -235,7 +272,7 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
     }
   }, [selector.enquiry_drop_response_status]);
 
-  const proceedToPreBookingClicked = () => {
+  const proceedToPreBookingClicked = async () => {
     setTypeOfActionDispatched("PROCEED_TO_PREBOOKING");
     if (selector.task_details_response?.taskId !== taskId) {
       return;
@@ -243,8 +280,33 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
 
     const newTaskObj = { ...selector.task_details_response };
     newTaskObj.taskStatus = "CLOSED";
+    newTaskObj.lat = currentLocation ? currentLocation.lat.toString() : null;
+    newTaskObj.lon = currentLocation ? currentLocation.long.toString() : null;
     dispatch(updateTaskApi(newTaskObj));
+
   };
+
+  useEffect(async() => {
+    // await proceedBooking();
+  }, []);
+
+  const GetPreBookingDropReasons = (orgId, token) => {
+
+    GetDropList(orgId, token, "Pre%20Booking").then(resolve => {
+      setDropData(resolve);
+    }, reject => {
+      console.error("Getting drop list faild")
+    })
+  }
+
+  const proceedBooking = async () =>{
+    await proceedToPreBookingClicked();
+
+    await navigation.popToTop();
+    await navigation.navigate('EMS_TAB');
+    await navigation.navigate(EmsTopTabNavigatorIdentifiers.leads);
+    dispatch(clearBookingState());
+  }
 
   // Handle Update Current Task Response
   useEffect(() => {
@@ -276,17 +338,19 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
       leadstage:
         identifier === "PROCEED_TO_PRE_BOOKING" ? "PREBOOKING" : "BOOKING",
       orgid: userData.orgId,
+      universalId: universalId
     };
     const url = URL.CUSTOMER_LEAD_REFERENCE();
 
-    await fetch(url, {
-      headers: {
-        "Content-Type": "application/json",
-        "auth-token": authToken,
-      },
-      method: "POST",
-      body: JSON.stringify(payload),
-    })
+    // await fetch(url, {
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     "auth-token": authToken,
+    //   },
+    //   method: "POST",
+    //   body: JSON.stringify(payload),
+    // })
+    await client.post(url,payload)
       .then((res) => res.json())
       .then((jsonRes) => {
         if (jsonRes.success === true) {
@@ -366,8 +430,8 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
     }
     let title =
       identifier === "PROCEED_TO_BOOKING"
-        ? "Booking Created Successfully"
-        : "Pre Booking Created Successfully";
+        ? "Booking Successfully Created"
+        : "Booking Approval Successfully Created";
 
     Alert.alert(
       title,
@@ -388,17 +452,25 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
     if (identifier === "PROCEED_TO_PRE_BOOKING") {
       getMyTasksListFromServer();
     }
-    navigation.popToTop();
-    dispatch(clearState());
+    else if (identifier === "PROCEED_TO_BOOKING") {
+      navigation.popToTop();
+      navigation.navigate("EMS_TAB");
+      navigation.navigate(EmsTopTabNavigatorIdentifiers.leads, {
+        fromScreen: "booking",
+      });
+    } else {
+      navigation.popToTop();
+    }
+    dispatch(clearBookingState());
   };
 
   const showDropDownMethod = (key, title) => {
     switch (key) {
       case "DROP_REASON":
-        setDataForDropDown([...selector.drop_reasons_list]);
+        setDataForDropDown(dropData);
         break;
       case "DROP_SUB_REASON":
-        setDataForDropDown([...selector.drop_sub_reasons_list]);
+        setDataForDropDown(dropSubReasonData);
         break;
       default:
         break;
@@ -444,7 +516,8 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
                     : "PreEnq_Lost_Com_Sub_Reas",
                 parentId: item.id,
               };
-              dispatch(getDropSubReasonDataApi(payload));
+              setdropSubReasonData(item.sublostreasons)
+              setDropSubReason("")
               setDropReason(item.name);
             }
             if (dropDownKey === "DROP_SUB_REASON") {
@@ -538,7 +611,7 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
               mode="contained"
               color={Colors.RED}
               labelStyle={{ textTransform: "none" }}
-              disabled={selector.isLoading}
+              // disabled={selector.isLoading}
               onPress={() => setIsDropSelected(true)}
             >
               Drop
@@ -547,12 +620,12 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
               mode="contained"
               color={Colors.RED}
               labelStyle={{ textTransform: "none" }}
-              disabled={selector.isLoading}
-              onPress={proceedToPreBookingClicked}
+              // disabled={selector.isLoading}
+              onPress={() => proceedToPreBookingClicked()}
             >
               {identifier === "PROCEED_TO_BOOKING"
-                ? "Proceed To Booking"
-                : "Proceed To PreBooking"}
+                ? "Proceed To Booking View"
+                : "Proceed to Booking approval"}
             </Button>
           </View>
         )}
@@ -562,13 +635,17 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
               mode="contained"
               color={Colors.RED}
               labelStyle={{ textTransform: "none" }}
-              disabled={selector.isLoading}
-              onPress={proceedToCancellation}
+              // disabled={selector.isLoading}
+              onPress={() => proceedToCancellation()}
             >
               Proceed To Cancellation
             </Button>
           </View>
         )}
+        {!selector.isLoading ? null : <LoaderComponent
+          visible={selector.isLoading}
+          onRequestClose={() => { }}
+        />}
       </SafeAreaView>
     </KeyboardAvoidingView>
   );

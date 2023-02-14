@@ -1,5 +1,6 @@
 package com.b2b_new_theme;
 
+import org.wonday.orientation.OrientationActivityLifecycle;
 import android.app.Application;
 import android.content.Context;
 import com.facebook.react.PackageList;
@@ -11,7 +12,9 @@ import com.facebook.soloader.SoLoader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import com.facebook.react.bridge.JSIModulePackage;
-import com.swmansion.reanimated.ReanimatedJSIModulePackage;
+// import com.swmansion.reanimated.ReanimatedJSIModulePackage;
+import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
+//import com.swmansion.reanimated.ReanimatedJSIModulePackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -26,15 +29,16 @@ public class MainApplication extends Application implements ReactApplication {
         protected List<ReactPackage> getPackages() {
           @SuppressWarnings("UnnecessaryLocalVariable")
           List<ReactPackage> packages = new PackageList(this).getPackages();
+          new ReactNativePushNotificationPackage();
           // Packages that cannot be autolinked yet can be added manually here, for example:
           // packages.add(new MyReactNativePackage());
           return packages;
         }
 
-        @Override
-        protected JSIModulePackage getJSIModulePackage() { 
-          return new ReanimatedJSIModulePackage(); 
-        }
+//        @Override
+//        protected JSIModulePackage getJSIModulePackage() {
+//          return new ReanimatedJSIModulePackage();
+//        }
 
         @Override
         protected String getJSMainModuleName() {
@@ -52,6 +56,7 @@ public class MainApplication extends Application implements ReactApplication {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
+    registerActivityLifecycleCallbacks(OrientationActivityLifecycle.getInstance());
   }
 
   /**

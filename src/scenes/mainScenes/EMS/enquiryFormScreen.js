@@ -1,8 +1,15 @@
 /** @format */
 
-import React, { useState, useEffect, useLayoutEffect } from "react";
+import React, {
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useCallback,
+} from "react";
 import {
   SafeAreaView,
+  FlatList,
   StyleSheet,
   View,
   Text,
@@ -13,6 +20,9 @@ import {
   KeyboardAvoidingView,
   Alert,
   BackHandler,
+  Image,
+  TouchableOpacity,
+  Modal,
 } from "react-native";
 import {
   DefaultTheme,
@@ -20,6 +30,7 @@ import {
   IconButton,
   List,
   Button,
+  Divider,
 } from "react-native-paper";
 import { Colors, GlobalStyle } from "../../../styles";
 import VectorImage from "react-native-vector-image";
@@ -29,7 +40,11 @@ import {
   DropDownComponant,
   DatePickerComponent,
 } from "../../../components";
+import { ModelListitemCom } from "./components/ModelListitemCom";
+import { ProformaComp } from "./components/ProformComp";
+
 import {
+  clearStateData,
   clearState,
   setEditable,
   setDatePicker,
@@ -46,6 +61,8 @@ import {
   setReplacementBuyerDetails,
   setEnquiryDropDetails,
   getEnquiryDetailsApi,
+  getEnquiryDetailsApiAuto,
+  getAutoSaveEnquiryDetailsApi,
   updateDmsContactOrAccountDtoData,
   updateDmsLeadDtoData,
   updateDmsAddressData,
@@ -62,6 +79,15 @@ import {
   updateDmsAttachmentDetails,
   getPendingTasksApi,
   updateAddressByPincode,
+  updateRef,
+  customerLeadRef,
+  updateEnquiryDetailsApiAutoSave,
+  clearPermanentAddr,
+  updateAddressByPincode2,
+  autoSaveEnquiryDetailsApi,
+  updatedmsLeadProduct,
+  clearState2,
+  getEnquiryTypesApi,
 } from "../../../redux/enquiryFormReducer";
 import {
   RadioTextItem,
@@ -70,7 +96,8 @@ import {
   DateSelectItem,
 } from "../../../pureComponents";
 import { ImagePickerComponent } from "../../../components";
-import { Dropdown } from "sharingan-rn-modal-dropdown";
+// import { Dropdown } from "sharingan-rn-modal-dropdown";
+import { Dropdown } from "react-native-element-dropdown";
 import {
   Salutation_Types,
   Enquiry_Segment_Data,
@@ -91,6 +118,7 @@ import {
   Enquiry_Drop_Reasons,
   Insurence_Types,
   Referred_By_Source,
+  Gender_Types,
 } from "../../../jsonData/enquiryFormScreenJsonData";
 import {
   showAlertMessage,
@@ -105,8 +133,11 @@ import {
   emiCalculator,
   GetCarModelList,
   GetDropList,
+  GetEnquiryCarModelList,
   GetFinanceBanksList,
+  isCheckPanOrAadhaar,
   PincodeDetails,
+  PincodeDetailsNew,
 } from "../../../utils/helperFunctions";
 
 import CREATE_NEW from "../../../assets/images/create_new.svg";
@@ -114,11 +145,38 @@ import URL from "../../../networking/endpoints";
 import { getEnquiryList } from "../../../redux/enquiryReducer";
 import { AppNavigator } from "../../../navigations";
 import {
-  isValidateAlphabetics,isValidate,
+  isValidateAlphabetics,
+  isValidate,
+  isValidateAplhaNumeric,
   isMobileNumber,
 } from "../../../utils/helperFunctions";
 import uuid from "react-native-uuid";
 import { DropComponent } from "./components/dropComp";
+import { useNavigation } from "@react-navigation/native";
+import moment from "moment";
+import Geolocation from "@react-native-community/geolocation";
+import {
+  changeEnquiryStatusApi,
+  getTaskDetailsApi,
+  updateTaskApi,
+  getEnquiryDetailsApi as proceedGetEnquiryDetailsApi,
+  updateEnquiryDetailsApi as proceedUpdateEnquiryDetailsApi,
+  clearState as preClearState,
+} from "../../../redux/proceedToPreBookingReducer";
+import { EmsTopTabNavigatorIdentifiers } from "../../../navigations/emsTopTabNavigator";
+import {
+  getCurrentTasksListApi,
+  getPendingTasksListApi,
+} from "../../../redux/mytaskReducer";
+import {
+  CustomerTypesObj,
+  CustomerTypesObj21,
+  CustomerTypesObj22,
+  EnquiryTypes21,
+  EnquiryTypes22,
+} from "../../../jsonData/preEnquiryScreenJsonData";
+import Fontisto from "react-native-vector-icons/Fontisto";
+import { client } from "../../../networking/client";
 
 const theme = {
   ...DefaultTheme,
@@ -131,12 +189,83 @@ const theme = {
   },
 };
 
+const dmsAttachmentsObj = {
+  branchId: null,
+  contentSize: 0,
+  createdBy: convertDateStringToMilliseconds(new Date()),
+  description: null,
+  documentNumber: "",
+  documentPath: "",
+  documentType: "",
+  documentVersion: 0,
+  fileName: "",
+  gstNumber: null,
+  id: 0,
+  isActive: null,
+  isPrivate: null,
+  keyName: "",
+  modifiedBy: "",
+  orgId: null,
+  ownerId: null,
+  ownerName: "",
+  parentId: null,
+  tinNumber: null,
+};
+
+let EventListData = [
+  {
+    eventName: "omega thon",
+    eventLocation: "Ahmedabad",
+    Startdate: "10/12/2022",
+    Enddate: "10/12/2022",
+    isSelected: false,
+    id: 0,
+  },
+  {
+    eventName: "omega thon22",
+    eventLocation: "Ahmedabad",
+    Startdate: "10/12/2022",
+    Enddate: "10/12/2022",
+    isSelected: false,
+    id: 1,
+  },
+  {
+    eventName: "omega thon22",
+    eventLocation: "Ahmedabad",
+    Startdate: "10/12/2022",
+    Enddate: "10/12/2022",
+    isSelected: false,
+    id: 2,
+  },
+  {
+    eventName: "omega thon22",
+    eventLocation: "Ahmedabad",
+    Startdate: "10/12/2022",
+    Enddate: "10/12/2022",
+    isSelected: false,
+    id: 3,
+  },
+  {
+    eventName: "omega thon22",
+    eventLocation: "Ahmedabad",
+    Startdate: "10/12/2022",
+    Enddate: "10/12/2022",
+    isSelected: false,
+    id: 4,
+  },
+];
+
 const DetailsOverviewScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
+  const headNavigation = useNavigation();
+  let scrollRef = useRef(null);
   const selector = useSelector((state) => state.enquiryFormReducer);
+  const proceedToPreSelector = useSelector(
+    (state) => state.proceedToPreBookingReducer
+  );
   const [openAccordian, setOpenAccordian] = useState("0");
   const [componentAppear, setComponentAppear] = useState(false);
-  const { universalId } = route.params;
+  const { universalId, enqDetails, leadStatus, leadStage } = route.params;
   const [showDropDownModel, setShowDropDownModel] = useState(false);
   const [dataForDropDown, setDataForDropDown] = useState([]);
   const [dropDownKey, setDropDownKey] = useState("");
@@ -147,17 +276,24 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     varientListForDropDown: [],
   });
   const [carColorsData, setCarColorsData] = useState([]);
+  const [carModelsList, setCarModelsList] = useState([]);
+
   const [c_model_types, set_c_model_types] = useState([]);
   const [r_model_types, set_r_model_types] = useState([]);
   const [a_model_types, set_a_model_types] = useState([]);
   const [showPreBookingBtn, setShowPreBookingBtn] = useState(false);
   const [isDropSelected, setIsDropSelected] = useState(false);
   const [userData, setUserData] = useState({
+    branchId: "",
     orgId: "",
     employeeId: "",
     employeeName: "",
+    isSelfManager: "",
+    isTracker: "",
   });
   const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
+  const [modelsList, setModelsList] = useState([]);
+
   const [typeOfActionDispatched, setTypeOfActionDispatched] = useState("");
   const [minOrMaxDate, setMinOrMaxDate] = useState({
     minDate: null,
@@ -177,8 +313,23 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const [dropModel, setDropModel] = useState("");
   const [dropPriceDifference, setDropPriceDifference] = useState("");
   const [dropRemarks, setDropRemarks] = useState("");
+  const [imagePath, setImagePath] = useState("");
+  const [addressData, setAddressData] = useState([]);
+  const [addressData2, setAddressData2] = useState([]);
+  const [defaultAddress, setDefaultAddress] = useState(null);
+  const [isSubmitPress, setIsSubmitPress] = useState(false);
+  const [isPrimaryCureentIndex, setIsPrimaryCurrentIndex] = useState(0);
 
+  const [currentLocation, setCurrentLocation] = useState(null);
+  const [authToken, setAuthToken] = useState("");
 
+  const [makerData, setMakerData] = useState([]);
+  const [isEventListModalVisible, setisEventListModalVisible] = useState(false);
+  const [eventListdata, seteventListData] = useState([]);
+  const [selectedEventData, setSelectedEventData] = useState([]);
+  const [eventConfigRes, setEventConfigRes] = useState([]);
+
+  // todo
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
@@ -192,33 +343,195 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     });
   }, [navigation]);
 
+  // useEffect(() => {
+
+  //   const interval = setInterval(() => {
+  //     if (enqDetails?.leadStage === "ENQUIRY" && enqDetails?.leadStatus === null) {
+  //       autoSave()
+  //     }
+  //   }, 10000);
+  //   return () => {
+
+  //   let interval;
+  //   navigation.addListener('focus', () => {
+  //     interval = setInterval(() => {
+  //       updateEnquiry()
+  //     }, 60000);
+  //   });
+  //   navigation.addListener('blur', () => {
+
+  //     clearInterval(interval)
+  //   }
+  // }, [autoSave, selector]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // if (enqDetails?.leadStage === "ENQUIRY" && enqDetails?.leadStatus === null) {
+      updateEnquiry();
+      // }
+    }, 5000);
+    return () => {
+      clearInterval(interval);
+    };
+    // let interval;
+    // interval = setInterval(() => {
+    //   updateEnquiry()
+    // }, 60000);
+    // navigation.addListener('blur', () => {
+    //   clearInterval(interval)
+    // })
+  }, [updateEnquiry, selector, uploadedImagesDataObj]);
+
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     autoSave()
+  //   }, 10000);
+  //   return () => {
+  //     clearInterval(interval)
+  //   }
+  // }, [selector])
+
+  // useEffect(() => {
+  //   let autoSaveInterval;
+  //     autoSaveInterval = setInterval(() => {
+  //       autoSave()
+  //     }, 6000);
+  //     return () => clearInterval(autoSaveInterval);
+  // }, [])
+
+  const clearLocalData = () => {
+    setOpenAccordian("0");
+    setComponentAppear(false);
+    setShowDropDownModel(false);
+    setDataForDropDown([]);
+    setDropDownKey("");
+    setDropDownTitle("Select Data");
+    setCarModelsData([]);
+    setSelectedCarVarientsData({
+      varientList: [],
+      varientListForDropDown: [],
+    });
+    setCarColorsData([]);
+    set_c_model_types([]);
+    set_r_model_types([]);
+    set_a_model_types([]);
+    setCarModelsList([]);
+    setShowPreBookingBtn(false);
+    setIsDropSelected(false);
+    setUserData({
+      branchId: "",
+      orgId: "",
+      employeeId: "",
+      employeeName: "",
+      isSelfManager: "",
+      isTracker: "",
+    });
+    setUploadedImagesDataObj({});
+    setTypeOfActionDispatched("");
+    setMinOrMaxDate({
+      minDate: null,
+      maxDate: null,
+    });
+    serInsurenceCompanyList([]);
+    setFinanceBanksList([]);
+    setSelectedBranchId("");
+
+    // drop section
+    setDropData([]);
+    setDropReason("");
+    setDropSubReason("");
+    setDropBrandName("");
+    setDropDealerName("");
+    setDropLocation("");
+    setDropModel("");
+    setDropPriceDifference("");
+    setDropRemarks("");
+    setImagePath("");
+    setAddressData([]);
+    setAddressData2([]);
+    setDefaultAddress(null);
+  };
+
   const goParentScreen = () => {
-    navigation.goBack();
+    clearLocalData();
     dispatch(clearState());
+    navigation.goBack();
+  };
+
+  const goToLeadScreen = () => {
+    clearLocalData();
+    dispatch(clearState());
+    navigation.navigate(EmsTopTabNavigatorIdentifiers.leads, {
+      fromScreen: "enquiry",
+    });
   };
 
   useEffect(() => {
+    return () => {
+      dispatch(clearStateData());
+      clearLocalData();
+    };
+  }, []);
+
+  useEffect(() => {
+    getAuthToken();
     getAsyncstoreData();
     getBranchId();
     setComponentAppear(true);
-    dispatch(getCustomerTypesApi());
+    getCustomerEnquiryType();
 
+    //  const dms = [{ "color": "Outback Bronze", "fuel": "Petrol", "id": 2704, "model": "Kwid",
+    //           "transimmisionType": "Manual", "variant": "KWID RXT 1.0L EASY- R BS6 ORVM MY22" },
+    //            { "color": "Caspian Blue", "fuel": "Petrol", "id": 1833, "model": "Kiger", "transimmisionType": "Automatic",
+    //           "variant": "Rxt 1.0L Ece Easy-R Ece My22" }]
+    //           setModelsList(dms)
     BackHandler.addEventListener("hardwareBackPress", handleBackButtonClick);
-    return () => {
+    // return () => {
+    //   BackHandler.removeEventListener(
+    //     "hardwareBackPress",
+    //     handleBackButtonClick
+    //   );
+    // };
+  }, []);
+
+  const getAuthToken = async () => {
+    const token = await AsyncStore.getData(AsyncStore.Keys.USER_TOKEN);
+    if (token) {
+      setAuthToken(token);
+    }
+  };
+
+  useEffect(() => {
+    navigation.addListener("blur", () => {
       BackHandler.removeEventListener(
         "hardwareBackPress",
         handleBackButtonClick
       );
-    };
-  }, []);
+    });
+
+    // return () => {
+    //     unsubscribe;
+    // };
+  }, [navigation]);
+
+  const getCustomerEnquiryType = async () => {
+    let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      dispatch(getCustomerTypesApi(jsonObj.orgId));
+      dispatch(getEnquiryTypesApi(jsonObj.orgId));
+    }
+  };
 
   const getBranchId = () => {
-
     AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_ID).then((branchId) => {
-      console.log("branch id:", branchId)
       setSelectedBranchId(branchId);
     });
-  }
+  };
+
+  const scrollToPos = (itemIndex) => {
+    scrollRef.current.scrollTo({ y: itemIndex * 70 });
+  };
 
   const handleBackButtonClick = () => {
     goParentScreen();
@@ -232,15 +545,19 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
       setUserData({
+        branchId: jsonObj.branchId,
         orgId: jsonObj.orgId,
         employeeId: jsonObj.empId,
         employeeName: jsonObj.empName,
+        isSelfManager: jsonObj.isSelfManager,
+        isTracker: jsonObj.isTracker,
       });
+      getCarMakeListFromServer(jsonObj.orgId);
       getCarModelListFromServer(jsonObj.orgId);
 
       // Get Token
       AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
-        if (token.length > 0) {
+        if (token?.length > 0) {
           getInsurenceCompanyNamesFromServer(token, jsonObj.orgId);
           getBanksListFromServer(jsonObj.orgId, token);
           GetEnquiryDropReasons(jsonObj.orgId, token);
@@ -250,13 +567,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   };
 
   const GetEnquiryDropReasons = (orgId, token) => {
-
-    GetDropList(orgId, token, "Enquiry").then(resolve => {
-      setDropData(resolve);
-    }, reject => {
-      console.error("Getting drop list faild")
-    })
-  }
+    GetDropList(orgId, token, "Enquiry").then(
+      (resolve) => {
+        setDropData(resolve);
+      },
+      (reject) => {
+        console.error("Getting drop list faild");
+      }
+    );
+  };
 
   const getCarModelListFromServer = (orgId) => {
     // Call Api
@@ -275,10 +594,23 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             });
           }
           setCarModelsData([...modalList]);
+          //  alert("entry---------",JSON.stringify(selector.dmsLeadProducts))
+          if (selector.dmsLeadProducts.length > 0) {
+            setCarModelsList(selector.dmsLeadProducts);
+          } else {
+            let tempModelObj = {
+              color: "",
+              fuel: "",
+              id: 0,
+              model: selector.enquiry_details_response?.dmsLeadDto?.model,
+              transimmisionType: "",
+              variant: "",
+              isPrimary: "N",
+            };
+            setCarModelsList([tempModelObj]);
+          }
         },
-        (rejected) => {
-          console.log("getCarModelListFromServer Failed");
-        }
+        (rejected) => {}
       )
       .finally(() => {
         // Get Enquiry Details
@@ -286,24 +618,68 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       });
   };
 
+  const getCarMakeListFromServer = (orgId) => {
+    // Call Api
+    GetEnquiryCarModelList(orgId)
+      .then(
+        (resolve) => {
+          let makeList = [];
+          if (resolve.length > 0) {
+            resolve.forEach((item) => {
+              makeList.push({
+                ...item,
+                name: item.otherMaker,
+              });
+            });
+            setMakerData([...makeList]);
+          }
+        },
+        (rejected) => {}
+      )
+      .finally(() => {});
+  };
+
   const getInsurenceCompanyNamesFromServer = async (token, orgId) => {
-    await fetch(URL.GET_INSURENCE_COMPANY_NAMES(orgId), {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "auth-token": token,
-      },
-    })
+    // await fetch(URL.GET_INSURENCE_COMPANY_NAMES(orgId), {
+    //   method: "GET",
+    //   headers: {
+    //     Accept: "application/json",
+    //     "Content-Type": "application/json",
+    //     "Authorization": "Bearer " + authToken,
+    //   },
+    // })
+    await client
+      .get(URL.GET_INSURENCE_COMPANY_NAMES(orgId))
       .then((json) => json.json())
       .then((res) => {
-        console.log("insurance : ", res);
         if (res != null && res.length > 0) {
           const companyList = res.map((item, index) => {
             return { ...item, name: item.company_name };
           });
           serInsurenceCompanyList([...companyList]);
         }
+      })
+      .catch((error) => {
+        showToastRedAlert(error.message);
+      });
+  };
+
+  const deleteModalFromServer = async ({ token, value }) => {
+    //alert(value.id)
+    await fetch(URL.DELETE_MODEL_CARD(value.id), {
+      method: "DELETE",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + authToken,
+      },
+    })
+      .then((json) => {
+        json.json();
+      })
+      .then((res) => {
+        //alert("delete : ", res.status);
+        //alert(res)
       })
       .catch((error) => {
         showToastRedAlert(error.message);
@@ -325,7 +701,60 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   };
 
   useEffect(() => {
+    try {
+      if (selector.dmsLeadProducts && selector.dmsLeadProducts?.length > 0) {
+        // setCarModelsList(selector.dmsLeadProducts)
+        addingIsPrimary();
+      } else {
+        let tempModelObj = {
+          color: "",
+          fuel: "",
+          id: 0,
+          model: selector.enquiry_details_response?.dmsLeadDto?.model,
+          transimmisionType: "",
+          variant: "",
+          isPrimary: "N",
+        };
+        setCarModelsList([tempModelObj]);
+      }
+    } catch (error) {
+      // alert("useeffect"+error)
+    }
+  }, [selector.dmsLeadProducts, selector.enquiry_details_response]); //selector.dmsLeadProducts, selector.enquiry_details_response
+
+  useEffect(() => {
+    if (selector.pincode) {
+      if (selector.pincode.length != 6) {
+        return;
+      }
+      PincodeDetailsNew(selector.pincode).then(
+        (res) => {
+          // dispatch an action to update address
+          let tempAddr = [];
+          if (res.length > 0) {
+            for (let i = 0; i < res.length; i++) {
+              if (
+                res[i].Block === selector.village ||
+                res[i].Name === selector.village
+              ) {
+                setDefaultAddress(res[i]);
+              }
+              tempAddr.push({ label: res[i].Name, value: res[i] });
+              if (i === res.length - 1) {
+                setAddressData([...tempAddr]);
+              }
+            }
+          }
+          // dispatch(updateAddressByPincode(resolve));
+        },
+        (rejected) => {}
+      );
+    }
+  }, [selector.pincode]);
+
+  useEffect(() => {
     if (selector.enquiry_details_response) {
+      setShowPreBookingBtn(false);
       let dmsContactOrAccountDto;
       if (selector.enquiry_details_response.hasOwnProperty("dmsAccountDto")) {
         dmsContactOrAccountDto =
@@ -341,6 +770,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         setShowPreBookingBtn(true);
       }
 
+      // if (dmsLeadDto.leadStage == "ENQUIRY" && dmsLeadDto.leadStatus == null) {
+      //   dispatch(getAutoSaveEnquiryDetailsApi(universalId));
+      // }
+
       // Update dmsContactOrAccountDto
       dispatch(updateDmsContactOrAccountDtoData(dmsContactOrAccountDto));
       // Update updateDmsLeadDtoData
@@ -352,6 +785,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dispatch(updateDmsAddressData(dmsLeadDto.dmsAddresses));
       // Updaet Model Selection
       dispatch(updateModelSelectionData(dmsLeadDto.dmsLeadProducts));
+      //   alert("reponse---------", JSON.stringify(dmsLeadDto.dmsLeadProducts))
+      //  setCarModelsList(selector.dmsLeadProducts)
       // Update Finance Details
       dispatch(updateFinancialData(dmsLeadDto.dmsfinancedetails));
       // Update Customer Need Analysys
@@ -361,23 +796,52 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         updateAdditionalOrReplacementBuyerData(dmsLeadDto.dmsExchagedetails)
       );
       // Update Attachment details
-      saveAttachmentDetailsInLocalObject(dmsLeadDto.dmsAttachments);
+
+      saveAttachmentDetailsInLocalObject(
+        dmsLeadDto.dmsAttachments,
+        dmsLeadDto.dmsExchagedetails
+      );
       dispatch(updateDmsAttachmentDetails(dmsLeadDto.dmsAttachments));
     }
-  }, [selector.enquiry_details_response]);
+  }, [selector.enquiry_details_response]); //selector.enquiry_details_response
 
-  const saveAttachmentDetailsInLocalObject = (dmsAttachments) => {
+  function isEmpty(obj) {
+    return Object.keys(obj)?.length === 0;
+  }
+
+  const saveAttachmentDetailsInLocalObject = (dmsAttachments, exchangeDoc) => {
     if (dmsAttachments.length > 0) {
       const dataObj = {};
       dmsAttachments.forEach((item, index) => {
-        const obj = {
-          documentPath: item.documentPath,
-          documentType: item.documentType,
-          fileName: item.fileName,
-          keyName: item.keyName,
-        };
-        dataObj[item.documentType] = obj;
+        if (!dataObj[item.documentType]) {
+          const obj = {
+            documentPath: item.documentPath,
+            documentType: item.documentType,
+            fileName: item.fileName,
+            keyName: item.keyName,
+          };
+          dataObj[item.documentType] = obj;
+        }
       });
+
+      if (exchangeDoc.length > 0 && !isEmpty(exchangeDoc[0])) {
+        const obj = {
+          documentPath: exchangeDoc[0]?.regDocumentPath,
+          documentType: "regNoD",
+          fileName: exchangeDoc[0]?.regDocumentPath?.split("/")?.pop(),
+          keyName: exchangeDoc[0]?.regDocumentKey,
+        };
+        dataObj["regNoD"] = obj;
+        if (exchangeDoc[0]?.insuranceAvailable == "true") {
+          const obj = {
+            documentPath: exchangeDoc[0]?.insuranceDocumentPath,
+            documentType: "insurance",
+            fileName: exchangeDoc[0]?.insuranceDocumentPath?.split("/")?.pop(),
+            keyName: exchangeDoc[0]?.insuranceDocumentKey,
+          };
+          dataObj["insurance"] = obj;
+        }
+      }
       setUploadedImagesDataObj({ ...dataObj });
     }
   };
@@ -390,7 +854,25 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const getEnquiryDetailsFromServer = () => {
     if (universalId) {
-      dispatch(getEnquiryDetailsApi(universalId));
+      // if (selector.isOpened) {
+      // dispatch(getAutoSaveEnquiryDetailsApi(universalId));
+      if (leadStatus === "ENQUIRYCOMPLETED" && leadStage === "ENQUIRY") {
+        dispatch(getEnquiryDetailsApi({ universalId, leadStage, leadStatus }));
+      } else {
+        Promise.all([
+          dispatch(
+            getEnquiryDetailsApiAuto({ universalId, leadStage, leadStatus })
+          ),
+        ])
+          .then(() => {
+            dispatch(
+              getEnquiryDetailsApi({ universalId, leadStage, leadStatus })
+            );
+          })
+          .catch(() => {});
+      }
+      // dispatch(getEnquiryDetailsApi({universalId, leadStage, leadStatus}));
+      // } else {
     }
   };
 
@@ -403,148 +885,461 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
   };
 
-  const submitClicked = () => {
+  // let dmsEntity = selector.enquiry_details_response;
 
-    if (selector.designation.length == 0 || selector.buyer_type.length == 0) {
-      showToast("Please fill required fields in Customer Profile");
-      return;
-    }
-    if (!isValidateAlphabetics(selector.occupation)) {
-      showToast("Please enter alphabetics only in occupation");
-      return;
+  const addingIsPrimary = async () => {
+    try {
+      let array = await [...selector.dmsLeadProducts];
+      for (let i = 0; i < selector.dmsLeadProducts.length; i++) {
+        var item = await array[i];
+        if (i == 0) {
+          var isPrimary = "Y";
+          if (item.isPrimary && item.isPrimary != null)
+            isPrimary = item.isPrimary;
+          item = await {
+            color: item.color,
+            fuel: item.fuel,
+            id: item.id,
+            model: item.model,
+            transimmisionType: item.transimmisionType,
+            variant: item.variant,
+            isPrimary: isPrimary,
+          };
+          if (
+            item.isPrimary &&
+            item.isPrimary != null &&
+            item.isPrimary === "Y"
+          )
+            setIsPrimaryCurrentIndex(i);
+          updateVariantModelsData(item.model, true, item.variant);
+        } else {
+          var isPrimary = "N";
+          if (item.isPrimary && item.isPrimary != null)
+            isPrimary = item.isPrimary;
+          item = await {
+            color: item.color,
+            fuel: item.fuel,
+            id: item.id,
+            model: item.model,
+            transimmisionType: item.transimmisionType,
+            variant: item.variant,
+            isPrimary: isPrimary,
+          };
+        }
+        array[i] = await item;
+        if (item.isPrimary && item.isPrimary != null && item.isPrimary === "Y")
+          setIsPrimaryCurrentIndex(i);
+      }
+
+      await setCarModelsList(array);
+    } catch (error) {}
+  };
+
+  const updateEnquiry = async () => {
+    let dmsContactOrAccountDto = {};
+    let dmsLeadDto = {};
+    let formData;
+
+    const dmsEntity = selector.enquiry_details_response;
+
+    if (dmsEntity.hasOwnProperty("dmsContactDto"))
+      dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsContactDto);
+    else if (dmsEntity.hasOwnProperty("dmsAccountDto"))
+      dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsAccountDto);
+
+    if (dmsEntity.hasOwnProperty("dmsLeadDto")) {
+      dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
+      dmsLeadDto.firstName = selector.firstName;
+      dmsLeadDto.lastName = selector.lastName;
+      dmsLeadDto.phone = selector.mobile;
+      if (
+        enqDetails.leadStage === "ENQUIRY" &&
+        enqDetails.leadStatus === null
+      ) {
+        dmsLeadDto.leadStage = "ENQUIRY";
+        dmsLeadDto.leadStatus = null;
+      }
+      const employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        let tempAttachments = [];
+
+        // pan number
+        if (selector.pan_number) {
+          let newArr = dmsLeadDto.dmsAttachments.filter((item) => {
+            return item.documentType === "pan";
+          });
+          if (newArr?.length) {
+            tempAttachments.push({
+              ...newArr[0],
+              documentNumber: selector.pan_number,
+              createdBy: convertDateStringToMilliseconds(new Date()),
+            });
+          }
+        }
+
+        // aadhar number
+        if (selector.adhaar_number) {
+          let newArr = dmsLeadDto.dmsAttachments.filter((item) => {
+            return item.documentType === "aadhar";
+          });
+          if (newArr.length) {
+            tempAttachments.push({
+              ...newArr[0],
+              documentNumber: selector.adhaar_number,
+              createdBy: convertDateStringToMilliseconds(new Date()),
+            });
+          }
+        }
+
+        // employee id number
+        if (selector.employee_id) {
+          let newArr = dmsLeadDto.dmsAttachments.filter((item) => {
+            return item.documentType === "employeeId";
+          });
+          if (newArr.length) {
+            tempAttachments.push({
+              ...newArr[0],
+              documentNumber: selector.employee_id,
+              createdBy: convertDateStringToMilliseconds(new Date()),
+            });
+          }
+        }
+
+        // if (Object.keys(uploadedImagesDataObj).length > 0) {
+        //   let tempImages = Object.entries(uploadedImagesDataObj).map((e) => ({
+        //     name: e[0],
+        //     value: e[1],
+        //   }));
+        //   for (let i = 0; i < tempImages.length; i++) {
+        //     if (
+        //       tempImages[i].name != "pan" &&
+        //       tempImages[i].name != "aadhar" &&
+        //       tempImages[i].name != "employeeId"
+        //     ) {
+        //       tempAttachments.push({
+        //         branchId: jsonObj.branchs[0]?.branchId,
+        //         contentSize: 0,
+        //         createdBy: convertDateStringToMilliseconds(new Date()),
+        //         description: "",
+        //         documentNumber: "",
+        //         documentPath: tempImages[i].value.documentPath,
+        //         documentType: tempImages[i].name,
+        //         documentVersion: 0,
+        //         fileName: tempImages[i].value.fileName,
+        //         gstNumber: "",
+        //         id: 0,
+        //         isActive: 0,
+        //         isPrivate: 0,
+        //         keyName: tempImages[i].value.keyName,
+        //         modifiedBy: jsonObj.empName,
+        //         orgId: jsonObj.orgId,
+        //         ownerId: "",
+        //         ownerName: jsonObj.empName,
+        //         parentId: "",
+        //         tinNumber: "",
+        //       });
+        //     }
+
+        //     if (i === tempImages.length - 1) {
+        //       dmsLeadDto.dmsAttachments = tempAttachments;
+        //     }
+        //   }
+        // } else {
+        //   dmsLeadDto.dmsAttachments = tempAttachments;
+        // }
+
+        dmsLeadDto.dmsAttachments = tempAttachments;
+      }
+
+      var tempDmsLeadProducts = selector.dmsLeadProducts;
+      var tempArr = [...carModelsList, ...tempDmsLeadProducts.filter((a) => a)];
+
+      dmsLeadDto.dmsLeadProducts = tempArr.filter((value, index) => {
+        const _value = JSON.stringify(value);
+        return (
+          index ===
+          tempArr.findIndex((obj) => {
+            return JSON.stringify(obj) === _value;
+          })
+        );
+      });
     }
 
-    if (!isValidateAlphabetics(selector.designation)) {
-      showToast("Please enter alphabetics only in designation");
-      return;
+    if (selector.enquiry_details_response.hasOwnProperty("dmsContactDto")) {
+      formData = {
+        dmsContactDto: dmsContactOrAccountDto,
+        dmsLeadDto: dmsLeadDto,
+      };
+    } else {
+      formData = {
+        dmsAccountDto: dmsContactOrAccountDto,
+        dmsLeadDto: dmsLeadDto,
+      };
     }
 
-    if (selector.salutation.length == 0) {
-      showToast("Please fill required fields in Personal Intro");
-      return;
+    // setTypeOfActionDispatched("UPDATE_ENQUIRY");
+    // dispatch(autoSaveEnquiryDetailsApi(formData))
+    let payload = {
+      data: formData,
+      status: "Active",
+      universalId: universalId,
+    };
+    AsyncStore.storeJsonData(AsyncStore.Keys.ENQ_PAYLOAD, payload);
+    dispatch(updateEnquiryDetailsApiAutoSave(payload));
+  };
+
+  const checkModelSelection = () => {
+    let error = false;
+    for (let i = 0; i < carModelsList.length; i++) {
+      if (carModelsList[i].model.length == 0) {
+        error = true;
+        showToast("Please fill model");
+        break;
+      } else if (carModelsList[i].variant.length == 0) {
+        error = true;
+        showToast("Please fill model variant");
+        break;
+      } else if (carModelsList[i].color.length == 0) {
+        error = true;
+        showToast("Please fill model Color");
+        break;
+      }
     }
+
+    if (error) {
+      return true;
+    }
+    return false;
+  };
+
+  const submitClicked = async () => {
+    //Personal Intro
+    setIsSubmitPress(true);
+
+    // if (selector.enquiry_segment.toLowerCase() == "personal") {
+    //   if (
+    //     selector.dateOfBirth.length == 0
+    //     // ||
+    //     // selector.anniversaryDate.length == 0
+    //   ) {
+    //     showToast("Please fill required fields in Personal Intro");
+    //     return;
+    //   }
+    // }
 
     if (selector.enquiry_segment.toLowerCase() == "personal") {
-      if (
-        selector.dateOfBirth.length == 0 ||
-        selector.anniversaryDate.length == 0
-      ) {
-        showToast("Please fill required fields in Personal Intro");
+      if (selector.gender.length == 0) {
+        scrollToPos(0);
+        setOpenAccordian("2");
+        showToast("Please select Gender");
         return;
       }
     }
 
     if (!isValidate(selector.firstName)) {
+      scrollToPos(0);
+      setOpenAccordian("2");
       showToast("please enter alphabetics only in firstname");
       return;
     }
+
     if (!isValidate(selector.lastName)) {
+      scrollToPos(0);
+      setOpenAccordian("2");
       showToast("please enter alphabetics only in lastname");
       return;
     }
-    if (!isValidateAlphabetics(selector.relationName)) {
-      showToast("please enter alphabetics only in relationname");
-      return;
-    }
-    if (!isValidateAlphabetics(selector.streetName)) {
-      showToast("Please enter alphabetics only in street name");
+
+    if (selector.enquiry_segment?.length == 0) {
+      scrollToPos(2);
+      setOpenAccordian("1");
+      showToast("Please select enquiry segment");
       return;
     }
 
-    // Model Selection
-    if (selector.model.length == 0 || selector.varient.length == 0 || selector.color.length == 0) {
-      showToast("Please fill required fields in Model Selection");
+    if (selector.customer_type?.length == 0) {
+      scrollToPos(2);
+      setOpenAccordian("1");
+      showToast("Please select customer type");
       return;
     }
 
-    if (
-      selector.houseNum.length == 0 ||
-      selector.streetName.length == 0 ||
-      selector.village.length == 0 ||
-      selector.city.length == 0 ||
-      selector.state.length == 0 ||
-      selector.district.length == 0
-    ) {
-      showToast("Please fill required fields in Communication Address");
+    if (selector.buyer_type.length == 0) {
+      scrollToPos(2);
+      setOpenAccordian("1");
+      showToast("Please fill  Buyer type");
       return;
     }
 
+    // if (
+    //   selector.p_pincode.length == 0 ||
+    //   selector.p_urban_or_rural.length == 0 ||
+    //   selector.p_houseNum.length == 0 ||
+    //   selector.p_streetName.length == 0 ||
+    //   selector.p_village.length == 0 ||
+    //   selector.p_mandal.length == 0 ||
+    //   selector.p_city.length == 0 ||
+    //   selector.p_district.length == 0 ||
+    //   selector.p_state.length == 0
+    // ) {
+    //   scrollToPos(14);
+    //   setOpenAccordian("3");
+    //   showToast("Please fill permanent address ");
+    //   return;
+    // }
+
+    if (selector.p_pincode.length == 0) {
+      scrollToPos(14);
+      setOpenAccordian("3");
+      showToast("Please fill Permanent pincode");
+      return;
+    }
+
+    if (selector.p_urban_or_rural.length == 0) {
+      scrollToPos(14);
+      setOpenAccordian("3");
+      showToast("Please fill Permanent Urban or Rural");
+      return;
+    }
+
+    if (checkModelSelection()) {
+      scrollToPos(4);
+      setOpenAccordian("4");
+      return;
+    }
+
+    let primaryTempCars = [];
+    primaryTempCars = carModelsList.filter((item) => {
+      return item.isPrimary === "Y";
+    });
+
+    if (!primaryTempCars.length > 0) {
+      scrollToPos(4);
+      setOpenAccordian("4");
+      showToast("Select is Primary for atleast one vehicle");
+      return;
+    }
+
+    //Finance Details
     if (selector.retail_finance.length == 0) {
-      showToast("Please fill required fields in Financial Details");
+      scrollToPos(5);
+      setOpenAccordian("5");
+      showToast("Please fill required fields in Finance Details");
       return;
     }
-
-    if (selector.retail_finance === "In House") {
-      if (
-        selector.finance_category.length == 0 ||
-        selector.loan_of_tenure.length == 0 ||
-        selector.emi.length == 0 ||
-        selector.approx_annual_income.length == 0 ||
-        selector.bank_or_finance.length == 0
-      ) {
-        showToast("plaese enter the proper details in finace category ");
-        return;
-      }
-    }
+    // if (selector.retail_finance === "In House") {
+    //   if (
+    //     selector.finance_category.length == 0) {
+    //     showToast("Please fill finance category");
+    //     return;
+    //   }
+    //   if (
+    //     selector.loan_of_tenure.length == 0
+    //   ) {
+    //     showToast("Please fill loan of tenure");
+    //     return;
+    //   }
+    //   if (selector.emi.length == 0) {
+    //     showToast("Please fill emi");
+    //     return;
+    //   }
+    //   if (selector.approx_annual_income.length == 0) {
+    //     showToast("Please fill approx annual income");
+    //     return;
+    //   }
+    //   if (selector.bank_or_finance.length == 0) {
+    //     showToast("Please fill bank/Finance");
+    //     return;
+    //   }
+    // }
 
     // Leashing
-    if (selector.retail_finance == "Leasing") {
-      if (selector.leashing_name.length == 0) {
-        showToast("Please fill required fields in leasing name");
-        return;
-      }
-    }
+    // if (selector.retail_finance == "Leasing") {
+    //   if (selector.leashing_name.length == 0) {
+    //     showToast("Please fill required fields in leasing name");
+    //     return;
+    //   }
+    // }
+
+    //Customer Customer need Analysis
+    // if (selector.c_voice_of_customer_remarks == 0) {
+    //   showToast("Please fill required remarks field in Customer need Analysis");
+    //   return;
+    // }
 
     if (selector.buyer_type === "Additional Buyer") {
-      if (
-        selector.a_make == 0 ||
-        selector.a_model == 0 ||
-        selector.a_varient == 0 ||
-        selector.a_color == 0 ||
-        selector.a_reg_no == 0
-      ) {
-        showToast("Please fill required fields in Addtional buyer ");
-        return;
-      }
-      if (!isValidateAlphabetics(selector.a_varient)) {
-        showToast("Please enter alphabetics only in varient ");
-        return;
-      }
+      // if (
+      //   selector.a_make == 0 ||
+      //   selector.a_model == 0 ||
+      //   selector.a_varient == 0 ||
+      //   selector.a_color == 0 ||
+      //   selector.a_reg_no == 0
+      // ) {
+      //   scrollToPos(8)
+      //   setOpenAccordian('8')
+      //   showToast("Please fill required fields in Addtional buyer ");
+      //   return;
+      // }
+      // if (!isValidateAlphabetics(selector.a_varient)) {
+      //   scrollToPos(8)
+      //   setOpenAccordian('8')
+      //   showToast("Please enter alphabetics only in varient ");
+      //   return;
+      // }
       if (!isValidateAlphabetics(selector.a_color)) {
+        scrollToPos(8);
+        setOpenAccordian("8");
         showToast("Please enter alphabetics only in color ");
         return;
       }
-      // if (!isValidateAlphabetics(selector.a_reg_no)) {
-      //   showToast("Please enter alphabetics only in reg no ");
-      //   return;
-      // }
     }
 
-    if (selector.buyer_type === "Replacement Buyer") {
+    if (
+      selector.buyer_type === "Replacement Buyer" ||
+      selector.buyer_type === "Exchange Buyer"
+    ) {
       if (selector.r_color.length > 0) {
         if (!isValidateAlphabetics(selector.r_color)) {
+          scrollToPos(9);
+          setOpenAccordian("9");
           showToast("Please enter alphabetics only in color ");
           return;
         }
       }
-      if (selector.r_insurence_company_name.length == 0) {
-        showToast("Please select the insurance company name");
+      if (selector.r_reg_no.length == 0) {
+        scrollToPos(9);
+        setOpenAccordian("9");
+        showToast("Please fill reg no is mandatory");
         return;
       }
       if (!isValidateAlphabetics(selector.r_model_other_name)) {
+        scrollToPos(9);
+        setOpenAccordian("9");
         showToast("Please enter proper model other name");
         return;
       }
-      
+
+      // if (selector.r_insurence_company_name.length == 0) {
+      //   showToast("Please select the insurance company name");
+      //   return;
+      // }
+
       if (selector.r_hypothication_checked === true) {
         if (selector.r_hypothication_name.length > 0) {
           if (!isValidateAlphabetics(selector.r_hypothication_name)) {
+            scrollToPos(9);
+            setOpenAccordian("9");
             showToast("Please enter the proper Hypothication name");
             return;
           }
         }
         if (selector.r_hypothication_branch.length > 0) {
           if (!isValidateAlphabetics(selector.r_hypothication_branch)) {
+            scrollToPos(9);
+            setOpenAccordian("9");
             showToast("Please enter the proper Hypothication branch");
             return;
           }
@@ -555,17 +1350,43 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     if (selector.c_looking_for_any_other_brand_checked === true) {
       if (selector.c_dealership_name.length > 0) {
         if (!isValidateAlphabetics(selector.c_dealership_name)) {
+          scrollToPos(7);
+          setOpenAccordian("7");
           showToast("please enter the validate Dealership name");
           return;
         }
       }
     }
 
+    // if (
+    //   selector.leashing_name.length > 0 &&
+    //   !isValidateAlphabetics(selector.leashing_name)
+    // ) {
+    //   showToast("Please enter proper leasing name");
+    //   return;
+    // }
+
+    if (isCheckPanOrAadhaar("pan", selector.pan_number)) {
+      scrollToPos(6);
+      setOpenAccordian("6");
+      showToast("Please enter proper PAN number");
+      return;
+    }
+
+    if (isCheckPanOrAadhaar("aadhaar", selector.adhaar_number)) {
+      scrollToPos(6);
+      setOpenAccordian("6");
+      showToast("Please enter proper Aadhaar number");
+      return;
+    }
+
     if (
-      selector.leashing_name.length > 0 &&
-      !isValidateAlphabetics(selector.leashing_name)
+      selector.gstin_number.length > 0 &&
+      !isValidateAplhaNumeric(selector.gstin_number)
     ) {
-      showToast("Please enter proper leasing name");
+      scrollToPos(6);
+      setOpenAccordian("6");
+      showToast("Please enter proper gstin number");
       return;
     }
 
@@ -583,8 +1404,125 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     else if (dmsEntity.hasOwnProperty("dmsAccountDto"))
       dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsAccountDto);
 
-    if (dmsEntity.hasOwnProperty("dmsLeadDto"))
-      dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
+    if (dmsEntity.hasOwnProperty("dmsLeadDto")) {
+      try {
+        dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
+      } catch (error) {}
+      dmsLeadDto.firstName = selector.firstName;
+      dmsLeadDto.lastName = selector.lastName;
+      dmsLeadDto.phone = selector.mobile;
+      dmsLeadDto.dmsLeadProducts = carModelsList;
+
+      let primaryModel = carModelsList.filter((item) => item.isPrimary === "Y");
+      dmsLeadDto.model = primaryModel[0].model;
+
+      const employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        let empObj = {
+          branchId: jsonObj.branchs[0]?.branchId,
+          modifiedBy: jsonObj.empName,
+          orgId: jsonObj.orgId,
+          ownerName: jsonObj.empName,
+        };
+        let tempAttachments = Object.assign([], dmsLeadDto.dmsAttachments);
+
+        let imgObjArr = [];
+        if (Object.keys(uploadedImagesDataObj).length > 0) {
+          imgObjArr = Object.entries(uploadedImagesDataObj).map((e) => ({
+            name: e[0],
+            value: e[1],
+          }));
+        }
+
+        for (let i = 0; i < imgObjArr.length; i++) {
+          let isAvailable = false;
+          for (let j = 0; j < tempAttachments.length; j++) {
+            if (tempAttachments[j].documentType == imgObjArr[i].name) {
+              isAvailable = true;
+              break;
+            }
+          }
+
+          if (!isAvailable) {
+            let newObj = {
+              ...dmsAttachmentsObj,
+              documentPath: imgObjArr[i].value.documentPath,
+              fileName: imgObjArr[i].value.fileName,
+              keyName: imgObjArr[i].value.keyName,
+              documentType: imgObjArr[i].name,
+              createdBy: convertDateStringToMilliseconds(new Date()),
+              ...empObj,
+            };
+
+            if (imgObjArr[i].name === "pan" && selector.pan_number) {
+              newObj.documentNumber = selector.pan_number;
+            } else if (
+              imgObjArr[i].name == "aadhar" &&
+              selector.adhaar_number
+            ) {
+              newObj.documentNumber = selector.adhaar_number;
+            } else if (
+              imgObjArr[i].name == "employeeId" &&
+              selector.employee_id
+            ) {
+              newObj.documentNumber = selector.employee_id;
+            }
+
+            tempAttachments.push(Object.assign({}, newObj));
+          }
+        }
+
+        let panArr = tempAttachments.filter((item) => {
+          return item.documentType === "pan";
+        });
+
+        let aadharArr = tempAttachments.filter((item) => {
+          return item.documentType === "aadhar";
+        });
+
+        let empArr = tempAttachments.filter((item) => {
+          return item.documentType === "employeeId";
+        });
+
+        // if pan number
+        if (!panArr.length && selector.pan_number) {
+          newObj = {
+            ...dmsAttachmentsObj,
+            documentNumber: selector.pan_number,
+            documentType: "pan",
+            ...empObj,
+          };
+          tempAttachments.push(Object.assign({}, newObj));
+        }
+
+        // if aadhar number
+        if (!aadharArr.length && selector.adhaar_number) {
+          newObj = {
+            ...dmsAttachmentsObj,
+            documentNumber: selector.adhaar_number,
+            documentType: "aadhar",
+            ...empObj,
+          };
+          tempAttachments.push(Object.assign({}, newObj));
+        }
+
+        // if emp id
+        if (!empArr.length && selector.employee_id) {
+          newObj = {
+            ...dmsAttachmentsObj,
+            documentNumber: selector.employee_id,
+            documentType: "employeeId",
+            ...empObj,
+          };
+          tempAttachments.push(Object.assign({}, newObj));
+        }
+
+        dmsLeadDto.dmsAttachments = Object.assign([], tempAttachments);
+      }
+    }
 
     if (selector.enquiry_details_response.hasOwnProperty("dmsContactDto")) {
       formData = {
@@ -597,15 +1535,40 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         dmsLeadDto: dmsLeadDto,
       };
     }
+
     setTypeOfActionDispatched("UPDATE_ENQUIRY");
-    dispatch(updateEnquiryDetailsApi(formData));
+    let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      const refPayload = {
+        branchid: jsonObj.branchs[0]?.branchId,
+        leadstage: "ENQUIRY",
+        orgid: jsonObj.orgId,
+        universalId: universalId,
+      };
+      Promise.all([
+        dispatch(updateEnquiryDetailsApi(formData)),
+        dispatch(customerLeadRef(refPayload)),
+      ]).then(async (res) => {
+        const payload = {
+          refNo: res[1].payload.dmsEntity.leadCustomerReference.referencenumber,
+          orgId: jsonObj.orgId,
+          stageCompleted: "ENQUIRY",
+        };
+        dispatch(updateRef(payload));
+      });
+    }
   };
 
   const mapContactOrAccountDto = (prevData) => {
     let dataObj = { ...prevData };
-    dataObj.dateOfBirth = convertDateStringToMillisecondsUsingMoment(
-      selector.dateOfBirth
-    );
+    if (selector.dateOfBirth) {
+      dataObj.dateOfBirth = convertDateStringToMillisecondsUsingMoment(
+        selector.dateOfBirth
+      );
+    } else {
+      dataObj.dateOfBirth = "";
+    }
     dataObj.email = selector.email;
     dataObj.firstName = selector.firstName;
     dataObj.lastName = selector.lastName;
@@ -647,14 +1610,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     dataObj.enquirySource = selector.source_of_enquiry;
     dataObj.eventCode = selector.event_code;
     dataObj.subSource = selector.sub_source_of_enquiry;
-    dataObj.dmsExpectedDeliveryDate =
-      convertDateStringToMillisecondsUsingMoment(
-        selector.expected_delivery_date
-      );
-    dataObj.model = selector.model;
+    dataObj.gstNumber = selector.gstin_number;
+    dataObj.dmsExpectedDeliveryDate = selector.expected_delivery_date
+      ? Number(selector.expected_delivery_date)
+      : convertDateStringToMillisecondsUsingMoment(new Date());
     dataObj.leadStatus = "ENQUIRYCOMPLETED";
     dataObj.dmsAddresses = mapDMSAddress(dataObj.dmsAddresses);
     dataObj.dmsLeadProducts = mapLeadProducts(dataObj.dmsLeadProducts);
+    dataObj.model = carModelsList[0]?.model;
     dataObj.dmsfinancedetails = mapDmsFinanceDetails(dataObj.dmsfinancedetails);
     dataObj.dmsLeadScoreCards = mapDmsLeadScoreCards(dataObj.dmsLeadScoreCards);
     dataObj.dmsExchagedetails = mapExchangeDetails(dataObj.dmsExchagedetails);
@@ -696,19 +1659,20 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     return dmsAddresses;
   };
 
-  const mapLeadProducts = (prevDmsLeadProducts) => {
+  const mapLeadProducts = async (prevDmsLeadProducts) => {
     let dmsLeadProducts = [...prevDmsLeadProducts];
     let dataObj = {};
-    if (dmsLeadProducts.length > 0) {
-      dataObj = { ...dmsLeadProducts[0] };
-    }
-    dataObj.id = dataObj.id ? dataObj.id : 0;
-    dataObj.model = selector.model;
-    dataObj.variant = selector.varient;
-    dataObj.color = selector.color;
-    dataObj.fuel = selector.fuel_type;
-    dataObj.transimmisionType = selector.transmission_type;
-    dmsLeadProducts[0] = dataObj;
+    // if (dmsLeadProducts.length > 0) {
+    //   dataObj = { ...dmsLeadProducts[0] };
+    // }
+    // dataObj.id = dataObj.id ? dataObj.id : 0;
+    // dataObj.model = selector.model;
+    // dataObj.variant = selector.varient;
+    // dataObj.color = selector.color;
+    // dataObj.fuel = selector.fuel_type;
+    // dataObj.transimmisionType = selector.transmission_type;
+    // alert(JSON.stringify(carModelsList))
+    dmsLeadProducts = await carModelsList;
     return dmsLeadProducts;
   };
 
@@ -733,7 +1697,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dataObj.financeCompany = selector.bank_or_finance;
     } else if (selector.retail_finance === "Out House") {
       dataObj.financeCompany = selector.bank_or_finance_name;
-    } else if (selector.retail_finance === "Leashing") {
+    } else if (selector.retail_finance === "Leasing") {
       dataObj.financeCompany = selector.leashing_name;
     }
     dmsfinancedetails[0] = dataObj;
@@ -755,6 +1719,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     dataObj.variant = selector.c_variant;
     dataObj.color = selector.c_color;
     dataObj.fuel = selector.c_fuel_type;
+    dataObj.transmissionType = selector.c_transmission_type;
     dataObj.priceRange = selector.c_price_range;
     dataObj.onRoadPriceanyDifference = selector.c_on_road_price;
     dataObj.dealershipName = selector.c_dealership_name;
@@ -767,7 +1732,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const mapExchangeDetails = (prevDmsExchagedetails) => {
     let dmsExchagedetails = [...prevDmsExchagedetails];
-    if (dmsExchagedetails.length > 0) {
+    if (dmsExchagedetails?.length > 0) {
       const dataObj = formatExchangeDetails(dmsExchagedetails[0]);
       dmsExchagedetails[0] = dataObj;
     } else {
@@ -775,6 +1740,84 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dmsExchagedetails[0] = dataObj;
     }
     return dmsExchagedetails;
+  };
+
+  const modelOnclick = async (index, value, type) => {
+    try {
+      if (type == "update") {
+        let arr = [...carModelsList];
+        arr[index] = value;
+        // arr.splice(carModelsList, index, value);
+        let primaryModel = [];
+        primaryModel = arr.filter((item) => item.isPrimary === "Y");
+        if (primaryModel.length > 0) {
+          if (
+            primaryModel[0].variant !== "" &&
+            primaryModel[0].model !== "" &&
+            primaryModel[0].color !== ""
+          ) {
+            updateVariantModelsData(
+              primaryModel[0].model,
+              true,
+              primaryModel[0].variant,
+              primaryModel[0].color
+            );
+          }
+        }
+        await setCarModelsList([...arr]);
+      } else {
+        if (type == "delete") {
+          let arr = await [...carModelsList];
+          arr.splice(index, 1);
+          setCarModelsList(Object.assign([], arr));
+          dispatch(updatedmsLeadProduct(Object.assign([], arr)));
+          deleteModalFromServer({ value });
+        }
+      }
+    } catch (error) {
+      // alert(error)
+    }
+  };
+
+  const isPrimaryOnclick = async (isPrimaryEnabled, index, item) => {
+    try {
+      if (isPrimaryEnabled === "Y") {
+        await setIsPrimaryCurrentIndex(index);
+        await setCarModelsList([]);
+        updateVariantModelsData(item.model, true, item.variant, item.color); //item.variant, item.color
+      }
+      if (carModelsList && carModelsList.length > 0) {
+        let arr = await [...carModelsList];
+        var data = arr[isPrimaryCureentIndex];
+        if (data) {
+          const cardata = await {
+            color: data.color,
+            fuel: data.fuel,
+            id: data.id,
+            model: data.model,
+            transimmisionType: data.transimmisionType,
+            variant: data.variant,
+            isPrimary: "N",
+          };
+          arr[isPrimaryCureentIndex] = cardata;
+        }
+        const selecteditem = await {
+          color: item.color,
+          fuel: item.fuel,
+          id: item.id,
+          model: item.model,
+          transimmisionType: item.transimmisionType,
+          variant: item.variant,
+          isPrimary: "Y",
+        };
+        arr[index] = selecteditem;
+        dispatch(updatedmsLeadProduct([...arr]));
+        await setCarModelsList([...arr]);
+        await setIsPrimaryCurrentIndex(index);
+      }
+    } catch (error) {
+      // alert(error)
+    }
   };
 
   const formatExchangeDetails = (prevData) => {
@@ -786,7 +1829,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dataObj.varient = selector.a_varient;
       dataObj.color = selector.a_color;
       dataObj.regNo = selector.a_reg_no;
-    } else if (selector.buyer_type === "Replacement Buyer") {
+    } else if (
+      selector.buyer_type === "Replacement Buyer" ||
+      selector.buyer_type === "Exchange Buyer"
+    ) {
       dataObj.buyerType = selector.buyer_type;
       dataObj.regNo = selector.r_reg_no;
       dataObj.brand = selector.r_make;
@@ -796,9 +1842,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dataObj.fuelType = selector.r_fuel_type;
       dataObj.transmission = selector.r_transmission_type;
       // Pending
-      dataObj.yearofManufacture = convertDateStringToMillisecondsUsingMoment(
-        selector.r_mfg_year
-      );
+      // dataObj.yearofManufacture = convertDateStringToMillisecondsUsingMoment(
+      //   selector.r_mfg_year
+      // );
+      dataObj.regDocumentKey = selector.regDocumentKey;
+      dataObj.regDocumentPath = selector.regDocumentPath;
+      dataObj.insuranceDocumentKey = selector.insuranceDocumentKey;
+      dataObj.insuranceDocumentPath = selector.insuranceDocumentPath;
+      dataObj.yearofManufacture = selector.r_mfg_year;
       dataObj.kiloMeters = selector.r_kms_driven_or_odometer_reading;
       dataObj.expectedPrice = selector.r_expected_price
         ? Number(selector.r_expected_price)
@@ -807,28 +1858,31 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dataObj.hypothication = selector.r_hypothication_name;
       dataObj.hypothicationBranch = selector.r_hypothication_branch;
       // Pending
-      dataObj.registrationDate = convertDateStringToMillisecondsUsingMoment(
-        selector.r_registration_date
+      dataObj.registrationDate = moment(
+        selector.r_registration_date,
+        "DD/MM/YYYY"
       );
-      dataObj.registrationValidityDate =
-        convertDateStringToMillisecondsUsingMoment(
-          selector.r_registration_validity_date
-        );
+      dataObj.registrationValidityDate = moment(
+        selector.r_registration_validity_date,
+        "DD/MM/YYYY"
+      );
       dataObj.insuranceAvailable = `${selector.r_insurence_checked}`;
       dataObj.insuranceDocumentAvailable =
         selector.r_insurence_document_checked;
       dataObj.insuranceCompanyName = selector.r_insurence_company_name;
       // Pending
-      dataObj.insuranceExpiryDate = convertDateStringToMillisecondsUsingMoment(
-        selector.r_insurence_expiry_date
-      );
+      dataObj.insuranceExpiryDate = selector.r_insurence_to_date
+        ? moment(selector.r_insurence_to_date, "DD/MM/YYYY")
+        : "";
       dataObj.insuranceType = selector.r_insurence_type;
       // Pending
-      dataObj.insuranceFromDate = convertDateStringToMillisecondsUsingMoment(
-        selector.r_insurence_from_date
+      dataObj.insuranceFromDate = moment(
+        selector.r_insurence_from_date,
+        "DD/MM/YYYY"
       );
-      dataObj.insuranceToDate = convertDateStringToMillisecondsUsingMoment(
-        selector.r_insurence_to_date
+      dataObj.insuranceToDate = moment(
+        selector.r_insurence_to_date,
+        "DD/MM/YYYY"
       );
     }
     return dataObj;
@@ -839,13 +1893,33 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     if (dmsAttachments.length > 0) {
       dmsAttachments.forEach((obj, index) => {
         const item = uploadedImagesDataObj[obj.documentType];
-        const object = formatAttachment(
-          { ...obj },
-          item,
-          index,
-          obj.documentType
-        );
-        dmsAttachments[index] = object;
+
+        let finalObj = {};
+
+        if (item) {
+          finalObj = formatAttachment(
+            { ...obj },
+            item,
+            index,
+            obj.documentType
+          );
+        } else {
+          let subItem = {
+            documentType: obj.documentType,
+            documentPath: "",
+            keyName: "",
+            fileName: "",
+          };
+
+          finalObj = formatAttachment(
+            { ...obj },
+            subItem,
+            index,
+            obj.documentType
+          );
+        }
+
+        dmsAttachments[index] = finalObj;
       });
     } else {
       Object.keys(uploadedImagesDataObj).forEach((key, index) => {
@@ -858,16 +1932,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   };
 
   const formatAttachment = (data, photoObj, index, typeOfDocument) => {
-    let object = { ...data };
+    let object = { ...dmsAttachmentsObj, ...data };
     object.branchId = selectedBranchId;
     object.ownerName = userData.employeeName;
     object.orgId = userData.orgId;
-    object.documentType = photoObj.documentType;
-    object.documentPath = photoObj.documentPath;
-    object.keyName = photoObj.keyName;
-    object.fileName = photoObj.fileName;
-    object.createdBy = new Date().getTime();
-    object.id = `${index}`;
+    object.documentType = photoObj?.documentType;
+    object.documentPath = photoObj?.documentPath;
+    object.keyName = photoObj?.keyName;
+    object.fileName = photoObj?.fileName;
+    object.createdBy = convertDateStringToMilliseconds(new Date());
+    // object.id = `${index}`;
     object.modifiedBy = userData.employeeName;
     object.ownerId = userData.employeeId;
     switch (typeOfDocument) {
@@ -877,8 +1951,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       case "aadhar":
         object.documentNumber = selector.adhaar_number;
         break;
-      case "REGDOC":
+      case "regNoD":
         object.documentNumber = selector.r_reg_no;
+        break;
+      case "employeeId":
+        object.documentNumber = selector.employee_id;
         break;
     }
     return object;
@@ -902,34 +1979,221 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         const universalId = dataObj.universalId;
         const taskStatus = dataObj.taskStatus;
 
-        Alert.alert(
-          "Below tasks are pending, do you want to continue to proceed pre-booking",
-          taskNames,
-          [
+        if (taskNames === "") {
+          navigation.navigate(
+            AppNavigator.EmsStackIdentifiers.proceedToPreBooking,
             {
-              text: "Cancel",
-              onPress: () => console.log("Cancel Pressed"),
-              style: "cancel",
-            },
-            {
-              text: "Proceed",
-              onPress: () => {
-                navigation.navigate(
-                  AppNavigator.EmsStackIdentifiers.proceedToPreBooking,
-                  {
-                    identifier: "PROCEED_TO_PRE_BOOKING",
-                    taskId,
-                    universalId,
-                    taskStatus,
-                  }
-                );
+              identifier: "PROCEED_TO_PRE_BOOKING",
+              taskId,
+              universalId,
+              taskStatus,
+            }
+          );
+        } else {
+          Alert.alert(
+            "Below tasks are pending, do you want to continue to proceed",
+            taskNames,
+            [
+              {
+                text: "Cancel",
+                onPress: () => {},
+                style: "cancel",
               },
-            },
-          ]
-        );
+              {
+                text: "Proceed",
+                onPress: () => {
+                  proceedToFinalPreBookingClicked(taskId);
+                  // navigation.navigate(
+                  //   AppNavigator.EmsStackIdentifiers.proceedToPreBooking,
+                  //   {
+                  //     identifier: "PROCEED_TO_PRE_BOOKING",
+                  //     taskId,
+                  //     universalId,
+                  //     taskStatus,
+                  //   }
+                  // );
+                },
+              },
+            ]
+          );
+        }
       } else {
         showAlertMessage("Below tasks are pending...", taskNames);
       }
+    }
+  };
+
+  useEffect(() => {
+    navigation.addListener("blur", () => {
+      getCurrentLocation();
+    });
+  }, [navigation]);
+
+  const getCurrentLocation = () => {
+    Geolocation.getCurrentPosition((info) => {
+      setCurrentLocation({
+        lat: info.coords.latitude,
+        long: info.coords.longitude,
+      });
+    });
+  };
+
+  const proceedToFinalPreBookingClicked = async (taskId) => {
+    setTypeOfActionDispatched("PROCEED_TO_PREBOOKING");
+
+    let response = await dispatch(getTaskDetailsApi(taskId));
+
+    if (response?.payload?.dmsEntity?.task?.taskId) {
+      const newTaskObj = { ...response.payload.dmsEntity.task };
+      newTaskObj.taskStatus = "CLOSED";
+      newTaskObj.lat = currentLocation ? currentLocation.lat.toString() : null;
+      newTaskObj.lon = currentLocation ? currentLocation.long.toString() : null;
+      dispatch(updateTaskApi(newTaskObj));
+    }
+  };
+
+  // Handle Update Current Task Response
+  useEffect(() => {
+    if (typeOfActionDispatched === "PROCEED_TO_PREBOOKING") {
+      if (proceedToPreSelector.update_task_response_status === "success") {
+        const endUrl = `${universalId}` + "?" + "stage=PREBOOKING";
+        dispatch(changeEnquiryStatusApi(endUrl));
+      } else if (
+        proceedToPreSelector.update_task_response_status === "failed"
+      ) {
+        showToastRedAlert("something went wrong");
+      }
+    }
+  }, [proceedToPreSelector.update_task_response_status]);
+
+  // Handle Change Enquiry Status response
+  useEffect(() => {
+    if (typeOfActionDispatched === "PROCEED_TO_PREBOOKING") {
+      if (proceedToPreSelector.change_enquiry_status === "success") {
+        callCustomerLeadReferenceApi();
+      } else if (proceedToPreSelector.change_enquiry_status === "failed") {
+        showToastRedAlert("something went wrong");
+      }
+    }
+  }, [proceedToPreSelector.change_enquiry_status]);
+
+  const callCustomerLeadReferenceApi = async () => {
+    const payload = {
+      branchid: userData.branchId,
+      leadstage: "PREBOOKING",
+      orgid: userData.orgId,
+      universalId: universalId,
+    };
+    const url = URL.CUSTOMER_LEAD_REFERENCE();
+    // await fetch(url, {
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     "Authorization": authToken,
+    //   },
+    //   method: "POST",
+    //   body: JSON.stringify(payload),
+    // })
+    await client
+      .post(url, payload)
+      .then((res) => res.json())
+      .then((jsonRes) => {
+        if (jsonRes.success === true) {
+          if (jsonRes.dmsEntity?.leadCustomerReference) {
+            const refNumber =
+              jsonRes.dmsEntity?.leadCustomerReference.referencenumber;
+            updateEnuiquiryDetails(refNumber);
+          }
+        }
+      })
+      .catch((err) => console.error(err));
+  };
+
+  const updateEnuiquiryDetails = async (refNumber) => {
+    let response = await dispatch(proceedGetEnquiryDetailsApi(universalId));
+
+    if (response?.payload?.dmsEntity) {
+      let enquiryDetailsObj = { ...response.payload.dmsEntity };
+      let dmsLeadDto = { ...enquiryDetailsObj.dmsLeadDto };
+      if (typeOfActionDispatched === "PROCEED_TO_PREBOOKING") {
+        dmsLeadDto.leadStatus = "ENQUIRYCOMPLETED";
+        dmsLeadDto.leadStage = "PREBOOKING";
+        dmsLeadDto.referencenumber = refNumber;
+      }
+
+      enquiryDetailsObj.dmsLeadDto = dmsLeadDto;
+      dispatch(proceedUpdateEnquiryDetailsApi(enquiryDetailsObj));
+    }
+  };
+
+  // Handle Enquiry Update response
+  useEffect(() => {
+    if (typeOfActionDispatched === "PROCEED_TO_PREBOOKING") {
+      if (
+        proceedToPreSelector.update_enquiry_details_response_status ===
+          "success" &&
+        proceedToPreSelector.update_enquiry_details_response
+      ) {
+        if (typeOfActionDispatched === "PROCEED_TO_PREBOOKING") {
+          displayCreateEnquiryAlert();
+        }
+      } else if (
+        proceedToPreSelector.update_enquiry_details_response_status === "failed"
+      ) {
+        showToastRedAlert("something went wrong");
+      }
+    } else {
+      if (
+        proceedToPreSelector.update_enquiry_details_response_status ===
+        "success"
+      ) {
+        clearState();
+        clearLocalData();
+      }
+    }
+  }, [
+    proceedToPreSelector.update_enquiry_details_response_status,
+    proceedToPreSelector.update_enquiry_details_response,
+  ]);
+
+  const displayCreateEnquiryAlert = () => {
+    let refNumber = "";
+    if (proceedToPreSelector.update_enquiry_details_response) {
+      refNumber =
+        proceedToPreSelector.update_enquiry_details_response.dmsLeadDto
+          .referencenumber;
+    }
+
+    Alert.alert(
+      "Booking Approval Successfully Created",
+      refNumber,
+      [
+        {
+          text: "OK",
+          onPress: () => goToParentScreen(),
+        },
+      ],
+      {
+        cancelable: false,
+      }
+    );
+  };
+
+  const goToParentScreen = () => {
+    getMyTasksListFromServer();
+    navigation.navigate(EmsTopTabNavigatorIdentifiers.leads, {
+      fromScreen: "proceedToBookingApproval",
+    });
+    dispatch(preClearState());
+    dispatch(clearState2());
+    clearState();
+    clearLocalData();
+  };
+
+  const getMyTasksListFromServer = () => {
+    if (userData.employeeId) {
+      const endUrl = `empid=${userData.employeeId}&limit=10&offset=${0}`;
+      dispatch(getCurrentTasksListApi(endUrl));
+      dispatch(getPendingTasksListApi(endUrl));
     }
   };
 
@@ -956,8 +2220,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         if (
           element.taskName === "Evaluation" &&
           (element.taskStatus === "" || element.taskStatus === "ASSIGNED") &&
-          selector.enquiry_details_response.dmsLeadDto.buyerType ===
-          "Replacement Buyer"
+          (selector.enquiry_details_response.dmsLeadDto.buyerType ===
+            "Replacement Buyer" ||
+            selector.enquiry_details_response.dmsLeadDto.buyerType ===
+              "Exchange Buyer")
         ) {
           pendingTaskNames.push("Evaluation : Pending \n");
         }
@@ -977,10 +2243,34 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     selector.get_pending_tasks_response_list,
   ]);
 
-  const proceedToPreBookingClicked = () => {
-    if (universalId) {
-      const endUrl = universalId + "?" + "stage=Enquiry";
-      dispatch(getPendingTasksApi(endUrl));
+  const proceedToPreBookingClicked = async () => {
+    const employeeData = await AsyncStore.getData(
+      AsyncStore.Keys.LOGIN_EMPLOYEE
+    );
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      if (
+        selector.enquiry_details_response.dmsLeadDto.salesConsultant ==
+          jsonObj.empName ||
+        selector.enquiry_details_response.dmsLeadDto.createdBy ==
+          jsonObj.empName
+      ) {
+        if (universalId) {
+          const endUrl = universalId + "?" + "stage=Enquiry";
+          dispatch(getPendingTasksApi(endUrl));
+        }
+      } else {
+        alert("Permission Denied");
+        // Alert.alert(
+        //   'Permission Denied',
+        //   [
+        //     {
+        //       text: 'OK',
+        //     }
+        //   ],
+        //   { cancelable: false }
+        // );
+      }
     }
   };
 
@@ -994,13 +2284,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   useEffect(() => {
     if (selector.update_enquiry_details_response === "success") {
       if (typeOfActionDispatched === "DROP_ENQUIRY") {
-        showToastSucess("Successfully Enquiry Dropped");
-        getEnquiryListFromServer();
+        // showToastSucess("Successfully Enquiry Dropped");
+        // getEnquiryListFromServer();
       } else if (typeOfActionDispatched === "UPDATE_ENQUIRY") {
         showToastSucess("Successfully Enquiry Updated");
+        goToLeadScreen();
       }
-      dispatch(clearState());
-      navigation.goBack();
     }
   }, [selector.update_enquiry_details_response]);
 
@@ -1016,10 +2305,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   };
 
   const proceedToCancelEnquiry = () => {
-    if (
-      dropRemarks.length === 0 ||
-      dropReason.length === 0
-    ) {
+    if (dropRemarks.length === 0 || dropReason.length === 0) {
       showToastRedAlert("Please enter details for drop");
       return;
     }
@@ -1030,7 +2316,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
     let enquiryDetailsObj = { ...selector.enquiry_details_response };
     let dmsLeadDto = { ...enquiryDetailsObj.dmsLeadDto };
-    dmsLeadDto.leadStatus = "ENQUIRYCOMPLETED";
+    // dmsLeadDto.leadStatus = "ENQUIRYCOMPLETED";
     dmsLeadDto.leadStage = "DROPPED";
     enquiryDetailsObj.dmsLeadDto = dmsLeadDto;
 
@@ -1043,7 +2329,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     const payload = {
       dmsLeadDropInfo: {
         additionalRemarks: dropRemarks,
-        branchId: selectedBranchId,
+        branchId: Number(selectedBranchId),
         brandName: dropBrandName,
         dealerName: dropDealerName,
         location: dropLocation,
@@ -1064,15 +2350,52 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     dispatch(updateEnquiryDetailsApi(enquiryDetailsObj));
   };
 
+  useEffect(() => {
+    if (
+      selector.enquiry_drop_response_status === "success" &&
+      selector.refNo !== ""
+    ) {
+      Alert.alert("Sent For Approval", `Enquiry Number: ${selector.refNo}`, [
+        {
+          text: "OK",
+          onPress: () => {
+            goToLeadScreen();
+          },
+        },
+      ]);
+    }
+  }, [selector.enquiry_drop_response_status, selector.refNo]);
+
   const showDropDownModelMethod = (key, headerText) => {
     Keyboard.dismiss();
-
+    // const orgId = +userData.orgId;
     switch (key) {
       case "ENQUIRY_SEGMENT":
-        setDataForDropDown([...Enquiry_Segment_Data]);
+        if (selector.enquiry_type_list?.length === 0) {
+          showToast("No Enquiry Types found");
+          return;
+        }
+        let eData = selector.enquiry_type_list;
+        let eNewData = eData?.map((val) => ({
+          ...val,
+          name: val?.segment_type || "",
+        }));
+        setDataForDropDown([...eNewData]);
         break;
       case "CUSTOMER_TYPE":
-        setDataForDropDown([...selector.customer_types_data]);
+        if (selector.customer_types_data?.length === 0) {
+          showToast("No Customer Types found");
+          return;
+        }
+        let cData = selector.customer_types_data;
+        let cNewData = cData?.map((val) => {
+          return {
+            ...val,
+            name: val?.customer_type || "",
+          };
+        });
+        setDataForDropDown([...cNewData]);
+
         break;
       case "SUB_SOURCE_OF_ENQUIRY":
         setDataForDropDown([...Enquiry_Sub_Source_Type_Data]);
@@ -1099,7 +2422,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         setDataForDropDown([...Salutation_Types]);
         break;
       case "GENDER":
-        setDataForDropDown([...selector.gender_types_data]);
+        setDataForDropDown([...Gender_Types]);
         break;
       case "RELATION":
         setDataForDropDown([...selector.relation_types_data]);
@@ -1126,7 +2449,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         setDataForDropDown([...Approx_Auual_Income_Types]);
         break;
       case "C_MAKE":
-        setDataForDropDown([...All_Car_Brands]);
+        setDataForDropDown([...makerData]);
         break;
       case "C_MODEL":
         setDataForDropDown([...c_model_types]);
@@ -1138,7 +2461,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         setDataForDropDown([...Transmission_Types]);
         break;
       case "R_MAKE":
-        setDataForDropDown([...All_Car_Brands]);
+        setDataForDropDown([...makerData]);
         break;
       case "R_MODEL":
         setDataForDropDown([...r_model_types]);
@@ -1175,7 +2498,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     fromInitialize,
     selectedVarientName
   ) => {
-    if (!selectedModelName || selectedModelName.length === 0) {
+    if (!selectedModelName || selectedModelName?.length === 0) {
       return;
     }
 
@@ -1216,7 +2539,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     let arrTemp = varientList.filter(function (obj) {
       return obj.name === selectedVarientName;
     });
-
     let carModelObj = arrTemp.length > 0 ? arrTemp[0] : undefined;
     if (carModelObj !== undefined) {
       let newArray = [];
@@ -1224,7 +2546,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       if (mArray.length) {
         mArray.map((item) => {
           newArray.push({
-            id: item.id,
+            id: item.varient_id,
             name: item.color,
           });
         });
@@ -1240,12 +2562,22 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const updateModelTypesForCustomerNeedAnalysis = (brandName, dropDownKey) => {
     let modelsData = [];
-    All_Car_Brands.forEach((item) => {
-      if (item.name === brandName) {
-        modelsData = item.models;
+    makerData.forEach((item) => {
+      if (item.otherMaker === brandName) {
+        let newArr = item.othermodels;
+        let finalArr = [];
+        newArr.forEach((newItem) => {
+          let newObj = {
+            ...newItem,
+            name: newItem.otherModel,
+          };
+          finalArr.push(newObj);
+        });
+
+        modelsData = finalArr;
       }
     });
-    console.log("modelsData: ", modelsData);
+    // alert("color")
     switch (dropDownKey) {
       case "C_MAKE":
         return set_c_model_types([...modelsData]);
@@ -1269,7 +2601,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       .split(".");
     // const fileName = fileNameArry.length > 0 ? fileNameArry[0] : "None";
     const fileName = uuid.v4();
-    console.log("uuid: ", fileName);
     formData.append("file", {
       name: `${fileName}-.${fileType}`,
       type: `image/${fileType}`,
@@ -1285,28 +2616,28 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         formData.append("documentType", "aadhar");
         break;
       case "UPLOAD_REG_DOC":
-        formData.append("documentType", "REGDOC");
+        formData.append("documentType", "regNoD");
         break;
       case "UPLOAD_INSURENCE":
         formData.append("documentType", "insurance");
         break;
       case "UPLOAD_EMPLOYEE_ID":
-        formData.append("documentType", "empId");
+        formData.append("documentType", "employeeId");
         break;
       case "UPLOAD_3_MONTHS_PAYSLIP":
-        formData.append("documentType", "payslip");
+        formData.append("documentType", "payslips");
         break;
       case "UPLOAD_PATTA_PASS_BOOK":
-        formData.append("documentType", "passbook");
+        formData.append("documentType", "pattaPassBook");
         break;
       case "UPLOAD_PENSION_LETTER":
-        formData.append("documentType", "pension");
+        formData.append("documentType", "pensionLetter");
         break;
       case "UPLOAD_IMA_CERTIFICATE":
         formData.append("documentType", "imaCertificate");
         break;
       case "UPLOAD_LEASING_CONFIRMATION":
-        formData.append("documentType", "leasingConfirm");
+        formData.append("documentType", "leasingConfirmationLetter");
         break;
       case "UPLOAD_ADDRESS_PROOF":
         formData.append("documentType", "address");
@@ -1320,16 +2651,44 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       method: "POST",
       headers: {
         "Content-Type": "multipart/form-data",
+        Authorization: "Bearer " + authToken,
       },
       body: formData,
     })
       .then((response) => response.json())
       .then((response) => {
-        //console.log('response', response);
         if (response) {
-          const dataObj = { ...uploadedImagesDataObj };
-          dataObj[response.documentType] = response;
-          setUploadedImagesDataObj({ ...dataObj });
+          if (keyId === "UPLOAD_REG_DOC") {
+            dispatch(
+              setReplacementBuyerDetails({
+                key: "R_REG_DOC_KEY",
+                text: response.keyName,
+              })
+            );
+            dispatch(
+              setReplacementBuyerDetails({
+                key: "R_REG_DOC_PATH",
+                text: response.documentPath,
+              })
+            );
+          } else if (keyId === "UPLOAD_INSURENCE") {
+            dispatch(
+              setReplacementBuyerDetails({
+                key: "R_INS_DOC_KEY",
+                text: response.keyName,
+              })
+            );
+            dispatch(
+              setReplacementBuyerDetails({
+                key: "R_INS_DOC_PATH",
+                text: response.documentPath,
+              })
+            );
+          } else {
+            const dataObj = { ...uploadedImagesDataObj };
+            dataObj[response.documentType] = response;
+            setUploadedImagesDataObj({ ...dataObj });
+          }
         }
       })
       .catch((error) => {
@@ -1349,29 +2708,52 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       case "AADHAR":
         delete imagesDataObj.aadhar;
         break;
-      case "REGDOC":
-        delete imagesDataObj.REGDOC;
+      case "regNoD":
+        dispatch(
+          setReplacementBuyerDetails({
+            key: "R_REG_DOC_KEY",
+            text: "",
+          })
+        );
+        dispatch(
+          setReplacementBuyerDetails({
+            key: "R_REG_DOC_PATH",
+            text: "",
+          })
+        );
         break;
       case "INSURENCE":
         delete imagesDataObj.insurance;
+        dispatch(
+          setReplacementBuyerDetails({
+            key: "R_INS_DOC_KEY",
+            text: "",
+          })
+        );
+        dispatch(
+          setReplacementBuyerDetails({
+            key: "R_INS_DOC_PATH",
+            text: "",
+          })
+        );
         break;
       case "EMPLOYEE_ID":
-        delete imagesDataObj.empId;
+        delete imagesDataObj.employeeId;
         break;
       case "3_MONTHS_PAYSLIP":
-        delete imagesDataObj.payslip;
+        delete imagesDataObj.payslips;
         break;
       case "PATTA_PASS_BOOK":
-        delete imagesDataObj.passbook;
+        delete imagesDataObj.pattaPassBook;
         break;
       case "PENSION_LETTER":
-        delete imagesDataObj.pension;
+        delete imagesDataObj.pensionLetter;
         break;
       case "IMA_CERTIFICATE":
         delete imagesDataObj.imaCertificate;
         break;
       case "LEASING_CONFIRMATION":
-        delete imagesDataObj.leasingConfirm;
+        delete imagesDataObj.leasingConfirmationLetter;
         break;
       case "ADDRESS_PROOF":
         delete imagesDataObj.address;
@@ -1398,20 +2780,60 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       </View>
     );
   };
-
+  const navigateToProforma = () => {
+    navigation.navigate(AppNavigator.EmsStackIdentifiers.ProformaScreen, {
+      modelDetails: selector.dmsLeadProducts[0],
+      branchId: selectedBranchId,
+      universalId: universalId,
+    });
+  };
   const updateAddressDetails = (pincode) => {
     if (pincode.length != 6) {
       return;
     }
 
-    PincodeDetails(pincode).then(
-      (resolve) => {
+    PincodeDetailsNew(pincode).then(
+      (res) => {
         // dispatch an action to update address
-        dispatch(updateAddressByPincode(resolve));
+        let tempAddr = [];
+        if (res) {
+          if (res.length > 0) {
+            for (let i = 0; i < res.length; i++) {
+              tempAddr.push({ label: res[i].Name, value: res[i] });
+              if (i === res.length - 1) {
+                setAddressData([...tempAddr]);
+              }
+            }
+          }
+        }
+        // dispatch(updateAddressByPincode(resolve));
       },
-      (rejected) => {
-        console.log("rejected...: ", rejected);
-      }
+      (rejected) => {}
+    );
+  };
+
+  const updateAddressDetails2 = (pincode) => {
+    if (pincode.length != 6) {
+      return;
+    }
+
+    PincodeDetailsNew(pincode).then(
+      (res) => {
+        // dispatch an action to update address
+        let tempAddr = [];
+        if (res) {
+          if (res.length > 0) {
+            for (let i = 0; i < res.length; i++) {
+              tempAddr.push({ label: res[i].Name, value: res[i] });
+              if (i === res.length - 1) {
+                setAddressData2([...tempAddr]);
+              }
+            }
+          }
+        }
+        // dispatch(updateAddressByPincode(resolve));
+      },
+      (rejected) => {}
     );
   };
 
@@ -1428,17 +2850,241 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     );
   }
 
+  const isPermanent = () => {
+    if (
+      selector?.p_pincode == selector?.pincode &&
+      selector?.p_houseNum == selector?.houseNum &&
+      selector?.p_streetName == selector?.streetName &&
+      selector?.p_village == selector?.village &&
+      selector?.p_mandal == selector?.mandal &&
+      selector?.p_city == selector?.city &&
+      selector?.p_district == selector?.district &&
+      selector?.p_state == selector?.state
+    ) {
+      return "YES";
+    } else {
+      return "NO";
+    }
+  };
+
+  const onEventInfoPress = () => {
+    // todo
+
+    let tempArr = [
+      {
+        eventName: enqDetails?.eventName,
+        eventLocation: enqDetails?.eventLocation,
+        Startdate: enqDetails?.eventStartDate,
+        Enddate: enqDetails?.eventEndDate,
+        isSelected: false,
+        id: 0,
+      },
+    ];
+
+    if (enqDetails.eventName !== null) {
+      seteventListData(tempArr);
+    }
+
+    setisEventListModalVisible(true);
+  };
+
+  const eventListTableRow = (
+    txt1,
+    txt2,
+    txt3,
+    txt4,
+    isDisplayRadio,
+    isRadioSelected,
+    isClickable,
+    itemMain,
+    index
+  ) => {
+    return (
+      <>
+        <TouchableOpacity
+          style={styles.eventTouchable}
+          disabled={true}
+          onPress={() => {
+            // let temp = [...eventListdata].filter(item => item.id === itemMain.id).map(i => i.isSelected = true)
+            let temp = eventListdata.map((i) =>
+              i.id === itemMain.id
+                ? { ...i, isSelected: true }
+                : { ...i, isSelected: false }
+            );
+
+            seteventListData(temp);
+          }}
+        >
+          {/* todo */}
+          {isDisplayRadio ? (
+            <Fontisto
+              name={
+                itemMain.isSelected ? "radio-btn-active" : "radio-btn-passive"
+              }
+              size={12}
+              color={Colors.RED}
+              style={{ marginEnd: 10 }}
+            />
+          ) : (
+            <View style={{ marginEnd: 10, width: 12 }}>{}</View>
+          )}
+
+          <Text numberOfLines={1} style={styles.eventText}>
+            {txt1}
+          </Text>
+          <Text numberOfLines={1} style={styles.eventText}>
+            {txt2}
+          </Text>
+          <Text numberOfLines={1} style={styles.eventText}>
+            {txt3}
+          </Text>
+          <Text numberOfLines={1} style={styles.eventText}>
+            {txt4}
+          </Text>
+        </TouchableOpacity>
+      </>
+    );
+  };
+
+  const addEventListModal = () => {
+    return (
+      <Modal
+        animationType="fade"
+        visible={isEventListModalVisible}
+        onRequestClose={() => {}}
+        transparent={true}
+      >
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgba(0,0,0,0.7)",
+          }}
+        >
+          <View style={styles.modelView}>
+            <Text style={styles.selectTitle}>Selected Event</Text>
+            <ScrollView
+              style={{
+                width: "100%",
+              }}
+              horizontal={true}
+            >
+              <View style={{ flexDirection: "column" }}>
+                <Text style={GlobalStyle.underline} />
+                <View
+                  style={{
+                    height: 30,
+                    borderBottomColor: "rgba(208, 212, 214, 0.7)",
+                    borderBottomWidth: 2,
+                  }}
+                >
+                  {eventListTableRow(
+                    "Event Name",
+                    "Event location",
+                    "Start Date",
+                    "End Date",
+                    false,
+                    false,
+                    true,
+                    0,
+                    0
+                  )}
+                  {/* <Text style={GlobalStyle.underline} /> */}
+                </View>
+                <View>
+                  <FlatList
+                    key={"EVENT_LIST"}
+                    data={eventListdata}
+                    style={{ height: "80%" }}
+                    keyExtractor={(item, index) => index.toString()}
+                    ListEmptyComponent={() => {
+                      return (
+                        <View
+                          style={{ alignItems: "center", marginVertical: 20 }}
+                        >
+                          <Text>{"Data Not Available"}</Text>
+                        </View>
+                      );
+                    }}
+                    renderItem={({ item, index }) => {
+                      return (
+                        <>
+                          <View
+                            style={{
+                              height: 35,
+                              borderBottomColor: "rgba(208, 212, 214, 0.7)",
+                              borderBottomWidth: 4,
+                              marginTop: 5,
+                            }}
+                          >
+                            {eventListTableRow(
+                              item.eventName,
+                              item.eventLocation,
+                              moment(item.Startdate).format("DD-MM-YYYY"),
+                              moment(item.Enddate).format("DD-MM-YYYY"),
+                              false,
+                              false,
+                              false,
+                              item,
+                              index
+                            )}
+                            {/* {eventListTableRow(item.eventName, item.eventLocation, item.Startdate, item.Enddate, false, false, false, item, index)} */}
+                          </View>
+                        </>
+                      );
+                    }}
+                  />
+                </View>
+              </View>
+            </ScrollView>
+            <View
+              style={{
+                flexDirection: "row",
+                alignSelf: "flex-end",
+                marginTop: 10,
+              }}
+            >
+              <Button
+                mode="contained"
+                style={{ width: "30%" }}
+                color={Colors.GRAY}
+                labelStyle={{ textTransform: "none" }}
+                onPress={() => {
+                  setisEventListModalVisible(false);
+                  // todo
+                  seteventListData([]);
+                }}
+              >
+                Close
+              </Button>
+              {/* <Button
+                mode="contained"
+
+                style={{ flex: 1 }}
+                color={Colors.PINK}
+                labelStyle={{ textTransform: "none" }}
+                onPress={() => addSelectedEvent()}>
+                Add
+              </Button> */}
+            </View>
+          </View>
+        </View>
+      </Modal>
+    );
+  };
+
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
       <ImagePickerComponent
         visible={selector.showImagePicker}
         keyId={selector.imagePickerKeyId}
         selectedImage={(data, keyId) => {
-          console.log("imageObj: ", data, keyId);
           uploadSelectedImage(data, keyId);
         }}
         onDismiss={() => dispatch(setImagePicker(""))}
       />
+      {addEventListModal()}
 
       <DropDownComponant
         visible={showDropDownModel}
@@ -1460,14 +3106,33 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           ) {
             updateModelTypesForCustomerNeedAnalysis(item.name, dropDownKey);
           }
+
+          if (
+            dropDownKey === "RETAIL_FINANCE" &&
+            selector.retail_finance !== item.name
+          ) {
+            dispatch(
+              setFinancialDetails({ key: "BANK_R_FINANCE_NAME", text: "" })
+            );
+            dispatch(setFinancialDetails({ key: "LOAN_AMOUNT", text: "" }));
+            dispatch(
+              setFinancialDetails({ key: "RATE_OF_INTEREST", text: "" })
+            );
+          }
+
           setShowDropDownModel(false);
           dispatch(
-            setDropDownData({ key: dropDownKey, value: item.name, id: item.id })
+            setDropDownData({
+              key: dropDownKey,
+              value: item.name,
+              id: item.id,
+              orgId: userData.orgId,
+            })
           );
         }}
       />
 
-      {selector.showDatepicker && (
+      {/* {selector.showDatepicker && (
         <DatePickerComponent
           visible={selector.showDatepicker}
           mode={"date"}
@@ -1475,7 +3140,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           minimumDate={selector.minDate}
           maximumDate={selector.maxDate}
           onChange={(event, selectedDate) => {
-            console.log("date: ", selectedDate);
             if (Platform.OS === "android") {
               if (!selectedDate) {
                 dispatch(
@@ -1490,7 +3154,29 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           }}
           onRequestClose={() => dispatch(setDatePicker())}
         />
-      )}
+      )} */}
+
+      {/* {selector.showDatepicker && ( */}
+      <DatePickerComponent
+        visible={selector.showDatepicker}
+        mode={"date"}
+        value={new Date(Date.now())}
+        minimumDate={selector.minDate}
+        maximumDate={selector.maxDate}
+        onChange={(event, selectedDate) => {
+          if (Platform.OS === "android") {
+            if (!selectedDate) {
+              dispatch(updateSelectedDate({ key: "NONE", text: selectedDate }));
+            } else {
+              dispatch(updateSelectedDate({ key: "", text: selectedDate }));
+            }
+          } else {
+            dispatch(updateSelectedDate({ key: "", text: selectedDate }));
+          }
+        }}
+        onRequestClose={() => dispatch(setDatePicker())}
+      />
+      {/* )} */}
 
       {/* <View style={styles.view1}>
         <Text style={styles.titleText}>{"Details Overview"}</Text>
@@ -1517,32 +3203,304 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           automaticallyAdjustContentInsets={true}
           bounces={true}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingVertical: 10, paddingHorizontal: 5 }}
+          contentContainerStyle={{
+            paddingVertical: 10,
+            paddingHorizontal: 5,
+          }}
           keyboardShouldPersistTaps={"handled"}
           style={{ flex: 1 }}
+          ref={scrollRef}
         >
           <View style={styles.baseVw}>
+           
+                 {(leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY' && carModelsList && carModelsList.length > 0) ?
+                  <Button style={{ height: 40, width: 200, marginBottom: 15, alignSelf: 'flex-end', alignContent: 'center', backgroundColor: Colors.PINK, color: Colors.WHITE }}
+              labelStyle={{ textTransform: "none", fontSize: 16, color: Colors.WHITE }}
+                onPress={() => navigateToProforma()}><Text>Proforma Invoice</Text></Button> : null}
+
+            {/* 
+           {(leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY' && carModelsList && carModelsList.length > 0) ?
+            <Button style={{height:40, width:200,marginBottom:15, alignSelf:'flex-end', alignContent:'center', backgroundColor:Colors.PINK, color: Colors.WHITE}}
+              labelStyle={{ textTransform: "none",fontSize:16, color: Colors.WHITE }}
+                onPress={() => navigateToProforma()}><Text>Proforma Invoice</Text></Button> : null} */}
+
             <List.AccordionGroup
               expandedId={openAccordian}
               onAccordionPress={(expandedId) => updateAccordian(expandedId)}
             >
-              {/* 1.Customer Profile */}
+              {/* {leadStatus === "ENQUIRYCOMPLETED" && leadStage === "ENQUIRY" ? (
+                <List.Accordion
+                  id={"10"}
+                  title={"Proforma Invoice"}
+                  titleStyle={{
+                    color: openAccordian === "10" ? Colors.BLACK : Colors.BLACK,
+                    fontSize: 16,
+                    fontWeight: "600",
+                  }}
+                  style={[
+                    {
+                      backgroundColor:
+                        openAccordian === "10" ? Colors.RED : Colors.WHITE,
+                      height: 60,
+                      // justifyContent: 'center'
+                    },
+                    styles.accordianBorder,
+                  ]}
+                >
+                  <ProformaComp
+                    route={route}
+                    userData={userData}
+                    modelDetails={selector.dmsLeadProducts[0]}
+                    branchId={selectedBranchId}
+                    universalId={route.params.universalId}
+                  />
+                </List.Accordion>
+              ) : null}
+              <View style={styles.space}></View> */}
+
+              {/* 1. Personal Intro */}
               <List.Accordion
-                id={"1"}
-                title={"Customer Profile"}
+                id={"2"}
+                title="Personal Info"
                 titleStyle={{
-                  color: openAccordian === "1" ? Colors.WHITE : Colors.BLACK,
+                  color: openAccordian === "2" ? Colors.BLACK : Colors.BLACK,
                   fontSize: 16,
                   fontWeight: "600",
                 }}
                 style={[
                   {
                     backgroundColor:
-                      openAccordian === "1"
-                        ? Colors.RED
-                        : Colors.SKY_LIGHT_BLUE_COLOR,
-                        height: 50,
-                        // justifyContent: 'center'
+                      openAccordian === "2" ? Colors.RED : Colors.WHITE,
+                    height: 60,
+                  },
+                  styles.accordianBorder,
+                ]}
+              >
+                <View style={styles.view3}>
+                  <View
+                    style={{
+                      width:
+                        selector.enquiry_segment.toLowerCase() === "personal"
+                          ? "45%"
+                          : "100%",
+                    }}
+                  >
+                    <DropDownSelectionItem
+                      label={"Salutation"}
+                      value={selector.salutation}
+                      onPress={() =>
+                        showDropDownModelMethod(
+                          "SALUTATION",
+                          "Select Salutation"
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline} />
+                  </View>
+                  <View style={{ width: "45%" }}>
+                    {selector.enquiry_segment.toLowerCase() === "personal" ? (
+                      <>
+                        <DropDownSelectionItem
+                          label={"Gender*"}
+                          value={selector.gender}
+                          onPress={() =>
+                            showDropDownModelMethod("GENDER", "Gender")
+                          }
+                        />
+
+                        <Text
+                          style={[
+                            GlobalStyle.underline,
+                            {
+                              backgroundColor:
+                                isSubmitPress && selector.gender === ""
+                                  ? "red"
+                                  : "rgba(208, 212, 214, 0.7)",
+                            },
+                          ]}
+                        ></Text>
+                      </>
+                    ) : null}
+                  </View>
+                </View>
+                <TextinputComp
+                  style={styles.textInputStyle}
+                  value={selector.firstName}
+                  label={"First Name*"}
+                  autoCapitalize="words"
+                  keyboardType={"default"}
+                  // editable={false}
+                  onChangeText={(text) =>
+                    dispatch(
+                      setPersonalIntro({ key: "FIRST_NAME", text: text })
+                    )
+                  }
+                />
+                <Text
+                  style={[
+                    GlobalStyle.underline,
+                    {
+                      backgroundColor:
+                        isSubmitPress && selector.firstName === ""
+                          ? "red"
+                          : "rgba(208, 212, 214, 0.7)",
+                    },
+                  ]}
+                ></Text>
+                <TextinputComp
+                  style={styles.textInputStyle}
+                  value={selector.lastName}
+                  label={"Last Name*"}
+                  // editable={false}
+                  autoCapitalize={"words"}
+                  keyboardType={"default"}
+                  onChangeText={(text) =>
+                    dispatch(setPersonalIntro({ key: "LAST_NAME", text: text }))
+                  }
+                />
+                <Text
+                  style={[
+                    GlobalStyle.underline,
+                    {
+                      backgroundColor:
+                        isSubmitPress && selector.lastName === ""
+                          ? "red"
+                          : "rgba(208, 212, 214, 0.7)",
+                    },
+                  ]}
+                ></Text>
+
+                <View style={styles.view3}>
+                  <View style={{ width: "45%" }}>
+                    <DropDownSelectionItem
+                      label={"Relation"}
+                      value={selector.relation}
+                      onPress={() =>
+                        showDropDownModelMethod("RELATION", "Relation")
+                      }
+                    />
+                  </View>
+                  <View style={{ width: "45%" }}>
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.relationName}
+                      label={"Relation Name"}
+                      autoCapitalize="words"
+                      keyboardType={"default"}
+                      maxLength={50}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setPersonalIntro({ key: "RELATION_NAME", text: text })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                  </View>
+                </View>
+
+                <TextinputComp
+                  style={styles.textInputStyle}
+                  value={selector.mobile}
+                  label={"Mobile Number*"}
+                  editable={false}
+                  maxLength={10}
+                  keyboardType={"phone-pad"}
+                  onChangeText={(text) =>
+                    dispatch(setPersonalIntro({ key: "MOBILE", text: text }))
+                  }
+                />
+                <Text
+                  style={[
+                    GlobalStyle.underline,
+                    {
+                      backgroundColor:
+                        isSubmitPress && selector.mobile === ""
+                          ? "red"
+                          : "rgba(208, 212, 214, 0.7)",
+                    },
+                  ]}
+                ></Text>
+                <TextinputComp
+                  style={styles.textInputStyle}
+                  value={selector.alterMobile}
+                  label={"Alternate Mobile Number"}
+                  editable={true}
+                  keyboardType={"phone-pad"}
+                  maxLength={10}
+                  onChangeText={(text) =>
+                    dispatch(
+                      setPersonalIntro({ key: "ALTER_MOBILE", text: text })
+                    )
+                  }
+                />
+                <Text style={GlobalStyle.underline}></Text>
+                <TextinputComp
+                  style={styles.textInputStyle}
+                  value={selector.email}
+                  label={"Email ID"}
+                  editable={true}
+                  keyboardType={"email-address"}
+                  onChangeText={(text) =>
+                    dispatch(setPersonalIntro({ key: "EMAIL", text: text }))
+                  }
+                />
+                <Text style={GlobalStyle.underline}></Text>
+
+                {selector.enquiry_segment.toLowerCase() == "personal" ? (
+                  <View>
+                    <View style={styles.view3}>
+                      <View style={{ width: "45%" }}>
+                        <DateSelectItem
+                          label={"Date Of Birth"}
+                          value={selector.dateOfBirth}
+                          onPress={() =>
+                            dispatch(setDatePicker("DATE_OF_BIRTH"))
+                          }
+                        />
+                      </View>
+                      <View style={{ width: "45%" }}>
+                        <TextinputComp
+                          style={styles.textInputStyle}
+                          value={selector?.age?.toString()}
+                          label={"Age"}
+                          keyboardType={"phone-pad"}
+                          maxLength={5}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setPersonalIntro({ key: "AGE", text: text })
+                            )
+                          }
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                      </View>
+                    </View>
+                    <DateSelectItem
+                      label={"Anniversary Date"}
+                      value={selector.anniversaryDate}
+                      onPress={() =>
+                        dispatch(setDatePicker("ANNIVERSARY_DATE"))
+                      }
+                    />
+                  </View>
+                ) : null}
+              </List.Accordion>
+              <View style={styles.space}></View>
+
+              {/* 2.Customer Profile */}
+              <List.Accordion
+                id={"1"}
+                title={"Customer Profile"}
+                titleStyle={{
+                  color: openAccordian === "1" ? Colors.BLACK : Colors.BLACK,
+                  fontSize: 16,
+                  fontWeight: "600",
+                }}
+                style={[
+                  {
+                    backgroundColor:
+                      openAccordian === "1" ? Colors.RED : Colors.WHITE,
+                    height: 60,
+                    // justifyContent: 'center'
                   },
                   styles.accordianBorder,
                 ]}
@@ -1551,7 +3509,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.occupation}
                   autoCapitalize="words"
-                  label={"Occupation*"}
+                  label={"Occupation"}
                   keyboardType={"default"}
                   maxLength={40}
                   onChangeText={(text) =>
@@ -1565,7 +3523,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.designation}
                   autoCapitalize="words"
-                  label={"Designation*"}
+                  label={"Designation"}
                   keyboardType={"default"}
                   maxLength={40}
                   onChangeText={(text) =>
@@ -1574,7 +3532,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     )
                   }
                 />
-                <Text style={GlobalStyle.underline}></Text>
+                <Text style={GlobalStyle.underline} />
 
                 <DropDownSelectionItem
                   label={"Enquiry Segment*"}
@@ -1589,7 +3547,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 />
 
                 <DropDownSelectionItem
-                  label={"Customer Type"}
+                  label={"Customer Type*"}
                   // disabled={!selector.enableEdit}
                   value={selector.customer_type}
                   onPress={() =>
@@ -1601,11 +3559,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 />
 
                 {selector.customer_type.toLowerCase() === "fleet" ||
-                  selector.customer_type.toLowerCase() === "institution" ||
-                  selector.customer_type.toLowerCase() === "corporate" ||
-                  selector.customer_type.toLowerCase() === "government" ||
-                  selector.customer_type.toLowerCase() === "retired" ||
-                  selector.customer_type.toLowerCase() === "other" ? (
+                selector.customer_type.toLowerCase() === "institution" ||
+                selector.customer_type.toLowerCase() === "corporate" ||
+                selector.customer_type.toLowerCase() === "government" ||
+                selector.customer_type.toLowerCase() === "retired" ||
+                selector.customer_type.toLowerCase() === "other" ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -1630,8 +3588,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.source_of_enquiry}
-                  label={"Source Of Enquiry"}
+                  label={"Source Of Enquiry*"}
                   editable={false}
+                  rightIconObj={{
+                    name: "information-outline",
+                    color: Colors.GRAY,
+                  }}
+                  showRightIcon={
+                    selector.source_of_enquiry === "Events" ? true : false
+                  }
+                  onRightIconPressed={onEventInfoPress}
                 />
                 <Text style={GlobalStyle.underline}></Text>
 
@@ -1655,19 +3621,19 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     .toLowerCase()
                     .trim()
                     .replace(/ /g, "") === "socialnetwork") && (
-                    <View>
-                      <DropDownSelectionItem
-                        label={"Sub Source Of Enquiry"}
-                        value={selector.sub_source_of_enquiry}
-                        onPress={() =>
-                          showDropDownModelMethod(
-                            "SUB_SOURCE_OF_ENQUIRY",
-                            "Sub Source Of Enquiry"
-                          )
-                        }
-                      />
-                    </View>
-                  )}
+                  <View>
+                    <DropDownSelectionItem
+                      label={"Sub Source Of Enquiry"}
+                      value={selector.sub_source_of_enquiry}
+                      onPress={() =>
+                        showDropDownModelMethod(
+                          "SUB_SOURCE_OF_ENQUIRY",
+                          "Sub Source Of Enquiry"
+                        )
+                      }
+                    />
+                  </View>
+                )}
 
                 {selector.source_of_enquiry.toLowerCase() === "reference" && (
                   <View>
@@ -1743,33 +3709,54 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 )}
 
                 <DateSelectItem
-                  label={"Expected Delivery Date"}
-                  value={selector.expected_delivery_date}
+                  label={"Expected Delivery Date*"}
+                  value={
+                    selector.expected_delivery_date
+                      ? moment(
+                          new Date(Number(selector.expected_delivery_date))
+                        ).format("DD/MM/YYYY")
+                      : moment().format("DD/MM/YYYY")
+                  }
                   onPress={() =>
                     dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
                   }
                 />
 
                 <DropDownSelectionItem
-                  label={"Enquiry Category"}
+                  label={"Enquiry Category*"}
                   disabled={true}
-                  value={selector.enquiry_category}
+                  value={
+                    selector.enquiry_category.length == 0
+                      ? "Hot"
+                      : selector.enquiry_category
+                  }
                   onPress={() =>
                     showDropDownModelMethod(
                       "ENQUIRY_CATEGORY",
                       "Enquiry Category"
                     )
                   }
+                  isDropDownIconShow={false}
                 />
 
                 <DropDownSelectionItem
-                  label={"Buyer Type"}
+                  label={"Buyer Type*"}
                   value={selector.buyer_type}
                   onPress={() =>
                     showDropDownModelMethod("BUYER_TYPE", "Buyer Type")
                   }
                 />
-
+                <Text
+                  style={[
+                    GlobalStyle.underline,
+                    {
+                      backgroundColor:
+                        isSubmitPress && selector.buyer_type === ""
+                          ? "red"
+                          : "rgba(208, 212, 214, 0.7)",
+                    },
+                  ]}
+                ></Text>
                 <DropDownSelectionItem
                   label={"KMs Travelled in Month"}
                   value={selector.kms_travelled_month}
@@ -1801,165 +3788,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 />
 
                 <DropDownSelectionItem
-                  label={"What is prime expectation from the car?"}
+                  label={"What is prime expectation from the Vehicle?"}
                   value={selector.prime_expectation_from_car}
                   onPress={() =>
                     showDropDownModelMethod(
                       "PRIME_EXPECTATION_CAR",
-                      "What is prime expectation from the car?"
+                      "What is prime expectation from the Vehicle?"
                     )
                   }
                 />
-              </List.Accordion>
-              <View style={styles.space}></View>
-              {/* 2. Personal Intro */}
-              <List.Accordion
-                id={"2"}
-                title="Personal Intro"
-                titleStyle={{
-                  color: openAccordian === "2" ? Colors.WHITE : Colors.BLACK,
-                  fontSize: 16,
-                  fontWeight: "600",
-                }}
-                style={[
-                  {
-                    backgroundColor:
-                      openAccordian === "2"
-                        ? Colors.RED
-                        : Colors.SKY_LIGHT_BLUE_COLOR,
-                    height: 50,
-                  },
-                  styles.accordianBorder,
-                ]}
-              >
-                <DropDownSelectionItem
-                  label={"Salutation*"}
-                  value={selector.salutation}
-                  onPress={() =>
-                    showDropDownModelMethod("SALUTATION", "Select Salutation")
-                  }
-                />
-
-                {selector.enquiry_segment.toLowerCase() == "personal" ? (
-                  <DropDownSelectionItem
-                    label={"Gender"}
-                    value={selector.gender}
-                    onPress={() => showDropDownModelMethod("GENDER", "Gender")}
-                  />
-                ) : null}
-
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.firstName}
-                  label={"First Name*"}
-                  autoCapitalize="words"
-                  keyboardType={"default"}
-                  editable={false}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setPersonalIntro({ key: "FIRST_NAME", text: text })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.lastName}
-                  label={"Last Name*"}
-                  editable={false}
-                  autoCapitalize={"words"}
-                  keyboardType={"default"}
-                  onChangeText={(text) =>
-                    dispatch(setPersonalIntro({ key: "LAST_NAME", text: text }))
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <DropDownSelectionItem
-                  label={"Relation"}
-                  value={selector.relation}
-                  onPress={() =>
-                    showDropDownModelMethod("RELATION", "Relation")
-                  }
-                />
-
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.relationName}
-                  label={"Relation Name*"}
-                  autoCapitalize="words"
-                  keyboardType={"default"}
-                  maxLength={50}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setPersonalIntro({ key: "RELATION_NAME", text: text })
-                    )
-                  }
-                />
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.mobile}
-                  label={"Mobile Number*"}
-                  editable={false}
-                  maxLength={10}
-                  keyboardType={"phone-pad"}
-                  onChangeText={(text) =>
-                    dispatch(setPersonalIntro({ key: "MOBILE", text: text }))
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.alterMobile}
-                  label={"Alternate Mobile Number"}
-                  editable={true}
-                  keyboardType={"phone-pad"}
-                  maxLength={10}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setPersonalIntro({ key: "ALTER_MOBILE", text: text })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.email}
-                  label={"Email ID*"}
-                  editable={true}
-                  keyboardType={"email-address"}
-                  onChangeText={(text) =>
-                    dispatch(setPersonalIntro({ key: "EMAIL", text: text }))
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-
-                {selector.enquiry_segment.toLowerCase() == "personal" ? (
-                  <View>
-                    <DateSelectItem
-                      label={"Date Of Birth"}
-                      value={selector.dateOfBirth}
-                      onPress={() => dispatch(setDatePicker("DATE_OF_BIRTH"))}
-                    />
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      value={selector.age}
-                      label={"Age"}
-                      keyboardType={"phone-pad"}
-                      maxLength={10}
-                      onChangeText={(text) =>
-                        dispatch(setPersonalIntro({ key: "AGE", text: text }))
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <DateSelectItem
-                      label={"Anniversary Date"}
-                      value={selector.anniversaryDate}
-                      onPress={() =>
-                        dispatch(setDatePicker("ANNIVERSARY_DATE"))
-                      }
-                    />
-                  </View>
-                ) : null}
               </List.Accordion>
               <View style={styles.space}></View>
               {/* // 3.Communication Address */}
@@ -1967,17 +3804,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 id={"3"}
                 title={"Communication Address"}
                 titleStyle={{
-                  color: openAccordian === "3" ? Colors.WHITE : Colors.BLACK,
+                  color: openAccordian === "3" ? Colors.BLACK : Colors.BLACK,
                   fontSize: 16,
                   fontWeight: "600",
                 }}
                 style={[
                   {
                     backgroundColor:
-                      openAccordian === "3"
-                        ? Colors.RED
-                        : Colors.SKY_LIGHT_BLUE_COLOR,
-                    height: 50,
+                      openAccordian === "3" ? Colors.RED : Colors.WHITE,
+                    height: 60,
                   },
                   styles.accordianBorder,
                 ]}
@@ -1990,14 +3825,52 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   keyboardType={"phone-pad"}
                   onChangeText={(text) => {
                     // get addreess by pincode
-                    if (text.length === 6) {
+                    if (text?.length === 6) {
                       updateAddressDetails(text);
                     }
                     dispatch(
                       setCommunicationAddress({ key: "PINCODE", text: text })
                     );
+                    setDefaultAddress(null);
                   }}
                 />
+                <Text
+                  style={[
+                    GlobalStyle.underline,
+                    {
+                      backgroundColor:
+                        isSubmitPress && selector.pincode === ""
+                          ? "red"
+                          : "rgba(208, 212, 214, 0.7)",
+                    },
+                  ]}
+                ></Text>
+
+                {addressData?.length > 0 && (
+                  <>
+                    <Text style={GlobalStyle.underline}></Text>
+                    <Dropdown
+                      style={[styles.dropdownContainer]}
+                      placeholderStyle={styles.placeholderStyle}
+                      selectedTextStyle={styles.selectedTextStyle}
+                      inputSearchStyle={styles.inputSearchStyle}
+                      iconStyle={styles.iconStyle}
+                      data={addressData}
+                      search
+                      maxHeight={300}
+                      labelField="label"
+                      valueField="value"
+                      placeholder={"Select address"}
+                      searchPlaceholder="Search..."
+                      value={defaultAddress}
+                      // onFocus={() => setIsFocus(true)}
+                      // onBlur={() => setIsFocus(false)}
+                      onChange={(val) => {
+                        dispatch(updateAddressByPincode(val.value));
+                      }}
+                    />
+                  </>
+                )}
                 <Text style={GlobalStyle.underline}></Text>
                 <View style={styles.radioGroupBcVw}>
                   <RadioTextItem
@@ -2031,20 +3904,20 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.houseNum}
-                  label={"H.No*"}
+                  label={"H.No"}
                   maxLength={50}
-                  keyboardType={"default"}
+                  // keyboardType={"number-pad"}
                   onChangeText={(text) =>
                     dispatch(
                       setCommunicationAddress({ key: "HOUSE_NO", text: text })
                     )
                   }
                 />
-                <Text style={GlobalStyle.underline}></Text>
+                <Text style={GlobalStyle.underline} />
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.streetName}
-                  label={"Street Name*"}
+                  label={"Street Name"}
                   autoCapitalize="words"
                   maxLength={120}
                   keyboardType={"default"}
@@ -2057,79 +3930,95 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     )
                   }
                 />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.village}
-                  label={"Village/Town*"}
-                  autoCapitalize="words"
-                  maxLength={50}
-                  keyboardType={"default"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCommunicationAddress({ key: "VILLAGE", text: text })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
+                <Text style={GlobalStyle.underline} />
+                {/* {selector.isAddressSet && ( */}
+                <>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.village}
+                    label={"Village/Town"}
+                    autoCapitalize="words"
+                    maxLength={50}
+                    keyboardType={"default"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "VILLAGE",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline} />
 
- <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.mandal}
-                  label={"Mandal*"}
-                  autoCapitalize="words"
-                  maxLength={50}
-                  keyboardType={"default"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCommunicationAddress({ key: "MANDAL", text: text })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.mandal}
+                    label={"Mandal/Tahsil"}
+                    autoCapitalize="words"
+                    maxLength={50}
+                    keyboardType={"default"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "MANDAL",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline} />
 
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.city}
-                  label={"City*"}
-                  autoCapitalize="words"
-                  maxLength={50}
-                  keyboardType={"default"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCommunicationAddress({ key: "CITY", text: text })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.district}
-                  label={"District*"}
-                  autoCapitalize="words"
-                  maxLength={50}
-                  keyboardType={"default"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCommunicationAddress({ key: "DISTRICT", text: text })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.state}
-                  label={"State*"}
-                  autoCapitalize="words"
-                  maxLength={50}
-                  keyboardType={"default"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCommunicationAddress({ key: "STATE", text: text })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.city}
+                    label={"City"}
+                    autoCapitalize="words"
+                    maxLength={50}
+                    keyboardType={"default"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({ key: "CITY", text: text })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline} />
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.district}
+                    label={"District"}
+                    autoCapitalize="words"
+                    maxLength={50}
+                    keyboardType={"default"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "DISTRICT",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline} />
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.state}
+                    label={"State"}
+                    autoCapitalize="words"
+                    maxLength={50}
+                    keyboardType={"default"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "STATE",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline} />
+                </>
+                {/* )} */}
                 <View
                   style={{ height: 20, backgroundColor: Colors.WHITE }}
                 ></View>
@@ -2147,7 +4036,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     label={"Yes"}
                     value={"yes"}
                     status={
-                      selector.is_permanent_address_same === "YES"
+                      selector.is_permanent_address_same === "YES" ||
+                      isPermanent() === "YES"
                         ? true
                         : false
                     }
@@ -2166,184 +4056,229 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     status={
                       selector.is_permanent_address_same === "NO" ? true : false
                     }
-                    onPress={() =>
+                    onPress={() => {
                       dispatch(
                         setCommunicationAddress({
                           key: "PERMANENT_ADDRESS",
                           text: "false",
                         })
-                      )
-                    }
+                      );
+                      dispatch(clearPermanentAddr());
+                    }}
                   />
                 </View>
                 <Text style={GlobalStyle.underline}></Text>
 
-                {selector.is_permanent_address_same === "NO" ? (
-                  <View>
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      value={selector.p_pincode}
-                      label={"Pincode*"}
-                      maxLength={6}
-                      keyboardType={"phone-pad"}
-                      onChangeText={(text) =>
+                {/* {selector.is_permanent_address_same === "NO" ? ( */}
+                <View>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.p_pincode}
+                    label={"Pincode*"}
+                    maxLength={6}
+                    keyboardType={"phone-pad"}
+                    onChangeText={(text) => {
+                      if (text?.length === 6) {
+                        updateAddressDetails2(text);
+                      }
+                      dispatch(
                         dispatch(
                           setCommunicationAddress({
                             key: "P_PINCODE",
                             text: text,
                           })
                         )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
+                      );
+                    }}
+                  />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.p_pincode === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
 
-                    <View style={styles.radioGroupBcVw}>
-                      <RadioTextItem
-                        label={"Urban"}
-                        value={"urban"}
-                        status={selector.p_urban_or_rural === 1 ? true : false}
-                        onPress={() =>
-                          dispatch(
-                            setCommunicationAddress({
-                              key: "P_RURAL_URBAN",
-                              text: "1",
-                            })
-                          )
-                        }
+                  {addressData2?.length > 0 && (
+                    <>
+                      <Text style={GlobalStyle.underline}></Text>
+                      <Dropdown
+                        style={[styles.dropdownContainer]}
+                        placeholderStyle={styles.placeholderStyle}
+                        selectedTextStyle={styles.selectedTextStyle}
+                        inputSearchStyle={styles.inputSearchStyle}
+                        iconStyle={styles.iconStyle}
+                        data={addressData2}
+                        search
+                        maxHeight={300}
+                        labelField="label"
+                        valueField="value"
+                        placeholder={"Select address"}
+                        searchPlaceholder="Search..."
+                        // value={defaultAddress}
+                        // onFocus={() => setIsFocus(true)}
+                        // onBlur={() => setIsFocus(false)}
+                        onChange={(val) => {
+                          dispatch(updateAddressByPincode2(val.value));
+                        }}
                       />
-                      <RadioTextItem
-                        label={"Rural"}
-                        value={"rural"}
-                        status={selector.p_urban_or_rural === 2 ? true : false}
-                        onPress={() =>
-                          dispatch(
-                            setCommunicationAddress({
-                              key: "P_RURAL_URBAN",
-                              text: "2",
-                            })
-                          )
-                        }
-                      />
-                    </View>
-                    <Text style={GlobalStyle.underline}></Text>
+                    </>
+                  )}
 
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      label={"H.No*"}
-                      keyboardType={"default"}
-                      maxLength={50}
-                      value={selector.p_houseNum}
-                      onChangeText={(text) =>
+                  <View style={styles.radioGroupBcVw}>
+                    <RadioTextItem
+                      label={"Urban"}
+                      value={"urban"}
+                      status={selector.p_urban_or_rural === 1 ? true : false}
+                      onPress={() =>
                         dispatch(
                           setCommunicationAddress({
-                            key: "P_HOUSE_NO",
-                            text: text,
+                            key: "P_RURAL_URBAN",
+                            text: "1",
                           })
                         )
                       }
                     />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      label={"Street Name*"}
-                      autoCapitalize="words"
-                      keyboardType={"default"}
-                      maxLength={50}
-                      value={selector.p_streetName}
-                      onChangeText={(text) =>
+                    <RadioTextItem
+                      label={"Rural"}
+                      value={"rural"}
+                      status={selector.p_urban_or_rural === 2 ? true : false}
+                      onPress={() =>
                         dispatch(
                           setCommunicationAddress({
-                            key: "P_STREET_NAME",
-                            text: text,
+                            key: "P_RURAL_URBAN",
+                            text: "2",
                           })
                         )
                       }
                     />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      value={selector.p_village}
-                      label={"Village/Town*"}
-                      autoCapitalize="words"
-                      maxLength={50}
-                      keyboardType={"default"}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setCommunicationAddress({
-                            key: "P_VILLAGE",
-                            text: text,
-                          })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                     <TextinputComp
-                      style={styles.textInputStyle}
-                      value={selector.p_mandal}
-                      label={"Mandal*"}
-                      autoCapitalize="words"
-                      maxLength={50}
-                      keyboardType={"default"}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setCommunicationAddress({
-                            key: "P_MANDAL",
-                            text: text,
-                          })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      value={selector.p_city}
-                      label={"City*"}
-                      autoCapitalize="words"
-                      maxLength={50}
-                      keyboardType={"default"}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setCommunicationAddress({ key: "P_CITY", text: text })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      value={selector.p_district}
-                      label={"District*"}
-                      autoCapitalize="words"
-                      maxLength={50}
-                      keyboardType={"default"}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setCommunicationAddress({
-                            key: "P_DISTRICT",
-                            text: text,
-                          })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      value={selector.p_state}
-                      label={"State*"}
-                      autoCapitalize="words"
-                      maxLength={50}
-                      keyboardType={"default"}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setCommunicationAddress({
-                            key: "P_STATE",
-                            text: text,
-                          })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
                   </View>
-                ) : null}
+                  <Text style={GlobalStyle.underline}></Text>
+
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    label={"H.No"}
+                    // keyboardType={"number-pad"}
+                    maxLength={50}
+                    value={selector.p_houseNum}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "P_HOUSE_NO",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline} />
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    label={"Street Name"}
+                    autoCapitalize="words"
+                    keyboardType={"default"}
+                    maxLength={50}
+                    value={selector.p_streetName}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "P_STREET_NAME",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.p_village}
+                    label={"Village/Town"}
+                    autoCapitalize="words"
+                    maxLength={50}
+                    keyboardType={"default"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "P_VILLAGE",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline} />
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.p_mandal}
+                    label={"Mandal"}
+                    autoCapitalize="words"
+                    maxLength={50}
+                    keyboardType={"default"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "P_MANDAL",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.p_city}
+                    label={"City"}
+                    autoCapitalize="words"
+                    maxLength={50}
+                    keyboardType={"default"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "P_CITY",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline} />
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.p_district}
+                    label={"District"}
+                    autoCapitalize="words"
+                    maxLength={50}
+                    keyboardType={"default"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "P_DISTRICT",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline} />
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.p_state}
+                    label={"State"}
+                    autoCapitalize="words"
+                    maxLength={50}
+                    keyboardType={"default"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "P_STATE",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline} />
+                </View>
+                {/* ) : null} */}
               </List.Accordion>
               <View style={styles.space}></View>
               {/* // 4.Model Selection */}
@@ -2351,37 +4286,91 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 id={"4"}
                 title={"Model Selection"}
                 titleStyle={{
-                  color: openAccordian === "4" ? Colors.WHITE : Colors.BLACK,
+                  color: openAccordian === "4" ? Colors.BLACK : Colors.BLACK,
                   fontSize: 16,
                   fontWeight: "600",
                 }}
                 style={[
                   {
                     backgroundColor:
-                      openAccordian === "4"
-                        ? Colors.RED
-                        : Colors.SKY_LIGHT_BLUE_COLOR,
-                    height: 50,
+                      openAccordian === "4" ? Colors.RED : Colors.WHITE,
+                    height: 60,
                   },
                   styles.accordianBorder,
                 ]}
               >
-                <DropDownSelectionItem
-                  label={"Model*"}
-                  value={selector.model}
-                  onPress={() =>
-                    showDropDownModelMethod("MODEL", "Select Model")
-                  }
+                {/* <View style={{marginHorizontal:5}}> */}
+                <TouchableOpacity
+                  onPress={() => {
+                    if (checkModelSelection()) {
+                      scrollToPos(4);
+                      setOpenAccordian("4");
+                      return;
+                    }
+
+                    const carmodeldata = {
+                      color: "",
+                      fuel: "",
+                      id: 0,
+                      model: "",
+                      transimmisionType: "",
+                      variant: "",
+                      isPrimary: "N",
+                    };
+
+                    let arr = [...carModelsList];
+                    arr.push(carmodeldata);
+                    setCarModelsList(arr);
+                    //selector.dmsLeadProducts = [...selector.dmsLeadProducts, carmodeldata]
+                  }}
+                  style={styles.addmodelbtn}
+                >
+                  <Text style={styles.addmodeltxt}>Add Model</Text>
+                </TouchableOpacity>
+                <FlatList
+                  //  style={{ height: faltListHeight }}
+                  data={carModelsList}
+                  extraData={carModelsList}
+                  // keyExtractor={(item, index) => item.id.toString()}
+                  renderItem={({ item, index }) => {
+                    return (
+                      // <Pressable onPress={() => selectedItem(item, index)}>
+                      <View>
+                        <ModelListitemCom
+                          modelOnclick={modelOnclick}
+                          isPrimaryOnclick={isPrimaryOnclick}
+                          index={index}
+                          item={item}
+                          isSubmitPress={isSubmitPress}
+                          isOnlyOne={carModelsList.length === 1 ? true : false}
+                          onChangeSubmit={() => setIsSubmitPress(false)}
+                        />
+
+                        {/* <Divider /> */}
+                      </View>
+                      // </Pressable>
+                    );
+                  }}
                 />
+                {/* <DropDownSelectionItem
+                    label={"Model*"}
+                    value={selector.model}
+                    onPress={() =>
+                      showDropDownModelMethod("MODEL", "Select Model")
+                    }
+                  />
+                  <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.model === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
+
+                </View>
 
                 <DropDownSelectionItem
-                  label={"Varient*"}
+                  label={"Variant*"}
                   value={selector.varient}
                   onPress={() =>
-                    showDropDownModelMethod("VARIENT", "Select Varient")
+                    showDropDownModelMethod("VARIENT", "Select Variant")
                   }
                 />
-
+                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.varient === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                 <DropDownSelectionItem
                   label={"Color*"}
                   value={selector.color}
@@ -2389,14 +4378,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     showDropDownModelMethod("COLOR", "Select Color")
                   }
                 />
-
+                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.color === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                 <TextinputComp
                   style={{ height: 65, width: "100%" }}
                   label={"Fuel Type"}
                   editable={false}
                   value={selector.fuel_type}
                 />
-                <Text style={GlobalStyle.underline}></Text>
+                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.fuel_type === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
 
                 <TextinputComp
                   style={{ height: 65, width: "100%" }}
@@ -2404,46 +4393,52 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   editable={false}
                   value={selector.transmission_type}
                 />
-                  <View style={[styles.addView, GlobalStyle.shadow]}>
-                    <Pressable onPress={() => console.log("pressed")}>
-                        <CREATE_NEW width={60} height={60} fill={"rgba(76,24,197,0.8)"} />
-                    </Pressable>
-                </View>
-                <Text style={GlobalStyle.underline}></Text>
+                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.transmission_type === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text> */}
               </List.Accordion>
               <View style={styles.space}></View>
               {/* // 5. Financial Details*/}
               <List.Accordion
                 id={"5"}
-                title={"Financial Details"}
+                title={"Finance Details"}
                 titleStyle={{
-                  color: openAccordian === "5" ? Colors.WHITE : Colors.BLACK,
+                  color: openAccordian === "5" ? Colors.BLACK : Colors.BLACK,
                   fontSize: 16,
                   fontWeight: "600",
                 }}
                 style={[
                   {
                     backgroundColor:
-                      openAccordian === "5"
-                        ? Colors.RED
-                        : Colors.SKY_LIGHT_BLUE_COLOR, height: 50,                  },
+                      openAccordian === "5" ? Colors.RED : Colors.WHITE,
+                    height: 60,
+                  },
                   styles.accordianBorder,
                 ]}
               >
                 <DropDownSelectionItem
-                  label={"Retail Finance"}
+                  label={"Retail Finance*"}
                   value={selector.retail_finance}
                   onPress={() =>
                     showDropDownModelMethod("RETAIL_FINANCE", "Retail Finance")
                   }
                 />
-
+                <Text
+                  style={[
+                    GlobalStyle.underline,
+                    {
+                      backgroundColor:
+                        isSubmitPress && selector.retail_finance === ""
+                          ? "red"
+                          : "rgba(208, 212, 214, 0.7)",
+                    },
+                  ]}
+                ></Text>
                 {selector.retail_finance === "Out House" ? (
                   <View>
                     <TextinputComp
                       style={{ height: 65, width: "100%" }}
                       label={"Bank/Finance Name"}
                       keyboardType={"default"}
+                      autoCapitalize="words"
                       value={selector.bank_or_finance_name}
                       onChangeText={(text) =>
                         dispatch(
@@ -2460,6 +4455,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       style={{ height: 65, width: "100%" }}
                       label={"Location"}
                       keyboardType={"default"}
+                      autoCapitalize="words"
                       value={selector.location}
                       onChangeText={(text) =>
                         dispatch(
@@ -2477,6 +4473,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       style={{ height: 65, width: "100%" }}
                       label={"Leasing Name"}
                       maxLength={50}
+                      autoCapitalize="words"
                       value={selector.leashing_name}
                       onChangeText={(text) =>
                         dispatch(
@@ -2493,7 +4490,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {selector.retail_finance === "In House" && (
                   <DropDownSelectionItem
-                    label={"Finance Category*"}
+                    label={"Finance Category"}
                     value={selector.finance_category}
                     onPress={() =>
                       showDropDownModelMethod(
@@ -2508,7 +4505,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   <View>
                     <TextinputComp
                       style={{ height: 65, width: "100%" }}
-                      label={"Down Payment*"}
+                      label={"Down Payment"}
                       maxLength={10}
                       keyboardType={"numeric"}
                       value={selector.down_payment}
@@ -2527,51 +4524,51 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {(selector.retail_finance === "In House" ||
                   selector.retail_finance === "Out House") && (
-                    <View>
-                      <TextinputComp
-                        style={{ height: 65, width: "100%" }}
-                        label={"Loan Amount*"}
-                        keyboardType={"numeric"}
-                        maxLength={10}
-                        value={selector.loan_amount}
-                        onChangeText={(text) => {
-                          emiCal(
-                            text,
-                            selector.loan_of_tenure,
-                            selector.rate_of_interest
-                          );
-                          dispatch(
-                            setFinancialDetails({
-                              key: "LOAN_AMOUNT",
-                              text: text,
-                            })
-                          );
-                        }}
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                      <TextinputComp
-                        style={{ height: 65, width: "100%" }}
-                        label={"Rate of Interest*"}
-                        keyboardType={"numeric"}
-                        maxLength={10}
-                        value={selector.rate_of_interest}
-                        onChangeText={(text) => {
-                          emiCal(
-                            selector.loan_amount,
-                            selector.loan_of_tenure,
-                            text
-                          );
-                          dispatch(
-                            setFinancialDetails({
-                              key: "RATE_OF_INTEREST",
-                              text: text,
-                            })
-                          );
-                        }}
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                    </View>
-                  )}
+                  <View>
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
+                      label={"Loan Amount"}
+                      keyboardType={"numeric"}
+                      maxLength={10}
+                      value={selector.loan_amount}
+                      onChangeText={(text) => {
+                        emiCal(
+                          text,
+                          selector.loan_of_tenure,
+                          selector.rate_of_interest
+                        );
+                        dispatch(
+                          setFinancialDetails({
+                            key: "LOAN_AMOUNT",
+                            text: text,
+                          })
+                        );
+                      }}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
+                      label={"Rate of Interest"}
+                      keyboardType={"numeric"}
+                      maxLength={10}
+                      value={selector.rate_of_interest?.toString()}
+                      onChangeText={(text) => {
+                        emiCal(
+                          selector.loan_amount,
+                          selector.loan_of_tenure,
+                          text
+                        );
+                        dispatch(
+                          setFinancialDetails({
+                            key: "RATE_OF_INTEREST",
+                            text: text,
+                          })
+                        );
+                      }}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                  </View>
+                )}
 
                 {selector.retail_finance === "In House" && (
                   <View>
@@ -2588,7 +4585,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       label={"Loan of Tenure(Months)"}
                       keyboardType={"numeric"}
                       maxLength={3}
-                      value={selector.loan_of_tenure}
+                      value={selector.loan_of_tenure?.toString()}
                       onChangeText={(text) => {
                         emiCal(
                           selector.loan_amount,
@@ -2607,7 +4604,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                     <TextinputComp
                       style={{ height: 65, width: "100%" }}
-                      label={"EMI*"}
+                      label={"EMI(Approximately)"}
                       keyboardType={"default"}
                       value={selector.emi}
                       onChangeText={(text) =>
@@ -2637,17 +4634,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 id={"6"}
                 title={"Upload Documents"}
                 titleStyle={{
-                  color: openAccordian === "6" ? Colors.WHITE : Colors.BLACK,
+                  color: openAccordian === "6" ? Colors.BLACK : Colors.BLACK,
                   fontSize: 16,
                   fontWeight: "600",
                 }}
                 style={[
                   {
                     backgroundColor:
-                      openAccordian === "6"
-                        ? Colors.RED
-                        : Colors.SKY_LIGHT_BLUE_COLOR,
-                    height: 50,
+                      openAccordian === "6" ? Colors.RED : Colors.WHITE,
+                    height: 60,
                   },
                   styles.accordianBorder,
                 ]}
@@ -2660,7 +4655,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   maxLength={10}
                   autoCapitalize={"characters"}
                   onChangeText={(text) => {
-                    dispatch(setUploadDocuments({ key: "PAN", text: text }));
+                    dispatch(
+                      setUploadDocuments({
+                        key: "PAN",
+                        text: text.replace(/[^a-zA-Z0-9]/g, ""),
+                      })
+                    );
                   }}
                 />
                 <Text style={GlobalStyle.underline}></Text>
@@ -2670,194 +4670,480 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     onPress={() => dispatch(setImagePicker("UPLOAD_PAN"))}
                   />
                 </View>
-                {uploadedImagesDataObj.pan ? (
-                  <DisplaySelectedImage
-                    fileName={uploadedImagesDataObj.pan.fileName}
-                    from={"PAN"}
-                  />
+                {uploadedImagesDataObj?.pan?.fileName ? (
+                  <View style={{ flexDirection: "row" }}>
+                    <TouchableOpacity
+                      style={styles.previewbtn}
+                      onPress={() => {
+                        if (uploadedImagesDataObj.pan?.documentPath) {
+                          setImagePath(uploadedImagesDataObj.pan?.documentPath);
+                        }
+                      }}
+                    >
+                      <Text style={styles.previewtxt}>Preview</Text>
+                    </TouchableOpacity>
+                    <View style={{ width: "80%" }}>
+                      <DisplaySelectedImage
+                        fileName={uploadedImagesDataObj.pan.fileName}
+                        from={"PAN"}
+                      />
+                    </View>
+                  </View>
                 ) : null}
 
                 {/* // Adhal Number */}
-                {(selector.enquiry_segment.toLowerCase() === "personal") ? (
+                {selector.enquiry_segment.toLowerCase() === "personal" ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
                       value={selector.adhaar_number}
                       label={"Aadhaar Number"}
-                      keyboardType={"phone-pad"}
+                      keyboardType={"number-pad"}
                       maxLength={12}
                       onChangeText={(text) =>
-                        dispatch(setUploadDocuments({ key: "ADHAR", text: text }))
+                        dispatch(
+                          setUploadDocuments({
+                            key: "ADHAR",
+                            text: text.replace(/[^0-9]/g, ""),
+                          })
+                        )
                       }
                     />
                     <Text style={GlobalStyle.underline}></Text>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
-                        name={"Upload Adhar"}
+                        name={"Upload Aadhaar"}
                         onPress={() => dispatch(setImagePicker("UPLOAD_ADHAR"))}
                       />
                     </View>
-                    {uploadedImagesDataObj.aadhar ? (
-                      <DisplaySelectedImage
-                        fileName={uploadedImagesDataObj.aadhar.fileName}
-                        from={"AADHAR"}
-                      />
+                    {uploadedImagesDataObj?.aadhar?.fileName ? (
+                      <View style={{ flexDirection: "row" }}>
+                        <TouchableOpacity
+                          style={styles.previewbtn}
+                          onPress={() => {
+                            if (uploadedImagesDataObj.aadhar?.documentPath) {
+                              setImagePath(
+                                uploadedImagesDataObj.aadhar?.documentPath
+                              );
+                            }
+                          }}
+                        >
+                          <Text style={styles.previewtxt}>Preview</Text>
+                        </TouchableOpacity>
+                        <View style={{ width: "80%" }}>
+                          <DisplaySelectedImage
+                            fileName={uploadedImagesDataObj.aadhar.fileName}
+                            from={"AADHAR"}
+                          />
+                        </View>
+                      </View>
                     ) : null}
                   </View>
                 ) : null}
 
                 {/* // Employeed ID */}
-                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "corporate" || selector.customer_type.toLowerCase() === "government" || selector.customer_type.toLowerCase() === "retired")) ? (
-                  <View >
+                {selector.enquiry_segment.toLowerCase() === "personal" &&
+                (selector.customer_type.toLowerCase() === "corporate" ||
+                  selector.customer_type.toLowerCase() === "government" ||
+                  selector.customer_type.toLowerCase() === "retired") ? (
+                  <View>
                     <TextinputComp
                       style={styles.textInputStyle}
                       value={selector.employee_id}
-                      label={"Employee ID*"}
+                      label={"Employee ID"}
                       maxLength={15}
                       onChangeText={(text) =>
-                        dispatch(setUploadDocuments({ key: "EMPLOYEE_ID", text: text }))
+                        dispatch(
+                          setUploadDocuments({
+                            key: "EMPLOYEE_ID",
+                            text: text,
+                          })
+                        )
                       }
                     />
                     <Text style={GlobalStyle.underline}></Text>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
                         name={"Employee ID"}
-                        onPress={() => dispatch(setImagePicker("UPLOAD_EMPLOYEE_ID"))}
+                        onPress={() =>
+                          dispatch(setImagePicker("UPLOAD_EMPLOYEE_ID"))
+                        }
                       />
                     </View>
-                    {uploadedImagesDataObj.empId ? (
-                      <DisplaySelectedImage
-                        fileName={uploadedImagesDataObj.empId.fileName}
-                        from={"EMPLOYEE_ID"}
-                      />
+                    {uploadedImagesDataObj?.employeeId?.fileName ? (
+                      <View style={{ flexDirection: "row" }}>
+                        <TouchableOpacity
+                          style={styles.previewbtn}
+                          onPress={() => {
+                            if (
+                              uploadedImagesDataObj.employeeId?.documentPath
+                            ) {
+                              setImagePath(
+                                uploadedImagesDataObj.employeeId?.documentPath
+                              );
+                            }
+                          }}
+                        >
+                          <Text style={styles.previewtxt}>Preview</Text>
+                        </TouchableOpacity>
+                        <View style={{ width: "80%" }}>
+                          <DisplaySelectedImage
+                            fileName={uploadedImagesDataObj.employeeId.fileName}
+                            from={"EMPLOYEE_ID"}
+                          />
+                        </View>
+                      </View>
                     ) : null}
                   </View>
                 ) : null}
 
                 {/* Last 3 month payslip */}
-                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "corporate" || selector.customer_type.toLowerCase() === "government")) ? (
-                  <View >
+                {selector.enquiry_segment.toLowerCase() === "personal" &&
+                (selector.customer_type.toLowerCase() === "corporate" ||
+                  selector.customer_type.toLowerCase() === "government") ? (
+                  <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
                         name={"Last 3 months payslip"}
-                        onPress={() => dispatch(setImagePicker("UPLOAD_3_MONTHS_PAYSLIP"))}
+                        onPress={() =>
+                          dispatch(setImagePicker("UPLOAD_3_MONTHS_PAYSLIP"))
+                        }
                       />
                     </View>
-                    {uploadedImagesDataObj.payslip ? (
-                      <DisplaySelectedImage
-                        fileName={uploadedImagesDataObj.payslip.fileName}
-                        from={"3_MONTHS_PAYSLIP"}
-                      />
+                    {uploadedImagesDataObj?.payslips ? (
+                      <View style={{ flexDirection: "row" }}>
+                        <TouchableOpacity
+                          style={styles.previewbtn}
+                          onPress={() => {
+                            if (uploadedImagesDataObj?.payslips?.documentPath) {
+                              setImagePath(
+                                uploadedImagesDataObj.payslips?.documentPath
+                              );
+                            }
+                          }}
+                        >
+                          <Text style={styles.previewtxt}>Preview</Text>
+                        </TouchableOpacity>
+                        <View style={{ width: "80%" }}>
+                          <DisplaySelectedImage
+                            fileName={uploadedImagesDataObj?.payslips.fileName}
+                            from={"3_MONTHS_PAYSLIP"}
+                          />
+                        </View>
+                      </View>
                     ) : null}
                   </View>
                 ) : null}
 
                 {/* Patta Pass book */}
-                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "farmer")) ? (
-                  <View >
+                {selector.enquiry_segment.toLowerCase() === "personal" &&
+                selector.customer_type.toLowerCase() === "farmer" ? (
+                  <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
                         name={"Patta Pass Book"}
-                        onPress={() => dispatch(setImagePicker("UPLOAD_PATTA_PASS_BOOK"))}
+                        onPress={() =>
+                          dispatch(setImagePicker("UPLOAD_PATTA_PASS_BOOK"))
+                        }
                       />
                     </View>
-                    {uploadedImagesDataObj.passbook ? (
-                      <DisplaySelectedImage
-                        fileName={uploadedImagesDataObj.passbook.fileName}
-                        from={"PATTA_PASS_BOOK"}
-                      />
+                    {uploadedImagesDataObj.pattaPassBook ? (
+                      <View style={{ flexDirection: "row" }}>
+                        <TouchableOpacity
+                          style={styles.previewbtn}
+                          onPress={() => {
+                            if (
+                              uploadedImagesDataObj.pattaPassBook?.documentPath
+                            ) {
+                              setImagePath(
+                                uploadedImagesDataObj.pattaPassBook
+                                  ?.documentPath
+                              );
+                            }
+                          }}
+                        >
+                          <Text style={styles.previewtxt}>Preview</Text>
+                        </TouchableOpacity>
+                        <View style={{ width: "80%" }}>
+                          <DisplaySelectedImage
+                            fileName={
+                              uploadedImagesDataObj.pattaPassBook.fileName
+                            }
+                            from={"PATTA_PASS_BOOK"}
+                          />
+                        </View>
+                      </View>
+                    ) : uploadedImagesDataObj.pattaPassBook ? (
+                      <View style={{ flexDirection: "row" }}>
+                        <TouchableOpacity
+                          style={styles.previewbtn}
+                          onPress={() => {
+                            if (
+                              uploadedImagesDataObj.pattaPassBook?.documentPath
+                            ) {
+                              setImagePath(
+                                uploadedImagesDataObj.pattaPassBook
+                                  ?.documentPath
+                              );
+                            }
+                          }}
+                        >
+                          <Text style={styles.previewtxt}>Preview</Text>
+                        </TouchableOpacity>
+                        <View style={{ width: "80%" }}>
+                          <DisplaySelectedImage
+                            fileName={
+                              uploadedImagesDataObj.pattaPassBook.fileName
+                            }
+                            from={"PATTA_PASS_BOOK"}
+                          />
+                        </View>
+                      </View>
                     ) : null}
                   </View>
                 ) : null}
 
                 {/* Pension Letter */}
-                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "retired")) ? (
-                  <View >
+                {selector.enquiry_segment.toLowerCase() === "personal" &&
+                selector.customer_type.toLowerCase() === "retired" ? (
+                  <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
                         name={"Pension Letter"}
-                        onPress={() => dispatch(setImagePicker("UPLOAD_PENSION_LETTER"))}
+                        onPress={() =>
+                          dispatch(setImagePicker("UPLOAD_PENSION_LETTER"))
+                        }
                       />
                     </View>
-                    {uploadedImagesDataObj.pension ? (
-                      <DisplaySelectedImage
-                        fileName={uploadedImagesDataObj.pension.fileName}
-                        from={"PENSION_LETTER"}
-                      />
+                    {uploadedImagesDataObj.pensionLetter ? (
+                      <View style={{ flexDirection: "row" }}>
+                        <TouchableOpacity
+                          style={styles.previewbtn}
+                          onPress={() => {
+                            if (
+                              uploadedImagesDataObj.pensionLetter?.documentPath
+                            ) {
+                              setImagePath(
+                                uploadedImagesDataObj.pensionLetter
+                                  ?.documentPath
+                              );
+                            }
+                          }}
+                        >
+                          <Text style={styles.previewtxt}>Preview</Text>
+                        </TouchableOpacity>
+                        <View style={{ width: "80%" }}>
+                          <DisplaySelectedImage
+                            fileName={
+                              uploadedImagesDataObj.pensionLetter.fileName
+                            }
+                            from={"PENSION_LETTER"}
+                          />
+                        </View>
+                      </View>
                     ) : null}
                   </View>
                 ) : null}
 
                 {/* IMA Certificate */}
-                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "doctor")) ? (
-                  <View >
+                {selector.enquiry_segment.toLowerCase() === "personal" &&
+                selector.customer_type.toLowerCase() === "doctor" ? (
+                  <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
                         name={"IMA Certificate"}
-                        onPress={() => dispatch(setImagePicker("UPLOAD_IMA_CERTIFICATE"))}
+                        onPress={() =>
+                          dispatch(setImagePicker("UPLOAD_IMA_CERTIFICATE"))
+                        }
                       />
                     </View>
                     {uploadedImagesDataObj.imaCertificate ? (
-                      <DisplaySelectedImage
-                        fileName={uploadedImagesDataObj.imaCertificate.fileName}
-                        from={"IMA_CERTIFICATE"}
-                      />
+                      <View style={{ flexDirection: "row" }}>
+                        <TouchableOpacity
+                          style={styles.previewbtn}
+                          onPress={() => {
+                            if (
+                              uploadedImagesDataObj.imaCertificate?.documentPath
+                            ) {
+                              setImagePath(
+                                uploadedImagesDataObj.imaCertificate
+                                  ?.documentPath
+                              );
+                            }
+                          }}
+                        >
+                          <Text style={styles.previewtxt}>Preview</Text>
+                        </TouchableOpacity>
+                        <View style={{ width: "80%" }}>
+                          <DisplaySelectedImage
+                            fileName={
+                              uploadedImagesDataObj.imaCertificate.fileName
+                            }
+                            from={"IMA_CERTIFICATE"}
+                          />
+                        </View>
+                      </View>
                     ) : null}
                   </View>
                 ) : null}
 
                 {/* Leasing Confirmation */}
-                {(selector.enquiry_segment.toLowerCase() === "commercial" && (selector.customer_type.toLowerCase() === "fleet")) ? (
-                  <View >
+                {selector.enquiry_segment.toLowerCase() === "commercial" &&
+                selector.customer_type.toLowerCase() === "fleet" ? (
+                  <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
                         name={"Leasing Confirmation"}
-                        onPress={() => dispatch(setImagePicker("UPLOAD_LEASING_CONFIRMATION"))}
+                        onPress={() =>
+                          dispatch(
+                            setImagePicker("UPLOAD_LEASING_CONFIRMATION")
+                          )
+                        }
                       />
                     </View>
-                    {uploadedImagesDataObj.leasingConfirm ? (
-                      <DisplaySelectedImage
-                        fileName={uploadedImagesDataObj.leasingConfirm.fileName}
-                        from={"LEASING_CONFIRMATION"}
-                      />
+                    {uploadedImagesDataObj.leasingConfirmationLetter ? (
+                      <View style={{ flexDirection: "row" }}>
+                        <TouchableOpacity
+                          style={styles.previewbtn}
+                          onPress={() => {
+                            if (
+                              uploadedImagesDataObj.leasingConfirmationLetter
+                                ?.documentPath
+                            ) {
+                              setImagePath(
+                                uploadedImagesDataObj.leasingConfirmationLetter
+                                  ?.documentPath
+                              );
+                            }
+                          }}
+                        >
+                          <Text style={styles.previewtxt}>Preview</Text>
+                        </TouchableOpacity>
+                        <View style={{ width: "80%" }}>
+                          <DisplaySelectedImage
+                            fileName={
+                              uploadedImagesDataObj.leasingConfirmationLetter
+                                .fileName
+                            }
+                            from={"LEASING_CONFIRMATION"}
+                          />
+                        </View>
+                      </View>
+                    ) : uploadedImagesDataObj.leasingConfirmationLetter ? (
+                      <View style={{ flexDirection: "row" }}>
+                        <TouchableOpacity
+                          style={styles.previewbtn}
+                          onPress={() => {
+                            if (
+                              uploadedImagesDataObj.leasingConfirmationLetter
+                                ?.documentPath
+                            ) {
+                              setImagePath(
+                                uploadedImagesDataObj.leasingConfirmationLetter
+                                  ?.documentPath
+                              );
+                            }
+                          }}
+                        >
+                          <Text style={styles.previewtxt}>Preview</Text>
+                        </TouchableOpacity>
+                        <View style={{ width: "80%" }}>
+                          <DisplaySelectedImage
+                            fileName={
+                              uploadedImagesDataObj.leasingConfirmationLetter
+                                .fileName
+                            }
+                            from={"LEASING_CONFIRMATION"}
+                          />
+                        </View>
+                      </View>
                     ) : null}
                   </View>
                 ) : null}
 
                 {/* Address Proof */}
-                {(selector.enquiry_segment.toLowerCase() === "company" && (selector.customer_type.toLowerCase() === "institution")) ? (
-                  <View >
+                {selector.enquiry_segment.toLowerCase() === "company" &&
+                selector.customer_type.toLowerCase() === "institution" ? (
+                  <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
                         name={"Address Proof"}
-                        onPress={() => dispatch(setImagePicker("UPLOAD_ADDRESS_PROOF"))}
+                        onPress={() =>
+                          dispatch(setImagePicker("UPLOAD_ADDRESS_PROOF"))
+                        }
                       />
                     </View>
                     {uploadedImagesDataObj.address ? (
-                      <DisplaySelectedImage
-                        fileName={uploadedImagesDataObj.address.fileName}
-                        from={"ADDRESS_PROOF"}
-                      />
+                      <View style={{ flexDirection: "row" }}>
+                        <TouchableOpacity
+                          style={styles.previewbtn}
+                          onPress={() => {
+                            if (uploadedImagesDataObj.address?.documentPath) {
+                              setImagePath(
+                                uploadedImagesDataObj.address?.documentPath
+                              );
+                            }
+                          }}
+                        >
+                          <Text style={styles.previewtxt}>Preview</Text>
+                        </TouchableOpacity>
+                        <View style={{ width: "80%" }}>
+                          <DisplaySelectedImage
+                            fileName={uploadedImagesDataObj.address.fileName}
+                            from={"ADDRESS_PROOF"}
+                          />
+                        </View>
+                      </View>
+                    ) : uploadedImagesDataObj.addressProof?.fileName ? (
+                      <View style={{ flexDirection: "row" }}>
+                        <TouchableOpacity
+                          style={styles.previewbtn}
+                          onPress={() => {
+                            if (
+                              uploadedImagesDataObj.addressProof?.documentPath
+                            ) {
+                              setImagePath(
+                                uploadedImagesDataObj.addressProof?.documentPath
+                              );
+                            }
+                          }}
+                        >
+                          <Text style={styles.previewtxt}>Preview</Text>
+                        </TouchableOpacity>
+                        <View style={{ width: "80%" }}>
+                          <DisplaySelectedImage
+                            fileName={
+                              uploadedImagesDataObj.addressProof.fileName
+                            }
+                            from={"ADDRESS_PROOF"}
+                          />
+                        </View>
+                      </View>
                     ) : null}
                   </View>
                 ) : null}
 
                 {/* GSTIN Number */}
-                {(selector.enquiry_segment.toLowerCase() === "company" && (selector.customer_type.toLowerCase() === "institution")) ? (
-                  <View >
+                {selector.enquiry_segment.toLowerCase() === "company" &&
+                selector.customer_type.toLowerCase() === "institution" ? (
+                  <View>
                     <TextinputComp
                       style={styles.textInputStyle}
                       value={selector.gstin_number}
                       label={"GSTIN Number"}
                       maxLength={30}
                       onChangeText={(text) =>
-                        dispatch(setUploadDocuments({ key: "GSTIN_NUMBER", text: text }))
+                        dispatch(
+                          setUploadDocuments({
+                            key: "GSTIN_NUMBER",
+                            text: text,
+                          })
+                        )
                       }
                     />
                     <Text style={GlobalStyle.underline}></Text>
                   </View>
                 ) : null}
-
               </List.Accordion>
               <View style={styles.space}></View>
               {/* // 7.Customer Need Analysis */}
@@ -2865,17 +5151,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 id={"7"}
                 title={"Customer Need Analysis"}
                 titleStyle={{
-                  color: openAccordian === "7" ? Colors.WHITE : Colors.BLACK,
+                  color: openAccordian === "7" ? Colors.BLACK : Colors.BLACK,
                   fontSize: 16,
                   fontWeight: "600",
                 }}
                 style={[
                   {
                     backgroundColor:
-                      openAccordian === "7"
-                        ? Colors.RED
-                        : Colors.SKY_LIGHT_BLUE_COLOR,
-                    height: 50,
+                      openAccordian === "7" ? Colors.RED : Colors.WHITE,
+                    height: 60,
                   },
                   styles.accordianBorder,
                 ]}
@@ -2894,7 +5178,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     color={Colors.RED}
                     onPress={() =>
                       dispatch(
-                        setCustomerNeedAnalysis({ key: "CHECK_BOX", text: "" })
+                        setCustomerNeedAnalysis({
+                          key: "CHECK_BOX",
+                          text: "",
+                        })
                       )
                     }
                   />
@@ -2959,6 +5246,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       label={"Variant"}
                       editable={true}
                       maxLength={40}
+                      autoCapitalize="words"
                       value={selector.c_variant}
                       onChangeText={(text) =>
                         dispatch(
@@ -2990,17 +5278,28 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <Text style={GlobalStyle.underline}></Text>
 
                     <DropDownSelectionItem
-                      label={"Fuel Type"}
+                      label={
+                        userData.isSelfManager == "Y" ? "Range" : "Fuel Type"
+                      }
                       value={selector.c_fuel_type}
                       onPress={() =>
-                        showDropDownModelMethod("C_FUEL_TYPE", "Variant")
+                        showDropDownModelMethod("C_FUEL_TYPE", "Fuel Type")
                       }
                     />
                     <DropDownSelectionItem
-                      label={"Transmission Type"}
+                      label={
+                        userData.isSelfManager == "Y"
+                          ? "Battery Type"
+                          : userData.isTracker == "Y"
+                          ? "Clutch Type"
+                          : "Transmission Type"
+                      }
                       value={selector.c_transmission_type}
                       onPress={() =>
-                        showDropDownModelMethod("C_TRANSMISSION_TYPE", "Color")
+                        showDropDownModelMethod(
+                          "C_TRANSMISSION_TYPE",
+                          "Transmission Type"
+                        )
                       }
                     />
 
@@ -3107,7 +5406,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <Text style={GlobalStyle.underline}></Text>
               </List.Accordion>
               {selector.buyer_type == "Additional Buyer" ||
-                selector.buyer_type == "Replacement Buyer" ? (
+              selector.buyer_type == "Replacement Buyer" ||
+              selector.buyer_type == "Exchange Buyer" ? (
                 <View style={styles.space}></View>
               ) : null}
               {/* // 8.Additional Buyer */}
@@ -3116,17 +5416,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   id={"8"}
                   title={"Additional Buyer"}
                   titleStyle={{
-                    color: openAccordian === "8" ? Colors.WHITE : Colors.BLACK,
-                    fontSize: 24,
-                    fontWeight: "400",
+                    color: openAccordian === "8" ? Colors.BLACK : Colors.BLACK,
+                    fontSize: 16,
+                    fontWeight: "600",
                   }}
                   style={[
                     {
                       backgroundColor:
-                        openAccordian === "8"
-                          ? Colors.RED
-                          : Colors.SKY_LIGHT_BLUE_COLOR,
-                      height: 50,
+                        openAccordian === "8" ? Colors.RED : Colors.WHITE,
+                      height: 60,
                     },
                     styles.accordianBorder,
                   ]}
@@ -3185,8 +5483,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.a_varient}
-                    label={"Varient"}
+                    label={"Variant"}
                     maxLength={50}
+                    autoCapitalize="words"
                     onChangeText={(text) =>
                       dispatch(
                         setAdditionalBuyerDetails({
@@ -3201,6 +5500,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     style={styles.textInputStyle}
                     value={selector.a_color}
                     label={"Color"}
+                    autoCapitalize="words"
                     maxLength={50}
                     onChangeText={(text) =>
                       dispatch(
@@ -3216,8 +5516,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     style={styles.textInputStyle}
                     value={selector.a_reg_no}
                     label={"Reg. No."}
-                    maxLength={50}
+                    maxLength={15}
                     keyboardType={"default"}
+                    autoCapitalize={"characters"}
                     onChangeText={(text) =>
                       dispatch(
                         setAdditionalBuyerDetails({
@@ -3232,22 +5533,21 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               ) : null}
 
               {/* // 9.Replacement Buyer */}
-              {selector.buyer_type == "Replacement Buyer" ? (
+              {selector.buyer_type == "Replacement Buyer" ||
+              selector.buyer_type == "Exchange Buyer" ? (
                 <List.Accordion
                   id={"9"}
-                  title={"Replacement Buyer"}
+                  title={"Exchange Buyer"}
                   titleStyle={{
-                    color: openAccordian === "9" ? Colors.WHITE : Colors.BLACK,
-                    fontSize: 24,
-                    fontWeight: "400",
+                    color: openAccordian === "9" ? Colors.BLACK : Colors.BLACK,
+                    fontSize: 16,
+                    fontWeight: "600",
                   }}
                   style={[
                     {
                       backgroundColor:
-                        openAccordian === "9"
-                          ? Colors.RED
-                          : Colors.SKY_LIGHT_BLUE_COLOR,
-                      height: 50,
+                        openAccordian === "9" ? Colors.RED : Colors.WHITE,
+                      height: 60,
                     },
                     styles.accordianBorder,
                   ]}
@@ -3255,8 +5555,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.r_reg_no}
-                    label={"Reg. No."}
-                    maxLength={50}
+                    label={"Reg. No.*"}
+                    maxLength={12}
                     keyboardType={"default"}
                     autoCapitalize={"characters"}
                     onChangeText={(text) =>
@@ -3268,18 +5568,42 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text style={GlobalStyle.underline}></Text>
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.r_reg_no === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
                   <View style={styles.select_image_bck_vw}>
                     <ImageSelectItem
                       name={"Upload Reg Doc"}
                       onPress={() => dispatch(setImagePicker("UPLOAD_REG_DOC"))}
                     />
                   </View>
-                  {uploadedImagesDataObj.REGDOC ? (
-                    <DisplaySelectedImage
-                      fileName={uploadedImagesDataObj.REGDOC.fileName}
-                      from={"REGDOC"}
-                    />
+                  {selector.regDocumentPath ? (
+                    <View style={{ flexDirection: "row" }}>
+                      <TouchableOpacity
+                        style={styles.previewbtn}
+                        onPress={() => {
+                          if (selector.regDocumentPath) {
+                            setImagePath(selector.regDocumentPath);
+                          }
+                        }}
+                      >
+                        <Text style={styles.previewtxt}>Preview</Text>
+                      </TouchableOpacity>
+                      <View style={{ width: "80%" }}>
+                        <DisplaySelectedImage
+                          fileName={selector.regDocumentKey}
+                          from={"regNoD"}
+                        />
+                      </View>
+                    </View>
                   ) : null}
                   <DropDownSelectionItem
                     label={"Make"}
@@ -3334,10 +5658,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                   <TextinputComp
                     style={{ height: 65, width: "100%" }}
-                    label={"Varient"}
+                    label={"Variant"}
                     editable={true}
                     value={selector.r_varient}
                     maxLength={50}
+                    autoCapitalize="words"
                     onChangeText={(text) =>
                       dispatch(
                         setReplacementBuyerDetails({
@@ -3355,6 +5680,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     editable={true}
                     maxLength={50}
                     value={selector.r_color}
+                    autoCapitalize="words"
                     onChangeText={(text) =>
                       dispatch(
                         setReplacementBuyerDetails({
@@ -3367,14 +5693,22 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   <Text style={GlobalStyle.underline}></Text>
 
                   <DropDownSelectionItem
-                    label={"Fuel Type"}
+                    label={
+                      userData.isSelfManager == "Y" ? "Range" : "Fuel Type"
+                    }
                     value={selector.r_fuel_type}
                     onPress={() =>
                       showDropDownModelMethod("R_FUEL_TYPE", "Fuel Type")
                     }
                   />
                   <DropDownSelectionItem
-                    label={"Transmission Type"}
+                    label={
+                      userData.isSelfManager == "Y"
+                        ? "Battery Type"
+                        : userData.isTracker == "Y"
+                        ? "Clutch Type"
+                        : "Transmission Type"
+                    }
                     value={selector.r_transmission_type}
                     onPress={() =>
                       showDropDownModelMethod(
@@ -3389,6 +5723,17 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     value={selector.r_mfg_year}
                     onPress={() => dispatch(setDatePicker("R_MFG_YEAR"))}
                   />
+                  {/* <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.r_mfg_year}
+                    label={"Mth.Yr. of MFG"}
+                    // keyboardType={"number-pad"}
+                    // maxLength={7}
+                    onChangeText={(text) => {
+                      let regex = /[\d]{2} \/ [\d]{4}/;
+                      dispatch(updateSelectedDate({ key: "R_MFG_YEAR", text: text }))
+                    }}
+                  /> */}
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.r_kms_driven_or_odometer_reading}
@@ -3436,6 +5781,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         value={selector.r_hypothication_name}
                         label={"Hypothication Name"}
                         keyboardType={"default"}
+                        autoCapitalize="words"
                         maxLength={50}
                         onChangeText={(text) =>
                           dispatch(
@@ -3452,6 +5798,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         value={selector.r_hypothication_branch}
                         label={"Hypothication Branch"}
                         keyboardType={"default"}
+                        autoCapitalize="words"
                         maxLength={50}
                         onChangeText={(text) =>
                           dispatch(
@@ -3541,17 +5888,37 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <View>
                       <View style={styles.select_image_bck_vw}>
                         <ImageSelectItem
-                          name={"Upload Insurence"}
+                          name={"Upload Insurance"}
                           onPress={() =>
                             dispatch(setImagePicker("UPLOAD_INSURENCE"))
                           }
                         />
                       </View>
-                      {uploadedImagesDataObj.insurance ? (
+                      {/* {uploadedImagesDataObj.insurance ? (
                         <DisplaySelectedImage
                           fileName={uploadedImagesDataObj.insurance.fileName}
                           from={"INSURENCE"}
                         />
+                      ) : null} */}
+                      {selector.insuranceDocumentPath ? (
+                        <View style={{ flexDirection: "row" }}>
+                          <TouchableOpacity
+                            style={styles.previewbtn}
+                            onPress={() => {
+                              if (selector.insuranceDocumentPath) {
+                                setImagePath(selector.insuranceDocumentPath);
+                              }
+                            }}
+                          >
+                            <Text style={styles.previewtxt}>Preview</Text>
+                          </TouchableOpacity>
+                          <View style={{ width: "80%" }}>
+                            <DisplaySelectedImage
+                              fileName={selector.insuranceDocumentKey}
+                              from={"INSURENCE"}
+                            />
+                          </View>
+                        </View>
                       ) : null}
                     </View>
                   )}
@@ -3560,11 +5927,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <View>
                       <DateSelectItem
                         label={"Insurance Policy Expiry Date"}
-                        value={selector.r_insurence_expiry_date}
+                        value={selector.r_insurence_to_date}
                         onPress={() =>
-                          dispatch(
-                            setDatePicker("R_INSURENCE_POLICIY_EXPIRY_DATE")
-                          )
+                          dispatch(setDatePicker("R_INSURENCE_TO_DATE"))
                         }
                       />
                     </View>
@@ -3637,64 +6002,61 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               {isDropSelected ? (
                 <List.Accordion
                   id={"10"}
-                  title={"Enquiry Drop Section"}
+                  title={"Enquiry Lost Section"}
                   titleStyle={{
-                    color: openAccordian === "10" ? Colors.WHITE : Colors.BLACK,
-                    fontSize: 24,
-                    fontWeight: "400",
+                    color: openAccordian === "10" ? Colors.BLACK : Colors.BLACK,
+                    fontSize: 16,
+                    fontWeight: "600",
                   }}
                   style={[
                     {
                       backgroundColor:
-                        openAccordian === "10"
-                          ? Colors.RED
-                          : Colors.SKY_LIGHT_BLUE_COLOR,
-                      height: 50,
+                        openAccordian === "10" ? Colors.RED : Colors.WHITE,
+                      height: 60,
                     },
                     styles.accordianBorder,
                   ]}
                 >
-
                   <DropComponent
                     from="ENQUIRY"
                     data={dropData}
                     reason={dropReason}
-                    setReason={(text => setDropReason(text))}
+                    setReason={(text) => setDropReason(text)}
                     subReason={dropSubReason}
-                    setSubReason={(text => setDropSubReason(text))}
+                    setSubReason={(text) => setDropSubReason(text)}
                     brandName={dropBrandName}
-                    setBrandName={text => setDropBrandName(text)}
+                    setBrandName={(text) => setDropBrandName(text)}
                     dealerName={dropDealerName}
-                    setDealerName={text => setDropDealerName(text)}
+                    setDealerName={(text) => setDropDealerName(text)}
                     location={dropLocation}
-                    setLocation={text => setDropLocation(text)}
+                    setLocation={(text) => setDropLocation(text)}
                     model={dropModel}
-                    setModel={text => setDropModel(text)}
+                    setModel={(text) => setDropModel(text)}
                     priceDiff={dropPriceDifference}
-                    setPriceDiff={text => setDropPriceDifference(text)}
+                    setPriceDiff={(text) => setDropPriceDifference(text)}
                     remarks={dropRemarks}
                     setRemarks={(text) => setDropRemarks(text)}
                   />
-
                 </List.Accordion>
               ) : null}
             </List.AccordionGroup>
           </View>
+
           {!isDropSelected && (
             <View style={styles.actionBtnView}>
               <Button
                 mode="contained"
                 style={{ width: 120 }}
-                color={Colors.RED}
-                labelStyle={{ textTransform: "none" }}
+                color={Colors.GRAY}
+                labelStyle={{ textTransform: "none", color: Colors.WHITE }}
                 onPress={() => setIsDropSelected(true)}
               >
-                Drop
+                Lost
               </Button>
               <Button
                 mode="contained"
                 style={{ width: 120 }}
-                color={Colors.BLACK}
+                color={Colors.PINK}
                 labelStyle={{ textTransform: "none" }}
                 onPress={submitClicked}
               >
@@ -3706,11 +6068,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             <View style={styles.prebookingBtnView}>
               <Button
                 mode="contained"
-                color={Colors.BLACK}
+                color={Colors.PINK}
                 labelStyle={{ textTransform: "none" }}
                 onPress={proceedToPreBookingClicked}
               >
-                Proceed To PreBooking
+                Proceed to Booking approval
               </Button>
             </View>
           )}
@@ -3728,6 +6090,52 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           )}
         </ScrollView>
       </KeyboardAvoidingView>
+
+      <Modal
+        animationType="fade"
+        visible={imagePath !== ""}
+        onRequestClose={() => {
+          setImagePath("");
+        }}
+        transparent={true}
+      >
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgba(0,0,0,0.7)",
+          }}
+        >
+          <View style={{ width: "90%" }}>
+            <Image
+              style={{ width: "100%", height: 400, borderRadius: 4 }}
+              resizeMode="contain"
+              source={{ uri: imagePath }}
+            />
+          </View>
+          <TouchableOpacity
+            style={{
+              width: 100,
+              height: 40,
+              justifyContent: "center",
+              alignItems: "center",
+              position: "absolute",
+              left: "37%",
+              bottom: "15%",
+              borderRadius: 5,
+              backgroundColor: Colors.RED,
+            }}
+            onPress={() => setImagePath("")}
+          >
+            <Text
+              style={{ fontSize: 14, fontWeight: "600", color: Colors.WHITE }}
+            >
+              Close
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -3744,8 +6152,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   baseVw: {
-    paddingHorizontal: 15,
-    paddingVertical: 2,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
   },
   shadow: {
     shadowColor: Colors.DARK_GRAY,
@@ -3758,11 +6166,11 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   textInputStyle: {
-    height: 65,
+    height: 50,
     width: "100%",
   },
   space: {
-    height: 8,
+    height: 5,
   },
   drop_down_view_style: {
     paddingTop: 5,
@@ -3814,7 +6222,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.WHITE,
   },
   actionBtnView: {
-    marginTop: 80,
+    marginTop: 8,
     flexDirection: "row",
     justifyContent: "space-evenly",
     alignItems: "center",
@@ -3841,7 +6249,7 @@ const styles = StyleSheet.create({
     color: Colors.DARK_GRAY,
   },
   accordianBorder: {
-    borderWidth: 0.4,
+    borderWidth: 0.5,
     borderRadius: 4,
     borderColor: "#7a7b7d",
   },
@@ -3850,5 +6258,115 @@ const styles = StyleSheet.create({
     bottom: 10,
     right: 10,
     backgroundColor: "white",
+  },
+  dropdownContainer: {
+    backgroundColor: "#fff",
+    padding: 16,
+    // borderWidth: 1,
+    width: "100%",
+    height: 50,
+    borderRadius: 5,
+  },
+  dropdown: {
+    height: 50,
+    borderColor: "gray",
+    borderWidth: 0.5,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+  },
+  icon: {
+    marginRight: 5,
+  },
+  label: {
+    position: "absolute",
+    backgroundColor: "white",
+    left: 22,
+    top: 8,
+    zIndex: 999,
+    paddingHorizontal: 8,
+    fontSize: 14,
+  },
+  placeholderStyle: {
+    fontSize: 16,
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+    color: "#000",
+    fontWeight: "400",
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
+  },
+  eventTouchable: {
+    flexDirection: "row",
+    // justifyContent: "space-around",
+    alignItems: "center",
+    // height: '15%',
+    alignContent: "center",
+    width: "100%",
+    marginTop: 5,
+  },
+  eventText: {
+    fontSize: 12,
+    color: Colors.BLACK,
+    textAlign: "left",
+    marginEnd: 10,
+    width: 100,
+  },
+  modelView: {
+    width: "90%",
+    backgroundColor: Colors.WHITE,
+    padding: 10,
+    borderWidth: 2,
+    borderColor: Colors.BLACK,
+    flexDirection: "column",
+    height: "22%",
+  },
+  selectTitle: {
+    color: Colors.BLACK,
+    fontSize: 16,
+    fontWeight: "700",
+    textAlign: "left",
+    margin: 5,
+  },
+  view3: {
+    flexDirection: "row",
+    display: "flex",
+    justifyContent: "space-between",
+    backgroundColor: Colors.WHITE,
+  },
+  addmodelbtn: {
+    width: "40%",
+    margin: 5,
+    borderRadius: 5,
+    backgroundColor: Colors.PINK,
+    height: 40,
+    alignSelf: "flex-end",
+    alignContent: "flex-end",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  addmodeltxt: {
+    fontSize: 16,
+    textAlign: "center",
+    color: Colors.WHITE,
+  },
+  previewbtn: {
+    width: "20%",
+    height: 30,
+    backgroundColor: Colors.SKY_BLUE,
+    borderRadius: 4,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  previewtxt: {
+    color: Colors.WHITE,
+    fontSize: 14,
+    fontWeight: "600",
   },
 });

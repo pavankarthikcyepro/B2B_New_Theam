@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { SafeAreaView, StyleSheet, View, FlatList, RefreshControl, Text, ActivityIndicator, Pressable } from "react-native";
-import { IconButton } from "react-native-paper";
+import {IconButton, Searchbar} from "react-native-paper";
 import { PreEnquiryItem, EmptyListView } from "../../../pureComponents";
 import { DateRangeComp, DatePickerComponent, SortAndFilterComp } from "../../../components";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,14 +12,20 @@ import { callNumber } from "../../../utils/helperFunctions";
 import moment from "moment";
 import { Category_Type_List_For_Filter } from '../../../jsonData/enquiryFormScreenJsonData';
 import { MyTaskNewItem } from '../MyTasks/components/MyTasksNewItem';
-
+import { updateTAB, updateIsSearch, updateSearchKey } from '../../../redux/appReducer';
+import { getCallRecordingCredentials } from '../../../redux/callRecordingReducer';
 const dateFormat = "YYYY-MM-DD";
+const currentDate = moment().add(0, "day").format(dateFormat)
+const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
 
 const PreBookingScreen = ({ navigation }) => {
 
     const selector = useSelector((state) => state.preBookingReducer);
+    const appSelector = useSelector(state => state.appReducer);
+    const callrecordingSelector = useSelector(state => state.appReducer);
     const { vehicle_model_list_for_filters, source_of_enquiry_list } = useSelector(state => state.homeReducer);
     const dispatch = useDispatch();
+
     const [vehicleModelList, setVehicleModelList] = useState(vehicle_model_list_for_filters);
     const [sourceList, setSourceList] = useState(source_of_enquiry_list);
     const [categoryList, setCategoryList] = useState(Category_Type_List_For_Filter);
@@ -29,24 +35,135 @@ const PreBookingScreen = ({ navigation }) => {
     const [selectedFromDate, setSelectedFromDate] = useState("");
     const [selectedToDate, setSelectedToDate] = useState("");
     const [sortAndFilterVisible, setSortAndFilterVisible] = useState(false);
+    const [searchedData, setSearchedData] = useState([]);
+    const [orgId, setOrgId] = useState("");
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const orgIdStateRef = React.useRef(orgId);
+    const empIdStateRef = React.useRef(employeeId);
+    const fromDateRef = React.useRef(selectedFromDate);
+    const toDateRef = React.useRef(selectedToDate);
+
+    const setMyState = data => {
+        empIdStateRef.current = data.empId;
+        orgIdStateRef.current = data.orgId;
+        setEmployeeId(data.empId);
+        setOrgId(data.orgId);
+        dispatch(getCallRecordingCredentials(1000))
+    };
+
+    const setFromDateState = date => {
+        fromDateRef.current = date;
+        setSelectedFromDate(date);
+    }
+
+    const setToDateState = date => {
+        toDateRef.current = date;
+        setSelectedToDate(date);
+    }
 
     useEffect(() => {
+        setSearchQuery('');
+        if (selector.pre_booking_list.length > 0) {
+            setSearchedData(selector.pre_booking_list)
+        }
+        else{
+            setSearchedData([])
+        }
+    }, [selector.pre_booking_list])
 
+    useEffect(() => {
+        if (appSelector.isSearch) {
+            dispatch(updateIsSearch(false))
+            if (appSelector.searchKey !== '') {
+                let tempData = []
+                tempData = selector.pre_booking_list.filter((item) => {
+                    return (
+                      `${item.firstName} ${item.lastName}`
+                        .toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase()) ||
+                      item.phone
+                        .toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase()) ||
+                      item.enquirySource
+                        .toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase()) ||
+                      item.enquiryCategory
+                        ?.toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase()) ||
+                      item.model
+                        .toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase())
+                    );
+                })
+                setSearchedData([]);
+                setSearchedData(tempData);
+                dispatch(updateSearchKey(''))
+            }
+            else {
+                setSearchedData([]);
+                setSearchedData(selector.pre_booking_list);
+            }
+        }
+    }, [appSelector.isSearch])
+
+    useEffect(async() => {
         // Get Data From Server
-        const currentDate = moment().add(0, "day").format(dateFormat)
-        const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
-        setSelectedFromDate(lastMonthFirstDate);
+        let isMounted = true;
+        setFromDateState(lastMonthFirstDate);
         const tomorrowDate = moment().add(1, "day").format(dateFormat)
-        setSelectedToDate(currentDate);
-        getAsyncData(lastMonthFirstDate, currentDate);
+        setToDateState(currentDate);
+        const employeeData = await AsyncStore.getData(
+            AsyncStore.Keys.LOGIN_EMPLOYEE
+        );
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            setEmployeeId(jsonObj.empId);
+            setOrgId(jsonObj.orgId);
+        }
+        getAsyncData().then(data => {
+            if (isMounted) {
+                setMyState(data);
+                getPreBookingListFromServer(empIdStateRef.current, lastMonthFirstDate, currentDate);
+            }
+        });
+
+        return () => { isMounted = false };
     }, [])
 
-    const getAsyncData = async (startDate, endDate) => {
-        let empId = await AsyncStore.getData(AsyncStore.Keys.EMP_ID);
-        if (empId) {
-            getPreBookingListFromServer(empId, startDate, endDate);
-            setEmployeeId(empId);
+    // Navigation Listner to Auto Referesh
+    useEffect(() => {
+        navigation.addListener('focus', () => {
+            setFromDateState(lastMonthFirstDate);
+            const tomorrowDate = moment().add(1, "day").format(dateFormat)
+            setToDateState(currentDate);
+            // getPreBookingListFromServer(empIdStateRef.current, fromDateRef.current, toDateRef.current);
+            getDataFromDB()
+        });
+
+        // return () => {
+        //     unsubscribe;
+        // };
+    }, [navigation]);
+
+    const getDataFromDB = async () => {
+        const employeeData = await AsyncStore.getData(
+            AsyncStore.Keys.LOGIN_EMPLOYEE
+        );
+        const dateFormat = "YYYY-MM-DD";
+        const currentDate = moment().add(0, "day").format(dateFormat)
+        const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            // setEmployeeId(jsonObj.empId);
+            getPreBookingListFromServer(jsonObj.empId, lastMonthFirstDate, currentDate);
         }
+    }
+
+    const getAsyncData = async () => {
+        let empId = await AsyncStore.getData(AsyncStore.Keys.EMP_ID);
+        let orgId = await AsyncStore.getData(AsyncStore.Keys.ORG_ID);
+        return { empId, orgId };
     }
 
     const getPreBookingListFromServer = (empId, startDate, endDate) => {
@@ -64,7 +181,7 @@ const PreBookingScreen = ({ navigation }) => {
             "empId": empId,
             "status": "PREBOOKING",
             "offset": offSet,
-            "limit": 10
+            "limit": 500,
         }
         return payload;
     }
@@ -87,11 +204,11 @@ const PreBookingScreen = ({ navigation }) => {
         const formatDate = moment(date).format(dateFormat);
         switch (key) {
             case "FROM_DATE":
-                setSelectedFromDate(formatDate);
+                setFromDateState(formatDate);
                 getPreBookingListFromServer(employeeId, formatDate, selectedToDate);
                 break;
             case "TO_DATE":
-                setSelectedToDate(formatDate);
+                setToDateState(formatDate);
                 getPreBookingListFromServer(employeeId, selectedFromDate, formatDate);
                 break;
         }
@@ -119,7 +236,7 @@ const PreBookingScreen = ({ navigation }) => {
             if (element.isChecked) {
                 modelFilters.push({
                     id: element.id,
-                    name: element.name
+                    name: element.value
                 })
             }
         });
@@ -127,7 +244,8 @@ const PreBookingScreen = ({ navigation }) => {
             if (element.isChecked) {
                 sourceFilters.push({
                     id: element.id,
-                    name: element.name
+                    name: element.name,
+                    orgId: orgId
                 })
             }
         });
@@ -151,6 +269,15 @@ const PreBookingScreen = ({ navigation }) => {
         );
     };
 
+    const getFirstLetterUpperCase = (string) => {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
+    const onChangeSearch = query => {
+        setSearchQuery(query);
+        dispatch(updateSearchKey(query));
+        dispatch(updateIsSearch(true));
+    };
 
     return (
         <SafeAreaView style={styles.container}>
@@ -160,7 +287,6 @@ const PreBookingScreen = ({ navigation }) => {
                 mode={"date"}
                 value={new Date(Date.now())}
                 onChange={(event, selectedDate) => {
-                    console.log("date: ", selectedDate);
                     setShowDatePicker(false)
                     if (Platform.OS === "android") {
                         if (selectedDate) {
@@ -179,7 +305,6 @@ const PreBookingScreen = ({ navigation }) => {
                 modelList={vehicleModelList}
                 sourceList={sourceList}
                 submitCallback={(payload) => {
-                    // console.log("payload: ", payload);
                     applySelectedFilters(payload);
                     setSortAndFilterVisible(false);
                 }}
@@ -204,12 +329,19 @@ const PreBookingScreen = ({ navigation }) => {
                     </View>
                 </Pressable>
             </View>
-
-            {selector.pre_booking_list.length === 0 ? <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} /> :
+            <View>
+                <Searchbar
+                    placeholder="Search"
+                    onChangeText={onChangeSearch}
+                    value={searchQuery}
+                    style={styles.searchBar}
+                />
+            </View>
+            {searchedData.length === 0 ? <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} /> :
                 <View style={[ { backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10 }]}>
                     <FlatList
-                        data={selector.pre_booking_list}
-                        extraData={selector.pre_booking_list}
+                        data={searchedData}
+                        extraData={searchedData}
                         keyExtractor={(item, index) => index.toString()}
                         refreshControl={(
                             <RefreshControl
@@ -220,7 +352,11 @@ const PreBookingScreen = ({ navigation }) => {
                         )}
                         showsVerticalScrollIndicator={false}
                         onEndReachedThreshold={0}
-                        onEndReached={getMorePreBookingListFromServer}
+                        // onEndReached={() => {
+                        //     if (appSelector.searchKey === '') {
+                        //         getMorePreBookingListFromServer()
+                        //     }
+                        // }}
                         ListFooterComponent={renderFooter}
                         renderItem={({ item, index }) => {
 
@@ -231,18 +367,27 @@ const PreBookingScreen = ({ navigation }) => {
 
                             return (
                                 <>
-                                    <View style={{ paddingVertical: 5 }}>
+                                    <View>
                                         <MyTaskNewItem
                                             from='PRE_BOOKING'
-                                            name={item.firstName + " " + item.lastName}
+                                            name={getFirstLetterUpperCase(item.firstName) + " " + getFirstLetterUpperCase(item.lastName)}
+                                            navigator={navigation}
+                                            uniqueId={item.leadId}
+                                            type='PreBook'
                                             status={""}
-                                            created={item.createdDate}
-                                            dmsLead={item.createdBy}
+                                            created={item.modifiedDate}
+                                            dmsLead={item.salesConsultant}
                                             phone={item.phone}
                                             source={item.enquirySource}
                                             model={item.model}
-                                            onItemPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, { universalId: item.universalId }) }
-                                            onDocPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.preBookingForm, { universalId: item.universalId })}
+                                            leadStatus={item.leadStatus}
+                                            leadStage={item.leadStage}
+                                            needStatus={"YES"}
+                                            enqCat={item.enquiryCategory}
+                                            onItemPress={() =>  {
+                                                navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, { universalId: item.universalId, mobileNo: item.phone, leadStatus: item.leadStatus })
+                                            }}
+                                            onDocPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.preBookingForm, { universalId: item.universalId , leadStage: item.leadStage, leadStatus: item.leadStatus})}
                                         />
                                     </View>
                                 </>
@@ -293,4 +438,5 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginBottom: 5
     },
+    searchBar:{height: 40}
 });

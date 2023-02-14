@@ -48,8 +48,9 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
     const [tableData, setTableData] = useState([]);
     const { accessorylist } = route.params;
 
+
+
     useEffect(() => {
-        console.log("accessorylist: ", accessorylist.length)
         let newFormatTableData = [];
         accessorylist.forEach((item) => {
             newFormatTableData.push({
@@ -61,11 +62,10 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
     }, [])
 
     const updatedItem = (index) => {
-
-        const data = [...tableData];
-        const selectedItem = data[index];
-        selectedItem.selected = !selectedItem.selected;
-        data[index] = selectedItem;
+      const data = [...tableData];
+      const selectedItem = data[index];
+      selectedItem.selected = !selectedItem.selected;
+      data[index] = selectedItem;
         setTableData([...data]);
     }
 
@@ -74,12 +74,13 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
         for (const item of tableData) {
             if (item.selected) {
                 itemSelected = true
+                //  setTableData([...item, ...tableData]);
                 break;
             }
         }
 
         if (itemSelected) {
-            route.params.callback(tableData);
+            route.params.onGoBack([...tableData]);
             navigation.goBack();
         }
     }
@@ -94,7 +95,7 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
                         renderItem={({ item, index }) => {
                             return (
                                 <View style={{ padding: 10, paddingBottom: 0 }}>
-                                    <Pressable onPress={() => updatedItem(index)}>
+                                    <Pressable onPress={() => updatedItem([index])}>
                                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                             <View style={{ maxWidth: "70%" }}>
                                                 <Text style={styles.text1}>{item.partName}</Text>

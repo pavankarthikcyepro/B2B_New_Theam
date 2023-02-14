@@ -1,81 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
-import { SafeAreaView, View, Text, StyleSheet, Animated } from "react-native";
-import { TextinputComp } from "../../components/textinputComp";
-import { useSelector, useDispatch } from "react-redux";
+import { SafeAreaView, View, Text, StyleSheet ,Button} from "react-native";
 import { Colors } from "../../styles";
-import {
-  clearState,
-  updateEmployeeId,
-  updatePassword,
-  updateSecurePassword,
-  showErrorMessage,
-  postUserData,
-  getPreEnquiryData,
-  getMenuList,
-  getCustomerTypeList,
-  getCarModalList,
-} from "../../redux/loginReducer";
 
-const ForgotScreen = () => {
-  const selector = useSelector((state) => state.loginReducer);
-  const dispatch = useDispatch();
-  const fadeAnima = useRef(new Animated.Value(0)).current;
+const ForgotScreen = ({navigation}) => {
+  const passwordClicked = () => {
+    navigation.navigate("CHANGE_PASSWORD_SCREEN");
+  }
 
   return (
     <SafeAreaView style={styles.container}>
-      <TextinputComp
-        value={selector.employeeId}
-        error={selector.showLoginErr}
-        errorMsg={selector.loginErrMessage}
-        label={"Employee ID"}
-        mode={"outlined"}
-        onChangeText={(text) => dispatch(updateEmployeeId(text))}
-      />
-      <View style={{ height: 20 }}></View>
-      <TextinputComp
-        value={selector.password}
-        error={selector.showPasswordErr}
-        errorMsg={selector.passwordErrMessage}
-        label={"Current Password"}
-        mode={"outlined"}
-        isSecure={selector.securePassword}
-        showRightIcon={true}
-        rightIconObj={{
-          name: selector.securePassword ? "eye-off-outline" : "eye-outline",
-          color: Colors.GRAY,
-        }}
-        onChangeText={(text) => dispatch(updatePassword(text))}
-        onRightIconPressed={() => dispatch(updateSecurePassword())}
-      />
-      <TextinputComp
-        value={selector.password}
-        error={selector.showPasswordErr}
-        errorMsg={selector.passwordErrMessage}
-        label={"New Password"}
-        mode={"outlined"}
-        isSecure={selector.securePassword}
-        showRightIcon={true}
-        rightIconObj={{
-          name: selector.securePassword ? "eye-off-outline" : "eye-outline",
-          color: Colors.GRAY,
-        }}
-        onChangeText={(text) => dispatch(updatePassword(text))}
-        onRightIconPressed={() => dispatch(updateSecurePassword())}
-      />
-      <TextinputComp
-        value={selector.password}
-        error={selector.showPasswordErr}
-        errorMsg={selector.passwordErrMessage}
-        label={"Confirm Password"}
-        mode={"outlined"}
-        isSecure={selector.securePassword}
-        showRightIcon={true}
-        rightIconObj={{
-          name: selector.securePassword ? "eye-off-outline" : "eye-outline",
-          color: Colors.GRAY,
-        }}
-        onChangeText={(text) => dispatch(updatePassword(text))}
-        onRightIconPressed={() => dispatch(updateSecurePassword())}
+      <Button
+        title={"CLICK HERE FOR FORGOT PASSWORD"}
+        onPress={passwordClicked}
       />
     </SafeAreaView>
   );

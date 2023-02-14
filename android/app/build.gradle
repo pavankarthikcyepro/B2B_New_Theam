@@ -78,7 +78,9 @@ import com.android.build.OutputFile
  */
 
 project.ext.react = [
+    entryFile: "index.js",
     enableHermes: false,  // clean and rebuild if changing
+    hermesCommand: "../../node_modules/hermes-engine/%OS-BIN%/hermes",
 ]
 
 project.ext.vectoricons = [
@@ -115,7 +117,7 @@ def enableSeparateBuildPerCPUArchitecture = false
 /**
  * Run Proguard to shrink the Java bytecode in release builds.
  */
-def enableProguardInReleaseBuilds = true
+def enableProguardInReleaseBuilds = false
 
 /**
  * The preferred build flavor of JavaScriptCore.
@@ -139,8 +141,10 @@ def jscFlavor = 'org.webkit:android-jsc:+'
  */
 def enableHermes = project.ext.react.get("enableHermes", false);
 
+// def useIntlJsc = false
+
 android {
-    ndkVersion rootProject.ext.ndkVersion
+    ndkVersion ndkVersion
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
@@ -150,6 +154,7 @@ android {
     }
 
     defaultConfig {
+        multiDexEnabled true
         applicationId "com.b2b_new_theme"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
@@ -171,10 +176,22 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+            storeFile file('cyepro-upload-key.keystore')
+            storePassword 'changeit'
+            keyAlias 'Cyepro$123-alias'
+            keyPassword 'changeit'
+            // if (project.hasProperty('MYAPP_UPLOAD_STORE_FILE')) {
+            //     storeFile file(MYAPP_UPLOAD_STORE_FILE)
+            //     storePassword MYAPP_UPLOAD_STORE_PASSWORD
+            //     keyAlias MYAPP_UPLOAD_KEY_ALIAS
+            //     keyPassword MYAPP_UPLOAD_KEY_PASSWORD
+            // }
+        }
     }
     buildTypes {
         debug {
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.debug        
         }
         release {
             // Caution! In production, you need to generate your own keystore file.
@@ -200,15 +217,33 @@ android {
 
         }
     }
+
+    dexOptions {
+    javaMaxHeapSize "4g"
+  }
 }
 
 dependencies {
+    // if (useIntlJsc) {
+    //  implementation 'org.webkit:android-jsc-intl:+'
+    // } else {
+    //     implementation 'org.webkit:android-jsc:+'
+    // }
+
     implementation fileTree(dir: "libs", include: ["*.jar"])
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
+    implementation project(':react-native-push-notification')
+    implementation(project(':react-native-maps')){
+      exclude group: 'com.google.android.gms'
+    }
+    implementation 'androidx.work:work-runtime-ktx:2.7.1'
+    implementation 'com.google.android.gms:play-services-base:18.0.1'
+    implementation 'com.google.android.gms:play-services-location:19.0.1'
+    implementation 'com.google.android.gms:play-services-maps:18.0.2'
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
       exclude group:'com.facebook.fbjni'
     }

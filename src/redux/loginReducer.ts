@@ -4,11 +4,11 @@ import { client } from "../networking/client";
 import URL from "../networking/endpoints";
 import * as AsyncStore from "../asyncStore";
 import realm from "../database/realm";
-import { showToastRedAlert } from "../utils/toast";
+import { showAlertMessage, showToastRedAlert } from "../utils/toast";
 
 interface LoginState {
   employeeId: string;
-  password: string;
+  password: string; 
   securePassword: boolean;
   showLoginErr: boolean;
   showPasswordErr: boolean;
@@ -21,6 +21,7 @@ interface LoginState {
   showLoader: boolean;
   offlineStatus: string;
   menuListStatus: string;
+  empIdStatus:String;
   userData: object;
   empId: string;
   menuList: any;
@@ -52,6 +53,7 @@ const initialState: LoginState = {
   userData: {},
   empId: "",
   menuListStatus: "",
+  empIdStatus:"",
   menuList: [],
   login_employee_details: {},
   branchesList: [],
@@ -60,7 +62,7 @@ const initialState: LoginState = {
 export const postUserData = createAsyncThunk(
   "LOGIN_SLICE/postUserData",
   async (inputData, { rejectWithValue }) => {
-    const response = await client.post(URL.LOGIN(), inputData);
+    const response = await client.post(URL.LOGIN(), inputData, {}, false);
     const json = await response.json();
     if (!response.ok) {
       return rejectWithValue(json);
@@ -75,6 +77,19 @@ export const getMenuList = createAsyncThunk(
     const response = await client.get(URL.MENULIST_API(name));
     const json = await response.json();
     if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+export const getEmpId = createAsyncThunk(
+  "LOGIN_SLICE/getEmpId",
+  async (name, { rejectWithValue }) => {
+    const response = await client.get(URL.GET_EMPID(name));
+    const json = await response.json();
+    if (!response.ok) {
+      alert('not ok')
       return rejectWithValue(json);
     }
     return json;
@@ -103,7 +118,7 @@ export const getCustomerTypeList = createAsyncThunk(
       return rejectWithValue(json);
     }
     return json;
-  }
+  } 
 );
 
 export const getCarModalList = createAsyncThunk(
@@ -134,7 +149,12 @@ export const loginSlice = createSlice({
       state.userData = {};
       state.empId = "";
       state.menuListStatus = "";
+      state.empIdStatus="";
       state.branchesList = [];
+    },
+    clearUserNameAndPass: (state, action) => {
+      state.employeeId = "";
+      state.password = "";
     },
     updateEmployeeId: (state, action: PayloadAction<string>) => {
       let employeeId = action.payload;
@@ -146,9 +166,9 @@ export const loginSlice = createSlice({
     },
     updatePassword: (state, action: PayloadAction<string>) => {
       let password = action.payload;
-      if (password.length < 4) {
+      if (password.length < 6) {
         state.showPasswordErr = true;
-        state.passwordErrMessage = "Password max length is 6 chars";
+        state.passwordErrMessage = "Password must be minimum of 6 characters";
       } else {
         state.showPasswordErr = false;
         state.passwordErrMessage = "";
@@ -175,21 +195,27 @@ export const loginSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(postUserData.fulfilled, (state, action) => {
-        console.log("res2: ", action.payload);
         const dataObj = action.payload;
         if (dataObj.status == "200") {
+          
           state.status = "sucess";
           state.isLoading = false;
-          state.authToken = dataObj.idToken;
+          state.authToken = dataObj.accessToken;
           state.userName = dataObj.userName;
           state.userData = dataObj;
-          AsyncStore.storeData(AsyncStore.Keys.USER_TOKEN, dataObj.idToken);
+          // state.employeeId = "";
+          // state.password = "";
+          AsyncStore.storeData(AsyncStore.Keys.USER_TOKEN, dataObj.accessToken);
+          AsyncStore.storeData(AsyncStore.Keys.IS_LOGIN, 'true');
+          AsyncStore.storeData(AsyncStore.Keys.ACCESS_TOKEN, dataObj.accessToken);
+          AsyncStore.storeData(AsyncStore.Keys.REFRESH_TOKEN, dataObj.refreshToken);
+        
         } else if (dataObj.reason) {
-          showToastRedAlert(dataObj.reason);
+          showAlertMessage("Failed", "Incorrect Password");
+          state.isLoading = false;
         }
       })
       .addCase(postUserData.rejected, (state, action) => {
-        console.log("res3: ", action.payload);
         state.status = "failed";
         state.isLoading = false;
         if (action.payload != undefined && action.payload["errorMessage"]) {
@@ -201,7 +227,6 @@ export const loginSlice = createSlice({
         state.offlineStatus = "pending";
       })
       .addCase(getPreEnquiryData.fulfilled, (state, action) => {
-        console.log("res: ", action.payload);
         const dmsEntityObj = action.payload?.dmsEntity;
         if (dmsEntityObj) {
           const data = dmsEntityObj.leadDtoPage.content;
@@ -219,6 +244,33 @@ export const loginSlice = createSlice({
       .addCase(getPreEnquiryData.rejected, (state) => {
         state.isLoading = false;
         state.offlineStatus = "completed";
+      })
+      .addCase(getEmpId.pending, (state) => {
+
+        state.isLoading = true;
+        state.empIdStatus = "pending";
+      })
+      .addCase(getEmpId.fulfilled, (state, action) => {
+
+        const empEntityObj = action.payload?.dmsEntity;
+        if (empEntityObj) {
+          const data = empEntityObj.empId;
+
+          // if (data.length > 0) {
+          //   data.forEach((object) => {
+          //     realm.write(() => {
+          //       realm.create("PRE_ENQUIRY_TABLE", { ...object });
+          //     });
+          //   });
+          // }
+        }
+        state.isLoading = false;
+        state.empIdStatus = "completed";
+      })
+      .addCase(getEmpId.rejected, (state) => {
+
+        state.isLoading = false;
+        state.empIdStatus = "completed";
       })
       .addCase(getMenuList.pending, (state, action) => {
         state.menuListStatus = "pending";
@@ -258,7 +310,6 @@ export const loginSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(getCustomerTypeList.fulfilled, (state, action) => {
-        console.log("customer_type_list: ", action.payload);
         const data = action.payload;
         data.forEach((item) => {
           realm.write(() => {
@@ -289,6 +340,7 @@ export const {
   updatePassword,
   updateSecurePassword,
   showErrorMessage,
+  clearUserNameAndPass
 } = loginSlice.actions;
 
 export default loginSlice.reducer;

@@ -19,24 +19,47 @@ interface CustomerDetailModel {
 export const getTaskDetailsApi = createAsyncThunk(
   "PROCEED_TO_BOOKING_SLICE/getTaskDetailsApi",
   async (taskId, { rejectWithValue }) => {
+    
     const response = await client.get(URL.GET_TASK_DETAILS(taskId));
-    const json = await response.json();
-    if (!response.ok) {
-      return rejectWithValue(json);
+    // const json = await response.json();
+    
+    
+    // if (!response.ok) {
+    //   return rejectWithValue(json);
+    // }
+    // return json;
+
+    try {
+      const json = await response.json();
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.error("Error: ", error + " : " + JSON.stringify(response));
+      return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
     }
-    return json;
   }
 );
 
 export const updateTaskApi = createAsyncThunk(
   "PROCEED_TO_BOOKING_SLICE/updateTaskApi",
   async (body, { rejectWithValue }) => {
+    
     const response = await client.put(URL.ASSIGN_TASK(), body);
-    const json = await response.json();
-    if (!response.ok) {
-      return rejectWithValue(json);
+
+    // const response = await client.post(URL.DROP_ENQUIRY(), payload);
+    try {
+      const json = await response.json()
+
+      if (!response.ok) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.error("BookingPaymentApi JSON parse error: ", error + " : " + JSON.stringify(response));
+      return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
     }
-    return json;
   }
 );
 
@@ -128,7 +151,7 @@ const slice = createSlice({
     drop_sub_reasons_list: [],
   },
   reducers: {
-    clearState: (state, action) => {
+    clearBookingState: (state, action) => {
       state.task_details_response = null;
       state.update_task_response_status = null;
       state.change_enquiry_status = null;
@@ -285,5 +308,5 @@ const slice = createSlice({
   },
 });
 
-export const { clearState, setDataDetails } = slice.actions;
+export const { clearBookingState, setDataDetails } = slice.actions;
 export default slice.reducer;

@@ -13,8 +13,9 @@ import { Colors, GlobalStyle } from "../../../styles";
 import { TextinputComp } from "../../../components";
 import { Button } from "react-native-paper";
 import { useSelector, useDispatch } from "react-redux";
-import { DropDownSelectionItem } from "../../../pureComponents/dropDownSelectionItem";
-import { DropDownComponant, DatePickerComponent } from "../../../components";
+import { DropDownSelectionItem } from "../../../pureComponents";
+import { DropDownComponant, DatePickerComponent, LoaderComponent } from "../../../components";
+import Geolocation from '@react-native-community/geolocation';
 import {
   clearState,
   setDatePicker,
@@ -22,7 +23,8 @@ import {
   updateSelectedDate,
   getTaskDetailsApi,
   updateTaskApi,
-  getEnquiryDetailsApi
+  getEnquiryDetailsApi,
+  getReasonList
 } from "../../../redux/enquiryFollowUpReducer";
 import { DateSelectItem } from "../../../pureComponents";
 import { convertDateStringToMillisecondsUsingMoment, GetCarModelList } from "../../../utils/helperFunctions";
@@ -38,6 +40,7 @@ import {
 } from "../../../redux/mytaskReducer";
 import * as AsyncStorage from "../../../asyncStore";
 import { isValidateAlphabetics } from "../../../utils/helperFunctions";
+import { Dropdown } from 'react-native-element-dropdown';
 
 const ScreenWidth = Dimensions.get("window").width;
 
@@ -57,8 +60,9 @@ const LocalButtonComp = ({ title, onPress, disabled }) => {
 };
 
 const EnquiryFollowUpScreen = ({ route, navigation }) => {
-  const { taskId, identifier, universalId } = route.params;
+  const { taskId, identifier, universalId, reasonTaskName } = route.params;
   const selector = useSelector((state) => state.enquiryFollowUpReducer);
+
   const dispatch = useDispatch();
   const [showDropDownModel, setShowDropDownModel] = useState(false);
   const [dropDownTitle, setDropDownTitle] = useState("");
@@ -68,15 +72,25 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
   const [modelVarientsData, setModelVarientsData] = useState([]);
   const [actionType, setActionType] = useState("");
   const [empId, setEmpId] = useState("");
+  const [reasonList, setReasonList] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [defaultReasonIndex, setDefaultReasonIndex] = useState(null);
+  const [currentLocation, setCurrentLocation] = useState(null);
+  const [otherReason, setOtherReason] = useState('');
+  const [isSubmitPress, setIsSubmitPress] = useState(false);
+  const [isDateError, setIsDateError] = useState(false);
 
   useLayoutEffect(() => {
     let title = "Enquiry Follow Up";
     switch (identifier) {
       case "PRE_ENQUIRY_FOLLOW_UP":
-        title = "Pre Enquiry Follow Up";
+        title = "Contacts followup";
         break;
       case "PRE_BOOKING_FOLLOW_UP":
-        title = "Pre Booking Follow Up";
+        title = "Booking approval task";
+        break;
+      case "BOOKING_FOLLOW_UP":
+        title = "Booking follow up";
         break;
     }
 
@@ -90,6 +104,98 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
     dispatch(getTaskDetailsApi(taskId));
     getEnquiryDetailsFromServer();
   }, []);
+
+  useEffect(() => {
+    navigation.addListener('focus', () => {
+      getCurrentLocation()
+      let taskName = reasonTaskName;
+      if (taskName === 'Contacts followup') { // this change is to send the previously used taskName value to the service call.
+        taskName = 'Pre Enquiry Followup'
+      }
+      getReasonListData(taskName)
+    })
+  }, [navigation]);
+
+  const getCurrentLocation = () => {
+    Geolocation.getCurrentPosition(info => {
+      setCurrentLocation({
+        lat: info.coords.latitude,
+        long: info.coords.longitude
+      })
+    });
+  }
+  useEffect(() => {
+    if (selector.isReasonUpdate && reasonList.length > 0) {
+      let reason = selector.reason;
+      let findIndex = reasonList.findIndex((item) => {
+        return item.value === selector.reason
+      })
+      if (findIndex !== -1) {
+        setDefaultReasonIndex(reasonList[findIndex].value)
+      }
+      else if (reason) {
+        dispatch(setEnquiryFollowUpDetails({ key: "REASON", text: "Other" }));
+        setDefaultReasonIndex("Other");
+        setOtherReason(reason);
+      }
+    }
+  }, [selector.isReasonUpdate, reasonList]);
+
+  useEffect(() => {
+    const enquiryResponse = selector.enquiry_details_response;
+    if (enquiryResponse && identifier === 'ENQUIRY_FOLLOW_UP') {
+      const dmsLeadDto = enquiryResponse.dmsLeadDto;
+      const dmsLeadProducts = dmsLeadDto.dmsLeadProducts;
+      if (dmsLeadProducts && dmsLeadProducts.length) {
+        const selectedModelData = dmsLeadProducts[0];
+        const { model, variant } = selectedModelData;
+        updateModelVarientsData(model, false);
+      }
+
+    }
+  }, [selector.enquiry_details_response]);
+
+  const getReasonListData = async (taskName) => {
+
+    setLoading(true)
+    const employeeData = await AsyncStorage.getData(AsyncStorage.Keys.LOGIN_EMPLOYEE);
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      let payload = {
+        orgId: jsonObj.orgId,
+        taskName:
+          taskName == "Booking approval task"
+            ? "PreBooking FollowUp"
+            : taskName,
+      };
+      Promise.all([
+        dispatch(getReasonList(payload))
+      ]).then((res) => {
+        let tempReasonList = [];
+        let allReasons = res[0].payload;
+        if (allReasons.length > 0) {
+          for (let i = 0; i < allReasons.length; i++) {
+            allReasons[i].label = allReasons[i].reason;
+            allReasons[i].value = allReasons[i].reason;
+            if (i === allReasons.length - 1) {
+              setTimeout(() => {
+                setReasonList([
+                  ...allReasons,
+                  { label: "Other", value: "Other" },
+                ]);
+              }, 100);
+              setLoading(false)
+            }
+          }
+        }
+        else {
+          setLoading(false)
+        }
+      }).catch(() => {
+        setLoading(false)
+      })
+    }
+  };
 
   const getAsyncStorageData = async () => {
     const employeeData = await AsyncStorage.getData(AsyncStorage.Keys.LOGIN_EMPLOYEE);
@@ -111,7 +217,6 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
       }
       setCarModelsData([...modalList]);
     }, (rejected) => {
-      console.log("getCarModelListFromServer Failed")
     }).finally(() => {
       // Get Enquiry Details
       getEnquiryDetailsFromServer();
@@ -202,40 +307,51 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
 
   const changeTaskStatusBasedOnActionType = (type) => {
     Keyboard.dismiss();
-
+    setIsSubmitPress(true)
     if (selector.task_details_response?.taskId !== taskId) {
       return;
     }
 
-    if (selector.employee_remarks.length === 0) {
-      showToast("Please enter required fields");
+    if (selector.reason.length === 0) {
+      showToast("Please select reason");
+      return;
+    }
+    if (selector.reason === 'Other' && otherReason.length === 0) {
+      showToast("Please Enter Other Reason");
+      return;
+    }
+    if (selector.customer_remarks.trim().length === 0) {
+      showToast("Please enter customer remarks");
       return;
     }
 
-    if (!isValidateAlphabetics(selector.reason)) {
-      showToast("Please enter alphabetics only in reason");
-      return;
-    }
-    if (!isValidateAlphabetics(selector.customer_remarks)) {
-      showToast("Please enter alphabetics only in customer reason");
+    if (selector.employee_remarks.trim().length === 0) {
+      showToast("Please enter employee remarks");
       return;
     }
 
-    if (!isValidateAlphabetics(selector.employee_remarks)) {
-      showToast("Please enter alphabetics only in employee remarks");
-      return;
+    if (type == 'RESCHEDULE') {
+      if (selector.actual_start_time.trim().length === 0) {
+        showToast("Please select next followup date");
+        return;
+      }
+
     }
+    var defaultDate = moment()
     const newTaskObj = { ...selector.task_details_response };
-    newTaskObj.reason = selector.reason;
+    newTaskObj.reason = selector.reason === 'Other' ? otherReason : selector.reason;
     newTaskObj.customerRemarks = selector.customer_remarks;
     newTaskObj.employeeRemarks = selector.employee_remarks;
     newTaskObj.taskActualStartTime = convertDateStringToMillisecondsUsingMoment(
-      selector.actual_start_time
+      selector.actual_start_time != '' ? selector.actual_start_time : defaultDate
     );
+    newTaskObj.lat = currentLocation ? currentLocation.lat.toString() : null;
+    newTaskObj.lon = currentLocation ? currentLocation.long.toString() : null;
     // dataObj.dmsExpectedDeliveryDate = convertDateStringToMillisecondsUsingMoment(selector.expected_delivery_date);
     newTaskObj.taskActualEndTime = convertDateStringToMillisecondsUsingMoment(
-      selector.actual_end_time
+      selector.actual_end_time != '' ? selector.actual_start_time : defaultDate
     );
+    newTaskObj.taskUpdatedById = empId;
     switch (type) {
       case "CLOSE":
         newTaskObj.taskStatus = "CLOSED";
@@ -244,12 +360,14 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
         newTaskObj.taskStatus = "CANCELLED";
         break;
       case "RESCHEDULE":
+       
         var momentA = moment(selector.actual_start_time, "DD/MM/YYYY");
         var momentB = moment(); // current date
-        if (momentA < momentB) {
-          showToast("Start date should not be less than current date");
-          return;
-        }
+        // if (momentA < momentB) {
+        //   setIsDateError(true)
+        //   showToast("Start date should not be less than current date");
+        //   return;
+        // }
         newTaskObj.taskStatus = "RESCHEDULED";
         break;
     }
@@ -270,6 +388,13 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
     setDropDownKey(key);
   };
 
+  const isViewMode = () => {
+    if (route?.params?.taskStatus === "CLOSED") {
+      return true;
+    }
+    return false;
+  }
+
   return (
     <SafeAreaView style={[styles.container]}>
       <DropDownComponant
@@ -282,7 +407,10 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
             updateModelVarientsData(item.name, false);
           }
           dispatch(
-            setEnquiryFollowUpDetails({ key: dropDownKey, text: item.name })
+            setEnquiryFollowUpDetails({
+              key: dropDownKey,
+              text: item.name,
+            })
           );
           setShowDropDownModel(false);
         }}
@@ -292,9 +420,9 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
         visible={selector.showDatepicker}
         mode={"date"}
         minimumDate={selector.minDate}
+        maximumDate={selector.maxDate}
         value={new Date(Date.now())}
         onChange={(event, selectedDate) => {
-          console.log("date: ", selectedDate);
           if (Platform.OS === "android") {
             //setDatePickerVisible(false);
           }
@@ -305,7 +433,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
 
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={Platform.OS == "ios" ? "padding" : "height"}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         enabled
         keyboardVerticalOffset={100}
       >
@@ -323,23 +451,27 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
                 <View>
                   <DropDownSelectionItem
                     label={"Model"}
-                    value={selector.model}
+                    disabled={isViewMode()}
+                    value={selector.enquiry_details_response?.dmsLeadDto?.model}
                     onPress={() =>
                       setDropDownDataForModel("MODEL", "Select Model")
                     }
                   />
 
-                  <DropDownSelectionItem
-                    label={"Varient"}
-                    value={selector.varient}
-                    onPress={() =>
-                      setDropDownDataForModel("VARIENT", "Select Varient")
-                    }
-                  />
+                  {identifier === "ENQUIRY_FOLLOW_UP" && (
+                    <DropDownSelectionItem
+                      label={"Varient"}
+                      disabled={isViewMode()}
+                      value={selector.varient}
+                      onPress={() =>
+                        setDropDownDataForModel("VARIENT", "Select Varient")
+                      }
+                    />
+                  )}
                 </View>
               )}
 
-            <TextinputComp
+            {/* <TextinputComp
               style={styles.textInputStyle}
               label={"Reason*"}
               value={selector.reason}
@@ -350,12 +482,84 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
                   setEnquiryFollowUpDetails({ key: "REASON", text: text })
                 );
               }}
-            />
+            /> */}
+            <View style={{ position: "relative" }}>
+              {selector.reason !== "" && (
+                <View
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 10,
+                    zIndex: 99,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 13,
+                      color: Colors.GRAY,
+                    }}
+                  >
+                    Reason*
+                  </Text>
+                </View>
+              )}
+              <Dropdown
+                disable={isViewMode()}
+                style={[styles.dropdownContainer]}
+                placeholderStyle={styles.placeholderStyle}
+                selectedTextStyle={styles.selectedTextStyle}
+                inputSearchStyle={styles.inputSearchStyle}
+                iconStyle={styles.iconStyle}
+                data={reasonList}
+                search
+                maxHeight={300}
+                labelField="label"
+                valueField="value"
+                placeholder={"Reason*"}
+                searchPlaceholder="Search..."
+                value={defaultReasonIndex}
+                // onFocus={() => setIsFocus(true)}
+                // onBlur={() => setIsFocus(false)}
+                onChange={(val) => {
+                  dispatch(
+                    setEnquiryFollowUpDetails({
+                      key: "REASON",
+                      text: val.value,
+                    })
+                  );
+                }}
+              />
+              <Text
+                style={[
+                  GlobalStyle.underline,
+                  {
+                    backgroundColor:
+                      isSubmitPress && selector.reason === ""
+                        ? "red"
+                        : "rgba(208, 212, 214, 0.7)",
+                  },
+                ]}
+              ></Text>
+            </View>
+            {selector.reason === "Other" && (
+              <TextinputComp
+                disabled={isViewMode()}
+                style={styles.textInputStyle}
+                label={"Other reason"}
+                autoCapitalize="sentences"
+                value={otherReason}
+                maxLength={50}
+                onChangeText={(text) => {
+                  setOtherReason(text);
+                }}
+              />
+            )}
             <Text style={GlobalStyle.underline}></Text>
 
             <TextinputComp
               style={styles.textInputStyle}
               label={"Customer Remarks*"}
+              disabled={isViewMode()}
               maxLength={50}
               value={selector.customer_remarks}
               autoCapitalize={"words"}
@@ -368,11 +572,22 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
                 )
               }
             />
-            <Text style={GlobalStyle.underline}></Text>
+            <Text
+              style={[
+                GlobalStyle.underline,
+                {
+                  backgroundColor:
+                    isSubmitPress && selector.customer_remarks === ""
+                      ? "red"
+                      : "rgba(208, 212, 214, 0.7)",
+                },
+              ]}
+            ></Text>
 
             <TextinputComp
               style={styles.textInputStyle}
               label={"Employee Remarks*"}
+              disabled={isViewMode()}
               value={selector.employee_remarks}
               maxLength={50}
               autoCapitalize={"words"}
@@ -385,52 +600,78 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
                 )
               }
             />
-            <Text style={GlobalStyle.underline}></Text>
+            <Text
+              style={[
+                GlobalStyle.underline,
+                {
+                  backgroundColor:
+                    isSubmitPress && selector.employee_remarks === ""
+                      ? "red"
+                      : "rgba(208, 212, 214, 0.7)",
+                },
+              ]}
+            ></Text>
             <DateSelectItem
-              label={"Actual Start Date"}
+              label={"Next Followup Date"}
+              // label={"Actual Start Date"}
+              disabled={isViewMode()}
               value={selector.actual_start_time}
               onPress={() => dispatch(setDatePicker("ACTUAL_START_TIME"))}
             //  value={selector.expected_delivery_date}
             // onPress={() =>
             // dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
             />
-            <Text style={GlobalStyle.underline}></Text>
-            <DateSelectItem
+            <Text
+              style={[
+                GlobalStyle.underline,
+                {
+                  backgroundColor:
+                    isSubmitPress &&
+                      (selector.actual_start_time === "" || isDateError)
+                      ? "red"
+                      : "rgba(208, 212, 214, 0.7)",
+                },
+              ]}
+            ></Text>
+            {/* <DateSelectItem
               label={"Actual End Date"}
+              disabled={isViewMode()}
               value={selector.actual_end_time}
               onPress={() => dispatch(setDatePicker("ACTUAL_END_TIME"))}
             />
-            <Text style={GlobalStyle.underline}></Text>
+            <Text style={GlobalStyle.underline}></Text> */}
           </View>
 
           {selector.task_status !== "CANCELLED" ? (
-            <View>
-              <View style={styles.view1}>
-                <LocalButtonComp
-                  title={"Update"}
-                  onPress={updateTask}
-                  disabled={selector.is_loading_for_task_update}
-                />
-                <LocalButtonComp
-                  title={"Close"}
-                  onPress={closeTask}
-                  disabled={selector.is_loading_for_task_update}
-                />
-              </View>
+            !isViewMode() ? (
+              <View>
+                <View style={styles.view1}>
+                  <LocalButtonComp
+                    title={"Update"}
+                    onPress={updateTask}
+                    disabled={selector.is_loading_for_task_update}
+                  />
+                  <LocalButtonComp
+                    title={"Close"}
+                    onPress={closeTask}
+                    disabled={selector.is_loading_for_task_update}
+                  />
+                </View>
 
-              <View style={styles.view1}>
-                <LocalButtonComp
-                  title={"Cancel"}
-                  onPress={cancelTask}
-                  disabled={selector.is_loading_for_task_update}
-                />
-                <LocalButtonComp
-                  title={"Reschedule"}
-                  onPress={rescheduleTask}
-                  disabled={selector.is_loading_for_task_update}
-                />
+                <View style={styles.view1}>
+                  <LocalButtonComp
+                    title={"Cancel"}
+                    onPress={cancelTask}
+                    disabled={selector.is_loading_for_task_update}
+                  />
+                  <LocalButtonComp
+                    title={"Reschedule"}
+                    onPress={rescheduleTask}
+                    disabled={selector.is_loading_for_task_update}
+                  />
+                </View>
               </View>
-            </View>
+            ) : null
           ) : (
             <View style={styles.cancelledVw}>
               <Text style={styles.cancelledText}>
@@ -440,6 +681,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
           )}
         </ScrollView>
       </KeyboardAvoidingView>
+      <LoaderComponent visible={loading} />
     </SafeAreaView>
   );
 };
@@ -476,5 +718,49 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "400",
     color: Colors.RED,
+  },
+  dropdownContainer: {
+    backgroundColor: 'white',
+    padding: 8,
+    // borderWidth: 1,
+    width: '100%',
+    height: 60,
+    // borderRadius: 5
+  },
+  dropdown: {
+    height: 50,
+    borderColor: 'gray',
+    borderWidth: 0.5,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+  },
+  icon: {
+    marginRight: 5,
+  },
+  label: {
+    position: 'absolute',
+    backgroundColor: 'white',
+    left: 22,
+    top: 8,
+    zIndex: 999,
+    paddingHorizontal: 8,
+    fontSize: 14,
+  },
+  placeholderStyle: {
+    fontSize: 16,
+    color: Colors.GRAY
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+    color: '#000',
+    fontWeight: '400'
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
   },
 });

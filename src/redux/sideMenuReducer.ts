@@ -5,51 +5,104 @@ export const HOME_LINE_STR = "HOME_LINE";
 export const BOOKING_TRACKER_STR = "BOOKING_TRACKER";
 export const DOCUMENT_WALLET_STR = "DOCUMENT_WALLET";
 export const CUSTOMER_RELATIONSHIP_STR = "CUSTOMER_RELATIONSHIP";
+export const DROP_ANALYSIS = "DROP_ANALYSIS";
 export const EVENT_MANAGEMENT_STR = "EVENT_MANAGEMENT";
-export const DIGITAL_PAYMENT_STR = "DIGITAL_PAYMENT"
-export const QR_CODE_STR = "QR_CODE"
+export const DIGITAL_PAYMENT_STR = "DIGITAL_PAYMENT";
+export const QR_CODE_STR = "QR_CODE";
+export const GROUP_STR = "GROUP";
+export const TRANSFER_STR = "TRANSFER";
+export const ATTENDANCE = "ATTENDANCE";
+export const DROP_LOST_CANCEL = "DROP_LOST_CANCEL";
+export const GEOLOCATION = "GEOLOCATION";
+export const DIGITAL_DASHBOARD = "DIGITAL_DASHBOARD";
+export const EVENT_DASHBOARD = "EVENT_DASHBOARD";
+export const REPORT_DOWNLOAD = "REPORT_DOWNLOAD";
 
 const data = [
   {
     title: "Home",
     icon: BOOKING_TRACKER_STR,
     screen: 99,
+    pngIcon: require("../assets/images/Home-01.png"),
+  },
+  {
+    title: "Live Leads",
+    icon: HOME_LINE_STR,
+    screen: 114,
+    pngIcon: require("../assets/images/Help_Desk-01.png"),
   },
   {
     title: "Target Planning",
     icon: CUSTOMER_RELATIONSHIP_STR,
     screen: 106,
+    pngIcon: require("../assets/images/Target_Planning-01.png"),
   },
   {
-    title: "Task Management",
-    icon: CUSTOMER_RELATIONSHIP_STR,
-    screen: 108,
+    title: "Digital Dashboard",
+    icon: DIGITAL_DASHBOARD,
+    screen: 118,
+    pngIcon: require("../assets/images/Target_Planning-01.png"),
   },
   {
-    title: "Upcoming Deliveries",
-    icon: BOOKING_TRACKER_STR,
-    screen: 100,
+    title: "Event Dashboard",
+    icon: EVENT_DASHBOARD,
+    screen: 119,
+    pngIcon: require("../assets/images/Target_Planning-01.png"),
   },
   {
-    title: "Event Management",
-    icon: EVENT_MANAGEMENT_STR,
-    screen: 103,
+    title: "My Attendance",
+    icon: ATTENDANCE,
+    screen: 116,
+    pngIcon: require("../assets/images/Target_Planning-01.png"),
   },
+  {
+    title: "Download Report",
+    icon: REPORT_DOWNLOAD,
+    screen: 121,
+    pngIcon: require("../assets/images/Target_Planning-01.png"),
+  },
+  {
+    title: "Geolocation",
+    icon: GEOLOCATION,
+    screen: 117,
+    pngIcon: require("../assets/images/Target_Planning-01.png"),
+  },
+  {
+    title: "Drop/Lost/Cancel",
+    icon: DROP_LOST_CANCEL,
+    screen: 115,
+    pngIcon: require("../assets/images/Settings-01.png"),
+  },
+  // {
+  //   title: "Task Management",
+  //   icon: CUSTOMER_RELATIONSHIP_STR,
+  //   screen: 108,
+  //   pngIcon: require("../assets/images/Task_Management-01.png"),
+  // },
+  // {
+  //   title: "Upcoming Deliveries",
+  //   icon: BOOKING_TRACKER_STR,
+  //   screen: 100,
+  //   pngIcon: require('../assets/images/Upcoming_Deliveries-01.png')
+  // },
+  // {
+  //   title: "Event Management",
+  //   icon: EVENT_MANAGEMENT_STR,
+  //   screen: 103,
+  //   pngIcon: require('../assets/images/Event_Management-01.png')
+  // },
   {
     title: "Task Transfer",
-    icon: CUSTOMER_RELATIONSHIP_STR,
+    icon: TRANSFER_STR,
     screen: 109,
+    pngIcon: require("../assets/images/Task_Trasnfer-01.png"),
   },
-  {
-    title: "Team Shuffle",
-    icon: CUSTOMER_RELATIONSHIP_STR,
-    screen: 109,
-  },
-  {
-    title: "Digital Payment",
-    icon: BOOKING_TRACKER_STR,
-    screen: 105,
-  },
+  // {
+  //   title: "Team Shuffle",
+  //   icon: GROUP_STR,
+  //   screen: 109,
+  //   pngIcon: require('../assets/images/Team_Shuffle-01.png')
+  // },
   // {
   //   title: "Complaints",
   //   icon: DOCUMENT_WALLET_STR,
@@ -59,16 +112,37 @@ const data = [
     title: "Helpdesk",
     icon: CUSTOMER_RELATIONSHIP_STR,
     screen: 107,
+    pngIcon: require("../assets/images/Help_Desk-01.png"),
   },
   {
     title: "Settings",
     icon: CUSTOMER_RELATIONSHIP_STR,
     screen: 102,
+    pngIcon: require("../assets/images/Settings-01.png"),
+  },
+  // {
+  //   title: "ETVBRL Report",
+  //   icon: CUSTOMER_RELATIONSHIP_STR,
+  //   screen: 111,
+  //   pngIcon: require('../assets/images/Reports-01.png')
+  // },
+  {
+    title: "QR Code",
+    icon: BOOKING_TRACKER_STR,
+    screen: 105,
+    pngIcon: require("../assets/images/Digital_Payment-01.png"),
+  },
+  {
+    title: "Drop Analysis",
+    icon: DROP_ANALYSIS,
+    screen: 113,
+    pngIcon: require("../assets/images/Settings-01.png"),
   },
   {
     title: "Sign Out",
     icon: CUSTOMER_RELATIONSHIP_STR,
-    screen: 111,
+    screen: 112,
+    pngIcon: require("../assets/images/Signout-01.png"),
   },
 ];
 
@@ -79,37 +153,49 @@ const dataForManager = [
     screen: 99,
   },
   {
+    title: "Live Leads",
+    icon: HOME_LINE_STR,
+    screen: 114,
+    pngIcon: require("../assets/images/Help_Desk-01.png"),
+  },
+  {
     title: "Target Planning",
     icon: CUSTOMER_RELATIONSHIP_STR,
     screen: 106,
   },
   {
-    title: "Task Management",
-    icon: CUSTOMER_RELATIONSHIP_STR,
-    screen: 108,
+    title: "My Attendance",
+    icon: ATTENDANCE,
+    screen: 116,
+    pngIcon: require("../assets/images/Target_Planning-01.png"),
   },
-  {
-    title: "Upcoming Deliveries",
-    icon: BOOKING_TRACKER_STR,
-    screen: 100,
-  },
-  {
-    title: "Event Management",
-    icon: EVENT_MANAGEMENT_STR,
-    screen: 103,
-  },
+  // {
+  //   title: "Task Management",
+  //   icon: CUSTOMER_RELATIONSHIP_STR,
+  //   screen: 108,
+  // },
+  // {
+  //   title: "Upcoming Deliveries",
+  //   icon: BOOKING_TRACKER_STR,
+  //   screen: 100,
+  // },
+  // {
+  //   title: "Event Management",
+  //   icon: EVENT_MANAGEMENT_STR,
+  //   screen: 103,
+  // },
   {
     title: "Task Transfer",
     icon: CUSTOMER_RELATIONSHIP_STR,
     screen: 109,
   },
+  // {
+  //   title: "Team Shuffle",
+  //   icon: CUSTOMER_RELATIONSHIP_STR,
+  //   screen: 109,
+  // },
   {
-    title: "Team Shuffle",
-    icon: CUSTOMER_RELATIONSHIP_STR,
-    screen: 109,
-  },
-  {
-    title: "Digital Payment",
+    title: "QR Code",
     icon: QR_CODE_STR,
     screen: 105,
   },
@@ -128,6 +214,12 @@ const dataForManager = [
     icon: CUSTOMER_RELATIONSHIP_STR,
     screen: 102,
   },
+  {
+    title: "Drop Analysis",
+    icon: DROP_ANALYSIS,
+    screen: 113,
+  },
+  { title: "Sign Out", icon: CUSTOMER_RELATIONSHIP_STR, screen: 112 },
 ];
 
 // {
@@ -142,7 +234,7 @@ export const sideMenuSlice = createSlice({
     tableData: data,
     managerData: dataForManager,
     normalData: data,
-    isManager: false
+    isManager: false,
   },
   reducers: {
     updateData: (state, action) => {

@@ -4,7 +4,6 @@ import {
   convertToTime,
 } from "../utils/helperFunctions";
 import URL from "../networking/endpoints";
-import moment from "moment";
 import { client } from "../networking/client";
 
 interface EnquiryFollowUpTextModel {
@@ -23,6 +22,7 @@ export const getTaskDetailsApi = createAsyncThunk(
   async (taskId, { rejectWithValue }) => {
     const response = await client.get(URL.GET_TASK_DETAILS(taskId));
     const json = await response.json();
+
     if (!response.ok) {
       return rejectWithValue(json);
     }
@@ -52,6 +52,17 @@ export const getEnquiryDetailsApi = createAsyncThunk("ENQUIRY_FOLLOW_UP_SLICE/ge
   return json;
 })
 
+export const getReasonList = createAsyncThunk("ENQUIRY_FOLLOW_UP_SLICE/getReasonList", async (payload: any, { rejectWithValue }) => {
+
+  const response = await client.get(URL.REASON_LIST(payload.orgId, payload.taskName));
+  const json = await response.json()
+
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
 const slice = createSlice({
   name: "ENQUIRY_FOLLOW_UP_SLICE",
   initialState: {
@@ -74,6 +85,7 @@ const slice = createSlice({
     actual_start_time: "",
     actual_end_time: "",
     enquiry_details_response: null,
+    isReasonUpdate: false,
   },
   reducers: {
     clearState: (state, action) => {
@@ -109,14 +121,16 @@ const slice = createSlice({
       }
     },
     setDatePicker: (state, action) => {
+      let date = new Date();
+      date.setDate(date.getDate() + 9);
       switch (action.payload) {
         case "ACTUAL_START_TIME":
           state.minDate = new Date();
-          state.maxDate = null;
+          state.maxDate = date;
           break;
         case "ACTUAL_END_TIME":
           state.minDate = new Date();
-          state.maxDate = null;
+          state.maxDate = date;
           break;
       }
       state.datePickerKeyId = action.payload;
@@ -143,6 +157,9 @@ const slice = createSlice({
       if (action.payload.success === true && action.payload.dmsEntity) {
         const taskObj = action.payload.dmsEntity.task;
         state.reason = taskObj.reason ? taskObj.reason : "";
+        if(taskObj.reason){
+          state.isReasonUpdate = true;
+        }
         state.customer_remarks = taskObj.customerRemarks
           ? taskObj.customerRemarks
           : "";
@@ -177,27 +194,25 @@ const slice = createSlice({
       state.update_task_response_status = null;
     });
     builder.addCase(updateTaskApi.fulfilled, (state, action) => {
-      console.log("S updateTaskApi", JSON.stringify(action.payload));
       state.is_loading_for_task_update = false;
       state.update_task_response_status = "success";
     });
     builder.addCase(updateTaskApi.rejected, (state, action) => {
-      console.log("F updateTaskApi", JSON.stringify(action.payload));
       state.is_loading_for_task_update = false;
       state.update_task_response_status = "failed";
     });
     // Get Prebooking Details
     builder.addCase(getEnquiryDetailsApi.pending, (state, action) => {
       state.enquiry_details_response = null;
+      state.model = '';
+      state.varient = '';
     })
     builder.addCase(getEnquiryDetailsApi.fulfilled, (state, action) => {
       if (action.payload.dmsEntity) {
         const dmsLeadDto = action.payload.dmsEntity.dmsLeadDto;
-        console.log("selectedModelObj:", dmsLeadDto)
 
         if (dmsLeadDto.dmsLeadProducts && dmsLeadDto.dmsLeadProducts.length > 0) {
           const selectedModelObj = dmsLeadDto.dmsLeadProducts[0];
-          console.log("selectedModelObj2:", selectedModelObj)
           state.model = selectedModelObj.model;
           state.varient = selectedModelObj.variant;
         }

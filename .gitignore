@@ -88,6 +88,8 @@ buck-out/
 *.keystore
 !debug.keystore
 
+*.hprof
+
 # fastlane
 #
 # It is recommended to not store the screenshots in the git repo. Instead, use fastlane to re-generate the
@@ -105,6 +107,7 @@ buck-out/
 # CocoaPods
 /ios/Pods/
 /ios/B2B_NEW_THEME/Images.xcassets/
+/ios/Podfile.lock
 
 
 package-lock.json

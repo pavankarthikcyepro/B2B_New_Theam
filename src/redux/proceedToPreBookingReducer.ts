@@ -43,7 +43,7 @@ export const getEnquiryDetailsApi = createAsyncThunk("PROCEED_TO_PRE_BOOKING_SLI
 })
 
 export const updateEnquiryDetailsApi = createAsyncThunk("PROCEED_TO_PRE_BOOKING_SLICE/updateEnquiryDetailsApi", async (payload, { rejectWithValue }) => {
-
+    
     const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
     const json = await response.json()
     if (!response.ok) {
@@ -65,11 +65,18 @@ export const changeEnquiryStatusApi = createAsyncThunk("PROCEED_TO_PRE_BOOKING_S
 export const dropEnquiryApi = createAsyncThunk("PROCEED_TO_PRE_BOOKING_SLICE/dropEnquiryApi", async (payload, { rejectWithValue }) => {
 
     const response = await client.post(URL.DROP_ENQUIRY(), payload);
-    const json = await response.json()
-    if (!response.ok) {
-        return rejectWithValue(json);
+    try {
+        const json = await response.json()
+
+        if (!response.ok) {
+            return rejectWithValue(json);
+        }
+        return json;
+    } catch (error) {
+        console.error("BookingPaymentApi JSON parse error: ", error + " : " + JSON.stringify(response));
+        return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
     }
-    return json;
+    
 })
 
 export const getDropDataApi = createAsyncThunk("PROCEED_TO_PRE_BOOKING_SLICE/getDropDataApi", async (payload, { rejectWithValue }) => {

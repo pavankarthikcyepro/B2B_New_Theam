@@ -3,12 +3,17 @@ import { SafeAreaView, StyleSheet, View, TouchableOpacity, Text } from "react-na
 import { Colors } from '../styles';
 import { IconButton } from 'react-native-paper';
 
-const ImageSelectItem = ({ name, onPress }) => {
+const ImageSelectItem = ({ name, onPress, disabled = false }) => {
     return (
-        <TouchableOpacity onPress={onPress}>
+        <TouchableOpacity onPress={() => {
+            if(!disabled){
+                onPress()
+            }
+        }}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={{ fontSize: 14, fontWeight: '400', color: Colors.BLUE }}>{name}</Text>
+                <Text disabled={true} style={{ fontSize: 14, fontWeight: '400', color: disabled ? Colors.GRAY : Colors.BLUE }}>{name}</Text>
                 <IconButton
+                    disabled={disabled}
                     icon={'file-upload'}
                     color={Colors.GRAY}
                     size={20}

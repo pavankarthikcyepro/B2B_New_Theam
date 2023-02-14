@@ -2,9 +2,7 @@ import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import { client } from "../networking/client";
 import URL from "../networking/endpoints";
 
-import {
-  Form_Types,
-} from "../jsonData/prebookingFormScreenJsonData";
+import { Form_Types } from "../jsonData/prebookingFormScreenJsonData";
 import {
   Salutation_Types,
   Enquiry_Segment_Data,
@@ -13,7 +11,11 @@ import {
 import { convertTimeStampToDateString } from "../utils/helperFunctions";
 import { showToastRedAlert } from "../utils/toast";
 import moment from "moment";
-import { add } from "react-native-reanimated";
+import {
+  CustomerTypesObj,
+  CustomerTypesObj21,
+  CustomerTypesObj22,
+} from "../jsonData/preEnquiryScreenJsonData";
 
 const dropDownData = [
   {
@@ -34,216 +36,435 @@ const dropDownData = [
   },
 ];
 
-export const getPrebookingDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getPrebookingDetailsApi", async (universalId, { rejectWithValue }) => {
+export const getPrebookingDetailsApi = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/getPrebookingDetailsApi",
+  async (universalId, { rejectWithValue }) => {
+    const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
+    try {
+      const json = await response.json();
 
-  const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
-  try {
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.error(
+        "getPrebookingDetailsApi JSON parse error: ",
+        error + " : " + JSON.stringify(response)
+      );
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
+    }
+  }
+);
+
+export const getRulesConfiguration = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/getRulesConfiguration",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.get(
+      URL.GET_RULES_CONFIG(
+        payload["model"],
+        payload["variant"],
+        payload["fuel"],
+        payload["orgId"]
+      )
+    );
+    try {
+      const json = await response.json();
+
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.error(
+        "getRulesConfiguration JSON parse error: ",
+        error + " : " + JSON.stringify(response)
+      );
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
+    }
+  }
+);
+
+export const updatePrebookingDetailsApi = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/updatePrebookingDetailsApi",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
+    try {
+      const json = await response.json();
+
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.error(
+        "updatePrebookingDetailsApi JSON parse error: ",
+        error + " : " + JSON.stringify(response)
+      );
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
+    }
+  }
+);
+
+export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/getOnRoadPriceAndInsurenceDetailsApi",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.get(
+      URL.GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS(
+        payload["varientId"],
+        payload["orgId"]
+      )
+    );
+    try {
+      const json = await response.json();
+
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      showToastRedAlert(
+        `Value not found for varient id: ${payload["varientId"]} and org id: ${payload["orgId"]}`
+      );
+      console.error(
+        "PRE-BOOKING getOnRoadPriceAndInsurenceDetailsApi JSON parse error: ",
+        error + " : " + JSON.stringify(response)
+      );
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
+    }
+  }
+);
+
+export const dropPreBooingApi = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/dropPreBooingApi",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.DROP_ENQUIRY(), payload);
+    try {
+      const json = await response.json();
+
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.error(
+        "dropPreBooingApi JSON parse error: ",
+        error + " : " + JSON.stringify(response)
+      );
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
+    }
+  }
+);
+export const sendEditedOnRoadPriceDetails = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/sendEditedOnRoadPriceDetails",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.put(
+      URL.SEND_ON_ROAD_PRICE_DETAILS(),
+      payload
+    );
+    try {
+      const json = await response.json();
+
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.error(
+        "sendOnRoadPriceDetails JSON parse error: ",
+        error + " : " + JSON.stringify(response)
+      );
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
+    }
+  }
+);
+
+export const sendOnRoadPriceDetails = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/sendOnRoadPriceDetails",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(
+      URL.SEND_ON_ROAD_PRICE_DETAILS(),
+      payload
+    );
+    try {
+      const json = await response.json();
+
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.error(
+        "sendOnRoadPriceDetails JSON parse error: ",
+        error + " : " + JSON.stringify(response)
+      );
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
+    }
+  }
+);
+
+export const getEnquiryTypesApi = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/getEnquiryTypesApi",
+  async (orgId, { rejectWithValue }) => {
+    const response = await client.get(URL.GET_ENQUIRY_TYPE(orgId));
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+export const getCustomerTypesApi = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/getCustomerTypesApi",
+  async (orgId, { rejectWithValue }) => {
+    const response = await client.get(URL.GET_CUSTOMER_TYPES(orgId));
+    try {
+      const json = await response.json();
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.error(
+        "getCustomerTypesApi JSON parse error: ",
+        error + " : " + JSON.stringify(response)
+      );
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
+    }
+  }
+);
+
+export const getDropDataApi = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/getDropDataApi",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.GET_DROP_DATA(), payload);
+    try {
+      const json = await response.json();
+
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.error(
+        "getDropDataApi JSON parse error: ",
+        error + " : " + JSON.stringify(response)
+      );
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
+    }
+  }
+);
+
+export const getDropSubReasonDataApi = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/getDropSubReasonDataApi",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.GET_DROP_DATA(), payload);
+    try {
+      const json = await response.json();
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.error(
+        "getDropSubReasonDataApi JSON parse error: ",
+        error + " : " + JSON.stringify(response)
+      );
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
+    }
+  }
+);
+
+export const getOnRoadPriceDtoListApi = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/getOnRoadPriceDtoListApi",
+  async (leadId, { rejectWithValue }) => {
+    const response = await client.get(URL.GET_ON_ROAD_PRICE_DTO_LIST(leadId));
+    try {
+      const json = await response.json();
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.error(
+        "getOnRoadPriceDtoListApi JSON parse error: ",
+        error + " : " + JSON.stringify(response)
+      );
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
+    }
+  }
+);
+
+export const preBookingPaymentApi = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/preBookingPaymentApi",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.PRE_BOOKING_PAYMENT(), payload);
+    try {
+      const json = await response.json();
+
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.error(
+        "preBookingPaymentApi JSON parse error: ",
+        error + " : " + JSON.stringify(response)
+      );
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
+    }
+  }
+);
+
+export const postBookingAmountApi = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/postBookingAmountApi",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.BOOKING_AMOUNT(), payload);
+    try {
+      const json = await response.json();
+
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.error(
+        "postBookingAmountApi JSON parse error: ",
+        error + " : " + JSON.stringify(response)
+      );
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
+    }
+  }
+);
+
+export const getPaymentDetailsApi = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/getPaymentDetailsApi",
+  async (leadId, { rejectWithValue }) => {
+    const response = await client.get(
+      URL.GET_PRE_BOOKING_PAYMENT_DETAILS(leadId)
+    );
+    try {
+      const json = await response.json();
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.error(
+        "getPaymentDetailsApi JSON parse error: ",
+        error + " : " + JSON.stringify(response)
+      );
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
+    }
+  }
+);
+
+export const getBookingAmountDetailsApi = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/getBookingAmountDetailsApi",
+  async (leadId, { rejectWithValue }) => {
+    const response = await client.get(URL.GET_BOOKING_AMOUNT_DETAILS(leadId));
+    try {
+      const json = await response.json();
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.error(
+        "getBookingAmountDetailsApi JSON parse error: ",
+        error + " : " + JSON.stringify(response)
+      );
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
+    }
+  }
+);
+
+export const getAssignedTasksApi = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/getAssignedTasksApi",
+  async (universalId, { rejectWithValue }) => {
+    const url = URL.TASKS_PRE_ENQUIRY() + universalId;
+    const response = await client.get(url);
+    try {
+      const json = await response.json();
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.error(
+        "getAssignedTasksApi JSON parse error: ",
+        error + " : " + JSON.stringify(response)
+      );
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
+    }
+  }
+);
+
+export const updateRef = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/updateRef",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.UPDATE_REF(), payload);
+    try {
+      // const json = await response.json();
+
+      if (!response.ok) {
+        return rejectWithValue(response);
+      }
+      return response;
+    } catch (error) {
+      console.error(JSON.stringify(response));
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
+    }
+  }
+);
+
+export const getOtherPricesDropDown = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/getOtherPricesDropDown",
+  async (orgId, { rejectWithValue }) => {
+    const url = URL.GET_OTHER_PRICES_DROP_DOWN(orgId);
+    const response = await client.get(url);
     const json = await response.json();
     if (response.status != 200) {
       return rejectWithValue(json);
     }
     return json;
-  } catch (error) {
-    console.error("getPrebookingDetailsApi JSON parse error: ", error + " : " + JSON.stringify(response));
-    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
   }
-})
-
-export const updatePrebookingDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/updatePrebookingDetailsApi", async (payload, { rejectWithValue }) => {
-
-  const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
-  try {
-    const json = await response.json();
-    if (response.status != 200) {
-      return rejectWithValue(json);
-    }
-    return json;
-  } catch (error) {
-    console.error("updatePrebookingDetailsApi JSON parse error: ", error + " : " + JSON.stringify(response));
-    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
-  }
-})
-
-export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getOnRoadPriceAndInsurenceDetailsApi", async (payload, { rejectWithValue }) => {
-
-  const response = await client.get(URL.GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS(payload["varientId"], payload["orgId"]));
-  try {
-    const json = await response.json();
-    if (response.status != 200) {
-      return rejectWithValue(json);
-    }
-    return json;
-  } catch (error) {
-    console.error("getOnRoadPriceAndInsurenceDetailsApi JSON parse error: ", error + " : " + JSON.stringify(response));
-    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
-  }
-})
-
-export const dropPreBooingApi = createAsyncThunk("PREBOONING_FORMS_SLICE/dropPreBooingApi", async (payload, { rejectWithValue }) => {
-
-  const response = await client.post(URL.DROP_ENQUIRY(), payload);
-  try {
-    const json = await response.json();
-    if (response.status != 200) {
-      return rejectWithValue(json);
-    }
-    return json;
-  } catch (error) {
-    console.error("dropPreBooingApi JSON parse error: ", error + " : " + JSON.stringify(response));
-    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
-  }
-})
-
-export const sendOnRoadPriceDetails = createAsyncThunk("PREBOONING_FORMS_SLICE/sendOnRoadPriceDetails", async (payload, { rejectWithValue }) => {
-
-  const response = await client.post(URL.SEND_ON_ROAD_PRICE_DETAILS(), payload);
-  try {
-    const json = await response.json();
-    if (response.status != 200) {
-      return rejectWithValue(json);
-    }
-    return json;
-  } catch (error) {
-    console.error("sendOnRoadPriceDetails JSON parse error: ", error + " : " + JSON.stringify(response));
-    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
-  }
-})
-
-export const getCustomerTypesApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getCustomerTypesApi", async (universalId, { rejectWithValue }) => {
-
-  const response = await client.get(URL.GET_CUSTOMER_TYPES());
-  try {
-    const json = await response.json();
-    if (response.status != 200) {
-      return rejectWithValue(json);
-    }
-    return json;
-  } catch (error) {
-    console.error("getCustomerTypesApi JSON parse error: ", error + " : " + JSON.stringify(response));
-    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
-  }
-})
-
-export const getDropDataApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getDropDataApi", async (payload, { rejectWithValue }) => {
-
-  const response = await client.post(URL.GET_DROP_DATA(), payload);
-  try {
-    const json = await response.json();
-    if (response.status != 200) {
-      return rejectWithValue(json);
-    }
-    return json;
-  } catch (error) {
-    console.error("getDropDataApi JSON parse error: ", error + " : " + JSON.stringify(response));
-    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
-  }
-})
-
-export const getDropSubReasonDataApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getDropSubReasonDataApi", async (payload, { rejectWithValue }) => {
-
-  const response = await client.post(URL.GET_DROP_DATA(), payload);
-  try {
-    const json = await response.json();
-    if (response.status != 200) {
-      return rejectWithValue(json);
-    }
-    return json;
-  } catch (error) {
-    console.error("getDropSubReasonDataApi JSON parse error: ", error + " : " + JSON.stringify(response));
-    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
-  }
-})
-
-export const getOnRoadPriceDtoListApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getOnRoadPriceDtoListApi", async (leadId, { rejectWithValue }) => {
-
-  const response = await client.get(URL.GET_ON_ROAD_PRICE_DTO_LIST(leadId));
-  try {
-    const json = await response.json();
-    if (response.status != 200) {
-      return rejectWithValue(json);
-    }
-    return json;
-  } catch (error) {
-    console.error("getOnRoadPriceDtoListApi JSON parse error: ", error + " : " + JSON.stringify(response));
-    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
-  }
-})
-
-export const preBookingPaymentApi = createAsyncThunk("PREBOONING_FORMS_SLICE/preBookingPaymentApi", async (payload, { rejectWithValue }) => {
-
-  const response = await client.post(URL.PRE_BOOKING_PAYMENT(), payload);
-  try {
-    const json = await response.json();
-    if (response.status != 200) {
-      return rejectWithValue(json);
-    }
-    return json;
-  } catch (error) {
-    console.error("preBookingPaymentApi JSON parse error: ", error + " : " + JSON.stringify(response));
-    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
-  }
-})
-
-export const postBookingAmountApi = createAsyncThunk("PREBOONING_FORMS_SLICE/postBookingAmountApi", async (payload, { rejectWithValue }) => {
-
-  const response = await client.post(URL.BOOKING_AMOUNT(), payload);
-  try {
-    const json = await response.json();
-    if (response.status != 200) {
-      return rejectWithValue(json);
-    }
-    return json;
-  } catch (error) {
-    console.error("postBookingAmountApi JSON parse error: ", error + " : " + JSON.stringify(response));
-    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
-  }
-})
-
-export const getPaymentDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getPaymentDetailsApi", async (leadId, { rejectWithValue }) => {
-
-  const response = await client.get(URL.GET_PRE_BOOKING_PAYMENT_DETAILS(leadId));
-  try {
-    const json = await response.json();
-    if (response.status != 200) {
-      return rejectWithValue(json);
-    }
-    return json;
-  } catch (error) {
-    console.error("getPaymentDetailsApi JSON parse error: ", error + " : " + JSON.stringify(response));
-    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
-  }
-})
-
-export const getBookingAmountDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getBookingAmountDetailsApi", async (leadId, { rejectWithValue }) => {
-
-  const response = await client.get(URL.GET_BOOKING_AMOUNT_DETAILS(leadId));
-  try {
-    const json = await response.json();
-    if (response.status != 200) {
-      return rejectWithValue(json);
-    }
-    return json;
-  } catch (error) {
-    console.error("getBookingAmountDetailsApi JSON parse error: ", error + " : " + JSON.stringify(response));
-    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
-  }
-})
-
-export const getAssignedTasksApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getAssignedTasksApi", async (universalId, { rejectWithValue }) => {
-
-  const url = URL.TASKS_PRE_ENQUIRY() + universalId;
-  const response = await client.get(url);
-  try {
-    const json = await response.json();
-    if (response.status != 200) {
-      return rejectWithValue(json);
-    }
-    return json;
-  } catch (error) {
-    console.error("getAssignedTasksApi JSON parse error: ", error + " : " + JSON.stringify(response));
-    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
-  }
-})
+);
 
 interface CustomerDetailModel {
   key: string;
@@ -271,7 +492,7 @@ const prebookingFormSlice = createSlice({
     showDropDownpicker: false,
     dropDownData: dropDownData,
     pre_booking_details_response: null,
-    customer_types_response: null,
+    customer_types_response: [],
     vehicle_on_road_price_insurence_details_response: null,
     pre_booking_drop_response_status: null,
     update_pre_booking_details_response: "",
@@ -312,15 +533,17 @@ const prebookingFormSlice = createSlice({
     gender: "",
     salutation: "",
     enquiry_segment: "",
+    buyer_type: "",
     customer_type: "",
     marital_status: "",
     // Communication Address
     pincode: "",
+    defaultAddress: "",
     urban_or_rural: 0, // 1: urban, 2:
     house_number: "",
     street_name: "",
     village: "",
-    mandal:"",
+    mandal: "",
     city: "",
     state: "",
     district: "",
@@ -331,7 +554,7 @@ const prebookingFormSlice = createSlice({
     p_houseNum: "",
     p_streetName: "",
     p_village: "",
-    p_mandal:"",
+    p_mandal: "",
     p_city: "",
     p_state: "",
     p_district: "",
@@ -341,6 +564,8 @@ const prebookingFormSlice = createSlice({
     color: "",
     fuel_type: "",
     transmission_type: "",
+    dmsLeadProducts: [],
+
     lead_product_id: "",
     model_drop_down_data_update_status: null,
     // financial details
@@ -382,7 +607,7 @@ const prebookingFormSlice = createSlice({
     additional_offer_1: "",
     additional_offer_2: "",
     // Documents Upload
-    form_or_pan: "",
+    form_or_pan: "PAN",
     customer_type_category: "",
     adhaar_number: "",
     pan_number: "",
@@ -401,13 +626,24 @@ const prebookingFormSlice = createSlice({
     cheque_number: "",
     cheque_date: "",
     dd_number: "",
-    dd_date: ""
+    dd_date: "",
+    isDataLoaded: false,
+    addOnPrice: 0,
+    refNo: "",
+    accessories_discount: "",
+    insurance_discount: "",
+    isAddressSet: false,
+    registrationCharges: 0,
+    configureRulesResponse: "",
+    configureRulesResponse_status: "",
+    otherPricesDropDown: [],
+    enquiry_type_list: [],
   },
   reducers: {
     clearState: (state, action) => {
       state.isLoading = false;
       state.pre_booking_details_response = null;
-      state.customer_types_response = null;
+      state.customer_types_response = [];
       state.vehicle_on_road_price_insurence_details_response = null;
       state.pre_booking_drop_response_status = null;
       state.update_pre_booking_details_response = null;
@@ -434,10 +670,12 @@ const prebookingFormSlice = createSlice({
       state.gender = "";
       state.salutation = "";
       state.enquiry_segment = "";
+      state.buyer_type = "";
       state.customer_type = "";
       state.marital_status = "";
       // Communication Address
       state.pincode = "";
+      state.defaultAddress = "";
       state.urban_or_rural = 0; // 1: urban, 2:
       state.house_number = "";
       state.street_name = "";
@@ -464,6 +702,7 @@ const prebookingFormSlice = createSlice({
       state.fuel_type = "";
       state.transmission_type = "";
       state.lead_product_id = "";
+      state.dmsLeadProducts = [];
       state.model_drop_down_data_update_status = null;
       // financial details
       state.retail_finance = "";
@@ -504,7 +743,7 @@ const prebookingFormSlice = createSlice({
       state.additional_offer_1 = "";
       state.additional_offer_2 = "";
       // Documents Upload
-      state.form_or_pan = "";
+      state.form_or_pan = "PAN";
       state.customer_type_category = "";
       state.adhaar_number = "";
       state.pan_number = "";
@@ -524,9 +763,28 @@ const prebookingFormSlice = createSlice({
       state.cheque_date = "";
       state.dd_number = "";
       state.dd_date = "";
+      state.isDataLoaded = false;
+      state.addOnPrice = 0;
+      state.refNo = "";
+      state.accessories_discount = "";
+      state.insurance_discount = "";
+      state.isAddressSet = false;
+      state.configureRulesResponse = "";
+      state.configureRulesResponse_status = "";
+      state.otherPricesDropDown = [];
+      state.enquiry_type_list = [];
+    },
+    updateStatus: (state, action) => {
+      state.pre_booking_payment_response_status = "";
+      state.booking_amount_response_status = "";
+    },
+    updatedmsLeadProduct: (state, action) => {
+      // alert(JSON.stringify(action.payload))
+      const data = action.payload;
+      state.dmsLeadProducts = data;
     },
     setDropDownData: (state, action: PayloadAction<DropDownModelNew>) => {
-      const { key, value, id } = action.payload;
+      const { key, value, id, orgId } = action.payload;
       switch (key) {
         case "SALUTATION":
           if (state.salutation !== value) {
@@ -537,10 +795,26 @@ const prebookingFormSlice = createSlice({
           break;
         case "ENQUIRY_SEGMENT":
           state.enquiry_segment = value;
+          let data = state.customer_types_response;
+          let newData = data?.filter((val) => val?.enquiry_segment == value);
+          state.customer_types_data = newData;
           state.customer_type = "";
-          if (state.customer_types_response) {
-            state.customer_types_data = state.customer_types_response[value.toLowerCase()];
-          }
+
+          // if (+orgId == 21) {
+          //   state.customer_types_data = CustomerTypesObj21[value.toLowerCase()];
+          // } else if (+orgId == 22) {
+          //   state.customer_types_data = CustomerTypesObj22[value.toLowerCase()];
+          // } else {
+          //   state.customer_types_data = CustomerTypesObj[value.toLowerCase()];
+          // }
+
+          break;
+        case "BUYER_TYPE":
+          state.buyer_type = value;
+          //state.customer_type ="";
+          //             if(state.customer_types_response){
+          // state.customer_types_data = state.customer_types_response[value.toLowerCase()]
+          //             }
           break;
         case "CUSTOMER_TYPE":
           state.customer_type = value;
@@ -640,8 +914,10 @@ const prebookingFormSlice = createSlice({
         case "DATE_OF_BIRTH":
           state.date_of_birth = selectedDate;
           const given = moment(selectedDate, "DD/MM/YYYY");
-          const current = moment().startOf('day');
-          const total = Number(moment.duration(current.diff(given)).asYears()).toFixed(0);
+          const current = moment().startOf("day");
+          const total = Number(
+            moment.duration(current.diff(given)).asYears()
+          ).toFixed(0);
           if (Number(total) > 0) {
             state.age = total;
           }
@@ -651,6 +927,7 @@ const prebookingFormSlice = createSlice({
           break;
         case "TENTATIVE_DELIVERY_DATE":
           state.tentative_delivery_date = selectedDate;
+
           break;
         case "TRANSACTION_DATE":
           state.transaction_date = selectedDate;
@@ -662,7 +939,6 @@ const prebookingFormSlice = createSlice({
           state.dd_date = selectedDate;
           break;
         case "NONE":
-          console.log("NONE");
           break;
       }
       state.showDatepicker = !state.showDatepicker;
@@ -698,6 +974,9 @@ const prebookingFormSlice = createSlice({
       switch (key) {
         case "PINCODE":
           state.pincode = text;
+          break;
+        case "DEFAULT_ADDRESS":
+          state.defaultAddress = text;
           break;
         case "RURAL_URBAN":
           state.urban_or_rural = Number(text);
@@ -782,6 +1061,9 @@ const prebookingFormSlice = createSlice({
         case "LOAN_AMOUNT":
           state.loan_amount = text;
           break;
+        case "LOAN_AMOUNT_OUT":
+          state.loan_amount = text;
+          break;
         case "RATE_OF_INTEREST":
           state.rate_of_interest = text;
           break;
@@ -846,6 +1128,12 @@ const prebookingFormSlice = createSlice({
         case "ADDITIONAL_OFFER_2":
           state.additional_offer_2 = text;
           break;
+        case "ACCESSORIES_DISCOUNT":
+          state.accessories_discount = text;
+          break;
+        case "INSURANCE_DISCOUNT":
+          state.insurance_discount = text;
+          break;
       }
     },
     setBookingPaymentDetails: (
@@ -884,6 +1172,7 @@ const prebookingFormSlice = createSlice({
           break;
         case "PAN_NUMBER":
           state.pan_number = text;
+          break;
         case "RELATIONSHIP_PROOF":
           state.relationship_proof = text;
           break;
@@ -902,6 +1191,9 @@ const prebookingFormSlice = createSlice({
           state.reject_remarks = text;
           break;
       }
+    },
+    updateResponseStatus: (state, action) => {
+      state.update_pre_booking_details_response = action.payload;
     },
     setPreBookingPaymentDetials: (state, action) => {
       const { key, text } = action.payload;
@@ -934,61 +1226,125 @@ const prebookingFormSlice = createSlice({
       state.transmission_type = action.payload.transmissionType;
     },
     updateDmsContactOrAccountDtoData: (state, action) => {
-
       // dmsContactOrAccountDto
       const dms_C_Or_A_Dto = action.payload;
-      state.salutation = dms_C_Or_A_Dto.salutation ? dms_C_Or_A_Dto.salutation : "";
+      state.salutation = dms_C_Or_A_Dto.salutation
+        ? dms_C_Or_A_Dto.salutation
+        : "";
       if (state.salutation) {
-        state.gender_types_data = Gender_Data_Obj[state.salutation.toLowerCase()];
+        state.gender_types_data =
+          Gender_Data_Obj[state.salutation.toLowerCase()];
       }
-      state.first_name = dms_C_Or_A_Dto.firstName ? dms_C_Or_A_Dto.firstName : "";
+      state.first_name = dms_C_Or_A_Dto.firstName
+        ? dms_C_Or_A_Dto.firstName
+        : "";
       state.last_name = dms_C_Or_A_Dto.lastName ? dms_C_Or_A_Dto.lastName : "";
       state.mobile = dms_C_Or_A_Dto.phone ? dms_C_Or_A_Dto.phone : "";
       state.email = dms_C_Or_A_Dto.email ? dms_C_Or_A_Dto.email : "";
-      const dateOfBirth = dms_C_Or_A_Dto.dateOfBirth ? dms_C_Or_A_Dto.dateOfBirth : "";
-      state.date_of_birth = convertTimeStampToDateString(dateOfBirth, "DD/MM/YYYY");
+      const dateOfBirth = dms_C_Or_A_Dto.dateOfBirth
+        ? dms_C_Or_A_Dto.dateOfBirth
+        : "";
+      state.date_of_birth = convertTimeStampToDateString(
+        dateOfBirth,
+        "DD/MM/YYYY"
+      );
       state.gender = dms_C_Or_A_Dto.gender ? dms_C_Or_A_Dto.gender : "";
-      state.age = dms_C_Or_A_Dto.age ? dms_C_Or_A_Dto.age.toString() : "0";
-      state.customer_type = dms_C_Or_A_Dto.customerType ? dms_C_Or_A_Dto.customerType : "";
+      // state.age = dms_C_Or_A_Dto.age ? dms_C_Or_A_Dto.age.toString() : "0";
+      const dob = convertTimeStampToDateString(dateOfBirth, "DD/MM/YYYY");
+      const given = moment(dob, "DD/MM/YYYY");
+      const current = moment().startOf("day");
+      const total = Number(
+        moment.duration(current.diff(given)).asYears()
+      ).toFixed(0);
+
+      if (Number(total) > 0) {
+        state.age = total.toString();
+      }
+      state.customer_type = dms_C_Or_A_Dto.customerType
+        ? dms_C_Or_A_Dto.customerType
+        : "";
+      ///state.buyer_type = dms_C_Or_A_Dto.buyerType? dms_C_Or_A_Dto.buyerType:"";
     },
     updateDmsLeadDtoData: (state, action) => {
-
       const dmsLeadDto = action.payload;
-      state.enquiry_segment = dmsLeadDto.enquirySegment ? dmsLeadDto.enquirySegment : "";
-      if (state.customer_types_response && state.enquiry_segment) {
-        state.customer_types_data = state.customer_types_response[state.enquiry_segment.toLowerCase()];
+      state.enquiry_segment = dmsLeadDto.enquirySegment
+        ? dmsLeadDto.enquirySegment
+        : "";
+      if (state.customer_types_response?.length && state.enquiry_segment) {
+        let data = state.customer_types_response;
+        let newData = data?.filter(
+          (val: any) => val?.enquiry_segment == state.enquiry_segment
+        );
+        state.customer_types_data = newData;
       }
-      state.marital_status = dmsLeadDto.maritalStatus ? dmsLeadDto.maritalStatus : "";
-      state.vehicle_type = dmsLeadDto.otherVehicleType ? dmsLeadDto.otherVehicleType : "";
-      state.registration_number = dmsLeadDto.otherVehicleRcNo ? dmsLeadDto.otherVehicleRcNo : "";
+      state.buyer_type = dmsLeadDto.buyerType ? dmsLeadDto.buyerType : "";
+      state.marital_status = dmsLeadDto.maritalStatus
+        ? dmsLeadDto.maritalStatus
+        : "";
+      state.vehicle_type = dmsLeadDto.otherVehicleType
+        ? dmsLeadDto.otherVehicleType
+        : "";
+      state.registration_number = dmsLeadDto.otherVehicleRcNo
+        ? dmsLeadDto.otherVehicleRcNo
+        : "";
 
       // Documents
-      state.form_or_pan = dmsLeadDto.documentType ? dmsLeadDto.documentType : "";
-      state.gstin_number = dmsLeadDto.gstNumber ? dmsLeadDto.gstNumber : "";
-      state.customer_type_category = dmsLeadDto.customerCategoryType ? dmsLeadDto.customerCategoryType : "";
+      if (dmsLeadDto.documentType) {
+        state.form_or_pan = dmsLeadDto.documentType;
+      }
+      if (dmsLeadDto.gstNumber && dmsLeadDto.gstNumber != "") {
+        state.gstin_number = dmsLeadDto.gstNumber;
+      }
+      state.customer_type_category = dmsLeadDto.customerCategoryType
+        ? dmsLeadDto.customerCategoryType
+        : "";
 
       // Commitment
       state.occasion = dmsLeadDto.occasion ? dmsLeadDto.occasion : "";
-      const customerPreferredDate = dmsLeadDto.commitmentDeliveryPreferredDate ? dmsLeadDto.commitmentDeliveryPreferredDate : "";
-      state.customer_preferred_date = convertTimeStampToDateString(customerPreferredDate, "DD/MM/YYYY");
-      const tentativeDeliveryDate = dmsLeadDto.commitmentDeliveryTentativeDate ? dmsLeadDto.commitmentDeliveryTentativeDate : ""
-      state.tentative_delivery_date = convertTimeStampToDateString(tentativeDeliveryDate, "DD/MM/YYYY");
+      const customerPreferredDate = dmsLeadDto.commitmentDeliveryPreferredDate
+        ? dmsLeadDto.commitmentDeliveryPreferredDate
+        : "";
+
+      state.customer_preferred_date = convertTimeStampToDateString(
+        customerPreferredDate,
+        "DD/MM/YYYY"
+      );
+      const tentativeDeliveryDate = dmsLeadDto.commitmentDeliveryTentativeDate
+        ? dmsLeadDto.commitmentDeliveryTentativeDate
+        : "";
+      state.tentative_delivery_date = convertTimeStampToDateString(
+        tentativeDeliveryDate,
+        "DD/MM/YYYY"
+      );
 
       // Reject Remarks
       state.reject_remarks = dmsLeadDto.remarks ? dmsLeadDto.remarks : "";
     },
     updateDmsAddressData: (state, action) => {
-
       const dmsAddresses = action.payload;
       if (dmsAddresses.length == 2) {
+        if (
+          dmsAddresses[0].pincode !== dmsAddresses[1].pincode ||
+          dmsAddresses[0].houseNo !== dmsAddresses[1].houseNo ||
+          dmsAddresses[0].street !== dmsAddresses[1].street ||
+          dmsAddresses[0].village !== dmsAddresses[1].village ||
+          dmsAddresses[0].mandal !== dmsAddresses[1].mandal ||
+          dmsAddresses[0].city !== dmsAddresses[1].city ||
+          dmsAddresses[0].district !== dmsAddresses[1].district ||
+          dmsAddresses[0].state !== dmsAddresses[1].state
+        ) {
+          state.is_permanent_address_same = "NO";
+        } else {
+          state.is_permanent_address_same = "YES";
+        }
         dmsAddresses.forEach((address) => {
-          if (address.addressType === 'Communication') {
-
+          if (address.addressType === "Communication") {
+            state.defaultAddress = address;
             state.pincode = address.pincode ? address.pincode : "";
             state.house_number = address.houseNo ? address.houseNo : "";
             state.street_name = address.street ? address.street : "";
             state.village = address.village ? address.village : "";
-            state.mandal = address.mandal ? address.mandal:"";
+            state.mandal = address.mandal ? address.mandal : "";
             state.city = address.city ? address.city : "";
             state.district = address.district ? address.district : "";
             state.state = address.state ? address.state : "";
@@ -1000,14 +1356,12 @@ const prebookingFormSlice = createSlice({
               urbanOrRural = 2;
             }
             state.urban_or_rural = urbanOrRural;
-
-          } else if (address.addressType === 'Permanent') {
-
+          } else if (address.addressType === "Permanent") {
             state.p_pincode = address.pincode ? address.pincode : "";
             state.p_houseNum = address.houseNo ? address.houseNo : "";
             state.p_streetName = address.street ? address.street : "";
             state.p_village = address.village ? address.village : "";
-            state.p_mandal = address.mandal ? address.mandal :"";
+            state.p_mandal = address.mandal ? address.mandal : "";
             state.p_city = address.city ? address.city : "";
             state.p_district = address.district ? address.district : "";
             state.p_state = address.state ? address.state : "";
@@ -1022,20 +1376,44 @@ const prebookingFormSlice = createSlice({
         });
       }
     },
+    clearPermanentAddr: (state, action) => {
+      state.p_pincode = "";
+      state.p_houseNum = "";
+      state.p_streetName = "";
+      state.p_village = "";
+      state.p_mandal = "";
+      state.p_city = "";
+      state.p_district = "";
+      state.p_state = "";
+      state.p_urban_or_rural = 0;
+    },
     updateModelSelectionData: (state, action) => {
-
       const dmsLeadProducts = action.payload;
       let dataObj: any = {};
       if (dmsLeadProducts.length > 0) {
-        dataObj = { ...dmsLeadProducts[0] };
+        // dataObj = { ...dmsLeadProducts[0] };
+        let modelData = dmsLeadProducts.filter(
+          (item) =>
+            item.model === state.pre_booking_details_response?.dmsLeadDto?.model
+        );
+        dataObj = { ...modelData[0] };
       }
       state.lead_product_id = dataObj.id ? dataObj.id : "";
       state.model = dataObj.model ? dataObj.model : "";
       state.varient = dataObj.variant ? dataObj.variant : "";
       state.color = dataObj.color ? dataObj.color : "";
       state.fuel_type = dataObj.fuel ? dataObj.fuel : "";
-      state.transmission_type = dataObj.transimmisionType ? dataObj.transimmisionType : "";
-      state.model_drop_down_data_update_status = "update";
+      state.transmission_type = dataObj.transimmisionType
+        ? dataObj.transimmisionType
+        : "";
+      try {
+        if (dmsLeadProducts && dmsLeadProducts.length != 0)
+          state.dmsLeadProducts = dmsLeadProducts;
+        state.model_drop_down_data_update_status = "update";
+      } catch (error) {
+        // alert(error)
+      }
+      //state.model_drop_down_data_update_status = "update";
     },
     updateFinancialData: (state, action) => {
       const dmsfinancedetails = action.payload;
@@ -1044,17 +1422,38 @@ const prebookingFormSlice = createSlice({
         dataObj = { ...dmsfinancedetails[0] };
       }
       state.retail_finance = dataObj.financeType ? dataObj.financeType : "";
-      state.finance_category = dataObj.financeCategory ? dataObj.financeCategory : "";
-      state.down_payment = dataObj.downPayment ? dataObj.downPayment.toString() : "";
-      state.loan_amount = dataObj.loanAmount ? dataObj.loanAmount.toString() : "";
-      state.bank_or_finance = dataObj.financeCompany ? dataObj.financeCompany : "";
-      state.bank_or_finance_name = dataObj.financeCompany ? dataObj.financeCompany : "";
-      state.rate_of_interest = dataObj.rateOfInterest ? dataObj.rateOfInterest : "";
-      state.loan_of_tenure = dataObj.expectedTenureYears ? dataObj.expectedTenureYears : "";
+      state.finance_category = dataObj.financeCategory
+        ? dataObj.financeCategory
+        : "";
+      state.down_payment = dataObj.downPayment
+        ? dataObj.downPayment.toString()
+        : "";
+      state.loan_amount = dataObj.loanAmount
+        ? dataObj.loanAmount.toString()
+        : "";
+      state.bank_or_finance =
+        state.retail_finance === "In House"
+          ? dataObj.financeCompany
+            ? dataObj.financeCompany
+            : ""
+          : "";
+      state.bank_or_finance_name = dataObj.financeCompany
+        ? dataObj.financeCompany
+        : "";
+      state.rate_of_interest = dataObj.rateOfInterest
+        ? dataObj.rateOfInterest
+        : "";
+      state.loan_of_tenure = dataObj.expectedTenureYears
+        ? dataObj.expectedTenureYears
+        : "";
       state.emi = dataObj.emi ? dataObj.emi.toString() : "";
-      state.approx_annual_income = dataObj.annualIncome ? dataObj.annualIncome : "";
+      state.approx_annual_income = dataObj.annualIncome
+        ? dataObj.annualIncome
+        : "";
       state.location = dataObj.location ? dataObj.location : "";
-      state.leashing_name = dataObj.financeCompany ? dataObj.financeCompany : "";
+      state.leashing_name = dataObj.financeCompany
+        ? dataObj.financeCompany
+        : "";
     },
     updateBookingPaymentData: (state, action) => {
       const dmsBooking = action.payload;
@@ -1062,14 +1461,22 @@ const prebookingFormSlice = createSlice({
       if (dmsBooking) {
         dataObj = { ...dmsBooking };
       }
-      state.booking_amount = dataObj.bookingAmount ? dataObj.bookingAmount.toString() : "";
+      state.booking_amount = dataObj.bookingAmount
+        ? dataObj.bookingAmount.toString()
+        : "";
       state.payment_at = dataObj.paymentAt ? dataObj.paymentAt : "";
-      state.booking_payment_mode = dataObj.modeOfPayment ? dataObj.modeOfPayment : "";
-      state.delivery_location = dataObj.deliveryLocation ? dataObj.deliveryLocation : "";
-      state.vechicle_registration = dataObj.otherVehicle ? dataObj.otherVehicle : false;
+
+      state.booking_payment_mode = dataObj.modeOfPayment
+        ? dataObj.modeOfPayment
+        : "";
+      state.delivery_location = dataObj.deliveryLocation
+        ? dataObj.deliveryLocation
+        : "";
+      state.vechicle_registration = dataObj.otherVehicle
+        ? dataObj.otherVehicle
+        : false;
     },
     updateDmsAttachments: (state, action) => {
-
       state.pan_number = "";
       state.adhaar_number = "";
 
@@ -1078,339 +1485,573 @@ const prebookingFormSlice = createSlice({
       if (attachments.length > 0) {
         attachments.forEach((item, index) => {
           if (item.documentType === "pan") {
-            state.pan_number = item.documentNumber;
+            if (item.documentNumber) {
+              state.pan_number = item.documentNumber;
+            }
+          } else if (item.documentType === "aadhar") {
+            if (item.documentNumber) {
+              state.adhaar_number = item.documentNumber;
+            }
+          } else if (
+            item.documentType === "employeeId" ||
+            item.documentType === "employeeId"
+          ) {
+            if (item.documentNumber) {
+              state.employee_id = item.documentNumber;
+            }
+          } else if (item.documentType === "gstNumber") {
+            if (item.documentNumber && item.documentNumber != "") {
+              state.gstin_number = item.documentNumber;
+            }
           }
-          else if (item.documentType === "aadhar") {
-            state.adhaar_number = item.documentNumber;
-          }
-        })
+        });
       }
     },
     updateAddressByPincode: (state, action) => {
+      state.defaultAddress = action.payload;
+      state.village = action.payload.Block || "";
+      state.mandal = state.mandal ? state.mandal : action.payload.Mandal || "";
+      // state.mandal = action.payload.Block || ""
+      state.city = action.payload.District || "";
+      state.district = action.payload.District || "";
+      state.state = action.payload.State || "";
+      state.isAddressSet = true;
+    },
+    updateAddressByPincode2: (state, action) => {
+      state.p_village = action.payload.Block || "";
+      state.p_mandal = state.p_mandal
+        ? state.p_mandal
+        : action.payload.Mandal || "";
+      // state.mandal = action.payload.Block || ""
+      state.p_city = action.payload.District || "";
+      state.p_district = action.payload.District || "";
+      state.p_state = action.payload.State || "";
+      // state.isAddressSet = true
+    },
+    updateOfferPriceData: (state, action) => {
+      let dataObj: any = "";
+      if (action?.payload?.length) {
+        dataObj = action.payload[0];
+      }
+      state.insurance_type = dataObj?.insuranceType
+        ? dataObj.insuranceType
+        : "";
+      state.warranty = dataObj?.warrantyName ? dataObj.warrantyName : "";
 
-      state.village = action.payload.Block || ""
-      
-      state.city = action.payload.Region || ""
-      state.district = action.payload.District || ""
-      state.state = action.payload.State || ""
-    }
+      if (
+        dataObj?.insuranceAddonData &&
+        dataObj?.insuranceAddonData.length > 0
+      ) {
+        let addOnNames = "";
+        dataObj.insuranceAddonData.forEach((element, index) => {
+          addOnNames +=
+            element.insuranceAddonName +
+            (index + 1 < dataObj.length ? ", " : "");
+        });
+        state.add_on_insurance = addOnNames;
+      } else {
+        state.add_on_insurance = "";
+      }
+
+      state.consumer_offer = dataObj?.specialScheme
+        ? `${dataObj.specialScheme}`
+        : "";
+      state.exchange_offer = dataObj?.exchangeOffers
+        ? `${dataObj.exchangeOffers}`
+        : "";
+      state.corporate_offer = dataObj?.corporateOffer
+        ? `${dataObj.corporateOffer}`
+        : "";
+      state.promotional_offer = dataObj?.promotionalOffers
+        ? `${dataObj.promotionalOffers}`
+        : "";
+      state.cash_discount = dataObj?.cashDiscount
+        ? `${dataObj.cashDiscount}`
+        : "";
+      state.for_accessories = dataObj?.focAccessories
+        ? `${dataObj.focAccessories}`
+        : "";
+      state.additional_offer_1 = dataObj?.additionalOffer1
+        ? `${dataObj.additionalOffer1}`
+        : "";
+      state.additional_offer_2 = dataObj?.additionalOffer2
+        ? `${dataObj.additionalOffer2}`
+        : "";
+      state.insurance_discount = dataObj?.insuranceDiscount
+        ? `${dataObj.insuranceDiscount}`
+        : "";
+      state.accessories_discount = dataObj?.accessoriesDiscount
+        ? `${dataObj.accessoriesDiscount}`
+        : "";
+      state.registrationCharges = dataObj?.registrationCharges
+        ? dataObj.registrationCharges
+        : 0;
+    },
   },
   extraReducers: (builder) => {
     // Get PreBooking Details
     builder.addCase(getPrebookingDetailsApi.pending, (state, action) => {
       state.pre_booking_details_response = null;
       state.isLoading = true;
-    })
+    });
     builder.addCase(getPrebookingDetailsApi.fulfilled, (state, action) => {
       if (action.payload.dmsEntity) {
+        state.refNo = action.payload.dmsEntity.dmsLeadDto.referencenumber;
         state.pre_booking_details_response = action.payload.dmsEntity;
+        let attachments = action.payload.dmsEntity.dmsLeadDto.dmsAttachments;
+        if (attachments.length > 0) {
+          let panDtls = [];
+          panDtls = attachments.filter((item) => {
+            return item.documentType === "pan";
+          });
+          if (panDtls.length > 0) {
+            state.form_or_pan = "PAN";
+            state.isDataLoaded = true;
+            setDocumentUploadDetails({
+              key: "PAN_NUMBER",
+              text: state.pan_number,
+            });
+          } else {
+            state.isDataLoaded = true;
+          }
+        }
       }
       state.isLoading = false;
-    })
+    });
     builder.addCase(getPrebookingDetailsApi.rejected, (state, action) => {
       state.pre_booking_details_response = null;
       state.isLoading = false;
-    })
+    });
     // Update PreBooking Details
     builder.addCase(updatePrebookingDetailsApi.pending, (state, action) => {
       state.update_pre_booking_details_response = "";
       state.isLoading = true;
-    })
+    });
     builder.addCase(updatePrebookingDetailsApi.fulfilled, (state, action) => {
       if (action.payload.success == true) {
         state.update_pre_booking_details_response = "success";
       }
       state.isLoading = false;
-    })
+    });
     builder.addCase(updatePrebookingDetailsApi.rejected, (state, action) => {
-      console.log("F updatePrebookingDetailsApi: ", JSON.stringify(action.payload));
+      // if (action.payload["message"]) {
+      //   showToastRedAlert(action.payload["message"]);
+      // }
       state.update_pre_booking_details_response = "failed";
       state.isLoading = false;
-    })
+    });
     // Get On Road Price & Insurence Details
-    builder.addCase(getOnRoadPriceAndInsurenceDetailsApi.pending, (state, action) => {
-      state.vehicle_on_road_price_insurence_details_response = null;
-      state.isLoading = true;
-    })
-    builder.addCase(getOnRoadPriceAndInsurenceDetailsApi.fulfilled, (state, action) => {
-      if (action.payload) {
-        state.vehicle_on_road_price_insurence_details_response = action.payload;
+    builder.addCase(
+      getOnRoadPriceAndInsurenceDetailsApi.pending,
+      (state, action) => {
+        state.vehicle_on_road_price_insurence_details_response = null;
+        state.isLoading = true;
       }
-      state.isLoading = false;
-    })
-    builder.addCase(getOnRoadPriceAndInsurenceDetailsApi.rejected, (state, action) => {
-      state.vehicle_on_road_price_insurence_details_response = null;
-      state.isLoading = false;
-    })
+    );
+    builder.addCase(
+      getOnRoadPriceAndInsurenceDetailsApi.fulfilled,
+      (state, action) => {
+        if (action.payload) {
+          state.vehicle_on_road_price_insurence_details_response =
+            action.payload;
+          if (action.payload.insuranceAddOn.length > 0) {
+            let addOnNames = "",
+              price = 0;
+
+            action.payload.insuranceAddOn.forEach((element, index) => {
+              addOnNames +=
+                element.add_on_price[0].document_name +
+                (index + 1 < action.payload.insuranceAddOn.length ? ", " : "");
+              price += Number(element.add_on_price[0].cost);
+            });
+            // state.add_on_insurance = addOnNames;
+            if (state.insurance_type !== "" && state.add_on_insurance) {
+              state.addOnPrice = price;
+            }
+          }
+        }
+        state.isLoading = false;
+      }
+    );
+    builder.addCase(
+      getOnRoadPriceAndInsurenceDetailsApi.rejected,
+      (state, action) => {
+        state.vehicle_on_road_price_insurence_details_response = null;
+        state.isLoading = false;
+      }
+    );
     // Drop Pre-Booking
     builder.addCase(dropPreBooingApi.pending, (state, action) => {
-      state.pre_booking_drop_response_status = "pending"
+      state.pre_booking_drop_response_status = "pending";
       state.isLoading = true;
-    })
+    });
     builder.addCase(dropPreBooingApi.fulfilled, (state, action) => {
       if (action.payload.status === "SUCCESS") {
         state.pre_booking_drop_response_status = "success";
       }
       state.isLoading = false;
-    })
+    });
     builder.addCase(dropPreBooingApi.rejected, (state, action) => {
-      state.pre_booking_drop_response_status = "failed"
+      state.pre_booking_drop_response_status = "failed";
       state.isLoading = false;
-    })
+    });
     // Send On Road Price Details
     builder.addCase(sendOnRoadPriceDetails.pending, (state, action) => {
-      state.send_onRoad_price_details_response = null
+      state.send_onRoad_price_details_response = null;
       state.isLoading = true;
-    })
+    });
     builder.addCase(sendOnRoadPriceDetails.fulfilled, (state, action) => {
       if (action.payload.dmsEntity) {
-        state.send_onRoad_price_details_response = action.payload.dmsEntity.dmsOnRoadPriceDto;
+        state.send_onRoad_price_details_response =
+          action.payload.dmsEntity.dmsOnRoadPriceDto;
       }
       state.isLoading = false;
-    })
+    });
     builder.addCase(sendOnRoadPriceDetails.rejected, (state, action) => {
-      state.send_onRoad_price_details_response = null
+      state.send_onRoad_price_details_response = null;
       state.isLoading = false;
-      if (action.payload["errorMessage"]) {
-        showToastRedAlert(action.payload["errorMessage"] || "Something went wrong");
+      // if (action.payload["errorMessage"]) {
+      //   showToastRedAlert(action.payload["errorMessage"] || "Something went wrong");
+      // }
+    });
+    // Send edited On Road Price Details
+    builder.addCase(sendEditedOnRoadPriceDetails.pending, (state, action) => {
+      state.send_onRoad_price_details_response = null;
+      state.isLoading = true;
+    });
+    builder.addCase(sendEditedOnRoadPriceDetails.fulfilled, (state, action) => {
+      if (action.payload.dmsEntity) {
+        state.send_onRoad_price_details_response =
+          action.payload.dmsEntity.dmsOnRoadPriceDto;
       }
-    })
+      state.isLoading = false;
+    });
+    builder.addCase(sendEditedOnRoadPriceDetails.rejected, (state, action) => {
+      state.send_onRoad_price_details_response = null;
+      state.isLoading = false;
+      // if (action.payload["errorMessage"]) {
+      //   showToastRedAlert(action.payload["errorMessage"] || "Something went wrong");
+      // }
+    });
     // Get On Road Price Dto List
     builder.addCase(getOnRoadPriceDtoListApi.pending, (state, action) => {
       state.on_road_price_dto_list_response = [];
       state.isLoading = true;
-    })
+    });
     builder.addCase(getOnRoadPriceDtoListApi.fulfilled, (state, action) => {
-      // console.log("S getOnRoadPriceDtoListApi: ", JSON.stringify(action.payload));
       if (action.payload.dmsEntity) {
-        const dmsOnRoadPriceDtoList = action.payload.dmsEntity.dmsOnRoadPriceDtoList;
-        state.on_road_price_dto_list_response = dmsOnRoadPriceDtoList;
-        if (dmsOnRoadPriceDtoList.length > 0) {
-          const dataObj = dmsOnRoadPriceDtoList[0];
+        const dmsOnRoadPriceDtoList =
+          action.payload.dmsEntity.dmsOnRoadPriceDtoList;
 
-          state.insurance_type = dataObj.insuranceType ? dataObj.insuranceType : "";
+        if (dmsOnRoadPriceDtoList.length > 0) {
+          let newArr: any = [dmsOnRoadPriceDtoList[0]];
+          state.on_road_price_dto_list_response = newArr;
+
+          const dataObj = dmsOnRoadPriceDtoList[0];
+          state.insurance_type = dataObj.insuranceType
+            ? dataObj.insuranceType
+            : "";
           state.warranty = dataObj.warrantyName ? dataObj.warrantyName : "";
 
-          if (dataObj.insuranceAddonData && dataObj.insuranceAddonData.length > 0) {
+          if (
+            dataObj.insuranceAddonData &&
+            dataObj.insuranceAddonData.length > 0
+          ) {
             let addOnNames = "";
             dataObj.insuranceAddonData.forEach((element, index) => {
-              addOnNames += element.insuranceAddonName + ((index + 1) < dataObj.length ? ", " : "");
+              addOnNames +=
+                element.insuranceAddonName +
+                (index + 1 < dataObj.length ? ", " : "");
             });
-            state.add_on_insurance + addOnNames;
+            state.add_on_insurance = addOnNames;
           }
 
-          state.consumer_offer = dataObj.specialScheme ? dataObj.specialScheme.toString() : "";
-          state.exchange_offer = dataObj.exchangeOffers ? dataObj.exchangeOffers.toString() : "";
-          state.corporate_offer = dataObj.corporateOffer ? dataObj.corporateOffer.toString() : "";
-          state.promotional_offer = dataObj.promotionalOffers ? dataObj.promotionalOffers.toString() : "";
-          state.cash_discount = dataObj.cashDiscount ? dataObj.cashDiscount.toString() : "";
-          state.for_accessories = dataObj.focAccessories ? dataObj.focAccessories.toString() : "";
-          state.additional_offer_1 = dataObj.additionalOffer1 ? dataObj.additionalOffer1.toString() : "";
-          state.additional_offer_2 = dataObj.additionalOffer2 ? dataObj.additionalOffer2.toString() : "";
+          state.consumer_offer = dataObj.specialScheme
+            ? dataObj.specialScheme.toString()
+            : "";
+          state.exchange_offer = dataObj.exchangeOffers
+            ? dataObj.exchangeOffers.toString()
+            : "";
+          state.corporate_offer = dataObj.corporateOffer
+            ? dataObj.corporateOffer.toString()
+            : "";
+          state.promotional_offer = dataObj.promotionalOffers
+            ? dataObj.promotionalOffers.toString()
+            : "";
+          state.cash_discount = dataObj.cashDiscount
+            ? dataObj.cashDiscount.toString()
+            : "";
+          state.for_accessories = dataObj.focAccessories
+            ? dataObj.focAccessories.toString()
+            : "";
+          state.additional_offer_1 = dataObj.additionalOffer1
+            ? dataObj.additionalOffer1.toString()
+            : "";
+          state.additional_offer_2 = dataObj.additionalOffer2
+            ? dataObj.additionalOffer2.toString()
+            : "";
+          state.insurance_discount = dataObj.insuranceDiscount
+            ? dataObj.insuranceDiscount.toString()
+            : "";
+          state.accessories_discount = dataObj.accessoriesDiscount
+            ? dataObj.accessoriesDiscount.toString()
+            : "";
+          state.registrationCharges = dataObj.registrationCharges
+            ? dataObj.registrationCharges
+            : 0;
         }
       }
       state.isLoading = false;
-    })
+    });
     builder.addCase(getOnRoadPriceDtoListApi.rejected, (state, action) => {
       state.on_road_price_dto_list_response = [];
       state.isLoading = false;
-    })
-    // Get Customer Types 
+    });
+    // Get Customer Types
     builder.addCase(getCustomerTypesApi.pending, (state, action) => {
       state.customer_types_response = [];
       state.isLoading = true;
-    })
+    });
     builder.addCase(getCustomerTypesApi.fulfilled, (state, action) => {
       if (action.payload) {
-        const customerTypes = action.payload;
-        let personalTypes = [];
-        let commercialTypes = [];
-        let companyTypes = [];
-        customerTypes.forEach(customer => {
-          const obj = { id: customer.id, name: customer.customerType }
-          if (customer.customerType === "Fleet") {
-            commercialTypes.push(obj);
-          } else if (customer.customerType === "Institution") {
-            companyTypes.push(obj);
-          } else {
-            personalTypes.push(obj);
-          }
-        });
-        const obj = {
-          "personal": personalTypes,
-          "commercial": commercialTypes,
-          "company": companyTypes,
-          "handicapped": companyTypes
-        }
-        state.customer_types_response = obj;
+        state.customer_types_response = action.payload;
       }
       state.isLoading = false;
-    })
+    });
     builder.addCase(getCustomerTypesApi.rejected, (state, action) => {
       state.customer_types_response = [];
       state.isLoading = false;
-    })
+    });
+
+    builder.addCase(getEnquiryTypesApi.pending, (state, action) => {
+      state.enquiry_type_list = [];
+      state.isLoading = true;
+    });
+    builder.addCase(getEnquiryTypesApi.fulfilled, (state, action) => {
+      state.enquiry_type_list = action.payload;
+      state.isLoading = false;
+    });
+    builder.addCase(getEnquiryTypesApi.rejected, (state, action) => {
+      state.enquiry_type_list = [];
+      state.isLoading = false;
+    });
+
     // Get Drop Down Data
     builder.addCase(getDropDataApi.pending, (state, action) => {
       state.drop_reasons_list = [];
       state.isLoading = true;
-    })
+    });
     builder.addCase(getDropDataApi.fulfilled, (state, action) => {
-
       if (action.payload) {
-        const newTypeData = action.payload.map(element => {
+        const newTypeData = action.payload.map((element) => {
           return {
             ...element,
-            name: element.value
-          }
+            name: element.value,
+          };
         });
         state.drop_reasons_list = newTypeData;
       }
       state.isLoading = false;
-    })
+    });
     builder.addCase(getDropDataApi.rejected, (state, action) => {
       state.drop_reasons_list = [];
       state.isLoading = false;
-    })
+    });
     // Get drop sub reasons api
     builder.addCase(getDropSubReasonDataApi.pending, (state, action) => {
       state.drop_sub_reasons_list = [];
       state.isLoading = true;
-    })
+    });
     builder.addCase(getDropSubReasonDataApi.fulfilled, (state, action) => {
       if (action.payload) {
-        const newTypeData = action.payload.map(element => {
+        const newTypeData = action.payload.map((element) => {
           return {
             ...element,
-            name: element.value
-          }
+            name: element.value,
+          };
         });
         state.drop_sub_reasons_list = newTypeData;
       }
       state.isLoading = false;
-    })
+    });
     builder.addCase(getDropSubReasonDataApi.rejected, (state, action) => {
       state.drop_sub_reasons_list = [];
       state.isLoading = false;
-    })
+    });
     // Pre Booking Payment Api
     builder.addCase(preBookingPaymentApi.pending, (state, action) => {
       state.pre_booking_payment_response = null;
       state.pre_booking_payment_response_status = "pending";
       state.isLoading = true;
-    })
+    });
     builder.addCase(preBookingPaymentApi.fulfilled, (state, action) => {
       if (action.payload.success == true) {
         state.pre_booking_payment_response = action.payload.dmsEntity;
         state.pre_booking_payment_response_status = "success";
       }
       state.isLoading = false;
-    })
+    });
     builder.addCase(preBookingPaymentApi.rejected, (state, action) => {
-      if (action.payload["errorMessage"]) {
-        showToastRedAlert(action.payload["errorMessage"]);
-      }
+      // if (action.payload["message"]) {
+      //   showToastRedAlert(action.payload["message"]);
+      // }
       state.pre_booking_payment_response = null;
       state.pre_booking_payment_response_status = "failed";
       state.isLoading = false;
-    })
+    });
     //Post Booking Amount
     builder.addCase(postBookingAmountApi.pending, (state, action) => {
       state.booking_amount_response = null;
       state.booking_amount_response_status = "pending";
       state.isLoading = true;
-    })
+    });
     builder.addCase(postBookingAmountApi.fulfilled, (state, action) => {
       if (action.payload.success == true) {
-        state.booking_amount_response = action.payload.dmsEntity.dmsBookingAmountReceivedDtoList;
+        state.booking_amount_response =
+          action.payload.dmsEntity.dmsBookingAmountReceivedDtoList;
         state.booking_amount_response_status = "success";
       }
       state.isLoading = false;
-    })
+    });
     builder.addCase(postBookingAmountApi.rejected, (state, action) => {
-      if (action.payload["errorMessage"]) {
-        showToastRedAlert(action.payload["errorMessage"]);
-      }
+      // if (action.payload["errorMessage"]) {
+      //   showToastRedAlert(action.payload["errorMessage"]);
+      // }
       state.booking_amount_response = null;
       state.booking_amount_response_status = "failed";
       state.isLoading = false;
-    })
+    });
     // Get Payment Details Api
     builder.addCase(getPaymentDetailsApi.pending, (state, action) => {
       state.existing_payment_details_response = null;
       state.existing_payment_details_status = "pending";
       state.isLoading = true;
-    })
+    });
     builder.addCase(getPaymentDetailsApi.fulfilled, (state, action) => {
       if (action.payload) {
         state.existing_payment_details_response = action.payload;
-        state.type_of_upi = action.payload.typeUpi ? action.payload.typeUpi : "";
-        state.transfer_from_mobile = action.payload.transferFromMobile ? action.payload.transferFromMobile : "";
-        state.transfer_to_mobile = action.payload.transferToMobile ? action.payload.transferToMobile : "";
+        state.type_of_upi = action.payload.typeUpi
+          ? action.payload.typeUpi
+          : "";
+        state.transfer_from_mobile = action.payload.transferFromMobile
+          ? action.payload.transferFromMobile
+          : "";
+        state.transfer_to_mobile = action.payload.transferToMobile
+          ? action.payload.transferToMobile
+          : "";
         state.utr_no = action.payload.utrNo ? action.payload.utrNo : "";
-        state.comapany_bank_name = action.payload.bankName ? action.payload.bankName : "";
-        state.cheque_number = action.payload.chequeNo ? action.payload.chequeNo.toString() : "";
+        state.comapany_bank_name = action.payload.bankName
+          ? action.payload.bankName
+          : "";
+        state.cheque_number = action.payload.chequeNo
+          ? action.payload.chequeNo.toString()
+          : "";
         state.dd_number = action.payload.ddNo ? action.payload.ddNo : "";
 
-        const date = convertTimeStampToDateString(action.payload.date, "DD/MM/YYYY");
+        const date = convertTimeStampToDateString(
+          action.payload.date,
+          "DD/MM/YYYY"
+        );
         state.transaction_date = date;
         state.cheque_date = date;
         state.dd_date = date;
       }
       state.existing_payment_details_status = "success";
       state.isLoading = false;
-    })
+    });
     builder.addCase(getPaymentDetailsApi.rejected, (state, action) => {
-      if (action.payload["errorMessage"]) {
-        showToastRedAlert(action.payload["errorMessage"]);
-      }
+      // if (action.payload["errorMessage"]) {
+      //   showToastRedAlert(action.payload["errorMessage"]);
+      // }
       state.existing_payment_details_response = null;
       state.existing_payment_details_status = "failed";
       state.isLoading = false;
-    })
+    });
     //Get Booking Amount Details
     builder.addCase(getBookingAmountDetailsApi.pending, (state, action) => {
       state.existing_booking_amount_response = null;
       state.existing_booking_amount_response_status = "pending";
       state.isLoading = true;
-    })
+    });
     builder.addCase(getBookingAmountDetailsApi.fulfilled, (state, action) => {
       if (action.payload.success == true) {
-        state.existing_booking_amount_response = action.payload.dmsEntity.dmsBookingAmountReceivedDtoList;
+        state.existing_booking_amount_response =
+          action.payload.dmsEntity.dmsBookingAmountReceivedDtoList;
         state.existing_booking_amount_response_status = "success";
       }
       state.isLoading = false;
-    })
+    });
     builder.addCase(getBookingAmountDetailsApi.rejected, (state, action) => {
-      if (action.payload["errorMessage"]) {
-        showToastRedAlert(action.payload["errorMessage"]);
-      }
+      // if (action.payload["errorMessage"]) {
+      //   showToastRedAlert(action.payload["errorMessage"]);
+      // }
       state.existing_booking_amount_response = null;
       state.existing_booking_amount_response_status = "failed";
       state.isLoading = false;
-    })
+    });
     //Get Assingned Tasks api
     builder.addCase(getAssignedTasksApi.pending, (state, action) => {
       state.assigned_tasks_list = [];
       state.assigned_tasks_list_status = "pending";
       state.isLoading = true;
-    })
+    });
     builder.addCase(getAssignedTasksApi.fulfilled, (state, action) => {
       if (action.payload.success == true && action.payload.dmsEntity) {
         state.assigned_tasks_list = action.payload.dmsEntity.tasks || [];
       }
       state.isLoading = false;
       state.assigned_tasks_list_status = "success";
-    })
+    });
     builder.addCase(getAssignedTasksApi.rejected, (state, action) => {
-      if (action.payload["errorMessage"]) {
-        showToastRedAlert(action.payload["errorMessage"]);
-      }
+      // if (action.payload["errorMessage"]) {
+      //   showToastRedAlert(action.payload["errorMessage"]);
+      // }
       state.assigned_tasks_list = [];
       state.assigned_tasks_list_status = "failed";
       state.isLoading = false;
-    })
-  }
+    });
+    //update ref number
+    builder.addCase(updateRef.pending, (state, action) => {});
+    builder.addCase(updateRef.fulfilled, (state, action) => {});
+    builder.addCase(updateRef.rejected, (state, action) => {});
+
+    //Get configured rulles api
+    builder.addCase(getRulesConfiguration.pending, (state, action) => {
+      state.configureRulesResponse = "";
+      state.configureRulesResponse_status = "pending";
+      state.isLoading = true;
+    });
+    builder.addCase(getRulesConfiguration.fulfilled, (state, action) => {
+      state.isLoading = false;
+
+      if (action.payload) {
+        state.configureRulesResponse = action.payload;
+        state.configureRulesResponse_status = "fulfilled";
+      }
+    });
+    builder.addCase(getRulesConfiguration.rejected, (state, action) => {
+      state.configureRulesResponse = "";
+      state.configureRulesResponse_status = "rejected";
+      state.isLoading = false;
+    });
+
+    //Get Other prices drop down data
+    builder.addCase(getOtherPricesDropDown.pending, (state, action) => {});
+    builder.addCase(getOtherPricesDropDown.fulfilled, (state, action) => {
+      if (action.payload) {
+        let data = [];
+        for (let i = 0; i < action.payload.length; i++) {
+          let obj = {
+            id: action.payload[i].id,
+            name: action.payload[i].Name,
+          };
+          data.push(obj);
+        }
+        state.otherPricesDropDown = Object.assign([], data);
+      }
+    });
+    builder.addCase(getOtherPricesDropDown.rejected, (state, action) => {});
+  },
 });
 
 export const {
@@ -1437,6 +2078,12 @@ export const {
   updateFinancialData,
   updateBookingPaymentData,
   updateDmsAttachments,
-  updateAddressByPincode
+  updateAddressByPincode,
+  updateResponseStatus,
+  updateStatus,
+  clearPermanentAddr,
+  updateAddressByPincode2,
+  updatedmsLeadProduct,
+  updateOfferPriceData,
 } = prebookingFormSlice.actions;
 export default prebookingFormSlice.reducer;

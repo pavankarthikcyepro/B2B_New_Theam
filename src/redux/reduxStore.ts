@@ -27,6 +27,13 @@ import taskThreeSixtyReducer from "./taskThreeSixtyReducer";
 import bookingReducer from "./bookingReducer";
 import bookingFormReducer from "./bookingFormReducer";
 import proceedToBookingReducer from "./proceedToBookingReducer";
+import appReducer from "./appReducer";
+import callRecordingReducer from "./callRecordingReducer";
+import taskTransferReducer from "./taskTransferReducer";
+import leaddropReducer from "./leaddropReducer";
+import liveLeadsReducer from "./liveLeadsReducer";
+import settingReducer from "./settingReducer";
+
 
 const reducer = combineReducers({
   routeReducer,
@@ -52,12 +59,26 @@ const reducer = combineReducers({
   upcomingDeliveriesReducer,
   targetSettingsReducer,
   taskThreeSixtyReducer,
-  bookingReducer,bookingFormReducer,proceedToBookingReducer,
+  leaddropReducer,
+  bookingReducer,
+  bookingFormReducer,
+  proceedToBookingReducer,
+  appReducer,
+  callRecordingReducer,
+  taskTransferReducer,
+  liveLeadsReducer,
+  settingReducer,
 });
+
+const createDebugger = require("redux-flipper").default;
 
 const store = configureStore({
   reducer,
-  middleware: (getDefaultMiddleware) =>
+  middleware: (getDefaultMiddleware) => __DEV__ ?
+    getDefaultMiddleware({
+      immutableCheck: false,
+      serializableCheck: false,
+    }).concat(createDebugger()) :
     getDefaultMiddleware({
       immutableCheck: false,
       serializableCheck: false,

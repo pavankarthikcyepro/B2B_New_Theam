@@ -112,9 +112,7 @@ const TestEnquiryFormScreen = ({ navigation }) => {
             <ImagePickerComponent
                 visible={selector.showImagePicker}
                 keyId={selector.imagePickerKeyId}
-                selectedImage={(data, keyId) => {
-                    console.log('imageObj: ', data, keyId);
-                }}
+                selectedImage={(data, keyId) => {}}
                 onDismiss={() => dispatch(setImagePicker(""))}
             />
 
@@ -124,7 +122,6 @@ const TestEnquiryFormScreen = ({ navigation }) => {
                     mode={'date'}
                     value={new Date(Date.now())}
                     onChange={(event, selectedDate) => {
-                        console.log('date: ', selectedDate)
                         if (Platform.OS === "android") {
                             if (!selectedDate) {
                                 dispatch(updateSelectedDate({ key: "NONE", text: selectedDate }));
@@ -992,7 +989,7 @@ const TestEnquiryFormScreen = ({ navigation }) => {
                             <Text style={GlobalStyle.underline}></Text>
                             <View style={styles.select_image_bck_vw}>
                                 <ImageSelectItem
-                                    name={"Upload Adhar"}
+                                    name={"Upload Aadhaar"}
                                     onPress={() => dispatch(setImagePicker("UPLOAD_ADHAR"))}
                                 />
                             </View>

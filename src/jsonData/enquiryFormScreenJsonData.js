@@ -11,11 +11,19 @@ export const Enquiry_Segment_Data = [
     id: "3",
     name: "Company",
   },
-  {
-    id: "4",
-    name: "Handicapped",
-  },
+  // {
+  //   id: "4",
+  //   name: "Handicapped",
+  // },
 ];
+
+export const Category_Type = [
+  {
+    id: "1",
+    name: "No Data Found",
+  }
+];
+
 
 export const Category_Type_List_For_Filter = [
   {
@@ -111,7 +119,12 @@ export const Gender_Data_Obj = {
       name: "Transgender",
     },
   ],
-  "M/S": []
+  "m/s": [
+    {
+      id: "1",
+      name: "Female",
+    },
+  ]
 };
 
 export const Relation_Data_Obj = {
@@ -151,6 +164,12 @@ export const Relation_Data_Obj = {
       name: "D/O",
     },
   ],
+  'm/s': [
+    {
+      id: "1",
+      name: "Rep by",
+    },
+  ],
 };
 
 export const Marital_Status_Types = [
@@ -175,7 +194,7 @@ export const Buyer_Type_Data = [
   },
   {
     id: "replacement_buyer",
-    name: "Replacement Buyer",
+    name: "Exchange Buyer",
   },
 ];
 export const Additional_Type_Data = [
@@ -377,6 +396,17 @@ export const Salutation_Types = [
   },
 ];
 
+export const Gender_Types = [
+  {
+    id: "1",
+    name: "Male"
+  },
+  {
+    id: "2",
+    name: "Female"
+  }
+]
+
 //Model Selection
 export const Transmission_Types = [
   {
@@ -407,7 +437,7 @@ export const Fuel_Types = [
   },
   {
     id: "2",
-    name: "Disel",
+    name: "Diesel",
   },
   {
     id: "3",

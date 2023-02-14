@@ -2,14 +2,23 @@ import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import URL from "../networking/endpoints";
 import { client } from "../networking/client";
 import { showToast, showToastRedAlert, showToastSucess } from "../utils/toast";
+import {
+    convertTimeStampToDateString,
+    convertToTime,
+} from "../utils/helperFunctions";
 
 interface HomeVisitTextModel {
     key: string,
     text: string
 }
 
-export const getTaskDetailsApi = createAsyncThunk("HOME_VISIT_SLICE/getTaskDetailsApi", async (taskId, { rejectWithValue }) => {
+interface CustomerDetailModel {
+    key: string;
+    text: string;
+}
 
+export const getTaskDetailsApi = createAsyncThunk("HOME_VISIT_SLICE/getTaskDetailsApi", async (taskId, { rejectWithValue }) => {
+    
     const response = await client.get(URL.GET_TASK_DETAILS(taskId));
     const json = await response.json()
     if (!response.ok) {
@@ -28,8 +37,8 @@ export const updateTaskApi = createAsyncThunk("HOME_VISIT_SLICE/updateTaskApi", 
 })
 
 export const generateOtpApi = createAsyncThunk("HOME_VISIT_SLICE/generateOtpApi", async (payload, { rejectWithValue }) => {
-
-    const response = await client.post(URL.GENERATE_OTP(), payload);
+    const url = `${URL.GENERATE_OTP()}?type=HOME VISIT`;
+    const response = await client.post(url, payload);
     const json = await response.json()
     if (!response.ok) {
         return rejectWithValue(json);
@@ -60,6 +69,13 @@ const slice = createSlice({
         generate_otp_response_status: "",
         otp_session_key: "",
         validate_otp_response_status: "",
+        isReasonUpdate: false,
+        actual_end_time: "",
+        minDate: null,
+        maxDate: null,
+        showDatepicker: false,
+        datePickerKeyId: "",
+        actual_start_time: "",
     },
     reducers: {
         clearState: (state, action) => {
@@ -82,7 +98,38 @@ const slice = createSlice({
                     state.employee_remarks = text;
                     break;
             }
-        }
+        },
+        setDatePicker: (state, action) => {
+            let date = new Date();
+            date.setDate(date.getDate() + 9);
+            switch (action.payload) {
+                case "ACTUAL_START_TIME":
+                    state.minDate = new Date();
+                    state.maxDate = date;
+                    break;
+                case "ACTUAL_END_TIME":
+                    state.minDate = new Date();
+                    state.maxDate = date;
+                    break;
+            }
+            state.datePickerKeyId = action.payload;
+            state.showDatepicker = !state.showDatepicker;
+        },
+        updateSelectedDate: (state, action: PayloadAction<CustomerDetailModel>) => {
+            const { key, text } = action.payload;
+            const selectedDate = convertTimeStampToDateString(text, "DD/MM/YYYY");
+            const keyId = key ? key : state.datePickerKeyId;
+            switch (state.datePickerKeyId) {
+                case "ACTUAL_START_TIME":
+                    state.actual_start_time = selectedDate;
+
+                    break;
+                case "ACTUAL_END_TIME":
+                    state.actual_end_time = selectedDate;
+                    break;
+            }
+            state.showDatepicker = !state.showDatepicker;
+        },
     },
     extraReducers: (builder) => {
         builder.addCase(getTaskDetailsApi.pending, (state, action) => {
@@ -91,10 +138,27 @@ const slice = createSlice({
         builder.addCase(getTaskDetailsApi.fulfilled, (state, action) => {
             if (action.payload.success === true && action.payload.dmsEntity) {
                 const taskObj = action.payload.dmsEntity.task;
+                if (taskObj.reason) {
+                    state.isReasonUpdate = true;
+                }
                 state.reason = taskObj.reason ? taskObj.reason : "";
                 state.customer_remarks = taskObj.customerRemarks ? taskObj.customerRemarks : "";
                 state.employee_remarks = taskObj.employeeRemarks ? taskObj.employeeRemarks : "";
                 state.task_details_response = taskObj;
+                const startDate = taskObj.taskActualStartTime
+                    ? taskObj.taskActualStartTime
+                    : "";
+                state.actual_start_time = convertTimeStampToDateString(
+                    startDate,
+                    "DD/MM/YYYY"
+                );
+                const endDate = taskObj.taskActualEndTime
+                    ? taskObj.taskActualEndTime
+                    : "";
+                state.actual_end_time = convertTimeStampToDateString(
+                    endDate,
+                    "DD/MM/YYYY"
+                );
             }
         })
         builder.addCase(getTaskDetailsApi.rejected, (state, action) => {
@@ -105,12 +169,10 @@ const slice = createSlice({
             state.update_task_response_status = null;
         })
         builder.addCase(updateTaskApi.fulfilled, (state, action) => {
-            console.log("S updateTaskApi", JSON.stringify(action.payload))
             state.is_loading_for_task_update = false;
             state.update_task_response_status = "success";
         })
         builder.addCase(updateTaskApi.rejected, (state, action) => {
-            console.log("F updateTaskApi", JSON.stringify(action.payload))
             state.is_loading_for_task_update = false;
             state.update_task_response_status = null;
             showToast("Something went wrong");
@@ -122,7 +184,6 @@ const slice = createSlice({
             state.otp_session_key = "";
         })
         builder.addCase(generateOtpApi.fulfilled, (state, action) => {
-            console.log("S generateOtpApi: ", JSON.stringify(action.payload));
             const status = action.payload.reason ? action.payload.reason : "";
             if (status === "Success") {
                 showToastSucess("Otp sent successfully");
@@ -132,7 +193,6 @@ const slice = createSlice({
             state.otp_session_key = action.payload.sessionKey ? action.payload.sessionKey : "";
         })
         builder.addCase(generateOtpApi.rejected, (state, action) => {
-            console.log("F generateOtpApi: ", JSON.stringify(action.payload));
             if (action.payload["reason"]) {
                 showToastRedAlert(action.payload["reason"]);
             }
@@ -146,7 +206,6 @@ const slice = createSlice({
             state.validate_otp_response_status = "pending";
         })
         builder.addCase(validateOtpApi.fulfilled, (state, action) => {
-            console.log("S validateOtpApi: ", JSON.stringify(action.payload));
             if (action.payload.reason === "Success") {
                 state.validate_otp_response_status = "successs";
             }
@@ -157,7 +216,6 @@ const slice = createSlice({
             state.isLoading = false;
         })
         builder.addCase(validateOtpApi.rejected, (state, action) => {
-            console.log("F validateOtpApi: ", JSON.stringify(action.payload));
             if (action.payload["reason"]) {
                 showToastRedAlert(action.payload["reason"]);
             }
@@ -169,6 +227,8 @@ const slice = createSlice({
 
 export const {
     clearState,
-    setHomeVisitDetails
+    setHomeVisitDetails,
+    setDatePicker,
+    updateSelectedDate
 } = slice.actions;
 export default slice.reducer;
