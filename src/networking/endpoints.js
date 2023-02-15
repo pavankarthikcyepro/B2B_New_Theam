@@ -115,6 +115,9 @@ export const dashboard = baseUrl + "dfd/dashboard";
 export const salesGap = baseUrl + "dfd/sales-gap";
 export const getBranch = baseUrl + "dfd/oh";
 export const tasktransfer = baseUrl + "dfd/sales-gap/target-dropdown";
+
+
+
 export const getLeaderBoardData =
   baseUrl + "dfd/dashboard/v2/get_emp_target_Dealer_ranking";
 export const getBranchRankingData =
@@ -345,6 +348,10 @@ const URL = {
     );
   },
   CUSTOMER_LEAD_REFERENCE: () => sales_url + "/lead-customer-reference",
+
+  GET_DET_FROM_PHONE: (phone, orgId) => sales_url + `/lead/phone/${phone}/${orgId}`,
+  GET_COMPLAIN_FACTOR_DATA: (orgId) => baseUrl + `dfdg/df-get-all/${orgId}/"Active"/${orgId}/ComplaintFactor`,
+
   GET_COMPLAINTS: () => dynamicReports_url + "/v2-generate-query",
   GET_EVENTS: () => {
     return ops_url + `/dms/getAllServiceEventsByFilterByStatus`;

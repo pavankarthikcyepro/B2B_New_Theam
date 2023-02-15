@@ -25,6 +25,80 @@ export const getMoreComplaintsListApi = createAsyncThunk("COMPLAINTS_TRACKER/get
     return json;
 })
 
+export const getDetailsFromPoneNumber = createAsyncThunk("COMPLAINTS_TRACKER/getDetailsFromPoneNumber", async (payload, { rejectWithValue }) => {
+
+    const response = await client.get(URL.GET_DET_FROM_PHONE(payload["phoneNum"], payload["orgid"]),);
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+export const getComplainFactorDropDownData = createAsyncThunk("COMPLAINTS_TRACKER/getComplainFactorDropDownData", async (orgid, { rejectWithValue }) => {
+
+    const response = await client.get(URL.GET_COMPLAIN_FACTOR_DATA(orgid),);
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+export const getLocationList = createAsyncThunk("COMPLAINTS_TRACKER/getLocationList", async (orgid, { rejectWithValue }) => {
+
+    const response = await client.get(URL.LOCATION_LIST(orgid),);
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+export const getBranchData = createAsyncThunk("COMPLAINTS_TRACKER/getBranchData", async (payload, { rejectWithValue }) => {
+
+    const response = await client.get(URL.TARGET_DROPDOWN(
+        payload["orgId"],
+        payload["parent"],
+        payload["child"],
+        payload["parentId"]
+    ));
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+export const getDepartment = createAsyncThunk("COMPLAINTS_TRACKER/getDepartment", async (payload, { rejectWithValue }) => {
+
+    const response = await client.get(URL.TARGET_DROPDOWN(
+        payload["orgId"],
+        payload["parent"],
+        payload["child"],
+        payload["parentId"]
+    ));
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+
+export const getDesignation = createAsyncThunk("COMPLAINTS_TRACKER/getDesignation", async (payload, { rejectWithValue }) => {
+
+    const response = await client.get(URL.TARGET_DROPDOWN(
+        payload["orgId"],
+        payload["parent"],
+        payload["child"],
+        payload["parentId"]
+    ));
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
 interface CustomerDetailModel {
     key: string;
     text: string;
@@ -50,15 +124,30 @@ export const complaintsSlice = createSlice({
         datePickerKeyId: "",
         minDate: null,
         maxDate: null,
-        location:"",
-        branch:"",
-        model:"",
-        customerName:"",
-        email:"",
-        stage:"",
-        stage_id:"",
-        consultant:"",
-        reporting_manager:""
+        location: "",
+        branch: "",
+        model: "",
+        customerName: "",
+        email: "",
+        stage: "",
+        stage_id: "",
+        consultant: "",
+        reporting_manager: "",
+        showImagePicker: false,
+        imagePickerKeyId: "",
+        getDetailsFromPhoneRespnse: "",
+        complaintFactorTypeDropdown: [],
+        complaintFactorType: "",
+        complainLocationDropDown: [],
+        complainLocation: "",
+        complainBranchDropDown: [],
+        complainBranch: "",
+        complainDepartmentDropDown: [],
+        complainDepartment: "",
+        complainDesignationDropDown: [],
+        complainDesignation: "",
+        complainEmployeeDropDown: [],
+        complainEmployee: "",
     },
     reducers: {
         clearState: (state, action) => {
@@ -66,17 +155,36 @@ export const complaintsSlice = createSlice({
             state.date_of_birth = "";
             state.datePickerKeyId = "";
             state.showDatepicker = false;
-            state.minDate= null;
-            state.maxDate=null;
+            state.minDate = null;
+            state.maxDate = null;
             state.location = "";
             state.branch = "";
             state.model = "";
-            state.customerName= "",
-            state.email = "",
-            state.stage = "",
-            state.stage_id = "",
-                state.consultant = "",
-                state.reporting_manager = ""
+            state.customerName = "";
+            state.email = "";
+            state.stage = "";
+            state.stage_id = "";
+            state.consultant = "";
+            state.reporting_manager = "";
+            state.showImagePicker = false
+            state.imagePickerKeyId = "";
+            state.getDetailsFromPhoneRespnse = "";
+            state.complaintFactorTypeDropdown = [];
+            state.complaintFactorType = "";
+            state.complainLocationDropDown = [],
+                state.complainLocation = "",
+                state.complainBranchDropDown = [],
+                state.complainBranch = "",
+                state.complainDepartmentDropDown = [],
+                state.complainDepartment = "",
+                state.complainDesignationDropDown = [],
+                state.complainDesignation = "",
+                state.complainEmployeeDropDown = [],
+                state.complainEmployee = "";    
+        },
+        setImagePicker: (state, action) => {
+            state.imagePickerKeyId = action.payload;
+            state.showImagePicker = !state.showImagePicker;
         },
         setCustomerDetails: (state, action: PayloadAction<CustomerDetailModel>) => {
             const { key, text } = action.payload;
@@ -143,12 +251,29 @@ export const complaintsSlice = createSlice({
         },
         setDropDownData: (state, action: PayloadAction<DropDownModel>) => {
             const { key, value, id, orgId } = action.payload;
+          
+
             switch (key) {
-                
-                case "CAR_MODEL":
-                    state.carModel = value;
+
+                case "COMPLAIN_FACTOR_TYPE":
+                    state.complaintFactorType = value;
                     break;
-               
+                case "COMPLAINT_LOCATION":
+                    state.complainLocation = value;
+                    break;
+                case "COMPLAINT_BRANCH":
+                    state.complainBranch = value;
+                    break;
+                case "COMPLAINT_DEPARTMENT":
+                    state.complainDepartment = value;
+                    break;
+                case "COMPLAINT_DESIGNATION":
+                    state.complainDesignation = value;
+                    break;
+                case "COMPLAINT_EMPLOYEE":
+                    state.complainEmployee = value;
+                    break;
+
             }
         },
     },
@@ -186,8 +311,123 @@ export const complaintsSlice = createSlice({
         builder.addCase(getMoreComplaintsListApi.rejected, (state, action) => {
             state.isExtraLoading = false;
         })
+
+
+        // Get data from phone number
+        builder.addCase(getDetailsFromPoneNumber.pending, (state, action) => {
+            state.isLoading = true;
+        })
+        builder.addCase(getDetailsFromPoneNumber.fulfilled, (state, action) => {
+            state.isLoading = false;
+
+            if (action.payload) {
+                let dmsLeDDTO = action.payload.dmsEntity.dmsLeadDto;
+                state.getDetailsFromPhoneRespnse = action.payload;
+                state.location = dmsLeDDTO.referencenumber.split(" ")[0].toString()
+                state.branch = dmsLeDDTO.referencenumber.toString()
+                state.model = dmsLeDDTO.model.toString()
+                state.customerName = dmsLeDDTO.firstName.toString() + " " + dmsLeDDTO.lastName.toString()
+                state.email = dmsLeDDTO.email.toString();
+                state.stage = dmsLeDDTO.leadStage.toString();
+                state.stage_id = dmsLeDDTO.referencenumber.toString();
+                state.consultant = dmsLeDDTO.salesConsultant.toString();
+                state.reporting_manager = action.payload.dmsEntity.reportingManager.toString();
+            }
+        })
+        builder.addCase(getDetailsFromPoneNumber.rejected, (state, action) => {
+            state.isLoading = false;
+        })
+
+
+
+        builder.addCase(getComplainFactorDropDownData.pending, (state, action) => {
+            state.isLoading = true;
+            state.complaintFactorTypeDropdown = [];
+        })
+        builder.addCase(getComplainFactorDropDownData.fulfilled, (state, action) => {
+            state.isLoading = false;
+
+            if (action.payload) {
+                state.complaintFactorTypeDropdown = action.payload;
+            }
+        })
+        builder.addCase(getComplainFactorDropDownData.rejected, (state, action) => {
+            state.isLoading = false;
+            state.complaintFactorTypeDropdown = [];
+        })
+
+
+
+        builder.addCase(getLocationList.pending, (state, action) => {
+            state.isLoading = true;
+            state.complainLocationDropDown = [];
+        })
+        builder.addCase(getLocationList.fulfilled, (state, action) => {
+            state.isLoading = false;
+
+            if (action.payload) {
+                state.complainLocationDropDown = action.payload;
+            }
+        })
+        builder.addCase(getLocationList.rejected, (state, action) => {
+            state.isLoading = false;
+            state.complainLocationDropDown = [];
+        })
+
+
+
+        builder.addCase(getBranchData.pending, (state, action) => {
+            state.isLoading = true;
+            state.complainBranchDropDown = [];
+        })
+        builder.addCase(getBranchData.fulfilled, (state, action) => {
+            state.isLoading = false;
+
+            if (action.payload) {
+                state.complainBranchDropDown = action.payload;
+            }
+        })
+        builder.addCase(getBranchData.rejected, (state, action) => {
+            state.isLoading = false;
+            state.complainBranchDropDown = [];
+        })
+
+
+        builder.addCase(getDepartment.pending, (state, action) => {
+            state.isLoading = true;
+            state.complainDepartmentDropDown = [];
+        })
+        builder.addCase(getDepartment.fulfilled, (state, action) => {
+            state.isLoading = false;
+
+            if (action.payload) {
+                state.complainDepartmentDropDown = action.payload;
+            }
+        })
+        builder.addCase(getDepartment.rejected, (state, action) => {
+            state.isLoading = false;
+            state.complainDepartmentDropDown = [];
+        })
+
+
+        builder.addCase(getDesignation.pending, (state, action) => {
+            state.isLoading = true;
+            state.complainDesignationDropDown = [];
+        })
+        builder.addCase(getDesignation.fulfilled, (state, action) => {
+            state.isLoading = false;
+
+            if (action.payload) {
+                state.complainDesignationDropDown = action.payload;
+            }
+        })
+        builder.addCase(getDesignation.rejected, (state, action) => {
+            state.isLoading = false;
+            state.complainDesignationDropDown = [];
+        })
+
     }
 });
 
-export const { clearState, setCustomerDetails,setDatePicker, } = complaintsSlice.actions;
+export const { clearState, setCustomerDetails, setDatePicker, setDropDownData, setImagePicker, updateSelectedDate } = complaintsSlice.actions;
 export default complaintsSlice.reducer;

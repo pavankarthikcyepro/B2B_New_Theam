@@ -6,6 +6,9 @@ import { ComplainTrackerIdentifires } from '../../../navigations/appNavigator';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import ComplaintList from './ComplaintList';
 import ClosedComplaintList from './ClosedComplaintList';
+import { useState } from 'react';
+import { useEffect } from 'react';
+import * as AsyncStore from "../../../asyncStore";
 const data = [
     {
         id: 0,
@@ -95,6 +98,85 @@ export  const ComplaintsTrackerTopTabNavigator = () => {
 
 const ComplaintTrackerMain = ({ route, navigation }) => {
 
+    const [userData, setUserData] = useState({
+        orgId: "",
+        employeeId: "",
+        employeeName: "",
+        isManager: false,
+        editEnable: false,
+        isPreBookingApprover: false,
+        isSelfManager: "",
+        isCRM: false,
+        isCRE: false,
+    });
+
+    useEffect(() => {
+        getUserData()
+       
+
+    }, [])
+
+    const getUserData = async () => {
+        try {
+            const employeeData = await AsyncStore.getData(
+                AsyncStore.Keys.LOGIN_EMPLOYEE
+            );
+
+            if (employeeData) {
+                const jsonObj = JSON.parse(employeeData);
+                
+                let isManager = false,
+                    editEnable = false, isCRE,isCRM;
+                let isPreBookingApprover = false;
+                if (
+                    jsonObj.hrmsRole === "MD" ||
+                    jsonObj.hrmsRole === "General Manager" ||
+                    jsonObj.hrmsRole === "Manager" ||
+                    jsonObj.hrmsRole === "Sales Manager" ||
+                    jsonObj.hrmsRole === "branch manager"
+                ) {
+                    isManager = true;
+                }
+                if (jsonObj.roles.includes("PreBooking Approver")) {
+
+                    editEnable = true;
+                    isPreBookingApprover = true;
+                }
+
+                if (
+                    jsonObj.hrmsRole === "CRE"
+                    
+                ) {
+                    isCRE = true;
+                }
+
+                if (
+                    jsonObj.hrmsRole === "CRM"
+
+                ) {
+                    isCRM = true;
+                }
+            
+                    
+                setUserData({
+                    orgId: jsonObj.orgId,
+                    employeeId: jsonObj.empId,
+                    employeeName: jsonObj.empName,
+                    isManager: isManager,
+                    editEnable: editEnable,
+                    isPreBookingApprover: isPreBookingApprover,
+                    isSelfManager: jsonObj.isSelfManager,
+                    isCRM: isCRM,
+                    isCRE: isCRE,
+                });
+
+                
+            }
+        } catch (error) {
+            alert(error);
+        }
+    };
+
     const renderItem = (item, index) => {
        
         return (
@@ -136,15 +218,15 @@ const ComplaintTrackerMain = ({ route, navigation }) => {
                 //   bounces={false}
                 />
             </View>
-
-            <TouchableOpacity
+            {userData.isCRE || userData.isCRM ? <TouchableOpacity
                 onPress={() => {
                     navigation.navigate(ComplainTrackerIdentifires.addEditComplaint);
                 }}
                 style={[GlobalStyle.shadow, styles.floatingBtn]}
             >
                 <Entypo size={25} name="plus" color={Colors.WHITE} />
-            </TouchableOpacity>
+            </TouchableOpacity> : null}
+            
 
         </SafeAreaView>
     )
