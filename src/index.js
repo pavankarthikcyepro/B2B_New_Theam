@@ -413,12 +413,12 @@ const AppScreen = () => {
                   updateType: IAUUpdateKind.IMMEDIATE,
                 };
               } else if (Platform.OS === "ios") {
-                var title = "Please Update to Latest Version";
+                var title = "New Version is Available";
                 updateOptions = {
                   forceUpgrade: true,
                   title: title,
-                  message: "UPDATE",
-                  buttonUpgradeText: "UPDATE2",
+                  message: "Please Update to Latest Version",
+                  buttonUpgradeText: "Update",
                 };
               }
               inAppUpdates.startUpdate(updateOptions);
