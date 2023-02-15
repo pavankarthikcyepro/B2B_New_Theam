@@ -5,7 +5,7 @@ import { Colors, GlobalStyle } from '../../../styles';
 import { DatePickerComponent, DropDownComponant, ImagePickerComponent, TextinputComp } from '../../../components';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCustomerDetails, updateSelectedDate,clearState,setDatePicker,
-    setDropDownData, setImagePicker, getDetailsFromPoneNumber, getComplainFactorDropDownData, getLocationList, getBranchData, getDepartment, getDesignation
+    setDropDownData, setImagePicker, getDetailsFromPoneNumber, getComplainFactorDropDownData, getLocationList, getBranchData, getDepartment, getDesignation, getEmployeeDetails
 } from '../../../redux/complaintTrackerReducer';
 import { DateSelectItem, DropDownSelectionItem, ImageSelectItem } from '../../../pureComponents';
 import { UserState } from 'realm';
@@ -18,6 +18,8 @@ import * as AsyncStore from "../../../asyncStore";
 import { showToast } from '../../../utils/toast';
 const dateFormat = "DD/MM/YYYY";
 const currentDate = moment().add(0, "day").format(dateFormat)
+let deptId, desigId="";
+
 const AddEditComplaint = () => {
     const [openAccordian, setOpenAccordian] = useState(0);
     const selector = useSelector((state) => state.complaintTrackerReducer);
@@ -37,7 +39,8 @@ const AddEditComplaint = () => {
         isManager: false,
         editEnable: false,
         isPreBookingApprover: false,
-        isSelfManager: ""
+        isSelfManager: "",
+        branchId:""
     });
     useEffect(() => {
         getUserData()
@@ -57,7 +60,7 @@ const AddEditComplaint = () => {
 
             if (employeeData) {
                 const jsonObj = JSON.parse(employeeData);
-
+               
                 let isManager = false,
                     editEnable = false;
                 let isPreBookingApprover = false;
@@ -82,7 +85,9 @@ const AddEditComplaint = () => {
                     isManager: isManager,
                     editEnable: editEnable,
                     isPreBookingApprover: isPreBookingApprover,
-                    isSelfManager: jsonObj.isSelfManager
+                    isSelfManager: jsonObj.isSelfManager,
+                    branchId: jsonObj.branchId
+
                 });
 
                 dispatch(getComplainFactorDropDownData(jsonObj.orgId))
@@ -387,7 +392,7 @@ const AddEditComplaint = () => {
               headerTitle={dropDownTitle}
               data={dataForDropDown}
               onRequestClose={() => setShowDropDownModel(false)}
-              selectedItems={(item) => {
+              selectedItems={async (item) => {
                 
                   if (dropDownKey === "COMPLAINT_LOCATION") {
                     let payload ={
@@ -397,6 +402,27 @@ const AddEditComplaint = () => {
                         parentId: item.id
                     }
                       dispatch(getBranchData(payload))
+
+                      dispatch(
+                          setDropDownData({
+                              key: "COMPLAINT_BRANCH",
+                              value: "",
+                              id: "",
+                              orgId: userData.orgId,
+                          })
+                      );
+                      dispatch(setDropDownData({
+                          key: "COMPLAINT_DEPARTMENT",
+                          value: "",
+                          id: "",
+                          orgId: userData.orgId,
+                      }))
+                      dispatch(setDropDownData({
+                          key: "COMPLAINT_DESIGNATION",
+                          value: "",
+                          id: "",
+                          orgId: userData.orgId,
+                      }))
                   } else if (dropDownKey === "COMPLAINT_BRANCH"){
                       let payload = {
                           orgId: userData.orgId,
@@ -405,14 +431,48 @@ const AddEditComplaint = () => {
                           parentId: item.id
                       }
                       dispatch(getDepartment(payload))
+                      dispatch(setDropDownData({
+                          key: "COMPLAINT_DEPARTMENT",
+                          value: "",
+                          id: "",
+                          orgId: userData.orgId,
+                      }))
+                      dispatch( setDropDownData({
+                          key: "COMPLAINT_DESIGNATION",
+                          value: "",
+                          id: "",
+                          orgId: userData.orgId,
+                      }))
                   } else if (dropDownKey === "COMPLAINT_DEPARTMENT"){
+                      
                       let payload = {
                           orgId: userData.orgId,
                           parent: "department",
                           child: "designation",
                           parentId: item.id
                       }
+                     deptId= item.id;
                       dispatch(getDesignation(payload))
+                      dispatch(setDropDownData({
+                          key: "COMPLAINT_DESIGNATION",
+                          value: "",
+                          id: "",
+                          orgId: userData.orgId,
+                      }))
+                      
+                  } else if (dropDownKey === "COMPLAINT_DESIGNATION") {
+                //    let   branchId = await AsyncStore.getData(
+                //           AsyncStore.Keys.SELECTED_BRANCH_ID
+                //       );
+                      let payload = {
+                          orgId: userData.orgId,
+                          branchId: userData.branchId,
+                          deptId: deptId,
+                          desigId:item.id
+                      }
+                  
+                      dispatch(getEmployeeDetails(payload))
+                      
                   }
                   setShowDropDownModel(false);
                   dispatch(

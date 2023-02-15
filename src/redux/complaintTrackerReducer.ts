@@ -99,6 +99,21 @@ export const getDesignation = createAsyncThunk("COMPLAINTS_TRACKER/getDesignatio
     return json;
 })
 
+
+export const getEmployeeDetails = createAsyncThunk("COMPLAINTS_TRACKER/getEmployeeDetails", async (payload, { rejectWithValue }) => {
+
+    const response = await client.get(URL.GET_EMPLOYEE_DETAILS(
+        payload["orgId"],
+        payload["branchId"],
+        payload["deptId"],
+        payload["desigId"]));
+    const json = await response.json();
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+});
+
 interface CustomerDetailModel {
     key: string;
     text: string;
@@ -424,6 +439,22 @@ export const complaintsSlice = createSlice({
         builder.addCase(getDesignation.rejected, (state, action) => {
             state.isLoading = false;
             state.complainDesignationDropDown = [];
+        })
+
+        builder.addCase(getEmployeeDetails.pending, (state, action) => {
+            state.isLoading = true;
+            state.complainEmployeeDropDown = [];
+        })
+        builder.addCase(getEmployeeDetails.fulfilled, (state, action) => {
+            state.isLoading = false;
+
+            if (action.payload) {
+                state.complainEmployeeDropDown = action.payload;
+            }
+        })
+        builder.addCase(getEmployeeDetails.rejected, (state, action) => {
+            state.isLoading = false;
+            state.complainEmployeeDropDown = [];
         })
 
     }
