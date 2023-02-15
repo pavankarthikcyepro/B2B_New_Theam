@@ -406,8 +406,14 @@ const URL = {
     return sales_url + "/lead-drop";
   },
   LEAD_DROPPED: () => sales_url + "/lead",
+
+  DROP_ANALYSIS_LIST_FILTER: () => sales_url + "/lead-drop/leadlist",
+
   UPDATE_BULKAPPROVAL: () => {
     return sales_url + "/lead-drop/bulkdrop";
+  },
+  UPDATE_DROP_STAGE: () => {
+    return sales_url + "/lead/updateDropStage";
   },
   REVOKE: (id) => {
     return sales_url + "/lead-drop/updateStatusEnquire/ENQUIRY/" + id;
@@ -439,6 +445,14 @@ const URL = {
   GET_SUB_MENU: (stage) => {
     return sales_url + "/lead/stagedropdown?menu=" + stage;
   },
+  GET_DROP_SUBMENU: (stage) => {
+    return sales_url + "/lead/dropstagesubmenu?menu=" + stage;
+  },
+
+  GET_DROPSTAGE_MENU: (stage) => {
+    return sales_url + "/lead/dropstagemenu";
+  },
+
   GET_LEAD_LIST: (branchId, empName, empId, offSet, limit) => {
     return (
       sales_url +
@@ -763,6 +777,9 @@ const URL = {
   },
   GET_TASK_360_HISTORY: (universalId) => {
     return sales_url + "/workflow/universalId/" + universalId;
+  },
+   GET_FOLLOWUP_COUNT: (universalId) => {
+     return sales_url + "/workflow/followupCounts/" + universalId;
   },
   CALL_DEALLOCATE: (empId) => {
     return roleManagement_url + "/dms/emp-update/" + empId;

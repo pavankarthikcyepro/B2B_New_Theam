@@ -162,6 +162,65 @@ export const updateBulkApproval = createAsyncThunk(
     return json;
   }
 );
+
+export const updateLeadStage = createAsyncThunk(
+  "DROPANALYSIS/updateLeadStage",
+  async (payload, { rejectWithValue }) => {
+
+    const response = await client.post(URL.UPDATE_DROP_STAGE(), payload);
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+export const getDropAnalysisFilter = createAsyncThunk(
+  "DROPANALYSIS/getDropAnalysisFilter",
+  async (payload, { rejectWithValue }) => {
+
+    const response = await client.post(URL.DROP_ANALYSIS_LIST_FILTER(), payload);
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+export const getdropstagemenu = createAsyncThunk(
+  "DROPANALYSIS/getdropstagemenu",
+  async (payload, { rejectWithValue }) => {
+
+    const response = await client.get(URL.GET_DROPSTAGE_MENU(payload));
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+
+export const getDropstagesubmenu = createAsyncThunk(
+  "DROPANALYSIS/getDropstagesubmenu",
+  async (payload, { rejectWithValue }) => {
+
+    const response = await client.get(URL.GET_DROP_SUBMENU(payload));
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+
 const leaddropListSlice = createSlice({
   name: "DROPANALYSIS",
   initialState: {
@@ -176,6 +235,9 @@ const leaddropListSlice = createSlice({
     menu: [],
     leadList: [],
     defualtStatus: [],
+    dropStageMenus:[],
+    dropStageSubMenus: [],
+    updateLeadStage:""
   },
   reducers: {
     clearLeadDropState :(state, action) => {
@@ -189,7 +251,10 @@ const leaddropListSlice = createSlice({
       state.subMenu= [],
       state.menu= [],
       state.leadList= [],
-      state.defualtStatus= []
+      state.defualtStatus= [],
+        state.dropStageMenus = [],
+        state.dropStageSubMenus = [],
+        state.updateLeadStage = ""
     },
   },
   extraReducers: (builder) => {
@@ -320,6 +385,81 @@ const leaddropListSlice = createSlice({
     builder.addCase(updateBulkApproval.rejected, (state, action) => {
       state.approvalStatus = "failed";
     });
+
+
+    builder.addCase(updateLeadStage.pending, (state) => { state.updateLeadStage = "pending"; });
+    builder.addCase(updateLeadStage.fulfilled, (state, action) => {
+
+      // if (action.payload.length > 0) {
+        showToast("Successfully updated");
+        state.updateLeadStage = "sucess";
+      // }
+      // const status = action.payload?.status;
+      // if (status === 'SUCCESS') {
+
+      // }
+      // state.isLoadingExtraData = false;
+
+    });
+    builder.addCase(updateLeadStage.rejected, (state, action) => {
+      state.updateLeadStage = "failed";
+    });
+
+    builder.addCase(getDropAnalysisFilter.pending, (state) => {
+      state.totalPages = 1;
+      state.pageNumber = 0;
+      state.leadDropList = [];
+      state.isLoading = true;
+    });
+    builder.addCase(getDropAnalysisFilter.fulfilled, (state, action) => {
+      const dmsLeadDropInfos = action.payload.dmsLeadDropInfos;
+
+      state.totalPages = 1;
+      state.pageNumber = 0;
+      state.leadDropList = [];
+      if (dmsLeadDropInfos) {
+        state.totalPages = dmsLeadDropInfos.totalPages;
+        state.pageNumber = dmsLeadDropInfos.pageable.pageNumber;
+        state.leadDropList = dmsLeadDropInfos.content;
+
+      }
+      state.isLoading = false;
+      state.status = "sucess";
+      
+    });
+    builder.addCase(getDropAnalysisFilter.rejected, (state, action) => {
+      state.totalPages = 1;
+      state.pageNumber = 0;
+      state.leadDropList = [];
+      state.isLoading = false;
+      state.status = "failed";
+    });
+
+
+    builder.addCase(getdropstagemenu.pending, (state) => {
+      state.dropStageMenus =[];
+    });
+    builder.addCase(getdropstagemenu.fulfilled, (state, action) => {
+      state.dropStageMenus = action.payload;
+
+    });
+    builder.addCase(getdropstagemenu.rejected, (state, action) => {
+      state.dropStageMenus =[];
+    });
+
+
+    builder.addCase(getDropstagesubmenu.pending, (state) => {
+      state.dropStageSubMenus = [];
+    });
+    builder.addCase(getDropstagesubmenu.fulfilled, (state, action) => {
+      state.dropStageSubMenus = action.payload;
+
+    });
+    builder.addCase(getDropstagesubmenu.rejected, (state, action) => {
+      state.dropStageSubMenus = [];
+    });
+
+
   },
 });
 

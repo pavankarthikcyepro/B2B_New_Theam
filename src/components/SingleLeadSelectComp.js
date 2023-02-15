@@ -18,6 +18,7 @@ const SingleLeadSelectComp = ({
     submitCallback,
     cancelClicked,
     selectAll,
+    isContactVisible=false
 }) => {
     const [localModelList, setLocalModelList] = useState([]);
 
@@ -79,7 +80,7 @@ const SingleLeadSelectComp = ({
                                     paddingHorizontal: 5,
                                 }}
                                 renderItem={({ item, index }) => {
-                                    if (item?.menu !== "Contact" && item?.status === "Active" && true) {
+                                    if (item?.menu !== "Contact" && item?.status === "Active" && true || isContactVisible === true) {
                                         return (
                                             <TouchableOpacity
                                                 onPress={() => itemSelected(item, index)}

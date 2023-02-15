@@ -17,7 +17,7 @@ import * as AsyncStore from "../../../../asyncStore";
 import {
   getLogoNameApi, getOnRoadPriceAndInsurenceDetailsApi, setDropDownData,
   postProformaInvoiceDetails, getProformaListingDetailsApi, setOfferPriceDetails,
-  setOfferPriceDataForSelectedProforma, clearOfferPriceData, clearStateData, getTermsAndConditionsOrgwise
+  setOfferPriceDataForSelectedProforma, clearOfferPriceData, clearStateData, getTermsAndConditionsOrgwise, getOtherPricesDropDown
 } from "../../../../redux/enquiryFormReducer";
 import { getFocusedRouteNameFromRoute, useNavigation } from "@react-navigation/native";
 import {
@@ -243,11 +243,12 @@ export const ProformaComp = ({
   const [otherPriceErrorAmountIndexInput, setOtherPriceErrorAmountIndex] = useState(null);
   const [otherPrices, setOtherPrices] = useState(0);
   const [otherPricesV2, setOtherPricesV2] = useState(0);
-
+  const [otherPriceDropDownIndex, setOtherPriceDropDownIndex] = useState(null);
+  
   useEffect(() => {
     getUserData();
     dispatch(getProformaListingDetailsApi(universalId));
-
+  
 
   }, []);
 
@@ -355,6 +356,7 @@ export const ProformaComp = ({
         dispatch(getTermsAndConditionsOrgwise(jsonObj.orgId))
         dispatch(getLogoNameApi(data));
         getCarModelListFromServer(jsonObj.orgId);
+        dispatch(getOtherPricesDropDown(jsonObj.orgId))
       }
     } catch (error) {
       alert(error);
@@ -811,7 +813,7 @@ export const ProformaComp = ({
         '<div>'+
       selector.proforma_orgName +'</div>' +
         '<div > GSTN: ' +
-        selector.proforma_gstnNumber + '</div>' +
+        `${selector.proforma_gstnNumber != null ? selector.proforma_gstnNumber : " "}`   + '</div>' +
         '<div>' + selector.proforma_houseNo + '</div>' +
         '<div >' + selector.profprma_street + '</div>' +
         '<div >' + selector.proforma_branch + '</div>' +
@@ -833,11 +835,11 @@ export const ProformaComp = ({
         '</tr>' +
         '<tr>' +
         '<td>PAN NO :</td>' +
-        '<td style="text-transform: uppercase"> ' + selector.pan_number + '</td>' +
+          '<td style="text-transform: uppercase"> ' + `${selector.pan_number != "" ? selector.pan_number : "-Na-"}` + '</td>' +
         '</tr>' +
         '<tr>' +
         '<td>GST NO :</td>' +
-        '<td style="text-transform: uppercase">' + selector.proforma_gstnNumber + '</td>' +
+        '<td style="text-transform: uppercase">' + `${selector.gstin_number != "" ? selector.gstin_number : "-Na-"}` + '</td>' +
         '</tr>' +
         '<tr>' +
         '<td colspan="4" style="text-align:center;"><strong>' + carModel + " " + "Model" + " " + carVariant + '</strong></td>' +
@@ -1083,7 +1085,7 @@ export const ProformaComp = ({
         '<table  style="border: 1px solid black; border - collapse: collapse; width:100%;">' +
         '<tr   >' +
         '<td  style=" color:#00165c; border: 1px solid black; border - collapse: collapse; width:50%;" >GST NO :</td>' +
-        '<td    style="text-transform: uppercase; color:#00165c; text-align: right; border: 1px solid black; border - collapse: collapse; width:50%;"> ' + selector.proforma_gstnNumber + ' </td>' +
+        '<td    style="text-transform: uppercase; color:#00165c; text-align: right; border: 1px solid black; border - collapse: collapse; width:50%;"> ' + selector.gstin_number + ' </td>' +
         '</tr>' +
         '</table>' +
         '</td>' +
@@ -1793,6 +1795,9 @@ export const ProformaComp = ({
       case "REGISTRATION_CHARGES":
         setDataForDropDown([...registrationChargesType]);
         break;
+      case "OTHER_PRICES":
+        setDataForDropDown([...selector.otherPricesDropDown]);
+        break;
     }
     setDropDownKey(key);
     setDropDownTitle(headerText);
@@ -2421,6 +2426,7 @@ export const ProformaComp = ({
         visible={showDropDownModel}
         headerTitle={dropDownTitle}
         data={dataForDropDown}
+        disabledData={addNewInput}
         multiple={showMultipleDropDownData}
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
@@ -2488,6 +2494,8 @@ export const ProformaComp = ({
           }
           else if (dropDownKey === "REGISTRATION_CHARGES") {
             setSelectedRegistrationCharges(item);
+          } else if (dropDownKey === "OTHER_PRICES") {
+            inputHandlerName(item.name, otherPriceDropDownIndex);
           }
           dispatch(
             setDropDownData({
@@ -2802,15 +2810,20 @@ export const ProformaComp = ({
               {carModel != "" && <TextAndAmountComp title={"Name :"} text={carModel} />}
               {carVariant != "" && <TextAndAmountComp title={"Model :"} text={carVariant} />}
               {carColor != "" && <TextAndAmountComp title={"Color:"} text={carColor} />}
-              {proformaNo != "" && <TextAndAmountComp
+              {  <TextAndAmountComp
                 title={"Proforma no:"}
-                text={proformaNo}
+                text={proformaNo != "" ?proformaNo: " "}
               />}
-              {selector.pan_number != "" &&
+              {
                 <TextAndAmountComp
                   title={"PAN NO :"}
-                  text={selector.pan_number}
+                  text={selector.pan_number != "" ? selector.pan_number : "-Na-"}
                 />}
+              { 
+                <TextAndAmountComp
+                title={"GST NO :"}
+                  text={selector.gstin_number != "" ? selector.gstin_number : "-Na-"}
+                /> }
 
               {/* <TextAndAmountComp
                 title={"Amount"}
@@ -3180,13 +3193,52 @@ export const ProformaComp = ({
                           marginVertical:4
                         }}
                       >
-                        <View style={{
+                        {/* <View style={{
                           backgroundColor:Colors.LIGHT_GRAY,width:'90%',
                           flexDirection:'row',
                           justifyContent:"space-between",
                           padding:10
-                          }}>
+                          }}> */}
+                          <View style={{ width: "33%" }}>
+                          <DropDownSelectionItem
+                            label={"Name"}
+                            disabled={!isInputsEditable()}
+                            value={item.name}
+                            style={{
+                              height: 40,
+                              borderColor: checkIsError("name", index)
+                                ? Colors.RED
+                                : Colors.BLACK,
+                            }}
+                            otherPrices={true}
+                            onPress={() => {
+                              showDropDownModelMethod(
+                                "OTHER_PRICES",
+                                "Select Name"
+                              );
+                              setOtherPriceDropDownIndex(index);
+                            }}
+                          />
+                          </View>
                           <TextInput
+                            editable={isInputsEditable()}
+                            style={[
+                              styles.otherPriceInput,
+                              {
+                                marginLeft: 20,
+                                borderColor: checkIsError("amount", index)
+                                  ? Colors.RED
+                                  : null,
+                              },
+                            ]}
+                            placeholder={"Amount"}
+                            keyboardType={"decimal-pad"}
+                            onChangeText={(value) =>
+                              inputHandlerPrice(value, index)
+                            }
+                            value={`${item.amount}`}
+                          />
+                          {/* <TextInput
                             style={[{
                               fontSize: 14,
                               fontWeight: "400",
@@ -3210,7 +3262,7 @@ export const ProformaComp = ({
                             underlineColor={Colors.LIGHT_GRAY}
                             outlineColor={Colors.BLACK}
                             theme={{ colors: { primary: Colors.BLACK, underlineColor: 'transparent' } }}
-                          />
+                          /> */}
                           {/* <TextInput
                           editable={isInputsEditable()}
                           style={[
@@ -3254,7 +3306,7 @@ export const ProformaComp = ({
                             value={`${item.amount}`}
                           /> */}
 
-                          <TextInput
+                          {/* <TextInput
                             style={[{
                               fontSize: 14,
                               fontWeight: "400",
@@ -3277,8 +3329,8 @@ export const ProformaComp = ({
                             underlineColor={Colors.LIGHT_GRAY}
                             outlineColor={Colors.BLACK}
                             theme={{ colors: { primary: Colors.BLACK, underlineColor: 'transparent' } }}
-                          />
-                        </View>
+                          /> */}
+                        {/* </View> */}
                         
                         <TouchableOpacity
                           disabled={!isInputsEditable()}
