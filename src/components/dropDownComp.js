@@ -39,7 +39,6 @@ const DropDownComponant = ({
   keyId = "",
   onRequestClose,
   disabledData = [],
-  isSelectOption = false,
 }) => {
   const [multipleData, setMultipleData] = useState([]);
 
@@ -77,16 +76,6 @@ const DropDownComponant = ({
   let faltListHeight = tableHeight;
   if (estimateTableHeight < tableHeight) {
     faltListHeight = null;
-  }
-
-  if (isSelectOption) {
-    data = [
-      {
-        name: "Select",
-        cost: 0,
-      },
-      ...data,
-    ];
   }
 
   return (
