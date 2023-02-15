@@ -1106,6 +1106,13 @@ const TestDriveScreen = ({ route, navigation }) => {
     generateOtpToCloseTask();
   };
   
+  function compare(dateTimeA, dateTimeB) {
+    var momentA = moment(dateTimeA, "DD/MM/YYYY");
+    var momentB = moment(dateTimeB, "DD/MM/YYYY");
+    if (momentA > momentB) return 1;
+    else if (momentA < momentB) return -1;
+    else return 0;
+  }
   const reSubmitClick = (status,taskName)=>{
     // call API here 
   
@@ -1140,6 +1147,14 @@ const TestDriveScreen = ({ route, navigation }) => {
 
     if (selector.customer_preferred_date.length === 0) {
       showToast("Please select customer preferred date");
+      return;
+    }
+      const dateFormat = "DD/MM/YYYY";
+      const currentDate = moment().add(0, "day").format(dateFormat)
+    
+    // conditon to show error for date older then today 
+    if (compare(selector.customer_preferred_date, currentDate) === -1){
+      showToast("Please select customer preferred date greater than today's date");
       return;
     }
 
@@ -1240,6 +1255,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       actualStartTime = date + " " + selector.actual_start_time;
       actualEndTime = date + " " + selector.actual_end_time;
     }
+
     setExpectedStartAndEndTime({ start: actualStartTime, end: actualEndTime });
     setTaskStatusAndName({ status: status, name: taskName });
 
