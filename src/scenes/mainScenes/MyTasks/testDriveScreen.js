@@ -1387,6 +1387,12 @@ const TestDriveScreen = ({ route, navigation }) => {
     
   };
 
+  const onDropDownClear = (key) => {
+    if (key) {
+      setSelectedDriverDetails({ name: "", id: "" });
+    }
+  };
+
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
       <ImagePickerComponent
@@ -1790,6 +1796,9 @@ const TestDriveScreen = ({ route, navigation }) => {
                 onPress={() =>
                   showDropDownModelMethod("LIST_OF_DRIVERS", "List of Drivers")
                 }
+                clearOption={true}
+                clearKey={"LIST_OF_DRIVERS"}
+                onClear={onDropDownClear}
               />
               <DateSelectItem
                 label={"Customer Preferred Time*"}
@@ -2012,11 +2021,13 @@ const TestDriveScreen = ({ route, navigation }) => {
             </View>
           ) : null}
 
-          {route?.params?.taskStatus === "CLOSED" && !isReopenSubmitVisible && !isCloseSelected ? (
+          {route?.params?.taskStatus === "CLOSED" &&
+          !isReopenSubmitVisible &&
+          !isCloseSelected ? (
             <View style={[styles.view1, { marginTop: 30 }]}>
               <Button
                 mode="contained"
-                style={{ width: '45%' }}
+                style={{ width: "45%" }}
                 color={Colors.RED}
                 // disabled={selector.is_loading_for_task_update}
                 labelStyle={{ textTransform: "none" }}
@@ -2036,8 +2047,8 @@ const TestDriveScreen = ({ route, navigation }) => {
                 color={Colors.GRAY}
                 // disabled={selector.is_loading_for_task_update}
                 labelStyle={{ textTransform: "none" }}
-                onPress={()=>{
-                  navigation.goBack()
+                onPress={() => {
+                  navigation.goBack();
                 }}
               >
                 Close
@@ -2048,17 +2059,15 @@ const TestDriveScreen = ({ route, navigation }) => {
                 color={Colors.RED}
                 // disabled={selector.is_loading_for_task_update}
                 labelStyle={{ textTransform: "none" }}
-                onPress={()=>{
+                onPress={() => {
                   // reSubmitClick("ASSIGNED","Test Drive Approval")
-                  closeTask("reopen")
+                  closeTask("reopen");
                 }}
               >
                 Submit
               </Button>
             </View>
           ) : null}
-
-          
         </ScrollView>
       </KeyboardAvoidingView>
 
