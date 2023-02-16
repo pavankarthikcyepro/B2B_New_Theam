@@ -17,6 +17,7 @@ import { ActivityIndicator, IconButton } from "react-native-paper";
 import { AppNavigator } from "../../../navigations";
 import { RenderSourceModelParameters } from "../Home/TabScreens/components/RenderSourceModelParameters";
 import PercentageToggleControl from "../Home/TabScreens/components/EmployeeView/PercentageToggleControl";
+import TextTicker from "react-native-text-ticker";
 
 const EventSourceModel = ({ route, navigation }) => {
   const dispatch = useDispatch();
@@ -28,6 +29,7 @@ const EventSourceModel = ({ route, navigation }) => {
   const [isSourceIndex, setIsSourceIndex] = useState(0);
   const [displayType, setDisplayType] = useState(0);
   const [sourceModelTotals, setSourceModelTotals] = useState({});
+  const [budgetTotal, setBudgetTotal] = useState(0);
   const [toggleParamsIndex, setToggleParamsIndex] = useState(0);
   const [toggleParamsMetaData, setToggleParamsMetaData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -124,6 +126,7 @@ const EventSourceModel = ({ route, navigation }) => {
   useEffect(() => {
     if (leadSource) {
       getTotal();
+      getBudgetTotal();
     }
   }, [leadSource]);
 
@@ -148,7 +151,7 @@ const EventSourceModel = ({ route, navigation }) => {
     setSourceModelTotals({ ...totals });
   };
 
-  const paramsMetadata = [
+  let paramsMetadata = [
     {
       color: "#FA03B9",
       paramName: "PreEnquiry",
@@ -238,6 +241,31 @@ const EventSourceModel = ({ route, navigation }) => {
     });
   }
 
+  paramsMetadata = [
+    ...paramsMetadata,
+    {
+      color: "#9E31BE",
+      paramName: "CONTACT PER CAR",
+      shortName: "Cont/Car",
+      initial: "CC",
+      toggleIndex: 0,
+    },
+    {
+      color: "#1C95A6",
+      paramName: "ENQUIRY PER CAR",
+      shortName: "Enq/Car",
+      initial: "EC",
+      toggleIndex: 0,
+    },
+    {
+      color: "#C62159",
+      paramName: "BOOKING PER CAR",
+      shortName: "Bkg/Car",
+      initial: "BC",
+      toggleIndex: 0,
+    },
+  ];
+
   const getData = (data, type) => {
     return (
       data &&
@@ -248,6 +276,18 @@ const EventSourceModel = ({ route, navigation }) => {
         return r;
       }, Object.create(null))
     );
+  };
+
+  const getBudgetTotal = () => {
+    const data = Object.values(leadSource);
+    let total = 0;
+
+    if (data.length > 0) {
+      for (let i = 0; i < data.length; i++) {
+        total = total + data[i][0].budget;
+      }
+    }
+    setBudgetTotal(total);
   };
 
   const renderDataView = () => {
@@ -268,6 +308,8 @@ const EventSourceModel = ({ route, navigation }) => {
                         displayType={displayType}
                         moduleType={moduleType}
                         sourceModelTotals={sourceModelTotals}
+                        isEvent={true}
+                        eventIndex={index}
                       />
                     )}
                   </View>
@@ -329,9 +371,39 @@ const EventSourceModel = ({ route, navigation }) => {
     }
   }
 
-  function isEmpty(obj) {
-    return Object.keys(obj).length === 0;
-  }
+  const columnTitleBlock = (title, color, width = 80) => {
+    return (
+      <View
+        style={[
+          styles.flexRow,
+          styles.justifyAlignCenter,
+          {
+            width: width,
+          },
+        ]}
+      >
+        <Text style={{ color: color }}>{title}</Text>
+      </View>
+    );
+  };
+  
+  const FormattedTextTick = ({ children }) => {
+    return (
+      <TextTicker
+        duration={10000}
+        loop={true}
+        bounce={false}
+        repeatSpacer={50}
+        marqueeDelay={0}
+        style={{
+          marginBottom: 0,
+        }}
+      >
+        {children}
+      </TextTicker>
+    );
+  };
+
   return (
     <>
       <View>
@@ -408,7 +480,7 @@ const EventSourceModel = ({ route, navigation }) => {
                     </View>
                     {renderTitleColumn()}
                     <View style={[styles.flexRow, styles.totalTextView]}>
-                      <Text style={styles.totalTitleText}>Total</Text>
+                      {/* <Text style={styles.totalTitleText}>Total</Text> */}
                     </View>
                   </View>
                   <ScrollView
@@ -425,6 +497,8 @@ const EventSourceModel = ({ route, navigation }) => {
                       {/* TOP Header view */}
                       <View key={"headers"} style={[styles.flexRow]}>
                         <View style={[styles.flexRow, { height: 20 }]}>
+                          {columnTitleBlock("Date", Colors.GREEN, 100)}
+                          {columnTitleBlock("Budget", Colors.CORAL)}
                           {toggleParamsMetaData.map((param, i) => {
                             if (moduleType === "live-leads") {
                               if (
@@ -441,7 +515,8 @@ const EventSourceModel = ({ route, navigation }) => {
                                       styles.justifyAlignCenter,
                                       {
                                         width:
-                                          param.paramName === "Accessories"
+                                          param.paramName === "Accessories" ||
+                                          param.paramName.includes("PER CAR")
                                             ? 80
                                             : 60,
                                       },
@@ -454,27 +529,26 @@ const EventSourceModel = ({ route, navigation }) => {
                                 );
                               }
                             } else {
-                              if (param.paramName !== "PreEnquiry") {
-                                return (
-                                  <View
-                                    key={`${param.paramName}__${i}`}
-                                    style={[
-                                      styles.flexRow,
-                                      styles.justifyAlignCenter,
-                                      {
-                                        width:
-                                          param.paramName === "Accessories"
-                                            ? 80
-                                            : 60,
-                                      },
-                                    ]}
-                                  >
-                                    <Text style={{ color: param.color }}>
-                                      {param.shortName}
-                                    </Text>
-                                  </View>
-                                );
-                              }
+                              return (
+                                <View
+                                  key={`${param.paramName}__${i}`}
+                                  style={[
+                                    styles.flexRow,
+                                    styles.justifyAlignCenter,
+                                    {
+                                      width:
+                                        param.paramName === "Accessories" ||
+                                        param.paramName.includes("PER CAR")
+                                          ? 80
+                                          : 60,
+                                    },
+                                  ]}
+                                >
+                                  <Text style={{ color: param.color }}>
+                                    {param.shortName}
+                                  </Text>
+                                </View>
+                              );
                             }
                           })}
                         </View>
@@ -485,6 +559,24 @@ const EventSourceModel = ({ route, navigation }) => {
                         <View style={styles.paramsTotalContainerView}>
                           <View style={styles.paramsTotalContainerSubView}>
                             <View style={styles.paramsTotalContainer}>
+                              <View
+                                style={{ width: 95, justifyContent: "center" }}
+                              >
+                                <Text style={styles.totalTitleText}>Total</Text>
+                              </View>
+                              <View
+                                key={`budget__i`}
+                                style={[
+                                  styles.justifyAlignCenter,
+                                  { width: 80 },
+                                ]}
+                              >
+                                <FormattedTextTick>
+                                  <Text style={{ color: Colors.WHITE }}>
+                                    {budgetTotal}
+                                  </Text>
+                                </FormattedTextTick>
+                              </View>
                               {Object.keys(sourceModelTotals).map(
                                 (x, index) => {
                                   if (moduleType === "live-leads") {
@@ -499,7 +591,9 @@ const EventSourceModel = ({ route, navigation }) => {
                                           key={`${index}`}
                                           style={[
                                             styles.justifyAlignCenter,
-                                            { width: 60 },
+                                            { width: x === "Accessories" ||
+                                                x.includes("PER CAR")
+                                                  ? 80 : 60 },
                                           ]}
                                         >
                                           <Text style={{ color: Colors.WHITE }}>
@@ -509,21 +603,25 @@ const EventSourceModel = ({ route, navigation }) => {
                                       );
                                     }
                                   } else {
-                                    if (x !== "PreEnquiry") {
-                                      return (
-                                        <View
-                                          key={`${index}`}
-                                          style={[
-                                            styles.justifyAlignCenter,
-                                            { width: 60 },
-                                          ]}
-                                        >
-                                          <Text style={{ color: Colors.WHITE }}>
-                                            {sourceModelTotals[x]}
-                                          </Text>
-                                        </View>
-                                      );
-                                    }
+                                    return (
+                                      <View
+                                        key={`${index}`}
+                                        style={[
+                                          styles.justifyAlignCenter,
+                                          {
+                                            width:
+                                              x === "Accessories" ||
+                                              x.includes("PER CAR")
+                                                ? 80
+                                                : 60,
+                                          },
+                                        ]}
+                                      >
+                                        <Text style={{ color: Colors.WHITE }}>
+                                          {sourceModelTotals[x]}
+                                        </Text>
+                                      </View>
+                                    );
                                   }
                                 }
                               )}
@@ -591,16 +689,13 @@ const styles = StyleSheet.create({
   },
   sourceModelContainer: { backgroundColor: Colors.WHITE, marginHorizontal: 12 },
   totalTextView: {
-    justifyContent: "flex-start",
+    justifyContent: "flex-end",
     flex: 1,
     alignItems: "center",
     backgroundColor: Colors.RED,
   },
   totalTitleText: {
-    flexDirection: "row",
     color: Colors.WHITE,
-    textAlign: "center",
-    marginLeft: 8,
     fontWeight: "bold",
   },
   paramsTotalContainerView: {
