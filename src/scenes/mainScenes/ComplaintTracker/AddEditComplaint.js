@@ -5,7 +5,7 @@ import { Colors, GlobalStyle } from '../../../styles';
 import { DatePickerComponent, DropDownComponant, ImagePickerComponent, TextinputComp } from '../../../components';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCustomerDetails, updateSelectedDate,clearState,setDatePicker,
-    setDropDownData, setImagePicker, getDetailsFromPoneNumber, getComplainFactorDropDownData, getLocationList, getBranchData, getDepartment, getDesignation, getEmployeeDetails
+    setDropDownData, setImagePicker, getDetailsFromPoneNumber, getComplainFactorDropDownData, getLocationList, getBranchData, getDepartment, getDesignation, getEmployeeDetails, postComplaintFirstTime
 } from '../../../redux/complaintTrackerReducer';
 import { DateSelectItem, DropDownSelectionItem, ImageSelectItem } from '../../../pureComponents';
 import { UserState } from 'realm';
@@ -60,6 +60,13 @@ const AddEditComplaint = (props) => {
         })
     }, [props.navigation])
     
+    useEffect(()=>{
+       
+        if(selector.postComplaintFirstTimeRes){
+            props.navigation.goBack();
+            dispatch(clearState())
+        }
+    }, [selector.postComplaintFirstTimeRes])
     
     
 
@@ -136,7 +143,7 @@ const AddEditComplaint = (props) => {
     const submitClicked = async () => {
         
         setIsSubmitPress(true);
-
+        
             if (selector.mobile.length == 0) {
                 scrollToPos(0);
                 setOpenAccordian("1");
@@ -205,10 +212,41 @@ const AddEditComplaint = (props) => {
 
 
 
+        let payload = {
+            "id": 0,
+            "customerName": selector.customerName,
+            "customeLocation": selector.location,
+            "currentStage": selector.stage,
+            "currentStageIdNo": selector.stage_id,
+            "salesExecutiveName": selector.consultant,
+            "manager":selector.reporting_manager,
+            "branch": selector.branch,
+            "complaintLocation": selector.complainLocation,
+            "designation": selector.complainDesignation,
+            "employee": selector.complainEmployee,
+            "complaintDecription": selector.complaintDescription,
+            "mobileNo": selector.mobile,
+            "email": selector.email,
+            "model": selector.model,
+            "complaintFactor": selector.complaintFactorType,
+            "closingSource": selector.closeComplaintSource,
+            "orgId": userData.orgId,
+            "department": selector.complainDepartment,
+            "createdBy": userData.employeeName,// need to give loggedin empid
+            "updatedBy": userData.employeeName,// need to give loggedin empid for first time and in update case need to give  
+            "createdDate": moment.utc().format(),
+            "updatedDate": moment.utc().format(),
+            "compliantBranch": selector.complainBranch,
+            "complaintDocument": uploadedImagesDataObj?.complaint?.documentPath,
+            "complaintCloserDocument": uploadedImagesDataObjForClose?.complaint?.documentPath,
+            "aging": null,
+            "status": "Active"
+        }
 
-      
 
-      
+       
+        dispatch(postComplaintFirstTime(payload));
+        
     };
 
     const uploadSelectedImage = async (selectedPhoto, keyId) => {
@@ -1042,7 +1080,7 @@ const AddEditComplaint = (props) => {
                   </View>
 
 
-                  <View style={{ marginBottom: 10 }}>
+                  {props.route.params.from === "CLOSE" &&    <View style={{ marginBottom: 10 }}>
                       <List.AccordionGroup
                           expandedId={openAccordian}
                           onAccordionPress={(expandedId) => updateAccordian(expandedId)}
@@ -1170,24 +1208,25 @@ const AddEditComplaint = (props) => {
                           </List.Accordion>
                       </List.AccordionGroup>
 
-                      {props.route.params.from === "ADD_NEW" && <Button
-                          mode="contained"
-                          style={styles.subBtnSty}
-                          color={Colors.PINK}
-                          labelStyle={{ textTransform: "none" }}
-                          onPress={() => { submitClicked()}}>
-                          Submit
-                      </Button>} 
-                      {props.route.params.from === "CLOSE" && <Button
-                          mode="contained"
-                          style={styles.subBtnSty}
-                          color={Colors.PINK}
-                          labelStyle={{ textTransform: "none" }}
-                          onPress={() => { }}>
-                          Close
-                      </Button>} 
+                    
                   </View>
-
+                  }
+                  {props.route.params.from === "ADD_NEW" && <Button
+                      mode="contained"
+                      style={styles.subBtnSty}
+                      color={Colors.PINK}
+                      labelStyle={{ textTransform: "none" }}
+                      onPress={() => { submitClicked() }}>
+                      Submit
+                  </Button>}
+                  {props.route.params.from === "CLOSE" && <Button
+                      mode="contained"
+                      style={styles.subBtnSty}
+                      color={Colors.PINK}
+                      labelStyle={{ textTransform: "none" }}
+                      onPress={() => { }}>
+                      Close
+                  </Button>} 
                 
               
           </View>

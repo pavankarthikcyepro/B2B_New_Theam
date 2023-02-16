@@ -127,6 +127,17 @@ export const getCountsComplaintsDashboard = createAsyncThunk("COMPLAINTS_TRACKER
     return json;
 });
 
+
+export const postComplaintFirstTime = createAsyncThunk("COMPLAINTS_TRACKER/postComplaintFirstTime", async (payload, { rejectWithValue }) => {
+
+    const response = await client.post(URL.POST_COMPLAINT(), payload);
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
 interface CustomerDetailModel {
     key: string;
     text: string;
@@ -180,7 +191,8 @@ export const complaintsSlice = createSlice({
         closeComplaintFinalRate: "",
         closeComplaintRemarks: "",
         complaintCountDashboard:"",
-        complaintDescription:""
+        complaintDescription:"",
+        postComplaintFirstTimeRes:"",
     },
     reducers: {
         clearState: (state, action) => {
@@ -219,6 +231,7 @@ export const complaintsSlice = createSlice({
                 state.closeComplaintRemarks = "";
             state.complaintCountDashboard ="";
             state.complaintDescription = "";
+            state.postComplaintFirstTimeRes = "";
         },
         clearStateFormData: (state, action) => {
             state.mobile = "";
@@ -546,7 +559,22 @@ export const complaintsSlice = createSlice({
             state.isLoading = false;
             state.complaintCountDashboard = "";
         })
+        
+        builder.addCase(postComplaintFirstTime.pending, (state, action) => {
+            state.isLoading = true;
+            state.postComplaintFirstTimeRes = "";
+        })
+        builder.addCase(postComplaintFirstTime.fulfilled, (state, action) => {
+            state.isLoading = false;
 
+            if (action.payload) {
+                state.postComplaintFirstTimeRes = action.payload;
+            }
+        })
+        builder.addCase(postComplaintFirstTime.rejected, (state, action) => {
+            state.isLoading = false;
+            state.postComplaintFirstTimeRes = "";
+        })
     }
 });
 

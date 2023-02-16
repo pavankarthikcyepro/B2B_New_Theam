@@ -18,7 +18,7 @@ const data = [{
         model:"Jeep compas"
 }]
 
-const ComplaintList = () => {
+const ComplaintList = (props) => {
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [datePickerId, setDatePickerId] = useState("");
     const [selectedFromDate, setSelectedFromDate] = useState("");
@@ -66,6 +66,9 @@ const ComplaintList = () => {
                 break;
         }
     }
+    const getFirstLetterUpperCase = (name) => {
+        return name?.charAt(0).toUpperCase() + name?.slice(1);
+    };
 
 
 
@@ -73,7 +76,7 @@ const ComplaintList = () => {
         return (
             <>
                 <View>
-                    {/* <MyTaskNewItem
+                    <MyTaskNewItem
                         tdflage={item?.tdflage ? item.tdflage : ""}
                         from={item.leadStage}
                         name={
@@ -81,7 +84,7 @@ const ComplaintList = () => {
                             " " +
                             getFirstLetterUpperCase(item.lastName)
                         }
-                        navigator={navigation}
+                        navigator={props.navigation}
                         uniqueId={item.leadId}
                         type={
                             item.leadStage === "ENQUIRY"
@@ -99,13 +102,13 @@ const ComplaintList = () => {
                         leadStatus={item.leadStatus}
                         leadStage={item.leadStage}
                         needStatus={"YES"}
-                        stageAccess={stageAccess}
+                        // stageAccess={stageAccess}
                         onlylead={true}
                         userData={userData.hrmsRole}
                         EmployeesRoles={EmployeesRoles}
                         enqCat={item.enquiryCategory}
                         onItemPress={() => {
-                            navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, {
+                            props.navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, {
                                 universalId: item.universalId,
                                 mobileNo: item.phone,
                                 leadStatus: item.leadStatus,
@@ -125,7 +128,7 @@ const ComplaintList = () => {
                                             route = AppNavigator.EmsStackIdentifiers.preBookingForm;
                                             break;
                                     }
-                                    navigation.navigate(route, {
+                                    props.navigation.navigate(route, {
                                         universalId: item.universalId,
                                         enqDetails: item,
                                         leadStatus: item.leadStatus,
@@ -145,7 +148,7 @@ const ComplaintList = () => {
                                         route = AppNavigator.EmsStackIdentifiers.preBookingForm;
                                         break;
                                 }
-                                navigation.navigate(route, {
+                                props.navigation.navigate(route, {
                                     universalId: item.universalId,
                                     enqDetails: item,
                                     leadStatus: item.leadStatus,
@@ -153,7 +156,7 @@ const ComplaintList = () => {
                                 });
                             }
                         }}
-                    /> */}
+                    />
                 </View>
             </>
         );

@@ -665,6 +665,9 @@ const URL = {
   GET_DASHBOARD_COUNT_COMPLAINT: ( empId) => {
     return sales_url +`/complainttracker/getCounts/${empId}`;
   },
+  POST_COMPLAINT: () => {
+    return sales_url + `/complainttracker/save`;
+  },
   TRANSFER_TASK: (fromUserId, toUserId) => {
     return (
       sales_url +
