@@ -16,20 +16,23 @@ import { useEffect } from 'react';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as AsyncStore from "../../../asyncStore";
 import { showToast } from '../../../utils/toast';
+import { useRef } from 'react';
 const dateFormat = "DD/MM/YYYY";
 const currentDate = moment().add(0, "day").format(dateFormat)
-let deptId, desigId="";
+let deptId_local, branchid_local="";
 
-const AddEditComplaint = () => {
+const AddEditComplaint = (props) => {
     const [openAccordian, setOpenAccordian] = useState(0);
     const selector = useSelector((state) => state.complaintTrackerReducer);
     const dispatch = useDispatch();
+    let scrollRef = useRef(null);
     const [showDatePicker, setShowDatePicker] = useState(false)
     const [complaintDate,  setcomplaintDate] = useState("")
     const [dataForDropDown, setDataForDropDown] = useState([]);
     const [dropDownKey, setDropDownKey] = useState("");
     const [showDropDownModel, setShowDropDownModel] = useState(false);
     const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
+    const [uploadedImagesDataObjForClose, setUploadedImagesDataObjForClose] = useState({});
     const [dropDownTitle, setDropDownTitle] = useState("Select Data");
     const [imagePath, setImagePath] = useState("");
     const [userData, setUserData] = useState({
@@ -42,13 +45,21 @@ const AddEditComplaint = () => {
         isSelfManager: "",
         branchId:""
     });
+    const [isSubmitPress, setIsSubmitPress] = useState(false);
+
     useEffect(() => {
         getUserData()
         setcomplaintDate(currentDate);
     
     }, [])
 
-  
+    useEffect(() => {
+        props.navigation.addListener("focus", () => {
+            
+           dispatch(clearState())
+        })
+    }, [props.navigation])
+    
     
     
 
@@ -106,7 +117,9 @@ const AddEditComplaint = () => {
             setOpenAccordian(0);
         }
     };
-
+    const scrollToPos = (itemIndex) => {
+        scrollRef.current.scrollTo({ y: itemIndex * 70 });
+    };
 
 
     const updateSelectedDate = (date, key) => {
@@ -120,7 +133,86 @@ const AddEditComplaint = () => {
         }
     }
 
+    const submitClicked = async () => {
+        
+        setIsSubmitPress(true);
+
+            if (selector.mobile.length == 0) {
+                scrollToPos(0);
+                setOpenAccordian("1");
+                showToast("Please enter valid phone number");
+                return;
+            }
+
+        if (selector.consultant.length == 0) {
+            scrollToPos(0);
+            setOpenAccordian("1");
+            showToast("Please select consultant");
+            return;
+        }
+        
+        if (selector.consultant.length == 0) {
+            scrollToPos(0);
+            setOpenAccordian("1");
+            showToast("Please select consultant");
+            return;
+        }
+
+
+        if (selector.complaintFactorType.length == 0) {
+            scrollToPos(1);
+            setOpenAccordian("2");
+            showToast("Please select complaint factor type");
+            return;
+        }
+        if (selector.complainLocation.length == 0) {
+            scrollToPos(1);
+            setOpenAccordian("2");
+            showToast("Please select location");
+            return;
+        }
+        if (selector.complainBranch.length == 0) {
+            scrollToPos(1);
+            setOpenAccordian("2");
+            showToast("Please select branch");
+            return;
+        }
+        if (selector.complainDepartment.length == 0) {
+            scrollToPos(1);
+            setOpenAccordian("2");
+            showToast("Please select department");
+            return;
+        }
+        if (selector.complainDesignation.length == 0) {
+            scrollToPos(1);
+            setOpenAccordian("2");
+            showToast("Please select designation");
+            return;
+        }
+        if (selector.complainEmployee.length == 0) {
+            scrollToPos(1);
+            setOpenAccordian("2");
+            showToast("Please select employee");
+            return;
+        }
+
+        if (selector.complaintDescription.length == 0) {
+            scrollToPos(1);
+            setOpenAccordian("2");
+            showToast("Please select complaint description");
+            return;
+        }
+
+
+
+
+      
+
+      
+    };
+
     const uploadSelectedImage = async (selectedPhoto, keyId) => {
+      
         const photoUri = selectedPhoto.uri;
         if (!photoUri) {
             return;
@@ -140,10 +232,13 @@ const AddEditComplaint = () => {
             // randomNumber: userData.employeeId, //logedd in employeeID
         });
         formData.append("randomNumber", userData.employeeId);
-
+        //todo
         switch (keyId) {
-            case "UPLOAD_PAN":
-                formData.append("documentType", "pan");
+            case "UPLOAD_COMPLAINT_DOC":
+                formData.append("documentType", "complaint");
+                break;
+            case "UPLOAD_CLOSED_COMPLAINT":
+                formData.append("documentType", "complaint");
                 break;
             
             default:
@@ -190,9 +285,16 @@ const AddEditComplaint = () => {
                             })
                         );
                     } else {
-                        const dataObj = { ...uploadedImagesDataObj };
-                        dataObj[response.documentType] = response;
-                        setUploadedImagesDataObj({ ...dataObj });
+                        if (keyId === "UPLOAD_CLOSED_COMPLAINT"){
+                            const dataObj = { ...uploadedImagesDataObjForClose };
+                            dataObj[response.documentType] = response;
+                            setUploadedImagesDataObjForClose({ ...dataObj });
+                        }else{
+                            const dataObj = { ...uploadedImagesDataObj };
+                            dataObj[response.documentType] = response;
+                            setUploadedImagesDataObj({ ...dataObj });
+                        }
+                        
                     }
                 }
             })
@@ -293,7 +395,16 @@ const AddEditComplaint = () => {
                 setDataForDropDown([...newObjData5]);
                 break;
             case "COMPLAINT_EMPLOYEE":
-                setDataForDropDown([]);
+                let objData6 = selector.complainEmployeeDropDown;
+                let newObjData6 = objData6.map((item) => {
+
+                    let obj = {
+                        id: item.empId,
+                        name: item.empName
+                    }
+                    return obj
+                })
+                setDataForDropDown([...newObjData6]);
                 break;
            
         }
@@ -307,19 +418,19 @@ const AddEditComplaint = () => {
             <View style={{ width: '80%' }}>
                 <TextinputComp
                     style={styles.textInputStyle}
-                    value={uploadedImagesDataObj?.pan?.fileName}
+                    value={uploadedImagesDataObj?.complaint?.fileName}
                     label={"Upload complaint document"}
                     keyboardType={"default"}
                     maxLength={10}
                     disabled={true}
                     autoCapitalize={"characters"}
                     onChangeText={(text) => {
-                        dispatch(
-                            setUploadDocuments({
-                                key: "PAN",
-                                text: text.replace(/[^a-zA-Z0-9]/g, ""),
-                            })
-                        );
+                        // dispatch(
+                        //     setUploadDocuments({
+                        //         key: "COMPLAINT_DOC",
+                        //         text: text.replace(/[^a-zA-Z0-9]/g, ""),
+                        //     })
+                        // );
                     }}
                 />
                 <Text style={GlobalStyle.underline}></Text>
@@ -328,7 +439,7 @@ const AddEditComplaint = () => {
             <View style={styles.select_image_bck_vw}>
                 <ImageSelectItem
                     name={""}
-                    onPress={() => dispatch(setImagePicker("UPLOAD_PAN"))}
+                    onPress={() => dispatch(setImagePicker("UPLOAD_COMPLAINT_DOC"))}
                 />
             </View>
             {/* {true ? (
@@ -384,7 +495,7 @@ const AddEditComplaint = () => {
           }}
           keyboardShouldPersistTaps={"handled"}
           style={{ flex: 1 ,}}
-          
+              ref={scrollRef}
     >
 
           <DropDownComponant
@@ -430,6 +541,7 @@ const AddEditComplaint = () => {
                           child: "department",
                           parentId: item.id
                       }
+                      branchid_local = item.id;
                       dispatch(getDepartment(payload))
                       dispatch(setDropDownData({
                           key: "COMPLAINT_DEPARTMENT",
@@ -451,7 +563,7 @@ const AddEditComplaint = () => {
                           child: "designation",
                           parentId: item.id
                       }
-                     deptId= item.id;
+                      deptId_local = item.id;
                       dispatch(getDesignation(payload))
                       dispatch(setDropDownData({
                           key: "COMPLAINT_DESIGNATION",
@@ -466,8 +578,8 @@ const AddEditComplaint = () => {
                 //       );
                       let payload = {
                           orgId: userData.orgId,
-                          branchId: userData.branchId,
-                          deptId: deptId,
+                          branchId: branchid_local,
+                          deptId: deptId_local,
                           desigId:item.id
                       }
                   
@@ -533,6 +645,7 @@ const AddEditComplaint = () => {
                                       style={styles.textInputStyle}
                                       value={selector.mobile}
                                       keyboardType={"number-pad"}
+                                      maxLength={10}
                                       // editable={false}
                                       disabled={false}
                                       label={"Mobile Number*"}
@@ -557,7 +670,17 @@ const AddEditComplaint = () => {
                                           // todo API call here for phone APi
                                       }}
                                   />
-                                  <Text style={GlobalStyle.underline}></Text>
+                                  <Text
+                                      style={[
+                                          GlobalStyle.underline,
+                                          {
+                                              backgroundColor:
+                                                  isSubmitPress && selector.mobile === ""
+                                                      ? "red"
+                                                      : "rgba(208, 212, 214, 0.7)",
+                                          },
+                                      ]}
+                                  ></Text>
                                   <View style={{ flexDirection: "row", width: '100%', justifyContent: "space-between" }}>
                                       <View style={{ width: '40%' }}>
                                           <DateSelectItem
@@ -716,6 +839,17 @@ const AddEditComplaint = () => {
                                               }
                                               showRightIcon={false}
                                           />
+                                          <Text
+                                              style={[
+                                                  GlobalStyle.underline,
+                                                  {
+                                                      backgroundColor:
+                                                          isSubmitPress && selector.consultant === ""
+                                                              ? "red"
+                                                              : "rgba(208, 212, 214, 0.7)",
+                                                  },
+                                              ]}
+                                          ></Text>
                                       </View>
                                       <View style={{ width: '50%' }}>
                                           <TextinputComp
@@ -771,6 +905,17 @@ const AddEditComplaint = () => {
                                           showDropDownModelMethod("COMPLAIN_FACTOR_TYPE", "Please Select")
                                       }
                                   />
+                                  <Text
+                                      style={[
+                                          GlobalStyle.underline,
+                                          {
+                                              backgroundColor:
+                                                  isSubmitPress && selector.complaintFactorType === ""
+                                                      ? "red"
+                                                      : "rgba(208, 212, 214, 0.7)",
+                                          },
+                                      ]}
+                                  ></Text>
                                   <DropDownSelectionItem
                                       label={"Location*"}
                                       value={selector.complainLocation}
@@ -778,6 +923,17 @@ const AddEditComplaint = () => {
                                           showDropDownModelMethod("COMPLAINT_LOCATION", "Please Select")
                                       }
                                   />
+                                  <Text
+                                      style={[
+                                          GlobalStyle.underline,
+                                          {
+                                              backgroundColor:
+                                                  isSubmitPress && selector.complainLocation === ""
+                                                      ? "red"
+                                                      : "rgba(208, 212, 214, 0.7)",
+                                          },
+                                      ]}
+                                  ></Text>
                                   <DropDownSelectionItem
                                       label={"Branch*"}
                                       value={selector.complainBranch}
@@ -785,6 +941,17 @@ const AddEditComplaint = () => {
                                           showDropDownModelMethod("COMPLAINT_BRANCH", "Please Select")
                                       }
                                   />
+                                  <Text
+                                      style={[
+                                          GlobalStyle.underline,
+                                          {
+                                              backgroundColor:
+                                                  isSubmitPress && selector.complainBranch === ""
+                                                      ? "red"
+                                                      : "rgba(208, 212, 214, 0.7)",
+                                          },
+                                      ]}
+                                  ></Text>
                                   <DropDownSelectionItem
                                       label={"Department*"}
                                       value={selector.complainDepartment}
@@ -792,6 +959,17 @@ const AddEditComplaint = () => {
                                           showDropDownModelMethod("COMPLAINT_DEPARTMENT", "Please Select")
                                       }
                                   />
+                                  <Text
+                                      style={[
+                                          GlobalStyle.underline,
+                                          {
+                                              backgroundColor:
+                                                  isSubmitPress && selector.complainDepartment === ""
+                                                      ? "red"
+                                                      : "rgba(208, 212, 214, 0.7)",
+                                          },
+                                      ]}
+                                  ></Text>
                                   <DropDownSelectionItem
                                       label={"Designation*"}
                                       value={selector.complainDesignation}
@@ -799,6 +977,17 @@ const AddEditComplaint = () => {
                                           showDropDownModelMethod("COMPLAINT_DESIGNATION", "Please Select")
                                       }
                                   />
+                                  <Text
+                                      style={[
+                                          GlobalStyle.underline,
+                                          {
+                                              backgroundColor:
+                                                  isSubmitPress && selector.complainDesignation === ""
+                                                      ? "red"
+                                                      : "rgba(208, 212, 214, 0.7)",
+                                          },
+                                      ]}
+                                  ></Text>
 
                                   <DropDownSelectionItem
                                       label={"Employee*"}
@@ -807,9 +996,45 @@ const AddEditComplaint = () => {
                                           showDropDownModelMethod("COMPLAINT_EMPLOYEE", "Please Select")
                                       }
                                   />
-
+                                  <Text
+                                      style={[
+                                          GlobalStyle.underline,
+                                          {
+                                              backgroundColor:
+                                                  isSubmitPress && selector.complainEmployee === ""
+                                                      ? "red"
+                                                      : "rgba(208, 212, 214, 0.7)",
+                                          },
+                                      ]}
+                                  ></Text>
 
                                   {renderPickUpImageDoc()}
+                                  <TextinputComp
+                                      style={styles.textInputStyle}
+                                      value={selector.complaintDescription}
+                                      //   keyboardType={"number-pad"}
+                                      // editable={false}
+                                      disabled={false}
+                                      label={"Complaint Description*"}
+                                      onChangeText={(text) =>
+                                          dispatch(
+                                              setCustomerDetails({ key: "COMPLAINT_DESCRIPTION", text: text })
+                                          )
+                                      }
+                                      showRightIcon={false}
+
+                                  />
+                                  <Text
+                                      style={[
+                                          GlobalStyle.underline,
+                                          {
+                                              backgroundColor:
+                                                  isSubmitPress && selector.complaintDescription === ""
+                                                      ? "red"
+                                                      : "rgba(208, 212, 214, 0.7)",
+                                          },
+                                      ]}
+                                  ></Text>
                             </View>
                               
                           </List.Accordion>
@@ -843,14 +1068,14 @@ const AddEditComplaint = () => {
                                  
                                   <TextinputComp
                                       style={styles.textInputStyle}
-                                      value={selector.customerName}
+                                      value={selector.closeComplaintSource}
                                       //   keyboardType={"number-pad"}
                                       // editable={false}
                                       disabled={false}
-                                      label={"Customer Name"}
+                                      label={"Complaint Closing Source*"}
                                       onChangeText={(text) =>
                                           dispatch(
-                                              setCustomerDetails({ key: "COUSTOMER_NAME", text: text })
+                                              setCustomerDetails({ key: "CLOSE_SOURCE", text: text })
                                           )
                                       }
                                       showRightIcon={false}
@@ -859,14 +1084,14 @@ const AddEditComplaint = () => {
 
                                   <TextinputComp
                                       style={styles.textInputStyle}
-                                      value={selector.email}
+                                      value={selector.closeComplaintFinalRate}
                                       //   keyboardType={"number-pad"}
                                       // editable={false}
                                       disabled={false}
-                                      label={"Email"}
+                                      label={"Final Rating"}
                                       onChangeText={(text) =>
                                           dispatch(
-                                              setCustomerDetails({ key: "EMAIL", text: text })
+                                              setCustomerDetails({ key: "CLOSE_FINALRATING", text: text })
                                           )
                                       }
                                       showRightIcon={false}
@@ -878,19 +1103,19 @@ const AddEditComplaint = () => {
                                       <View style={{ width: '80%' }}>
                                           <TextinputComp
                                               style={styles.textInputStyle}
-                                              value={uploadedImagesDataObj?.pan?.fileName}
+                                              value={uploadedImagesDataObjForClose?.complaint?.fileName}
                                               label={"Upload complaint Closer Document"}
                                               keyboardType={"default"}
                                               maxLength={10}
                                               disabled={true}
                                               autoCapitalize={"characters"}
                                               onChangeText={(text) => {
-                                                  dispatch(
-                                                      setUploadDocuments({
-                                                          key: "PAN",
-                                                          text: text.replace(/[^a-zA-Z0-9]/g, ""),
-                                                      })
-                                                  );
+                                                //   dispatch(
+                                                //       setUploadDocuments({
+                                                //           key: "PAN",
+                                                //           text: text.replace(/[^a-zA-Z0-9]/g, ""),
+                                                //       })
+                                                //   );
                                               }}
                                           />
                                           <Text style={GlobalStyle.underline}></Text>
@@ -899,7 +1124,7 @@ const AddEditComplaint = () => {
                                       <View style={styles.select_image_bck_vw}>
                                           <ImageSelectItem
                                               name={""}
-                                              onPress={() => dispatch(setImagePicker("UPLOAD_PAN"))}
+                                              onPress={() => dispatch(setImagePicker("UPLOAD_CLOSED_COMPLAINT"))}
                                           />
                                       </View>
                                       {/* {true ? (
@@ -926,14 +1151,14 @@ const AddEditComplaint = () => {
 
                                   <TextinputComp
                                       style={styles.textInputStyle}
-                                      value={selector.email}
+                                      value={selector.closeComplaintRemarks}
                                       //   keyboardType={"number-pad"}
                                       // editable={false}
                                       disabled={false}
-                                      label={"Email"}
+                                      label={"Complaint Closer Remarks* "}
                                       onChangeText={(text) =>
                                           dispatch(
-                                              setCustomerDetails({ key: "EMAIL", text: text })
+                                              setCustomerDetails({ key: "COMPLAINT_CLOSE_REMARKS", text: text })
                                           )
                                       }
                                       showRightIcon={false}
@@ -941,8 +1166,26 @@ const AddEditComplaint = () => {
                                   />
                               </View>
 
+                             
                           </List.Accordion>
                       </List.AccordionGroup>
+
+                      {props.route.params.from === "ADD_NEW" && <Button
+                          mode="contained"
+                          style={styles.subBtnSty}
+                          color={Colors.PINK}
+                          labelStyle={{ textTransform: "none" }}
+                          onPress={() => { submitClicked()}}>
+                          Submit
+                      </Button>} 
+                      {props.route.params.from === "CLOSE" && <Button
+                          mode="contained"
+                          style={styles.subBtnSty}
+                          color={Colors.PINK}
+                          labelStyle={{ textTransform: "none" }}
+                          onPress={() => { }}>
+                          Close
+                      </Button>} 
                   </View>
 
                 
@@ -998,4 +1241,5 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         borderColor: "#7a7b7d",
     },
+    subBtnSty:{ width: '50%', marginVertical: 10, alignSelf: "flex-end" }
 })

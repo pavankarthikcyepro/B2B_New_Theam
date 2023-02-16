@@ -661,6 +661,10 @@ const URL = {
   GET_EMPLOYEE_DETAILS: (orgId, branchId, deptId, desigId) => {
     return `${getEmployeeData}?orgId=${orgId}&branchId=${branchId}&deptId=${deptId}&desigId=${desigId}`;
   },
+
+  GET_DASHBOARD_COUNT_COMPLAINT: ( empId) => {
+    return sales_url +`/complainttracker/getCounts/${empId}`;
+  },
   TRANSFER_TASK: (fromUserId, toUserId) => {
     return (
       sales_url +

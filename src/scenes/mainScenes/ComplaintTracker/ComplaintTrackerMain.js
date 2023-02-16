@@ -9,6 +9,8 @@ import ClosedComplaintList from './ClosedComplaintList';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import * as AsyncStore from "../../../asyncStore";
+import { useDispatch, useSelector } from 'react-redux';
+import { getCountsComplaintsDashboard } from '../../../redux/complaintTrackerReducer';
 const data = [
     {
         id: 0,
@@ -62,8 +64,8 @@ const Badge = ({ focused, title, countList }) => {
 const ComplaintsTrackerTopTab = createMaterialTopTabNavigator();
 
 
-export  const ComplaintsTrackerTopTabNavigator = () => {
-   
+export const ComplaintsTrackerTopTabNavigator = () => {
+
     return (
         <ComplaintsTrackerTopTab.Navigator
             initialRouteName={ComplainTrackerIdentifires.complainTrackerList}
@@ -91,12 +93,14 @@ export  const ComplaintsTrackerTopTabNavigator = () => {
                     ),
                 }}
             />
-           
+
         </ComplaintsTrackerTopTab.Navigator>
     );
 };
 
 const ComplaintTrackerMain = ({ route, navigation }) => {
+    const selector = useSelector((state) => state.complaintTrackerReducer);
+    const dispatch = useDispatch();
 
     const [userData, setUserData] = useState({
         orgId: "",
@@ -111,11 +115,11 @@ const ComplaintTrackerMain = ({ route, navigation }) => {
     });
 
     useEffect(() => {
-        getUserData()
-       
-
-    }, [])
-
+        navigation.addListener("focus", () => {
+            getUserData()
+        });
+    }, [navigation]);
+    
     const getUserData = async () => {
         try {
             const employeeData = await AsyncStore.getData(
@@ -124,9 +128,9 @@ const ComplaintTrackerMain = ({ route, navigation }) => {
 
             if (employeeData) {
                 const jsonObj = JSON.parse(employeeData);
-                
+
                 let isManager = false,
-                    editEnable = false, isCRE,isCRM;
+                    editEnable = false, isCRE, isCRM;
                 let isPreBookingApprover = false;
                 if (
                     jsonObj.hrmsRole === "MD" ||
@@ -145,7 +149,7 @@ const ComplaintTrackerMain = ({ route, navigation }) => {
 
                 if (
                     jsonObj.hrmsRole === "CRE"
-                    
+
                 ) {
                     isCRE = true;
                 }
@@ -156,8 +160,8 @@ const ComplaintTrackerMain = ({ route, navigation }) => {
                 ) {
                     isCRM = true;
                 }
-            
-                    
+
+
                 setUserData({
                     orgId: jsonObj.orgId,
                     employeeId: jsonObj.empId,
@@ -169,8 +173,11 @@ const ComplaintTrackerMain = ({ route, navigation }) => {
                     isCRM: isCRM,
                     isCRE: isCRE,
                 });
+                let payload = {
+                    empId: jsonObj.empId
+                }
 
-                
+                dispatch(getCountsComplaintsDashboard(payload));
             }
         } catch (error) {
             alert(error);
@@ -178,7 +185,7 @@ const ComplaintTrackerMain = ({ route, navigation }) => {
     };
 
     const renderItem = (item, index) => {
-       
+
         return (
             <View style={{
                 width: '100%',
@@ -187,7 +194,7 @@ const ComplaintTrackerMain = ({ route, navigation }) => {
                 borderWidth: 1,
                 borderRadius: 10,
                 justifyContent: "center",
-                marginVertical:10
+                marginVertical: 10
 
             }}>
                 <View style={styles.scondView}>
@@ -201,7 +208,8 @@ const ComplaintTrackerMain = ({ route, navigation }) => {
                     <TouchableOpacity onPress={() => {
                         navigation.navigate(ComplainTrackerIdentifires.complainTrackerTop);
                     }}>
-                        <Text style={styles.txt1}>{30}</Text>
+                        {selector.complaintCountDashboard !== "" ? <Text style={styles.txt1}>{item.id === 0 ? selector.complaintCountDashboard?.activeCount
+                            : selector.complaintCountDashboard?.closedCount}</Text> : <Text style={styles.txt1}>0</Text>}   
                     </TouchableOpacity>
                 </View>
             </View>)
@@ -212,7 +220,7 @@ const ComplaintTrackerMain = ({ route, navigation }) => {
             <View style={{ padding: 10, }}>
                 <FlatList
                     data={data}
-
+                    bounces={false}
                     renderItem={({ item, index }) => renderItem(item, index)}
                 //   contentContainerStyle={styles.titleRow}
                 //   bounces={false}
@@ -220,13 +228,15 @@ const ComplaintTrackerMain = ({ route, navigation }) => {
             </View>
             {userData.isCRE || userData.isCRM ? <TouchableOpacity
                 onPress={() => {
-                    navigation.navigate(ComplainTrackerIdentifires.addEditComplaint);
+                    navigation.navigate(ComplainTrackerIdentifires.addEditComplaint, {
+                        from: "ADD_NEW"
+                    });
                 }}
                 style={[GlobalStyle.shadow, styles.floatingBtn]}
             >
                 <Entypo size={25} name="plus" color={Colors.WHITE} />
             </TouchableOpacity> : null}
-            
+
 
         </SafeAreaView>
     )

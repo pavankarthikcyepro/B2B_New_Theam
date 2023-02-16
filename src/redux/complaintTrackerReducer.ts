@@ -114,6 +114,19 @@ export const getEmployeeDetails = createAsyncThunk("COMPLAINTS_TRACKER/getEmploy
     return json;
 });
 
+
+export const getCountsComplaintsDashboard = createAsyncThunk("COMPLAINTS_TRACKER/getCountsComplaintsDashboard", async (payload, { rejectWithValue }) => {
+
+    const response = await client.get(URL.GET_DASHBOARD_COUNT_COMPLAINT(
+        payload["empId"],
+    ));
+    const json = await response.json();
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+});
+
 interface CustomerDetailModel {
     key: string;
     text: string;
@@ -163,6 +176,11 @@ export const complaintsSlice = createSlice({
         complainDesignation: "",
         complainEmployeeDropDown: [],
         complainEmployee: "",
+        closeComplaintSource: "",
+        closeComplaintFinalRate: "",
+        closeComplaintRemarks: "",
+        complaintCountDashboard:"",
+        complaintDescription:""
     },
     reducers: {
         clearState: (state, action) => {
@@ -195,7 +213,49 @@ export const complaintsSlice = createSlice({
                 state.complainDesignationDropDown = [],
                 state.complainDesignation = "",
                 state.complainEmployeeDropDown = [],
-                state.complainEmployee = "";    
+                state.complainEmployee = "";
+            state.closeComplaintSource = "",
+                state.closeComplaintFinalRate = "",
+                state.closeComplaintRemarks = "";
+            state.complaintCountDashboard ="";
+            state.complaintDescription = "";
+        },
+        clearStateFormData: (state, action) => {
+            state.mobile = "";
+            state.date_of_birth = "";
+            state.datePickerKeyId = "";
+            state.showDatepicker = false;
+            state.minDate = null;
+            state.maxDate = null;
+            state.location = "";
+            state.branch = "";
+            state.model = "";
+            state.customerName = "";
+            state.email = "";
+            state.stage = "";
+            state.stage_id = "";
+            state.consultant = "";
+            state.reporting_manager = "";
+            state.showImagePicker = false
+            state.imagePickerKeyId = "";
+            state.getDetailsFromPhoneRespnse = "";
+            state.complaintFactorTypeDropdown = [];
+            state.complaintFactorType = "";
+            state.complainLocationDropDown = [],
+                state.complainLocation = "",
+                state.complainBranchDropDown = [],
+                state.complainBranch = "",
+                state.complainDepartmentDropDown = [],
+                state.complainDepartment = "",
+                state.complainDesignationDropDown = [],
+                state.complainDesignation = "",
+                state.complainEmployeeDropDown = [],
+                state.complainEmployee = "";
+            state.closeComplaintSource = "",
+                state.closeComplaintFinalRate = "",
+                state.closeComplaintRemarks = "";
+            state.complaintCountDashboard = "";
+            state.complaintDescription = "";
         },
         setImagePicker: (state, action) => {
             state.imagePickerKeyId = action.payload;
@@ -239,6 +299,19 @@ export const complaintsSlice = createSlice({
                 case "REPORTING_MANAGER":
                     state.reporting_manager = text;
                     break;
+                case "CLOSE_SOURCE":
+                    state.closeComplaintSource = text;
+                    break;
+                case "CLOSE_FINALRATING":
+                    state.closeComplaintFinalRate = text;
+                    break;
+                case "COMPLAINT_CLOSE_REMARKS":
+                    state.closeComplaintRemarks = text;
+                    break;
+                case "COMPLAINT_DESCRIPTION":
+                    state.complaintDescription = text;
+                    break;
+
             }
         },
         updateSelectedDate: (state, action: PayloadAction<CustomerDetailModel>) => {
@@ -266,7 +339,7 @@ export const complaintsSlice = createSlice({
         },
         setDropDownData: (state, action: PayloadAction<DropDownModel>) => {
             const { key, value, id, orgId } = action.payload;
-          
+
 
             switch (key) {
 
@@ -449,12 +522,29 @@ export const complaintsSlice = createSlice({
             state.isLoading = false;
 
             if (action.payload) {
-                state.complainEmployeeDropDown = action.payload;
+                state.complainEmployeeDropDown = action.payload.dmsEntity.employees;
             }
         })
         builder.addCase(getEmployeeDetails.rejected, (state, action) => {
             state.isLoading = false;
             state.complainEmployeeDropDown = [];
+        })
+
+
+        builder.addCase(getCountsComplaintsDashboard.pending, (state, action) => {
+            state.isLoading = true;
+            state.complaintCountDashboard = "";
+        })
+        builder.addCase(getCountsComplaintsDashboard.fulfilled, (state, action) => {
+            state.isLoading = false;
+
+            if (action.payload) {
+                state.complaintCountDashboard = action.payload;
+            }
+        })
+        builder.addCase(getCountsComplaintsDashboard.rejected, (state, action) => {
+            state.isLoading = false;
+            state.complaintCountDashboard = "";
         })
 
     }
