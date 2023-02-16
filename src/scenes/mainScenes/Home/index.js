@@ -1397,7 +1397,16 @@ const HomeScreen = ({ route, navigation }) => {
                   {"Contact"}
                 </Text>
                 <View style={styles.cardView}>
-                  <Text style={{ ...styles.rankText, color: "blue" }}>
+                  <Text
+                    style={{
+                      ...styles.rankText,
+                      color: "blue",
+                      textDecorationLine: selector.receptionistData
+                        ?.contactsCount
+                        ? "underline"
+                        : "none",
+                    }}
+                  >
                     {selector.receptionistData?.contactsCount || 0}
                   </Text>
                 </View>
@@ -1419,7 +1428,16 @@ const HomeScreen = ({ route, navigation }) => {
                   {"Drop"}
                 </Text>
                 <View style={styles.cardView}>
-                  <Text style={{ ...styles.rankText, color: "blue" }}>
+                  <Text
+                    style={{
+                      ...styles.rankText,
+                      color: "blue",
+                      textDecorationLine: selector.receptionistData
+                        ?.totalDroppedCount
+                        ? "underline"
+                        : "none",
+                    }}
+                  >
                     {selector.receptionistData?.totalDroppedCount || 0}
                   </Text>
                 </View>
@@ -1435,7 +1453,16 @@ const HomeScreen = ({ route, navigation }) => {
                   {"Enquiry"}
                 </Text>
                 <View style={styles.cardView}>
-                  <Text style={{ ...styles.rankText, color: "blue" }}>
+                  <Text
+                    style={{
+                      ...styles.rankText,
+                      color: "blue",
+                      textDecorationLine: selector.receptionistData
+                        ?.enquirysCount
+                        ? "underline"
+                        : "none",
+                    }}
+                  >
                     {selector.receptionistData?.enquirysCount || 0}
                   </Text>
                 </View>
@@ -1449,7 +1476,16 @@ const HomeScreen = ({ route, navigation }) => {
               >
                 <Text style={styles.rankHeadingText}>{"Bookings"}</Text>
                 <View style={styles.cardView}>
-                  <Text style={{ ...styles.rankText, color: "blue" }}>
+                  <Text
+                    style={{
+                      ...styles.rankText,
+                      color: "blue",
+                      textDecorationLine: selector.receptionistData
+                        ?.bookingsCount
+                        ? "underline"
+                        : "none",
+                    }}
+                  >
                     {selector.receptionistData?.bookingsCount || 0}
                   </Text>
                 </View>
@@ -1462,7 +1498,15 @@ const HomeScreen = ({ route, navigation }) => {
               >
                 <Text style={styles.rankHeadingText}>{"Retails"}</Text>
                 <View style={styles.cardView}>
-                  <Text style={{ ...styles.rankText, color: "blue" }}>
+                  <Text
+                    style={{
+                      ...styles.rankText,
+                      color: "blue",
+                      textDecorationLine: selector.receptionistData?.RetailCount
+                        ? "underline"
+                        : "none",
+                    }}
+                  >
                     {selector.receptionistData?.RetailCount || 0}
                   </Text>
                 </View>

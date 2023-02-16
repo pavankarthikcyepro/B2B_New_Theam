@@ -1177,18 +1177,18 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                                     >
                                       <Text
                                         onPress={() => {
-                                          item?.allocatedCount > 0 &&
+                                          item?.enquiryCount > 0 &&
                                             navigateToEMS();
                                         }}
                                         style={{
                                           padding: 2,
                                           textDecorationLine:
-                                            item?.allocatedCount > 0
+                                            item?.enquiryCount > 0
                                               ? "underline"
                                               : "none",
                                         }}
                                       >
-                                        {item?.allocatedCount}
+                                        {item?.enquiryCount}
                                       </Text>
                                     </View>
                                     <View
