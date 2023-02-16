@@ -2425,6 +2425,7 @@ export const ProformaComp = ({
           setCarVariant("");
           setCarColor("");
           setselectedVehicleID("");
+          newProformaClick();
           break;
         case "VARIENT":
           setCarVariant("");
@@ -2432,7 +2433,7 @@ export const ProformaComp = ({
           break;
         case "COLOR":
           setCarColor("");
-          setselectedvehicleImageId();
+          setselectedvehicleImageId("");
           break;
         case "REGISTRATION_CHARGES":
           setSelectedRegistrationCharges({});
@@ -2468,11 +2469,11 @@ export const ProformaComp = ({
           setShowDropDownModel(false);
           setShowMultipleDropDownData(false);
           if (dropDownKey === "MODEL") {
+            newProformaClick();
             setCarModel(item.name);
             setCarVariant("");
             setCarColor("");
             setselectedVehicleID(item.id);
-
             updateVariantModelsData(item.name, orgId, carModelsData);
           } else if (dropDownKey === "VARIENT") {
             setCarVariant(item.name);
@@ -2508,14 +2509,12 @@ export const ProformaComp = ({
             let insurenceAddOns = [];
             if (item.length > 0) {
               item.forEach((obj, index) => {
-                if (obj.selected) {
-                  totalCost += Number(obj.cost);
-                  names += obj.name + (index + 1 < item.length ? ", " : "");
-                  insurenceAddOns.push({
-                    insuranceAmount: obj.cost,
-                    insuranceAddonName: obj.name,
-                  });
-                }
+                totalCost += Number(obj.cost);
+                names += obj.name + (index + 1 < item.length ? ", " : "");
+                insurenceAddOns.push({
+                  insuranceAmount: obj.cost,
+                  insuranceAddonName: obj.name,
+                });
               });
             }
             setSelectedAddOnsPrice(totalCost);
