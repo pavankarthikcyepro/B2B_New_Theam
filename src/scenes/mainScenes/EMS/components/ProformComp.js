@@ -365,10 +365,10 @@ export const ProformaComp = ({
 
   useEffect(() => {
     if (selector.getTermsNConditions_res_status === "success") {
-      let data = 'If users abuse your website or mobile app in any way, you can terminate their account. Your "Termination" clause can inform users that their accounts would be terminated if they abuse your service.\n If users abuse your website or mobile app in any way, you can terminate their account. Your "Termination" clause can inform users that their accounts would be terminated if they abuse your service.';
+      // let data = 'If users abuse your website or mobile app in any way, you can terminate their account. Your "Termination" clause can inform users that their accounts would be terminated if they abuse your service.\n If users abuse your website or mobile app in any way, you can terminate their account. Your "Termination" clause can inform users that their accounts would be terminated if they abuse your service.';
 
-      // settermsNConditionData(selector.getTermsNConditions_res.configData.split(/\r?\n/))
-      settermsNConditionData(data.split(/\r?\n/));
+      settermsNConditionData(selector.getTermsNConditions_res.configData.split(/\r?\n/))
+      // settermsNConditionData(data.split(/\r?\n/));
 
     }
 
