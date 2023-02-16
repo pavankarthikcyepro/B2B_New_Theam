@@ -1026,38 +1026,49 @@ const DropAnalysisScreen = ({ navigation }) => {
                                 isCountAndFollowUpVisible(item.stage);
 
                                 return (
-                                    <>
-
-                                        <View>
-                                            <DropAnalysisItem
-                                                onItemSelected={onItemSelected}
-                                                from='PRE_ENQUIRY'
-                                                name={getFirstLetterUpperCase(item.firstName) + " " + getFirstLetterUpperCase(item.lastName)}
-                                                enqCat={item.enquiryCategory}
-                                                uniqueId={item.leadId}
-                                                leadDropId={item.leadDropId}
-                                                created={item.droppedDate}
-                                                dmsLead={item.droppedby}
-                                                source={item.enquirySource}
-                                                lostReason={item.lostReason}
-                                                status={item.status}
-                                                leadStage={item.stage}
-                                                isManager={isManager}
-                                                dropStatus={item.status}
-                                                mobileNo={item.mobileNumber}
-                                                isCheckboxVisible={true}
-                                                isRefresh={isRefresh}
-                                                navigation ={navigation}
-                                                showBubble={true}
-                                                showThreeDots={true}
-                                                universalId={item.crmUniversalId}
-                                                count = {item.count}
-                                                isThreeBtnClickable={isCountAndFollowUpVisible(item.stage)}
-                                                leadStatus = {item.leadStatus}
-                                                
-                                            />
-                                        </View>
-                                    </>
+                                  <>
+                                    <View>
+                                      <DropAnalysisItem
+                                        onItemSelected={onItemSelected}
+                                        from="PRE_ENQUIRY"
+                                        name={
+                                          getFirstLetterUpperCase(
+                                            item.firstName
+                                          ) +
+                                          " " +
+                                          getFirstLetterUpperCase(item.lastName)
+                                        }
+                                        enqCat={item.enquiryCategory}
+                                        uniqueId={item.leadId}
+                                        leadDropId={item.leadDropId}
+                                        created={item.droppedDate}
+                                        dmsLead={item.droppedby}
+                                        source={item.enquirySource}
+                                        lostReason={item.lostReason}
+                                        status={item.status}
+                                        leadStage={item.stage}
+                                        isManager={isManager}
+                                        dropStatus={item.status}
+                                        mobileNo={item.mobileNumber}
+                                        isCheckboxVisible={true}
+                                        isRefresh={isRefresh}
+                                        navigation={navigation}
+                                        showBubble={true}
+                                        showThreeDots={true}
+                                        universalId={item.crmUniversalId}
+                                        count={item.count}
+                                        isThreeBtnClickable={isCountAndFollowUpVisible(
+                                          item.stage
+                                        )}
+                                        leadStatus={item.leadStatus}
+                                        dse={
+                                          item.stage == "PREENQUIRY"
+                                            ? item.createdBy
+                                            : item.salesConsultant
+                                        }
+                                      />
+                                    </View>
+                                  </>
                                 );
                             }}
                         />
