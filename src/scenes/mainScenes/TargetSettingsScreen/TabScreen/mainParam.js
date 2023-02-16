@@ -52,6 +52,7 @@ import URL from "../../../../networking/endpoints";
 import { RenderEmployeeTarget } from "../../Home/TabScreens/components/RenderEmployeeTarget";
 import { RenderGrandTargetTotal } from "../../Home/TabScreens/components/RenderGrandTargetTotal";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import _ from "lodash";
 
 const color = [
   "#9f31bf",
@@ -764,6 +765,9 @@ const MainParamScreen = ({ route, navigation }) => {
                     branchName: json1?.data[0]?.branchName,
                     branch: json1?.data[0]?.branch,
                     recordId: json1?.data[0]?.id,
+                    updatedUserName: json1?.data[0]?.updatedUserName,
+                    isAccess: json1?.data[0]?.isAccess,
+                    OriginalParameters: format,
                     // targetAchievements: newArray,
                     // tempTargetAchievements: newArray,
                   };
@@ -1003,8 +1007,25 @@ const MainParamScreen = ({ route, navigation }) => {
   function RenderTeamsSelfData(type) {
     return (
       <TextInput
-        editable={editParameters}
-        style={editParameters ? styles.textBox : styles.textBoxDisabled}
+        onPressIn={() => {
+          if (editParameters) {
+            if (ownData?.isAccess == "false") {
+              showToastRedAlert(
+                `Target has been already set by ${ownData?.updatedUserName}`
+              );
+            }
+          }
+        }}
+        editable={
+          editParameters ? (ownData?.isAccess == "false" ? false : true) : false
+        }
+        style={
+          editParameters
+            ? ownData.isAccess == "false"
+              ? styles.textBoxDisabled
+              : styles.textBox
+            : styles.textBoxDisabled
+        }
         value={`${updatedSelfParameters[type]}`}
         keyboardType={"number-pad"}
         onChangeText={(z) => onChangeSelfParamValue(type, z)}
@@ -1081,6 +1102,7 @@ const MainParamScreen = ({ route, navigation }) => {
         start_date: selector.startDate,
         end_date: selector.endDate,
         loggedInEmpId: `${empId}`,
+        recordId: ownData.id,
       };
       Promise.all([dispatch(saveSelfTargetParams(payload))])
         .then((x) => {})
@@ -1121,6 +1143,7 @@ const MainParamScreen = ({ route, navigation }) => {
       branch: item.branchId || item.branch,
       department: item?.department || "0",
       designation: item?.designation || "0",
+      recordId: item?.recordId || "0",
       targets: [
         {
           unit: "percentage",
@@ -1233,7 +1256,15 @@ const MainParamScreen = ({ route, navigation }) => {
           for (let i = 0; i < x.length; i++) {
             const element = x[i];
             let path = element.tempTargetAchievements;
-            if (pathCondition(path)) {
+            if (
+              pathCondition(path) &&
+              element.isAccess !== "false" &&
+              _.differenceWith(
+                element.tempTargetAchievements,
+                element.OriginalParameters,
+                _.isEqual
+              ).length > 0
+            ) {
               let format1 = getPayloadDataFormat(element);
               tempArr.push(format1);
             }
@@ -1248,7 +1279,15 @@ const MainParamScreen = ({ route, navigation }) => {
               ) {
                 const element1 = element.employeeTargetAchievements[j];
                 let path1 = element1.tempTargetAchievements;
-                if (pathCondition(path1)) {
+                if (
+                  pathCondition(path1) &&
+                  element1.isAccess !== "false" &&
+                  _.differenceWith(
+                    element1.tempTargetAchievements,
+                    element1.OriginalParameters,
+                    _.isEqual
+                  ).length > 0
+                ) {
                   let format2 = getPayloadDataFormat(element1);
                   tempArr.push(format2);
                 }
@@ -1263,7 +1302,15 @@ const MainParamScreen = ({ route, navigation }) => {
                   ) {
                     const element2 = element1.employeeTargetAchievements[k];
                     let path2 = element2.tempTargetAchievements;
-                    if (pathCondition(path2)) {
+                    if (
+                      pathCondition(path2) &&
+                      element2.isAccess !== "false" &&
+                      _.differenceWith(
+                        element2.tempTargetAchievements,
+                        element2.OriginalParameters,
+                        _.isEqual
+                      ).length > 0
+                    ) {
                       let format3 = getPayloadDataFormat(element2);
                       tempArr.push(format3);
                     }
@@ -1278,7 +1325,15 @@ const MainParamScreen = ({ route, navigation }) => {
                       ) {
                         const element3 = element2.employeeTargetAchievements[l];
                         let path3 = element3.tempTargetAchievements;
-                        if (pathCondition(path3)) {
+                        if (
+                          pathCondition(path3) &&
+                          element3.isAccess !== "false" &&
+                          _.differenceWith(
+                            element3.tempTargetAchievements,
+                            element3.OriginalParameters,
+                            _.isEqual
+                          ).length > 0
+                        ) {
                           let format4 = getPayloadDataFormat(element3);
                           tempArr.push(format4);
                         }
@@ -1294,7 +1349,15 @@ const MainParamScreen = ({ route, navigation }) => {
                             const element4 =
                               element3.employeeTargetAchievements[c];
                             let path4 = element4.tempTargetAchievements;
-                            if (pathCondition(path4)) {
+                            if (
+                              pathCondition(path4) &&
+                              element4.isAccess !== "false" &&
+                              _.differenceWith(
+                                element4.tempTargetAchievements,
+                                element4.OriginalParameters,
+                                _.isEqual
+                              ).length > 0
+                            ) {
                               let format5 = getPayloadDataFormat(element4);
                               tempArr.push(format5);
                             }
@@ -1521,6 +1584,9 @@ const MainParamScreen = ({ route, navigation }) => {
                           ].tempTargetAchievements = getDataFormat(newArr[0]);
                           lastParameter[index].employeeTargetAchievements[
                             i
+                          ].OriginalParameters = getDataFormat(newArr[0]);
+                          lastParameter[index].employeeTargetAchievements[
+                            i
                           ].branchName = newArr[0].branchName;
                           lastParameter[index].employeeTargetAchievements[
                             i
@@ -1528,6 +1594,12 @@ const MainParamScreen = ({ route, navigation }) => {
                           lastParameter[index].employeeTargetAchievements[
                             i
                           ].recordId = newArr[0]?.id;
+                          lastParameter[index].employeeTargetAchievements[
+                            i
+                          ].updatedUserName = newArr[0]?.updatedUserName;
+                          lastParameter[index].employeeTargetAchievements[
+                            i
+                          ].isAccess = newArr[0]?.isAccess;
                         }
                       }
                     }
@@ -1605,55 +1677,61 @@ const MainParamScreen = ({ route, navigation }) => {
           moduleType={"home"}
           editParameters={editParameters}
           editAndUpdate={(x) => {
-            let branchName = item?.branchName;
-            let branch = item?.branch;
-
-            if (!branchName) {
-              branchName = getBranchName(item.branchId, true);
-            }
-            if (!branch) {
-              branch = item.branchId;
-            }
-
-            setSelectedDropdownData([
-              {
-                label: branchName,
-                value: branch,
-              },
-            ]);
-            if (
-              item?.retailTarget !== null &&
-              selector?.endDate === item?.endDate &&
-              selector?.startDate === item?.startDate
-            ) {
-              setSelectedBranch({
-                label: branchName,
-                value: branch,
-              });
-              setDefaultBranch(branch);
-              setAddOrEdit("E");
+            if (item?.isAccess == "false") {
+              showToastRedAlert(
+                `Target has been already set by ${item?.updatedUserName}`
+              );
             } else {
-              setDefaultBranch(null);
-              setAddOrEdit("A");
-            }
-            if (item?.targetName) {
-              setTargetName(item?.targetName);
-            }
+              let branchName = item?.branchName;
+              let branch = item?.branch;
 
-            // if (x === "0" || x === 0) {
-            //   setIsNoTargetAvailable(true);
-            // } else {
-            //   setIsNoTargetAvailable(false);
-            // }
-            if (item.recordId) {
-              setIsNoTargetAvailable(false);
-            } else {
-              setIsNoTargetAvailable(true);
-            }
+              if (!branchName) {
+                branchName = getBranchName(item.branchId, true);
+              }
+              if (!branch) {
+                branch = item.branchId;
+              }
 
-            setRetail(x);
-            setSelectedUser(item);
-            setOpenRetail(true);
+              setSelectedDropdownData([
+                {
+                  label: branchName,
+                  value: branch,
+                },
+              ]);
+              if (
+                item?.retailTarget !== null &&
+                selector?.endDate === item?.endDate &&
+                selector?.startDate === item?.startDate
+              ) {
+                setSelectedBranch({
+                  label: branchName,
+                  value: branch,
+                });
+                setDefaultBranch(branch);
+                setAddOrEdit("E");
+              } else {
+                setDefaultBranch(null);
+                setAddOrEdit("A");
+              }
+              if (item?.targetName) {
+                setTargetName(item?.targetName);
+              }
+
+              // if (x === "0" || x === 0) {
+              //   setIsNoTargetAvailable(true);
+              // } else {
+              //   setIsNoTargetAvailable(false);
+              // }
+              if (item.recordId) {
+                setIsNoTargetAvailable(false);
+              } else {
+                setIsNoTargetAvailable(true);
+              }
+
+              setRetail(x);
+              setSelectedUser(item);
+              setOpenRetail(true);
+            }
           }}
           onChangeTeamParamValue={(index, x, id, param) => {
             onChangeTeamParamValue2(index, x, item.empId, param);
@@ -1676,55 +1754,61 @@ const MainParamScreen = ({ route, navigation }) => {
           moduleType={"home"}
           editParameters={editParameters}
           editAndUpdate={(x) => {
-            let branchName = item?.branchName;
-            let branch = item?.branch;
-
-            if (!branchName) {
-              branchName = getBranchName(item.branchId, true);
-            }
-            if (!branch) {
-              branch = item.branchId;
-            }
-
-            setSelectedDropdownData([
-              {
-                label: branchName,
-                value: branch,
-              },
-            ]);
-            if (
-              item?.retailTarget !== null &&
-              selector?.endDate === item?.endDate &&
-              selector?.startDate === item?.startDate
-            ) {
-              setSelectedBranch({
-                label: branchName,
-                value: branch,
-              });
-              setDefaultBranch(branch);
-              setAddOrEdit("E");
+            if (item?.isAccess == "false") {
+              showToastRedAlert(
+                `Target has been already set by ${item?.updatedUserName}`
+              );
             } else {
-              setDefaultBranch(null);
-              setAddOrEdit("A");
-            }
-            if (item?.targetName) {
-              setTargetName(item?.targetName);
-            }
+              let branchName = item?.branchName;
+              let branch = item?.branch;
 
-            // if (x === "0" || x === 0){
-            //   setIsNoTargetAvailable(true);
-            // }else{
-            //   setIsNoTargetAvailable(false);
-            // }
-            if (item.recordId) {
-              setIsNoTargetAvailable(false);
-            } else {
-              setIsNoTargetAvailable(true);
-            }
+              if (!branchName) {
+                branchName = getBranchName(item.branchId, true);
+              }
+              if (!branch) {
+                branch = item.branchId;
+              }
 
-            setRetail(x);
-            setSelectedUser(item);
-            setOpenRetail(true);
+              setSelectedDropdownData([
+                {
+                  label: branchName,
+                  value: branch,
+                },
+              ]);
+              if (
+                item?.retailTarget !== null &&
+                selector?.endDate === item?.endDate &&
+                selector?.startDate === item?.startDate
+              ) {
+                setSelectedBranch({
+                  label: branchName,
+                  value: branch,
+                });
+                setDefaultBranch(branch);
+                setAddOrEdit("E");
+              } else {
+                setDefaultBranch(null);
+                setAddOrEdit("A");
+              }
+              if (item?.targetName) {
+                setTargetName(item?.targetName);
+              }
+
+              // if (x === "0" || x === 0){
+              //   setIsNoTargetAvailable(true);
+              // }else{
+              //   setIsNoTargetAvailable(false);
+              // }
+              if (item.recordId) {
+                setIsNoTargetAvailable(false);
+              } else {
+                setIsNoTargetAvailable(true);
+              }
+
+              setRetail(x);
+              setSelectedUser(item);
+              setOpenRetail(true);
+            }
           }}
           onChangeTeamParamValue={(index, x, id, param) => {
             onChangeTeamParamValue1(index, x, item.empId, param);
@@ -1841,7 +1925,7 @@ const MainParamScreen = ({ route, navigation }) => {
                             ].tempTargetAchievements.findIndex(
                               (item) => item.paramName === type
                             );
-                            y3[innerIndex4].tempTargetAchievements[
+                            y4[innerIndex4].tempTargetAchievements[
                               childIndex4
                             ].target = x;
                             const updatedParams = [...allParameters];
@@ -3361,12 +3445,12 @@ const MainParamScreen = ({ route, navigation }) => {
                 <TouchableOpacity
                   style={styles.textBox}
                   onPress={() => {
-                    // if (ownData.isAccess == "false") {
-                    //   showToastRedAlert(
-                    //     `Target has been already set by ${ownData.updatedUserName}`
-                    //   );
-                    // } else {
-                    //   setSelectedUser({ ...loggedInEmpDetails });
+                    if (ownData.isAccess == "false") {
+                      showToastRedAlert(
+                        `Target has been already set by ${ownData.updatedUserName}`
+                      );
+                    } else {
+                      //   setSelectedUser({ ...loggedInEmpDetails });
                       // if (isNoTargetAvailable) {
                       //     setAddOrEdit('A')
                       // }
@@ -3402,7 +3486,7 @@ const MainParamScreen = ({ route, navigation }) => {
                           setIsNoTargetAvailable(true);
                         }
                       } else showToast("Access Denied");
-                    // }
+                    }
                   }}
                 >
                   {/* todo */}
@@ -3521,11 +3605,11 @@ const MainParamScreen = ({ route, navigation }) => {
                     // else {
                     //     setAddOrEdit('E')
                     // }
-                    // if (ownData.isAccess == "false") {
-                    //   showToastRedAlert(
-                    //     `Target has been already set by ${ownData.updatedUserName}`
-                    //   );
-                    // } else {
+                    if (ownData.isAccess == "false") {
+                      showToastRedAlert(
+                        `Target has been already set by ${ownData.updatedUserName}`
+                      );
+                    } else {
                       if (loggedInEmpDetails.primaryDepartment === "Sales") {
                         if (
                           ownData.retailTarget !== null &&
@@ -3556,7 +3640,7 @@ const MainParamScreen = ({ route, navigation }) => {
                           setIsNoTargetAvailable(true);
                         }
                       } else showToast("Access Denied");
-                    // }
+                    }
                   }}
                 >
                   <Text style={styles.textInput}>
