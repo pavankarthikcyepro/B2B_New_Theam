@@ -101,7 +101,7 @@ export const ComplintLidtItem = ({
     name,
     status,
     created,
-    dmsLead,
+    salesExecutiveName,
     phone,
     source,
     model,
@@ -119,10 +119,14 @@ export const ComplintLidtItem = ({
 }) => {
     let date = "";
     if (from == "MY_TASKS") {
-        date = moment(created, "YYYY-MM-DD hh-mm-s").format("DD/MM/YYYY h:mm a");
+        // date = moment(created, "YYYY-MM-DD hh-mm-s").format("DD/MM/YYYY h:mm a");
+        date = moment(created).format("DD/MM/YYYY h:mm a");
+        console.log("manthan--ff ", date);
     } else {
         date = convertTimeStampToDateString(created);
+       
     }
+    
 
     let bgColor = Colors.BLUE;
     let statusName = status;
@@ -189,7 +193,7 @@ export const ComplintLidtItem = ({
                         {/*<Text style={styles.catText}>{enqCat}</Text>*/}
                     </View>
                     <Text style={styles.text2}>{date}</Text>
-                    <Text style={styles.text2}>{source + " - " + dmsLead}</Text>
+                    <Text style={styles.text2}>{source + " - " + salesExecutiveName}</Text>
                     <Text style={styles.text2}>{phone}</Text>
                     <>
                         {from !== "PRE_ENQUIRY" && (

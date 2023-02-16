@@ -121,6 +121,7 @@ import ComplaintTrackerMain, { ComplaintsTrackerTopTabNavigator } from "../scene
 import ComplaintList from "../scenes/mainScenes/ComplaintTracker/ComplaintList";
 import { ComplaintsTopTabNavigator } from "./complaintsTopTabNavigator";
 import AddEditComplaint from "../scenes/mainScenes/ComplaintTracker/AddEditComplaint";
+import ClosedComplaintList from "../scenes/mainScenes/ComplaintTracker/ClosedComplaintList";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -1135,7 +1136,7 @@ const ComplainTrackgerStackNavigator = ({ navigation }) => {
       />
       <ComplainTrackgerStack.Screen
         name={ComplainTrackerIdentifires.closedComplainTeackerList}
-        component={ComplaintList}
+        component={ClosedComplaintList}
         options={{
           title: "Complaints",
           // headerLeft: () => <MenuIcon navigation={navigation} />,

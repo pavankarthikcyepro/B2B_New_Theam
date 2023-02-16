@@ -6,7 +6,9 @@ import { IconButton } from 'react-native-paper';
 import { Colors } from '../../../styles';
 import { MyTaskNewItem } from '../MyTasks/components/MyTasksNewItem';
 import { ComplintLidtItem } from './ComplintLidtItem';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { getComplaintListFilter } from '../../../redux/complaintTrackerReducer';
+import * as AsyncStore from "../../../asyncStore";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().add(0, "day").format(dateFormat)
@@ -20,11 +22,13 @@ const data = [{
 }]
 
 const ComplaintList = (props) => {
+    const selector = useSelector((state) => state.complaintTrackerReducer);
+    const dispatch = useDispatch();
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [datePickerId, setDatePickerId] = useState("");
     const [selectedFromDate, setSelectedFromDate] = useState("");
     const [selectedToDate, setSelectedToDate] = useState("");
-
+    const [activeComplaintList, setActiveComplaintList] = useState([])
     const fromDateRef = React.useRef(selectedFromDate);
     const toDateRef = React.useRef(selectedToDate);
     const [userData, setUserData] = useState({
@@ -45,9 +49,18 @@ const ComplaintList = (props) => {
         const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
         setFromDateState(CurrentMonthFirstDate);
         setToDateState(currentMonthLastDate);
-
+        getUserData()
+      
     }, [])
 
+        useEffect(() => {
+          
+            if (selector.complaintListRes){
+                setActiveComplaintList(selector.complaintListRes)
+            }
+         
+        }, [selector.complaintListRes])
+        
     const setFromDateState = date => {
         fromDateRef.current = date;
         setSelectedFromDate(date);
@@ -64,7 +77,18 @@ const ComplaintList = (props) => {
     }
 
 
+    const getPayloadData = () => {
 
+
+        const payload = {
+            "orgId": userData.orgId,
+            "loginUser": userData.employeeName,
+            "startDate": selectedFromDate,
+            "endDate": selectedToDate,
+            "status": "Active"
+        }
+        return payload;
+    }
     const updateSelectedDate = (date, key) => {
 
         const formatDate = moment(date).format(dateFormat);
@@ -134,10 +158,20 @@ const ComplaintList = (props) => {
                     isCRM: isCRM,
                     isCRE: isCRE,
                 });
-                let payload = {
-                    empId: jsonObj.empId
+               
+                // let payload = getPayloadData();
+                const dateFormat = "YYYY-MM-DD";
+                const currentDate = moment().add(0, "day").format(dateFormat)
+                const CurrentMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+                const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+                const payload = {
+                    "orgId": jsonObj.orgId,
+                    "loginUser": jsonObj.empName,
+                    "startDate": CurrentMonthFirstDate,
+                    "endDate": currentMonthLastDate,
+                    "status": "Active"
                 }
-
+                dispatch(getComplaintListFilter(payload))
                
             }
         } catch (error) {
@@ -150,86 +184,67 @@ const ComplaintList = (props) => {
     const renderItem = ({ item, index }) => {
         return (
             <>
-                <View>
+                <View style={{}}>
                     <ComplintLidtItem
-                        tdflage={item?.tdflage ? item.tdflage : ""}
-                        from={item.leadStage}
+                       
+                        from={"MY_TASKS"}
                         name={
-                            getFirstLetterUpperCase(item.firstName) +
-                            " " +
-                            getFirstLetterUpperCase(item.lastName)
+                            getFirstLetterUpperCase(item.customerName)
                         }
                         navigator={props.navigation}
-                        uniqueId={item.leadId}
-                        type={
-                            item.leadStage === "ENQUIRY"
-                                ? "Enq"
-                                : item.leadStage === "BOOKING"
-                                    ? "Book"
-                                    : "PreBook"
-                        }
-                        status={""}
-                        created={item.modifiedDate}
-                        dmsLead={item.salesConsultant}
-                        phone={item.phone}
-                        source={item.enquirySource}
+                      
+                      
+                        created={item.createdDate}
+                        salesExecutiveName={item.salesExecutiveName}
+                        phone={item.mobileNo}
+                        source={item.complaintFactor}
                         model={item.model}
-                        leadStatus={item.leadStatus}
-                        leadStage={item.leadStage}
-                        needStatus={"YES"}
-                        // stageAccess={stageAccess}
-                        onlylead={true}
                         userData={userData.hrmsRole}
-                        EmployeesRoles={""}
-                        enqCat={item.enquiryCategory}
+                      
                         onItemPress={() => {
-                            props.navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, {
-                                universalId: item.universalId,
-                                mobileNo: item.phone,
-                                leadStatus: item.leadStatus,
-                            });
+                            
                         }}
                         onDocPress={() => {
-                            let user = userData.hrmsRole.toLowerCase();
-                            if (EmployeesRoles.includes(user)) {
-                                if (stageAccess[0]?.viewStage?.includes(item.leadStage)) {
-                                    let route = AppNavigator.EmsStackIdentifiers.detailsOverview;
-                                    switch (item.leadStage) {
-                                        case "BOOKING":
-                                            route = AppNavigator.EmsStackIdentifiers.bookingForm;
-                                            break;
-                                        case "PRE_BOOKING":
-                                        case "PREBOOKING":
-                                            route = AppNavigator.EmsStackIdentifiers.preBookingForm;
-                                            break;
-                                    }
-                                    props.navigation.navigate(route, {
-                                        universalId: item.universalId,
-                                        enqDetails: item,
-                                        leadStatus: item.leadStatus,
-                                        leadStage: item.leadStage,
-                                    });
-                                } else {
-                                    alert("No Access");
-                                }
-                            } else {
-                                let route = AppNavigator.EmsStackIdentifiers.detailsOverview;
-                                switch (item.leadStage) {
-                                    case "BOOKING":
-                                        route = AppNavigator.EmsStackIdentifiers.bookingForm;
-                                        break;
-                                    case "PRE_BOOKING":
-                                    case "PREBOOKING":
-                                        route = AppNavigator.EmsStackIdentifiers.preBookingForm;
-                                        break;
-                                }
-                                props.navigation.navigate(route, {
-                                    universalId: item.universalId,
-                                    enqDetails: item,
-                                    leadStatus: item.leadStatus,
-                                    leadStage: item.leadStage,
-                                });
-                            }
+                            // let user = userData.hrmsRole.toLowerCase();
+                            // if (EmployeesRoles.includes(user)) {
+                            //     if (stageAccess[0]?.viewStage?.includes(item.leadStage)) {
+                            //         let route = AppNavigator.EmsStackIdentifiers.detailsOverview;
+                            //         switch (item.leadStage) {
+                            //             case "BOOKING":
+                            //                 route = AppNavigator.EmsStackIdentifiers.bookingForm;
+                            //                 break;
+                            //             case "PRE_BOOKING":
+                            //             case "PREBOOKING":
+                            //                 route = AppNavigator.EmsStackIdentifiers.preBookingForm;
+                            //                 break;
+                            //         }
+                            //         props.navigation.navigate(route, {
+                            //             universalId: item.universalId,
+                            //             enqDetails: item,
+                            //             leadStatus: item.leadStatus,
+                            //             leadStage: item.leadStage,
+                            //         });
+                            //     } else {
+                            //         alert("No Access");
+                            //     }
+                            // } else {
+                            //     let route = AppNavigator.EmsStackIdentifiers.detailsOverview;
+                            //     switch (item.leadStage) {
+                            //         case "BOOKING":
+                            //             route = AppNavigator.EmsStackIdentifiers.bookingForm;
+                            //             break;
+                            //         case "PRE_BOOKING":
+                            //         case "PREBOOKING":
+                            //             route = AppNavigator.EmsStackIdentifiers.preBookingForm;
+                            //             break;
+                            //     }
+                            //     props.navigation.navigate(route, {
+                            //         universalId: item.universalId,
+                            //         enqDetails: item,
+                            //         leadStatus: item.leadStatus,
+                            //         leadStage: item.leadStage,
+                            //     });
+                            // }
                         }}
                     />
                 </View>
@@ -292,17 +307,18 @@ const ComplaintList = (props) => {
 
           <View style={[styles.flatlistView]}>
               <FlatList
-                  initialNumToRender={data?.length}
-                  data={data}
-                  extraData={data}
+              
+                  initialNumToRender={activeComplaintList.length}
+                  data={activeComplaintList}
+                  extraData={activeComplaintList}
                   keyExtractor={(item, index) => index.toString()}
-                  refreshControl={
-                      <RefreshControl
-                        //   refreshing={selector.isLoading}
-                          // onRefresh={() => getEnquiryListFromServer(employeeId, selectedFromDate, selectedToDate)}
-                          progressViewOffset={200}
-                      />
-                  }
+                //   refreshControl={
+                //       <RefreshControl
+                //         //   refreshing={selector.isLoading}
+                //           // onRefresh={() => getEnquiryListFromServer(employeeId, selectedFromDate, selectedToDate)}
+                //           progressViewOffset={200}
+                //       />
+                //   }
                   showsVerticalScrollIndicator={false}
                   onEndReachedThreshold={0}
                   onEndReached={() => {
@@ -357,7 +373,7 @@ const styles = StyleSheet.create({
     },
     flatlistView: {
         backgroundColor: Colors.LIGHT_GRAY,
-        flex: 1,
         marginBottom: 10,
+       
     },
 })

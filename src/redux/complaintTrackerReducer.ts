@@ -138,6 +138,16 @@ export const postComplaintFirstTime = createAsyncThunk("COMPLAINTS_TRACKER/postC
     return json;
 })
 
+export const getComplaintListFilter = createAsyncThunk("COMPLAINTS_TRACKER/getComplaintListFilter", async (payload, { rejectWithValue }) => {
+
+    const response = await client.post(URL.GET_COMPLAINT_LIST(), payload);
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
 interface CustomerDetailModel {
     key: string;
     text: string;
@@ -193,6 +203,7 @@ export const complaintsSlice = createSlice({
         complaintCountDashboard:"",
         complaintDescription:"",
         postComplaintFirstTimeRes:"",
+        complaintListRes:"",
     },
     reducers: {
         clearState: (state, action) => {
@@ -232,6 +243,7 @@ export const complaintsSlice = createSlice({
             state.complaintCountDashboard ="";
             state.complaintDescription = "";
             state.postComplaintFirstTimeRes = "";
+            state.complaintListRes = "";
         },
         clearStateFormData: (state, action) => {
             state.mobile = "";
@@ -574,6 +586,24 @@ export const complaintsSlice = createSlice({
         builder.addCase(postComplaintFirstTime.rejected, (state, action) => {
             state.isLoading = false;
             state.postComplaintFirstTimeRes = "";
+        })
+
+        
+
+        builder.addCase(getComplaintListFilter.pending, (state, action) => {
+            state.isLoading = true;
+            state.complaintListRes = "";
+        })
+        builder.addCase(getComplaintListFilter.fulfilled, (state, action) => {
+            state.isLoading = false;
+
+            if (action.payload) {
+                state.complaintListRes = action.payload;
+            }
+        })
+        builder.addCase(getComplaintListFilter.rejected, (state, action) => {
+            state.isLoading = false;
+            state.complaintListRes = "";
         })
     }
 });

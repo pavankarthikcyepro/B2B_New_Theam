@@ -668,6 +668,9 @@ const URL = {
   POST_COMPLAINT: () => {
     return sales_url + `/complainttracker/save`;
   },
+  GET_COMPLAINT_LIST: () => {
+    return sales_url + `/complainttracker/filter`;
+  },
   TRANSFER_TASK: (fromUserId, toUserId) => {
     return (
       sales_url +
