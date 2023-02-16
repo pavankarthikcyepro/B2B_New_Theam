@@ -1106,6 +1106,13 @@ const TestDriveScreen = ({ route, navigation }) => {
     generateOtpToCloseTask();
   };
   
+  function compare(dateTimeA, dateTimeB) {
+    var momentA = moment(dateTimeA, "DD/MM/YYYY");
+    var momentB = moment(dateTimeB, "DD/MM/YYYY");
+    if (momentA > momentB) return 1;
+    else if (momentA < momentB) return -1;
+    else return 0;
+  }
   const reSubmitClick = (status,taskName)=>{
     // call API here 
   
@@ -1140,6 +1147,14 @@ const TestDriveScreen = ({ route, navigation }) => {
 
     if (selector.customer_preferred_date.length === 0) {
       showToast("Please select customer preferred date");
+      return;
+    }
+      const dateFormat = "DD/MM/YYYY";
+      const currentDate = moment().add(0, "day").format(dateFormat)
+    
+    // conditon to show error for date older then today 
+    if (compare(selector.customer_preferred_date, currentDate) === -1){
+      showToast("Please select customer preferred date greater than today's date");
       return;
     }
 
@@ -1240,6 +1255,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       actualStartTime = date + " " + selector.actual_start_time;
       actualEndTime = date + " " + selector.actual_end_time;
     }
+
     setExpectedStartAndEndTime({ start: actualStartTime, end: actualEndTime });
     setTaskStatusAndName({ status: status, name: taskName });
 
@@ -1385,6 +1401,12 @@ const TestDriveScreen = ({ route, navigation }) => {
       }
     }
     
+  };
+
+  const onDropDownClear = (key) => {
+    if (key) {
+      setSelectedDriverDetails({ name: "", id: "" });
+    }
   };
 
   return (
@@ -1790,6 +1812,9 @@ const TestDriveScreen = ({ route, navigation }) => {
                 onPress={() =>
                   showDropDownModelMethod("LIST_OF_DRIVERS", "List of Drivers")
                 }
+                clearOption={true}
+                clearKey={"LIST_OF_DRIVERS"}
+                onClear={onDropDownClear}
               />
               <DateSelectItem
                 label={"Customer Preferred Time*"}
@@ -2012,11 +2037,13 @@ const TestDriveScreen = ({ route, navigation }) => {
             </View>
           ) : null}
 
-          {route?.params?.taskStatus === "CLOSED" && !isReopenSubmitVisible && !isCloseSelected ? (
+          {route?.params?.taskStatus === "CLOSED" &&
+          !isReopenSubmitVisible &&
+          !isCloseSelected ? (
             <View style={[styles.view1, { marginTop: 30 }]}>
               <Button
                 mode="contained"
-                style={{ width: '45%' }}
+                style={{ width: "45%" }}
                 color={Colors.RED}
                 // disabled={selector.is_loading_for_task_update}
                 labelStyle={{ textTransform: "none" }}
@@ -2036,8 +2063,8 @@ const TestDriveScreen = ({ route, navigation }) => {
                 color={Colors.GRAY}
                 // disabled={selector.is_loading_for_task_update}
                 labelStyle={{ textTransform: "none" }}
-                onPress={()=>{
-                  navigation.goBack()
+                onPress={() => {
+                  navigation.goBack();
                 }}
               >
                 Close
@@ -2048,17 +2075,15 @@ const TestDriveScreen = ({ route, navigation }) => {
                 color={Colors.RED}
                 // disabled={selector.is_loading_for_task_update}
                 labelStyle={{ textTransform: "none" }}
-                onPress={()=>{
+                onPress={() => {
                   // reSubmitClick("ASSIGNED","Test Drive Approval")
-                  closeTask("reopen")
+                  closeTask("reopen");
                 }}
               >
                 Submit
               </Button>
             </View>
           ) : null}
-
-          
         </ScrollView>
       </KeyboardAvoidingView>
 
