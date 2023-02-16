@@ -5,7 +5,7 @@ import { Colors, GlobalStyle } from '../../../styles';
 import { DatePickerComponent, DropDownComponant, ImagePickerComponent, TextinputComp } from '../../../components';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCustomerDetails, updateSelectedDate,clearState,setDatePicker,
-    setDropDownData, setImagePicker, getDetailsFromPoneNumber, getComplainFactorDropDownData, getLocationList, getBranchData, getDepartment, getDesignation, getEmployeeDetails, postComplaintFirstTime
+    setDropDownData, setImagePicker, getDetailsFromPoneNumber, getComplainFactorDropDownData, getLocationList, getBranchData, getDepartment, getDesignation, getEmployeeDetails, postComplaintFirstTime, clearStateFormData, getComplaitDetailsfromId
 } from '../../../redux/complaintTrackerReducer';
 import { DateSelectItem, DropDownSelectionItem, ImageSelectItem } from '../../../pureComponents';
 import { UserState } from 'realm';
@@ -50,13 +50,20 @@ const AddEditComplaint = (props) => {
     useEffect(() => {
         getUserData()
         setcomplaintDate(currentDate);
-    
+        
     }, [])
 
     useEffect(() => {
         props.navigation.addListener("focus", () => {
-            
-           dispatch(clearState())
+         
+            dispatch(clearStateFormData())
+            if (props.route.params.from === "CLOSED_LIST" || props.route.params.from === "ACTIVE_LIST"){
+                let payload = {
+                    complaintId: props.route.params.complaintId
+                }
+                dispatch(getComplaitDetailsfromId(payload))
+            }
+                
         })
     }, [props.navigation])
     
@@ -64,10 +71,14 @@ const AddEditComplaint = (props) => {
        
         if(selector.postComplaintFirstTimeRes){
             props.navigation.goBack();
-            dispatch(clearState())
+            dispatch(clearStateFormData())
         }
     }, [selector.postComplaintFirstTimeRes])
     
+    useEffect(() => {
+      
+     
+    }, [selector.complaintDetailsFromIdRes])
     
 
     const getUserData = async () => {

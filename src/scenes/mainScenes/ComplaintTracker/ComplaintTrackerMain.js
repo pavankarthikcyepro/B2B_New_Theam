@@ -65,7 +65,8 @@ const ComplaintsTrackerTopTab = createMaterialTopTabNavigator();
 
 
 export const ComplaintsTrackerTopTabNavigator = () => {
-
+    const { activeTotalCount, closeTotalCount } = useSelector((state) => state.complaintTrackerReducer);
+   
     return (
         <ComplaintsTrackerTopTab.Navigator
             initialRouteName={ComplainTrackerIdentifires.complainTrackerList}
@@ -79,7 +80,7 @@ export const ComplaintsTrackerTopTabNavigator = () => {
                         <Badge
                             title={"Active"}
                             focused={focused}
-                            countList={"30"}
+                            countList={activeTotalCount}
                         />
                     ),
                 }}
@@ -89,7 +90,7 @@ export const ComplaintsTrackerTopTabNavigator = () => {
                 component={ClosedComplaintList}
                 options={{
                     title: ({ focused }) => (
-                        <Badge title={"Closed"} focused={focused} countList={"20"} />
+                        <Badge title={"Closed"} focused={focused} countList={closeTotalCount} />
                     ),
                 }}
             />

@@ -94,7 +94,7 @@ const callWebViewRecord = async ({ navigator, phone, uniqueId, type }) => {
 };
 
 export const ComplintLidtItem = ({
-    from = "MY_TASKS",
+    from = "",
     navigator,
     type,
     uniqueId = "",
@@ -116,17 +116,18 @@ export const ComplintLidtItem = ({
     EmployeesRoles,
     userData,
     tdflage = "",
+    ageing=0,
 }) => {
     let date = "";
-    if (from == "MY_TASKS") {
+    if (from === "CLOSED_LIST" || from === "ACTIVE_LIST") {
         // date = moment(created, "YYYY-MM-DD hh-mm-s").format("DD/MM/YYYY h:mm a");
         date = moment(created).format("DD/MM/YYYY h:mm a");
-        console.log("manthan--ff ", date);
+       
     } else {
         date = convertTimeStampToDateString(created);
-       
+
     }
-    
+
 
     let bgColor = Colors.BLUE;
     let statusName = status;
@@ -193,65 +194,12 @@ export const ComplintLidtItem = ({
                         {/*<Text style={styles.catText}>{enqCat}</Text>*/}
                     </View>
                     <Text style={styles.text2}>{date}</Text>
-                    <Text style={styles.text2}>{source + " - " + salesExecutiveName}</Text>
+                    <Text style={styles.text5}>{source + " - " + salesExecutiveName}</Text>
                     <Text style={styles.text2}>{phone}</Text>
-                    <>
-                        {from !== "PRE_ENQUIRY" && (
-                            <View
-                                style={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    alignItems: "center",
-                                }}
-                            >
-                                {/* {tdflage == "CLOSED" ? (
-                                    <Image
-                                        source={require("./../../../../assets/images/test_drive_icon.png")}
-                                        style={styles.testDriveIconImage}
-                                        resizeMode="contain"
-                                    />
-                                ) : null} */}
-                                <>
-                                    {leadStage == "ENQUIRY" &&
-                                        enqCat !== "" &&
-                                        enqCat?.length > 0 && (
-                                            <View
-                                                style={{
-                                                    display: "flex",
-                                                    flexDirection: "row",
-                                                    justifyContent: "center",
-                                                    alignItems: "center",
-                                                }}
-                                            >
-                                                <Text
-                                                    style={[
-                                                        styles.text3,
-                                                        { color: getCategoryTextColor(enqCat) },
-                                                    ]}
-                                                >
-                                                    {enqCat}
-                                                </Text>
-                                                <Text
-                                                    style={{ fontWeight: "600", color: Colors.BLACK }}
-                                                >
-                                                    {" "}
-                                                    |{" "}
-                                                </Text>
-                                            </View>
-                                        )}
-                                </>
-
-                                <Text
-                                    style={[
-                                        styles.text3,
-                                        { color: getStageColor(leadStage, leadStatus) },
-                                    ]}
-                                >
-                                    {leadStage === "PREBOOKING" ? "BOOKING APPROVAL" : leadStage}
-                                </Text>
-                            </View>
-                        )}
-                    </>
+                    <View style={{ flexDirection: "row" ,alignContent:"center"}}>
+                        <Text style={styles.text2}>{"Ageing - "}</Text>
+                        <Text style={styles.text6}>{ageing}</Text>
+                    </View>
                 </View>
                 <View style={{ width: "35%", alignItems: "center" }}>
                     {uniqueId ? (
@@ -266,7 +214,7 @@ export const ComplintLidtItem = ({
                         style={{
                             flexDirection: "row",
                             width: "100%",
-                            justifyContent: "space-evenly",
+                            justifyContent: "flex-end",
                         }}
                     >
                         <IconComp
@@ -274,74 +222,19 @@ export const ComplintLidtItem = ({
                             disabled={true}
                             opacity={cannotEditLead() ? 0.5 : 1}
                             onPress={() => {
-                                if (onlylead) {
-                                    let user = userData.toLowerCase();
-                                    if (EmployeesRoles.includes(user)) {
-                                        if (stageAccess[0]?.viewStage?.includes(leadStage)) {
-                                            cannotEditLead()
-                                                ? showToastRedAlert("You don't have Permission")
-                                                : onDocPress();
-                                        } else {
-                                            alert("No Access");
-                                        }
-                                    } else {
-                                        cannotEditLead()
-                                            ? showToastRedAlert("You don't have Permission")
-                                            : onDocPress();
-                                    }
-                                } else {
-                                    cannotEditLead()
-                                        ? showToastRedAlert("You don't have Permission")
-                                        : onDocPress();
-                                }
+                                onDocPress(from);
                             }}
                         />
                         <View style={{ padding: 5 }} />
-                        <IconComp
-                            iconName={"phone-outline"}
+                        {from === "ACTIVE_LIST" && <IconComp
+                            iconName={"close-circle"}
                             onPress={() => {
-                                callWebViewRecord({
-                                    navigator,
-                                    phone,
-                                    uniqueId,
-                                    type,
-                                });
-                                return;
-                                if (onlylead) {
-                                    let user = userData.toLowerCase();
-                                    if (EmployeesRoles.includes(user)) {
-                                        if (stageAccess[0]?.viewStage?.includes(leadStage)) {
-                                            callWebViewRecord({
-                                                navigator,
-                                                phone,
-                                                uniqueId,
-                                                type,
-                                            });
-                                        } else {
-                                            alert("No Access");
-                                        }
-                                    } else {
-                                        callWebViewRecord({
-                                            navigator,
-                                            phone,
-                                            uniqueId,
-                                            type,
-                                        });
-                                    }
-                                } else {
-                                    callWebViewRecord({
-                                        navigator,
-                                        phone,
-                                        uniqueId,
-                                        type,
-                                    });
-                                }
-                                // cannotEditLead() ?
-                                //     showToastRedAlert("You don't have Permission") :
+                                onDocPress(from);
                             }}
-                        />
-                        <View style={{ padding: 5 }} />
-                        <IconComp
+                        />}
+                       
+                        {/* <View style={{ padding: 5 }} /> */}
+                        {/* <IconComp
                             iconName={"whatsapp"}
                             onPress={
                                 () => {
@@ -364,7 +257,7 @@ export const ComplintLidtItem = ({
 
                                 // cannotEditLead() ? showToastRedAlert("You don't have Permission") :
                             }
-                        />
+                        /> */}
                     </View>
                 </View>
             </View>
@@ -375,13 +268,13 @@ export const ComplintLidtItem = ({
 const styles = StyleSheet.create({
     text1: {
         color: Colors.BLACK,
-        fontSize: 16,
+        fontSize: 14,
         fontWeight: "700",
         marginBottom: 5,
     },
     text2: {
         color: Colors.BLACK,
-        fontSize: 14,
+        fontSize: 12,
         fontWeight: "600",
         marginBottom: 5,
     },
@@ -435,5 +328,17 @@ const styles = StyleSheet.create({
         height: 30,
         width: 30,
         borderRadius: 15,
+    },
+    text6: {
+        color: Colors.RED,
+        fontSize: 12,
+        fontWeight: "600",
+        marginBottom: 5,
+    },
+    text5: {
+        color: Colors.BLACK,
+        fontSize: 12,
+        fontWeight: "600",
+        marginBottom: 5,
     },
 });

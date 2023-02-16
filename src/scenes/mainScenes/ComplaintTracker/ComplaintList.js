@@ -9,6 +9,8 @@ import { ComplintLidtItem } from './ComplintLidtItem';
 import { useDispatch, useSelector } from 'react-redux';
 import { getComplaintListFilter } from '../../../redux/complaintTrackerReducer';
 import * as AsyncStore from "../../../asyncStore";
+import { ComplainTrackerIdentifires } from '../../../navigations/appNavigator';
+import { EmptyListView } from '../../../pureComponents';
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().add(0, "day").format(dateFormat)
@@ -77,14 +79,14 @@ const ComplaintList = (props) => {
     }
 
 
-    const getPayloadData = () => {
+    const getPayloadData = (startdate,toDate) => {
 
 
         const payload = {
             "orgId": userData.orgId,
             "loginUser": userData.employeeName,
-            "startDate": selectedFromDate,
-            "endDate": selectedToDate,
+            "startDate": startdate,
+            "endDate": toDate,
             "status": "Active"
         }
         return payload;
@@ -95,9 +97,14 @@ const ComplaintList = (props) => {
         switch (key) {
             case "FROM_DATE":
                 setFromDateState(formatDate);
+                const payload = getPayloadData(formatDate,selectedToDate);
+                dispatch(getComplaintListFilter(payload))
+
                 break;
             case "TO_DATE":
                 setToDateState(formatDate);
+                const payload2 = getPayloadData(selectedFromDate, formatDate);
+                dispatch(getComplaintListFilter(payload2))
                 break;
         }
     }
@@ -179,6 +186,23 @@ const ComplaintList = (props) => {
         }
     };
 
+    const initialCallToserver = () => {
+
+        // let payload = getPayloadData();
+        const dateFormat = "YYYY-MM-DD";
+        const currentDate = moment().add(0, "day").format(dateFormat)
+        const CurrentMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+        const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+        const payload = {
+            "orgId": userData.orgId,
+            "loginUser": userData.employeeName,
+            "startDate": CurrentMonthFirstDate,
+            "endDate": currentMonthLastDate,
+            "status": "Active"
+        }
+        dispatch(getComplaintListFilter(payload))
+
+    }
 
 
     const renderItem = ({ item, index }) => {
@@ -186,8 +210,8 @@ const ComplaintList = (props) => {
             <>
                 <View style={{}}>
                     <ComplintLidtItem
-                       
-                        from={"MY_TASKS"}
+                        ageing= {item.ageing}
+                        from={"ACTIVE_LIST"}
                         name={
                             getFirstLetterUpperCase(item.customerName)
                         }
@@ -204,47 +228,11 @@ const ComplaintList = (props) => {
                         onItemPress={() => {
                             
                         }}
-                        onDocPress={() => {
-                            // let user = userData.hrmsRole.toLowerCase();
-                            // if (EmployeesRoles.includes(user)) {
-                            //     if (stageAccess[0]?.viewStage?.includes(item.leadStage)) {
-                            //         let route = AppNavigator.EmsStackIdentifiers.detailsOverview;
-                            //         switch (item.leadStage) {
-                            //             case "BOOKING":
-                            //                 route = AppNavigator.EmsStackIdentifiers.bookingForm;
-                            //                 break;
-                            //             case "PRE_BOOKING":
-                            //             case "PREBOOKING":
-                            //                 route = AppNavigator.EmsStackIdentifiers.preBookingForm;
-                            //                 break;
-                            //         }
-                            //         props.navigation.navigate(route, {
-                            //             universalId: item.universalId,
-                            //             enqDetails: item,
-                            //             leadStatus: item.leadStatus,
-                            //             leadStage: item.leadStage,
-                            //         });
-                            //     } else {
-                            //         alert("No Access");
-                            //     }
-                            // } else {
-                            //     let route = AppNavigator.EmsStackIdentifiers.detailsOverview;
-                            //     switch (item.leadStage) {
-                            //         case "BOOKING":
-                            //             route = AppNavigator.EmsStackIdentifiers.bookingForm;
-                            //             break;
-                            //         case "PRE_BOOKING":
-                            //         case "PREBOOKING":
-                            //             route = AppNavigator.EmsStackIdentifiers.preBookingForm;
-                            //             break;
-                            //     }
-                            //     props.navigation.navigate(route, {
-                            //         universalId: item.universalId,
-                            //         enqDetails: item,
-                            //         leadStatus: item.leadStatus,
-                            //         leadStage: item.leadStage,
-                            //     });
-                            // }
+                        onDocPress={(from) => {
+                            props.navigation.navigate(ComplainTrackerIdentifires.addEditComplaint, {
+                                from: from,
+                                complaintId:item.id
+                            });
                         }}
                     />
                 </View>
@@ -254,7 +242,7 @@ const ComplaintList = (props) => {
 
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{flex:1}}>
           <DatePickerComponent
               visible={showDatePicker}
               mode={"date"}
@@ -304,32 +292,36 @@ const ComplaintList = (props) => {
                   </View>
               </Pressable>
           </View>
-
-          <View style={[styles.flatlistView]}>
+          {activeComplaintList.length <= 0 ? 
+          <EmptyListView
+              title={"No Data Found"}
+                  isLoading={selector.isLoading}
+          /> : <View style={[styles.flatlistView]}>
               <FlatList
-              
+
                   initialNumToRender={activeComplaintList.length}
                   data={activeComplaintList}
                   extraData={activeComplaintList}
                   keyExtractor={(item, index) => index.toString()}
-                //   refreshControl={
-                //       <RefreshControl
-                //         //   refreshing={selector.isLoading}
-                //           // onRefresh={() => getEnquiryListFromServer(employeeId, selectedFromDate, selectedToDate)}
-                //           progressViewOffset={200}
-                //       />
-                //   }
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={selector.isLoading}
+                            onRefresh={() => initialCallToserver()}
+                            progressViewOffset={200}
+                        />
+                    }
                   showsVerticalScrollIndicator={false}
                   onEndReachedThreshold={0}
                   onEndReached={() => {
-                    //   if (searchQuery === "") {
-                    //       getMoreEnquiryListFromServer();
-                    //   }
+                      //   if (searchQuery === "") {
+                      //       getMoreEnquiryListFromServer();
+                      //   }
                   }}
-                //   ListFooterComponent={renderFooter}
+                  //   ListFooterComponent={renderFooter}
                   renderItem={renderItem}
               />
-          </View>
+          </View> }
+        
  
       </SafeAreaView>
   )

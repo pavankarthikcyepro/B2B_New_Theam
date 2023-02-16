@@ -147,6 +147,27 @@ export const getComplaintListFilter = createAsyncThunk("COMPLAINTS_TRACKER/getCo
     }
     return json;
 })
+export const getComplaintListFilterClosed = createAsyncThunk("COMPLAINTS_TRACKER/getComplaintListFilterClosed", async (payload, { rejectWithValue }) => {
+
+    const response = await client.post(URL.GET_COMPLAINT_LIST(), payload);
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+export const getComplaitDetailsfromId = createAsyncThunk("COMPLAINTS_TRACKER/getComplaitDetailsfromId", async (payload, { rejectWithValue }) => {
+
+    const response = await client.get(URL.GEY_COMPLAINT_DET_FROMID(
+        payload["complaintId"],
+    ));
+    const json = await response.json();
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+});
 
 interface CustomerDetailModel {
     key: string;
@@ -204,6 +225,10 @@ export const complaintsSlice = createSlice({
         complaintDescription:"",
         postComplaintFirstTimeRes:"",
         complaintListRes:"",
+        activeTotalCount:0,
+        closeTotalCount:0,
+        closeComplainListres:"",
+        complaintDetailsFromIdRes:""
     },
     reducers: {
         clearState: (state, action) => {
@@ -244,6 +269,10 @@ export const complaintsSlice = createSlice({
             state.complaintDescription = "";
             state.postComplaintFirstTimeRes = "";
             state.complaintListRes = "";
+            state.activeTotalCount=0;
+            state.closeTotalCount= 0;
+            state.closeComplainListres = "",
+                state.complaintDetailsFromIdRes=""
         },
         clearStateFormData: (state, action) => {
             state.mobile = "";
@@ -281,6 +310,7 @@ export const complaintsSlice = createSlice({
                 state.closeComplaintRemarks = "";
             state.complaintCountDashboard = "";
             state.complaintDescription = "";
+            state.complaintDetailsFromIdRes = ""
         },
         setImagePicker: (state, action) => {
             state.imagePickerKeyId = action.payload;
@@ -599,14 +629,71 @@ export const complaintsSlice = createSlice({
 
             if (action.payload) {
                 state.complaintListRes = action.payload;
+                state.activeTotalCount = action.payload.length;
             }
         })
         builder.addCase(getComplaintListFilter.rejected, (state, action) => {
             state.isLoading = false;
             state.complaintListRes = "";
         })
+
+
+        builder.addCase(getComplaintListFilterClosed.pending, (state, action) => {
+            state.isLoading = true;
+            state.closeComplainListres = "";
+        })
+        builder.addCase(getComplaintListFilterClosed.fulfilled, (state, action) => {
+            state.isLoading = false;
+
+            if (action.payload) {
+                state.closeComplainListres = action.payload;
+                state.closeTotalCount = action.payload.length;
+            }
+        })
+        builder.addCase(getComplaintListFilterClosed.rejected, (state, action) => {
+            state.isLoading = false;
+            state.closeComplainListres = "";
+        })
+
+
+        builder.addCase(getComplaitDetailsfromId.pending, (state, action) => {
+            state.isLoading = true;
+            state.complaintDetailsFromIdRes = "";
+        })
+        builder.addCase(getComplaitDetailsfromId.fulfilled, (state, action) => {
+            state.isLoading = false;
+
+            if (action.payload) {
+                
+                state.complaintDetailsFromIdRes = action.payload;
+                state.getDetailsFromPhoneRespnse = action.payload;
+
+                let response = action.payload;
+                state.location = response.customeLocation
+                state.branch = response.branch.toString()
+                state.model = response.model.toString()
+                state.customerName = response.customerName.toString(); 
+                state.email = response.email.toString();
+                state.stage = response.currentStage.toString();
+                state.stage_id = response.currentStageIdNo  .toString();
+                state.consultant = response.salesExecutiveName.toString();
+                state.reporting_manager = response.manager.toString();
+                state.mobile = response.mobileNo.toString();
+                state.complaintFactorType = response.complaintFactor.toString();
+                state.complainLocation = response.complaintLocation.toString();
+                state.complainBranch = response.compliantBranch.toString();
+                state.complainDepartment = response.department.toString();
+                state.complainDesignation = response.designation.toString();
+                state.complainEmployee = response.employee.toString();
+                
+            }
+        })
+        builder.addCase(getComplaitDetailsfromId.rejected, (state, action) => {
+            state.isLoading = false;
+            state.complaintDetailsFromIdRes = "";
+        })
     }
 });
 
-export const { clearState, setCustomerDetails, setDatePicker, setDropDownData, setImagePicker, updateSelectedDate } = complaintsSlice.actions;
+export const { clearState, setCustomerDetails, setDatePicker, setDropDownData, setImagePicker, updateSelectedDate,clearStateFormData } = complaintsSlice.actions;
 export default complaintsSlice.reducer;

@@ -1,20 +1,40 @@
-import { SafeAreaView, StyleSheet, Text, View, Pressable } from 'react-native'
+import { SafeAreaView, StyleSheet, Text, View, Pressable, FlatList } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { DatePickerComponent, DateRangeComp } from '../../../components';
 import moment from 'moment';
 import { Colors } from '../../../styles';
-
+import * as AsyncStore from "../../../asyncStore";
 import { IconButton } from 'react-native-paper';
+import { useDispatch, useSelector } from 'react-redux';
+import { getComplaintListFilterClosed } from '../../../redux/complaintTrackerReducer';
+import { ComplintLidtItem } from './ComplintLidtItem';
+import { ComplainTrackerIdentifires } from '../../../navigations/appNavigator';
+import { EmptyListView } from '../../../pureComponents';
+import { RefreshControl } from 'react-native-gesture-handler';
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().add(0, "day").format(dateFormat)
-const ClosedComplaintList = () => {
+const ClosedComplaintList = (props) => {
+    const selector = useSelector((state) => state.complaintTrackerReducer);
+    const dispatch = useDispatch();
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [datePickerId, setDatePickerId] = useState("");
     const [selectedFromDate, setSelectedFromDate] = useState("");
     const [selectedToDate, setSelectedToDate] = useState("");
     const fromDateRef = React.useRef(selectedFromDate);
     const toDateRef = React.useRef(selectedToDate);
+    const [userData, setUserData] = useState({
+        orgId: "",
+        employeeId: "",
+        employeeName: "",
+        isManager: false,
+        editEnable: false,
+        isPreBookingApprover: false,
+        isSelfManager: "",
+        isCRM: false,
+        isCRE: false,
+    });
+    const [closeComplaintList, setCloseComplaintList] = useState([])
 
     useEffect(() => {
         const dateFormat = "YYYY-MM-DD";
@@ -23,9 +43,16 @@ const ClosedComplaintList = () => {
         const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
         setFromDateState(CurrentMonthFirstDate);
         setToDateState(currentMonthLastDate);
-    
+        getUserData()
     }, [])
     
+    useEffect(() => {
+
+        if (selector.closeComplainListres) {
+            setCloseComplaintList(selector.closeComplainListres)
+        }
+
+    }, [selector.closeComplainListres])
 
     const showDatePickerMethod = (key) => {
         setShowDatePicker(true);
@@ -42,7 +69,82 @@ const ClosedComplaintList = () => {
         setSelectedToDate(date);
     }
 
+    const getUserData = async () => {
+        try {
+            const employeeData = await AsyncStore.getData(
+                AsyncStore.Keys.LOGIN_EMPLOYEE
+            );
 
+            if (employeeData) {
+                const jsonObj = JSON.parse(employeeData);
+
+                let isManager = false,
+                    editEnable = false, isCRE, isCRM;
+                let isPreBookingApprover = false;
+                if (
+                    jsonObj.hrmsRole === "MD" ||
+                    jsonObj.hrmsRole === "General Manager" ||
+                    jsonObj.hrmsRole === "Manager" ||
+                    jsonObj.hrmsRole === "Sales Manager" ||
+                    jsonObj.hrmsRole === "branch manager"
+                ) {
+                    isManager = true;
+                }
+                if (jsonObj.roles.includes("PreBooking Approver")) {
+
+                    editEnable = true;
+                    isPreBookingApprover = true;
+                }
+
+                if (
+                    jsonObj.hrmsRole === "CRE"
+
+                ) {
+                    isCRE = true;
+                }
+
+                if (
+                    jsonObj.hrmsRole === "CRM"
+
+                ) {
+                    isCRM = true;
+                }
+
+
+                setUserData({
+                    orgId: jsonObj.orgId,
+                    employeeId: jsonObj.empId,
+                    employeeName: jsonObj.empName,
+                    isManager: isManager,
+                    editEnable: editEnable,
+                    isPreBookingApprover: isPreBookingApprover,
+                    isSelfManager: jsonObj.isSelfManager,
+                    isCRM: isCRM,
+                    isCRE: isCRE,
+                });
+
+                // let payload = getPayloadData();
+                const dateFormat = "YYYY-MM-DD";
+                const currentDate = moment().add(0, "day").format(dateFormat)
+                const CurrentMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+                const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+                const payload = {
+                    "orgId": jsonObj.orgId,
+                    "loginUser": jsonObj.empName,
+                    "startDate": CurrentMonthFirstDate,
+                    "endDate": currentMonthLastDate,
+                    "status": "Closed"
+                }
+                dispatch(getComplaintListFilterClosed(payload))
+
+            }
+        } catch (error) {
+            alert(error);
+        }
+    };
+    const getFirstLetterUpperCase = (name) => {
+        return name?.charAt(0).toUpperCase() + name?.slice(1);
+    };
 
     const updateSelectedDate = (date, key) => {
 
@@ -50,14 +152,81 @@ const ClosedComplaintList = () => {
         switch (key) {
             case "FROM_DATE":
                 setFromDateState(formatDate);
-                break;
+                const payload = getPayloadData(formatDate, selectedToDate);
+                dispatch(getComplaintListFilterClosed(payload))
             case "TO_DATE":
                 setToDateState(formatDate);
+                const payload2 = getPayloadData(selectedFromDate, formatDate);
+                dispatch(getComplaintListFilterClosed(payload2))
                 break;
         }
     }
+    const getPayloadData = (startdate, toDate) => {
+
+
+        const payload = {
+            "orgId": userData.orgId,
+            "loginUser": userData.employeeName,
+            "startDate": startdate,
+            "endDate": toDate,
+            "status": "Active"
+        }
+        return payload;
+    }
+
+    const initialCallToserver=()=>{
+        // let payload = getPayloadData();
+        const dateFormat = "YYYY-MM-DD";
+        const currentDate = moment().add(0, "day").format(dateFormat)
+        const CurrentMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+        const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+        const payload = {
+            "orgId": userData.orgId,
+            "loginUser": userData.employeeName,
+            "startDate": CurrentMonthFirstDate,
+            "endDate": currentMonthLastDate,
+            "status": "Closed"
+        }
+        dispatch(getComplaintListFilterClosed(payload))
+    }
+
+    const renderItem = ({ item, index }) => {
+        return (
+            <>
+                <View style={{}}>
+                    <ComplintLidtItem
+                        ageing={item.ageing}
+                        from={"CLOSED_LIST"}
+                        name={
+                            getFirstLetterUpperCase(item.customerName)
+                        }
+                        navigator={props.navigation}
+
+
+                        created={item.createdDate}
+                        salesExecutiveName={item.salesExecutiveName}
+                        phone={item.mobileNo}
+                        source={item.complaintFactor}
+                        model={item.model}
+                        userData={userData.hrmsRole}
+
+                        onItemPress={() => {
+
+                        }}
+                        onDocPress={(from) => {
+                            props.navigation.navigate(ComplainTrackerIdentifires.addEditComplaint, {
+                                from: from,
+                                complaintId: item.id
+                            });
+                        }}
+                    />
+                </View>
+            </>
+        );
+    };
+
     return (
-        <SafeAreaView>
+        <SafeAreaView style={{ flex: 1 }}>
             <DatePickerComponent
                 visible={showDatePicker}
                 mode={"date"}
@@ -99,6 +268,36 @@ const ClosedComplaintList = () => {
                 </Pressable>
             </View>
 
+            {closeComplaintList.length <= 0 ?
+                <EmptyListView
+                    title={"No Data Found"}
+                    isLoading={selector.isLoading}
+                /> : <View style={[styles.flatlistView]}>
+                    <FlatList
+
+                        initialNumToRender={closeComplaintList.length}
+                        data={closeComplaintList}
+                        extraData={closeComplaintList}
+                        keyExtractor={(item, index) => index.toString()}
+                          refreshControl={
+                              <RefreshControl
+                                  refreshing={selector.isLoading}
+                                  onRefresh={() => initialCallToserver()}
+                                  progressViewOffset={200}
+                              />
+                          }
+                        showsVerticalScrollIndicator={false}
+                        onEndReachedThreshold={0}
+                        onEndReached={() => {
+                            //   if (searchQuery === "") {
+                            //       getMoreEnquiryListFromServer();
+                            //   }
+                        }}
+                        //   ListFooterComponent={renderFooter}
+                        renderItem={renderItem}
+                    />
+                </View>}
+          
         </SafeAreaView>
     )
 }
@@ -137,5 +336,10 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "400",
         color: Colors.RED,
+    },
+    flatlistView: {
+        backgroundColor: Colors.LIGHT_GRAY,
+        marginBottom: 10,
+
     },
 })

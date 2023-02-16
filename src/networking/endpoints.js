@@ -665,6 +665,9 @@ const URL = {
   GET_DASHBOARD_COUNT_COMPLAINT: ( empId) => {
     return sales_url +`/complainttracker/getCounts/${empId}`;
   },
+  GEY_COMPLAINT_DET_FROMID: (complaintId) => {
+    return sales_url + `/complainttracker/getCt/${complaintId}`;
+  },
   POST_COMPLAINT: () => {
     return sales_url + `/complainttracker/save`;
   },
