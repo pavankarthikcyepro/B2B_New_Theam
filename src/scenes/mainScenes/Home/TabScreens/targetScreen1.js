@@ -645,7 +645,7 @@ const TargetScreen = ({ route }) => {
       if (json.empName) {
         setReceptionistTeamParameters(json.empName);
         let totalKey1 = json.empName.reduce(
-          (acc, obj) => acc + obj.totalAllocatedCount,
+          (acc, obj) => acc + obj.enquirysCount,
           0
         );
         let totalKey2 = json.empName.reduce(
@@ -1014,7 +1014,7 @@ const TargetScreen = ({ route }) => {
                                         }}
                                       >
                                         {[
-                                          item.totalAllocatedCount || 0,
+                                          item.enquirysCount || 0,
                                           item.bookingCount || 0,
                                           item.RetailCount || 0,
                                           item.totalDroppedCount || 0,
@@ -2543,18 +2543,18 @@ const TargetScreen = ({ route }) => {
                                   >
                                     <Text
                                       onPress={() => {
-                                        item?.allocatedCount > 0 &&
+                                        item?.enquiryCount > 0 &&
                                           navigateToEMS();
                                       }}
                                       style={{
                                         padding: 2,
                                         textDecorationLine:
-                                          item?.allocatedCount > 0
+                                          item?.enquiryCount > 0
                                             ? "underline"
                                             : "none",
                                       }}
                                     >
-                                      {item?.allocatedCount}
+                                      {item?.enquiryCount}
                                     </Text>
                                   </View>
                                   <View
@@ -2664,19 +2664,18 @@ const TargetScreen = ({ route }) => {
                             <View style={styles.view20}>
                               <Text
                                 onPress={() => {
-                                  selector.receptionistData
-                                    .totalAllocatedCount > 0 && navigateToEMS();
+                                  selector.receptionistData.enquirysCount > 0 &&
+                                    navigateToEMS();
                                 }}
                                 style={{
                                   padding: 2,
                                   textDecorationLine:
-                                    selector.receptionistData
-                                      .totalAllocatedCount > 0
+                                    selector.receptionistData.enquirysCount > 0
                                       ? "underline"
                                       : "none",
                                 }}
                               >
-                                {selector.receptionistData.totalAllocatedCount}
+                                {selector.receptionistData.enquirysCount}
                               </Text>
                             </View>
                             <View style={styles.view20}>

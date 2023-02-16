@@ -154,16 +154,20 @@ const DropAnalysisScreen = ({ navigation }) => {
         data = data.filter(x => x.status.toLowerCase() !== 'rejected');
         setSearchedData(data)
 
-        let dropDatatemp = [...selector.leadDropList].filter(item => item.status.toUpperCase() === "DROPPED");
+        let dropDatatemp = [...selector.leadDropList].filter(
+          (item) =>
+            item.status.toUpperCase() === "DROPPED" ||
+            item.status.toUpperCase() === "APPROVED"
+        );
         setDroppedData(dropDatatemp);
 
-        let ApproveDatatemp = [...selector.leadDropList].filter(item => item.status.toUpperCase() === "APPROVED");
-        setApprovedData(ApproveDatatemp);
+        // let ApproveDatatemp = [...selector.leadDropList].filter(item => item.status.toUpperCase() === "APPROVED");
+        // setApprovedData(ApproveDatatemp);
 
         let rejectedDatatemp = [...selector.leadDropList].filter(item => item.status.toUpperCase() === "REJECTED");
         setRejectedData(rejectedDatatemp);
         // getCountValues();
-        let tempArr = ['DROPPED ' + `${(10)}`, 'APPROVED ' + `${(12)}`, 'REJECTED ' + `${(22)}`]
+        let tempArr = ['DROPPED ' + `${(10)}`, 'REJECTED ' + `${(22)}`]
         // let temp = ['DROPPED ' + `${(dropDatatemp.length)}`, 'APPROVED ' + `${(ApproveDatatemp.length)}`, 'REJECTED ' + `${(rejectedDatatemp.length)}`]
         setToggelparamdata(tempArr)
         setSelectedItemIds([]);
@@ -220,14 +224,18 @@ const DropAnalysisScreen = ({ navigation }) => {
                 
                 setSearchedData(tempData);
                 if (toggleParamsIndex === 0){
-                    let dropDatatemp = tempData.filter(item => item.status.toUpperCase() === "DROPPED");
+                    let dropDatatemp = tempData.filter(
+                      (item) =>
+                        item.status.toUpperCase() === "DROPPED" ||
+                        item.status.toUpperCase() === "APPROVED"
+                    );
                     setDroppedData(dropDatatemp)
                 }else if (toggleParamsIndex === 1){
-                    let ApproveDatatemp = tempData.filter(item => item.status.toUpperCase() === "APPROVED");
-                    setApprovedData(ApproveDatatemp);
-                }else if(toggleParamsIndex===2) {
+                    // let ApproveDatatemp = tempData.filter(item => item.status.toUpperCase() === "APPROVED");
+                    // setApprovedData(ApproveDatatemp);
                     let rejectedDatatemp = tempData.filter(item => item.status.toUpperCase() === "REJECTED");
                     setRejectedData(rejectedDatatemp);
+                }else if(toggleParamsIndex===2) {
                 }
                 dispatch(updateSearchKey(''))
             }
@@ -861,7 +869,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                     backgroundColor: "rgb(211,211,211,0.65)",
                 }}
                 // values={["ETVBRL", "Allied", "View All"]}
-                values={['DROPPED ' + `${(droppedData.length)}`, 'APPROVED ' + `${(approvedData.length)}`, 'REJECTED ' + `${(rejectedData.length)}`]}
+                values={['DROPPED ' + `${(droppedData.length)}`, 'REJECTED ' + `${(rejectedData.length)}`]}
                 selectedIndex={toggleParamsIndex}
                 tintColor={Colors.RED}
                 fontStyle={{ color: Colors.BLACK, fontSize: 10 }}
@@ -1018,38 +1026,49 @@ const DropAnalysisScreen = ({ navigation }) => {
                                 isCountAndFollowUpVisible(item.stage);
 
                                 return (
-                                    <>
-
-                                        <View>
-                                            <DropAnalysisItem
-                                                onItemSelected={onItemSelected}
-                                                from='PRE_ENQUIRY'
-                                                name={getFirstLetterUpperCase(item.firstName) + " " + getFirstLetterUpperCase(item.lastName)}
-                                                enqCat={item.enquiryCategory}
-                                                uniqueId={item.leadId}
-                                                leadDropId={item.leadDropId}
-                                                created={item.droppedDate}
-                                                dmsLead={item.droppedby}
-                                                source={item.enquirySource}
-                                                lostReason={item.lostReason}
-                                                status={item.status}
-                                                leadStage={item.stage}
-                                                isManager={isManager}
-                                                dropStatus={item.status}
-                                                mobileNo={item.mobileNumber}
-                                                isCheckboxVisible={true}
-                                                isRefresh={isRefresh}
-                                                navigation ={navigation}
-                                                showBubble={true}
-                                                showThreeDots={true}
-                                                universalId={item.crmUniversalId}
-                                                count = {item.count}
-                                                isThreeBtnClickable={isCountAndFollowUpVisible(item.stage)}
-                                                leadStatus = {item.leadStatus}
-                                                
-                                            />
-                                        </View>
-                                    </>
+                                  <>
+                                    <View>
+                                      <DropAnalysisItem
+                                        onItemSelected={onItemSelected}
+                                        from="PRE_ENQUIRY"
+                                        name={
+                                          getFirstLetterUpperCase(
+                                            item.firstName
+                                          ) +
+                                          " " +
+                                          getFirstLetterUpperCase(item.lastName)
+                                        }
+                                        enqCat={item.enquiryCategory}
+                                        uniqueId={item.leadId}
+                                        leadDropId={item.leadDropId}
+                                        created={item.droppedDate}
+                                        dmsLead={item.droppedby}
+                                        source={item.enquirySource}
+                                        lostReason={item.lostReason}
+                                        status={item.status}
+                                        leadStage={item.stage}
+                                        isManager={isManager}
+                                        dropStatus={item.status}
+                                        mobileNo={item.mobileNumber}
+                                        isCheckboxVisible={true}
+                                        isRefresh={isRefresh}
+                                        navigation={navigation}
+                                        showBubble={true}
+                                        showThreeDots={true}
+                                        universalId={item.crmUniversalId}
+                                        count={item.count}
+                                        isThreeBtnClickable={isCountAndFollowUpVisible(
+                                          item.stage
+                                        )}
+                                        leadStatus={item.leadStatus}
+                                        dse={
+                                          item.stage == "PREENQUIRY"
+                                            ? item.createdBy
+                                            : item.salesConsultant
+                                        }
+                                      />
+                                    </View>
+                                  </>
                                 );
                             }}
                         />
@@ -1058,71 +1077,6 @@ const DropAnalysisScreen = ({ navigation }) => {
                     </View>}
             </> }
             {toggleParamsIndex === 1 && <>
-                {approvedData.length === 0 ? <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} /> :
-                    <View style={[{ backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10, marginTop: 10 }]}>
-                        <FlatList
-                            initialNumToRender={approvedData.length}
-                            data={approvedData}
-                            extraData={approvedData}
-                            keyExtractor={(item, index) => index.toString()}
-                            refreshControl={(
-                                <RefreshControl
-                                    refreshing={selector.isLoading}
-                                    onRefresh={() => getDropListFromServerV2(employeeId, employeeName, branchId, orgId, selectedFromDate, selectedToDate)}
-                                    progressViewOffset={200}
-                                />
-                            )}
-                            showsVerticalScrollIndicator={false}
-                            onEndReachedThreshold={0}
-                            onEndReached={() => {
-                                if (appSelector.searchKey === '') {
-                                    // getMoreEnquiryListFromServer()
-                                }
-                            }}
-                            ListFooterComponent={renderFooter}
-                            renderItem={({ item, index }) => {
-
-                                let color = Colors.WHITE;
-                                if (index % 2 != 0) {
-                                    color = Colors.LIGHT_GRAY;
-                                }
-
-                                return (
-                                    <>
-
-                                        <View>
-                                            <DropAnalysisItem
-                                                onItemSelected={onItemSelected}
-                                                from='PRE_ENQUIRY'
-                                                name={getFirstLetterUpperCase(item.firstName) + " " + getFirstLetterUpperCase(item.lastName)}
-                                                enqCat={item.enquiryCategory}
-                                                uniqueId={item.leadId}
-                                                leadDropId={item.leadDropId}
-                                                created={item.droppedDate}
-                                                dmsLead={item.droppedby}
-                                                source={item.enquirySource}
-                                                lostReason={item.lostReason}
-                                                status={item.status}
-                                                leadStage={item.stage}
-                                                isManager={isManager}
-                                                dropStatus={item.status}
-                                                mobileNo={item.mobileNumber}
-                                                isCheckboxVisible = {false}
-                                                navigation={navigation}
-                                                showBubble={false}
-                                                showThreeDots={false}
-                                                leadStatus={item.leadStatus}
-                                            />
-                                        </View>
-                                    </>
-                                );
-                            }}
-                        />
-                        {renderFooter()}
-                        {/* {isManager && renderApprovalUi()} */}
-                    </View>}
-            </>}
-            {toggleParamsIndex === 2 && <>
                 {rejectedData.length === 0 ? <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} /> :
                     <View style={[{ backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10,marginTop:10 }]}>
                         <FlatList

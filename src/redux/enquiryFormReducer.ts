@@ -645,6 +645,7 @@ const initialState = {
   customer_types: null,
   enquiry_type_list: [],
   isAddressSet: false,
+  isAddressSet2: false,
   isOpened: false,
   refNo: "",
   rmfgYear: null,
@@ -841,7 +842,12 @@ const enquiryDetailsOverViewSlice = createSlice({
             state.gender = genderData?.length > 0 ? genderData[0].name : "";
             state.relation = "";
             state.gender_types_data = genderData;
-            state.relation_types_data = Relation_Data_Obj[value.toLowerCase()];
+            if (value) {
+              state.relation_types_data =
+                Relation_Data_Obj[value.toLowerCase()];
+            } else {
+              state.relation_types_data = [];
+            }
           }
           state.salutation = value;
           break;
@@ -2092,7 +2098,11 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.city = action.payload.District || "";
       state.district = action.payload.District || "";
       state.state = action.payload.State || "";
-      state.isAddressSet = true;
+      if (Object.keys(action.payload).length > 0 ){
+        state.isAddressSet = true;
+      } else {
+        state.isAddressSet = false;
+      }
       if (state.is_permanent_address_same === "YES") {
         state.p_village = action.payload.Block || "";
         state.p_mandal = state.mandal
@@ -2105,6 +2115,11 @@ const enquiryDetailsOverViewSlice = createSlice({
       }
     },
     updateAddressByPincode2: (state, action) => {
+      if (Object.keys(action.payload).length > 0) {
+        state.isAddressSet2 = true;
+      } else {
+        state.isAddressSet2 = false;
+      }
       state.p_village = action.payload.Block || "";
       state.p_mandal = state.p_mandal
         ? state.p_mandal
