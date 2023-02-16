@@ -144,7 +144,7 @@ const data = [
     title: "Complaint Tracker",
     icon: COMPLAINT_TRACKER,
     screen: 123,
-    // pngIcon: require("../assets/images/review.png"),
+    pngIcon: require("../assets/images/review.png"),
   },
   {
     title: "Sign Out",

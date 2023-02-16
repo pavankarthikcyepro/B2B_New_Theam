@@ -5,6 +5,7 @@ import moment from 'moment';
 import { IconButton } from 'react-native-paper';
 import { Colors } from '../../../styles';
 import { MyTaskNewItem } from '../MyTasks/components/MyTasksNewItem';
+import { ComplintLidtItem } from './ComplintLidtItem';
 
 
 const dateFormat = "YYYY-MM-DD";
@@ -26,7 +27,17 @@ const ComplaintList = (props) => {
 
     const fromDateRef = React.useRef(selectedFromDate);
     const toDateRef = React.useRef(selectedToDate);
-
+    const [userData, setUserData] = useState({
+        orgId: "",
+        employeeId: "",
+        employeeName: "",
+        isManager: false,
+        editEnable: false,
+        isPreBookingApprover: false,
+        isSelfManager: "",
+        isCRM: false,
+        isCRE: false,
+    });
     useEffect(() => {
         const dateFormat = "YYYY-MM-DD";
         const currentDate = moment().add(0, "day").format(dateFormat)
@@ -70,13 +81,77 @@ const ComplaintList = (props) => {
         return name?.charAt(0).toUpperCase() + name?.slice(1);
     };
 
+    const getUserData = async () => {
+        try {
+            const employeeData = await AsyncStore.getData(
+                AsyncStore.Keys.LOGIN_EMPLOYEE
+            );
+
+            if (employeeData) {
+                const jsonObj = JSON.parse(employeeData);
+
+                let isManager = false,
+                    editEnable = false, isCRE, isCRM;
+                let isPreBookingApprover = false;
+                if (
+                    jsonObj.hrmsRole === "MD" ||
+                    jsonObj.hrmsRole === "General Manager" ||
+                    jsonObj.hrmsRole === "Manager" ||
+                    jsonObj.hrmsRole === "Sales Manager" ||
+                    jsonObj.hrmsRole === "branch manager"
+                ) {
+                    isManager = true;
+                }
+                if (jsonObj.roles.includes("PreBooking Approver")) {
+
+                    editEnable = true;
+                    isPreBookingApprover = true;
+                }
+
+                if (
+                    jsonObj.hrmsRole === "CRE"
+
+                ) {
+                    isCRE = true;
+                }
+
+                if (
+                    jsonObj.hrmsRole === "CRM"
+
+                ) {
+                    isCRM = true;
+                }
+
+
+                setUserData({
+                    orgId: jsonObj.orgId,
+                    employeeId: jsonObj.empId,
+                    employeeName: jsonObj.empName,
+                    isManager: isManager,
+                    editEnable: editEnable,
+                    isPreBookingApprover: isPreBookingApprover,
+                    isSelfManager: jsonObj.isSelfManager,
+                    isCRM: isCRM,
+                    isCRE: isCRE,
+                });
+                let payload = {
+                    empId: jsonObj.empId
+                }
+
+               
+            }
+        } catch (error) {
+            alert(error);
+        }
+    };
+
 
 
     const renderItem = ({ item, index }) => {
         return (
             <>
                 <View>
-                    <MyTaskNewItem
+                    <ComplintLidtItem
                         tdflage={item?.tdflage ? item.tdflage : ""}
                         from={item.leadStage}
                         name={
@@ -105,7 +180,7 @@ const ComplaintList = (props) => {
                         // stageAccess={stageAccess}
                         onlylead={true}
                         userData={userData.hrmsRole}
-                        EmployeesRoles={EmployeesRoles}
+                        EmployeesRoles={""}
                         enqCat={item.enquiryCategory}
                         onItemPress={() => {
                             props.navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, {
