@@ -934,9 +934,9 @@ export const ProformaComp = ({
         '</tr>' +
         '<tr>' +
         '<td class="tCenter" style="background-color: #4d4f51; color: #fff !important;"><strong>NET ON ROAD PRICE</strong></td>' +
-        '<td style="background-color: #4d4f51; color: #fff !important; text-align: right;"><strong>' + totalOnRoadPrice.toString() + ' </strong></td>' +
+        '<td style="background-color: #4d4f51; color: #fff !important; text-align: right;"><strong>' + getActualPrice().toFixed(2).toString() + ' </strong></td>' +
         '<td class="tCenter" style="background-color: #4d4f51; color: #fff !important;"><strong>NET ON ROAD PRICE AFTER DISCOUNT</strong></td>' +
-        '<td style="background-color: #4d4f51; color: #fff !important; text-align: right;"><strong>' + totalOnRoadPriceAfterDiscount.toString() + '</strong></td>' +
+        '<td style="background-color: #4d4f51; color: #fff !important; text-align: right;"><strong>' + getActualPriceAfterDiscount().toFixed(2).toString() + '</strong></td>' +
         '</tr>' +
         '<tr>' +
         '<td colspan="4">' +
@@ -1023,289 +1023,289 @@ export const ProformaComp = ({
     }
   };
 
-  const downloadPdf2 = async (from) => {
+  // const downloadPdf2 = async (from) => {
 
-    try {
-      let siteTypeName =
-        (await '<div  >') +
-        '<div>' +
-        '<div    id="proforma" style="margin: 0px; width: 1100px; height: 100%;">' +
+  //   try {
+  //     let siteTypeName =
+  //       (await '<div  >') +
+  //       '<div>' +
+  //       '<div    id="proforma" style="margin: 0px; width: 1100px; height: 100%;">' +
 
-        '<table  class="ttable" style=" border: 1px solid black;width:100%;  color: black; font - size: 12px; " >' +
-        " <tr>" +
-        '<td   class="tCenter" colspan="4" style="background: #7e7b7b; text-align: center; border: 1px solid black; border - collapse: collapse;">' +
-        '<strong>PROFORMA INVOICE</strong>' +
-        "</td>" +
-        "</tr>" +
+  //       '<table  class="ttable" style=" border: 1px solid black;width:100%;  color: black; font - size: 12px; " >' +
+  //       " <tr>" +
+  //       '<td   class="tCenter" colspan="4" style="background: #7e7b7b; text-align: center; border: 1px solid black; border - collapse: collapse;">' +
+  //       '<strong>PROFORMA INVOICE</strong>' +
+  //       "</td>" +
+  //       "</tr>" +
 
-        "<tr >" +
-        // '<td   colspan="2" rowspan="5">' +
-        // '<div   class="row align-items-center">' +
-        //   '<div   class="col-md-2 col-2">' +
-        '<td style="border: 1px solid black; border - collapse: collapse; padding-left: 20px; ">' + '<img   style="width: 100px; height: auto" src=' +
-        selector.proforma_logo +
-        ">" +
-        '</td>' +
+  //       "<tr >" +
+  //       // '<td   colspan="2" rowspan="5">' +
+  //       // '<div   class="row align-items-center">' +
+  //       //   '<div   class="col-md-2 col-2">' +
+  //       '<td style="border: 1px solid black; border - collapse: collapse; padding-left: 20px; ">' + '<img   style="width: 100px; height: auto" src=' +
+  //       selector.proforma_logo +
+  //       ">" +
+  //       '</td>' +
 
-        // '</div>' +
-        '<td style="border: 1px solid black; border - collapse: collapse; padding:10px;">' +
-        '<div   class="col-md-8 orgname" style="font-size: 12px; font - weight: bold; margin - left: 30px; border - left: 1px solid black; ">' +
-        '<p  style="color:#00165c; ">' +
-        selector.proforma_orgName +
-        '</p>' +
-        '<p   class="orgname-pad" style=" margin-top: -10px; color:#00165c; "> GSTN: ' +
-        selector.proforma_gstnNumber + '</p>' +
-        '<p style="color:#00165c; " >' + selector.proforma_houseNo + '</p>' +
-        '<p   class="orgaddr-pad" style=" margin-top: -10px; color:#00165c; ">' + selector.profprma_street + '</p> ' +
-        '<p   class="orgaddr-pad" style=" margin-top: -10px; color:#00165c; ">' + selector.proforma_branch + '</p> ' +
-        '<p   class="orgaddr-pad" style=" margin-top: -10px; color:#00165c; ">' + selector.proforma_city + selector.proforma_pincode + '</p> ' +
-        '<p   class="orgaddr-pad" style=" margin-top: -10px; color:#00165c; ">' + selector.proforma_state + '</p> ' +
-        '</div>' +
+  //       // '</div>' +
+  //       '<td style="border: 1px solid black; border - collapse: collapse; padding:10px;">' +
+  //       '<div   class="col-md-8 orgname" style="font-size: 12px; font - weight: bold; margin - left: 30px; border - left: 1px solid black; ">' +
+  //       '<p  style="color:#00165c; ">' +
+  //       selector.proforma_orgName +
+  //       '</p>' +
+  //       '<p   class="orgname-pad" style=" margin-top: -10px; color:#00165c; "> GSTN: ' +
+  //       selector.proforma_gstnNumber + '</p>' +
+  //       '<p style="color:#00165c; " >' + selector.proforma_houseNo + '</p>' +
+  //       '<p   class="orgaddr-pad" style=" margin-top: -10px; color:#00165c; ">' + selector.profprma_street + '</p> ' +
+  //       '<p   class="orgaddr-pad" style=" margin-top: -10px; color:#00165c; ">' + selector.proforma_branch + '</p> ' +
+  //       '<p   class="orgaddr-pad" style=" margin-top: -10px; color:#00165c; ">' + selector.proforma_city + selector.proforma_pincode + '</p> ' +
+  //       '<p   class="orgaddr-pad" style=" margin-top: -10px; color:#00165c; ">' + selector.proforma_state + '</p> ' +
+  //       '</div>' +
 
-        '</td>' +
-        '<td  style="border: 1px solid black; border - collapse: collapse;  ">' +
-        '<table   style="border: 1px solid black; border - collapse: collapse; width:100%;";>' +
-        '<tr  " >' +
-        '<td   style=" color:#00165c; border: 1px solid black; border - collapse: collapse; width:50%;" >PROFORMA NO :</td>' +
-        '<td   style=" color:#00165c; border: 1px solid black; border - collapse: collapse; text-align: right; width:50%;"  "> ' + proformaNo + ' </td>' +
-        '</tr>' +
-        '</table>' +
-        '<table  style="border: 1px solid black; border - collapse: collapse; width:100%;">' +
-        '<tr   >' +
-        '<td style=" color:#00165c; border: 1px solid black; border - collapse: collapse; width:50%;"  >DATE :</td>' +
-        '<td  style=" color:#00165c; border: 1px solid black; border - collapse: collapse; text-align: right; width:50%;" >' + selectedDate + '</td>' +
-        '</tr>' +
-        '</table>' +
-        '<table  style="border: 1px solid black; border - collapse: collapse; width:100%;">' +
-        '<tr   >' +
-        '<td  style=" color:#00165c;border: 1px solid black; border - collapse: collapse; width:50%;" >PAN NO :</td>' +
-        '<td    style="text-transform: uppercase; color:#00165c; text-align: right; border: 1px solid black; border - collapse: collapse; width:50%;"> ' + selector.pan_number + ' </td>' +
-        '</tr>' +
-        '</table>' +
-        '<table  style="border: 1px solid black; border - collapse: collapse; width:100%;">' +
-        '<tr   >' +
-        '<td  style=" color:#00165c; border: 1px solid black; border - collapse: collapse; width:50%;" >GST NO :</td>' +
-        '<td    style="text-transform: uppercase; color:#00165c; text-align: right; border: 1px solid black; border - collapse: collapse; width:50%;"> ' + selector.gstin_number + ' </td>' +
-        '</tr>' +
-        '</table>' +
-        '</td>' +
-
-
-        // '</div>'+
-        // '</td>'+
-        "</tr>" +
+  //       '</td>' +
+  //       '<td  style="border: 1px solid black; border - collapse: collapse;  ">' +
+  //       '<table   style="border: 1px solid black; border - collapse: collapse; width:100%;";>' +
+  //       '<tr  " >' +
+  //       '<td   style=" color:#00165c; border: 1px solid black; border - collapse: collapse; width:50%;" >PROFORMA NO :</td>' +
+  //       '<td   style=" color:#00165c; border: 1px solid black; border - collapse: collapse; text-align: right; width:50%;"  "> ' + proformaNo + ' </td>' +
+  //       '</tr>' +
+  //       '</table>' +
+  //       '<table  style="border: 1px solid black; border - collapse: collapse; width:100%;">' +
+  //       '<tr   >' +
+  //       '<td style=" color:#00165c; border: 1px solid black; border - collapse: collapse; width:50%;"  >DATE :</td>' +
+  //       '<td  style=" color:#00165c; border: 1px solid black; border - collapse: collapse; text-align: right; width:50%;" >' + selectedDate + '</td>' +
+  //       '</tr>' +
+  //       '</table>' +
+  //       '<table  style="border: 1px solid black; border - collapse: collapse; width:100%;">' +
+  //       '<tr   >' +
+  //       '<td  style=" color:#00165c;border: 1px solid black; border - collapse: collapse; width:50%;" >PAN NO :</td>' +
+  //       '<td    style="text-transform: uppercase; color:#00165c; text-align: right; border: 1px solid black; border - collapse: collapse; width:50%;"> ' + selector.pan_number + ' </td>' +
+  //       '</tr>' +
+  //       '</table>' +
+  //       '<table  style="border: 1px solid black; border - collapse: collapse; width:100%;">' +
+  //       '<tr   >' +
+  //       '<td  style=" color:#00165c; border: 1px solid black; border - collapse: collapse; width:50%;" >GST NO :</td>' +
+  //       '<td    style="text-transform: uppercase; color:#00165c; text-align: right; border: 1px solid black; border - collapse: collapse; width:50%;"> ' + selector.gstin_number + ' </td>' +
+  //       '</tr>' +
+  //       '</table>' +
+  //       '</td>' +
 
 
+  //       // '</div>'+
+  //       // '</td>'+
+  //       "</tr>" +
 
 
 
 
 
-        '<tr      class="tCenter" >  ' +
-        '<td      colspan="4" style="border: 1px solid black; border - collapse: collapse; color:#00165c; text-align: center;"> <strong     >' + carModel + " " + "Model" + " " + carVariant + '</strong></td>' +
-        '</tr>' +
-        '<tr      class="tCenter">  ' +
-        '<td     style="border: 1px solid black; border - collapse: collapse; color:#00165c; text-align: center; " colspan="4"><strong    >' + carColor + '</strong></td>' +
-        '</tr>' +
-        '<tr >' +
-        '<td    style="border: 1px solid black; border - collapse: collapse; "><strong   >PARTICULARS</strong></td>' +
-        '<td      style="text-align: right; border: 1px solid black; border - collapse: collapse;" width="25%"><strong     >AMOUNT</strong></td>' +
-        '<td      style="border: 1px solid black; border - collapse: collapse; " > <strong     >DISCOUNT</strong></td>' +
-        '<td      style="text-align: right; border: 1px solid black; border - collapse: collapse;" width="25%"><strong     >AMOUNT</strong></td>' +
-        '</tr>' +
 
 
-        '<tr>' +
-        '<td       style="border: 1px solid black; border - collapse: collapse; ">Ex-Showroom Price</td>' +
-        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;" width="25%"> ' + priceInfomationData.ex_showroom_price.toString() + '</td>' +
-        '<td       style="border: 1px solid black; border - collapse: collapse; ">Consumer Offer</td>' +
-        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;" width="25%"> ' + selector.consumer_offer.toString() + ' </td>' +
-        '</tr>' +
-        '<tr >' +
-        '<td      style="border: 1px solid black; border - collapse: collapse; ">Life Tax</td>' +
-        '<td      class="talign" width="25%" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + lifeTaxAmount.toString() + ' </td>' +
-        '<td      style="border: 1px solid black; border - collapse: collapse; ">Exchange Offer</td>' +
-        '<td      class="talign" width="25%" style="text-align: right; border: 1px solid black; border - collapse: collapse;" > ' + selector.exchange_offer.toString() + ' </td>' +
-        '</tr>' +
-        '<tr>' +
-        '<td   style="border: 1px solid black; border - collapse: collapse; "  >Registration Charges</td>' +
-        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + `${selectedRegistrationCharges?.cost ? selectedRegistrationCharges?.cost : "0.00"}`
-        + ' </td>' +
-        '<td     style="border: 1px solid black; border - collapse: collapse; ">Corporate Offer</td>' +
-        '<td      class="talign" width="25%" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + selector.corporate_offer.toString() + ' </td>' +
-        '</tr>' +
-        '<tr>' +
-        '<td   style="border: 1px solid black; border - collapse: collapse; "  >Insurance ()</td>' +
-        '<td      class="talign"style="text-align: right; border: 1px solid black; border - collapse: collapse;">' + selectedInsurencePrice.toString() + '</td>' +
-        '<td   style="border: 1px solid black; border - collapse: collapse; "  >Promotional Offers</td>' +
-        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + selector.promotional_offer.toString() + ' </td>' +
-        '</tr>' +
-        '<tr >' +
-        '<td   style="border: 1px solid black; border - collapse: collapse; "  >Add-on Insurance</td>' +
-        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;">' + selectedAddOnsPrice.toString() + '</td>' +
-        '<td   style="border: 1px solid black; border - collapse: collapse; "  >Cash Discount</td>' +
-        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + selector.cash_discount.toString() + ' </td>' +
-        '</tr>' +
-        '<tr     >' +
-        '<td  style="border: 1px solid black; border - collapse: collapse; "   >Warranty ()</td>' +
-        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + selectedWarrentyPrice.toString() + ' </td>' +
-        '<td  style="border: 1px solid black; border - collapse: collapse; "   >FOC Accessories</td>' +
-        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + selector.for_accessories.toString() + ' </td>' +
-        '</tr>' +
-        '<tr     >' +
-        '<td  style="border: 1px solid black; border - collapse: collapse; "   >Handling Charges:</td>' +
-        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + `${handlingChargSlctd ? priceInfomationData.handling_charges.toFixed(2) : 0}` + ' </td>' +
-        '<td   style="border: 1px solid black; border - collapse: collapse; "  >Insurance Discount</td>' +
-        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;">' + selector.insurance_discount.toString() + ' </td>' +
-        '</tr>' +
-        '<tr     >' +
-        '<td style="border: 1px solid black; border - collapse: collapse; "    >Essential Kit:</td>' +
-        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;">' + `${essentialKitSlctd ? priceInfomationData.essential_kit.toFixed(2) : 0}` + '</td>' +
-        '<td   style="border: 1px solid black; border - collapse: collapse; "  >Accessories Discount</td>' +
-        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + selector.accessories_discount.toString() + ' </td>' +
-        '</tr>' +
-        '<tr >' +
-        '<td   style="border: 1px solid black; border - collapse: collapse; "  >TCS(&gt;10Lakhs -&gt; 1%):</td>' +
-        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;">' + tcsAmount.toString() + '</td>' +
-        '<td   style="border: 1px solid black; border - collapse: collapse; "  >Additional Offer 1</td>' +
-        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + selector.additional_offer_1.toString() + ' </td>' +
-        '</tr>' +
-        '<tr     >' +
-        '<td  style="border: 1px solid black; border - collapse: collapse; "   >Paid Accessories:</td>' +
-        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + selectedPaidAccessoriesPrice.toString() + ' </td>' +
-        '<td  style="border: 1px solid black; border - collapse: collapse; "   >Additional Offer 2</td>' +
-        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;">' + selector.additional_offer_2.toString() + '</td>' +
-        '</tr>' +
-        '<tr     >' +
-        '<td   style="border: 1px solid black; border - collapse: collapse; "  >Fast Tag</td>' +
-        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + `${fastTagSlctd ? priceInfomationData?.fast_tag?.toFixed(2) : 0}` + ' </td>' +
-        '<td   style="border: 1px solid black; border - collapse: collapse; "  > </td>' +
-        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"></td>' +
-        '</tr>' +
-
-        addNewInput.map((item) => {
-          return '<tr     >' +
-            '<td    style="border: 1px solid black; border - collapse: collapse; "  >' + item.name + '</td>' +
-            '<td      class="taligns" style="text-align: right; border: 1px solid black; border - collapse: collapse;">' + item.amount + '</td>' +
-            '<td  style="border: 1px solid black; border - collapse: collapse; "    ></td>' +
-            '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"></td>' +
-            '</tr > '
-        }).join(' ') +
-
-        '<tr     >' +
-        '<td    style="border: 1px solid black; border - collapse: collapse; "  ></td>' +
-        '<td      class="taligns" style="text-align: right; border: 1px solid black; border - collapse: collapse;"></td>' +
-        '<td  style="border: 1px solid black; border - collapse: collapse; "    ></td>' +
-        '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"></td>' +
-        '</tr > ' +
+  //       '<tr      class="tCenter" >  ' +
+  //       '<td      colspan="4" style="border: 1px solid black; border - collapse: collapse; color:#00165c; text-align: center;"> <strong     >' + carModel + " " + "Model" + " " + carVariant + '</strong></td>' +
+  //       '</tr>' +
+  //       '<tr      class="tCenter">  ' +
+  //       '<td     style="border: 1px solid black; border - collapse: collapse; color:#00165c; text-align: center; " colspan="4"><strong    >' + carColor + '</strong></td>' +
+  //       '</tr>' +
+  //       '<tr >' +
+  //       '<td    style="border: 1px solid black; border - collapse: collapse; "><strong   >PARTICULARS</strong></td>' +
+  //       '<td      style="text-align: right; border: 1px solid black; border - collapse: collapse;" width="25%"><strong     >AMOUNT</strong></td>' +
+  //       '<td      style="border: 1px solid black; border - collapse: collapse; " > <strong     >DISCOUNT</strong></td>' +
+  //       '<td      style="text-align: right; border: 1px solid black; border - collapse: collapse;" width="25%"><strong     >AMOUNT</strong></td>' +
+  //       '</tr>' +
 
 
+  //       '<tr>' +
+  //       '<td       style="border: 1px solid black; border - collapse: collapse; ">Ex-Showroom Price</td>' +
+  //       '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;" width="25%"> ' + priceInfomationData.ex_showroom_price.toString() + '</td>' +
+  //       '<td       style="border: 1px solid black; border - collapse: collapse; ">Consumer Offer</td>' +
+  //       '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;" width="25%"> ' + selector.consumer_offer.toString() + ' </td>' +
+  //       '</tr>' +
+  //       '<tr >' +
+  //       '<td      style="border: 1px solid black; border - collapse: collapse; ">Life Tax</td>' +
+  //       '<td      class="talign" width="25%" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + lifeTaxAmount.toString() + ' </td>' +
+  //       '<td      style="border: 1px solid black; border - collapse: collapse; ">Exchange Offer</td>' +
+  //       '<td      class="talign" width="25%" style="text-align: right; border: 1px solid black; border - collapse: collapse;" > ' + selector.exchange_offer.toString() + ' </td>' +
+  //       '</tr>' +
+  //       '<tr>' +
+  //       '<td   style="border: 1px solid black; border - collapse: collapse; "  >Registration Charges</td>' +
+  //       '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + `${selectedRegistrationCharges?.cost ? selectedRegistrationCharges?.cost : "0.00"}`
+  //       + ' </td>' +
+  //       '<td     style="border: 1px solid black; border - collapse: collapse; ">Corporate Offer</td>' +
+  //       '<td      class="talign" width="25%" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + selector.corporate_offer.toString() + ' </td>' +
+  //       '</tr>' +
+  //       '<tr>' +
+  //       '<td   style="border: 1px solid black; border - collapse: collapse; "  >Insurance ()</td>' +
+  //       '<td      class="talign"style="text-align: right; border: 1px solid black; border - collapse: collapse;">' + selectedInsurencePrice.toString() + '</td>' +
+  //       '<td   style="border: 1px solid black; border - collapse: collapse; "  >Promotional Offers</td>' +
+  //       '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + selector.promotional_offer.toString() + ' </td>' +
+  //       '</tr>' +
+  //       '<tr >' +
+  //       '<td   style="border: 1px solid black; border - collapse: collapse; "  >Add-on Insurance</td>' +
+  //       '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;">' + selectedAddOnsPrice.toString() + '</td>' +
+  //       '<td   style="border: 1px solid black; border - collapse: collapse; "  >Cash Discount</td>' +
+  //       '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + selector.cash_discount.toString() + ' </td>' +
+  //       '</tr>' +
+  //       '<tr     >' +
+  //       '<td  style="border: 1px solid black; border - collapse: collapse; "   >Warranty ()</td>' +
+  //       '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + selectedWarrentyPrice.toString() + ' </td>' +
+  //       '<td  style="border: 1px solid black; border - collapse: collapse; "   >FOC Accessories</td>' +
+  //       '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + selector.for_accessories.toString() + ' </td>' +
+  //       '</tr>' +
+  //       '<tr     >' +
+  //       '<td  style="border: 1px solid black; border - collapse: collapse; "   >Handling Charges:</td>' +
+  //       '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + `${handlingChargSlctd ? priceInfomationData.handling_charges.toFixed(2) : 0}` + ' </td>' +
+  //       '<td   style="border: 1px solid black; border - collapse: collapse; "  >Insurance Discount</td>' +
+  //       '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;">' + selector.insurance_discount.toString() + ' </td>' +
+  //       '</tr>' +
+  //       '<tr     >' +
+  //       '<td style="border: 1px solid black; border - collapse: collapse; "    >Essential Kit:</td>' +
+  //       '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;">' + `${essentialKitSlctd ? priceInfomationData.essential_kit.toFixed(2) : 0}` + '</td>' +
+  //       '<td   style="border: 1px solid black; border - collapse: collapse; "  >Accessories Discount</td>' +
+  //       '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + selector.accessories_discount.toString() + ' </td>' +
+  //       '</tr>' +
+  //       '<tr >' +
+  //       '<td   style="border: 1px solid black; border - collapse: collapse; "  >TCS(&gt;10Lakhs -&gt; 1%):</td>' +
+  //       '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;">' + tcsAmount.toString() + '</td>' +
+  //       '<td   style="border: 1px solid black; border - collapse: collapse; "  >Additional Offer 1</td>' +
+  //       '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + selector.additional_offer_1.toString() + ' </td>' +
+  //       '</tr>' +
+  //       '<tr     >' +
+  //       '<td  style="border: 1px solid black; border - collapse: collapse; "   >Paid Accessories:</td>' +
+  //       '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + selectedPaidAccessoriesPrice.toString() + ' </td>' +
+  //       '<td  style="border: 1px solid black; border - collapse: collapse; "   >Additional Offer 2</td>' +
+  //       '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;">' + selector.additional_offer_2.toString() + '</td>' +
+  //       '</tr>' +
+  //       '<tr     >' +
+  //       '<td   style="border: 1px solid black; border - collapse: collapse; "  >Fast Tag</td>' +
+  //       '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"> ' + `${fastTagSlctd ? priceInfomationData?.fast_tag?.toFixed(2) : 0}` + ' </td>' +
+  //       '<td   style="border: 1px solid black; border - collapse: collapse; "  > </td>' +
+  //       '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"></td>' +
+  //       '</tr>' +
 
-        '<tr      >' +
-        '<td       class="tCenter" style="background-color: rgb(228, 212, 190); text-align: center; border: 1px solid black; border - collapse: collapse;"><strong      >NET ON ROAD PRICE</strong></td>' +
-        '<td       class="talign" style="background-color: rgb(228, 212, 190); text-align: right; border: 1px solid black; border - collapse: collapse;"><strong      >' + totalOnRoadPrice.toString() + '</strong></td>' +
-        '<td       class="tCenter" style="background-color: rgb(228, 212, 190); text-align: center; border: 1px solid black; border - collapse: collapse;"><strong      >NET ON ROAD PRICE AFTER DISCOUNT</strong></td>' +
-        '<td       class="talign" style="background-color: rgb(228, 212, 190); text-align: right; border: 1px solid black; border - collapse: collapse;"><strong      >' + totalOnRoadPriceAfterDiscount.toString() + '</strong></td>' +
-        '</tr>' +
+  //       addNewInput.map((item) => {
+  //         return '<tr     >' +
+  //           '<td    style="border: 1px solid black; border - collapse: collapse; "  >' + item.name + '</td>' +
+  //           '<td      class="taligns" style="text-align: right; border: 1px solid black; border - collapse: collapse;">' + item.amount + '</td>' +
+  //           '<td  style="border: 1px solid black; border - collapse: collapse; "    ></td>' +
+  //           '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"></td>' +
+  //           '</tr > '
+  //       }).join(' ') +
 
-
-        '<tr      >' +
-        '<td       colspan="4">' +
-        '<p       style="text-decoration: underline">TERMS AND CONDITIONS</p>' +
-
-        '<div       class="ng-star-inserted">' + termNconditionData.map((item, index) => {
-
-          return '<div style="padding:4px">' + `${index + 1}` + " ) " + `${item}` + '</div>'
-
-        }).join(' ') + '</div>' +
-
-        '</td>' +
-        '</tr>' +
-
-        '<tr      >' +
-        '<td    style="border: 1px solid black; border - collapse: collapse;"   colspan="4">' +
-        '<div       class="row">' +
-        '<div       class="col-md-12"><span       class="pull-right" style="float: right;"><b      >For,' + selector.proforma_orgName + '</b></span></div>' +
-        '</div>' +
-        '<div       class="row" style="margin-top: 20px">' +
-        '<div       class="col-md-12"><span       class="pull-right" style="float: right;"><b      >Authorised Signatory</b></span></div>' +
-        '</div>' +
-        '</td>' +
-        '</tr>' +
+  //       '<tr     >' +
+  //       '<td    style="border: 1px solid black; border - collapse: collapse; "  ></td>' +
+  //       '<td      class="taligns" style="text-align: right; border: 1px solid black; border - collapse: collapse;"></td>' +
+  //       '<td  style="border: 1px solid black; border - collapse: collapse; "    ></td>' +
+  //       '<td      class="talign" style="text-align: right; border: 1px solid black; border - collapse: collapse;"></td>' +
+  //       '</tr > ' +
 
 
 
-        "</table>" +
-        '</div >' +
-        '</div >' +
-        '</div >';
+  //       '<tr      >' +
+  //       '<td       class="tCenter" style="background-color: rgb(228, 212, 190); text-align: center; border: 1px solid black; border - collapse: collapse;"><strong      >NET ON ROAD PRICE</strong></td>' +
+  //       '<td       class="talign" style="background-color: rgb(228, 212, 190); text-align: right; border: 1px solid black; border - collapse: collapse;"><strong      >' + totalOnRoadPrice.toString() + '</strong></td>' +
+  //       '<td       class="tCenter" style="background-color: rgb(228, 212, 190); text-align: center; border: 1px solid black; border - collapse: collapse;"><strong      >NET ON ROAD PRICE AFTER DISCOUNT</strong></td>' +
+  //       '<td       class="talign" style="background-color: rgb(228, 212, 190); text-align: right; border: 1px solid black; border - collapse: collapse;"><strong      >' + totalOnRoadPriceAfterDiscount.toString() + '</strong></td>' +
+  //       '</tr>' +
 
 
-      let bottomPitch =
-        (await '<div style="padding-top:10px;" >') +
-        "<p>" +
-        "Thank you for using our LED Savings Calculator. Energy Lighting Services is based in Nashville, Tennessee, and has been retrofitting commercial buildings all over North America with LED lighting systems since 2010. We would be honored to help you with your project needs.Please reach out to us if you have any questions.www.energylightingservices.com  855.270.3300  info@elsco.org" +
-        "<p>" +
-        "</div>";
-      let finalHtmlText = await siteTypeName;
-      let directoryPath = "";
-      if (Platform.OS === "android") {
-        directoryPath = "Download";
-      }
-      else {
-        directoryPath = "Documents";
-      }
-      let options = {
-        html: finalHtmlText,
-        fileName: 'ProformaInvoice' + `${selectedProformaID}`,
-        directory: directoryPath,
-      };
-      let file = await RNHTMLtoPDF.convert(options);
-      var PdfData = await RNFS.readFile(file.filePath, "base64").then();
+  //       '<tr      >' +
+  //       '<td       colspan="4">' +
+  //       '<p       style="text-decoration: underline">TERMS AND CONDITIONS</p>' +
 
-      // RNFS.copyFile(file.filePath + "/ProformaInvoice.pdf", RNFS.DocumentDirectoryPath + "/ProformaInvoice2.pdf")
+  //       '<div       class="ng-star-inserted">' + termNconditionData.map((item, index) => {
+
+  //         return '<div style="padding:4px">' + `${index + 1}` + " ) " + `${item}` + '</div>'
+
+  //       }).join(' ') + '</div>' +
+
+  //       '</td>' +
+  //       '</tr>' +
+
+  //       '<tr      >' +
+  //       '<td    style="border: 1px solid black; border - collapse: collapse;"   colspan="4">' +
+  //       '<div       class="row">' +
+  //       '<div       class="col-md-12"><span       class="pull-right" style="float: right;"><b      >For,' + selector.proforma_orgName + '</b></span></div>' +
+  //       '</div>' +
+  //       '<div       class="row" style="margin-top: 20px">' +
+  //       '<div       class="col-md-12"><span       class="pull-right" style="float: right;"><b      >Authorised Signatory</b></span></div>' +
+  //       '</div>' +
+  //       '</td>' +
+  //       '</tr>' +
 
 
-      // downloadInLocal(file.filePath);
-      if (from === "email") {
-        await Mailer.mail(
-          {
-            subject: "Invoice",
-            //  recipients: ['radhadevi8958@gmail.com'],
-            body: "",
-            attachments: [
-              {
-                path: file.filePath, // The absolute path of the file from which to read data.
-                type: "pdf", // Mime Type: jpg, png, doc, ppt, html, pdf
-                name: "ProformaInvoice.pdf", // Optional: Custom filename for attachment
-              },
-            ],
-          },
-          (error, event) => {
-            if (error) {
-              AlertIOS.alert(
-                "Error",
-                "Could not send mail. Please send a mail to support@example.com"
-              );
-            }
-          }
-        );
-      }
 
-      // alert(file.filePath);
-      Alert.alert(
-        'File Downloaded to following location',
-        `${file.filePath}`, // <- this part is optional, you can pass an empty string
-        [
-          { text: 'OK', onPress: () => console.log('OK Pressed') },
-        ],
-        { cancelable: false },
-      );
-    } catch (error) {
+  //       "</table>" +
+  //       '</div >' +
+  //       '</div >' +
+  //       '</div >';
 
-      alert(error);
-    }
-  };
+
+  //     let bottomPitch =
+  //       (await '<div style="padding-top:10px;" >') +
+  //       "<p>" +
+  //       "Thank you for using our LED Savings Calculator. Energy Lighting Services is based in Nashville, Tennessee, and has been retrofitting commercial buildings all over North America with LED lighting systems since 2010. We would be honored to help you with your project needs.Please reach out to us if you have any questions.www.energylightingservices.com  855.270.3300  info@elsco.org" +
+  //       "<p>" +
+  //       "</div>";
+  //     let finalHtmlText = await siteTypeName;
+  //     let directoryPath = "";
+  //     if (Platform.OS === "android") {
+  //       directoryPath = "Download";
+  //     }
+  //     else {
+  //       directoryPath = "Documents";
+  //     }
+  //     let options = {
+  //       html: finalHtmlText,
+  //       fileName: 'ProformaInvoice' + `${selectedProformaID}`,
+  //       directory: directoryPath,
+  //     };
+  //     let file = await RNHTMLtoPDF.convert(options);
+  //     var PdfData = await RNFS.readFile(file.filePath, "base64").then();
+
+  //     // RNFS.copyFile(file.filePath + "/ProformaInvoice.pdf", RNFS.DocumentDirectoryPath + "/ProformaInvoice2.pdf")
+
+
+  //     // downloadInLocal(file.filePath);
+  //     if (from === "email") {
+  //       await Mailer.mail(
+  //         {
+  //           subject: "Invoice",
+  //           //  recipients: ['radhadevi8958@gmail.com'],
+  //           body: "",
+  //           attachments: [
+  //             {
+  //               path: file.filePath, // The absolute path of the file from which to read data.
+  //               type: "pdf", // Mime Type: jpg, png, doc, ppt, html, pdf
+  //               name: "ProformaInvoice.pdf", // Optional: Custom filename for attachment
+  //             },
+  //           ],
+  //         },
+  //         (error, event) => {
+  //           if (error) {
+  //             AlertIOS.alert(
+  //               "Error",
+  //               "Could not send mail. Please send a mail to support@example.com"
+  //             );
+  //           }
+  //         }
+  //       );
+  //     }
+
+  //     // alert(file.filePath);
+  //     Alert.alert(
+  //       'File Downloaded to following location',
+  //       `${file.filePath}`, // <- this part is optional, you can pass an empty string
+  //       [
+  //         { text: 'OK', onPress: () => console.log('OK Pressed') },
+  //       ],
+  //       { cancelable: false },
+  //     );
+  //   } catch (error) {
+
+  //     alert(error);
+  //   }
+  // };
 
   // const downloadPdf = async (from) => {
   //   try {
