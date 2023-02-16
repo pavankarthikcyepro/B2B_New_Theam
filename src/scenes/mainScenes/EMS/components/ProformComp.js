@@ -2417,8 +2417,44 @@ export const ProformaComp = ({
     return amount;
   };
 
+  const onDropDownClear = (key) => {
+    if (key) {
+      switch (key) {
+        case "MODEL":
+          setCarModel("");
+          setCarVariant("");
+          setCarColor("");
+          setselectedVehicleID("");
+          newProformaClick();
+          break;
+        case "VARIENT":
+          setCarVariant("");
+          setCarColor("");
+          break;
+        case "COLOR":
+          setCarColor("");
+          setselectedvehicleImageId("");
+          break;
+        case "REGISTRATION_CHARGES":
+          setSelectedRegistrationCharges({});
+          break;
+        case "INSURANCE_TYPE":
+          setSelectedInsurencePrice(0);
+          break;
+        case "INSURENCE_ADD_ONS":
+          setSelectedAddOnsPrice(0);
+          // setSelectedInsurenceAddons([]);
+          break;
+        case "WARRANTY":
+          setSelectedWarrentyPrice(0);
+          break;
 
-
+        default:
+          break;
+      }
+      dispatch(setDropDownData({ key: key, value: "", id: "" }));
+    }
+  };
 
   return (
     <View style={{}}>
@@ -2433,33 +2469,30 @@ export const ProformaComp = ({
           setShowDropDownModel(false);
           setShowMultipleDropDownData(false);
           if (dropDownKey === "MODEL") {
-            setCarModel(item.name)
-            setCarVariant("")
-            setCarColor("")
+            newProformaClick();
+            setCarModel(item.name);
+            setCarVariant("");
+            setCarColor("");
             setselectedVehicleID(item.id);
-
             updateVariantModelsData(item.name, orgId, carModelsData);
           } else if (dropDownKey === "VARIENT") {
-            setCarVariant(item.name)
-            setCarColor("")
+            setCarVariant(item.name);
+            setCarColor("");
 
             updateColorsDataForSelectedVarient(
               item.name,
               selectedCarVarientsData.varientList
             );
-          }
-          else if (dropDownKey === "COLOR") {
-            setCarColor(item.name)
-            setselectedvehicleImageId(item.id)
+          } else if (dropDownKey === "COLOR") {
+            setCarColor(item.name);
+            setselectedvehicleImageId(item.id);
             // updateColor(item);
-          }
-          else if (dropDownKey === "SELECTPERFORMA") {
-
-            setSelectedProfroma(item.name)
-            updateProformaDataforSelectedValue(item.id, item.name, [...proformaDataForDropdown]);
-
+          } else if (dropDownKey === "SELECTPERFORMA") {
+            setSelectedProfroma(item.name);
+            updateProformaDataforSelectedValue(item.id, item.name, [
+              ...proformaDataForDropdown,
+            ]);
           } else if (dropDownKey === "INSURANCE_TYPE") {
-
             setSelectedInsurencePrice(item.cost);
           } else if (dropDownKey === "WARRANTY") {
             setSelectedWarrentyPrice(Number(item.cost));
@@ -2471,7 +2504,6 @@ export const ProformaComp = ({
             };
             dispatch(getDropSubReasonDataApi(payload));
           } else if (dropDownKey === "INSURENCE_ADD_ONS") {
-
             let totalCost = 0;
             let names = "";
             let insurenceAddOns = [];
@@ -2491,8 +2523,7 @@ export const ProformaComp = ({
               setDropDownData({ key: dropDownKey, value: names, id: "" })
             );
             return;
-          }
-          else if (dropDownKey === "REGISTRATION_CHARGES") {
+          } else if (dropDownKey === "REGISTRATION_CHARGES") {
             setSelectedRegistrationCharges(item);
           } else if (dropDownKey === "OTHER_PRICES") {
             inputHandlerName(item.name, otherPriceDropDownIndex);
@@ -2506,8 +2537,6 @@ export const ProformaComp = ({
           );
         }}
       />
-
-
 
       {/* <View style={{ flexDirection: "row", alignSelf: "flex-end", marginTop: '2%' }}>
         <Button
@@ -2529,61 +2558,86 @@ export const ProformaComp = ({
           New Proforma
         </Button>
       </View> */}
-      <View style={{
-        flexDirection: "column", alignSelf: "flex-end", marginTop: '2%',
-        width: '100%',
-      }}>
-
+      <View
+        style={{
+          flexDirection: "column",
+          alignSelf: "flex-end",
+          marginTop: "2%",
+          width: "100%",
+        }}
+      >
         <View style={{}}>
-          {selectedProfroma == "" && !isnewProformaClicked ?
+          {selectedProfroma == "" && !isnewProformaClicked ? (
             <>
-              {proformaDataForDropdown.length > 0 ? <Text style={{
-                color: Colors.BLACK,
-                fontSize: 16,
-                fontWeight: "700"
-
-              }}>Select Invoice</Text>: <></> }
+              {proformaDataForDropdown.length > 0 ? (
+                <Text
+                  style={{
+                    color: Colors.BLACK,
+                    fontSize: 16,
+                    fontWeight: "700",
+                  }}
+                >
+                  Select Invoice
+                </Text>
+              ) : (
+                <></>
+              )}
               <FlatList
                 key={"PROFORMA_LIST"}
                 data={proformaDataForDropdown}
                 ListEmptyComponent={() => {
-                  return (<View style={{ alignItems: 'center',marginVertical:20 }}><Text>{"Data Not Available"}</Text></View>)
+                  return (
+                    <View style={{ alignItems: "center", marginVertical: 20 }}>
+                      <Text>{"Data Not Available"}</Text>
+                    </View>
+                  );
                 }}
                 keyExtractor={(item, index) => index.toString()}
-                style={{
-                  // height:'70%'
-                }}
+                style={
+                  {
+                    // height:'70%'
+                  }
+                }
                 showsVerticalScrollIndicator
                 renderItem={({ item, index }) => {
-
                   return (
                     <TouchableOpacity
                       onPress={() => {
-                        setSelectedProfroma(item.name)
-                        updateProformaDataforSelectedValue(item.id, item.name, [...proformaDataForDropdown]);
+                        setSelectedProfroma(item.name);
+                        updateProformaDataforSelectedValue(item.id, item.name, [
+                          ...proformaDataForDropdown,
+                        ]);
                       }}
                       style={styles.proforMlistTochable}
                     >
                       <Text style={styles.proformList}>{item.name}</Text>
-                      <MaterialIcons name="chevron-right" size={30} color={Colors.BLACK} />
+                      <MaterialIcons
+                        name="chevron-right"
+                        size={30}
+                        color={Colors.BLACK}
+                      />
                     </TouchableOpacity>
                   );
-
                 }}
               />
             </>
-            : <></>}
-
-
-
+          ) : (
+            <></>
+          )}
         </View>
 
         <Button
           mode="contained"
-          style={{ width: '80%', borderRadius: 5, alignSelf: "center", marginTop: '2%' }}
+          style={{
+            width: "80%",
+            borderRadius: 5,
+            alignSelf: "center",
+            marginTop: "2%",
+          }}
           color={Colors.PINK}
           labelStyle={{ textTransform: "none", fontSize: 16 }}
-          onPress={() => newProformaClick()}>
+          onPress={() => newProformaClick()}
+        >
           New Proforma
         </Button>
       </View>
@@ -2653,22 +2707,25 @@ export const ProformaComp = ({
           </List.Accordion>
         </List.AccordionGroup> : null} */}
 
-
-        {isnewProformaClicked ?
+        {isnewProformaClicked ? (
           <>
-            <Text style={{
-              color: Colors.BLACK,
-              fontSize: 16,
-              fontWeight: "700",
-              marginVertical: 10
-
-            }}>New Proforma Invoice</Text>
+            <Text
+              style={{
+                color: Colors.BLACK,
+                fontSize: 16,
+                fontWeight: "700",
+                marginVertical: 10,
+              }}
+            >
+              New Proforma Invoice
+            </Text>
             <DropDownSelectionItem
               label={"Vehicle"}
               value={carModel}
-              onPress={() =>
-                showDropDownModelMethod("MODEL", "Select Vehicle")
-              }
+              onPress={() => showDropDownModelMethod("MODEL", "Select Vehicle")}
+              clearOption={true}
+              clearKey={"MODEL"}
+              onClear={onDropDownClear}
             />
 
             <DropDownSelectionItem
@@ -2676,14 +2733,14 @@ export const ProformaComp = ({
               value={carVariant}
               onPress={() => {
                 if (carModel != "") {
-                  showDropDownModelMethod("VARIENT", "Select Variant")
+                  showDropDownModelMethod("VARIENT", "Select Variant");
                 } else {
-                  showToast("Please Select Vehicle")
+                  showToast("Please Select Vehicle");
                 }
-
-              }
-
-              }
+              }}
+              clearOption={true}
+              clearKey={"VARIENT"}
+              onClear={onDropDownClear}
             />
 
             <DropDownSelectionItem
@@ -2691,45 +2748,46 @@ export const ProformaComp = ({
               value={carColor}
               onPress={() => {
                 if (carModel != "" && carVariant != "") {
-                  showDropDownModelMethod("COLOR", "Select Color")
+                  showDropDownModelMethod("COLOR", "Select Color");
                 } else {
-                  showToast("Please Select Variant")
+                  showToast("Please Select Variant");
                 }
-
-              }
-
-              }
+              }}
+              clearOption={true}
+              clearKey={"COLOR"}
+              onClear={onDropDownClear}
             />
           </>
-          : null}
+        ) : null}
       </View>
 
       {/* main view to manage visibility  */}
       <View>
-        {selectedProfroma != "" || carModel != "" ?
+        {selectedProfroma != "" || carModel != "" ? (
           <>
-
-
             {/* Proforma Invoice section */}
             <View
               style={{
                 backgroundColor: Colors.WHITE,
                 marginVertical: 10,
-              }}>
-              <View style={{
-
-                backgroundColor: Colors.PINK, padding: 5
-              }}>
+              }}
+            >
+              <View
+                style={{
+                  backgroundColor: Colors.PINK,
+                  padding: 5,
+                }}
+              >
                 <Text
                   style={{
                     fontSize: 14,
                     color: Colors.WHITE,
                     textAlign: "center",
-                    fontWeight: '700'
-                  }}>
+                    fontWeight: "700",
+                  }}
+                >
                   PROFORMA INVOICE
                 </Text>
-
               </View>
 
               <View
@@ -2740,7 +2798,8 @@ export const ProformaComp = ({
                   backgroundColor: Colors.LIGHT_GRAY,
                   margin: 10,
                   padding: 5,
-                }}>
+                }}
+              >
                 <Image
                   style={styles.ImageStyleS}
                   source={{ uri: selector.proforma_logo }}
@@ -2756,10 +2815,10 @@ export const ProformaComp = ({
                   {selector.proforma_orgName}
                 </Text> */}
               </View>
-              <TextAndAmountComp title={"Bldg no. :"} text={
-
-                selector.proforma_houseNo
-              } />
+              <TextAndAmountComp
+                title={"Bldg no. :"}
+                text={selector.proforma_houseNo}
+              />
               {/* <Text
                 style={{
                   fontSize: 14,
@@ -2776,54 +2835,69 @@ export const ProformaComp = ({
                   ", " +
                   selector.proforma_state + ", " + selector.proforma_pincode}
               </Text> */}
-              <TextAndAmountComp title={"Location :"} text={
-
-                selector.profprma_street +
-                ", " +
-                selector.proforma_branch +
-                ", " +
-                selector.proforma_state + ", " + selector.proforma_pincode
-              }
+              <TextAndAmountComp
+                title={"Location :"}
+                text={
+                  selector.profprma_street +
+                  ", " +
+                  selector.proforma_branch +
+                  ", " +
+                  selector.proforma_state +
+                  ", " +
+                  selector.proforma_pincode
+                }
                 titleStyle={{
-                  alignSelf: 'flex-start'
+                  alignSelf: "flex-start",
                 }}
               />
-              <TextAndAmountComp title={"Lessee :"} text={
-
-                formateLesseName()
-              } />
-              <TextAndAmountComp title={"Lessor :"} text={
-                selector.proforma_orgName
-              } />
-              {selector.proforma_gstnNumber && <TextAndAmountComp title={"GSTN :"} text={
-                selector.proforma_gstnNumber
-              } />}
+              <TextAndAmountComp title={"Lessee :"} text={formateLesseName()} />
+              <TextAndAmountComp
+                title={"Lessor :"}
+                text={selector.proforma_orgName}
+              />
+              {selector.proforma_gstnNumber && (
+                <TextAndAmountComp
+                  title={"GSTN :"}
+                  text={selector.proforma_gstnNumber}
+                />
+              )}
 
               {/* <TextAndAmountComp title={"Name"} text={modelDetails?.model} /> */}
-              <TextAndAmountComp
-                title={"Date"}
-                text={selectedDate}
-              />
+              <TextAndAmountComp title={"Date"} text={selectedDate} />
               {/* <TextAndAmountComp title={"Name"} text={modelDetails?.model} />
               <TextAndAmountComp title={"Model"} text={modelDetails?.variant} />
               <TextAndAmountComp title={"Color"} text={modelDetails?.color} /> */}
-              {carModel != "" && <TextAndAmountComp title={"Name :"} text={carModel} />}
-              {carVariant != "" && <TextAndAmountComp title={"Model :"} text={carVariant} />}
-              {carColor != "" && <TextAndAmountComp title={"Color:"} text={carColor} />}
-              {  <TextAndAmountComp
-                title={"Proforma no:"}
-                text={proformaNo != "" ?proformaNo: " "}
-              />}
+              {carModel != "" && (
+                <TextAndAmountComp title={"Name :"} text={carModel} />
+              )}
+              {carVariant != "" && (
+                <TextAndAmountComp title={"Model :"} text={carVariant} />
+              )}
+              {carColor != "" && (
+                <TextAndAmountComp title={"Color:"} text={carColor} />
+              )}
+              {
+                <TextAndAmountComp
+                  title={"Proforma no:"}
+                  text={proformaNo != "" ? proformaNo : " "}
+                />
+              }
               {
                 <TextAndAmountComp
                   title={"PAN NO :"}
-                  text={selector.pan_number != "" ? selector.pan_number : "-Na-"}
-                />}
-              { 
+                  text={
+                    selector.pan_number != "" ? selector.pan_number : "-Na-"
+                  }
+                />
+              }
+              {
                 <TextAndAmountComp
-                title={"GST NO :"}
-                  text={selector.gstin_number != "" ? selector.gstin_number : "-Na-"}
-                /> }
+                  title={"GST NO :"}
+                  text={
+                    selector.gstin_number != "" ? selector.gstin_number : "-Na-"
+                  }
+                />
+              }
 
               {/* <TextAndAmountComp
                 title={"Amount"}
@@ -2833,28 +2907,28 @@ export const ProformaComp = ({
 
             <View
               style={{
-
                 borderColor: Colors.PINK,
                 paddingBottom: 10,
-                backgroundColor: Colors.LIGHT_GRAY
-              }}>
-              <View style={{
-
-                backgroundColor: Colors.DARK_GRAY, padding: 5
-              }}>
+                backgroundColor: Colors.LIGHT_GRAY,
+              }}
+            >
+              <View
+                style={{
+                  backgroundColor: Colors.DARK_GRAY,
+                  padding: 5,
+                }}
+              >
                 <Text
                   style={{
                     fontSize: 14,
                     color: Colors.WHITE,
                     textAlign: "center",
-                    fontWeight:'700'
-
-                  }}>
+                    fontWeight: "700",
+                  }}
+                >
                   PRICE CONFIRMATION
                 </Text>
-
               </View>
-
 
               <TextAndAmountComp
                 title={"Ex-Showroom Price:"}
@@ -2893,39 +2967,47 @@ export const ProformaComp = ({
                                     title={"Life Tax:"}
                                     amount={lifeTaxAmount.toFixed(2)}
                                 /> */}
-              <View style={[{
-                flexDirection: "column",
-                justifyContent: "space-between",
-                paddingHorizontal: 12,
-                minHeight: 40,
-                paddingVertical: 0,
-                alignItems: "flex-start",
-                backgroundColor: Colors.WHITE,
-              }]}>
-
-                <Text style={[styles.leftLabel, { textAlign: "left" }]}>{"Life Tax:"}</Text>
+              <View
+                style={[
+                  {
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    paddingHorizontal: 12,
+                    minHeight: 40,
+                    paddingVertical: 0,
+                    alignItems: "flex-start",
+                    backgroundColor: Colors.WHITE,
+                  },
+                ]}
+              >
+                <Text style={[styles.leftLabel, { textAlign: "left" }]}>
+                  {"Life Tax:"}
+                </Text>
 
                 <View
                   style={{
-                    width: '100%',
-                    justifyContent: 'space-between',
+                    width: "100%",
+                    justifyContent: "space-between",
                     flexDirection: "row",
-                    alignItems: "center"
-                  }}>
+                    alignItems: "center",
+                  }}
+                >
                   <TextInput
                     value={taxPercent}
-                    style={[{
-                      fontSize: 14,
-                      fontWeight: "400",
-                      borderBottomWidth: 1,
-                      borderBottomColor: "#d1d1d1",
-                      width: '50%',
-                      backgroundColor: Colors.WHITE,
-                      paddingHorizontal: 0,paddingVertical:0
-                    }]}
+                    style={[
+                      {
+                        fontSize: 14,
+                        fontWeight: "400",
+                        borderBottomWidth: 1,
+                        borderBottomColor: "#d1d1d1",
+                        width: "50%",
+                        backgroundColor: Colors.WHITE,
+                        paddingHorizontal: 0,
+                        paddingVertical: 0,
+                      },
+                    ]}
                     keyboardType={"number-pad"}
                     onChangeText={(text) => {
-
                       setTaxPercent(text);
                       if (text !== "") {
                         setLifeTaxAmount(getLifeTaxNew(Number(text)));
@@ -2938,22 +3020,25 @@ export const ProformaComp = ({
                     underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
                     underlineColor={Colors.LIGHT_GRAY}
                     outlineColor={Colors.BLACK}
-                    theme={{ colors: { primary: Colors.BLACK, underlineColor: 'transparent' } }}
+                    theme={{
+                      colors: {
+                        primary: Colors.BLACK,
+                        underlineColor: "transparent",
+                      },
+                    }}
                   />
-
 
                   <Text style={{ fontSize: 14, fontWeight: "400" }}>
                     {rupeeSymbol + " " + lifeTaxAmount.toFixed(2)}
                   </Text>
                 </View>
-
               </View>
 
               {/* <Text style={GlobalStyle.underline}></Text> */}
 
               <View style={styles.symbolview}>
-                <View style={{ width: "70%",paddingVertical:0 }}>
-                  <DropDownSelectionItemV2
+                <View style={{ width: "70%", paddingVertical: 0 }}>
+                  <DropDownSelectionItem
                     disabled={!isInputsEditable()}
                     label={"Registration Charges:"}
                     value={selectedRegistrationCharges?.name}
@@ -2963,15 +3048,19 @@ export const ProformaComp = ({
                         "Registration Charges"
                       )
                     }
+                    clearOption={true}
+                    clearKey={"REGISTRATION_CHARGES"}
+                    onClear={onDropDownClear}
                   />
                 </View>
 
                 <Text style={styles.shadowText}>
                   {rupeeSymbol +
                     " " +
-                    `${selectedRegistrationCharges?.cost
-                      ? selectedRegistrationCharges?.cost
-                      : "0.00"
+                    `${
+                      selectedRegistrationCharges?.cost
+                        ? selectedRegistrationCharges?.cost
+                        : "0.00"
                     }`}
                 </Text>
               </View>
@@ -2983,12 +3072,18 @@ export const ProformaComp = ({
 
               <View style={styles.symbolview}>
                 <View style={{ width: "70%" }}>
-                  <DropDownSelectionItemV2
+                  <DropDownSelectionItem
                     label={"Insurance Type:"}
                     value={selector.insurance_type}
                     onPress={() =>
-                      showDropDownModelMethod("INSURANCE_TYPE", "Insurance Type")
+                      showDropDownModelMethod(
+                        "INSURANCE_TYPE",
+                        "Insurance Type"
+                      )
                     }
+                    clearOption={true}
+                    clearKey={"INSURANCE_TYPE"}
+                    onClear={onDropDownClear}
                   />
                 </View>
                 <Text style={styles.shadowText}>
@@ -2997,15 +3092,23 @@ export const ProformaComp = ({
               </View>
               <View style={styles.symbolview}>
                 <View style={{ width: "70%" }}>
-                  <DropDownSelectionItemV2
+                  <DropDownSelectionItem
                     label={"Add-on Insurance:"}
                     value={
-                      selector.insurance_type !== "" ? selector.add_on_insurance : ""
+                      selector.insurance_type !== ""
+                        ? selector.add_on_insurance
+                        : ""
                     }
                     disabled={!selector.insurance_type}
                     onPress={() =>
-                      showDropDownModelMethod("INSURENCE_ADD_ONS", "Add-on Insurance")
+                      showDropDownModelMethod(
+                        "INSURENCE_ADD_ONS",
+                        "Add-on Insurance"
+                      )
                     }
+                    clearOption={true}
+                    clearKey={"INSURENCE_ADD_ONS"}
+                    onClear={onDropDownClear}
                   />
                 </View>
                 {selector.insurance_type !== "" ? (
@@ -3018,10 +3121,15 @@ export const ProformaComp = ({
               </View>
               <View style={styles.symbolview}>
                 <View style={{ width: "70%" }}>
-                  <DropDownSelectionItemV2
+                  <DropDownSelectionItem
                     label={"Warranty:"}
                     value={selector.warranty}
-                    onPress={() => showDropDownModelMethod("WARRANTY", "Warranty")}
+                    onPress={() =>
+                      showDropDownModelMethod("WARRANTY", "Warranty")
+                    }
+                    clearOption={true}
+                    clearKey={"WARRANTY"}
+                    onClear={onDropDownClear}
                   />
                 </View>
                 <Text style={styles.shadowText}>
@@ -3053,7 +3161,9 @@ export const ProformaComp = ({
               <CheckboxTextAndAmountComp
                 title={"Essential Kit:"}
                 amount={
-                  essentialKitSlctd ? priceInfomationData.essential_kit.toFixed(2) : 0
+                  essentialKitSlctd
+                    ? priceInfomationData.essential_kit.toFixed(2)
+                    : 0
                 }
                 // amount={essentialKitSlctd ? priceInfomationData.essential_kit.toFixed(2) : "0.00"}
                 isChecked={essentialKitSlctd}
@@ -3082,10 +3192,11 @@ export const ProformaComp = ({
                       accessorylist: paidAccessoriesList,
                       selectedAccessoryList: selectedPaidAccessoriesList,
                       selectedFOCAccessoryList: selectedFOCAccessoriesList,
-                      fromScreen: "PROFORMA"
+                      fromScreen: "PROFORMA",
                     }
                   )
-                }>
+                }
+              >
                 <PaidAccessoriesTextAndAmountComp
                   title={"Paid Accessories:"}
                   amount={selectedPaidAccessoriesPrice.toFixed(2)}
@@ -3098,7 +3209,8 @@ export const ProformaComp = ({
                     backgroundColor: Colors.WHITE,
                     paddingLeft: 12,
                     paddingTop: 5,
-                  }}>
+                  }}
+                >
                   {paidAccessoriesListNew.map((item, index) => {
                     return (
                       <Text style={styles.accessoriText} key={"ACC" + index}>
@@ -3106,13 +3218,17 @@ export const ProformaComp = ({
                       </Text>
                     );
                   })}
-                  <Text style={[GlobalStyle.underline, { marginTop: 5 }]}></Text>
+                  <Text
+                    style={[GlobalStyle.underline, { marginTop: 5 }]}
+                  ></Text>
                 </View>
               ) : null}
 
               <CheckboxTextAndAmountComp
                 title={"Fast Tag:"}
-                amount={fastTagSlctd ? priceInfomationData?.fast_tag?.toFixed(2) : 0}
+                amount={
+                  fastTagSlctd ? priceInfomationData?.fast_tag?.toFixed(2) : 0
+                }
                 // amount={fastTagSlctd ? priceInfomationData.fast_tag.toFixed(2) : "0.00"}
                 isChecked={fastTagSlctd}
                 onPress={() => {
@@ -3132,10 +3248,7 @@ export const ProformaComp = ({
 
               {/* for other price  */}
               <View style={styles.otherPriceTitleRow}>
-                <Text style={styles.otherPriceTextStyle}>
-                  Add Other Prices
-                </Text>
-              
+                <Text style={styles.otherPriceTextStyle}>Add Other Prices</Text>
 
                 <TouchableOpacity
                   style={[
@@ -3144,9 +3257,8 @@ export const ProformaComp = ({
                       // backgroundColor: isInputsEditable()
                       //   ? Colors.RED
                       //   : Colors.GRAY,
-                      alignItems:"center",
-                      alignSelf:"flex-end"
-
+                      alignItems: "center",
+                      alignSelf: "flex-end",
                     },
                   ]}
                   disabled={!isInputsEditable()}
@@ -3157,7 +3269,7 @@ export const ProformaComp = ({
                     style={{
                       color: Colors.RED,
                       fontSize: 14,
-                      marginStart:4
+                      marginStart: 4,
                     }}
                   >
                     Add
@@ -3188,9 +3300,9 @@ export const ProformaComp = ({
                           justifyContent: "space-between",
                           alignItems: "center",
                           paddingHorizontal: 10,
-                          backgroundColor:Colors.WHITE,
-                          width:'100%',
-                          marginVertical:4
+                          backgroundColor: Colors.WHITE,
+                          width: "100%",
+                          marginVertical: 4,
                         }}
                       >
                         {/* <View style={{
@@ -3199,7 +3311,7 @@ export const ProformaComp = ({
                           justifyContent:"space-between",
                           padding:10
                           }}> */}
-                          <View style={{ width: "33%" }}>
+                        <View style={{ width: "33%" }}>
                           <DropDownSelectionItem
                             label={"Name"}
                             disabled={!isInputsEditable()}
@@ -3219,26 +3331,26 @@ export const ProformaComp = ({
                               setOtherPriceDropDownIndex(index);
                             }}
                           />
-                          </View>
-                          <TextInput
-                            editable={isInputsEditable()}
-                            style={[
-                              styles.otherPriceInput,
-                              {
-                                marginLeft: 20,
-                                borderColor: checkIsError("amount", index)
-                                  ? Colors.RED
-                                  : null,
-                              },
-                            ]}
-                            placeholder={"Amount"}
-                            keyboardType={"decimal-pad"}
-                            onChangeText={(value) =>
-                              inputHandlerPrice(value, index)
-                            }
-                            value={`${item.amount}`}
-                          />
-                          {/* <TextInput
+                        </View>
+                        <TextInput
+                          editable={isInputsEditable()}
+                          style={[
+                            styles.otherPriceInput,
+                            {
+                              marginLeft: 20,
+                              borderColor: checkIsError("amount", index)
+                                ? Colors.RED
+                                : null,
+                            },
+                          ]}
+                          placeholder={"Amount"}
+                          keyboardType={"decimal-pad"}
+                          onChangeText={(value) =>
+                            inputHandlerPrice(value, index)
+                          }
+                          value={`${item.amount}`}
+                        />
+                        {/* <TextInput
                             style={[{
                               fontSize: 14,
                               fontWeight: "400",
@@ -3263,7 +3375,7 @@ export const ProformaComp = ({
                             outlineColor={Colors.BLACK}
                             theme={{ colors: { primary: Colors.BLACK, underlineColor: 'transparent' } }}
                           /> */}
-                          {/* <TextInput
+                        {/* <TextInput
                           editable={isInputsEditable()}
                           style={[
                             styles.otherPriceInput,
@@ -3286,8 +3398,7 @@ export const ProformaComp = ({
                           outlineColor={Colors.BLACK}
                         /> */}
 
-
-                          {/* <TextInput
+                        {/* <TextInput
                             editable={isInputsEditable()}
                             style={[
                               styles.otherPriceInput,
@@ -3306,7 +3417,7 @@ export const ProformaComp = ({
                             value={`${item.amount}`}
                           /> */}
 
-                          {/* <TextInput
+                        {/* <TextInput
                             style={[{
                               fontSize: 14,
                               fontWeight: "400",
@@ -3331,11 +3442,11 @@ export const ProformaComp = ({
                             theme={{ colors: { primary: Colors.BLACK, underlineColor: 'transparent' } }}
                           /> */}
                         {/* </View> */}
-                        
+
                         <TouchableOpacity
                           disabled={!isInputsEditable()}
                           onPress={() => deleteHandler(index)}
-                          style={{ width:'10%' }}
+                          style={{ width: "10%" }}
                         >
                           <IconButton
                             icon="trash-can-outline"
@@ -3350,9 +3461,7 @@ export const ProformaComp = ({
                 />
               </View>
 
-              
               {/* <Text style={GlobalStyle.underline}></Text> */}
-
 
               {/* // 6.Offer Price */}
               {/* <List.Accordion
@@ -3383,12 +3492,11 @@ export const ProformaComp = ({
 
               <ProformaTextinputOffers
                 containerStyle={{
-                  flexDirection:"row",
-                  backgroundColor:Colors.WHITE,
-                  alignItems:"center",
+                  flexDirection: "row",
+                  backgroundColor: Colors.WHITE,
+                  alignItems: "center",
                   paddingHorizontal: 10,
-                  justifyContent:"space-between",
-                 
+                  justifyContent: "space-between",
                 }}
                 placeholder={"Amount"}
                 underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
@@ -3411,7 +3519,7 @@ export const ProformaComp = ({
                   )
                 }
               />
-             
+
               {/* <TextinputComp
                 disabled={!isInputsEditable()}
                 style={styles.offerPriceTextInput}
@@ -3454,16 +3562,15 @@ export const ProformaComp = ({
                   backgroundColor: Colors.WHITE,
                   alignItems: "center",
                   paddingHorizontal: 10,
-                  justifyContent: "space-between"
+                  justifyContent: "space-between",
                 }}
                 placeholder={"Amount"}
                 underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
                 underlineColor={Colors.LIGHT_GRAY}
-                
                 disabled={!isInputsEditable()}
                 style={styles.offerPriceTextInput}
                 // label={"Consumer Offer:"}
-             
+
                 showLeftAffixText={true}
                 leftAffixText={rupeeSymbol}
                 showRightIcon={true}
@@ -3504,12 +3611,11 @@ export const ProformaComp = ({
                   backgroundColor: Colors.WHITE,
                   alignItems: "center",
                   paddingHorizontal: 10,
-                  justifyContent: "space-between"
+                  justifyContent: "space-between",
                 }}
                 placeholder={"Amount"}
                 underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
                 underlineColor={Colors.LIGHT_GRAY}
-
                 disabled={!isInputsEditable()}
                 style={styles.offerPriceTextInput}
                 // label={"Consumer Offer:"}
@@ -3554,12 +3660,11 @@ export const ProformaComp = ({
                   backgroundColor: Colors.WHITE,
                   alignItems: "center",
                   paddingHorizontal: 10,
-                  justifyContent: "space-between"
+                  justifyContent: "space-between",
                 }}
                 placeholder={"Amount"}
                 underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
                 underlineColor={Colors.LIGHT_GRAY}
-
                 disabled={!isInputsEditable()}
                 style={styles.offerPriceTextInput}
                 // label={"Consumer Offer:"}
@@ -3605,12 +3710,11 @@ export const ProformaComp = ({
                   backgroundColor: Colors.WHITE,
                   alignItems: "center",
                   paddingHorizontal: 10,
-                  justifyContent: "space-between"
+                  justifyContent: "space-between",
                 }}
                 placeholder={"Amount"}
                 underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
                 underlineColor={Colors.LIGHT_GRAY}
-
                 disabled={!isInputsEditable()}
                 style={styles.offerPriceTextInput}
                 // label={"Consumer Offer:"}
@@ -3656,12 +3760,11 @@ export const ProformaComp = ({
                   backgroundColor: Colors.WHITE,
                   alignItems: "center",
                   paddingHorizontal: 10,
-                  justifyContent: "space-between"
+                  justifyContent: "space-between",
                 }}
                 placeholder={"Amount"}
                 underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
                 underlineColor={Colors.LIGHT_GRAY}
-
                 disabled={!isInputsEditable()}
                 style={styles.offerPriceTextInput}
                 // label={"Consumer Offer:"}
@@ -3706,12 +3809,11 @@ export const ProformaComp = ({
                   backgroundColor: Colors.WHITE,
                   alignItems: "center",
                   paddingHorizontal: 10,
-                  justifyContent: "space-between"
+                  justifyContent: "space-between",
                 }}
                 placeholder={"Amount"}
                 underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
                 underlineColor={Colors.LIGHT_GRAY}
-
                 disabled={!isInputsEditable()}
                 style={styles.offerPriceTextInput}
                 // label={"Consumer Offer:"}
@@ -3756,12 +3858,11 @@ export const ProformaComp = ({
                   backgroundColor: Colors.WHITE,
                   alignItems: "center",
                   paddingHorizontal: 10,
-                  justifyContent: "space-between"
+                  justifyContent: "space-between",
                 }}
                 placeholder={"Amount"}
                 underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
                 underlineColor={Colors.LIGHT_GRAY}
-
                 disabled={!isInputsEditable()}
                 style={styles.offerPriceTextInput}
                 // label={"Consumer Offer:"}
@@ -3833,12 +3934,11 @@ export const ProformaComp = ({
                   backgroundColor: Colors.WHITE,
                   alignItems: "center",
                   paddingHorizontal: 10,
-                  justifyContent: "space-between"
+                  justifyContent: "space-between",
                 }}
                 placeholder={"Amount"}
                 underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
                 underlineColor={Colors.LIGHT_GRAY}
-
                 disabled={!isInputsEditable()}
                 style={styles.offerPriceTextInput}
                 // label={"Consumer Offer:"}
@@ -3888,7 +3988,6 @@ export const ProformaComp = ({
                 placeholder={"Amount"}
                 underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
                 underlineColor={Colors.LIGHT_GRAY}
-
                 disabled={!isInputsEditable()}
                 style={styles.offerPriceTextInput}
                 // label={"Consumer Offer:"}
@@ -3910,23 +4009,23 @@ export const ProformaComp = ({
               />
 
               {/* <Text style={GlobalStyle.underline}></Text> */}
-              <View style={{backgroundColor:Colors.WHITE, padding:10 }}>
-              <TextAndAmountComp
-                title={"On Road Price:"}
-                // amount={totalOnRoadPrice.toFixed(2)}
-                amount={getActualPrice().toFixed(2)}
-                titleStyle={{ fontSize: 18, fontWeight: "800" }}
-                amoutStyle={{ fontSize: 18, fontWeight: "800" }}
-                componentStyle={{backgroundColor:Colors.LIGHT_GRAY}}
-              />
-              <TextAndAmountComp
-                title={"On Road Price After Discount:"}
-                // amount={totalOnRoadPriceAfterDiscount.toFixed(2)}
-                amount={getActualPriceAfterDiscount().toFixed(2)}
-                titleStyle={{ fontSize: 18, fontWeight: "800" }}
-                amoutStyle={{ fontSize: 18, fontWeight: "800" }}
+              <View style={{ backgroundColor: Colors.WHITE, padding: 10 }}>
+                <TextAndAmountComp
+                  title={"On Road Price:"}
+                  // amount={totalOnRoadPrice.toFixed(2)}
+                  amount={getActualPrice().toFixed(2)}
+                  titleStyle={{ fontSize: 18, fontWeight: "800" }}
+                  amoutStyle={{ fontSize: 18, fontWeight: "800" }}
                   componentStyle={{ backgroundColor: Colors.LIGHT_GRAY }}
-              />
+                />
+                <TextAndAmountComp
+                  title={"On Road Price After Discount:"}
+                  // amount={totalOnRoadPriceAfterDiscount.toFixed(2)}
+                  amount={getActualPriceAfterDiscount().toFixed(2)}
+                  titleStyle={{ fontSize: 18, fontWeight: "800" }}
+                  amoutStyle={{ fontSize: 18, fontWeight: "800" }}
+                  componentStyle={{ backgroundColor: Colors.LIGHT_GRAY }}
+                />
               </View>
               {/* <Text style={GlobalStyle.underline}></Text> */}
               {/* </List.Accordion> */}
@@ -3934,50 +4033,52 @@ export const ProformaComp = ({
             {/* {showApproveRejectBtn && */}
             <View
               style={{
-                flexDirection: "row", alignSelf: "flex-end"
-
-              }}>
-              {showSaveBtn && !showSendForApprovBtn && <Button
-                mode="contained"
-                style={{ flex: 1, marginRight: 10 }}
-                // style={{ width: '30%', marginRight: 10 }}
-                color={Colors.GRAY}
-                labelStyle={{ textTransform: "none", color: Colors.WHITE }}
-                onPress={() => newProformaClick()}>
-                Cancel
-              </Button>}
-              {showSaveBtn &&
-              
-                  <Button
-                    mode="contained"
-                    style={{ flex: 1, }}
-                    // style={{ width: '30%', }}
-                    color={Colors.PINK}
-                    labelStyle={{ textTransform: "none" }}
-                    onPress={() => saveProformaDetails("save")}>
-                    Save
-                  </Button>
-              
-              }
-
-              {showSendForApprovBtn &&
+                flexDirection: "row",
+                alignSelf: "flex-end",
+              }}
+            >
+              {showSaveBtn && !showSendForApprovBtn && (
                 <Button
                   mode="contained"
-                  style={{ flex: 1, marginStart:10 }}
+                  style={{ flex: 1, marginRight: 10 }}
+                  // style={{ width: '30%', marginRight: 10 }}
+                  color={Colors.GRAY}
+                  labelStyle={{ textTransform: "none", color: Colors.WHITE }}
+                  onPress={() => newProformaClick()}
+                >
+                  Cancel
+                </Button>
+              )}
+              {showSaveBtn && (
+                <Button
+                  mode="contained"
+                  style={{ flex: 1 }}
+                  // style={{ width: '30%', }}
                   color={Colors.PINK}
                   labelStyle={{ textTransform: "none" }}
-                  onPress={() => saveProformaDetails("SENTFORAPPROVAL")}>
-                  Send For Approval
-                </Button>}
+                  onPress={() => saveProformaDetails("save")}
+                >
+                  Save
+                </Button>
+              )}
 
+              {showSendForApprovBtn && (
+                <Button
+                  mode="contained"
+                  style={{ flex: 1, marginStart: 10 }}
+                  color={Colors.PINK}
+                  labelStyle={{ textTransform: "none" }}
+                  onPress={() => saveProformaDetails("SENTFORAPPROVAL")}
+                >
+                  Send For Approval
+                </Button>
+              )}
             </View>
             {/* } */}
 
-
             {showApproveRejectBtn &&
               // !isLeadCreatedBySelf() &&
-              userData.isPreBookingApprover &&
-              (
+              userData.isPreBookingApprover && (
                 // <View style={styles.actionBtnView}>
                 //   {!isRejectSelected && (
                 //     <Button
@@ -4006,33 +4107,28 @@ export const ProformaComp = ({
                 // </View>
 
                 <View style={styles.actionBtnView}>
-                
-                    <Button
-                      mode="contained"
-                      style={{ flex: 1, marginRight: 10 }}
-                      color={Colors.GREEN}
-                      labelStyle={{ textTransform: "none" }}
-                      onPress={() => saveProformaDetails("APPROVED")}
-                    >
-                      Approve
-                    </Button>
-                 
                   <Button
                     mode="contained"
-                    style={{ flex: 1, }}
+                    style={{ flex: 1, marginRight: 10 }}
+                    color={Colors.GREEN}
+                    labelStyle={{ textTransform: "none" }}
+                    onPress={() => saveProformaDetails("APPROVED")}
+                  >
+                    Approve
+                  </Button>
+
+                  <Button
+                    mode="contained"
+                    style={{ flex: 1 }}
                     color={Colors.RED}
                     labelStyle={{ textTransform: "none" }}
-                    onPress={() =>
-                     saveProformaDetails("REJECTED")
-                        
-                    }
+                    onPress={() => saveProformaDetails("REJECTED")}
                   >
-                  Reject
+                    Reject
                   </Button>
-              
                 </View>
               )}
-            {isDownLoadVisible &&
+            {isDownLoadVisible && (
               <View style={{ flexDirection: "row", alignSelf: "flex-end" }}>
                 <Button
                   mode="contained"
@@ -4040,19 +4136,22 @@ export const ProformaComp = ({
                   // style={{ width: '30%', marginRight: 10 }}
                   color={Colors.PINK}
                   labelStyle={{ textTransform: "none" }}
-                  onPress={() => downloadPdf3("downlaod")}>
+                  onPress={() => downloadPdf3("downlaod")}
+                >
                   Download
                 </Button>
                 <Button
                   mode="contained"
-                  style={{ flex: 1, }}
+                  style={{ flex: 1 }}
                   // style={{ width: '30%', }}
                   color={Colors.PINK}
                   labelStyle={{ textTransform: "none" }}
-                  onPress={() => downloadPdf3("email")}>
+                  onPress={() => downloadPdf3("email")}
+                >
                   Email
                 </Button>
-              </View>}
+              </View>
+            )}
 
             {/* {showApproveRejectBtn && userData.isSelfManager == "Y" ? (
               <View style={styles.actionBtnView}>
@@ -4081,12 +4180,9 @@ export const ProformaComp = ({
                 </Button>
               </View>
             ) : null} */}
-
-
-          </> : null}
-
+          </>
+        ) : null}
       </View>
-
     </View>
   );
 };
