@@ -53,59 +53,71 @@ const IconComp = ({ iconName, onPress, bgColor }) => {
 
 
 let isVisible= false;
-export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId, uniqueId, enqCat, leadStage, name, status, created, dmsLead, lostReason, isManager = false, dropStatus = '', mobileNo, isCheckboxVisible, isRefresh = false, navigation, showBubble = false, showThreeDots = false, universalId, count = 0, isThreeBtnClickable = false, leadStatus }) => {
-  const [isItemSelected, setisItemSelected] = useState("unchecked")
-
+export const DropAnalysisItem = ({
+  from = "MY_TASKS",
+  onItemSelected,
+  leadDropId,
+  uniqueId,
+  enqCat,
+  leadStage,
+  name,
+  status,
+  created,
+  dmsLead,
+  lostReason,
+  isManager = false,
+  dropStatus = "",
+  mobileNo,
+  isCheckboxVisible,
+  isRefresh = false,
+  navigation,
+  showBubble = false,
+  showThreeDots = false,
+  universalId,
+  count = 0,
+  isThreeBtnClickable = false,
+  leadStatus,
+  dse = "",
+}) => {
+  const [isItemSelected, setisItemSelected] = useState("unchecked");
 
   useEffect(() => {
-
     if (isRefresh) {
-      setisItemSelected('unchecked')
+      setisItemSelected("unchecked");
     }
-
-  }, [isRefresh])
-
+  }, [isRefresh]);
 
   const checkboxSelected = async () => {
     try {
-      if (isItemSelected === 'unchecked') {
-        onItemSelected(uniqueId, leadDropId, 'multi', 'add')
-        await setisItemSelected('checked')
-
+      if (isItemSelected === "unchecked") {
+        onItemSelected(uniqueId, leadDropId, "multi", "add");
+        await setisItemSelected("checked");
       } else {
-        onItemSelected(uniqueId, leadDropId, 'multi', 'delete')
-        await setisItemSelected('unchecked')
+        onItemSelected(uniqueId, leadDropId, "multi", "delete");
+        await setisItemSelected("unchecked");
       }
     } catch (error) {
-      alert(error)
+      alert(error);
     }
+  };
 
-
-  }
-
-
-  const navigateToDropHistory =()=>{
-   
+  const navigateToDropHistory = () => {
     let tempLeadStagre = leadStage;
-    if (tempLeadStagre ==="PREENQUIRY"){
-      tempLeadStagre = "Pre Enquiry Follow Up"
-    } else if (tempLeadStagre === "ENQUIRY"){
-      tempLeadStagre = "Enquiry Follow Up"
+    if (tempLeadStagre === "PREENQUIRY") {
+      tempLeadStagre = "Pre Enquiry Follow Up";
+    } else if (tempLeadStagre === "ENQUIRY") {
+      tempLeadStagre = "Enquiry Follow Up";
     } else if (tempLeadStagre === "PREBOOKING") {
-      tempLeadStagre = "Pre Booking Follow Up"
+      tempLeadStagre = "Pre Booking Follow Up";
     } else if (tempLeadStagre === "BOOKING") {
-      tempLeadStagre = "Booking Follow Up"
+      tempLeadStagre = "Booking Follow Up";
     }
-   
-    navigation.navigate(
-      "DROP_ANALYSIS_HISTORY",
-      {
 
-        title: tempLeadStagre,
-        universalId: universalId,
-      }
-    )
-  }
+    navigation.navigate("DROP_ANALYSIS_HISTORY", {
+      title: tempLeadStagre,
+      universalId: universalId,
+    });
+  };
 
   let date = "";
   if (from == "MY_TASKS") {
@@ -116,22 +128,27 @@ export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId
 
   let bgColor = Colors.BLUE;
   let statusName = status;
-  if (status === "CANCELLED" || status === "ASSIGNED" || status === "SENT_FOR_APPROVAL" || status === "RESCHEDULED") {
+  if (
+    status === "CANCELLED" ||
+    status === "ASSIGNED" ||
+    status === "SENT_FOR_APPROVAL" ||
+    status === "RESCHEDULED"
+  ) {
     bgColor = statusBgColors[status].color;
     statusName = statusBgColors[status].title;
   }
 
-    function checkForStageName(taskName) {
-      if (taskName?.toLowerCase() === 'preenquiry') {
-        taskName = 'CONTACTS';
-      } else if (taskName?.toLowerCase() === 'prebooking') {
-        taskName = 'Booking Approval';
-      }
-      // else if (taskName.includes('Booking')) {
-      //     taskName = taskName.replace('Booking', 'Booking View');
-      // }
-      return taskName
+  function checkForStageName(taskName) {
+    if (taskName?.toLowerCase() === "preenquiry") {
+      taskName = "CONTACTS";
+    } else if (taskName?.toLowerCase() === "prebooking") {
+      taskName = "Booking Approval";
     }
+    // else if (taskName.includes('Booking')) {
+    //     taskName = taskName.replace('Booking', 'Booking View');
+    // }
+    return taskName;
+  }
   function getStageColor(leadStage, leadStatus) {
     return leadStatus === "PREENQUIRYCOMPLETED" ||
       (leadStatus === "ENQUIRYCOMPLETED" && leadStage === "ENQUIRY") ||
@@ -145,9 +162,8 @@ export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.LIGHT_GRAY, }}>
-
-      <View style={[styles.mainView]} >
+    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.LIGHT_GRAY }}>
+      <View style={[styles.mainView]}>
         <TouchableOpacity style={styles.section} disabled={true}>
           <View
             style={{
@@ -157,25 +173,21 @@ export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId
               position: "relative",
             }}
           >
-          
             <View style={{ width: "60%" }}>
-              <View style={{flexDirection:"row",}}>
-                
-                {isManager && isCheckboxVisible &&
+              <View style={{ flexDirection: "row" }}>
+                {isManager && isCheckboxVisible && dropStatus == "DROPPED" && (
                   <Checkbox.Android
                     onPress={() => {
-                      checkboxSelected()
+                      checkboxSelected();
                     }}
                     status={isItemSelected}
                     color={Colors.YELLOW}
-                    uncheckedColor={Colors.YELLOW} />}
+                    uncheckedColor={Colors.YELLOW}
+                  />
+                )}
 
-                {showBubble &&  (
-                  <View
-                    style={styles.btn3}
-
-                  >
-                    
+                {showBubble && (
+                  <View style={styles.btn3}>
                     <Image
                       source={require("./../../../../assets/images/check-list.png")}
                       resizeMode="contain"
@@ -186,23 +198,25 @@ export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId
                   </View>
                 )}
               </View>
-              
 
               <View style={{ flexDirection: "row", marginLeft: 10 }}>
                 <View style={{ maxWidth: "73%" }}>
-
                   <Text style={styles.text1}>{name}</Text>
                 </View>
                 <Text style={styles.catText}>{enqCat}</Text>
               </View>
-              <Text style={styles.text2}>{lostReason + " - " + dmsLead}</Text>
+              <Text style={styles.text2}>{"Reason: " + lostReason}</Text>
+              {dse ? (
+                <Text style={styles.text2}>{"Assignee: " + dse}</Text>
+              ) : null}
+              <Text style={styles.text2}>{"DroppedBy: " + dmsLead}</Text>
               <Text style={styles.text2}>{mobileNo}</Text>
               <Text style={styles.text3}>{date}</Text>
               {/* {needStatus === "YES" &&
                         <View style={{ height: 15, width: 15, borderRadius: 10, backgroundColor: leadStatus === 'PREENQUIRYCOMPLETED' || (leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY') || (leadStatus === 'PREBOOKINGCOMPLETED' && leadStage === 'PREBOOKING') || leadStatus === 'BOOKINGCOMPLETED' ? '#18a835' : '#f29a22', position: 'absolute', top: 0, right: 0 }}></View>
                     } */}
             </View>
-           
+
             <View style={{ width: "30%", alignItems: "center" }}>
               <View style={styles.modal}>
                 <Text style={styles.text4}>{checkForStageName(leadStage)}</Text>
@@ -268,7 +282,7 @@ export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId
 
                 <Text
                   style={{
-                    color: getStageColor(leadStage, leadStatus) ,
+                    color: getStageColor(leadStage, leadStatus),
                     fontSize: 14,
                     fontWeight: "bold",
                   }}
@@ -279,15 +293,12 @@ export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId
               {/* )} */}
             </View>
           </View>
-          
         </TouchableOpacity>
         {showThreeDots ? (
           <TouchableOpacity
             disabled={!isThreeBtnClickable}
             style={{ flex: 1 }}
-            onPress={() =>
-              navigateToDropHistory()
-            }
+            onPress={() => navigateToDropHistory()}
           >
             <Image
               source={require("./../../../../assets/images/dots.png")}
@@ -300,7 +311,7 @@ export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId
       </View>
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   text1: {
