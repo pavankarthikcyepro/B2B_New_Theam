@@ -1041,15 +1041,19 @@ const HomeScreen = ({ route, navigation }) => {
     }
   };
 
-  function navigateToEMS(params) {
-    navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
-    setTimeout(() => {
-      navigation.navigate("LEADS", {
-        // param: param === "INVOICE" ? "Retail" : param,
-        // moduleType: "home",
-        // employeeDetail: "",
-      });
-    }, 1000);
+  function navigateToEMS(params = {}, screenName = "") {
+    navigation.navigate(
+      screenName ? screenName : AppNavigator.TabStackIdentifiers.ems
+    );
+    if (!screenName){
+      setTimeout(() => {
+        navigation.navigate("LEADS", {
+          // param: param === "INVOICE" ? "Retail" : param,
+          // moduleType: "home",
+          // employeeDetail: "",
+        });
+      }, 1000);
+    }
   }
   function navigateToContact(params) {
     navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
@@ -1161,6 +1165,9 @@ const HomeScreen = ({ route, navigation }) => {
       />
     );
   };
+  function navigateToDropLostCancel(params) {
+    navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis);
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -1390,15 +1397,27 @@ const HomeScreen = ({ route, navigation }) => {
                   {"Contact"}
                 </Text>
                 <View style={styles.cardView}>
-                  <Text style={{ ...styles.rankText, color: "blue" }}>
+                  <Text
+                    style={{
+                      ...styles.rankText,
+                      color: "blue",
+                      textDecorationLine: selector.receptionistData
+                        ?.contactsCount
+                        ? "underline"
+                        : "none",
+                    }}
+                  >
                     {selector.receptionistData?.contactsCount || 0}
                   </Text>
                 </View>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
-                  selector.receptionistData.totalLostCount > 0 &&
-                    navigateToEMS();
+                  selector.receptionistData.totalDroppedCount > 0 &&
+                    navigateToEMS(
+                      {},
+                      AppNavigator.DrawerStackIdentifiers.dropAnalysis
+                    );
                 }}
                 style={styles.view8}
               >
@@ -1406,11 +1425,20 @@ const HomeScreen = ({ route, navigation }) => {
                   numberOfLines={1}
                   style={{ ...styles.rankHeadingText, width: 50 }}
                 >
-                  {"Drops"}
+                  {"Drop"}
                 </Text>
                 <View style={styles.cardView}>
-                  <Text style={{ ...styles.rankText, color: "blue" }}>
-                    {selector.receptionistData?.totalLostCount || 0}
+                  <Text
+                    style={{
+                      ...styles.rankText,
+                      color: "blue",
+                      textDecorationLine: selector.receptionistData
+                        ?.totalDroppedCount
+                        ? "underline"
+                        : "none",
+                    }}
+                  >
+                    {selector.receptionistData?.totalDroppedCount || 0}
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -1425,7 +1453,16 @@ const HomeScreen = ({ route, navigation }) => {
                   {"Enquiry"}
                 </Text>
                 <View style={styles.cardView}>
-                  <Text style={{ ...styles.rankText, color: "blue" }}>
+                  <Text
+                    style={{
+                      ...styles.rankText,
+                      color: "blue",
+                      textDecorationLine: selector.receptionistData
+                        ?.enquirysCount
+                        ? "underline"
+                        : "none",
+                    }}
+                  >
                     {selector.receptionistData?.enquirysCount || 0}
                   </Text>
                 </View>
@@ -1439,7 +1476,16 @@ const HomeScreen = ({ route, navigation }) => {
               >
                 <Text style={styles.rankHeadingText}>{"Bookings"}</Text>
                 <View style={styles.cardView}>
-                  <Text style={{ ...styles.rankText, color: "blue" }}>
+                  <Text
+                    style={{
+                      ...styles.rankText,
+                      color: "blue",
+                      textDecorationLine: selector.receptionistData
+                        ?.bookingsCount
+                        ? "underline"
+                        : "none",
+                    }}
+                  >
                     {selector.receptionistData?.bookingsCount || 0}
                   </Text>
                 </View>
@@ -1452,7 +1498,15 @@ const HomeScreen = ({ route, navigation }) => {
               >
                 <Text style={styles.rankHeadingText}>{"Retails"}</Text>
                 <View style={styles.cardView}>
-                  <Text style={{ ...styles.rankText, color: "blue" }}>
+                  <Text
+                    style={{
+                      ...styles.rankText,
+                      color: "blue",
+                      textDecorationLine: selector.receptionistData?.RetailCount
+                        ? "underline"
+                        : "none",
+                    }}
+                  >
                     {selector.receptionistData?.RetailCount || 0}
                   </Text>
                 </View>

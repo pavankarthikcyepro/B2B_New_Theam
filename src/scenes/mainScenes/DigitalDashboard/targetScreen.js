@@ -755,7 +755,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
   }
 
   function navigateToDropLostCancel(params) {
-    navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropLostCancel);
+    navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis);
   }
   return (
     <React.Fragment>
@@ -1177,18 +1177,18 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                                     >
                                       <Text
                                         onPress={() => {
-                                          item?.allocatedCount > 0 &&
+                                          item?.enquiryCount > 0 &&
                                             navigateToEMS();
                                         }}
                                         style={{
                                           padding: 2,
                                           textDecorationLine:
-                                            item?.allocatedCount > 0
+                                            item?.enquiryCount > 0
                                               ? "underline"
                                               : "none",
                                         }}
                                       >
-                                        {item?.allocatedCount}
+                                        {item?.enquiryCount}
                                       </Text>
                                     </View>
                                     <View

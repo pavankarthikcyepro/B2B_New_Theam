@@ -874,7 +874,7 @@ const TargetScreen = ({ route }) => {
   }
 
   function navigateToDropLostCancel(params) {
-    navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropLostCancel);
+    navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis);
   }
   return (
     <React.Fragment>
@@ -950,6 +950,7 @@ const TargetScreen = ({ route }) => {
                       >
                         {receptionistTeamParameters.length > 0 &&
                           receptionistTeamParameters.map((item, index) => {
+                            console.log("item -> ", item);
                             return (
                               <View key={`${item.empName} ${index}`}>
                                 <View
@@ -2543,18 +2544,18 @@ const TargetScreen = ({ route }) => {
                                   >
                                     <Text
                                       onPress={() => {
-                                        item?.allocatedCount > 0 &&
+                                        item?.enquiryCount > 0 &&
                                           navigateToEMS();
                                       }}
                                       style={{
                                         padding: 2,
                                         textDecorationLine:
-                                          item?.allocatedCount > 0
+                                          item?.enquiryCount > 0
                                             ? "underline"
                                             : "none",
                                       }}
                                     >
-                                      {item?.allocatedCount}
+                                      {item?.enquiryCount}
                                     </Text>
                                   </View>
                                   <View
@@ -2664,19 +2665,18 @@ const TargetScreen = ({ route }) => {
                             <View style={styles.view20}>
                               <Text
                                 onPress={() => {
-                                  selector.receptionistData
-                                    .totalAllocatedCount > 0 && navigateToEMS();
+                                  selector.receptionistData.enquirysCount > 0 &&
+                                    navigateToEMS();
                                 }}
                                 style={{
                                   padding: 2,
                                   textDecorationLine:
-                                    selector.receptionistData
-                                      .totalAllocatedCount > 0
+                                    selector.receptionistData.enquirysCount > 0
                                       ? "underline"
                                       : "none",
                                 }}
                               >
-                                {selector.receptionistData.totalAllocatedCount}
+                                {selector.receptionistData.enquirysCount}
                               </Text>
                             </View>
                             <View style={styles.view20}>

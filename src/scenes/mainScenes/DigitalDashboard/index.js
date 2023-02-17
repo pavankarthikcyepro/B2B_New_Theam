@@ -861,6 +861,11 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
       });
     }, 100);
   }
+
+  function navigateToDropLostCancel(params) {
+    navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis);
+  }
+  
   function navigateToContact(params) {
     navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
     setTimeout(() => {
@@ -924,7 +929,7 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
-                  selector.receptionistData.totalLostCount > 0 &&
+                  selector.receptionistData.totalDroppedCount > 0 &&
                     navigateToEMS();
                 }}
                 style={styles.view8}
@@ -933,11 +938,11 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
                   numberOfLines={1}
                   style={{ ...styles.rankHeadingText, width: 50 }}
                 >
-                  {"Drops"}
+                  {"Drop"}
                 </Text>
                 <View style={styles.cardView}>
                   <Text style={{ ...styles.rankText, color: "blue" }}>
-                    {selector.receptionistData?.totalLostCount || 0}
+                    {selector.receptionistData?.totalDroppedCount || 0}
                   </Text>
                 </View>
               </TouchableOpacity>

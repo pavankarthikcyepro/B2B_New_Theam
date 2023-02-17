@@ -93,8 +93,7 @@ import { GoogleMapKey } from "../service";
 //   "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic";
 
 // Dev End Points with JWT
-export const baseUrl =
-  "https://stage-api.cyepro.com/";
+export const baseUrl = "https://stage-api.cyepro.com/";
 export const auth_url = baseUrl + "auth";
 export const hrms_url = baseUrl + "hrms";
 export const inventory_url = baseUrl + "inventory";
@@ -162,7 +161,7 @@ export const reasonDropDown = baseUrl + "dynamic-forms/dropdown";
 export const getDetailsByempIdAndorgId =
   baseUrl + "sales/employeeTracking/getDetailsByempIdAndorgId";
 export const getLocationCoordinates =
-baseUrl + "sales/employeeTracking/getLocationByempIdAndorgId";
+  baseUrl + "sales/employeeTracking/getLocationByempIdAndorgId";
 
 const URL = {
   // LOGIN: () => hrms_url + "/emplogin",
@@ -407,8 +406,14 @@ const URL = {
     return sales_url + "/lead-drop";
   },
   LEAD_DROPPED: () => sales_url + "/lead",
+
+  DROP_ANALYSIS_LIST_FILTER: () => sales_url + "/lead-drop/leadlist",
+
   UPDATE_BULKAPPROVAL: () => {
     return sales_url + "/lead-drop/bulkdrop";
+  },
+  UPDATE_DROP_STAGE: () => {
+    return sales_url + "/lead/updateDropStage";
   },
   REVOKE: (id) => {
     return sales_url + "/lead-drop/updateStatusEnquire/ENQUIRY/" + id;
@@ -440,6 +445,14 @@ const URL = {
   GET_SUB_MENU: (stage) => {
     return sales_url + "/lead/stagedropdown?menu=" + stage;
   },
+  GET_DROP_SUBMENU: (stage) => {
+    return sales_url + "/lead/dropstagesubmenu?menu=" + stage;
+  },
+
+  GET_DROPSTAGE_MENU: (stage) => {
+    return sales_url + "/lead/dropstagemenu";
+  },
+
   GET_LEAD_LIST: (branchId, empName, empId, offSet, limit) => {
     return (
       sales_url +
@@ -550,7 +563,16 @@ const URL = {
     return downloadFile2;
   },
   LOCATION_LIST: (orgId) => {
-    return `${baseUrl} + "dfd/oh/data-nodes?orgId=${orgId}&levelCode=Level4`;
+    return `${baseUrl}dfd/oh/data-nodes?orgId=${orgId}&levelCode=Level4`;
+  },
+  DEALER_CODE_LIST1: (orgId) => {
+    return `${baseUrl}dfd/oh/data-nodes?orgId=${orgId}&levelCode=Level5`;
+  },
+  GET_DESIGNATION: (orgId, branchId) => {
+    return `${sales_url}/employees/get/designations/${orgId}/${branchId}`;
+  },
+  GET_EMPLOYEES: (designationId, branchId) => {
+    return `${sales_url}/employees/getemployee/${designationId}/${branchId}`;
   },
   DEALER_CODE_LIST: (orgId) => {
     return `${baseUrl} + "dfd/oh/data-nodes?orgId=1&levelCode=Level5`;
@@ -644,8 +666,7 @@ const URL = {
   UPDATE_TEAM_TARGET_PARAMS: () => {
     return `${salesGap}/target-update`;
   },
-  EVENT_DASHBOARD: () =>
-    `${dashboard}/v2/get_target_params_events`,
+  EVENT_DASHBOARD: () => `${dashboard}/v2/get_target_params_events`,
   MODEL_SOURCE_SELF: () =>
     `${dashboard}/v2/get_target_params_for_emp_model_source`,
   GET_LIVE_LEADS_MODEL_SOURCE_SELF: () =>
@@ -695,9 +716,7 @@ const URL = {
   },
   GET_HOLIDAYS: (orgId) => {
     return (
-      sales_url +
-      "/employeeHolidayList/getAllHolidayDetails/" +
-      `${orgId}`
+      sales_url + "/employeeHolidayList/getAllHolidayDetails/" + `${orgId}`
     );
   },
   NOTIFICATION_LIST: (empId) => {
@@ -758,6 +777,9 @@ const URL = {
   },
   GET_TASK_360_HISTORY: (universalId) => {
     return sales_url + "/workflow/universalId/" + universalId;
+  },
+   GET_FOLLOWUP_COUNT: (universalId) => {
+     return sales_url + "/workflow/followupCounts/" + universalId;
   },
   CALL_DEALLOCATE: (empId) => {
     return roleManagement_url + "/dms/emp-update/" + empId;

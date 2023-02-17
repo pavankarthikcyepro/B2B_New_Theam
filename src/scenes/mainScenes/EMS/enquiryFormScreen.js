@@ -3074,6 +3074,18 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     );
   };
 
+  const onDropDownClear = (key) => {
+    if (key) {
+      dispatch(
+        setDropDownData({
+          key: key,
+          value: "",
+          id: "",
+        })
+      );
+    }
+  };
+
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
       <ImagePickerComponent
@@ -3212,11 +3224,30 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           ref={scrollRef}
         >
           <View style={styles.baseVw}>
-           
-                 {(leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY' && carModelsList && carModelsList.length > 0) ?
-                  <Button style={{ height: 40, width: 200, marginBottom: 15, alignSelf: 'flex-end', alignContent: 'center', backgroundColor: Colors.PINK, color: Colors.WHITE }}
-              labelStyle={{ textTransform: "none", fontSize: 16, color: Colors.WHITE }}
-                onPress={() => navigateToProforma()}><Text>Proforma Invoice</Text></Button> : null}
+            {leadStatus === "ENQUIRYCOMPLETED" &&
+            leadStage === "ENQUIRY" &&
+            carModelsList &&
+            carModelsList.length > 0 ? (
+              <Button
+                style={{
+                  height: 40,
+                  width: 200,
+                  marginBottom: 15,
+                  alignSelf: "flex-end",
+                  alignContent: "center",
+                  backgroundColor: Colors.PINK,
+                  color: Colors.WHITE,
+                }}
+                labelStyle={{
+                  textTransform: "none",
+                  fontSize: 16,
+                  color: Colors.WHITE,
+                }}
+                onPress={() => navigateToProforma()}
+              >
+                <Text>Proforma Invoice</Text>
+              </Button>
+            ) : null}
 
             {/* 
            {(leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY' && carModelsList && carModelsList.length > 0) ?
@@ -3294,6 +3325,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           "Select Salutation"
                         )
                       }
+                      clearOption={true}
+                      clearKey={"SALUTATION"}
+                      onClear={onDropDownClear}
                     />
                     <Text style={GlobalStyle.underline} />
                   </View>
@@ -3378,6 +3412,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       onPress={() =>
                         showDropDownModelMethod("RELATION", "Relation")
                       }
+                      clearOption={true}
+                      clearKey={"RELATION"}
+                      onClear={onDropDownClear}
                     />
                   </View>
                   <View style={{ width: "45%" }}>
@@ -3631,6 +3668,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           "Sub Source Of Enquiry"
                         )
                       }
+                      clearOption={true}
+                      clearKey={"SUB_SOURCE_OF_ENQUIRY"}
+                      onClear={onDropDownClear}
                     />
                   </View>
                 )}
@@ -3689,6 +3729,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           "Referred BY Source"
                         )
                       }
+                      clearOption={true}
+                      clearKey={"RF_SOURCE"}
+                      onClear={onDropDownClear}
                     />
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -3766,6 +3809,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       "KMs Travelled in Month"
                     )
                   }
+                  clearOption={true}
+                  clearKey={"KMS_TRAVELLED"}
+                  onClear={onDropDownClear}
                 />
 
                 <DropDownSelectionItem
@@ -3774,6 +3820,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   onPress={() =>
                     showDropDownModelMethod("WHO_DRIVES", "Who Drives")
                   }
+                  clearOption={true}
+                  clearKey={"WHO_DRIVES"}
+                  onClear={onDropDownClear}
                 />
 
                 <DropDownSelectionItem
@@ -3785,6 +3834,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       "How many members in your family?"
                     )
                   }
+                  clearOption={true}
+                  clearKey={"MEMBERS"}
+                  onClear={onDropDownClear}
                 />
 
                 <DropDownSelectionItem
@@ -3796,6 +3848,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       "What is prime expectation from the Vehicle?"
                     )
                   }
+                  clearOption={true}
+                  clearKey={"PRIME_EXPECTATION_CAR"}
+                  onClear={onDropDownClear}
                 />
               </List.Accordion>
               <View style={styles.space}></View>
@@ -4498,6 +4553,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         "Finance Category"
                       )
                     }
+                    clearOption={true}
+                    clearKey={"FINANCE_CATEGORY"}
+                    onClear={onDropDownClear}
                   />
                 )}
 
@@ -4578,6 +4636,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       onPress={() =>
                         showDropDownModelMethod("BANK_FINANCE", "Bank/Financer")
                       }
+                      clearOption={true}
+                      clearKey={"BANK_FINANCE"}
+                      onClear={onDropDownClear}
                     />
 
                     <TextinputComp
@@ -4624,6 +4685,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           "Approx Annual Income"
                         )
                       }
+                      clearOption={true}
+                      clearKey={"APPROX_ANNUAL_INCOME"}
+                      onClear={onDropDownClear}
                     />
                   </View>
                 )}
@@ -5193,6 +5257,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       label={"Make"}
                       value={selector.c_make}
                       onPress={() => showDropDownModelMethod("C_MAKE", "Make")}
+                      clearOption={true}
+                      clearKey={"C_MAKE"}
+                      onClear={onDropDownClear}
                     />
                     {selector.c_make === "Other" && (
                       <View>
@@ -5220,6 +5287,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       onPress={() =>
                         showDropDownModelMethod("C_MODEL", "Model")
                       }
+                      clearOption={true}
+                      clearKey={"C_MODEL"}
+                      onClear={onDropDownClear}
                     />
                     {selector.c_model === "Other" && (
                       <View>
@@ -5285,6 +5355,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       onPress={() =>
                         showDropDownModelMethod("C_FUEL_TYPE", "Fuel Type")
                       }
+                      clearOption={true}
+                      clearKey={"C_FUEL_TYPE"}
+                      onClear={onDropDownClear}
                     />
                     <DropDownSelectionItem
                       label={
@@ -5301,6 +5374,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           "Transmission Type"
                         )
                       }
+                      clearOption={true}
+                      clearKey={"C_TRANSMISSION_TYPE"}
+                      onClear={onDropDownClear}
                     />
 
                     <TextinputComp
@@ -5433,6 +5509,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     label={"Make"}
                     value={selector.a_make}
                     onPress={() => showDropDownModelMethod("A_MAKE", "Make")}
+                    clearOption={true}
+                    clearKey={"A_MAKE"}
+                    onClear={onDropDownClear}
                   />
                   {selector.a_make === "Other" && (
                     <View>
@@ -5450,6 +5529,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                             })
                           )
                         }
+                        clearOption={true}
+                        clearKey={"A_MAKE_OTHER_NAME"}
+                        onClear={onDropDownClear}
                       />
                       <Text style={GlobalStyle.underline}></Text>
                     </View>
@@ -5458,6 +5540,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     label={"Model"}
                     value={selector.a_model}
                     onPress={() => showDropDownModelMethod("A_MODEL", "Model")}
+                    clearOption={true}
+                    clearKey={"A_MODEL"}
+                    onClear={onDropDownClear}
                   />
                   {selector.a_model === "Other" && (
                     <View>
@@ -5609,6 +5694,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     label={"Make"}
                     value={selector.r_make}
                     onPress={() => showDropDownModelMethod("R_MAKE", "Make")}
+                    clearOption={true}
+                    clearKey={"R_MAKE"}
+                    onClear={onDropDownClear}
                   />
                   {selector.r_make === "Other" && (
                     <View>
@@ -5634,6 +5722,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     label={"Model"}
                     value={selector.r_model}
                     onPress={() => showDropDownModelMethod("R_MODEL", "Model")}
+                    clearOption={true}
+                    clearKey={"R_MODEL"}
+                    onClear={onDropDownClear}
                   />
                   {selector.r_model === "Other" && (
                     <View>
@@ -5700,6 +5791,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     onPress={() =>
                       showDropDownModelMethod("R_FUEL_TYPE", "Fuel Type")
                     }
+                    clearOption={true}
+                    clearKey={"R_FUEL_TYPE"}
+                    onClear={onDropDownClear}
                   />
                   <DropDownSelectionItem
                     label={
@@ -5716,6 +5810,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         "Transmission Type"
                       )
                     }
+                    clearOption={true}
+                    clearKey={"R_TRANSMISSION_TYPE"}
+                    onClear={onDropDownClear}
                   />
 
                   <DateSelectItem
@@ -5946,6 +6043,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                               "Insurance Type"
                             )
                           }
+                          clearOption={true}
+                          clearKey={"R_INSURENCE_TYPE"}
+                          onClear={onDropDownClear}
                         />
                         <DateSelectItem
                           label={"Insurance From Date"}
@@ -5975,6 +6075,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                             "Insurence Company Name"
                           )
                         }
+                        clearOption={true}
+                        clearKey={"R_INSURENCE_COMPANY_NAME"}
+                        onClear={onDropDownClear}
                       />
                       {/* <TextinputComp
                         style={styles.textInputStyle}

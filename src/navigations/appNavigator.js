@@ -115,6 +115,8 @@ import EventSourceModel from "../scenes/mainScenes/EventDashboard/EventSourceMod
 import LeaderShipFilter from "../scenes/mainScenes/Home/TabScreens/leaderShipFilter";
 import Orientation from "react-native-orientation-locker";
 import { detectIsOrientationLock } from "../utils/helperFunctions";
+import TaskthreeSixtyhistoryFilter from "../scenes/mainScenes/EMS/components/TaskthreeSixtyhistoryFilter";
+import DownloadReportScreen from "../scenes/mainScenes/Attendance/DownloadReport";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -155,7 +157,7 @@ export const TestDriveHistoryIcon = ({ navigation }) => {
 
 const MyTaskFilter = ({ navigation }) => {
   const screen = useSelector((state) => state.mytaskReducer.currentScreen);
-  if (screen === "TODAY") return <React.Fragment></React.Fragment>;
+  // if (screen === "TODAY") return <React.Fragment></React.Fragment>;
   return (
     <IconButton
       icon="filter-outline"
@@ -362,6 +364,7 @@ export const DrawerStackIdentifiers = {
   attendance: "Attendance",
   geolocation: "Geolocation",
   digitalDashboard: "DIGITAL_DASHBOARD",
+  reportDownload:"REPORT_DOWNLOAD"
 };
 
 export const TabStackIdentifiers = {
@@ -406,6 +409,8 @@ export const EmsStackIdentifiers = {
   webViewComp: "webViewComp",
   ProformaScreen: "PROFORMA_SCREEN",
   newEnquiry: "NEW_ENQUIRY",
+  testDriveHistory: "TEST_HISTORY",
+  task360HistoryFilter: "TASK_360_HISTORY_FILTER",
 };
 
 export const PreBookingStackIdentifiers = {
@@ -622,7 +627,13 @@ const EmsStackNavigator = ({ navigation }) => {
           headerTitle: route?.params?.title ?? "History",
         })}
       />
-
+      <EmsStack.Screen
+        name={EmsStackIdentifiers.task360HistoryFilter}
+        component={TaskthreeSixtyhistoryFilter}
+        options={({ route }) => ({
+          headerTitle: "History Filter",
+        })}
+      />
       <EmsStack.Screen
         name={EmsStackIdentifiers.homeVisit}
         component={HomeVisitScreen}
@@ -660,6 +671,14 @@ const EmsStackNavigator = ({ navigation }) => {
         name={EmsStackIdentifiers.ProformaScreen}
         component={ProformaScreen}
         options={{ title: "Proforma Invoice" }}
+      />
+      <EmsStack.Screen
+        name={EmsStackIdentifiers.testDriveHistory}
+        component={TestDriveHistory}
+        options={{
+          title: "Test Drive History",
+          // headerRight: () => <TestDriveHistoryIcon navigation={navigation} />,
+        }}
       />
     </EmsStack.Navigator>
   );
@@ -1024,7 +1043,7 @@ const DropAnalysisStackNavigator = ({ navigation }) => {
         name={"DROP_ANALYSIS"}
         component={DropAnalysisScreen}
         options={{
-          title: "Lead Drop List",
+          title: "Drop List",
           headerLeft: () => <MenuIcon navigation={navigation} />,
           headerRight: () => {
             return (
@@ -1036,6 +1055,13 @@ const DropAnalysisStackNavigator = ({ navigation }) => {
             );
           },
         }}
+      />
+      <DropAnalysisStack.Screen
+        name={"DROP_ANALYSIS_HISTORY"}
+        component={TaskThreeSixtyHistory}
+        options={({ route }) => ({
+          headerTitle: route?.params?.title ?? "History",
+        })}
       />
     </DropAnalysisStack.Navigator>
   );
@@ -1298,7 +1324,10 @@ const MainStackDrawerNavigator = ({ navigation }) => {
         name={DrawerStackIdentifiers.digitalDashboard}
         component={DigitalDashBoardScreen}
       />
-
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.reportDownload}
+        component={DownloadReportNavigator}
+      />
       {/* <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.preBooking}
         component={PreBookingStackNavigator}
@@ -1308,6 +1337,26 @@ const MainStackDrawerNavigator = ({ navigation }) => {
         component={TargetSettingsScreen}
       />
     </MainDrawerNavigator.Navigator>
+  );
+};
+const DownloadReportStack = createStackNavigator();
+
+const DownloadReportNavigator = ({ navigation }) => {
+  return (
+    <DownloadReportStack.Navigator
+      initialRouteName={"REPORT_DOWNLOAD"}
+      screenOptions={screeOptionStyle}
+    >
+      <DownloadReportStack.Screen
+        name={"REPORT_DOWNLOAD"}
+        component={DownloadReportScreen}
+        options={{
+          title: "Download Report",
+          headerShown: true,
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+    </DownloadReportStack.Navigator>
   );
 };
 

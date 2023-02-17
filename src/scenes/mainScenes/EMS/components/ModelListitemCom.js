@@ -121,6 +121,41 @@ export const ModelListitemCom = ({
     setDropDownTitle(headerText);
     setShowDropDownModel(true);
   };
+
+  const onDropDownClear = (key) => {
+    if (key) {
+      switch (key) {
+        case "MODEL":
+          setCarModel("");
+          setCarVariant("");
+          setCarColor("");
+          setCarFuelType("");
+          setCarTransmissionType("");
+          setSelectedCarVarientsData({
+            varientList: [],
+            varientListForDropDown: [],
+          });
+          setCarColorsData([]);
+          break;
+
+        case "VARIENT":
+          setCarVariant("");
+          setCarColor("");
+          setCarFuelType("");
+          setCarTransmissionType("");
+          setCarColorsData([]);
+          break;
+
+        case "COLOR":
+          setCarColor("");
+          break;
+
+        default:
+          break;
+      }
+    }
+  };
+
   useEffect(() => {
     // navigation.addListener('focus', () => {
     //     getAsyncstoreData();
