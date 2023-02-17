@@ -158,8 +158,8 @@ android {
         applicationId "com.b2b_new_theme"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 30
+        versionName "CPR30-17022023"
     }
     splits {
         abi {
@@ -171,22 +171,22 @@ android {
     }
     signingConfigs {
         debug {
-            storeFile file('debug.keystore')
-            storePassword 'android'
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
-        }
-        release {
             storeFile file('cyepro-upload-key.keystore')
-            storePassword 'changeit'
+           storePassword 'changeit'
             keyAlias 'Cyepro$123-alias'
             keyPassword 'changeit'
-            // if (project.hasProperty('MYAPP_UPLOAD_STORE_FILE')) {
-            //     storeFile file(MYAPP_UPLOAD_STORE_FILE)
-            //     storePassword MYAPP_UPLOAD_STORE_PASSWORD
-            //     keyAlias MYAPP_UPLOAD_KEY_ALIAS
-            //     keyPassword MYAPP_UPLOAD_KEY_PASSWORD
-            // }
+        }
+        release {
+            //storeFile file('cyepro-upload-key.keystore')
+            //storePassword 'changeit'
+           // keyAlias 'Cyepro$123-alias'
+            //keyPassword 'changeit'
+             if (project.hasProperty('MYAPP_UPLOAD_STORE_FILE')) {
+                 storeFile file(MYAPP_UPLOAD_STORE_FILE)
+                 storePassword MYAPP_UPLOAD_STORE_PASSWORD
+                 keyAlias MYAPP_UPLOAD_KEY_ALIAS
+                keyPassword MYAPP_UPLOAD_KEY_PASSWORD
+             }
         }
     }
     buildTypes {
