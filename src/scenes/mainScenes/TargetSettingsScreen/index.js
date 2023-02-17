@@ -397,6 +397,7 @@ const TargetSettingsScreen = ({ route, navigation }) => {
         onRequestClose={() => setShowDatePicker(false)}
       />
       <HeaderComp
+        filter={homeSelector.isTeamPresent}
         // title={"Monthly Target Planning"}
         title={"Target Planning"}
         // branchName={selectedBranchName}

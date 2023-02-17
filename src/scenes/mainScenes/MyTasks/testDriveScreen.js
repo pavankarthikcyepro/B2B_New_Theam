@@ -454,7 +454,9 @@ const TestDriveScreen = ({ route, navigation }) => {
         setHandleActionButtons(5);
       } else if (taskStatus === "ASSIGNED" && taskName === "Test Drive") {
         setHandleActionButtons(1);
-      }
+      } if (taskStatus === "RESCHEDULED" && taskName === "Test Drive") {
+        setHandleActionButtons(4);
+      } 
 
       setSelectedDseDetails({
         name: selector.task_details_response.assignee?.empName,
