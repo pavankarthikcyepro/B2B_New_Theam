@@ -13,13 +13,19 @@ import { AuthNavigator } from "../../navigations";
 import { useIsFocused } from "@react-navigation/native";
 import Orientation from "react-native-orientation-locker";
 import { getWidth } from "../../utils/helperFunctions";
+import { useSelector } from "react-redux";
 
 const WelcomeScreen = ({ navigation }) => {
+  const selector = useSelector((state) => state.homeReducer);
 
   const loginButtonClicked = () => {
     navigation.navigate(AuthNavigator.AuthStackIdentifiers.LOGIN);
   };
 
+  const UpdateApp = () => {
+    alert("Please Update to Latest Version");
+  };
+  
   return (
     <SafeAreaView style={styles.container}>
       <View
@@ -46,7 +52,7 @@ const WelcomeScreen = ({ navigation }) => {
       <ButtonComp
         title={"LOG IN"}
         width={getWidth(100) - 40}
-        onPress={loginButtonClicked}
+        onPress={selector.newUpdateAvailable ? UpdateApp : loginButtonClicked}
         color={Colors.PINK}
       />
 
