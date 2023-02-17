@@ -22,6 +22,7 @@ import {
   DropDownSelectionItem,
 } from "../../../../pureComponents";
 import moment from "moment";
+ import _ from "lodash";
 import { Button } from "react-native-paper";
 import {
   updateFilterDropDownData,
@@ -543,48 +544,49 @@ const FilterTargetScreen = ({ route, navigation }) => {
   };
 
   const submitBtnForEmployeeData = () => {
-    let selectedIds = [];
-    for (let key in employeeDropDownDataLocal) {
-      const arrayData = employeeDropDownDataLocal[key];
-      if (arrayData.length != 0) {
-        arrayData.forEach((element) => {
-          if (element.selected === true) {
-            selectedIds.push(element.code);
+    if (!_.isEmpty(targetSelector.dealerFilter)){
+      let selectedIds = [];
+      for (let key in employeeDropDownDataLocal) {
+        const arrayData = employeeDropDownDataLocal[key];
+        if (arrayData.length != 0) {
+          arrayData.forEach((element) => {
+            if (element.selected === true) {
+              selectedIds.push(element.code);
+            }
+          });
+        }
+      }
+
+      let x =
+        employeeDropDownDataLocal[
+        Object.keys(employeeDropDownDataLocal)[
+        Object.keys(employeeDropDownDataLocal).length - 1
+        ]
+        ];
+      let selectedID = x.filter((e) => e.selected == true);
+      let temp = [];
+      Object.keys(employeeDropDownDataLocal).map(function (key, index) {
+        Object.values(employeeDropDownDataLocal)[index].map(
+          (innerItem, innerIndex) => {
+            if (innerItem.selected == true) {
+              temp.push(innerItem);
+            }
           }
+        );
+      });
+
+      dispatch(updateFilterSelectedData(employeeDropDownDataLocal));
+      if (temp.length > 0) {
+        navigation.navigate("MONTHLY_TARGET_SCREEN", {
+          params: {
+            from: "Filter",
+            // selectedID: selectedIds[selectedIds.length - 1],
+            selectedID: temp[temp.length - 1].id,
+            fromDate: fromDate,
+            toDate: toDate,
+          },
         });
       }
-    }
-
-    let x =
-      employeeDropDownDataLocal[
-        Object.keys(employeeDropDownDataLocal)[
-          Object.keys(employeeDropDownDataLocal).length - 1
-        ]
-      ];
-    let selectedID = x.filter((e) => e.selected == true);
-    let temp = [];
-    Object.keys(employeeDropDownDataLocal).map(function (key, index) {
-      Object.values(employeeDropDownDataLocal)[index].map(
-        (innerItem, innerIndex) => {
-          if (innerItem.selected == true) {
-            temp.push(innerItem);
-          }
-        }
-      );
-    });
-
-    dispatch(updateFilterSelectedData(employeeDropDownDataLocal));
-    if (temp.length > 0) {
-      navigation.navigate("MONTHLY_TARGET_SCREEN", {
-        params: {
-          from: "Filter",
-          // selectedID: selectedIds[selectedIds.length - 1],
-          selectedID: temp[temp.length - 1].id,
-          fromDate: fromDate,
-          toDate: toDate,
-        },
-      });
-    }
 
     // let selectedID = x[x-1];
     // return;
@@ -593,6 +595,10 @@ const FilterTargetScreen = ({ route, navigation }) => {
     // } else {
     //   showToast("Please select any value");
     // }
+    }else{
+      showToast("Please select Dealer Code");
+    }
+    
   };
 
   const updateSelectedDate = (date, key) => {
