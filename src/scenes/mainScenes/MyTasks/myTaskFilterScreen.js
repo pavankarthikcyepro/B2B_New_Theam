@@ -386,6 +386,29 @@ const MyTaskFilterScreen = ({ navigation }) => {
             unselectedParentIds.push(Number(item.parentId));
           }
         });
+
+        if (!selectedParendIds.length) {
+          const tmpObj = { ...employeeDropDownDataLocal };
+          delete tmpObj[key];
+          let filterObj = [];
+          Object.keys(tmpObj).map((newKey) => {
+            if (tmpObj[newKey].length > 0) {
+              if (arrayCheck.length > 0) {
+                for (let i = 0; i < tmpObj[newKey].length; i++) {
+                  if (tmpObj[newKey][i].order < arrayCheck[0].order) {
+                    filterObj.push(tmpObj[newKey][i]);
+                  }
+                }
+              }
+            }
+          });
+          filterObj.forEach((item) => {
+            if (item.selected != undefined && item.selected == true) {
+              selectedParendIds.push(Number(item.id));
+            }
+          });
+        }
+        
         let localIndex = index - 1;
 
         for (localIndex; localIndex >= 0; localIndex--) {
