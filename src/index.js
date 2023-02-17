@@ -40,7 +40,6 @@ import SpInAppUpdates, {
   IAUUpdateKind,
   StartUpdateOptions,
 } from "sp-react-native-in-app-updates";
-import { checkAppUpdate } from "./forceUpdate";
 enableScreens();
 
 const officeLocation = {
@@ -352,7 +351,6 @@ const AppScreen = () => {
   };
 
   useEffect(async () => {
-    checkAppUpdate();
     if (Platform.OS === "ios") {
       PushNotificationIOS.checkPermissions((item) => {
         if (!item.alert) {
@@ -361,14 +359,6 @@ const AppScreen = () => {
       });
       // sendLocalNotification();
     }
-    // if (Platform.OS === "android") {
-    //   PushNotification.checkPermissions((item) => {
-    //     if (!item.alert) {
-    //       PushNotification.requestPermissions();
-    //     }
-    //   });
-    //   // sendLocalNotification();
-    // }
 
     const checkUserToken = async () => {
       await BackgroundService.stop();

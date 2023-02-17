@@ -862,6 +862,8 @@ export const homeSlice = createSlice({
       state.isDSE = action.payload;
     },
     SetNewUpdateAvailable: (state, action) => {
+      console.log("KSKKSKSKSKSKAAALL", action.payload);
+      
       state.newUpdateAvailable = action.payload;
     },
     updateTargetData: (state, action) => {
