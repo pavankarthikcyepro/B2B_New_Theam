@@ -4,6 +4,7 @@ import { achievementPercentage } from "../../../../../utils/helperFunctions";
 import { Colors } from "../../../../../styles";
 import { AppNavigator } from "../../../../../navigations";
 import { EmsTopTabNavigatorIdentifiers } from "../../../../../navigations/emsTopTabNavigator";
+import { showToastRedAlert } from "../../../../../utils/toast";
 
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 100) / 5;
@@ -144,9 +145,12 @@ export const RenderEmployeeTarget = (parameter) => {
                                 ? 63
                                 : 53,
                             paddingTop: 4,
-                            textDecorationLine: editParameters
-                              ? "underline"
-                              : "none",
+                            textDecorationLine: item?.isAccess == "false"
+                                ? "none"
+                                : "underline"
+                            // textDecorationLine: editParameters
+                            //   ? "underline"
+                            //   : "none",
                           },
                         ]}
                       >
@@ -156,9 +160,25 @@ export const RenderEmployeeTarget = (parameter) => {
                       </Text>
                     ) : (
                       <TextInput
+                        onPressIn={() => {
+                          if (editParameters) {
+                            if (item?.isAccess == "false") {
+                              showToastRedAlert(
+                                `Target has been already set by ${item?.updatedUserName}`
+                              );
+                            }
+                          }
+                        }}
                         key={index}
                         numberOfLines={1}
-                        editable={editParameters}
+                        // editable={editParameters}
+                        editable={
+                          editParameters
+                            ? item?.isAccess == "false"
+                              ? false
+                              : true
+                            : false
+                        }
                         keyboardType={"number-pad"}
                         style={[
                           styles.totalText,
@@ -171,8 +191,13 @@ export const RenderEmployeeTarget = (parameter) => {
                                 : 53,
                             paddingVertical: 0,
                             // height:30,
+                            // textDecorationLine: editParameters
+                            //   ? "underline"
+                            //   : "none",
                             textDecorationLine: editParameters
-                              ? "underline"
+                              ? item?.isAccess == "false"
+                                ? "none"
+                                : "underline"
                               : "none",
                           },
                         ]}
@@ -197,7 +222,10 @@ export const RenderEmployeeTarget = (parameter) => {
                               ? 63
                               : 53,
                           paddingTop: 4,
-                          textDecorationLine: "underline",
+                          // textDecorationLine: "underline",
+                          textDecorationLine:item?.isAccess == "false"
+                              ? "none"
+                              : "underline",
                         },
                       ]}
                     >
