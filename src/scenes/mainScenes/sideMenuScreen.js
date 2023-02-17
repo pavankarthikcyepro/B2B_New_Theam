@@ -60,6 +60,7 @@ import { myTaskClearState } from "../../redux/mytaskReducer";
 import Snackbar from "react-native-snackbar";
 import NetInfo from "@react-native-community/netinfo";
 import { notificationClearState } from "../../redux/notificationReducer";
+import { saveFilterPayload, updateDealerFilterData, updateFilterSelectedData } from "../../redux/targetSettingsReducer";
 
 const screenWidth = Dimensions.get("window").width;
 const profileWidth = screenWidth / 6;
@@ -391,6 +392,9 @@ const SideMenuScreen = ({ navigation }) => {
     dispatch(notificationClearState());
     dispatch(clearEnqState());
     dispatch(clearLeadDropState());
+    dispatch(saveFilterPayload({}));
+    dispatch(updateFilterSelectedData({}));
+    dispatch(updateDealerFilterData({}));
     signOut();
   };
 
