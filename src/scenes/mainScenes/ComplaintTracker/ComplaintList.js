@@ -44,16 +44,27 @@ const ComplaintList = (props) => {
         isCRM: false,
         isCRE: false,
     });
-    useEffect(() => {
-        const dateFormat = "YYYY-MM-DD";
-        const currentDate = moment().add(0, "day").format(dateFormat)
-        const CurrentMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
-        const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
-        setFromDateState(CurrentMonthFirstDate);
-        setToDateState(currentMonthLastDate);
-        getUserData()
+    // useEffect(() => {
+    //     const dateFormat = "YYYY-MM-DD";
+    //     const currentDate = moment().add(0, "day").format(dateFormat)
+    //     const CurrentMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+    //     const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+    //     setFromDateState(CurrentMonthFirstDate);
+    //     setToDateState(currentMonthLastDate);
+    //     // getUserData()
       
-    }, [])
+    // }, [])
+    useEffect(() => {
+        props.navigation.addListener("focus", () => {
+            const dateFormat = "YYYY-MM-DD";
+            const currentDate = moment().add(0, "day").format(dateFormat)
+            const CurrentMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+            const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+            setFromDateState(CurrentMonthFirstDate);
+            setToDateState(currentMonthLastDate);
+            getUserData()
+        });
+    }, [props.navigation]);
 
         useEffect(() => {
           
@@ -228,10 +239,11 @@ const ComplaintList = (props) => {
                         onItemPress={() => {
                             
                         }}
-                        onDocPress={(from) => {
+                        onDocPress={(from,which_btn) => {
                             props.navigation.navigate(ComplainTrackerIdentifires.addEditComplaint, {
                                 from: from,
-                                complaintId:item.id
+                                complaintId:item.id,
+                                which_btn: which_btn
                             });
                         }}
                     />

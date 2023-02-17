@@ -229,7 +229,7 @@ export const ComplintLidtItem = ({
                         {from === "ACTIVE_LIST" && <IconComp
                             iconName={"close-circle"}
                             onPress={() => {
-                                onDocPress(from);
+                                onDocPress(from,"Close_Btn");
                             }}
                         />}
                        

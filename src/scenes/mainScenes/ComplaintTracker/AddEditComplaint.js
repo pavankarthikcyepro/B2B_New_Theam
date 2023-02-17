@@ -43,7 +43,9 @@ const AddEditComplaint = (props) => {
         editEnable: false,
         isPreBookingApprover: false,
         isSelfManager: "",
-        branchId:""
+        branchId:"",
+        isCRM: false,
+        isCRE: false,
     });
     const [isSubmitPress, setIsSubmitPress] = useState(false);
 
@@ -70,8 +72,9 @@ const AddEditComplaint = (props) => {
     useEffect(()=>{
        
         if(selector.postComplaintFirstTimeRes){
-            props.navigation.goBack();
             dispatch(clearStateFormData())
+            props.navigation.goBack();
+            
         }
     }, [selector.postComplaintFirstTimeRes])
     
@@ -91,7 +94,7 @@ const AddEditComplaint = (props) => {
                 const jsonObj = JSON.parse(employeeData);
                
                 let isManager = false,
-                    editEnable = false;
+                    editEnable = false, isCRE= false, isCRM =false;
                 let isPreBookingApprover = false;
                 if (
                     jsonObj.hrmsRole === "MD" ||
@@ -107,6 +110,21 @@ const AddEditComplaint = (props) => {
                     editEnable = true;
                     isPreBookingApprover = true;
                 }
+
+                if (
+                    jsonObj.hrmsRole === "CRE"
+
+                ) {
+                    isCRE = true;
+                }
+
+                if (
+                    jsonObj.hrmsRole === "CRM"
+
+                ) {
+                    isCRM = true;
+                }
+
                 setUserData({
                     orgId: jsonObj.orgId,
                     employeeId: jsonObj.empId,
@@ -115,8 +133,9 @@ const AddEditComplaint = (props) => {
                     editEnable: editEnable,
                     isPreBookingApprover: isPreBookingApprover,
                     isSelfManager: jsonObj.isSelfManager,
-                    branchId: jsonObj.branchId
-
+                    branchId: jsonObj.branchId, 
+                     isCRM: isCRM,
+                    isCRE: isCRE,
                 });
 
                 dispatch(getComplainFactorDropDownData(jsonObj.orgId))
@@ -152,18 +171,23 @@ const AddEditComplaint = (props) => {
     }
 
     const isEditable = ()=>{
-        
+        console.log("mantha---dd ", props.route.params.from);
         if (props.route.params.from ==="ADD_NEW"){
+            console.log("mantha---dd 11", userData.isCRE);
             return false;
-        } else if (props.route.params.from === "ACTIVE_LIST"){
+        } else if (props.route.params.from === "ACTIVE_LIST" && userData.isCRE || userData.isCRM){
+            console.log("mantha---dd 22", userData.isCRE);
             return false;
         } else if (props.route.params.from === "CLOSED_LIST"){
+            console.log("mantha---dd 33", userData.isCRE);
             return true;
-
+        }else{
+            console.log("mantha---dd 44", userData.isCRE);
+            return true;
         }
     }
 
-    const submitClicked = async () => {
+    const submitClicked = async (status) => {
         
         setIsSubmitPress(true);
         
@@ -232,11 +256,26 @@ const AddEditComplaint = (props) => {
             showToast("Please select complaint description");
             return;
         }
+        if (status ==="Closed"){
+            if (selector.closeComplaintSource == 0) {
+                scrollToPos(2);
+                setOpenAccordian("3");
+                showToast("Please select complaint closing source");
+                return;
+            }
+            if (selector.closeComplaintRemarks == 0) {
+                scrollToPos(2);
+                setOpenAccordian("3");
+                showToast("Please select complaint closing remarks");
+                return;
+            }
+        }
+        
 
 
 
         let payload = {
-            "id": 0,
+            "id": selector.complaintDetailsFromIdRes ? selector.complaintDetailsFromIdRes?.id : 0,
             "customerName": selector.customerName,
             "customeLocation": selector.location,
             "currentStage": selector.stage,
@@ -260,10 +299,10 @@ const AddEditComplaint = (props) => {
             "createdDate": moment.utc().format(),
             "updatedDate": moment.utc().format(),
             "compliantBranch": selector.complainBranch,
-            "complaintDocument": uploadedImagesDataObj?.complaint?.documentPath,
-            "complaintCloserDocument": uploadedImagesDataObjForClose?.complaint?.documentPath,
+            "complaintDocument": uploadedImagesDataObj?.complaint?.documentPath || selector.complaintdoc,
+            "complaintCloserDocument": uploadedImagesDataObjForClose?.complaint?.documentPath || selector.complainCloserDoc,
             "aging": null,
-            "status": "Active"
+            "status": status
         }
 
 
@@ -709,7 +748,6 @@ const AddEditComplaint = (props) => {
                                       keyboardType={"number-pad"}
                                       maxLength={10}
                                       // editable={false}
-                                  
                                       disabled={isEditable()}
                                       label={"Mobile Number*"}
                                       onChangeText={(text) =>
@@ -720,16 +758,16 @@ const AddEditComplaint = (props) => {
                                       showRightIcon={true}
                                       rightIconObj={{ name: "magnify", color: Colors.GRAY }}
                                       onRightIconPressed={() => {
-                                          if (selector.mobile.length == 10){
-                                            let payload = {
-                                                phoneNum:selector.mobile,
-                                                orgid:userData.orgId
+                                            if (selector.mobile.length == 10) {
+                                                let payload = {
+                                                    phoneNum: selector.mobile,
+                                                    orgid: userData.orgId
+                                                }
+                                                dispatch(getDetailsFromPoneNumber(payload))
+                                            } else {
+                                                showToast("Please enter valid mobile number");
                                             }
-                                              dispatch(getDetailsFromPoneNumber(payload))
-                                          }else{
-                                              showToast("Please enter valid mobile number");
-                                          }
-                                          
+                                        
                                           // todo API call here for phone APi
                                       }}
                                   />
@@ -1111,7 +1149,9 @@ const AddEditComplaint = (props) => {
                   </View>
 
 
-                  {props.route.params.from === "CLOSE" &&    <View style={{ marginBottom: 10 }}>
+                  {props.route.params.from === "CLOSED_LIST" ||   
+                      props.route.params.which_btn ==="Close_Btn" ?
+                  <View style={{ marginBottom: 10 }}>
                       <List.AccordionGroup
                           expandedId={openAccordian}
                           onAccordionPress={(expandedId) => updateAccordian(expandedId)}
@@ -1150,6 +1190,17 @@ const AddEditComplaint = (props) => {
                                       showRightIcon={false}
 
                                   />
+                                      <Text
+                                          style={[
+                                              GlobalStyle.underline,
+                                              {
+                                                  backgroundColor:
+                                                      isSubmitPress && selector.closeComplaintSource === ""
+                                                          ? "red"
+                                                          : "rgba(208, 212, 214, 0.7)",
+                                              },
+                                          ]}
+                                      ></Text>
 
                                   <TextinputComp
                                       style={styles.textInputStyle}
@@ -1234,6 +1285,17 @@ const AddEditComplaint = (props) => {
                                       showRightIcon={false}
 
                                   />
+                                      <Text
+                                          style={[
+                                              GlobalStyle.underline,
+                                              {
+                                                  backgroundColor:
+                                                      isSubmitPress && selector.closeComplaintRemarks === ""
+                                                          ? "red"
+                                                          : "rgba(208, 212, 214, 0.7)",
+                                              },
+                                          ]}
+                                      ></Text>
                               </View>
 
                              
@@ -1242,23 +1304,32 @@ const AddEditComplaint = (props) => {
 
                     
                   </View>
-                  }
+                  : null}
                   {props.route.params.from === "ADD_NEW" && <Button
                       mode="contained"
                       style={styles.subBtnSty}
                       color={Colors.PINK}
                       labelStyle={{ textTransform: "none" }}
-                      onPress={() => { submitClicked() }}>
+                      onPress={() => { submitClicked("Active") }}>
                       Submit
                   </Button>}
-                  {props.route.params.from === "CLOSE" && <Button
+                  {props.route.params.from === "ACTIVE_LIST" && userData.isCRE || userData.isCRM?
+                   <Button
                       mode="contained"
                       style={styles.subBtnSty}
                       color={Colors.PINK}
                       labelStyle={{ textTransform: "none" }}
-                      onPress={() => { }}>
+                      onPress={() => { submitClicked("Active") }}>
+                      Update
+                  </Button> : null}
+                  {props.route.params.which_btn === "Close_Btn" && userData.isCRE || userData.isCRM? <Button
+                      mode="contained"
+                      style={styles.subBtnSty}
+                      color={Colors.PINK}
+                      labelStyle={{ textTransform: "none" }}
+                      onPress={() => { submitClicked("Closed") }}>
                       Close
-                  </Button>} 
+                  </Button>:null} 
                 
               
           </View>
