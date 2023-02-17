@@ -679,13 +679,7 @@ const EventDashBoardTargetScreen = ({ route }) => {
                     );
                     const json = await response.json();
 
-                    console.log("emp click json -> ", json);
-                    
                     if (Array.isArray(json)) {
-                      console.log(
-                        "Formatted emp click json -> ",
-                        getFormattedIndividualData(json)
-                      );
                       lastParameter[index].employeeTargetAchievements[
                         i
                       ].targetAchievements = getFormattedIndividualData(json);
@@ -865,16 +859,6 @@ const EventDashBoardTargetScreen = ({ route }) => {
                                   >
                                     <View style={{ flexDirection: "row" }}>
                                       <Text
-                                        onPress={() => {
-                                          navigation.navigate(
-                                            AppNavigator.HomeStackIdentifiers
-                                              .location,
-                                            {
-                                              empId: item.empId,
-                                              orgId: item.orgId,
-                                            }
-                                          );
-                                        }}
                                         style={{
                                           fontSize: 12,
                                           fontWeight: "600",
