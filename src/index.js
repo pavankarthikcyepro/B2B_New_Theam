@@ -401,7 +401,7 @@ const AppScreen = () => {
       );
       console.log("LLLL");
       await inAppUpdates
-        .checkNeedsUpdate({ curVersion: '1.0(1)' })
+        .checkNeedsUpdate({ curVersion: 'CPR30-17022023(30)' })
         .then((result) => {
           console.log("result", result);
           try {
