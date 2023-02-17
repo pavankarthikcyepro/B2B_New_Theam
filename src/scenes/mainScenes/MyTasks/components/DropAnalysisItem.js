@@ -207,7 +207,7 @@ export const DropAnalysisItem = ({
               </View>
               <Text style={styles.text2}>{"Reason: " + lostReason}</Text>
               {dse ? (
-                <Text style={styles.text2}>{"Assignee: " + dse}</Text>
+                <Text style={styles.text2}>{"AssignedTo: " + dse}</Text>
               ) : null}
               <Text style={styles.text2}>{"DroppedBy: " + dmsLead}</Text>
               <Text style={styles.text2}>{mobileNo}</Text>
