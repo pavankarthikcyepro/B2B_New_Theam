@@ -5,7 +5,7 @@ import { Colors, GlobalStyle } from '../../../styles';
 import { DatePickerComponent, DropDownComponant, ImagePickerComponent, TextinputComp } from '../../../components';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCustomerDetails, updateSelectedDate,clearState,setDatePicker,
-    setDropDownData, setImagePicker, getDetailsFromPoneNumber, getComplainFactorDropDownData, getLocationList, getBranchData, getDepartment, getDesignation, getEmployeeDetails, postComplaintFirstTime, clearStateFormData, getComplaitDetailsfromId
+    setDropDownData, setImagePicker, getDetailsFromPoneNumber, getComplainFactorDropDownData, getLocationList, getBranchData, getDepartment, getDesignation, getEmployeeDetails, postComplaintFirstTime, clearStateFormData, getComplaitDetailsfromId, postComplaintClose
 } from '../../../redux/complaintTrackerReducer';
 import { DateSelectItem, DropDownSelectionItem, ImageSelectItem } from '../../../pureComponents';
 import { UserState } from 'realm';
@@ -76,11 +76,16 @@ const AddEditComplaint = (props) => {
             props.navigation.goBack();
             
         }
-    }, [selector.postComplaintFirstTimeRes])
+       else if (selector.postComplaintCloseRes) {
+            dispatch(clearStateFormData())
+            props.navigation.goBack();
+
+        }
+    }, [selector.postComplaintFirstTimeRes, selector.postComplaintCloseRes])
     
     useEffect(() => {
       
-     
+        console.log("manthan---f ",selector.complaintDetailsFromIdRes);
     }, [selector.complaintDetailsFromIdRes])
     
 
@@ -171,18 +176,18 @@ const AddEditComplaint = (props) => {
     }
 
     const isEditable = ()=>{
-        console.log("mantha---dd ", props.route.params.from);
+     
         if (props.route.params.from ==="ADD_NEW"){
-            console.log("mantha---dd 11", userData.isCRE);
+         
             return false;
         } else if (props.route.params.from === "ACTIVE_LIST" && userData.isCRE || userData.isCRM){
-            console.log("mantha---dd 22", userData.isCRE);
+          
             return false;
         } else if (props.route.params.from === "CLOSED_LIST"){
-            console.log("mantha---dd 33", userData.isCRE);
+          
             return true;
         }else{
-            console.log("mantha---dd 44", userData.isCRE);
+           
             return true;
         }
     }
@@ -271,43 +276,109 @@ const AddEditComplaint = (props) => {
             }
         }
         
+        if(status==="Active"){
+            let payload = {
+                "id": selector.complaintDetailsFromIdRes ? selector.complaintDetailsFromIdRes?.id : 0,
+                "customerName": selector.customerName,
+                "customeLocation": selector.location,
+                "currentStage": selector.stage,
+                "currentStageIdNo": selector.stage_id,
+                "salesExecutiveName": selector.consultant,
+                "manager": selector.reporting_manager,
+                "branch": selector.branch,
+                "complaintLocation": selector.complainLocation,
+                "designation": selector.complainDesignation,
+                "employee": selector.complainEmployee,
+                "complaintDecription": selector.complaintDescription,
+                "mobileNo": selector.mobile,
+                "email": selector.email,
+                "model": selector.model,
+                "complaintFactor": selector.complaintFactorType,
+                "closingSource": selector.closeComplaintSource,
+                "orgId": userData.orgId,
+                "department": selector.complainDepartment,
+                "createdBy": userData.employeeName,// need to give loggedin empid
+                "updatedBy": userData.employeeName,// need to give loggedin empid for first time and in update case need to give  
+                "createdDate": selector.complaintDetailsFromIdRes?.createdDate ? selector.complaintDetailsFromIdRes?.createdDate : moment.utc().format(),
+                "updatedDate": moment.utc().format(),
+                "compliantBranch": selector.complainBranch,
+                "complaintDocument": uploadedImagesDataObj?.complaint?.documentPath || selector.complaintdoc,
+                "complaintCloserDocument": uploadedImagesDataObjForClose?.complaint?.documentPath || selector.complainCloserDoc,
+                "aging": null,
+                "status": status
+            }
 
+            dispatch(postComplaintFirstTime(payload));
+        } else if (status ==="Closed"){
+            let payload = {
+                "id": selector.complaintDetailsFromIdRes ? selector.complaintDetailsFromIdRes?.id : 0,
+                "customerName": selector.customerName,
+                "customeLocation": selector.location,
+                "currentStage": selector.stage,
+                "currentStageIdNo": selector.stage_id,
+                "salesExecutiveName": selector.consultant,
+                "manager": selector.reporting_manager,
+                "branch": selector.branch,
+                "complaintLocation": selector.complainLocation,
+                "designation": selector.complainDesignation,
+                "employee": selector.complainEmployee,
+                "complaintDecription": selector.complaintDescription,
+                "mobileNo": selector.mobile,
+                "email": selector.email,
+                "model": selector.model,
+                "complaintFactor": selector.complaintFactorType,
+                "closingSource": selector.closeComplaintSource,
+                "orgId": userData.orgId,
+                "department": selector.complainDepartment,
+                // "createdBy": userData.employeeName,// need to give loggedin empid
+                "updatedBy": userData.employeeName,// need to give loggedin empid for first time and in update case need to give  
+                // "createdDate": selector.complaintDetailsFromIdRes?.createdDate ? selector.complaintDetailsFromIdRes?.createdDate : moment.utc().format(),
+                "updatedDate": moment.utc().format(),
+                "compliantBranch": selector.complainBranch,
+                "complaintDocument": uploadedImagesDataObj?.complaint?.documentPath || selector.complaintdoc,
+                "complaintCloserDocument": uploadedImagesDataObjForClose?.complaint?.documentPath || selector.complainCloserDoc,
+                "aging": null,
+                "status": status
+            }
 
+            dispatch(postComplaintClose(payload));
+        } else if (status === "Update") {
+            let payload = {
+                "id": selector.complaintDetailsFromIdRes ? selector.complaintDetailsFromIdRes?.id : 0,
+                "customerName": selector.customerName,
+                "customeLocation": selector.location,
+                "currentStage": selector.stage,
+                "currentStageIdNo": selector.stage_id,
+                "salesExecutiveName": selector.consultant,
+                "manager": selector.reporting_manager,
+                "branch": selector.branch,
+                "complaintLocation": selector.complainLocation,
+                "designation": selector.complainDesignation,
+                "employee": selector.complainEmployee,
+                "complaintDecription": selector.complaintDescription,
+                "mobileNo": selector.mobile,
+                "email": selector.email,
+                "model": selector.model,
+                "complaintFactor": selector.complaintFactorType,
+                "closingSource": selector.closeComplaintSource,
+                "orgId": userData.orgId,
+                "department": selector.complainDepartment,
+                // "createdBy": userData.employeeName,// need to give loggedin empid
+                "updatedBy": userData.employeeName,// need to give loggedin empid for first time and in update case need to give  
+                // "createdDate": selector.complaintDetailsFromIdRes?.createdDate ? selector.complaintDetailsFromIdRes?.createdDate : moment.utc().format(),
+                "updatedDate": moment.utc().format(),
+                "compliantBranch": selector.complainBranch,
+                "complaintDocument": uploadedImagesDataObj?.complaint?.documentPath || selector.complaintdoc,
+                "complaintCloserDocument": uploadedImagesDataObjForClose?.complaint?.documentPath || selector.complainCloserDoc,
+                "aging": null,
+                "status": "Active"
+            }
 
-        let payload = {
-            "id": selector.complaintDetailsFromIdRes ? selector.complaintDetailsFromIdRes?.id : 0,
-            "customerName": selector.customerName,
-            "customeLocation": selector.location,
-            "currentStage": selector.stage,
-            "currentStageIdNo": selector.stage_id,
-            "salesExecutiveName": selector.consultant,
-            "manager":selector.reporting_manager,
-            "branch": selector.branch,
-            "complaintLocation": selector.complainLocation,
-            "designation": selector.complainDesignation,
-            "employee": selector.complainEmployee,
-            "complaintDecription": selector.complaintDescription,
-            "mobileNo": selector.mobile,
-            "email": selector.email,
-            "model": selector.model,
-            "complaintFactor": selector.complaintFactorType,
-            "closingSource": selector.closeComplaintSource,
-            "orgId": userData.orgId,
-            "department": selector.complainDepartment,
-            "createdBy": userData.employeeName,// need to give loggedin empid
-            "updatedBy": userData.employeeName,// need to give loggedin empid for first time and in update case need to give  
-            "createdDate": moment.utc().format(),
-            "updatedDate": moment.utc().format(),
-            "compliantBranch": selector.complainBranch,
-            "complaintDocument": uploadedImagesDataObj?.complaint?.documentPath || selector.complaintdoc,
-            "complaintCloserDocument": uploadedImagesDataObjForClose?.complaint?.documentPath || selector.complainCloserDoc,
-            "aging": null,
-            "status": status
+            dispatch(postComplaintClose(payload));
         }
 
 
-       
-        dispatch(postComplaintFirstTime(payload));
+        
         
     };
 
@@ -1313,13 +1384,13 @@ const AddEditComplaint = (props) => {
                       onPress={() => { submitClicked("Active") }}>
                       Submit
                   </Button>}
-                  {props.route.params.from === "ACTIVE_LIST" && userData.isCRE || userData.isCRM?
+                  {props.route.params.from === "ACTIVE_LIST" && props.route.params.which_btn !== "Close_Btn" && userData.isCRE || userData.isCRM?
                    <Button
                       mode="contained"
                       style={styles.subBtnSty}
                       color={Colors.PINK}
                       labelStyle={{ textTransform: "none" }}
-                      onPress={() => { submitClicked("Active") }}>
+                      onPress={() => { submitClicked("Update") }}>
                       Update
                   </Button> : null}
                   {props.route.params.which_btn === "Close_Btn" && userData.isCRE || userData.isCRM? <Button

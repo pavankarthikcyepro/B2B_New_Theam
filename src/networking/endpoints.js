@@ -671,6 +671,9 @@ const URL = {
   POST_COMPLAINT: () => {
     return sales_url + `/complainttracker/save`;
   },
+  POST_COMPLAINT_CLOSE: () => {
+    return sales_url + `/complainttracker/savecomplaint`;
+  },
   GET_COMPLAINT_LIST: () => {
     return sales_url + `/complainttracker/filter`;
   },

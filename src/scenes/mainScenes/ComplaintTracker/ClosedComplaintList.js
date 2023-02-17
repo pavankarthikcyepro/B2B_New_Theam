@@ -4,13 +4,14 @@ import { DatePickerComponent, DateRangeComp } from '../../../components';
 import moment from 'moment';
 import { Colors } from '../../../styles';
 import * as AsyncStore from "../../../asyncStore";
-import { IconButton } from 'react-native-paper';
+import { IconButton, Searchbar } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import { getComplaintListFilterClosed } from '../../../redux/complaintTrackerReducer';
 import { ComplintLidtItem } from './ComplintLidtItem';
 import { ComplainTrackerIdentifires } from '../../../navigations/appNavigator';
 import { EmptyListView } from '../../../pureComponents';
 import { RefreshControl } from 'react-native-gesture-handler';
+import { updateIsSearch, updateSearchKey } from '../../../redux/appReducer';
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().add(0, "day").format(dateFormat)
@@ -35,16 +36,29 @@ const ClosedComplaintList = (props) => {
         isCRE: false,
     });
     const [closeComplaintList, setCloseComplaintList] = useState([])
+    const appSelector = useSelector((state) => state.appReducer);   
+    const [searchQuery, setSearchQuery] = useState("");
 
+    // useEffect(() => {
+    //     const dateFormat = "YYYY-MM-DD";
+    //     const currentDate = moment().add(0, "day").format(dateFormat)
+    //     const CurrentMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+    //     const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+    //     setFromDateState(CurrentMonthFirstDate);
+    //     setToDateState(currentMonthLastDate);
+    //     getUserData()
+    // }, [])
     useEffect(() => {
-        const dateFormat = "YYYY-MM-DD";
+        props.navigation.addListener("focus", () => {
+             const dateFormat = "YYYY-MM-DD";
         const currentDate = moment().add(0, "day").format(dateFormat)
         const CurrentMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
         const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
         setFromDateState(CurrentMonthFirstDate);
         setToDateState(currentMonthLastDate);
         getUserData()
-    }, [])
+        });
+    }, [props.navigation]);
     
     useEffect(() => {
 
@@ -54,6 +68,37 @@ const ClosedComplaintList = (props) => {
 
     }, [selector.closeComplainListres])
 
+    useEffect(() => {
+        if (appSelector.isSearch) {
+            dispatch(updateIsSearch(false));
+            if (appSelector.searchKey !== "") {
+                let tempData = [];
+                tempData = selector.closeComplainListres.filter((item) => {
+                    console.log("manthan---f22 ", item.customerName);
+                    return (
+                        `${item.customerName}`
+                            .toLowerCase()
+                            .includes(appSelector.searchKey.toLowerCase())
+
+                    );
+                });
+                console.log("manthan---f ", tempData);
+                // setActiveComplaintList([])
+                setCloseComplaintList(tempData)
+                // setSearchedData([]);
+                // setSearchedData(tempData);
+                dispatch(updateSearchKey(""));
+            } else {
+                // setActiveComplaintList([])
+                setCloseComplaintList(selector.closeComplainListres)
+            }
+        }
+    }, [appSelector.isSearch]);
+    const onChangeSearch = (query) => {
+        setSearchQuery(query);
+        dispatch(updateSearchKey(query));
+        dispatch(updateIsSearch(true));
+    };
     const showDatePickerMethod = (key) => {
         setShowDatePicker(true);
         setDatePickerId(key);
@@ -267,7 +312,14 @@ const ClosedComplaintList = (props) => {
                     </View>
                 </Pressable>
             </View>
-
+            <View>
+                <Searchbar
+                    placeholder="Search"
+                    onChangeText={onChangeSearch}
+                    value={searchQuery}
+                    style={styles.searchBar}
+                />
+            </View>
             {closeComplaintList.length <= 0 ?
                 <EmptyListView
                     title={"No Data Found"}
@@ -340,6 +392,8 @@ const styles = StyleSheet.create({
     flatlistView: {
         backgroundColor: Colors.LIGHT_GRAY,
         marginBottom: 10,
+        flex:1
 
     },
+    searchBar: { height: 40 },
 })

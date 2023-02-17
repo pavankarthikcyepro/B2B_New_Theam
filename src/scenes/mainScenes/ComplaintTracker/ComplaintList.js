@@ -2,7 +2,7 @@ import { Pressable, SafeAreaView, StyleSheet, Text, View, RefreshControl, FlatLi
 import React, { useEffect, useState } from 'react'
 import { DatePickerComponent, DateRangeComp } from '../../../components';
 import moment from 'moment';
-import { IconButton } from 'react-native-paper';
+import { IconButton, Searchbar } from 'react-native-paper';
 import { Colors } from '../../../styles';
 import { MyTaskNewItem } from '../MyTasks/components/MyTasksNewItem';
 import { ComplintLidtItem } from './ComplintLidtItem';
@@ -11,6 +11,7 @@ import { getComplaintListFilter } from '../../../redux/complaintTrackerReducer';
 import * as AsyncStore from "../../../asyncStore";
 import { ComplainTrackerIdentifires } from '../../../navigations/appNavigator';
 import { EmptyListView } from '../../../pureComponents';
+import { updateIsSearch, updateSearchKey } from '../../../redux/appReducer';
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().add(0, "day").format(dateFormat)
@@ -33,6 +34,8 @@ const ComplaintList = (props) => {
     const [activeComplaintList, setActiveComplaintList] = useState([])
     const fromDateRef = React.useRef(selectedFromDate);
     const toDateRef = React.useRef(selectedToDate);
+    const [searchQuery, setSearchQuery] = useState("");
+    const appSelector = useSelector((state) => state.appReducer);
     const [userData, setUserData] = useState({
         orgId: "",
         employeeId: "",
@@ -74,6 +77,34 @@ const ComplaintList = (props) => {
          
         }, [selector.complaintListRes])
         
+
+    useEffect(() => {
+        if (appSelector.isSearch) {
+            dispatch(updateIsSearch(false));
+            if (appSelector.searchKey !== "") {
+                let tempData = [];
+                tempData = selector.complaintListRes.filter((item) => {
+                    console.log("manthan---f22 ", item.customerName);
+                    return (
+                        `${item.customerName}`
+                            .toLowerCase()
+                            .includes(appSelector.searchKey.toLowerCase())
+                       
+                    );
+                });
+                console.log("manthan---f ",tempData);
+                // setActiveComplaintList([])
+                setActiveComplaintList(tempData)
+                // setSearchedData([]);
+                // setSearchedData(tempData);
+                dispatch(updateSearchKey(""));
+            } else {
+                // setActiveComplaintList([])
+                setActiveComplaintList(selector.complaintListRes)
+            }
+        }
+    }, [appSelector.isSearch]);
+
     const setFromDateState = date => {
         fromDateRef.current = date;
         setSelectedFromDate(date);
@@ -88,7 +119,11 @@ const ComplaintList = (props) => {
         setShowDatePicker(true);
         setDatePickerId(key);
     }
-
+    const onChangeSearch = (query) => {
+        setSearchQuery(query);
+        dispatch(updateSearchKey(query));
+        dispatch(updateIsSearch(true));
+    };
 
     const getPayloadData = (startdate,toDate) => {
 
@@ -304,6 +339,14 @@ const ComplaintList = (props) => {
                   </View>
               </Pressable>
           </View>
+          <View>
+              <Searchbar
+                  placeholder="Search"
+                  onChangeText={onChangeSearch}
+                  value={searchQuery}
+                  style={styles.searchBar}
+              />
+          </View>
           {activeComplaintList.length <= 0 ? 
           <EmptyListView
               title={"No Data Found"}
@@ -378,6 +421,7 @@ const styles = StyleSheet.create({
     flatlistView: {
         backgroundColor: Colors.LIGHT_GRAY,
         marginBottom: 10,
-       
+        flex: 1
     },
+    searchBar: { height: 40 },
 })

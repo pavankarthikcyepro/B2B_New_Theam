@@ -138,6 +138,17 @@ export const postComplaintFirstTime = createAsyncThunk("COMPLAINTS_TRACKER/postC
     return json;
 })
 
+
+export const postComplaintClose = createAsyncThunk("COMPLAINTS_TRACKER/postComplaintClose", async (payload, { rejectWithValue }) => {
+
+    const response = await client.post(URL.POST_COMPLAINT_CLOSE(), payload);
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
 export const getComplaintListFilter = createAsyncThunk("COMPLAINTS_TRACKER/getComplaintListFilter", async (payload, { rejectWithValue }) => {
 
     const response = await client.post(URL.GET_COMPLAINT_LIST(), payload);
@@ -230,7 +241,8 @@ export const complaintsSlice = createSlice({
         closeComplainListres:"",
         complaintDetailsFromIdRes:"",
         complaintdoc:"",
-        complainCloserDoc:""
+        complainCloserDoc:"",
+        postComplaintCloseRes :""
     },
     reducers: {
         clearState: (state, action) => {
@@ -276,7 +288,8 @@ export const complaintsSlice = createSlice({
             state.closeComplainListres = "",
                 state.complaintDetailsFromIdRes="",
                 state.complaintdoc = "",
-                state.complainCloserDoc = ""
+                state.complainCloserDoc = "",
+                state.postComplaintCloseRes=""
         },
         clearStateFormData: (state, action) => {
             state.mobile = "";
@@ -317,7 +330,8 @@ export const complaintsSlice = createSlice({
             state.complaintDetailsFromIdRes = "",
                 state.complaintdoc = ""
             state.complainCloserDoc = "",
-             state.postComplaintFirstTimeRes = ""
+             state.postComplaintFirstTimeRes = "",
+                state.postComplaintCloseRes=""
         },
         setImagePicker: (state, action) => {
             state.imagePickerKeyId = action.payload;
@@ -625,6 +639,22 @@ export const complaintsSlice = createSlice({
             state.postComplaintFirstTimeRes = "";
         })
 
+
+        builder.addCase(postComplaintClose.pending, (state, action) => {
+            state.isLoading = true;
+            state.postComplaintCloseRes = "";
+        })
+        builder.addCase(postComplaintClose.fulfilled, (state, action) => {
+            state.isLoading = false;
+
+            if (action.payload) {
+                state.postComplaintCloseRes = action.payload;
+            }
+        })
+        builder.addCase(postComplaintClose.rejected, (state, action) => {
+            state.isLoading = false;
+            state.postComplaintCloseRes = "";
+        })
         
 
         builder.addCase(getComplaintListFilter.pending, (state, action) => {
