@@ -69,12 +69,12 @@ const data = [
     screen: 117,
     pngIcon: require("../assets/images/Target_Planning-01.png"),
   },
-  {
-    title: "Drop/Lost/Cancel",
-    icon: DROP_LOST_CANCEL,
-    screen: 115,
-    pngIcon: require("../assets/images/Settings-01.png"),
-  },
+  // {
+  //   title: "Drop/Lost/Cancel",
+  //   icon: DROP_LOST_CANCEL,
+  //   screen: 115,
+  //   pngIcon: require("../assets/images/Settings-01.png"),
+  // },
   // {
   //   title: "Task Management",
   //   icon: CUSTOMER_RELATIONSHIP_STR,
