@@ -228,7 +228,9 @@ export const complaintsSlice = createSlice({
         activeTotalCount:0,
         closeTotalCount:0,
         closeComplainListres:"",
-        complaintDetailsFromIdRes:""
+        complaintDetailsFromIdRes:"",
+        complaintdoc:"",
+        complainCloserDoc:""
     },
     reducers: {
         clearState: (state, action) => {
@@ -272,7 +274,9 @@ export const complaintsSlice = createSlice({
             state.activeTotalCount=0;
             state.closeTotalCount= 0;
             state.closeComplainListres = "",
-                state.complaintDetailsFromIdRes=""
+                state.complaintDetailsFromIdRes="",
+                state.complaintdoc = "",
+                state.complainCloserDoc = ""
         },
         clearStateFormData: (state, action) => {
             state.mobile = "";
@@ -310,7 +314,9 @@ export const complaintsSlice = createSlice({
                 state.closeComplaintRemarks = "";
             state.complaintCountDashboard = "";
             state.complaintDescription = "";
-            state.complaintDetailsFromIdRes = ""
+            state.complaintDetailsFromIdRes = "",
+                state.complaintdoc = ""
+            state.complainCloserDoc = ""
         },
         setImagePicker: (state, action) => {
             state.imagePickerKeyId = action.payload;
@@ -685,7 +691,8 @@ export const complaintsSlice = createSlice({
                 state.complainDepartment = response.department.toString();
                 state.complainDesignation = response.designation.toString();
                 state.complainEmployee = response.employee.toString();
-                
+                state.complaintdoc = response.complaintDocument?.toString(); 
+                state.complainCloserDoc = response.complaintCloserDocument?.toString();
             }
         })
         builder.addCase(getComplaitDetailsfromId.rejected, (state, action) => {

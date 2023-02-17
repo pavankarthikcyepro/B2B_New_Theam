@@ -151,6 +151,18 @@ const AddEditComplaint = (props) => {
         }
     }
 
+    const isEditable = ()=>{
+        
+        if (props.route.params.from ==="ADD_NEW"){
+            return false;
+        } else if (props.route.params.from === "ACTIVE_LIST"){
+            return false;
+        } else if (props.route.params.from === "CLOSED_LIST"){
+            return true;
+
+        }
+    }
+
     const submitClicked = async () => {
         
         setIsSubmitPress(true);
@@ -467,11 +479,11 @@ const AddEditComplaint = (props) => {
             <View style={{ width: '80%' }}>
                 <TextinputComp
                     style={styles.textInputStyle}
-                    value={uploadedImagesDataObj?.complaint?.fileName}
+                    value={uploadedImagesDataObj?.complaint?.fileName || selector.complaintdoc}
                     label={"Upload complaint document"}
                     keyboardType={"default"}
                     maxLength={10}
-                    disabled={true}
+                    disabled={isEditable()}
                     autoCapitalize={"characters"}
                     onChangeText={(text) => {
                         // dispatch(
@@ -488,6 +500,7 @@ const AddEditComplaint = (props) => {
             <View style={styles.select_image_bck_vw}>
                 <ImageSelectItem
                     name={""}
+                    disabled={isEditable()}
                     onPress={() => dispatch(setImagePicker("UPLOAD_COMPLAINT_DOC"))}
                 />
             </View>
@@ -696,7 +709,8 @@ const AddEditComplaint = (props) => {
                                       keyboardType={"number-pad"}
                                       maxLength={10}
                                       // editable={false}
-                                      disabled={false}
+                                  
+                                      disabled={isEditable()}
                                       label={"Mobile Number*"}
                                       onChangeText={(text) =>
                                           dispatch(
@@ -735,7 +749,7 @@ const AddEditComplaint = (props) => {
                                           <DateSelectItem
                                               label={"Complaint Date"}
                                               value={complaintDate}
-                                              disabled={false}
+                                              disabled={isEditable()}
                                               onPress={() => {
                                                   setShowDatePicker(true)
                                               }}
@@ -749,7 +763,7 @@ const AddEditComplaint = (props) => {
                                               value={selector.location}
                                               //   keyboardType={}
                                               // editable={false}
-                                              disabled={false}
+                                              disabled={isEditable()}
                                               label={"Location"}
                                               onChangeText={(text) =>
                                                   dispatch(
@@ -777,7 +791,7 @@ const AddEditComplaint = (props) => {
                                               value={selector.branch}
                                               //   keyboardType={"number-pad"}
                                               // editable={false}
-                                              disabled={false}
+                                              disabled={isEditable()}
                                               label={"Branch"}
                                               onChangeText={(text) =>
                                                   dispatch(
@@ -793,7 +807,7 @@ const AddEditComplaint = (props) => {
                                               value={selector.model}
                                               //   keyboardType={"number-pad"}
                                               // editable={false}
-                                              disabled={false}
+                                              disabled={isEditable()}
                                               label={"Model"}
                                               onChangeText={(text) =>
                                                   dispatch(
@@ -810,7 +824,7 @@ const AddEditComplaint = (props) => {
                                       value={selector.customerName}
                                       //   keyboardType={"number-pad"}
                                       // editable={false}
-                                      disabled={false}
+                                      disabled={isEditable()}
                                       label={"Customer Name"}
                                       onChangeText={(text) =>
                                           dispatch(
@@ -826,7 +840,7 @@ const AddEditComplaint = (props) => {
                                       value={selector.email}
                                       //   keyboardType={"number-pad"}
                                       // editable={false}
-                                      disabled={false}
+                                      disabled={isEditable()}
                                       label={"Email"}
                                       onChangeText={(text) =>
                                           dispatch(
@@ -844,7 +858,7 @@ const AddEditComplaint = (props) => {
                                               value={selector.stage}
                                               //   keyboardType={"number-pad"}
                                               // editable={false}
-                                              disabled={false}
+                                              disabled={isEditable()}
                                               label={"Stage"}
                                               onChangeText={(text) =>
                                                   dispatch(
@@ -860,7 +874,7 @@ const AddEditComplaint = (props) => {
                                               value={selector.stage_id}
                                               //   keyboardType={"number-pad"}
                                               // editable={false}
-                                              disabled={false}
+                                              disabled={isEditable()}
                                               label={"Stage ID"}
                                               onChangeText={(text) =>
                                                   dispatch(
@@ -879,7 +893,7 @@ const AddEditComplaint = (props) => {
                                               value={selector.consultant}
                                               //   keyboardType={"number-pad"}
                                               // editable={false}
-                                              disabled={false}
+                                              disabled={isEditable()}
                                               label={"Consultant*"}
                                               onChangeText={(text) =>
                                                   dispatch(
@@ -906,7 +920,7 @@ const AddEditComplaint = (props) => {
                                               value={selector.reporting_manager}
                                               //   keyboardType={"number-pad"}
                                               // editable={false}
-                                              disabled={false}
+                                              disabled={isEditable()}
                                               label={"Reporting Manager"}
                                               onChangeText={(text) =>
                                                   dispatch(
@@ -948,6 +962,7 @@ const AddEditComplaint = (props) => {
                           >
                             <View style={{backgroundColor:Colors.WHITE}}>
                                   <DropDownSelectionItem
+                                      disabled={isEditable()}
                                       label={"Complaint Factor Type*"}
                                       value={selector.complaintFactorType}
                                       onPress={() =>
@@ -966,6 +981,7 @@ const AddEditComplaint = (props) => {
                                       ]}
                                   ></Text>
                                   <DropDownSelectionItem
+                                      disabled={isEditable()}
                                       label={"Location*"}
                                       value={selector.complainLocation}
                                       onPress={() =>
@@ -984,6 +1000,7 @@ const AddEditComplaint = (props) => {
                                       ]}
                                   ></Text>
                                   <DropDownSelectionItem
+                                      disabled={isEditable()}
                                       label={"Branch*"}
                                       value={selector.complainBranch}
                                       onPress={() =>
@@ -1002,6 +1019,7 @@ const AddEditComplaint = (props) => {
                                       ]}
                                   ></Text>
                                   <DropDownSelectionItem
+                                      disabled={isEditable()}
                                       label={"Department*"}
                                       value={selector.complainDepartment}
                                       onPress={() =>
@@ -1020,6 +1038,7 @@ const AddEditComplaint = (props) => {
                                       ]}
                                   ></Text>
                                   <DropDownSelectionItem
+                                      disabled={isEditable()}
                                       label={"Designation*"}
                                       value={selector.complainDesignation}
                                       onPress={() =>
@@ -1039,6 +1058,7 @@ const AddEditComplaint = (props) => {
                                   ></Text>
 
                                   <DropDownSelectionItem
+                                      disabled={isEditable()}
                                       label={"Employee*"}
                                       value={selector.complainEmployee}
                                       onPress={() =>
@@ -1059,11 +1079,11 @@ const AddEditComplaint = (props) => {
 
                                   {renderPickUpImageDoc()}
                                   <TextinputComp
+                                      disabled={isEditable()}
                                       style={styles.textInputStyle}
                                       value={selector.complaintDescription}
                                       //   keyboardType={"number-pad"}
                                       // editable={false}
-                                      disabled={false}
                                       label={"Complaint Description*"}
                                       onChangeText={(text) =>
                                           dispatch(
@@ -1120,7 +1140,7 @@ const AddEditComplaint = (props) => {
                                       value={selector.closeComplaintSource}
                                       //   keyboardType={"number-pad"}
                                       // editable={false}
-                                      disabled={false}
+                                      disabled={isEditable()}
                                       label={"Complaint Closing Source*"}
                                       onChangeText={(text) =>
                                           dispatch(
@@ -1136,7 +1156,7 @@ const AddEditComplaint = (props) => {
                                       value={selector.closeComplaintFinalRate}
                                       //   keyboardType={"number-pad"}
                                       // editable={false}
-                                      disabled={false}
+                                      disabled={isEditable()}
                                       label={"Final Rating"}
                                       onChangeText={(text) =>
                                           dispatch(
@@ -1152,11 +1172,11 @@ const AddEditComplaint = (props) => {
                                       <View style={{ width: '80%' }}>
                                           <TextinputComp
                                               style={styles.textInputStyle}
-                                              value={uploadedImagesDataObjForClose?.complaint?.fileName}
+                                              value={uploadedImagesDataObjForClose?.complaint?.fileName || selector.complainCloserDoc}
                                               label={"Upload complaint Closer Document"}
                                               keyboardType={"default"}
                                               maxLength={10}
-                                              disabled={true}
+                                              disabled={isEditable()}
                                               autoCapitalize={"characters"}
                                               onChangeText={(text) => {
                                                 //   dispatch(
@@ -1172,6 +1192,7 @@ const AddEditComplaint = (props) => {
 
                                       <View style={styles.select_image_bck_vw}>
                                           <ImageSelectItem
+                                              disabled={isEditable()}
                                               name={""}
                                               onPress={() => dispatch(setImagePicker("UPLOAD_CLOSED_COMPLAINT"))}
                                           />
@@ -1203,7 +1224,7 @@ const AddEditComplaint = (props) => {
                                       value={selector.closeComplaintRemarks}
                                       //   keyboardType={"number-pad"}
                                       // editable={false}
-                                      disabled={false}
+                                      disabled={isEditable()}
                                       label={"Complaint Closer Remarks* "}
                                       onChangeText={(text) =>
                                           dispatch(
