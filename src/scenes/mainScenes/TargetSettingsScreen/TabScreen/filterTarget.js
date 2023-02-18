@@ -247,23 +247,23 @@ const FilterTargetScreen = ({ route, navigation }) => {
       newArr = [...newList];
     }
     let tempArr = index == 0 ? data : newArr;
-    if (tempArr.length == 0) {
-      const data = employeeDropDownDataLocal[employeeTitleNameList[index]];
-      let newIndex = index == 0 ? 0 : index - 2;
+    // if (tempArr.length == 0) {
+    //   const data = employeeDropDownDataLocal[employeeTitleNameList[index]];
+    //   let newIndex = index == 0 ? 0 : index - 2;
 
-      let newItem = Object.keys(employeeDropDownDataLocal)[newIndex];
-      const tempData = employeeDropDownDataLocal[newItem];
-      const isSelected = tempData.filter((e) => e.selected == true);
-      let newArr = [];
-      if (isSelected[0]?.id && index !== 0) {
-        const newList = data.filter((e) => e.parentId == isSelected[0]?.id);
-        newArr = [...newList];
-      }
-      let tempArr = index == 0 ? data : newArr;
+    //   let newItem = Object.keys(employeeDropDownDataLocal)[newIndex];
+    //   const tempData = employeeDropDownDataLocal[newItem];
+    //   const isSelected = tempData?.filter((e) => e.selected == true);
+    //   let newArr = [];
+    //   if (isSelected[0]?.id && index !== 0) {
+    //     const newList = data.filter((e) => e.parentId == isSelected[0]?.id);
+    //     newArr = [...newList];
+    //   }
+    //   let tempArr = index == 0 ? data : newArr;
+    //   setDropDownData([...tempArr]);
+    // } else {
       setDropDownData([...tempArr]);
-    } else {
-      setDropDownData([...tempArr]);
-    }
+    // }
     setSelectedItemIndex(index);
     setShowDropDownModel(true);
     setDropDownFrom("EMPLOYEE_TABLE");
@@ -799,44 +799,44 @@ const FilterTargetScreen = ({ route, navigation }) => {
                           renderItem={({ item, index }) => {
                             const data = employeeDropDownDataLocal[item];
                             let selectedNames = "";
-                            if (item) {
-                              for (let i = 1; i < employeeTitleNameList.length; i++) {
-                                let notSelected =
-                                  employeeTitleNameList[index - i];
-                                if (notSelected) {
-                                  const data1 =
-                                    employeeDropDownDataLocal[notSelected];
-                                  const filterData = data1.filter(
-                                    (e) => e.selected == true
-                                  );
-                                  if (filterData.length > 0) {
-                                    const isAnyData = data.filter(
-                                      (e) => e.parentId == filterData[0]?.code
-                                    );
-                                    if (isAnyData.length == 0) {
-                                      return;
-                                    }
-                                  }
-                                }
-                              }
-                              // let notSelected =
-                              //   employeeTitleNameList[index - 1];
-                              // if (notSelected) {
-                              //   const data1 =
-                              //     employeeDropDownDataLocal[notSelected];
-                              //   const filterData = data1.filter(
-                              //     (e) => e.selected == true
-                              //   );
-                              //   if (filterData.length > 0) {
-                              //     const isAnyData = data.filter(
-                              //       (e) => e.parentId == filterData[0]?.code
-                              //     );
-                              //     if (isAnyData.length == 0) {
-                              //       return;
-                              //     }
-                              //   }
-                              // }
-                            }
+                            // if (item) {
+                            //   for (let i = 1; i < employeeTitleNameList.length; i++) {
+                            //     let notSelected =
+                            //       employeeTitleNameList[index - i];
+                            //     if (notSelected) {
+                            //       const data1 =
+                            //         employeeDropDownDataLocal[notSelected];
+                            //       const filterData = data1.filter(
+                            //         (e) => e.selected == true
+                            //       );
+                            //       if (filterData.length > 0) {
+                            //         const isAnyData = data.filter(
+                            //           (e) => e.parentId == filterData[0]?.code
+                            //         );
+                            //         if (isAnyData.length == 0) {
+                            //           return;
+                            //         }
+                            //       }
+                            //     }
+                            //   }
+                            //   // let notSelected =
+                            //   //   employeeTitleNameList[index - 1];
+                            //   // if (notSelected) {
+                            //   //   const data1 =
+                            //   //     employeeDropDownDataLocal[notSelected];
+                            //   //   const filterData = data1.filter(
+                            //   //     (e) => e.selected == true
+                            //   //   );
+                            //   //   if (filterData.length > 0) {
+                            //   //     const isAnyData = data.filter(
+                            //   //       (e) => e.parentId == filterData[0]?.code
+                            //   //     );
+                            //   //     if (isAnyData.length == 0) {
+                            //   //       return;
+                            //   //     }
+                            //   //   }
+                            //   // }
+                            // }
                             data.forEach((obj, index) => {
                               if (
                                 obj.selected != undefined &&
