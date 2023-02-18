@@ -74,7 +74,7 @@ const ClosedComplaintList = (props) => {
             if (appSelector.searchKey !== "") {
                 let tempData = [];
                 tempData = selector.closeComplainListres.filter((item) => {
-                    console.log("manthan---f22 ", item.customerName);
+                 
                     return (
                         `${item.customerName}`
                             .toLowerCase()
@@ -82,7 +82,7 @@ const ClosedComplaintList = (props) => {
 
                     );
                 });
-                console.log("manthan---f ", tempData);
+           
                 // setActiveComplaintList([])
                 setCloseComplaintList(tempData)
                 // setSearchedData([]);
@@ -214,7 +214,7 @@ const ClosedComplaintList = (props) => {
             "loginUser": userData.employeeName,
             "startDate": startdate,
             "endDate": toDate,
-            "status": "Active"
+            "status": "Closed"
         }
         return payload;
     }

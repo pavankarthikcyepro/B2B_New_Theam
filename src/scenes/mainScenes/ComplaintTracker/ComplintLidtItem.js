@@ -116,7 +116,7 @@ export const ComplintLidtItem = ({
     EmployeesRoles,
     userData,
     tdflage = "",
-    ageing=0,
+    ageing = 0, displayClose=false
 }) => {
     let date = "";
     if (from === "CLOSED_LIST" || from === "ACTIVE_LIST") {
@@ -226,12 +226,12 @@ export const ComplintLidtItem = ({
                             }}
                         />
                         <View style={{ padding: 5 }} />
-                        {from === "ACTIVE_LIST" && <IconComp
+                        {from === "ACTIVE_LIST" && displayClose? <IconComp
                             iconName={"close-circle"}
                             onPress={() => {
                                 onDocPress(from,"Close_Btn");
                             }}
-                        />}
+                        />:null}
                        
                         {/* <View style={{ padding: 5 }} /> */}
                         {/* <IconComp

@@ -85,7 +85,7 @@ const AddEditComplaint = (props) => {
     
     useEffect(() => {
       
-        console.log("manthan---f ",selector.complaintDetailsFromIdRes);
+        
     }, [selector.complaintDetailsFromIdRes])
     
 
@@ -706,6 +706,12 @@ const AddEditComplaint = (props) => {
                           id: "",
                           orgId: userData.orgId,
                       }))
+                      dispatch(setDropDownData({
+                          key: "COMPLAINT_EMPLOYEE",
+                          value: "",
+                          id: "",
+                          orgId: userData.orgId,
+                      }))
                   } else if (dropDownKey === "COMPLAINT_BRANCH"){
                       let payload = {
                           orgId: userData.orgId,
@@ -727,6 +733,12 @@ const AddEditComplaint = (props) => {
                           id: "",
                           orgId: userData.orgId,
                       }))
+                      dispatch(setDropDownData({
+                          key: "COMPLAINT_EMPLOYEE",
+                          value: "",
+                          id: "",
+                          orgId: userData.orgId,
+                      }))
                   } else if (dropDownKey === "COMPLAINT_DEPARTMENT"){
                       
                       let payload = {
@@ -739,6 +751,12 @@ const AddEditComplaint = (props) => {
                       dispatch(getDesignation(payload))
                       dispatch(setDropDownData({
                           key: "COMPLAINT_DESIGNATION",
+                          value: "",
+                          id: "",
+                          orgId: userData.orgId,
+                      }))
+                      dispatch(setDropDownData({
+                          key: "COMPLAINT_EMPLOYEE",
                           value: "",
                           id: "",
                           orgId: userData.orgId,
@@ -756,7 +774,12 @@ const AddEditComplaint = (props) => {
                       }
                   
                       dispatch(getEmployeeDetails(payload))
-                      
+                      dispatch(setDropDownData({
+                          key: "COMPLAINT_EMPLOYEE",
+                          value: "",
+                          id: "",
+                          orgId: userData.orgId,
+                      }))
                   }
                   setShowDropDownModel(false);
                   dispatch(

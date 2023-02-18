@@ -84,7 +84,7 @@ const ComplaintList = (props) => {
             if (appSelector.searchKey !== "") {
                 let tempData = [];
                 tempData = selector.complaintListRes.filter((item) => {
-                    console.log("manthan---f22 ", item.customerName);
+                
                     return (
                         `${item.customerName}`
                             .toLowerCase()
@@ -92,7 +92,7 @@ const ComplaintList = (props) => {
                        
                     );
                 });
-                console.log("manthan---f ",tempData);
+              
                 // setActiveComplaintList([])
                 setActiveComplaintList(tempData)
                 // setSearchedData([]);
@@ -256,6 +256,7 @@ const ComplaintList = (props) => {
             <>
                 <View style={{}}>
                     <ComplintLidtItem
+                    displayClose = {userData.isCRE||userData.isCRM}
                         ageing= {item.ageing}
                         from={"ACTIVE_LIST"}
                         name={
