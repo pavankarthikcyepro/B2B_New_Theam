@@ -263,6 +263,8 @@ const HomeVisitScreen = ({ route, navigation }) => {
       showToast("Please Enter employee remarks");
       return;
     }
+
+    var defaultDate = moment();
     const newTaskObj = { ...selector.task_details_response };
     newTaskObj.reason = selector.reason === 'Others' ? otherReason : selector.reason;
     newTaskObj.customerRemarks = selector.customer_remarks;
@@ -271,6 +273,16 @@ const HomeVisitScreen = ({ route, navigation }) => {
     newTaskObj.lon = currentLocation ? currentLocation.long.toString() : null;
     newTaskObj.taskActualEndTime = convertDateStringToMillisecondsUsingMoment(
       selector.actual_end_time
+    );
+    newTaskObj.taskActualStartTime = convertDateStringToMillisecondsUsingMoment(
+      selector.actual_start_time != ""
+        ? selector.actual_start_time
+        : defaultDate
+    );
+    newTaskObj.taskUpdatedTime = convertDateStringToMillisecondsUsingMoment(
+      selector.actual_start_time != ""
+        ? selector.actual_start_time
+        : defaultDate
     );
 
     if (actionType === "CLOSE_TASK") {
@@ -289,6 +301,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
       }
       newTaskObj.taskStatus = "RESCHEDULED";
     }
+
     dispatch(updateTaskApi(newTaskObj));
     setActionType(actionType);
   };
