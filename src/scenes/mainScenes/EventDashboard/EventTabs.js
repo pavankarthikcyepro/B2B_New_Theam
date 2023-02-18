@@ -97,6 +97,7 @@ const EventDashBoardTargetScreen = ({ route }) => {
     orgId: 0,
     branchs: [],
   });
+  const [rotateAnimation, setRotateAnimation] = useState(new Animated.Value(0));
   const scrollViewRef = useRef();
   const paramsMetadata = [
     {
@@ -205,6 +206,33 @@ const EventDashBoardTargetScreen = ({ route }) => {
       toggleIndex: 0,
     },
   ];
+
+  useEffect(() => {
+    handleAnimation();
+  }, [isLoading]);
+
+  const handleAnimation = () => {
+    Animated.loop(
+      Animated.timing(rotateAnimation, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      })
+    ).start();
+  }; 
+
+  const interpolateRotating = rotateAnimation.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0deg", "720deg"],
+  });
+
+  const animatedStyle = {
+    transform: [
+      {
+        rotate: interpolateRotating,
+      },
+    ],
+  };
 
   useEffect(() => {
     const dateFormat = "YYYY-MM-DD";
@@ -775,11 +803,20 @@ const EventDashBoardTargetScreen = ({ route }) => {
                   </View>
                 </View>
                 {isLoading ? (
-                  <ActivityIndicator
-                    color={Colors.RED}
-                    size={"large"}
-                    style={{ marginTop: 15 }}
-                  />
+                  <View
+                    style={{
+                      marginVertical: 15,
+                      justifyContent: "center",
+                      alignSelf: "center",
+                      borderRadius: 8,
+                    }}
+                  >
+                    <Animated.Image
+                      style={[{ width: 40, height: 40 }, animatedStyle]}
+                      resizeMode={"contain"}
+                      source={require("../../../assets/images/cy.png")}
+                    />
+                  </View>
                 ) : (
                   <ScrollView
                     contentContainerStyle={styles.scrollview}

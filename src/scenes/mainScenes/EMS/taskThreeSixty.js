@@ -521,7 +521,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                     style={[styles.countCointaner]}
                                   />
                                     {dataForFOllowUpCount !== undefined ? <Text style={styles.txt8}>{item.taskName === "Pre Enquiry Follow Up" ?
-                                      dataForFOllowUpCount?.conntactFollowUpCount.toString().trim()
+                                      dataForFOllowUpCount?.conntactFollowUpCount?.toString().trim()
                                       : item.taskName === "Enquiry Follow Up" ? dataForFOllowUpCount?.enquiryFollowUpCount.toString().trim() :
                                         item.taskName === "Pre Booking Follow Up" ? dataForFOllowUpCount?.preBookingFollowUpCount.toString().trim() :
                                           item.taskName === "Booking Follow Up" ? dataForFOllowUpCount?.bookingFollowUpCount.toString().trim() : item.taskName === "Test Drive" ? selector.testDrivCount : 0}

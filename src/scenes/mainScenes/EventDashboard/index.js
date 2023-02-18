@@ -536,7 +536,7 @@ const EventDashBoardScreen = ({ route, navigation }) => {
           </View>
         </View>
       </ScrollView>
-      <LoaderComponent visible={loading} />
+      {/* <LoaderComponent visible={loading} /> */}
     </SafeAreaView>
   );
 };
