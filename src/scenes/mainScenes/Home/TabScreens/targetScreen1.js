@@ -645,7 +645,7 @@ const TargetScreen = ({ route }) => {
       if (json.empName) {
         setReceptionistTeamParameters(json.empName);
         let totalKey1 = json.empName.reduce(
-          (acc, obj) => acc + obj.enquirysCount,
+          (acc, obj) => acc + obj.totalAllocatedCount,
           0
         );
         let totalKey2 = json.empName.reduce(
@@ -950,6 +950,7 @@ const TargetScreen = ({ route }) => {
                       >
                         {receptionistTeamParameters.length > 0 &&
                           receptionistTeamParameters.map((item, index) => {
+                            console.log("item -> ", item);
                             return (
                               <View key={`${item.empName} ${index}`}>
                                 <View
@@ -1014,7 +1015,7 @@ const TargetScreen = ({ route }) => {
                                         }}
                                       >
                                         {[
-                                          item.enquirysCount || 0,
+                                          item.totalAllocatedCount || 0,
                                           item.bookingCount || 0,
                                           item.RetailCount || 0,
                                           item.totalDroppedCount || 0,
