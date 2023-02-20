@@ -2005,6 +2005,33 @@ const TargetScreen = ({ route }) => {
                                                                                     innerItem4.empName
                                                                                   }
                                                                                 </Text>
+                                                                                <SourceModelView
+                                                                                  onClick={() => {
+                                                                                    navigation.navigate(
+                                                                                      AppNavigator
+                                                                                        .HomeStackIdentifiers
+                                                                                        .sourceModel,
+                                                                                      {
+                                                                                        empId:
+                                                                                          innerItem4.empId,
+                                                                                        headerTitle:
+                                                                                          innerItem4.empName,
+                                                                                        type: "TEAM",
+                                                                                        moduleType:
+                                                                                          "home",
+                                                                                      }
+                                                                                    );
+                                                                                  }}
+                                                                                  style={{
+                                                                                    transform:
+                                                                                      [
+                                                                                        {
+                                                                                          translateX:
+                                                                                            translation,
+                                                                                        },
+                                                                                      ],
+                                                                                  }}
+                                                                                />
                                                                               </View>
                                                                               <View
                                                                                 style={{
@@ -2119,6 +2146,33 @@ const TargetScreen = ({ route }) => {
                                                                                               innerItem5.empName
                                                                                             }
                                                                                           </Text>
+                                                                                          <SourceModelView
+                                                                                            onClick={() => {
+                                                                                              navigation.navigate(
+                                                                                                AppNavigator
+                                                                                                  .HomeStackIdentifiers
+                                                                                                  .sourceModel,
+                                                                                                {
+                                                                                                  empId:
+                                                                                                    innerItem5.empId,
+                                                                                                  headerTitle:
+                                                                                                    innerItem5.empName,
+                                                                                                  type: "TEAM",
+                                                                                                  moduleType:
+                                                                                                    "home",
+                                                                                                }
+                                                                                              );
+                                                                                            }}
+                                                                                            style={{
+                                                                                              transform:
+                                                                                                [
+                                                                                                  {
+                                                                                                    translateX:
+                                                                                                      translation,
+                                                                                                  },
+                                                                                                ],
+                                                                                            }}
+                                                                                          />
                                                                                         </View>
                                                                                         <View
                                                                                           style={{
@@ -2236,6 +2290,33 @@ const TargetScreen = ({ route }) => {
                                                                                                         innerItem6.empName
                                                                                                       }
                                                                                                     </Text>
+                                                                                                    <SourceModelView
+                                                                                                      onClick={() => {
+                                                                                                        navigation.navigate(
+                                                                                                          AppNavigator
+                                                                                                            .HomeStackIdentifiers
+                                                                                                            .sourceModel,
+                                                                                                          {
+                                                                                                            empId:
+                                                                                                              innerItem6.empId,
+                                                                                                            headerTitle:
+                                                                                                              innerItem6.empName,
+                                                                                                            type: "TEAM",
+                                                                                                            moduleType:
+                                                                                                              "home",
+                                                                                                          }
+                                                                                                        );
+                                                                                                      }}
+                                                                                                      style={{
+                                                                                                        transform:
+                                                                                                          [
+                                                                                                            {
+                                                                                                              translateX:
+                                                                                                                translation,
+                                                                                                            },
+                                                                                                          ],
+                                                                                                      }}
+                                                                                                    />
                                                                                                   </View>
                                                                                                   <View
                                                                                                     style={{
