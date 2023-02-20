@@ -88,13 +88,13 @@ const SourceModel = ({ route, navigation }) => {
     };
 
     // if (type != "TEAM") {
-    //   if (selector.filterIds?.empSelected?.length) {
-    //     payload["empSelected"] = selector.filterIds.empSelected;
-    //   } else {
-    //     payload["levelSelected"] = selector.filterIds?.levelSelected?.length
-    //       ? selector.filterIds.levelSelected
-    //       : null;
-    //   }
+    if (selector.filterIds?.empSelected?.length) {
+      payload["empSelected"] = selector.filterIds.empSelected;
+    } else {
+      payload["levelSelected"] = selector.filterIds?.levelSelected?.length
+        ? selector.filterIds.levelSelected
+        : null;
+    }
     // }
 
     const urlSelf = URL.MODEL_SOURCE_SELF();
