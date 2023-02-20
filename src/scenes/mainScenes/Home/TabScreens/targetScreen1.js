@@ -1774,9 +1774,19 @@ const TargetScreen = ({ route }) => {
                                                                     ]}
                                                                   >
                                                                     <View
-                                                                      style={
-                                                                        styles.view11
-                                                                      }
+                                                                      style={[
+                                                                        styles.view11,
+                                                                        {
+                                                                          width:
+                                                                            Dimensions.get(
+                                                                              "screen"
+                                                                            )
+                                                                              .width -
+                                                                            (innerItem3.isOpenInner
+                                                                              ? 53
+                                                                              : 48),
+                                                                        },
+                                                                      ]}
                                                                     >
                                                                       <View
                                                                         style={{
@@ -1969,9 +1979,19 @@ const TargetScreen = ({ route }) => {
                                                                               ]}
                                                                             >
                                                                               <View
-                                                                                style={
-                                                                                  styles.view11
-                                                                                }
+                                                                                style={[
+                                                                                  styles.view11,
+                                                                                  {
+                                                                                    width:
+                                                                                      Dimensions.get(
+                                                                                        "screen"
+                                                                                      )
+                                                                                        .width -
+                                                                                      (innerItem4.isOpenInner
+                                                                                        ? 59
+                                                                                        : 55),
+                                                                                  },
+                                                                                ]}
                                                                               >
                                                                                 <Text
                                                                                   style={{
@@ -2073,9 +2093,19 @@ const TargetScreen = ({ route }) => {
                                                                                         ]}
                                                                                       >
                                                                                         <View
-                                                                                          style={
-                                                                                            styles.view11
-                                                                                          }
+                                                                                          style={[
+                                                                                            styles.view11,
+                                                                                            {
+                                                                                              width:
+                                                                                                Dimensions.get(
+                                                                                                  "screen"
+                                                                                                )
+                                                                                                  .width -
+                                                                                                (innerItem5.isOpenInner
+                                                                                                  ? 65
+                                                                                                  : 51),
+                                                                                            },
+                                                                                          ]}
                                                                                         >
                                                                                           <Text
                                                                                             style={{
@@ -2180,9 +2210,19 @@ const TargetScreen = ({ route }) => {
                                                                                                   ]}
                                                                                                 >
                                                                                                   <View
-                                                                                                    style={
-                                                                                                      styles.view11
-                                                                                                    }
+                                                                                                    style={[
+                                                                                                      styles.view11,
+                                                                                                      {
+                                                                                                        width:
+                                                                                                          Dimensions.get(
+                                                                                                            "screen"
+                                                                                                          )
+                                                                                                            .width -
+                                                                                                          (innerItem6.isOpenInner
+                                                                                                            ? 71
+                                                                                                            : 67),
+                                                                                                      },
+                                                                                                    ]}
                                                                                                   >
                                                                                                     <Text
                                                                                                       style={{
