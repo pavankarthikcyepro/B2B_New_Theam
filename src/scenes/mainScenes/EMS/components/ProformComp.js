@@ -1905,11 +1905,10 @@ export const ProformaComp = ({
       if (mArray.length > 0) {
         mArray.map((item) => {
           newArray.push({
-            id: item.id,
+            id: item.vehicleImageId,
             name: item.color,
           });
         });
-
         setCarColorsData([...newArray]);
       }
 
