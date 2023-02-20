@@ -1,6 +1,6 @@
 import { SafeAreaView, StyleSheet, Text, View, Pressable, FlatList } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { DatePickerComponent, DateRangeComp } from '../../../components';
+import { DatePickerComponent, DateRangeComp, LeadsFilterComp, SingleLeadSelectComp } from '../../../components';
 import moment from 'moment';
 import { Colors } from '../../../styles';
 import * as AsyncStore from "../../../asyncStore";
@@ -38,6 +38,15 @@ const ClosedComplaintList = (props) => {
     const [closeComplaintList, setCloseComplaintList] = useState([])
     const appSelector = useSelector((state) => state.appReducer);   
     const [searchQuery, setSearchQuery] = useState("");
+    const [leadsFilterVisible, setLeadsFilterVisible] = useState(false);
+    const [leadsFilterData, setLeadsFilterData] = useState([]);
+    const [leadsSubMenuFilterVisible, setLeadsSubMenuFilterVisible] =
+        useState(false);
+    const [subMenu, setSubMenu] = useState([]);
+    const [leadsFilterDropDownText, setLeadsFilterDropDownText] = useState("All");
+    const [leadsSubMenuFilterDropDownText, setLeadsSubMenuFilterDropDownText] =
+        useState("All");
+
 
     // useEffect(() => {
     //     const dateFormat = "YYYY-MM-DD";
@@ -272,6 +281,10 @@ const ClosedComplaintList = (props) => {
         );
     };
 
+    const getSubMenuList = (name) => {
+        //    call secound API here 
+    }
+
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <DatePickerComponent
@@ -292,9 +305,78 @@ const ClosedComplaintList = (props) => {
                 }}
                 onRequestClose={() => setShowDatePicker(false)}
             />
+            <SingleLeadSelectComp
+                isContactVisible={true}
+                visible={leadsFilterVisible}
+                modelList={leadsFilterData}
+                submitCallback={(x) => {
+                    setLeadsSubMenuFilterDropDownText("All")
+                    setLeadsFilterData([...x]);
+                    setLeadsFilterVisible(false);
+                    const data = x.filter((y) => y.checked);
+                    if (data.length === 3) {
+                        setLeadsFilterDropDownText("All");
+                    } else {
+                        const names = data.map((y) => y.menu);
+                        getSubMenuList(names.toString());
+                        setLeadsFilterDropDownText(names.toString());
+                    }
+                }}
+                cancelClicked={() => {
+                    setLeadsFilterVisible(false);
+                }}
+                selectAll={async () => {
+                    setSubMenu([]);
+                    //   getDropAnalysisWithFilterFromServer();
+                    setLeadsFilterDropDownText("All")
+                    setLeadsSubMenuFilterDropDownText("All");
+                    let path = selector.dropStageMenus;
+
+                    const newArr = path.map((v) => ({ ...v, checked: false }));
+                    setLeadsFilterData(newArr);
+
+                    const dateFormat = "YYYY-MM-DD";
+                    const currentDate = moment().add(0, "day").format(dateFormat)
+                    const CurrentMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+                    const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+                    setFromDateState(CurrentMonthFirstDate);
+                    setToDateState(currentMonthLastDate);
+                }}
+            />
+            <LeadsFilterComp
+                visible={leadsSubMenuFilterVisible}
+                modelList={subMenu}
+                submitCallback={(x) => {
+                    setSubMenu([...x]);
+
+                    setLeadsSubMenuFilterVisible(false);
+                    const data = x.filter((y) => y.checked);
+
+                    // if (data.length === subMenu.length) {
+                    //     setLeadsSubMenuFilterDropDownText("All");
+                    // } else {
+                    const names = data.map((y) => y?.subMenu);
+                    setLeadsSubMenuFilterDropDownText(
+                        names.toString() ? names.toString() : "Select Sub Menu"
+                    );
+                    let tmpArr = [];
+                    data.map((item) =>
+                        tmpArr.push(item.leadStage)
+                    )
+
+                    //   getDropAnalysisWithFilterFromServerFilterApply(selectedFromDate, selectedToDate, ...tmpArr, null)
+                    // }
+                }}
+                cancelClicked={() => {
+                    setLeadsSubMenuFilterVisible(false);
+                }}
+                onChange={(x) => {
+
+                }}
+            />
 
             <View style={styles.view1}>
-                <View style={{ width: "80%" }}>
+                <View style={{ width: "100%" }}>
                     <DateRangeComp
                         fromDate={selectedFromDate}
                         toDate={selectedToDate}
@@ -302,7 +384,7 @@ const ClosedComplaintList = (props) => {
                         toDateClicked={() => showDatePickerMethod("TO_DATE")}
                     />
                 </View>
-                <Pressable onPress={() => {}}>
+                {/* <Pressable onPress={() => {}}>
                     <View style={styles.filterView}>
                         <Text style={styles.text1}>{"Filter"}</Text>
                         <IconButton
@@ -312,7 +394,92 @@ const ClosedComplaintList = (props) => {
                             style={{ margin: 0, padding: 0 }}
                         />
                     </View>
-                </Pressable>
+                </Pressable> */}
+                <View style={styles.fliterView}>
+                    <View style={{ width: '49%' }}>
+                        <Pressable
+                            onPress={() => {
+                                setLeadsFilterVisible(true);
+                            }}
+                        >
+                            <View
+                                style={{
+                                    borderWidth: 0.5,
+                                    borderColor: Colors.BORDER_COLOR,
+                                    borderRadius: 4,
+                                    flexDirection: "row",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                }}
+                            >
+                                <Text
+                                    style={{
+                                        width: "65%",
+                                        paddingHorizontal: 5,
+                                        paddingVertical: 2,
+                                        fontSize: 12,
+                                        fontWeight: "600",
+                                    }}
+                                    numberOfLines={2}
+                                >
+                                    {leadsFilterDropDownText}
+                                </Text>
+                                <IconButton
+                                    icon={leadsFilterVisible ? "chevron-up" : "chevron-down"}
+                                    size={20}
+                                    color={Colors.BLACK}
+                                    style={{ margin: 0, padding: 0 }}
+                                />
+                            </View>
+                        </Pressable>
+                    </View>
+                    <View
+                        style={{
+                            width: "49%",
+                        }}
+                    >
+                        <Pressable
+                            onPress={() => {
+                                setLeadsSubMenuFilterVisible(true);
+                            }}
+                        >
+                            <View
+                                style={{
+                                    borderWidth: 0.5,
+                                    borderColor: Colors.BORDER_COLOR,
+                                    borderRadius: 4,
+                                    flexDirection: "row",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                }}
+                            >
+                                <Text
+                                    style={{
+                                        width: "65%",
+                                        paddingHorizontal: 5,
+                                        paddingVertical: 2,
+                                        fontSize: 12,
+                                        fontWeight: "600",
+                                    }}
+                                    numberOfLines={2}
+                                >
+                                    {leadsSubMenuFilterDropDownText}
+                                </Text>
+                                <IconButton
+                                    icon={
+                                        leadsSubMenuFilterVisible ? "chevron-up" : "chevron-down"
+                                    }
+                                    size={20}
+                                    color={Colors.BLACK}
+                                    style={{
+                                        margin: 0,
+                                        padding: 0,
+                                    }}
+                                />
+                            </View>
+                        </Pressable>
+                    </View>
+                </View>
             </View>
             <View>
                 <Searchbar
@@ -360,7 +527,7 @@ export default ClosedComplaintList
 
 const styles = StyleSheet.create({
     view1: {
-        flexDirection: "row",
+        flexDirection: "column",
         justifyContent: "space-between",
         alignItems: "center",
         marginVertical: 5,
@@ -398,4 +565,15 @@ const styles = StyleSheet.create({
 
     },
     searchBar: { height: 40 },
+    fliterView: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        borderColor: Colors.LIGHT_GRAY,
+        paddingHorizontal: 6,
+        paddingBottom: 4,
+        backgroundColor: Colors.WHITE,
+        marginTop: -6,
+        width: "100%",
+        alignItems: "center",
+    },
 })
