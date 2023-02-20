@@ -3,7 +3,7 @@ import { SafeAreaView, StyleSheet, View, TouchableOpacity, FlatList, ActivityInd
 import { PageControlItem } from "../../../pureComponents/pageControlItem";
 import { Button, IconButton } from "react-native-paper";
 import {  EmptyListView } from "../../pureComponents";
-import { DateRangeComp, DatePickerComponent, SortAndFilterComp, ButtonComp, SingleLeadSelectComp, LeadsFilterComp } from "../../components";
+import { DateRangeComp, DatePickerComponent, SortAndFilterComp, ButtonComp, SingleLeadSelectComp, LeadsFilterComp, DropAnalysisSubFilterComp } from "../../components";
 import { useDispatch, useSelector } from "react-redux";
 import { Colors, GlobalStyle } from "../../styles";
 import { AppNavigator } from '../../navigations';
@@ -127,13 +127,13 @@ const DropAnalysisScreen = ({ navigation }) => {
         const CurrentMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
         const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
        
-        const payload = getPayloadDataV3(CurrentMonthFirstDate, currentMonthLastDate, null, null, jsonObj.orgId, jsonObj.empName)
+        const payload = getPayloadDataV3(CurrentMonthFirstDate, currentMonthLastDate, null, null, jsonObj.orgId, jsonObj.empName, "")
        
         dispatch(getDropAnalysisFilter(payload))
     }
 
 
-    const getDropAnalysisWithFilterFromServerFilterApply = async (startDate,endDate,stage,status) => {
+    const getDropAnalysisWithFilterFromServerFilterApply = async (startDate, endDate, stage, status, filterValue) => {
         const employeeData = await AsyncStore.getData(
             AsyncStore.Keys.LOGIN_EMPLOYEE
         );
@@ -143,7 +143,22 @@ const DropAnalysisScreen = ({ navigation }) => {
         // const CurrentMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
         // const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
 
-        const payload = getPayloadDataV3(startDate, endDate, stage, status, jsonObj.orgId, jsonObj.empName,)
+      
+        if (leadsFilterDropDownText.toLowerCase() === "booking" && filterValue.toLowerCase() ==="booking"){
+            filterValue = "bookingBoking";
+           
+        } else if (leadsFilterDropDownText.toLowerCase() === "retail" && filterValue.toLowerCase() === "retail"){
+            filterValue = "reatailRetail";
+           
+        } else if (leadsFilterDropDownText.toLowerCase() === "delivery" && filterValue.toLowerCase() === "delivery") {
+            filterValue = "deliveryDelivery";
+           
+        }else{
+            filterValue = "";
+         
+        }
+        
+        const payload = getPayloadDataV3(startDate, endDate, stage, status, jsonObj.orgId, jsonObj.empName, filterValue)
       
         dispatch(getDropAnalysisFilter(payload))
     }
@@ -393,7 +408,7 @@ const DropAnalysisScreen = ({ navigation }) => {
 
         
     }
-    const getPayloadDataV3 = (CurrentMonthFirstDate, currentMonthLastDate,stages,status,orgId,empName) => {
+    const getPayloadDataV3 = (CurrentMonthFirstDate, currentMonthLastDate, stages, status, orgId, empName, filterValue="") => {
        
 
         const payload = {
@@ -404,7 +419,8 @@ const DropAnalysisScreen = ({ navigation }) => {
             "startDate": CurrentMonthFirstDate,
             "endDate": currentMonthLastDate,
             "stages":  stages,
-            "status": status
+            "status": status,
+            "filterValue": filterValue!=="" ? filterValue:""
         }
         return payload;
     }
@@ -827,7 +843,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                         setToDateState(currentMonthLastDate);
                     }}
                 />
-                <LeadsFilterComp
+                <DropAnalysisSubFilterComp
                     visible={leadsSubMenuFilterVisible}
                     modelList={subMenu}
                     submitCallback={(x) => {
@@ -839,7 +855,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                         // if (data.length === subMenu.length) {
                         //     setLeadsSubMenuFilterDropDownText("All");
                         // } else {
-                            const names = data.map((y) => y?.subMenu);
+                            let names = data.map((y) => y?.subMenu);
                             setLeadsSubMenuFilterDropDownText(
                                 names.toString() ? names.toString() : "Select Sub Menu"
                             );
@@ -848,7 +864,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                             tmpArr.push(item.leadStage)
                         )
                         
-                        getDropAnalysisWithFilterFromServerFilterApply(selectedFromDate, selectedToDate, ...tmpArr,null)
+                        getDropAnalysisWithFilterFromServerFilterApply(selectedFromDate, selectedToDate, ...tmpArr, null, names.toString())
                         // }
                     }}
                     cancelClicked={() => {

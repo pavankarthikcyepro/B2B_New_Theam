@@ -266,7 +266,7 @@ const FilterScreen = ({ route, navigation }) => {
     setDropDownFrom("EMPLOYEE_TABLE");
   };
 
-  const updateSelectedItems = async(data, index, initalCall = false) => {
+  const updateSelectedItems = async (data, index, initalCall = false) => {
     !initalCall && setIsFilter(true);
     let mainData = data;
     let mainKey = nameKeyList[index];
@@ -351,16 +351,16 @@ const FilterScreen = ({ route, navigation }) => {
     };
     totalDataObjLocal[mainKey] = newOBJ;
     setTotalDataObj({ ...totalDataObjLocal });
-     const employeeData = await AsyncStore.getData(
+    const employeeData = await AsyncStore.getData(
       AsyncStore.Keys.LOGIN_EMPLOYEE
     );
     if (employeeData) {
-       const jsonObj = JSON.parse(employeeData);
-       initalCall &&
-       jsonObj.hrmsRole != "Sales Consultant" &&
-       jsonObj.hrmsRole != "Walkin DSE" &&
-       submitBtnClicked(totalDataObjLocal);
-      }
+      const jsonObj = JSON.parse(employeeData);
+      initalCall &&
+        jsonObj.hrmsRole != "Sales Consultant" &&
+        jsonObj.hrmsRole != "Walkin DSE" &&
+        submitBtnClicked(totalDataObjLocal);
+    }
   };
 
   const updateSelectedItemsForEmployeeDropDown = (data, index) => {
@@ -486,7 +486,7 @@ const FilterScreen = ({ route, navigation }) => {
     });
   };
 
-  const submitBtnClicked = async(initialData = null) => {
+  const submitBtnClicked = async (initialData = null) => {
     if (
       (userData.hrmsRole == "Sales Consultant" ||
         userData.hrmsRole == "Walkin DSE") &&
@@ -556,7 +556,8 @@ const FilterScreen = ({ route, navigation }) => {
   const getDashboadTableDataFromServer = (
     selectedIds,
     from,
-    initalCall = false
+    initalCall = false,
+    selectedEmployee
   ) => {
     const payload = {
       startDate: fromDate,
@@ -598,10 +599,12 @@ const FilterScreen = ({ route, navigation }) => {
           if (!initalCall) {
             filterPayload["empSelected"] = [];
             filterPayload["allEmpSelected"] = [];
+            filterPayload["employeeName"] = [];
           }
         } else {
           filterPayload["empSelected"] = selectedIds;
           filterPayload["allEmpSelected"] = allEmpIds;
+          filterPayload["employeeName"] = selectedEmployee;
         }
         Promise.all([
           // dispatch(getLeadSourceTableList(payload)), // h
@@ -718,6 +721,7 @@ const FilterScreen = ({ route, navigation }) => {
     }
     let selectedIds = [];
     let keys = [];
+    let selectedNames = [];
     for (let key in employeeDropDownDataLocal) {
       keys.push(key);
     }
@@ -730,13 +734,19 @@ const FilterScreen = ({ route, navigation }) => {
         if (element.selected === true) {
           back = true;
           selectedIds.push(element.code);
+          selectedNames.push(element?.name);
         }
       });
       if (back) break;
     }
     if (selectedIds.length > 0) {
       setIsEmployeeLoading(true);
-      getDashboadTableDataFromServer(selectedIds, "EMPLOYEE");
+      getDashboadTableDataFromServer(
+        selectedIds,
+        "EMPLOYEE",
+        false,
+        selectedNames
+      );
     } else {
       showToast("Please select any value");
     }
