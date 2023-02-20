@@ -225,11 +225,27 @@ const MyTaskFilterScreen = ({ navigation }) => {
     } else {
       data = totalData[nameKeyList[index]]?.sublevels;
     }
+    let newData = [];
+    const employeeData = await AsyncStore.getData(
+      AsyncStore.Keys.LOGIN_EMPLOYEE
+    );
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      for (let i = 0; i < data.length; i++) {
+        const id = data[i];
+        for (let j = 0; j < jsonObj.branchs.length; j++) {
+          const id2 = jsonObj.branchs[j];
+          if (id2.branchName === id.name) {
+            newData.push(id);
+          }
+        }
+      }
+    }
     if (index === 4) {
-      setDropDownData([...data]);
+      setDropDownData([...newData]);
       if (initalCall) {
         let levelIds = selector.filterIds?.levelSelectedIds;
-        let updatedMultipleData = [...data];
+        let updatedMultipleData = [...newData];
         let nData = updatedMultipleData.map((val) => {
           return {
             ...val,
@@ -240,7 +256,7 @@ const MyTaskFilterScreen = ({ navigation }) => {
         updateSelectedItems(updatedMultipleData, index, true);
       }
     } else {
-      setDropDownData([...data]);
+      setDropDownData([...newData]);
     }
     setSelectedItemIndex(index);
     !initalCall && setShowDropDownModel(true);
