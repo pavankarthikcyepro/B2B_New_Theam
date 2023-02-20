@@ -168,6 +168,38 @@ const TargetSettingsScreen = ({ route, navigation }) => {
     return unsubscribe;
   }, [navigation]);
 
+  useEffect(() => {
+    navigation.addListener("focus", () => {
+      getTeam();
+    });
+  }, [navigation]);
+
+  const getTeam = async () => {
+    let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      if (
+        jsonObj?.hrmsRole === "Admin" ||
+        jsonObj?.hrmsRole === "Admin Prod" ||
+        jsonObj?.hrmsRole === "App Admin" ||
+        jsonObj?.hrmsRole === "Manager" ||
+        jsonObj?.hrmsRole === "TL" ||
+        jsonObj?.hrmsRole === "General Manager" ||
+        jsonObj?.hrmsRole === "branch manager" ||
+        jsonObj?.hrmsRole === "Testdrive_Manager" ||
+        jsonObj?.hrmsRole === "MD" ||
+        jsonObj?.hrmsRole === "Business Head" ||
+        jsonObj?.hrmsRole === "Sales Manager" ||
+        jsonObj?.hrmsRole === "Sales Head" ||
+        jsonObj?.hrmsRole === "CRM"
+      ) {
+        // dispatch(updateIsTeam(true));
+      } else {
+        dispatch(updateIsTeam(false));
+      }
+    }
+  };
+
   const setCurrentMonthDate = async () => {
     return new Promise((resolve) => {
       const dateFormat = "YYYY-MM-DD";
@@ -397,6 +429,7 @@ const TargetSettingsScreen = ({ route, navigation }) => {
         onRequestClose={() => setShowDatePicker(false)}
       />
       <HeaderComp
+        filter={homeSelector.isTeamPresent}
         // title={"Monthly Target Planning"}
         title={"Target Planning"}
         // branchName={selectedBranchName}

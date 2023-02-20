@@ -38,6 +38,7 @@ import { ActivityIndicator, IconButton } from "react-native-paper";
 import { client } from "../../../../networking/client";
 import URL from "../../../../networking/endpoints";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import TextTicker from "react-native-text-ticker";
 
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 100) / 5;
@@ -645,7 +646,7 @@ const TargetScreen = ({ route }) => {
       if (json.empName) {
         setReceptionistTeamParameters(json.empName);
         let totalKey1 = json.empName.reduce(
-          (acc, obj) => acc + obj.enquirysCount,
+          (acc, obj) => acc + obj.totalAllocatedCount,
           0
         );
         let totalKey2 = json.empName.reduce(
@@ -950,6 +951,7 @@ const TargetScreen = ({ route }) => {
                       >
                         {receptionistTeamParameters.length > 0 &&
                           receptionistTeamParameters.map((item, index) => {
+                            console.log("item -> ", item);
                             return (
                               <View key={`${item.empName} ${index}`}>
                                 <View
@@ -1014,7 +1016,7 @@ const TargetScreen = ({ route }) => {
                                         }}
                                       >
                                         {[
-                                          item.enquirysCount || 0,
+                                          item.totalAllocatedCount || 0,
                                           item.bookingCount || 0,
                                           item.RetailCount || 0,
                                           item.totalDroppedCount || 0,
@@ -1294,7 +1296,7 @@ const TargetScreen = ({ route }) => {
                                     </Text>
                                   </View>
                                   <View style={{ flexDirection: "row" }}>
-                                    {item?.childCount > 1 && (
+                                    {item?.childCount > 0 && (
                                       <Animated.View
                                         style={{
                                           transform: [
@@ -1441,7 +1443,7 @@ const TargetScreen = ({ route }) => {
                                                       }}
                                                     >
                                                       {innerItem1?.childCount >
-                                                        1 && (
+                                                        0 && (
                                                         <Animated.View
                                                           style={{
                                                             transform: [
@@ -1626,7 +1628,7 @@ const TargetScreen = ({ route }) => {
                                                               }}
                                                             >
                                                               {innerItem2?.childCount >
-                                                                1 && (
+                                                                0 && (
                                                                 <Animated.View
                                                                   style={{
                                                                     transform: [
@@ -1773,9 +1775,19 @@ const TargetScreen = ({ route }) => {
                                                                     ]}
                                                                   >
                                                                     <View
-                                                                      style={
-                                                                        styles.view11
-                                                                      }
+                                                                      style={[
+                                                                        styles.view11,
+                                                                        {
+                                                                          width:
+                                                                            Dimensions.get(
+                                                                              "screen"
+                                                                            )
+                                                                              .width -
+                                                                            (innerItem3.isOpenInner
+                                                                              ? 53
+                                                                              : 48),
+                                                                        },
+                                                                      ]}
                                                                     >
                                                                       <View
                                                                         style={{
@@ -1806,7 +1818,7 @@ const TargetScreen = ({ route }) => {
                                                                         }}
                                                                       >
                                                                         {innerItem3?.childCount >
-                                                                          1 && (
+                                                                          0 && (
                                                                           <Animated.View
                                                                             style={{
                                                                               transform:
@@ -1968,9 +1980,19 @@ const TargetScreen = ({ route }) => {
                                                                               ]}
                                                                             >
                                                                               <View
-                                                                                style={
-                                                                                  styles.view11
-                                                                                }
+                                                                                style={[
+                                                                                  styles.view11,
+                                                                                  {
+                                                                                    width:
+                                                                                      Dimensions.get(
+                                                                                        "screen"
+                                                                                      )
+                                                                                        .width -
+                                                                                      (innerItem4.isOpenInner
+                                                                                        ? 59
+                                                                                        : 55),
+                                                                                  },
+                                                                                ]}
                                                                               >
                                                                                 <Text
                                                                                   style={{
@@ -1983,6 +2005,33 @@ const TargetScreen = ({ route }) => {
                                                                                     innerItem4.empName
                                                                                   }
                                                                                 </Text>
+                                                                                <SourceModelView
+                                                                                  onClick={() => {
+                                                                                    navigation.navigate(
+                                                                                      AppNavigator
+                                                                                        .HomeStackIdentifiers
+                                                                                        .sourceModel,
+                                                                                      {
+                                                                                        empId:
+                                                                                          innerItem4.empId,
+                                                                                        headerTitle:
+                                                                                          innerItem4.empName,
+                                                                                        type: "TEAM",
+                                                                                        moduleType:
+                                                                                          "home",
+                                                                                      }
+                                                                                    );
+                                                                                  }}
+                                                                                  style={{
+                                                                                    transform:
+                                                                                      [
+                                                                                        {
+                                                                                          translateX:
+                                                                                            translation,
+                                                                                        },
+                                                                                      ],
+                                                                                  }}
+                                                                                />
                                                                               </View>
                                                                               <View
                                                                                 style={{
@@ -2072,9 +2121,19 @@ const TargetScreen = ({ route }) => {
                                                                                         ]}
                                                                                       >
                                                                                         <View
-                                                                                          style={
-                                                                                            styles.view11
-                                                                                          }
+                                                                                          style={[
+                                                                                            styles.view11,
+                                                                                            {
+                                                                                              width:
+                                                                                                Dimensions.get(
+                                                                                                  "screen"
+                                                                                                )
+                                                                                                  .width -
+                                                                                                (innerItem5.isOpenInner
+                                                                                                  ? 65
+                                                                                                  : 51),
+                                                                                            },
+                                                                                          ]}
                                                                                         >
                                                                                           <Text
                                                                                             style={{
@@ -2087,6 +2146,33 @@ const TargetScreen = ({ route }) => {
                                                                                               innerItem5.empName
                                                                                             }
                                                                                           </Text>
+                                                                                          <SourceModelView
+                                                                                            onClick={() => {
+                                                                                              navigation.navigate(
+                                                                                                AppNavigator
+                                                                                                  .HomeStackIdentifiers
+                                                                                                  .sourceModel,
+                                                                                                {
+                                                                                                  empId:
+                                                                                                    innerItem5.empId,
+                                                                                                  headerTitle:
+                                                                                                    innerItem5.empName,
+                                                                                                  type: "TEAM",
+                                                                                                  moduleType:
+                                                                                                    "home",
+                                                                                                }
+                                                                                              );
+                                                                                            }}
+                                                                                            style={{
+                                                                                              transform:
+                                                                                                [
+                                                                                                  {
+                                                                                                    translateX:
+                                                                                                      translation,
+                                                                                                  },
+                                                                                                ],
+                                                                                            }}
+                                                                                          />
                                                                                         </View>
                                                                                         <View
                                                                                           style={{
@@ -2179,9 +2265,19 @@ const TargetScreen = ({ route }) => {
                                                                                                   ]}
                                                                                                 >
                                                                                                   <View
-                                                                                                    style={
-                                                                                                      styles.view11
-                                                                                                    }
+                                                                                                    style={[
+                                                                                                      styles.view11,
+                                                                                                      {
+                                                                                                        width:
+                                                                                                          Dimensions.get(
+                                                                                                            "screen"
+                                                                                                          )
+                                                                                                            .width -
+                                                                                                          (innerItem6.isOpenInner
+                                                                                                            ? 71
+                                                                                                            : 67),
+                                                                                                      },
+                                                                                                    ]}
                                                                                                   >
                                                                                                     <Text
                                                                                                       style={{
@@ -2194,6 +2290,33 @@ const TargetScreen = ({ route }) => {
                                                                                                         innerItem6.empName
                                                                                                       }
                                                                                                     </Text>
+                                                                                                    <SourceModelView
+                                                                                                      onClick={() => {
+                                                                                                        navigation.navigate(
+                                                                                                          AppNavigator
+                                                                                                            .HomeStackIdentifiers
+                                                                                                            .sourceModel,
+                                                                                                          {
+                                                                                                            empId:
+                                                                                                              innerItem6.empId,
+                                                                                                            headerTitle:
+                                                                                                              innerItem6.empName,
+                                                                                                            type: "TEAM",
+                                                                                                            moduleType:
+                                                                                                              "home",
+                                                                                                          }
+                                                                                                        );
+                                                                                                      }}
+                                                                                                      style={{
+                                                                                                        transform:
+                                                                                                          [
+                                                                                                            {
+                                                                                                              translateX:
+                                                                                                                translation,
+                                                                                                            },
+                                                                                                          ],
+                                                                                                      }}
+                                                                                                    />
                                                                                                   </View>
                                                                                                   <View
                                                                                                     style={{

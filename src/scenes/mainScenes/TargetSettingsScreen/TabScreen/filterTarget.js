@@ -22,6 +22,7 @@ import {
   DropDownSelectionItem,
 } from "../../../../pureComponents";
 import moment from "moment";
+ import _ from "lodash";
 import { Button } from "react-native-paper";
 import {
   updateFilterDropDownData,
@@ -246,23 +247,23 @@ const FilterTargetScreen = ({ route, navigation }) => {
       newArr = [...newList];
     }
     let tempArr = index == 0 ? data : newArr;
-    if (tempArr.length == 0) {
-      const data = employeeDropDownDataLocal[employeeTitleNameList[index]];
-      let newIndex = index == 0 ? 0 : index - 2;
+    // if (tempArr.length == 0) {
+    //   const data = employeeDropDownDataLocal[employeeTitleNameList[index]];
+    //   let newIndex = index == 0 ? 0 : index - 2;
 
-      let newItem = Object.keys(employeeDropDownDataLocal)[newIndex];
-      const tempData = employeeDropDownDataLocal[newItem];
-      const isSelected = tempData.filter((e) => e.selected == true);
-      let newArr = [];
-      if (isSelected[0]?.id && index !== 0) {
-        const newList = data.filter((e) => e.parentId == isSelected[0]?.id);
-        newArr = [...newList];
-      }
-      let tempArr = index == 0 ? data : newArr;
+    //   let newItem = Object.keys(employeeDropDownDataLocal)[newIndex];
+    //   const tempData = employeeDropDownDataLocal[newItem];
+    //   const isSelected = tempData?.filter((e) => e.selected == true);
+    //   let newArr = [];
+    //   if (isSelected[0]?.id && index !== 0) {
+    //     const newList = data.filter((e) => e.parentId == isSelected[0]?.id);
+    //     newArr = [...newList];
+    //   }
+    //   let tempArr = index == 0 ? data : newArr;
+    //   setDropDownData([...tempArr]);
+    // } else {
       setDropDownData([...tempArr]);
-    } else {
-      setDropDownData([...tempArr]);
-    }
+    // }
     setSelectedItemIndex(index);
     setShowDropDownModel(true);
     setDropDownFrom("EMPLOYEE_TABLE");
@@ -543,48 +544,49 @@ const FilterTargetScreen = ({ route, navigation }) => {
   };
 
   const submitBtnForEmployeeData = () => {
-    let selectedIds = [];
-    for (let key in employeeDropDownDataLocal) {
-      const arrayData = employeeDropDownDataLocal[key];
-      if (arrayData.length != 0) {
-        arrayData.forEach((element) => {
-          if (element.selected === true) {
-            selectedIds.push(element.code);
+    if (!_.isEmpty(targetSelector.dealerFilter)){
+      let selectedIds = [];
+      for (let key in employeeDropDownDataLocal) {
+        const arrayData = employeeDropDownDataLocal[key];
+        if (arrayData.length != 0) {
+          arrayData.forEach((element) => {
+            if (element.selected === true) {
+              selectedIds.push(element.code);
+            }
+          });
+        }
+      }
+
+      let x =
+        employeeDropDownDataLocal[
+        Object.keys(employeeDropDownDataLocal)[
+        Object.keys(employeeDropDownDataLocal).length - 1
+        ]
+        ];
+      let selectedID = x.filter((e) => e.selected == true);
+      let temp = [];
+      Object.keys(employeeDropDownDataLocal).map(function (key, index) {
+        Object.values(employeeDropDownDataLocal)[index].map(
+          (innerItem, innerIndex) => {
+            if (innerItem.selected == true) {
+              temp.push(innerItem);
+            }
           }
+        );
+      });
+
+      dispatch(updateFilterSelectedData(employeeDropDownDataLocal));
+      if (temp.length > 0) {
+        navigation.navigate("MONTHLY_TARGET_SCREEN", {
+          params: {
+            from: "Filter",
+            // selectedID: selectedIds[selectedIds.length - 1],
+            selectedID: temp[temp.length - 1].id,
+            fromDate: fromDate,
+            toDate: toDate,
+          },
         });
       }
-    }
-
-    let x =
-      employeeDropDownDataLocal[
-        Object.keys(employeeDropDownDataLocal)[
-          Object.keys(employeeDropDownDataLocal).length - 1
-        ]
-      ];
-    let selectedID = x.filter((e) => e.selected == true);
-    let temp = [];
-    Object.keys(employeeDropDownDataLocal).map(function (key, index) {
-      Object.values(employeeDropDownDataLocal)[index].map(
-        (innerItem, innerIndex) => {
-          if (innerItem.selected == true) {
-            temp.push(innerItem);
-          }
-        }
-      );
-    });
-
-    dispatch(updateFilterSelectedData(employeeDropDownDataLocal));
-    if (temp.length > 0) {
-      navigation.navigate("MONTHLY_TARGET_SCREEN", {
-        params: {
-          from: "Filter",
-          // selectedID: selectedIds[selectedIds.length - 1],
-          selectedID: temp[temp.length - 1].id,
-          fromDate: fromDate,
-          toDate: toDate,
-        },
-      });
-    }
 
     // let selectedID = x[x-1];
     // return;
@@ -593,6 +595,10 @@ const FilterTargetScreen = ({ route, navigation }) => {
     // } else {
     //   showToast("Please select any value");
     // }
+    }else{
+      showToast("Please select Dealer Code");
+    }
+    
   };
 
   const updateSelectedDate = (date, key) => {
@@ -793,44 +799,44 @@ const FilterTargetScreen = ({ route, navigation }) => {
                           renderItem={({ item, index }) => {
                             const data = employeeDropDownDataLocal[item];
                             let selectedNames = "";
-                            if (item) {
-                              for (let i = 1; i < employeeTitleNameList.length; i++) {
-                                let notSelected =
-                                  employeeTitleNameList[index - i];
-                                if (notSelected) {
-                                  const data1 =
-                                    employeeDropDownDataLocal[notSelected];
-                                  const filterData = data1.filter(
-                                    (e) => e.selected == true
-                                  );
-                                  if (filterData.length > 0) {
-                                    const isAnyData = data.filter(
-                                      (e) => e.parentId == filterData[0]?.code
-                                    );
-                                    if (isAnyData.length == 0) {
-                                      return;
-                                    }
-                                  }
-                                }
-                              }
-                              // let notSelected =
-                              //   employeeTitleNameList[index - 1];
-                              // if (notSelected) {
-                              //   const data1 =
-                              //     employeeDropDownDataLocal[notSelected];
-                              //   const filterData = data1.filter(
-                              //     (e) => e.selected == true
-                              //   );
-                              //   if (filterData.length > 0) {
-                              //     const isAnyData = data.filter(
-                              //       (e) => e.parentId == filterData[0]?.code
-                              //     );
-                              //     if (isAnyData.length == 0) {
-                              //       return;
-                              //     }
-                              //   }
-                              // }
-                            }
+                            // if (item) {
+                            //   for (let i = 1; i < employeeTitleNameList.length; i++) {
+                            //     let notSelected =
+                            //       employeeTitleNameList[index - i];
+                            //     if (notSelected) {
+                            //       const data1 =
+                            //         employeeDropDownDataLocal[notSelected];
+                            //       const filterData = data1.filter(
+                            //         (e) => e.selected == true
+                            //       );
+                            //       if (filterData.length > 0) {
+                            //         const isAnyData = data.filter(
+                            //           (e) => e.parentId == filterData[0]?.code
+                            //         );
+                            //         if (isAnyData.length == 0) {
+                            //           return;
+                            //         }
+                            //       }
+                            //     }
+                            //   }
+                            //   // let notSelected =
+                            //   //   employeeTitleNameList[index - 1];
+                            //   // if (notSelected) {
+                            //   //   const data1 =
+                            //   //     employeeDropDownDataLocal[notSelected];
+                            //   //   const filterData = data1.filter(
+                            //   //     (e) => e.selected == true
+                            //   //   );
+                            //   //   if (filterData.length > 0) {
+                            //   //     const isAnyData = data.filter(
+                            //   //       (e) => e.parentId == filterData[0]?.code
+                            //   //     );
+                            //   //     if (isAnyData.length == 0) {
+                            //   //       return;
+                            //   //     }
+                            //   //   }
+                            //   // }
+                            // }
                             data.forEach((obj, index) => {
                               if (
                                 obj.selected != undefined &&

@@ -1492,12 +1492,11 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                                     color:
                                       Math.floor(
                                         (parseInt(
-                                          selector.receptionistData
-                                            .enquirysCount
+                                          selector.receptionistData.RetailCount
                                         ) /
                                           parseInt(
                                             selector.receptionistData
-                                              .RetailCount
+                                              .enquirysCount
                                           )) *
                                           100
                                       ) > 40
@@ -1508,20 +1507,19 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                                   }}
                                 >
                                   {parseInt(
-                                    selector.receptionistData.enquirysCount
+                                    selector.receptionistData.RetailCount
                                   ) === 0 ||
                                   parseInt(
-                                    selector.receptionistData.RetailCount
+                                    selector.receptionistData.enquirysCount
                                   ) === 0
                                     ? 0
                                     : Math.round(
                                         (parseInt(
-                                          selector.receptionistData
-                                            .enquirysCount
+                                          selector.receptionistData.RetailCount
                                         ) /
                                           parseInt(
                                             selector.receptionistData
-                                              .RetailCount
+                                              .enquirysCount
                                           )) *
                                           100
                                       )}
