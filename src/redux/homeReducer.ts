@@ -829,6 +829,7 @@ export const homeSlice = createSlice({
       levelSelected: [],
       empSelected: [],
       allEmpSelected: [],
+      employeeName:[]
     },
     leaderShipFIlterId: [],
   },
@@ -929,6 +930,7 @@ export const homeSlice = createSlice({
         levelSelected: [],
         empSelected: [],
         allEmpSelected: [],
+        employeeName:[]
       };
       state.leaderShipFIlterId = [];
     },
