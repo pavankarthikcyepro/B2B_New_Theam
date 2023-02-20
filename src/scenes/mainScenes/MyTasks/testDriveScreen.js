@@ -66,6 +66,7 @@ import {
 } from "react-native-confirmation-code-field";
 import { client } from "../../../networking/client";
 import { EmsTopTabNavigatorIdentifiers } from "../../../navigations/emsTopTabNavigator";
+import { convertDateStringToMillisecondsUsingMoment } from "./../../../utils/helperFunctions";
 
 const LocalButtonComp = ({
   title,
@@ -920,7 +921,12 @@ const TestDriveScreen = ({ route, navigation }) => {
         taskName: taskStatusAndName.name,
         expectedStarttime: startTime,
         expectedEndTime: endTime,
+        taskUpdatedTime: convertDateStringToMillisecondsUsingMoment(
+          `${selector.customer_preferred_date} ${selector.customer_preferred_time}`,
+          "DD/MM/YYYY HH:mm"
+        ),
       };
+
       dispatch(updateTestDriveTaskApi(payload));
     }
   }, [selector.book_test_drive_appointment_response]);

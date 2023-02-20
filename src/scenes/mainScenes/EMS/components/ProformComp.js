@@ -244,7 +244,7 @@ export const ProformaComp = ({
   const [otherPrices, setOtherPrices] = useState(0);
   const [otherPricesV2, setOtherPricesV2] = useState(0);
   const [otherPriceDropDownIndex, setOtherPriceDropDownIndex] = useState(null);
-  
+  const [selectedAddoninsurance, setSelectedAddoninsurance] = useState("");
   useEffect(() => {
     getUserData();
     dispatch(getProformaListingDetailsApi(universalId));
@@ -779,6 +779,23 @@ export const ProformaComp = ({
     setisDownLoadVisible(false);
     setSelectedPaidAccessoriesList([])
 
+  }
+  const onClick_Vartient = ()=>{
+    clearPriceConfirmationData();
+    dispatch(clearOfferPriceData());
+    calculateOnRoadPrice(false, false, false)
+    calculateOnRoadPriceAfterDiscount()
+    setSelectedPaidAccessoriesList([])
+    //todo
+    // setselectedProformaID("");
+    // setselectedVehicleID("");
+    // setSelectedVarientId("");
+    // setselectedvehicleImageId("");
+    // setShowApproveRejectBtn(false);
+    // setProformaNo("");
+    // setSelectedDate(moment().format("DD-MMM-YYYY"));
+    // setisDownLoadVisible(false);
+    // setSelectedPaidAccessoriesList([])
   }
   const selectPerformaClick = () => {
     setisSelectPerformaClick(true)
@@ -1542,7 +1559,7 @@ export const ProformaComp = ({
           insurance_type: selector.insurance_type,
           insurance_value: selectedInsurencePrice,
           add_on_covers: selectedAddOnsPrice,
-          waranty_name: selector.waranty_name,
+          waranty_name: selector.warranty,
           waranty_value: selectedWarrentyPrice,
           handling_charges: `${handlingChargSlctd ? priceInfomationData.handling_charges.toFixed(2) : 0}`,
           essential_kit: `${essentialKitSlctd ? priceInfomationData.essential_kit.toFixed(2) : 0}`,
@@ -1557,7 +1574,7 @@ export const ProformaComp = ({
           cgstsgst_tax: 0,
           cess_tax: 0,
 
-          insurance_addon_data: "",
+          insurance_addon_data: selector.add_on_insurance ? selector.add_on_insurance : selectedAddoninsurance,
           accessory_items: [...selectedPaidAccessoriesList],
           promotional_offers: selector.promotional_offer,
           special_scheme: selector.consumer_offer,
@@ -1596,7 +1613,7 @@ export const ProformaComp = ({
           insurance_type: selector.insurance_type,
           insurance_value: selectedInsurencePrice,
           add_on_covers: selectedAddOnsPrice,
-          waranty_name: selector.waranty_name,
+          waranty_name: selector.warranty,
           waranty_value: selectedWarrentyPrice,
           handling_charges: `${handlingChargSlctd ? priceInfomationData.handling_charges.toFixed(2) : 0}`,
           essential_kit: `${essentialKitSlctd ? priceInfomationData.essential_kit.toFixed(2) : 0}`,
@@ -1611,7 +1628,7 @@ export const ProformaComp = ({
           cgstsgst_tax: 0,
           cess_tax: 0,
 
-          insurance_addon_data: "",
+          insurance_addon_data: selector.add_on_insurance ? selector.add_on_insurance : selectedAddoninsurance,
           accessory_items: [...selectedPaidAccessoriesList],
           promotional_offers: selector.promotional_offer,
           special_scheme: selector.consumer_offer,
@@ -1649,7 +1666,7 @@ export const ProformaComp = ({
           insurance_type: selector.insurance_type,
           insurance_value: selectedInsurencePrice,
           add_on_covers: selectedAddOnsPrice,
-          waranty_name: selector.waranty_name,
+          waranty_name: selector.warranty,
           waranty_value: selectedWarrentyPrice,
           handling_charges: `${handlingChargSlctd ? priceInfomationData.handling_charges.toFixed(2) : 0}`,
           essential_kit: `${essentialKitSlctd ? priceInfomationData.essential_kit.toFixed(2) : 0}`,
@@ -1664,7 +1681,7 @@ export const ProformaComp = ({
           cgstsgst_tax: 0,
           cess_tax: 0,
 
-          insurance_addon_data: "",
+          insurance_addon_data: selector.add_on_insurance ? selector.add_on_insurance : selectedAddoninsurance,
           accessory_items: [...selectedPaidAccessoriesList],
           promotional_offers: selector.promotional_offer,
           special_scheme: selector.consumer_offer,
@@ -1705,7 +1722,7 @@ export const ProformaComp = ({
           insurance_type: selector.insurance_type,
           insurance_value: selectedInsurencePrice,
           add_on_covers: selectedAddOnsPrice,
-          waranty_name: selector.waranty_name,
+          waranty_name: selector.warranty,
           waranty_value: selectedWarrentyPrice,
           handling_charges: `${handlingChargSlctd ? priceInfomationData.handling_charges.toFixed(2) : 0}`,
           essential_kit: `${essentialKitSlctd ? priceInfomationData.essential_kit.toFixed(2) : 0}`,
@@ -1720,7 +1737,7 @@ export const ProformaComp = ({
           cgstsgst_tax: 0,
           cess_tax: 0,
 
-          insurance_addon_data: "",
+          insurance_addon_data: selector.add_on_insurance? selector.add_on_insurance : selectedAddoninsurance,
           accessory_items: [...selectedPaidAccessoriesList],
           promotional_offers: selector.promotional_offer,
           special_scheme: selector.consumer_offer,
@@ -2067,8 +2084,10 @@ export const ProformaComp = ({
         dispatch(
           setDropDownData({ key: "WARRANTY", value: oth_performa_column.waranty_name, id: "" })
         );
-        setTaxPercent(oth_performa_column.lifeTaxPercentage.toString());
-        setLifeTaxAmount(getLifeTaxNew(Number(oth_performa_column.lifeTaxPercentage)));
+        if (oth_performa_column.lifeTaxPercentage) {
+          setTaxPercent(oth_performa_column.lifeTaxPercentage.toString());
+          setLifeTaxAmount(getLifeTaxNew(Number(oth_performa_column.lifeTaxPercentage)));
+        }
 
         let tempRegistrationCharge = {
           cost: oth_performa_column.registration_charges,
@@ -2083,7 +2102,9 @@ export const ProformaComp = ({
         } else {
           setSelectedInsurencePrice(0);
         }
-
+        if (oth_performa_column.insurance_addon_data){
+          setSelectedAddoninsurance(oth_performa_column.insurance_addon_data)
+        }
         // let tempAddonData = {
         //   cost: oth_performa_column.add_on_covers,
         //   document_name: "Zero Dip",
@@ -2257,6 +2278,7 @@ export const ProformaComp = ({
   }
 
   const clearPriceConfirmationData = () => {
+    
     setSelectedRegistrationCharges({});
     setRegistrationChargesType([]);
     setInsurenceAddOnTypes([]);
@@ -2430,10 +2452,12 @@ export const ProformaComp = ({
         case "VARIENT":
           setCarVariant("");
           setCarColor("");
+          onClick_Vartient();
           break;
         case "COLOR":
           setCarColor("");
           setselectedvehicleImageId("");
+          onClick_Vartient();
           break;
         case "REGISTRATION_CHARGES":
           setSelectedRegistrationCharges({});
@@ -2478,7 +2502,7 @@ export const ProformaComp = ({
           } else if (dropDownKey === "VARIENT") {
             setCarVariant(item.name);
             setCarColor("");
-
+            // newProformaClick();
             updateColorsDataForSelectedVarient(
               item.name,
               selectedCarVarientsData.varientList
@@ -2486,6 +2510,10 @@ export const ProformaComp = ({
           } else if (dropDownKey === "COLOR") {
             setCarColor(item.name);
             setselectedvehicleImageId(item.id);
+            updateColorsDataForSelectedVarient(
+              carVariant,
+              selectedCarVarientsData.varientList
+            );
             // updateColor(item);
           } else if (dropDownKey === "SELECTPERFORMA") {
             setSelectedProfroma(item.name);
@@ -2734,6 +2762,7 @@ export const ProformaComp = ({
               onPress={() => {
                 if (carModel != "") {
                   showDropDownModelMethod("VARIENT", "Select Variant");
+                  onClick_Vartient();
                 } else {
                   showToast("Please Select Vehicle");
                 }
@@ -2749,6 +2778,7 @@ export const ProformaComp = ({
               onPress={() => {
                 if (carModel != "" && carVariant != "") {
                   showDropDownModelMethod("COLOR", "Select Color");
+                   onClick_Vartient();
                 } else {
                   showToast("Please Select Variant");
                 }
@@ -3096,9 +3126,10 @@ export const ProformaComp = ({
                     label={"Add-on Insurance:"}
                     value={
                       selector.insurance_type !== ""
-                        ? selector.add_on_insurance
+                        ? selector.add_on_insurance ? selector.add_on_insurance :selectedAddoninsurance
                         : ""
                     }
+                    //todo
                     disabled={!selector.insurance_type}
                     onPress={() =>
                       showDropDownModelMethod(

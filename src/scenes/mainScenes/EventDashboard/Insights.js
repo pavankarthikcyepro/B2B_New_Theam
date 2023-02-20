@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
+  Animated,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -46,6 +47,7 @@ const EventInsights = ({ route, navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const isFocused = useIsFocused();
   const scrollViewRef = useRef();
+  const [rotateAnimation, setRotateAnimation] = useState(new Animated.Value(0));
 
   //   useEffect(() => {
   //     navigation.setOptions({
@@ -107,6 +109,33 @@ const EventInsights = ({ route, navigation }) => {
     data = data.filter((x) => x.toggleIndex === 0);
     setToggleParamsMetaData([...data]);
   }, []);
+
+  useEffect(() => {
+    handleAnimation();
+  }, [isLoading || selector.isLoading]);
+
+  const handleAnimation = () => {
+    Animated.loop(
+      Animated.timing(rotateAnimation, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      })
+    ).start();
+  };
+
+  const interpolateRotating = rotateAnimation.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0deg", "720deg"],
+  });
+
+  const animatedStyle = {
+    transform: [
+      {
+        rotate: interpolateRotating,
+      },
+    ],
+  };
 
   useEffect(() => {
     if (selector.sourceModelData.length > 0) {
@@ -481,7 +510,20 @@ const EventInsights = ({ route, navigation }) => {
           </View>
           <View style={{ flex: 1 }}>
             {isLoading || selector.isLoading ? (
-              <ActivityIndicator color={Colors.RED} size={"large"} />
+              <View
+                style={{
+                  marginVertical: 15,
+                  justifyContent: "center",
+                  alignSelf: "center",
+                  borderRadius: 8,
+                }}
+              >
+                <Animated.Image
+                  style={[{ width: 40, height: 40 }, animatedStyle]}
+                  resizeMode={"contain"}
+                  source={require("../../../assets/images/cy.png")}
+                />
+              </View>
             ) : (
               <ScrollView>
                 <View style={[styles.flexRow, { paddingHorizontal: 6 }]}>

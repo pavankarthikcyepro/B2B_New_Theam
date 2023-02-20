@@ -1295,7 +1295,7 @@ const TargetScreen = ({ route }) => {
                                     </Text>
                                   </View>
                                   <View style={{ flexDirection: "row" }}>
-                                    {item?.childCount > 1 && (
+                                    {item?.childCount > 0 && (
                                       <Animated.View
                                         style={{
                                           transform: [
@@ -1442,7 +1442,7 @@ const TargetScreen = ({ route }) => {
                                                       }}
                                                     >
                                                       {innerItem1?.childCount >
-                                                        1 && (
+                                                        0 && (
                                                         <Animated.View
                                                           style={{
                                                             transform: [
@@ -1627,7 +1627,7 @@ const TargetScreen = ({ route }) => {
                                                               }}
                                                             >
                                                               {innerItem2?.childCount >
-                                                                1 && (
+                                                               0 && (
                                                                 <Animated.View
                                                                   style={{
                                                                     transform: [
@@ -1807,7 +1807,7 @@ const TargetScreen = ({ route }) => {
                                                                         }}
                                                                       >
                                                                         {innerItem3?.childCount >
-                                                                          1 && (
+                                                                          0 && (
                                                                           <Animated.View
                                                                             style={{
                                                                               transform:

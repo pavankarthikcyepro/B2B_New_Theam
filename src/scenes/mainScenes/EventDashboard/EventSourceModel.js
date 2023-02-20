@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
+  Animated,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -34,6 +35,7 @@ const EventSourceModel = ({ route, navigation }) => {
   const [toggleParamsMetaData, setToggleParamsMetaData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const scrollViewRef = useRef();
+  const [rotateAnimation, setRotateAnimation] = useState(new Animated.Value(0));
   
   useEffect(() => {
     navigation.setOptions({
@@ -87,6 +89,33 @@ const EventSourceModel = ({ route, navigation }) => {
     dispatch(getEventSourceModelForSelf({ type, payload, key }));
   }, [empId, navigation]);
 
+  useEffect(() => {
+    handleAnimation();
+  }, [isLoading || selector.isLoading]);
+
+  const handleAnimation = () => {
+    Animated.loop(
+      Animated.timing(rotateAnimation, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      })
+    ).start();
+  };
+
+  const interpolateRotating = rotateAnimation.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0deg", "720deg"],
+  });
+
+  const animatedStyle = {
+    transform: [
+      {
+        rotate: interpolateRotating,
+      },
+    ],
+  };
+  
   useEffect(() => {
     setToggleParamsIndex(0);
     let data = [...paramsMetadata];
@@ -464,7 +493,20 @@ const EventSourceModel = ({ route, navigation }) => {
           </View>
           <View style={{ height: "85%" }}>
             {isLoading || selector.isLoading ? (
-              <ActivityIndicator color={Colors.RED} size={"large"} />
+              <View
+                style={{
+                  marginVertical: 15,
+                  justifyContent: "center",
+                  alignSelf: "center",
+                  borderRadius: 8,
+                }}
+              >
+                <Animated.Image
+                  style={[{ width: 40, height: 40 }, animatedStyle]}
+                  resizeMode={"contain"}
+                  source={require("../../../assets/images/cy.png")}
+                />
+              </View>
             ) : (
               <ScrollView>
                 <View style={[styles.flexRow, { paddingHorizontal: 6 }]}>
@@ -591,9 +633,13 @@ const EventSourceModel = ({ route, navigation }) => {
                                           key={`${index}`}
                                           style={[
                                             styles.justifyAlignCenter,
-                                            { width: x === "Accessories" ||
+                                            {
+                                              width:
+                                                x === "Accessories" ||
                                                 x.includes("PER CAR")
-                                                  ? 80 : 60 },
+                                                  ? 80
+                                                  : 60,
+                                            },
                                           ]}
                                         >
                                           <Text style={{ color: Colors.WHITE }}>

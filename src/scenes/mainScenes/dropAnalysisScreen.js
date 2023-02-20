@@ -128,7 +128,7 @@ const DropAnalysisScreen = ({ navigation }) => {
         const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
        
         const payload = getPayloadDataV3(CurrentMonthFirstDate, currentMonthLastDate, null, null, jsonObj.orgId, jsonObj.empName)
-    
+       
         dispatch(getDropAnalysisFilter(payload))
     }
 
@@ -144,7 +144,7 @@ const DropAnalysisScreen = ({ navigation }) => {
         // const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
 
         const payload = getPayloadDataV3(startDate, endDate, stage, status, jsonObj.orgId, jsonObj.empName,)
-        
+      
         dispatch(getDropAnalysisFilter(payload))
     }
 
@@ -337,13 +337,14 @@ const DropAnalysisScreen = ({ navigation }) => {
         if (employeeData) {
             const jsonObj = await JSON.parse(employeeData);
             // await setOrgId(jsonObj.orgId)
-
+            
             if (
               jsonObj?.hrmsRole.toLowerCase().includes("manager") ||
               jsonObj?.hrmsRole.toLowerCase() == "admin" ||
               jsonObj?.hrmsRole.toLowerCase() == "sales head" ||
-              jsonObj?.hrmsRole.toLowerCase() == "md"
+                jsonObj?.hrmsRole.toLowerCase() == "md" || jsonObj?.hrmsRole.toLowerCase() == "crm"
             ) {
+               
               setIsManager(true);
             }
 
@@ -363,6 +364,7 @@ const DropAnalysisScreen = ({ navigation }) => {
         // dispatch(getLeadDropList(payload));
     }
     const getDropListFromServerV2 = (empId, empName, branchId, orgId, startDate, endDate) => {
+       
         setisApprovalUIVisible(false)
         // const payload = getPayloadData(empId,empName, branchId,orgId, startDate, endDate, 0)
         // dispatch(getLeadDropList(payload));
@@ -431,22 +433,23 @@ const DropAnalysisScreen = ({ navigation }) => {
             case "FROM_DATE":
                 setFromDateState(formatDate);
                 setSubMenu([]);
-                getDropAnalysisWithFilterFromServer();
+           
                 setLeadsFilterDropDownText("All")
                 setLeadsSubMenuFilterDropDownText("All");
                 let path = selector.dropStageMenus;
-
+            
                 const newArr = path.map((v) => ({ ...v, checked: false }));
                 setLeadsFilterData(newArr);
-
+            
                 getDropAnalysisWithFilterFromServerFilterApply(formatDate,selectedToDate)
                 // getDropListFromServer(employeeId,employeeName, branchId,orgId, formatDate, selectedToDate);
                 break;
             case "TO_DATE":
                 setToDateState(formatDate);
                 setSubMenu([]);
-                getDropAnalysisWithFilterFromServer();
+           
                 setLeadsFilterDropDownText("All")
+              
                 setLeadsSubMenuFilterDropDownText("All");
                 let path2 = selector.dropStageMenus;
 
@@ -973,13 +976,13 @@ const DropAnalysisScreen = ({ navigation }) => {
                 </View>
             </View>
             {/* date and other filters UI END*/}
-            
+          
             {toggleParamsIndex === 0 && <>
                 {droppedData.length === 0 ? <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} /> :
                     <View style={[{ backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10, marginTop: 10 }]}>
                         {isManager &&
                         <View style={{ flexDirection: "row", alignSelf: "flex-end", marginTop: '2%' }}>
-
+                        
                            <View style={styles.modal}>
                                 <TouchableOpacity style={styles.tochable}
                                     disabled={selectedItemIds.length > 0 ? false : true}
@@ -1131,6 +1134,11 @@ const DropAnalysisScreen = ({ navigation }) => {
                                                 showBubble={false}
                                                 showThreeDots={false}
                                                 leadStatus={item.leadStatus}
+                                                dse={
+                                                    item.stage == "PREENQUIRY"
+                                                        ? item.createdBy
+                                                        : item.salesConsultant
+                                                }
                                             />
                                         </View>
                                     </>
