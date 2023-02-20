@@ -1178,6 +1178,33 @@ const TargetScreen = ({ route }) => {
               </View>
             ) : null
           ) : null}
+          {/* {selector.filterIds?.employeeName?.length > 0 && <View
+            style={{
+              width: "100%",
+              height: 25,
+              borderRadius: 8,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <TextTicker
+              duration={10000}
+              loop={true}
+              bounce={false}
+              repeatSpacer={50}
+              marqueeDelay={0}
+              style={{
+                marginBottom: 0,
+              }}
+            >
+              {selector.filterIds?.employeeName?.length > 0 &&
+                selector.filterIds?.employeeName?.map((e) => {
+                  return (
+                    <Text style={{ padding: 2, color: Colors.RED }}>{e+", "}</Text>
+                  );
+                })}
+            </TextTicker>
+          </View>} */}
           {selector.isTeam && !receptionistRole.includes(userData.hrmsRole) ? (
             <View>
               <View style={styles.view1}>
