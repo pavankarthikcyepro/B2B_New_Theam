@@ -38,6 +38,7 @@ import { ActivityIndicator, IconButton } from "react-native-paper";
 import { client } from "../../../../networking/client";
 import URL from "../../../../networking/endpoints";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import TextTicker from "react-native-text-ticker";
 
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 100) / 5;
@@ -1627,7 +1628,7 @@ const TargetScreen = ({ route }) => {
                                                               }}
                                                             >
                                                               {innerItem2?.childCount >
-                                                               0 && (
+                                                                0 && (
                                                                 <Animated.View
                                                                   style={{
                                                                     transform: [
@@ -1774,9 +1775,19 @@ const TargetScreen = ({ route }) => {
                                                                     ]}
                                                                   >
                                                                     <View
-                                                                      style={
-                                                                        styles.view11
-                                                                      }
+                                                                      style={[
+                                                                        styles.view11,
+                                                                        {
+                                                                          width:
+                                                                            Dimensions.get(
+                                                                              "screen"
+                                                                            )
+                                                                              .width -
+                                                                            (innerItem3.isOpenInner
+                                                                              ? 53
+                                                                              : 48),
+                                                                        },
+                                                                      ]}
                                                                     >
                                                                       <View
                                                                         style={{
@@ -1969,9 +1980,19 @@ const TargetScreen = ({ route }) => {
                                                                               ]}
                                                                             >
                                                                               <View
-                                                                                style={
-                                                                                  styles.view11
-                                                                                }
+                                                                                style={[
+                                                                                  styles.view11,
+                                                                                  {
+                                                                                    width:
+                                                                                      Dimensions.get(
+                                                                                        "screen"
+                                                                                      )
+                                                                                        .width -
+                                                                                      (innerItem4.isOpenInner
+                                                                                        ? 59
+                                                                                        : 55),
+                                                                                  },
+                                                                                ]}
                                                                               >
                                                                                 <Text
                                                                                   style={{
@@ -2073,9 +2094,19 @@ const TargetScreen = ({ route }) => {
                                                                                         ]}
                                                                                       >
                                                                                         <View
-                                                                                          style={
-                                                                                            styles.view11
-                                                                                          }
+                                                                                          style={[
+                                                                                            styles.view11,
+                                                                                            {
+                                                                                              width:
+                                                                                                Dimensions.get(
+                                                                                                  "screen"
+                                                                                                )
+                                                                                                  .width -
+                                                                                                (innerItem5.isOpenInner
+                                                                                                  ? 65
+                                                                                                  : 51),
+                                                                                            },
+                                                                                          ]}
                                                                                         >
                                                                                           <Text
                                                                                             style={{
@@ -2180,9 +2211,19 @@ const TargetScreen = ({ route }) => {
                                                                                                   ]}
                                                                                                 >
                                                                                                   <View
-                                                                                                    style={
-                                                                                                      styles.view11
-                                                                                                    }
+                                                                                                    style={[
+                                                                                                      styles.view11,
+                                                                                                      {
+                                                                                                        width:
+                                                                                                          Dimensions.get(
+                                                                                                            "screen"
+                                                                                                          )
+                                                                                                            .width -
+                                                                                                          (innerItem6.isOpenInner
+                                                                                                            ? 71
+                                                                                                            : 67),
+                                                                                                      },
+                                                                                                    ]}
                                                                                                   >
                                                                                                     <Text
                                                                                                       style={{
