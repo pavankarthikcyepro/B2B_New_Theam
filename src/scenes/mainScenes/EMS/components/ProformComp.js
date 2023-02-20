@@ -785,6 +785,7 @@ export const ProformaComp = ({
     dispatch(clearOfferPriceData());
     calculateOnRoadPrice(false, false, false)
     calculateOnRoadPriceAfterDiscount()
+    setSelectedPaidAccessoriesList([])
     //todo
     // setselectedProformaID("");
     // setselectedVehicleID("");
