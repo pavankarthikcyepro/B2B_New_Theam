@@ -225,6 +225,8 @@ const ClosedComplaintList = (props) => {
         const currentDate = moment().add(0, "day").format(dateFormat)
         const CurrentMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
         const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+        setFromDateState(CurrentMonthFirstDate);
+        setToDateState(currentMonthLastDate);
         const payload = {
             "orgId": userData.orgId,
             "loginUser": userData.employeeName,
@@ -333,7 +335,7 @@ const ClosedComplaintList = (props) => {
                         keyExtractor={(item, index) => index.toString()}
                           refreshControl={
                               <RefreshControl
-                                  refreshing={selector.isLoading}
+                                  refreshing={selector.isExtraLoading}
                                   onRefresh={() => initialCallToserver()}
                                   progressViewOffset={200}
                               />
