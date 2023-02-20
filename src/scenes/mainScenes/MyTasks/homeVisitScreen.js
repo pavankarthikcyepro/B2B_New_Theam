@@ -274,15 +274,20 @@ const HomeVisitScreen = ({ route, navigation }) => {
     newTaskObj.taskActualEndTime = convertDateStringToMillisecondsUsingMoment(
       selector.actual_end_time
     );
-    newTaskObj.taskActualStartTime = convertDateStringToMillisecondsUsingMoment(
-      selector.actual_start_time != ""
-        ? selector.actual_start_time
-        : defaultDate
-    );
+
+    let updateTime = moment(defaultDate).format("DD/MM/YYYY HH:mm");
+    if (selector.actual_start_time != "") {
+      updateTime = `${selector.actual_start_time} ${moment().format("HH:mm")}`;
+    }
+
     newTaskObj.taskUpdatedTime = convertDateStringToMillisecondsUsingMoment(
-      selector.actual_start_time != ""
-        ? selector.actual_start_time
-        : defaultDate
+      updateTime,
+      "DD/MM/YYYY HH:mm"
+    );
+
+    newTaskObj.taskActualStartTime = convertDateStringToMillisecondsUsingMoment(
+      updateTime,
+      "DD/MM/YYYY HH:mm"
     );
 
     if (actionType === "CLOSE_TASK") {
