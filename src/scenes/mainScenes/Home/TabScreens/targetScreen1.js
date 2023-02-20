@@ -38,6 +38,7 @@ import { ActivityIndicator, IconButton } from "react-native-paper";
 import { client } from "../../../../networking/client";
 import URL from "../../../../networking/endpoints";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import TextTicker from "react-native-text-ticker";
 
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 100) / 5;
@@ -1627,7 +1628,7 @@ const TargetScreen = ({ route }) => {
                                                               }}
                                                             >
                                                               {innerItem2?.childCount >
-                                                               0 && (
+                                                                0 && (
                                                                 <Animated.View
                                                                   style={{
                                                                     transform: [
