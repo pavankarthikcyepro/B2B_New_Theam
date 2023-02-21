@@ -233,7 +233,7 @@ const ListComponent = ({ route, navigation }) => {
                 dataType: "todaysData",
                 // "startDate": startDate,
                 // "endDate": endDate,
-                salesConsultantId: selector.filterIds?.empSelectedIds || [],
+                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
                 branchCodes: selector.filterIds?.dealerCodes || [],
               };
             } else {
@@ -242,7 +242,7 @@ const ListComponent = ({ route, navigation }) => {
                 loggedInEmpId: jsonObj.empId,
                 onlyForEmp: true,
                 dataType: "todaysData",
-                salesConsultantId: selector.filterIds?.empSelectedIds || [],
+                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
                 branchCodes: selector.filterIds?.dealerCodes || [],
               };
             }
@@ -286,7 +286,7 @@ const ListComponent = ({ route, navigation }) => {
                 dataType: "todaysData",
                 // "startDate": startDate,
                 // "endDate": endDate,
-                salesConsultantId: selector.filterIds?.empSelectedIds || [],
+                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
                 branchCodes: selector.filterIds?.dealerCodes || [],
               };
             } else {
@@ -295,7 +295,7 @@ const ListComponent = ({ route, navigation }) => {
                 loggedInEmpId: jsonObj.empId,
                 onlyForEmp: false,
                 dataType: "todaysData",
-                salesConsultantId: selector.filterIds?.empSelectedIds || [],
+                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
                 branchCodes: selector.filterIds?.dealerCodes || [],
               };
             }
@@ -388,7 +388,7 @@ const ListComponent = ({ route, navigation }) => {
                 startDate: startDate,
                 endDate: endDate,
                 ignoreDateFilter: false,
-                salesConsultantId: selector.filterIds?.empSelectedIds || [],
+                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
                 branchCodes: selector.filterIds?.dealerCodes || [],
               };
             } else {
@@ -398,7 +398,7 @@ const ListComponent = ({ route, navigation }) => {
                 onlyForEmp: true,
                 dataType: "upcomingData",
                 ignoreDateFilter: true,
-                salesConsultantId: selector.filterIds?.empSelectedIds || [],
+                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
                 branchCodes: selector.filterIds?.dealerCodes || [],
               };
             }
@@ -439,7 +439,7 @@ const ListComponent = ({ route, navigation }) => {
                 startDate: startDate,
                 endDate: endDate,
                 ignoreDateFilter: false,
-                salesConsultantId: selector.filterIds?.empSelectedIds || [],
+                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
                 branchCodes: selector.filterIds?.dealerCodes || [],
               };
             } else {
@@ -449,7 +449,7 @@ const ListComponent = ({ route, navigation }) => {
                 onlyForEmp: false,
                 dataType: "upcomingData",
                 ignoreDateFilter: true,
-                salesConsultantId: selector.filterIds?.empSelectedIds || [],
+                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
                 branchCodes: selector.filterIds?.dealerCodes || [],
               };
             }
@@ -548,7 +548,7 @@ const ListComponent = ({ route, navigation }) => {
                 startDate: startDate,
                 endDate: endDate,
                 ignoreDateFilter: false,
-                salesConsultantId: selector.filterIds?.empSelectedIds || [],
+                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
                 branchCodes: selector.filterIds?.dealerCodes || [],
               };
             } else {
@@ -558,7 +558,7 @@ const ListComponent = ({ route, navigation }) => {
                 onlyForEmp: true,
                 dataType: "pendingData",
                 ignoreDateFilter: true,
-                salesConsultantId: selector.filterIds?.empSelectedIds || [],
+                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
                 branchCodes: selector.filterIds?.dealerCodes || [],
               };
             }
@@ -599,7 +599,7 @@ const ListComponent = ({ route, navigation }) => {
                 startDate: startDate,
                 endDate: endDate,
                 ignoreDateFilter: false,
-                salesConsultantId: selector.filterIds?.empSelectedIds || [],
+                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
                 branchCodes: selector.filterIds?.dealerCodes || [],
               };
             } else {
@@ -609,7 +609,7 @@ const ListComponent = ({ route, navigation }) => {
                 onlyForEmp: false,
                 dataType: "pendingData",
                 ignoreDateFilter: true,
-                salesConsultantId: selector.filterIds?.empSelectedIds || [],
+                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
                 branchCodes: selector.filterIds?.dealerCodes || [],
               };
             }
@@ -709,7 +709,7 @@ const ListComponent = ({ route, navigation }) => {
                 startDate: startDate,
                 endDate: endDate,
                 ignoreDateFilter: false,
-                salesConsultantId: selector.filterIds?.empSelectedIds || [],
+                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
                 branchCodes: selector.filterIds?.dealerCodes || [],
               };
             } else {
@@ -719,7 +719,7 @@ const ListComponent = ({ route, navigation }) => {
                 onlyForEmp: true,
                 dataType: "rescheduledData",
                 ignoreDateFilter: true,
-                salesConsultantId: selector.filterIds?.empSelectedIds || [],
+                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
                 branchCodes: selector.filterIds?.dealerCodes || [],
               };
             }
@@ -760,7 +760,7 @@ const ListComponent = ({ route, navigation }) => {
                 startDate: startDate,
                 endDate: endDate,
                 ignoreDateFilter: false,
-                salesConsultantId: selector.filterIds?.empSelectedIds || [],
+                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
                 branchCodes: selector.filterIds?.dealerCodes || [],
               };
             } else {
@@ -770,7 +770,7 @@ const ListComponent = ({ route, navigation }) => {
                 onlyForEmp: false,
                 dataType: "rescheduledData",
                 ignoreDateFilter: true,
-                salesConsultantId: selector.filterIds?.empSelectedIds || [],
+                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
                 branchCodes: selector.filterIds?.dealerCodes || [],
               };
             }
@@ -894,7 +894,7 @@ const ListComponent = ({ route, navigation }) => {
                 startDate: startDate,
                 endDate: endDate,
                 ignoreDateFilter: false,
-                salesConsultantId: selector.filterIds?.empSelectedIds || [],
+                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
                 branchCodes: selector.filterIds?.dealerCodes || [],
               };
             } else {
@@ -904,7 +904,7 @@ const ListComponent = ({ route, navigation }) => {
                 onlyForEmp: true,
                 dataType: "completedData",
                 ignoreDateFilter: true,
-                salesConsultantId: selector.filterIds?.empSelectedIds || [],
+                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
                 branchCodes: selector.filterIds?.dealerCodes || [],
               };
             }
@@ -945,7 +945,7 @@ const ListComponent = ({ route, navigation }) => {
                 startDate: route.params.from ? globalStartDate : startDate,
                 endDate: route.params.from ? globalEndDate : endDate,
                 ignoreDateFilter: false,
-                salesConsultantId: selector.filterIds?.empSelectedIds || [],
+                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
                 branchCodes: selector.filterIds?.dealerCodes || [],
               };
             } else {
@@ -955,7 +955,7 @@ const ListComponent = ({ route, navigation }) => {
                 onlyForEmp: false,
                 dataType: "completedData",
                 ignoreDateFilter: true,
-                salesConsultantId: selector.filterIds?.empSelectedIds || [],
+                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
                 branchCodes: selector.filterIds?.dealerCodes || [],
               };
             }
