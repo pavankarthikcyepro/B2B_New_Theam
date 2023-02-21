@@ -159,6 +159,7 @@ const TaskListScreen = ({ route, navigation }) => {
                         return (
                             <View style={{marginHorizontal: 10}}>
                                 <MyTaskNewItem
+                                        updatedOn={item.updatedOn}
                                         name={item.customerName}
                                         uniqueId={item.taskId}
                                         navigator={navigation}
