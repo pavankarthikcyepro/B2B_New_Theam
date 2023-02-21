@@ -207,6 +207,15 @@ const URL = {
     return sales_url + `/master-data/customertype/${orgId}`;
   },
   MY_TASKS: () => sales_url + "/workflow/assignedTasks?",
+  GET_ROLES_LIST: () => {
+    return roleManagement_url + `/dms/getRoles`;
+  },
+  GET_DESGINATION_LIST: () => {
+    return roleManagement_url + `/dms/getDesignation`;
+  },
+  SAVE_EMPLOYEE: () => {
+    return roleManagement_url + `/dms/save-employee`;
+  },
   MY_TASKS_RESCHEDULED_HISTORY: (empId) =>
     sales_url + `/task-history/resheduled-update-today?empId=${empId}`,
   CONTACT_DETAILS: (universalId) => {
@@ -778,8 +787,8 @@ const URL = {
   GET_TASK_360_HISTORY: (universalId) => {
     return sales_url + "/workflow/universalId/" + universalId;
   },
-   GET_FOLLOWUP_COUNT: (universalId) => {
-     return sales_url + "/workflow/followupCounts/" + universalId;
+  GET_FOLLOWUP_COUNT: (universalId) => {
+    return sales_url + "/workflow/followupCounts/" + universalId;
   },
   CALL_DEALLOCATE: (empId) => {
     return roleManagement_url + "/dms/emp-update/" + empId;

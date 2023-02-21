@@ -34,7 +34,13 @@ import {
 } from "../../redux/targetSettingsReducer";
 
 const WelcomeScreen = ({ navigation }) => {
+  const selector = useSelector((state) => state.homeReducer);
+  const dispatch = useDispatch();
   const { signOut } = React.useContext(AuthContext);
+
+  useEffect(() => {
+    checkAppUpdate();
+  }, []);
 
   const signOutClicked = async () => {
     AsyncStore.storeData(AsyncStore.Keys.USER_NAME, "");
@@ -60,15 +66,12 @@ const WelcomeScreen = ({ navigation }) => {
     signOut();
   };
 
-  useEffect(() => {
-    checkAppUpdate();
-  }, []);
-
-  const selector = useSelector((state) => state.homeReducer);
-  const dispatch = useDispatch();
-
   const loginButtonClicked = () => {
     navigation.navigate(AuthNavigator.AuthStackIdentifiers.LOGIN);
+  };
+
+  const RegisterButtonClicked = () => {
+    navigation.navigate(AuthNavigator.AuthStackIdentifiers.REGISTER);
   };
 
   const UpdateApp = () => {
@@ -152,7 +155,15 @@ const WelcomeScreen = ({ navigation }) => {
         onPress={selector.newUpdateAvailable ? UpdateApp : loginButtonClicked}
         color={Colors.PINK}
       />
-
+      <View style={{ height: 10 }} />
+      <ButtonComp
+        title={"REGISTER"}
+        width={getWidth(100) - 40}
+        onPress={
+          selector.newUpdateAvailable ? UpdateApp : RegisterButtonClicked
+        }
+        color={Colors.PINK}
+      />
       <View style={styles.bottomViewStyle}>
         <Text style={styles.textOneStyle}>{"Important Notice"}</Text>
         <Text style={styles.textTwoStyle}>
