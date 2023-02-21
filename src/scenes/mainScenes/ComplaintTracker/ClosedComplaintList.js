@@ -1,6 +1,6 @@
 import { SafeAreaView, StyleSheet, Text, View, Pressable, FlatList } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { DatePickerComponent, DateRangeComp, LeadsFilterComp, SingleLeadSelectComp } from '../../../components';
+import { DatePickerComponent, DateRangeComp, DropAnalysisSubFilterComp, LeadsFilterComp, SingleLeadSelectComp } from '../../../components';
 import moment from 'moment';
 import { Colors } from '../../../styles';
 import * as AsyncStore from "../../../asyncStore";
@@ -343,7 +343,7 @@ const ClosedComplaintList = (props) => {
                     setToDateState(currentMonthLastDate);
                 }}
             />
-            <LeadsFilterComp
+            <DropAnalysisSubFilterComp
                 visible={leadsSubMenuFilterVisible}
                 modelList={subMenu}
                 submitCallback={(x) => {
