@@ -114,7 +114,10 @@ export const RenderSourceModelParameters = (parameter) => {
                   style={[
                     styles.itemBox,
                     {
-                      width: param === "Accessories" || param.includes("PER CAR") ? 80 : 60,
+                      width:
+                        param === "Accessories" || param.includes("PER CAR")
+                          ? 80
+                          : 60,
                     },
                   ]}
                 >
@@ -123,7 +126,8 @@ export const RenderSourceModelParameters = (parameter) => {
                       ? displayType === 0
                         ? selectedParameter.achievment
                         : selectedParameter.paramName == "DROPPED" ||
-                          selectedParameter.target > 0
+                          // selectedParameter.target > 0
+                          selectedParameter.achievment > 0
                         ? `${sourceModelPercentage(
                             selectedParameter.achievment,
                             sourceModelTotals[selectedParameter.paramName]
@@ -163,7 +167,8 @@ export const RenderSourceModelParameters = (parameter) => {
                     ? displayType === 0
                       ? selectedParameter.achievment
                       : selectedParameter.paramName == "DROPPED" ||
-                        selectedParameter.target > 0
+                        // selectedParameter.target > 0
+                        selectedParameter.achievment > 0
                       ? `${sourceModelPercentage(
                           selectedParameter.achievment,
                           sourceModelTotals[selectedParameter.paramName]
