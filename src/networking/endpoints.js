@@ -581,9 +581,17 @@ const URL = {
     return baseUrl + "dfdr/dynamic-reports/etvbrl_report";
   },
 
-  QR: (orgId, branchId) => {
-    return sales_url + `/qrcode/get/${orgId}/${branchId}`;
+  QR: (orgId) => {
+    return sales_url + `/qrcode/get/${orgId}`;
   },
+
+  BRANCHES: (orgId) => sales_url + `/workflow/get_branchs/${orgId}`,
+
+  UPLOAD_QR: (orgId, branchId) =>
+    sales_url + `/documents/uploadQrCode?orgId=${orgId}&branchId=${branchId}`,
+
+  QR_SAVE: () => sales_url + `/qrcode/save`,
+
   GET_VEHICAL_MODAL: () => {
     return vehicleInfoService_url + `/api/vehicle_details/vehicle_models`;
   },
@@ -778,8 +786,8 @@ const URL = {
   GET_TASK_360_HISTORY: (universalId) => {
     return sales_url + "/workflow/universalId/" + universalId;
   },
-   GET_FOLLOWUP_COUNT: (universalId) => {
-     return sales_url + "/workflow/followupCounts/" + universalId;
+  GET_FOLLOWUP_COUNT: (universalId) => {
+    return sales_url + "/workflow/followupCounts/" + universalId;
   },
   CALL_DEALLOCATE: (empId) => {
     return roleManagement_url + "/dms/emp-update/" + empId;
