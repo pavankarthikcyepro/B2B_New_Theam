@@ -308,6 +308,7 @@ const ComplaintList = (props) => {
                                 which_btn: which_btn
                             });
                         }}
+                        complaintID={item.id}
                     />
                 </View>
             </>

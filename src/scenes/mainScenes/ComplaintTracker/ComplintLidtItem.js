@@ -40,8 +40,8 @@ const IconComp = ({ iconName, onPress, opacity = 1 }) => {
         <TouchableOpacity onPress={onPress}>
             <View
                 style={{
-                    width: 32,
-                    height: 32,
+                    width: 28,
+                    height: 28,
                     justifyContent: "center",
                     alignItems: "center",
                     borderWidth: 1,
@@ -50,7 +50,7 @@ const IconComp = ({ iconName, onPress, opacity = 1 }) => {
                     opacity,
                 }}
             >
-                <IconButton icon={iconName} color={Colors.GREEN} size={17} />
+                <IconButton icon={iconName} color={Colors.GREEN} size={15} />
             </View>
         </TouchableOpacity>
     );
@@ -116,7 +116,7 @@ export const ComplintLidtItem = ({
     EmployeesRoles,
     userData,
     tdflage = "",
-    ageing = 0, displayClose=false
+    ageing = 0, displayClose = false, complaintID
 }) => {
     let date = "";
     if (from === "CLOSED_LIST" || from === "ACTIVE_LIST") {
@@ -177,7 +177,7 @@ export const ComplintLidtItem = ({
     };
 
     return (
-        <TouchableOpacity onPress={onItemPress} style={styles.section}>
+        <TouchableOpacity onPress={onItemPress} style={styles.section} disabled={true}>
             <View
                 style={{
                     flexDirection: "row",
@@ -226,15 +226,62 @@ export const ComplintLidtItem = ({
                             }}
                         />
                         <View style={{ padding: 5 }} />
-                        {from === "ACTIVE_LIST" && displayClose? <IconComp
+                        {from === "ACTIVE_LIST" && displayClose? 
+                        <>
+                         <IconComp
                             iconName={"close-circle"}
                             onPress={() => {
                                 onDocPress(from,"Close_Btn");
                             }}
-                        />:null}
+                           /> 
+                            <View style={{ padding: 5 }} />
+                        </> :null}
                        
-                        {/* <View style={{ padding: 5 }} /> */}
-                        {/* <IconComp
+                        <IconComp
+                            iconName={"phone-outline"}
+                            onPress={() => {
+                                callWebViewRecord({
+                                    navigator,
+                                    phone,
+                                    uniqueId,
+                                    type,
+                                });
+                                return;
+                                if (onlylead) {
+                                    let user = userData.toLowerCase();
+                                    if (EmployeesRoles.includes(user)) {
+                                        if (stageAccess[0]?.viewStage?.includes(leadStage)) {
+                                            callWebViewRecord({
+                                                navigator,
+                                                phone,
+                                                uniqueId,
+                                                type,
+                                            });
+                                        } else {
+                                            alert("No Access");
+                                        }
+                                    } else {
+                                        callWebViewRecord({
+                                            navigator,
+                                            phone,
+                                            uniqueId,
+                                            type,
+                                        });
+                                    }
+                                } else {
+                                    callWebViewRecord({
+                                        navigator,
+                                        phone,
+                                        uniqueId,
+                                        type,
+                                    });
+                                }
+                                // cannotEditLead() ?
+                                //     showToastRedAlert("You don't have Permission") :
+                            }}
+                        />
+                        <View style={{ padding: 5 }} />
+                        <IconComp
                             iconName={"whatsapp"}
                             onPress={
                                 () => {
@@ -257,7 +304,11 @@ export const ComplintLidtItem = ({
 
                                 // cannotEditLead() ? showToastRedAlert("You don't have Permission") :
                             }
-                        /> */}
+                        />
+                    </View>
+                    <View style={{ flexDirection: "row", alignSelf: "flex-end",marginTop:10 }}>
+                        <Text style={styles.text2}>{"Complaint Id - "}</Text>
+                        <Text style={styles.text2}>{complaintID}</Text>
                     </View>
                 </View>
             </View>

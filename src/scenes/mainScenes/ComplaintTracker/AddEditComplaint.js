@@ -262,13 +262,15 @@ const AddEditComplaint = (props) => {
             return;
         }
         if (status ==="Closed"){
-            if (selector.closeComplaintSource == 0) {
+          
+            if (selector.closeComplaintSource.length == 0) {
                 scrollToPos(2);
                 setOpenAccordian("3");
                 showToast("Please select complaint closing source");
                 return;
             }
-            if (selector.closeComplaintRemarks == 0) {
+            
+            if (selector.closeComplaintRemarks === undefined || selector.closeComplaintRemarks.length == 0) {
                 scrollToPos(2);
                 setOpenAccordian("3");
                 showToast("Please select complaint closing remarks");
@@ -341,7 +343,7 @@ const AddEditComplaint = (props) => {
                 "status": status
             }
 
-            dispatch(postComplaintClose(payload));
+            // dispatch(postComplaintClose(payload));
         } else if (status === "Update") {
             let payload = {
                 "id": selector.complaintDetailsFromIdRes ? selector.complaintDetailsFromIdRes?.id : 0,

@@ -275,6 +275,7 @@ const ClosedComplaintList = (props) => {
                                 complaintId: item.id
                             });
                         }}
+                        complaintID={item.id}
                     />
                 </View>
             </>
