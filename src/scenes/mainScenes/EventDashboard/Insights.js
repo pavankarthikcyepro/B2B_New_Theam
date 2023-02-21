@@ -112,7 +112,7 @@ const EventInsights = ({ route, navigation }) => {
 
   useEffect(() => {
     handleAnimation();
-  }, [isLoading || selector.isLoading]);
+  }, [isLoading || selector.isEventLoading]);
 
   const handleAnimation = () => {
     Animated.loop(
@@ -509,7 +509,7 @@ const EventInsights = ({ route, navigation }) => {
             )}
           </View>
           <View style={{ flex: 1 }}>
-            {isLoading || selector.isLoading ? (
+            {isLoading || selector.isEventLoading ? (
               <View
                 style={{
                   marginVertical: 15,
