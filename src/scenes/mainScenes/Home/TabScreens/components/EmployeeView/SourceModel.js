@@ -74,11 +74,21 @@ const SourceModel = ({ route, navigation }) => {
 
     let payload = {
       // endDate: monthLastDate,
-      endDate: moduleType === "live-leads" ? monthLastDate : monthLastDate,
+      endDate:
+        moduleType === "live-leads"
+          ? monthLastDate
+          : selector?.filterIds?.endDate
+          ? selector.filterIds.endDate
+          : monthLastDate,
       loggedInEmpId: empId,
       empId: empId,
       // startDate: monthFirstDate,
-      startDate: moduleType === "live-leads" ? "2021-01-01" : monthFirstDate,
+      startDate:
+        moduleType === "live-leads"
+          ? "2021-01-01"
+          : selector?.filterIds?.startDate
+          ? selector.filterIds.startDate
+          : monthFirstDate,
       levelSelected: null,
       pageNo: 0,
       size: 100,
@@ -88,13 +98,13 @@ const SourceModel = ({ route, navigation }) => {
     };
 
     // if (type != "TEAM") {
-    //   if (selector.filterIds?.empSelected?.length) {
-    //     payload["empSelected"] = selector.filterIds.empSelected;
-    //   } else {
-    //     payload["levelSelected"] = selector.filterIds?.levelSelected?.length
-    //       ? selector.filterIds.levelSelected
-    //       : null;
-    //   }
+    if (selector.filterIds?.empSelected?.length) {
+      payload["empSelected"] = selector.filterIds.empSelected;
+    } else {
+      payload["levelSelected"] = selector.filterIds?.levelSelected?.length
+        ? selector.filterIds.levelSelected
+        : null;
+    }
     // }
 
     const urlSelf = URL.MODEL_SOURCE_SELF();
