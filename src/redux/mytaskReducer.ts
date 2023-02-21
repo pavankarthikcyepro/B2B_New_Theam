@@ -302,9 +302,10 @@ export const mytaskSlice = createSlice({
     filter_drop_down_data: {},
     employees_drop_down_data: {},
     filterIds: {
-      dealerCodes:[],
+      dealerCodes: [],
       levelSelectedIds: [],
       empSelectedIds: [],
+      empLastSelectedIds: [],
     },
   },
   reducers: {
@@ -327,9 +328,10 @@ export const mytaskSlice = createSlice({
       state.filter_drop_down_data = {};
       state.employees_drop_down_data = {};
       state.filterIds = {
-        dealerCodes:[],
+        dealerCodes: [],
         levelSelectedIds: [],
         empSelectedIds: [],
+        empLastSelectedIds: [],
       };
       state.currentScreen = "";
     },
