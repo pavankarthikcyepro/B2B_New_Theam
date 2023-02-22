@@ -620,7 +620,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
                   {/*}*/}
                   {!selector.isMD && (
                     <>
-                      {!receptionistRole.includes(hrmsRole) && (
+                      {/* {!receptionistRole.includes(hrmsRole) && (
                         <View style={styles.rankView}>
                           <View style={styles.rankBox}>
                             <Text style={styles.rankHeadingText}>
@@ -744,7 +744,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
                             </View>
                           </View>
                         </View>
-                      )}
+                      )} */}
                     </>
                   )}
                 </>
