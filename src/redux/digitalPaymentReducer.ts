@@ -31,19 +31,21 @@ const digitalPaymentReducer = createSlice({
   initialState: {
     branches: [],
     isLoading: false,
-    saveQrCodeSuccess: null,
+    saveQrCodeSuccess: "",
   },
   reducers: {
+    clearSaveApiRes: (state, action) => {
+      state.saveQrCodeSuccess = "";
+    },
     clearState: (state, action) => {
       state.branches = [];
       state.isLoading = false;
-      state.saveQrCodeSuccess = null;
+      state.saveQrCodeSuccess = "";
     },
   },
   extraReducers: (builder) => {
     // Get branch list
     builder.addCase(getBranchesList.pending, (state, action) => {
-      state.saveQrCodeSuccess = true;
       state.branches = [];
     });
     builder.addCase(getBranchesList.fulfilled, (state, action) => {
@@ -57,18 +59,18 @@ const digitalPaymentReducer = createSlice({
     // Save QR code
     builder.addCase(saveQrCode.pending, (state, action) => {
       state.isLoading = true;
-      state.saveQrCodeSuccess = false;
+      state.saveQrCodeSuccess = "";
     });
     builder.addCase(saveQrCode.fulfilled, (state, action) => {
       state.isLoading = false;
-      state.saveQrCodeSuccess = true;
+      state.saveQrCodeSuccess = "success";
     });
     builder.addCase(saveQrCode.rejected, (state, action) => {
       state.isLoading = false;
-      state.saveQrCodeSuccess = false;
+      state.saveQrCodeSuccess = "";
     });
   },
 });
 
-export const { clearState } = digitalPaymentReducer.actions;
+export const { clearSaveApiRes, clearState } = digitalPaymentReducer.actions;
 export default digitalPaymentReducer.reducer;

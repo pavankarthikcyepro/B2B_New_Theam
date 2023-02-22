@@ -14,7 +14,7 @@ import uuid from "react-native-uuid";
 import * as AsyncStore from "../../asyncStore";
 import { client } from "../../networking/client";
 import URL from "../../networking/endpoints";
-import { getBranchesList, saveQrCode } from "../../redux/digitalPaymentReducer";
+import { clearSaveApiRes, getBranchesList, saveQrCode } from "../../redux/digitalPaymentReducer";
 import { useDispatch, useSelector } from "react-redux";
 import { DropDownSelectionItem } from "../../pureComponents";
 import {
@@ -22,7 +22,7 @@ import {
   ImagePickerComponent,
   LoaderComponent,
 } from "../../components";
-import { showToast } from "../../utils/toast";
+import { showToast, showToastRedAlert, showToastSucess } from "../../utils/toast";
 import { useIsFocused } from "@react-navigation/native";
 
 const DigitalPaymentScreen = ({ navigation }) => {
@@ -61,10 +61,19 @@ const DigitalPaymentScreen = ({ navigation }) => {
     });
   };
 
+  const getLatestQrList = async () => {
+    const response = await client.get(URL.QR(orgId));
+    const qr = await response.json();
+    qr.reverse();
+    setDataList(qr);
+    dispatch(clearSaveApiRes());
+  }
+
   const getQrCode = async (orgId, branchId) => {
     const response = await client.get(URL.QR(orgId));
     const qr = await response.json();
     if (qr.length > 0) {
+      dispatch(clearSaveApiRes());
       qr.reverse();
       setDataList(qr);
       for (let i = 0; i < qr.length; i++) {
@@ -132,13 +141,23 @@ const DigitalPaymentScreen = ({ navigation }) => {
       .then((response) => response.json())
       .then((response) => {
         if (response) {
-          setFileData({
-            ...fileData,
-            uri: response.documentPath,
-            type: fileType,
-            name: response.fileName ? response.fileName : fileName,
-            universalId: response.universalId,
-          });
+          if (response.documentPath) {
+            setFileData({
+              ...fileData,
+              uri: response.documentPath,
+              type: fileType,
+              name: response.fileName ? response.fileName : fileName,
+              universalId: response.universalId,
+            });
+          } else {
+            setFileData({
+              uri: "",
+              type: "",
+              name: "",
+              universalId: "",
+            });
+            showToastRedAlert("Something went wrong");
+          }
         }
       })
       .catch((error) => {
@@ -153,7 +172,7 @@ const DigitalPaymentScreen = ({ navigation }) => {
       showToast("Please select Dealer Code");
       return;
     }
-    if (fileData.uri == "") {
+    if (!fileData.uri) {
       showToast("Please choose image");
       return;
     }
@@ -173,6 +192,14 @@ const DigitalPaymentScreen = ({ navigation }) => {
 
     dispatch(saveQrCode(branchArrPayload));
   };
+
+  useEffect(() => {
+    if(selector.saveQrCodeSuccess == "success"){
+      showToastSucess("QR Code updated successfully");
+      getLatestQrList();
+    }
+  }, [selector.saveQrCodeSuccess]);
+  
 
   return (
     <SafeAreaView style={styles.container}>
