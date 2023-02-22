@@ -25,6 +25,7 @@ import {
   getTotalOftheTeam,
   getTotalTargetParametersData,
   getUserWiseTargetParameters,
+  getUserWiseTargetParameters2,
   updateEmployeeDataBasedOnDelegate,
 } from "../../../redux/homeReducer";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
@@ -219,7 +220,7 @@ const EventDashBoardTargetScreen = ({ route }) => {
         useNativeDriver: true,
       })
     ).start();
-  }; 
+  };
 
   const interpolateRotating = rotateAnimation.interpolate({
     inputRange: [0, 1],
@@ -375,9 +376,9 @@ const EventDashBoardTargetScreen = ({ route }) => {
     selector.insights_target_parameters_data,
   ]); //selector.self_target_parameters_data]
 
-  const getFormattedInitialData = async (empId, initial) => {
+  const getFormattedInitialData = async (empId, initial, employees) => {
     const url = URL.EVENT_DASHBOARD();
-    const response = await client.post(url, getTotalPayload(empId));
+    const response = await client.post(url, getTotalPayload(empId, employees));
     const newJson = await response.json();
     if (response.ok && newJson.length > 0) {
       if (initial) {
@@ -519,14 +520,35 @@ const EventDashBoardTargetScreen = ({ route }) => {
               (item) => item.empId === jsonObj.empId
             ),
           ];
-          myParams[0] = {
-            ...myParams[0],
-            isOpenInner: false,
-            employeeTargetAchievements: [],
-            targetAchievements: await getFormattedInitialData(jsonObj.empId, true),
-            tempTargetAchievements: myParams[0]?.targetAchievements,
-          };
-          setAllParameters(myParams);
+          let selfData = await getFormatSelfData(employeeData, jsonObj.empId);
+          if (selfData) {
+            let myData = selfData?.employeeTargetAchievements?.filter(
+              (e) => e.empId === jsonObj.empId
+            )[0]?.targetAchievements;
+            let employees = [];
+            for (
+              let i = 0;
+              i < selfData?.employeeTargetAchievements.length;
+              i++
+            ) {
+              const element = selfData?.employeeTargetAchievements[i];
+              if (element.empId !== jsonObj.empId) {
+                employees.push(element.empId);
+              }
+            }
+            myParams[0] = {
+              ...myParams[0],
+              isOpenInner: false,
+              employeeTargetAchievements: [],
+              targetAchievements: await getFormattedInitialData(
+                jsonObj.empId,
+                true,
+                employees
+              ),
+              tempTargetAchievements: getFormattedIndividualData(myData),
+            };
+            setAllParameters(myParams);
+          }
         }
       }
       setIsLoading(false);
@@ -534,6 +556,17 @@ const EventDashBoardTargetScreen = ({ route }) => {
       setIsLoading(false);
     }
   }, [selector.all_emp_parameters_data, isFocused]);
+
+  const getFormatSelfData = async (employeeData, empId, initial) => {
+    const url = URL.GET_TEAMS_EVENT_PARAMS();
+    // console.log("SELDFFF", getEmployeePayload(employeeData, { empId: empId }));
+    const response = await client.post(
+      url,
+      getEmployeePayload(employeeData, { empId: empId })
+    );
+    const newJson = await response.json();
+    return newJson;
+  };
 
   useEffect(() => {
     navigation.addListener("focus", () => {
@@ -596,7 +629,7 @@ const EventDashBoardTargetScreen = ({ route }) => {
       }
     } catch (error) {}
   };
-  
+
   const getBranchName = (branchId) => {
     let branchName = "";
     if (branches.length > 0) {
@@ -608,7 +641,7 @@ const EventDashBoardTargetScreen = ({ route }) => {
     return branchName;
   };
 
-  const getTotalPayload = (item) => {
+  const getTotalPayload = (item, employees) => {
     const dateFormat = "YYYY-MM-DD";
     const currentDate = moment().format(dateFormat);
     const monthFirstDate = moment(currentDate, dateFormat)
@@ -627,6 +660,7 @@ const EventDashBoardTargetScreen = ({ route }) => {
       empId: item,
       pageNo: 0,
       size: 5,
+      // empSelected: employees,
     };
   };
 
@@ -675,7 +709,7 @@ const EventDashBoardTargetScreen = ({ route }) => {
       );
       if (employeeData) {
         const payload = getEmployeePayload(employeeData, item);
-        Promise.all([dispatch(getUserWiseTargetParameters(payload))]).then(
+        Promise.all([dispatch(getUserWiseTargetParameters2(payload))]).then(
           async (res) => {
             let tempRawData = [];
             tempRawData = res[0]?.payload?.employeeTargetAchievements.filter(
@@ -692,7 +726,9 @@ const EventDashBoardTargetScreen = ({ route }) => {
                   isOpenInner: false,
                   branchName: getBranchName(tempRawData[i].branchId),
                   employeeTargetAchievements: [],
-                  tempTargetAchievements: tempRawData[i]?.targetAchievements,
+                  tempTargetAchievements: getFormattedIndividualData(
+                    tempRawData[i]?.targetAchievements
+                  ),
                 };
                 if (i === tempRawData.length - 1) {
                   lastParameter[index].employeeTargetAchievements = tempRawData;
@@ -710,7 +746,13 @@ const EventDashBoardTargetScreen = ({ route }) => {
                     if (Array.isArray(json)) {
                       lastParameter[index].employeeTargetAchievements[
                         i
-                      ].targetAchievements = getFormattedIndividualData(json);
+                      ].targetAchievements =
+                        lastParameter[index].employeeTargetAchievements[i]
+                          .childCount == 0
+                          ? getFormattedIndividualData(
+                              tempRawData[i]?.targetAchievements
+                            )
+                          : getFormattedIndividualData(json);
                     }
                   }
                 }
@@ -752,22 +794,22 @@ const EventDashBoardTargetScreen = ({ route }) => {
     navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropLostCancel);
   }
 
-    const renderData = (item, color) => {
-      return (
-        <View
-          style={{ flexDirection: "row", backgroundColor: Colors.BORDER_COLOR }}
-        >
-          <RenderEmployeeParameters
-            item={item}
-            displayType={togglePercentage}
-            params={toggleParamsMetaData}
-            navigation={navigation}
-            moduleType={"home"}
-            hideTgt={true}
-          />
-        </View>
-      );
-    };
+  const renderData = (item, color) => {
+    return (
+      <View
+        style={{ flexDirection: "row", backgroundColor: Colors.BORDER_COLOR }}
+      >
+        <RenderEmployeeParameters
+          item={item}
+          displayType={togglePercentage}
+          params={toggleParamsMetaData}
+          navigation={navigation}
+          moduleType={"home"}
+          hideTgt={true}
+        />
+      </View>
+    );
+  };
 
   return (
     <React.Fragment>
