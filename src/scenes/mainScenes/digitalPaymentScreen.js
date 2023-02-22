@@ -44,6 +44,7 @@ const DigitalPaymentScreen = ({ navigation }) => {
   const [selectedBranchIds, setSelectedBranchIds] = useState([]);
   const [showImagePicker, setShowImagePicker] = useState(false);
   const [authToken, setAuthToken] = useState("");
+  const [shownUploadSection, setShownUploadSection] = useState(false);
 
   useEffect(() => {
     getUserData();
@@ -52,6 +53,20 @@ const DigitalPaymentScreen = ({ navigation }) => {
   const getUserData = async () => {
     const data = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     const parsedData = JSON.parse(data);
+
+    if (
+      parsedData?.hrmsRole === "Business Head" ||
+      parsedData?.hrmsRole === "MD" ||
+      parsedData?.hrmsRole === "General Manager" ||
+      parsedData?.hrmsRole === "Admin" ||
+      parsedData?.hrmsRole === "App Admin" ||
+      parsedData?.hrmsRole === "Admin Prod"
+    ) {
+      setShownUploadSection(true);
+    } else {
+      setShownUploadSection(false);
+    }
+
     setUserData(parsedData);
     const { orgId, branchId } = parsedData;
     await dispatch(getBranchesList(orgId));
@@ -285,33 +300,35 @@ const DigitalPaymentScreen = ({ navigation }) => {
             resizeMode="contain"
           />
         </View>
-        <View style={[styles.branchesContainer, { padding: 15 }]}>
-          <View style={styles.uploadingRow}>
+        {shownUploadSection ? (
+          <View style={[styles.branchesContainer, { padding: 15 }]}>
+            <View style={styles.uploadingRow}>
+              <TouchableOpacity
+                style={styles.uploadBtnContainer}
+                onPress={() => setShowImagePicker(true)}
+              >
+                <Text style={styles.uploadText}>Choose Image</Text>
+              </TouchableOpacity>
+              <Text numberOfLines={2} style={styles.fileNameText}>
+                {fileData.name ? fileData.name : "No Image Chosen"}
+              </Text>
+            </View>
+
+            <DropDownSelectionItem
+              label={"Dealer Code"}
+              value={selectedBranches}
+              onPress={() => dropDownItemClicked()}
+              takeMinHeight={true}
+            />
+
             <TouchableOpacity
-              style={styles.uploadBtnContainer}
-              onPress={() => setShowImagePicker(true)}
+              style={styles.submitBtnContainer}
+              onPress={() => submitClick()}
             >
-              <Text style={styles.uploadText}>Choose Image</Text>
+              <Text style={styles.submitBtnText}>Submit</Text>
             </TouchableOpacity>
-            <Text numberOfLines={2} style={styles.fileNameText}>
-              {fileData.name ? fileData.name : "No Image Chosen"}
-            </Text>
           </View>
-
-          <DropDownSelectionItem
-            label={"Dealer Code"}
-            value={selectedBranches}
-            onPress={() => dropDownItemClicked()}
-            takeMinHeight={true}
-          />
-
-          <TouchableOpacity
-            style={styles.submitBtnContainer}
-            onPress={() => submitClick()}
-          >
-            <Text style={styles.submitBtnText}>Submit</Text>
-          </TouchableOpacity>
-        </View>
+        ) : null}
       </ScrollView>
       <LoaderComponent visible={selector.isLoading} />
     </SafeAreaView>
