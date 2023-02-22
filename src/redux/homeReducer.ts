@@ -237,6 +237,19 @@ export const getUserWiseTargetParameters = createAsyncThunk(
   }
 );
 
+export const getUserWiseTargetParameters2 = createAsyncThunk(
+  "HOME/getUserWiseTargetParameters2",
+  async (payload: any, { rejectWithValue }) => {
+    const response = await client.post(URL.GET_TEAMS_EVENT_PARAMS(), payload);
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 export const getTotalOftheTeam = createAsyncThunk(
   "HOME/getTotalOftheTeam",
   async (payload: any, { rejectWithValue }) => {

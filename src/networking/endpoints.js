@@ -612,6 +612,8 @@ const URL = {
   },
   GET_TEAMS_TARGET_PARAMS: () =>
     dashboard + "/v4/get_target_params_for_all_emps",
+  GET_TEAMS_EVENT_PARAMS: () =>
+    dashboard + "/v4/get_target_params_for_all_emps_events",
   // GET_TOTAL_TARGET_PARAMS: () => dashboard + "/v4/get_target_params",
   GET_TOTAL_TARGET_PARAMS: () => dashboard + "/v2/get_target_params",
   GET_EMPLOYEE_DETAILS: (orgId, branchId, deptId, desigId) => {
