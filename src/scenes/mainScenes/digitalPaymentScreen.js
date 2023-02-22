@@ -11,17 +11,21 @@ import {
   Platform,
 } from "react-native";
 import uuid from "react-native-uuid";
-import * as AsyncStore from '../../asyncStore';
+import * as AsyncStore from "../../asyncStore";
 import { client } from "../../networking/client";
 import URL from "../../networking/endpoints";
 import { getBranchesList, saveQrCode } from "../../redux/digitalPaymentReducer";
 import { useDispatch, useSelector } from "react-redux";
 import { DropDownSelectionItem } from "../../pureComponents";
-import { DropDownComponant, ImagePickerComponent, LoaderComponent } from "../../components";
+import {
+  DropDownComponant,
+  ImagePickerComponent,
+  LoaderComponent,
+} from "../../components";
 import { showToast } from "../../utils/toast";
 import { useIsFocused } from "@react-navigation/native";
 
-const DigitalPaymentScreen = ({navigation}) => {
+const DigitalPaymentScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const isFocused = useIsFocused();
   const selector = useSelector((state) => state.digitalPaymentReducer);
@@ -45,7 +49,7 @@ const DigitalPaymentScreen = ({navigation}) => {
     getUserData();
   }, [isFocused]);
 
-  const getUserData = async() => {
+  const getUserData = async () => {
     const data = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     const parsedData = JSON.parse(data);
     setUserData(parsedData);
@@ -55,7 +59,7 @@ const DigitalPaymentScreen = ({navigation}) => {
     await AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
       setAuthToken(token);
     });
-  }
+  };
 
   const getQrCode = async (orgId, branchId) => {
     const response = await client.get(URL.QR(orgId));
@@ -92,7 +96,7 @@ const DigitalPaymentScreen = ({navigation}) => {
           selector.branches[i].branchId == userData.branchId ? true : false,
       };
       newArr.push(obj);
-      if (selector.branches[i].branchId == userData.branchId){
+      if (selector.branches[i].branchId == userData.branchId) {
         setSelectedBranches(selector.branches[i].name);
       }
     }
@@ -162,7 +166,7 @@ const DigitalPaymentScreen = ({navigation}) => {
         documentType: "qrcode",
         fileName: fileData.name,
         orgId: userData.orgId,
-        universalid: fileData.universalId
+        universalid: fileData.universalId,
       };
       branchArrPayload.push(obj);
     }
@@ -193,10 +197,12 @@ const DigitalPaymentScreen = ({navigation}) => {
             selectedNames = names?.join(", ");
           }
 
-          if (branchIds.length == 1){
+          if (branchIds.length == 1) {
             if (dataList.length > 0) {
+              let flag = 0;
               for (let i = 0; i < dataList.length; i++) {
                 if (dataList[i].branchId == branchIds[0]) {
+                  flag = 1;
                   setFileData({
                     ...fileData,
                     uri: dataList[i].documentPath,
@@ -209,13 +215,22 @@ const DigitalPaymentScreen = ({navigation}) => {
                   break;
                 }
               }
+              if (flag == 0) {
+                setFileData({
+                  ...fileData,
+                  name: "",
+                  universalId: "",
+                  type: "",
+                  uri: "https://www.bigpharmacy.com.my/scripts/timthumb.php",
+                });
+              }
             } else {
               setFileData({
                 ...fileData,
                 uri: "https://www.bigpharmacy.com.my/scripts/timthumb.php",
               });
             }
-          } 
+          }
           setSelectedBranchIds(branchIds);
           setSelectedBranches(selectedNames);
           setShowDropDownModel(false);
@@ -314,7 +329,7 @@ const styles = StyleSheet.create({
   },
   fileNameText: {
     marginLeft: 5,
-    flex: 1
+    flex: 1,
   },
   submitBtnContainer: {
     padding: 7,
@@ -322,10 +337,10 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingHorizontal: 20,
     alignSelf: "center",
-    marginTop: 15
+    marginTop: 15,
   },
   submitBtnText: {
     color: Colors.WHITE,
-    fontSize: 16
+    fontSize: 16,
   },
 });
