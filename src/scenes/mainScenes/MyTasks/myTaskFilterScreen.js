@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Text,
   View,
+  ScrollView
 } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import { Button } from "react-native-paper";
@@ -532,10 +533,26 @@ const MyTaskFilterScreen = ({ navigation }) => {
       return;
     }
     let selectedIds = [];
+    let lastSelectedIds = [];
     let keys = [];
     for (let key in employeeDropDownDataLocal) {
       keys.push(key);
     }
+
+    let localIndex = keys.length - 1;
+    for (var i = localIndex; i >= 0; i--) {
+      let key = keys[i];
+      const arrayData = employeeDropDownDataLocal[key] || [];
+      let back = false;
+      arrayData?.forEach((element) => {
+        if (element.selected === true) {
+          back = true;
+          lastSelectedIds.push(element.code);
+        }
+      });
+      if (back) break;
+    }
+
     for (let i = 0; i < keys?.length; i++) {
       let key = keys[i];
       const arrayData = employeeDropDownDataLocal[key] || [];
@@ -545,10 +562,12 @@ const MyTaskFilterScreen = ({ navigation }) => {
         }
       });
     }
+
     let filterPayoad = { ...selector.filterIds };
     if (selectedIds?.length > 0) {
       setIsEmployeeLoading(true);
       filterPayoad["empSelectedIds"] = selectedIds;
+      filterPayoad["empLastSelectedIds"] = lastSelectedIds;
       Promise.all([dispatch(updateFilterIds(filterPayoad))])
         .then(() => {
           navigation.navigate(MyTasksStackIdentifiers.mytasks);
@@ -666,141 +685,149 @@ const MyTaskFilterScreen = ({ navigation }) => {
           setShowDropDownModel(false);
         }}
       />
-      <View style={styles.subContainer}>
-        <View style={{ borderColor: Colors.BORDER_COLOR, borderWidth: 1 }}>
-          <FlatList
-            data={nameKeyList}
-            listKey="ORG_TABLE"
-            scrollEnabled={false}
-            extraData={employeeTitleNameList}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item, index }) => {
-              const data = totalData[item]?.sublevels;
-              let names = [];
-              let selectedNames = "";
-              if (data?.length > 0) {
-                data.forEach((obj) => {
-                  if (obj.selected != undefined && obj.selected == true) {
-                    names.push(obj.name);
-                  }
-                });
-                selectedNames = names?.join(", ");
-              }
-              return (
-                <View>
-                  <DropDownSelectionItem
-                    label={item}
-                    value={selectedNames}
-                    onPress={() => dropDownItemClicked(item, index)}
-                    takeMinHeight={true}
+      <ScrollView
+        keyboardShouldPersistTaps="always"
+        style={styles.subContainer}
+      >
+        <View style={styles.subContainer}>
+          <View style={{ borderColor: Colors.BORDER_COLOR, borderWidth: 1 }}>
+            <FlatList
+              data={nameKeyList}
+              listKey="ORG_TABLE"
+              scrollEnabled={false}
+              extraData={employeeTitleNameList}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item, index }) => {
+                const data = totalData[item]?.sublevels;
+                let names = [];
+                let selectedNames = "";
+                if (data?.length > 0) {
+                  data.forEach((obj) => {
+                    if (obj.selected != undefined && obj.selected == true) {
+                      names.push(obj.name);
+                    }
+                  });
+                  selectedNames = names?.join(", ");
+                }
+                return (
+                  <View>
+                    <DropDownSelectionItem
+                      label={item}
+                      value={selectedNames}
+                      onPress={() => dropDownItemClicked(item, index)}
+                      takeMinHeight={true}
+                    />
+                  </View>
+                );
+              }}
+            />
+          </View>
+          {!isFilterLoading ? (
+            <View style={styles.submitBtnBckVw}>
+              <Button
+                labelStyle={{
+                  color: Colors.RED,
+                  textTransform: "none",
+                }}
+                style={{ width: buttonWidth }}
+                mode="outlined"
+                onPress={() => clearBtnClick()}
+              >
+                Clear
+              </Button>
+              <Button
+                labelStyle={{
+                  color: Colors.WHITE,
+                  textTransform: "none",
+                }}
+                style={{ width: buttonWidth }}
+                contentStyle={{ backgroundColor: Colors.BLACK }}
+                mode="contained"
+                onPress={() => submitBtnClick()}
+              >
+                Submit
+              </Button>
+            </View>
+          ) : (
+            <AcitivityLoader />
+          )}
+
+          <View>
+            {employeeTitleNameList?.length > 0 && (
+              <View>
+                <View
+                  style={{
+                    borderColor: Colors.BORDER_COLOR,
+                    borderWidth: 1,
+                  }}
+                >
+                  <FlatList
+                    data={employeeTitleNameList}
+                    listKey="EMPLOYEE_TABLE"
+                    keyExtractor={(item, index) => "EMP_" + index.toString()}
+                    scrollEnabled={false}
+                    renderItem={({ item, index }) => {
+                      const data = employeeDropDownDataLocal[item];
+                      let names = [];
+                      let selectedNames = "";
+                      if (data?.length > 0) {
+                        data.forEach((obj) => {
+                          if (
+                            obj.selected != undefined &&
+                            obj.selected == true
+                          ) {
+                            names.push(obj.name);
+                          }
+                        });
+                        selectedNames = names?.join(", ");
+                      }
+                      return (
+                        <View>
+                          <DropDownSelectionItem
+                            label={item}
+                            value={selectedNames}
+                            onPress={() => dropDownItemClicked2(item, index)}
+                            takeMinHeight={true}
+                          />
+                        </View>
+                      );
+                    }}
                   />
                 </View>
-              );
-            }}
-          />
-        </View>
-        {!isFilterLoading ? (
-          <View style={styles.submitBtnBckVw}>
-            <Button
-              labelStyle={{
-                color: Colors.RED,
-                textTransform: "none",
-              }}
-              style={{ width: buttonWidth }}
-              mode="outlined"
-              onPress={() => clearBtnClick()}
-            >
-              Clear
-            </Button>
-            <Button
-              labelStyle={{
-                color: Colors.WHITE,
-                textTransform: "none",
-              }}
-              style={{ width: buttonWidth }}
-              contentStyle={{ backgroundColor: Colors.BLACK }}
-              mode="contained"
-              onPress={() => submitBtnClick()}
-            >
-              Submit
-            </Button>
-          </View>
-        ) : (
-          <AcitivityLoader />
-        )}
-
-        <View>
-          {employeeTitleNameList?.length > 0 && (
-            <View>
-              <View
-                style={{
-                  borderColor: Colors.BORDER_COLOR,
-                  borderWidth: 1,
-                }}
-              >
-                <FlatList
-                  data={employeeTitleNameList}
-                  listKey="EMPLOYEE_TABLE"
-                  keyExtractor={(item, index) => "EMP_" + index.toString()}
-                  scrollEnabled={false}
-                  renderItem={({ item, index }) => {
-                    const data = employeeDropDownDataLocal[item];
-                    let names = [];
-                    let selectedNames = "";
-                    if (data?.length > 0) {
-                      data.forEach((obj) => {
-                        if (obj.selected != undefined && obj.selected == true) {
-                          names.push(obj.name);
-                        }
-                      });
-                      selectedNames = names?.join(", ");
-                    }
-                    return (
-                      <View>
-                        <DropDownSelectionItem
-                          label={item}
-                          value={selectedNames}
-                          onPress={() => dropDownItemClicked2(item, index)}
-                          takeMinHeight={true}
-                        />
-                      </View>
-                    );
-                  }}
-                />
+                {!isEmployeeLoading ? (
+                  <View style={styles.submitBtnBckVw}>
+                    <Button
+                      labelStyle={{
+                        color: Colors.RED,
+                        textTransform: "none",
+                      }}
+                      style={{ width: buttonWidth }}
+                      mode="outlined"
+                      onPress={() => clearBtnForEmployeeData()}
+                    >
+                      Clear
+                    </Button>
+                    <Button
+                      labelStyle={{
+                        color: Colors.WHITE,
+                        textTransform: "none",
+                      }}
+                      style={{ width: buttonWidth }}
+                      contentStyle={{ backgroundColor: Colors.BLACK }}
+                      mode="contained"
+                      onPress={() => submitBtnForEmployeeData()}
+                    >
+                      Submit
+                    </Button>
+                  </View>
+                ) : (
+                  <AcitivityLoader />
+                )}
               </View>
-              {!isEmployeeLoading ? (
-                <View style={styles.submitBtnBckVw}>
-                  <Button
-                    labelStyle={{
-                      color: Colors.RED,
-                      textTransform: "none",
-                    }}
-                    style={{ width: buttonWidth }}
-                    mode="outlined"
-                    onPress={() => clearBtnForEmployeeData()}
-                  >
-                    Clear
-                  </Button>
-                  <Button
-                    labelStyle={{
-                      color: Colors.WHITE,
-                      textTransform: "none",
-                    }}
-                    style={{ width: buttonWidth }}
-                    contentStyle={{ backgroundColor: Colors.BLACK }}
-                    mode="contained"
-                    onPress={() => submitBtnForEmployeeData()}
-                  >
-                    Submit
-                  </Button>
-                </View>
-              ) : (
-                <AcitivityLoader />
-              )}
-            </View>
-          )}
+            )}
+          </View>
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };

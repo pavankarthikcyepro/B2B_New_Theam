@@ -335,7 +335,7 @@ const URL = {
   GET_TEST_DRIVE_APPOINTMENT_DETAILS: (entityModuleId, branchId, orgId) => {
     return (
       ops_url +
-      `/testdrive/history?branchId=${branchId}&filterType=TESTDRIVE&filterVal=${entityModuleId}&orgId=${orgId}`
+      `/testdrive/history?branch=${branchId}&filterType=TESTDRIVE&filterVal=${entityModuleId}&orgId=${orgId}`
     );
   },
   VALIDATE_TEST_DRIVE_DATE: (date, vehicleId) => {
@@ -581,9 +581,17 @@ const URL = {
     return baseUrl + "dfdr/dynamic-reports/etvbrl_report";
   },
 
-  QR: (orgId, branchId) => {
-    return sales_url + `/qrcode/get/${orgId}/${branchId}`;
+  QR: (orgId) => {
+    return sales_url + `/qrcode/get/${orgId}`;
   },
+
+  BRANCHES: (orgId) => sales_url + `/workflow/get_branchs/${orgId}`,
+
+  UPLOAD_QR: (orgId, branchId) =>
+    sales_url + `/documents/uploadQrCode?orgId=${orgId}&branchId=${branchId}`,
+
+  QR_SAVE: () => sales_url + `/qrcode/save`,
+
   GET_VEHICAL_MODAL: () => {
     return vehicleInfoService_url + `/api/vehicle_details/vehicle_models`;
   },
@@ -604,6 +612,8 @@ const URL = {
   },
   GET_TEAMS_TARGET_PARAMS: () =>
     dashboard + "/v4/get_target_params_for_all_emps",
+  GET_TEAMS_EVENT_PARAMS: () =>
+    dashboard + "/v4/get_target_params_for_all_emps_events",
   // GET_TOTAL_TARGET_PARAMS: () => dashboard + "/v4/get_target_params",
   GET_TOTAL_TARGET_PARAMS: () => dashboard + "/v2/get_target_params",
   GET_EMPLOYEE_DETAILS: (orgId, branchId, deptId, desigId) => {
@@ -778,8 +788,8 @@ const URL = {
   GET_TASK_360_HISTORY: (universalId) => {
     return sales_url + "/workflow/universalId/" + universalId;
   },
-   GET_FOLLOWUP_COUNT: (universalId) => {
-     return sales_url + "/workflow/followupCounts/" + universalId;
+  GET_FOLLOWUP_COUNT: (universalId) => {
+    return sales_url + "/workflow/followupCounts/" + universalId;
   },
   CALL_DEALLOCATE: (empId) => {
     return roleManagement_url + "/dms/emp-update/" + empId;

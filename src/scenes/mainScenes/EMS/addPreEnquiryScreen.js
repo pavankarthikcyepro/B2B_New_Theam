@@ -213,31 +213,31 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         });
 
       if (jsonObj.hrmsRole === "Reception") {
-        const resultAry = homeSelector.source_of_enquiry_list.filter(
-          (item) => item.name == "Showroom"
-        );
-        if (resultAry.length > 0) {
-          dispatch(
-            setDropDownData({
-              key: "SOURCE_OF_ENQUIRY",
-              value: resultAry[0].name,
-              id: resultAry[0].id,
-            })
-          );
-        }
+        // const resultAry = homeSelector.source_of_enquiry_list.filter(
+        //   (item) => item.name == "Showroom"
+        // );
+        // if (resultAry.length > 0) {
+        //   dispatch(
+        //     setDropDownData({
+        //       key: "SOURCE_OF_ENQUIRY",
+        //       value: resultAry[0].name,
+        //       id: resultAry[0].id,
+        //     })
+        //   );
+        // }
       } else if (jsonObj.hrmsRole === "Tele Caller") {
-        const resultAry = homeSelector.source_of_enquiry_list.filter(
-          (item) => item.name == "Digital Marketing"
-        );
-        if (resultAry.length > 0) {
-          dispatch(
-            setDropDownData({
-              key: "SOURCE_OF_ENQUIRY",
-              value: resultAry[0].name,
-              id: resultAry[0].id,
-            })
-          );
-        }
+        // const resultAry = homeSelector.source_of_enquiry_list.filter(
+        //   (item) => item.name == "Digital Marketing"
+        // );
+        // if (resultAry.length > 0) {
+        //   dispatch(
+        //     setDropDownData({
+        //       key: "SOURCE_OF_ENQUIRY",
+        //       value: resultAry[0].name,
+        //       id: resultAry[0].id,
+        //     })
+        //   );
+        // }
       }
     }
   };

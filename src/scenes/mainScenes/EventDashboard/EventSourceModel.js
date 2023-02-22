@@ -91,7 +91,7 @@ const EventSourceModel = ({ route, navigation }) => {
 
   useEffect(() => {
     handleAnimation();
-  }, [isLoading || selector.isLoading]);
+  }, [isLoading || selector.isEventLoading]);
 
   const handleAnimation = () => {
     Animated.loop(
@@ -492,7 +492,7 @@ const EventSourceModel = ({ route, navigation }) => {
             )}
           </View>
           <View style={{ height: "85%" }}>
-            {isLoading || selector.isLoading ? (
+            {isLoading || selector.isEventLoading ? (
               <View
                 style={{
                   marginVertical: 15,
