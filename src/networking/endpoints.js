@@ -335,7 +335,7 @@ const URL = {
   GET_TEST_DRIVE_APPOINTMENT_DETAILS: (entityModuleId, branchId, orgId) => {
     return (
       ops_url +
-      `/testdrive/history?branchId=${branchId}&filterType=TESTDRIVE&filterVal=${entityModuleId}&orgId=${orgId}`
+      `/testdrive/history?branch=${branchId}&filterType=TESTDRIVE&filterVal=${entityModuleId}&orgId=${orgId}`
     );
   },
   VALIDATE_TEST_DRIVE_DATE: (date, vehicleId) => {
@@ -581,9 +581,17 @@ const URL = {
     return baseUrl + "dfdr/dynamic-reports/etvbrl_report";
   },
 
-  QR: (orgId, branchId) => {
-    return sales_url + `/qrcode/get/${orgId}/${branchId}`;
+  QR: (orgId) => {
+    return sales_url + `/qrcode/get/${orgId}`;
   },
+
+  BRANCHES: (orgId) => sales_url + `/workflow/get_branchs/${orgId}`,
+
+  UPLOAD_QR: (orgId, branchId) =>
+    sales_url + `/documents/uploadQrCode?orgId=${orgId}&branchId=${branchId}`,
+
+  QR_SAVE: () => sales_url + `/qrcode/save`,
+
   GET_VEHICAL_MODAL: () => {
     return vehicleInfoService_url + `/api/vehicle_details/vehicle_models`;
   },

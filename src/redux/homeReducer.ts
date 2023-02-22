@@ -814,6 +814,7 @@ export const homeSlice = createSlice({
     employee_list: [],
     reporting_manager_list: [],
     isLoading: false,
+    isEventLoading: false,
     leaderboard_list: [],
     branchrank_list: [],
     designationList: [],
@@ -923,6 +924,7 @@ export const homeSlice = createSlice({
       state.employee_list = [];
       state.reporting_manager_list = [];
       state.isLoading = false;
+      state.isEventLoading = false;
       state.leaderboard_list = [];
       state.branchrank_list = [];
       state.self_target_parameters_data = empData;
@@ -1412,31 +1414,31 @@ export const homeSlice = createSlice({
       })
       
       .addCase(getEventSourceModelForSelf.pending, (state, action) => {
-        state.isLoading = true;
+        state.isEventLoading = true;
         state.eventSourceModelForSelf = [];
       })
       .addCase(getEventSourceModelForSelf.fulfilled, (state, action) => {
-        state.isLoading = false;
+        state.isEventLoading = false;
         if (action.payload) {
           state.eventSourceModelForSelf = action.payload;
         }
       })
       .addCase(getEventSourceModelForSelf.rejected, (state, action) => {
-        state.isLoading = false;
+        state.isEventLoading = false;
       })
 
       .addCase(getEventSourceModel.pending, (state, action) => {
-        state.isLoading = true;
+        state.isEventLoading = true;
         state.sourceModelData = [];
       })
       .addCase(getEventSourceModel.fulfilled, (state, action) => {
-        state.isLoading = false;
+        state.isEventLoading = false;
         if (action.payload) {
           state.sourceModelData = action.payload;
         }
       })
       .addCase(getEventSourceModel.rejected, (state, action) => {
-        state.isLoading = false;
+        state.isEventLoading = false;
       })
       .addCase(getReceptionistData.pending, (state) => {})
       .addCase(getReceptionistData.fulfilled, (state, action) => {

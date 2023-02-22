@@ -814,7 +814,7 @@ const EventDashBoardTargetScreen = ({ route }) => {
   return (
     <React.Fragment>
       <>
-        {!selector.isLoading || true ? (
+        {!selector.isEventLoading || true ? (
           selector.isTeam ? (
             <View style={styles.container}>
               <View>

@@ -112,11 +112,11 @@ export const MyTaskNewItem = ({
   onlylead = false,
   EmployeesRoles,
   userData,
-  tdflage = "",
+  tdflage = "", updatedOn
 }) => {
   let date = "";
   if (from == "MY_TASKS") {
-    date = moment(created, "YYYY-MM-DD hh-mm-s").format("DD/MM/YYYY h:mm a");
+    date = moment(updatedOn, "YYYY-MM-DD hh-mm-s").format("DD/MM/YYYY h:mm a");
   } else {
     date = convertTimeStampToDateString(created);
   }

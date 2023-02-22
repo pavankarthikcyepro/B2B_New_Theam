@@ -156,6 +156,13 @@ export const updateBulkApproval = createAsyncThunk(
     const response = await client.post(URL.UPDATE_BULKAPPROVAL(), payload);
     const json = await response.json();
     
+    if(response.ok){
+      if (payload[0].dmsLeadDropInfo.status ==="APPROVED"){
+        showToast("Successfully approved");
+      } else if (payload[0].dmsLeadDropInfo.status === "REJECTED"){
+        showToast("Successfully rejected");
+      }
+    }
     if (!response.ok) {
       return rejectWithValue(json);
     }
@@ -372,7 +379,7 @@ const leaddropListSlice = createSlice({
     builder.addCase(updateBulkApproval.fulfilled, (state, action) => {
       
       if (action.payload.length > 0) {
-        showToast("Successfully updated");
+        // showToast("Successfully updated");
         state.approvalStatus = "sucess";
       }
       // const status = action.payload?.status;
@@ -391,7 +398,7 @@ const leaddropListSlice = createSlice({
     builder.addCase(updateLeadStage.fulfilled, (state, action) => {
 
       // if (action.payload.length > 0) {
-        showToast("Successfully updated");
+        // showToast("Successfully updated");
         state.updateLeadStage = "sucess";
       // }
       // const status = action.payload?.status;

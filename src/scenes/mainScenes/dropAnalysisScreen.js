@@ -197,6 +197,9 @@ const DropAnalysisScreen = ({ navigation }) => {
             
            setisApprovalUIVisible(false)
             dispatch(updateLeadStage(updateLeadStageArray))
+            getDropListFromServerV2(employeeId, employeeName, branchId, orgId, selectedFromDate, selectedToDate)
+            setIsResfresh(true);
+            dispatch(clearLeadDropState())
             // getDropListFromServerV2(employeeId, employeeName, branchId, orgId, selectedFromDate, selectedToDate)
             // setIsResfresh(true);
             // dispatch(clearLeadDropState())
@@ -215,9 +218,10 @@ const DropAnalysisScreen = ({ navigation }) => {
     useEffect(() => {
       
         if (selector.updateLeadStage === "sucess") {
-            getDropListFromServerV2(employeeId, employeeName, branchId, orgId, selectedFromDate, selectedToDate)
-            setIsResfresh(true);
-            dispatch(clearLeadDropState())
+            setupdateLeadStageArray([])
+            // getDropListFromServerV2(employeeId, employeeName, branchId, orgId, selectedFromDate, selectedToDate)
+            // setIsResfresh(true);
+            // dispatch(clearLeadDropState())
         }
       
     }, [selector.updateLeadStage])
@@ -525,7 +529,11 @@ const DropAnalysisScreen = ({ navigation }) => {
     const updateBulkStatus = async (status)=>{
         
         if(status === 'reject'){
-            
+
+            let tempObj = {
+                "dropLeadIdList": selectedItemIds.map(item => item.dmsLeadDropInfo.leadDropId)
+            }
+            setupdateLeadStageArray(tempObj)
             const arr = await selectedItemIds.map(item =>
                 {
                 const dmsLeadDropInfo =
@@ -544,6 +552,7 @@ const DropAnalysisScreen = ({ navigation }) => {
             let tempObj = {
                 "dropLeadIdList": selectedItemIds.map(item => item.dmsLeadDropInfo.leadDropId)
             }
+            
             setupdateLeadStageArray(tempObj)
             dispatch(updateBulkApproval(selectedItemIds));
             
