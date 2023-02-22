@@ -68,6 +68,7 @@ const DropAnalysisScreen = ({ navigation }) => {
         useState("All");
     const [tempFilterPayload, setTempFilterPayload] = useState([]);
     const [updateLeadStageArray, setupdateLeadStageArray] = useState([]);
+    const [isAppvoedCalled, setisAppvoedCalled] = useState(false);
 
     // const setMyState = data => {
     //     empIdStateRef.current = data.empId;
@@ -192,11 +193,14 @@ const DropAnalysisScreen = ({ navigation }) => {
     useEffect(() => {
        
         if (selector.approvalStatus === "sucess") {
-           selector.approvalStatus = ""
+        //    selector.approvalStatus = ""
            
             
            setisApprovalUIVisible(false)
-            dispatch(updateLeadStage(updateLeadStageArray))
+           if(isAppvoedCalled){
+               dispatch(updateLeadStage(updateLeadStageArray))
+           }
+           
             getDropListFromServerV2(employeeId, employeeName, branchId, orgId, selectedFromDate, selectedToDate)
             setIsResfresh(true);
             dispatch(clearLeadDropState())
@@ -219,6 +223,7 @@ const DropAnalysisScreen = ({ navigation }) => {
       
         if (selector.updateLeadStage === "sucess") {
             setupdateLeadStageArray([])
+            setisAppvoedCalled(false);
             // getDropListFromServerV2(employeeId, employeeName, branchId, orgId, selectedFromDate, selectedToDate)
             // setIsResfresh(true);
             // dispatch(clearLeadDropState())
@@ -530,10 +535,10 @@ const DropAnalysisScreen = ({ navigation }) => {
         
         if(status === 'reject'){
 
-            let tempObj = {
-                "dropLeadIdList": selectedItemIds.map(item => item.dmsLeadDropInfo.leadDropId)
-            }
-            setupdateLeadStageArray(tempObj)
+            // let tempObj = {
+            //     "dropLeadIdList": selectedItemIds.map(item => item.dmsLeadDropInfo.leadDropId)
+            // }
+            // setupdateLeadStageArray(tempObj)
             const arr = await selectedItemIds.map(item =>
                 {
                 const dmsLeadDropInfo =
@@ -555,6 +560,7 @@ const DropAnalysisScreen = ({ navigation }) => {
             
             setupdateLeadStageArray(tempObj)
             dispatch(updateBulkApproval(selectedItemIds));
+            setisAppvoedCalled(true);
             
         } 
 
@@ -897,7 +903,8 @@ const DropAnalysisScreen = ({ navigation }) => {
                     backgroundColor: "rgb(211,211,211,0.65)",
                 }}
                 // values={["ETVBRL", "Allied", "View All"]}
-                values={['DROPPED ' + `${(droppedData.length)}`, 'REJECTED ' + `${(rejectedData.length)}`]}
+                // values={['DROPPED ' + `${(droppedData.length)}`, 'REJECTED ' + `${(rejectedData.length)}`]}
+                values={['DROPPED ' + `${(droppedData.length)}`]}
                 selectedIndex={toggleParamsIndex}
                 tintColor={Colors.RED}
                 fontStyle={{ color: Colors.BLACK, fontSize: 10 }}
@@ -1104,7 +1111,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                         {/* {isManager && renderApprovalUi()} */}
                     </View>}
             </> }
-            {toggleParamsIndex === 1 && <>
+            {/* {toggleParamsIndex === 1 && <>
                 {rejectedData.length === 0 ? <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} /> :
                     <View style={[{ backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10,marginTop:10 }]}>
                         <FlatList
@@ -1123,7 +1130,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                             onEndReachedThreshold={0}
                             onEndReached={() => {
                                 if (appSelector.searchKey === '') {
-                                    // getMoreEnquiryListFromServer()
+                                  
                                 }
                             }}
                             ListFooterComponent={renderFooter}
@@ -1171,9 +1178,9 @@ const DropAnalysisScreen = ({ navigation }) => {
                             }}
                         />
                         {renderFooter()}
-                        {/* {isManager && renderApprovalUi()} */}
+                      
                     </View>}
-            </>}
+            </>} */}
 
                 {/* {searchedData.length === 0 ? <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} /> :
                     <View style={[{ backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10 }]}>
