@@ -366,7 +366,7 @@ const DropAnalysisScreen = ({ navigation }) => {
               jsonObj?.hrmsRole.toLowerCase().includes("manager") ||
               jsonObj?.hrmsRole.toLowerCase() == "admin" ||
               jsonObj?.hrmsRole.toLowerCase() == "sales head" ||
-                jsonObj?.hrmsRole.toLowerCase() == "md" || jsonObj?.hrmsRole.toLowerCase() == "crm"
+                jsonObj?.hrmsRole.toLowerCase() == "md" || jsonObj?.hrmsRole.toLowerCase() == "crm" || jsonObj?.hrmsRole.toLowerCase() == "tl"
             ) {
                
               setIsManager(true);
