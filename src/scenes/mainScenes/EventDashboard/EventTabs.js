@@ -376,9 +376,9 @@ const EventDashBoardTargetScreen = ({ route }) => {
     selector.insights_target_parameters_data,
   ]); //selector.self_target_parameters_data]
 
-  const getFormattedInitialData = async (empId, initial, employees) => {
+  const getFormattedInitialData = async (empId, initial) => {
     const url = URL.EVENT_DASHBOARD();
-    const response = await client.post(url, getTotalPayload(empId, employees));
+    const response = await client.post(url, getTotalPayload(empId));
     const newJson = await response.json();
     if (response.ok && newJson.length > 0) {
       if (initial) {
@@ -520,35 +520,20 @@ const EventDashBoardTargetScreen = ({ route }) => {
               (item) => item.empId === jsonObj.empId
             ),
           ];
-          let selfData = await getFormatSelfData(employeeData, jsonObj.empId);
-          if (selfData) {
-            let myData = selfData?.employeeTargetAchievements?.filter(
-              (e) => e.empId === jsonObj.empId
-            )[0]?.targetAchievements;
-            let employees = [];
-            for (
-              let i = 0;
-              i < selfData?.employeeTargetAchievements.length;
-              i++
-            ) {
-              const element = selfData?.employeeTargetAchievements[i];
-              if (element.empId !== jsonObj.empId) {
-                employees.push(element.empId);
-              }
-            }
-            myParams[0] = {
-              ...myParams[0],
-              isOpenInner: false,
-              employeeTargetAchievements: [],
-              targetAchievements: await getFormattedInitialData(
-                jsonObj.empId,
-                true,
-                employees
-              ),
-              tempTargetAchievements: getFormattedIndividualData(myData),
-            };
-            setAllParameters(myParams);
-          }
+          myParams[0] = {
+            ...myParams[0],
+            isOpenInner: false,
+            employeeTargetAchievements: [],
+            targetAchievements: await getFormattedInitialData(
+              jsonObj.empId,
+              true
+            ),
+            tempTargetAchievements: getFormattedIndividualData(
+              await getFormatSelfData(jsonObj.empId, jsonObj.empId)
+            ),
+          };
+
+          setAllParameters(myParams);
         }
       }
       setIsLoading(false);
@@ -557,15 +542,16 @@ const EventDashBoardTargetScreen = ({ route }) => {
     }
   }, [selector.all_emp_parameters_data, isFocused]);
 
-  const getFormatSelfData = async (employeeData, empId, initial) => {
-    const url = URL.GET_TEAMS_EVENT_PARAMS();
-    // console.log("SELDFFF", getEmployeePayload(employeeData, { empId: empId }));
-    const response = await client.post(
-      url,
-      getEmployeePayload(employeeData, { empId: empId })
-    );
-    const newJson = await response.json();
-    return newJson;
+  const getFormatSelfData = async (loginEmpId, empId, initial) => {
+    try {
+      const url = URL.EVENT_DASHBOARD();
+      const response = await client.post(
+        url,
+        getTotalPayload1(loginEmpId, empId)
+      );
+      const newJson = await response.json();
+      return newJson;
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -641,7 +627,7 @@ const EventDashBoardTargetScreen = ({ route }) => {
     return branchName;
   };
 
-  const getTotalPayload = (item, employees) => {
+  const getTotalPayload = (item) => {
     const dateFormat = "YYYY-MM-DD";
     const currentDate = moment().format(dateFormat);
     const monthFirstDate = moment(currentDate, dateFormat)
@@ -660,7 +646,29 @@ const EventDashBoardTargetScreen = ({ route }) => {
       empId: item,
       pageNo: 0,
       size: 5,
-      // empSelected: employees,
+    };
+  };
+
+  const getTotalPayload1 = (item, empId) => {
+    const dateFormat = "YYYY-MM-DD";
+    const currentDate = moment().format(dateFormat);
+    const monthFirstDate = moment(currentDate, dateFormat)
+      .subtract(0, "months")
+      .startOf("month")
+      .format(dateFormat);
+    const monthLastDate = moment(currentDate, dateFormat)
+      .subtract(0, "months")
+      .endOf("month")
+      .format(dateFormat);
+    return {
+      endDate: monthLastDate,
+      loggedInEmpId: item,
+      startDate: monthFirstDate,
+      levelSelected: null,
+      empId: item,
+      pageNo: 0,
+      size: 5,
+      empSelected: [empId],
     };
   };
 
@@ -709,7 +717,7 @@ const EventDashBoardTargetScreen = ({ route }) => {
       );
       if (employeeData) {
         const payload = getEmployeePayload(employeeData, item);
-        Promise.all([dispatch(getUserWiseTargetParameters2(payload))]).then(
+        Promise.all([dispatch(getUserWiseTargetParameters(payload))]).then(
           async (res) => {
             let tempRawData = [];
             tempRawData = res[0]?.payload?.employeeTargetAchievements.filter(
@@ -726,9 +734,7 @@ const EventDashBoardTargetScreen = ({ route }) => {
                   isOpenInner: false,
                   branchName: getBranchName(tempRawData[i].branchId),
                   employeeTargetAchievements: [],
-                  tempTargetAchievements: getFormattedIndividualData(
-                    tempRawData[i]?.targetAchievements
-                  ),
+                  // tempTargetAchievements: tempRawData[i]?.targetAchievements,
                 };
                 if (i === tempRawData.length - 1) {
                   lastParameter[index].employeeTargetAchievements = tempRawData;
@@ -742,17 +748,24 @@ const EventDashBoardTargetScreen = ({ route }) => {
                       tempPayload
                     );
                     const json = await response.json();
+                    const jsonObj = JSON.parse(employeeData);
 
+                    let selfData = await getFormatSelfData(
+                      jsonObj.empId,
+                      element
+                    );
                     if (Array.isArray(json)) {
                       lastParameter[index].employeeTargetAchievements[
                         i
                       ].targetAchievements =
                         lastParameter[index].employeeTargetAchievements[i]
                           .childCount == 0
-                          ? getFormattedIndividualData(
-                              tempRawData[i]?.targetAchievements
-                            )
+                          ? getFormattedIndividualData(selfData)
                           : getFormattedIndividualData(json);
+                      lastParameter[index].employeeTargetAchievements[
+                        i
+                      ].tempTargetAchievements =
+                        getFormattedIndividualData(selfData);
                     }
                   }
                 }
