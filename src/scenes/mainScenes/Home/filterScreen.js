@@ -167,8 +167,6 @@ const FilterScreen = ({ route, navigation }) => {
       nameKeyList.length > 0 &&
       isFocused &&
       selector.filterIds?.levelSelected?.length > 4
-      // userData.hrmsRole != "Sales Consultant" &&
-      // userData.hrmsRole != "Walkin DSE"
     ) {
       dispatch(updateEmpDropDown());
       setEmployeeTitleNameList([]);
@@ -357,9 +355,9 @@ const FilterScreen = ({ route, navigation }) => {
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
       initalCall &&
-        jsonObj.hrmsRole != "Sales Consultant" &&
-        jsonObj.hrmsRole != "Walkin DSE" &&
-        submitBtnClicked(totalDataObjLocal);
+        (jsonObj?.hrmsRole?.toLowerCase().includes("dse") ||
+          jsonObj?.hrmsRole?.toLowerCase().includes("sales consultant"));
+      submitBtnClicked(totalDataObjLocal);
     }
   };
 
@@ -488,8 +486,8 @@ const FilterScreen = ({ route, navigation }) => {
 
   const submitBtnClicked = async (initialData = null) => {
     if (
-      (userData.hrmsRole == "Sales Consultant" ||
-        userData.hrmsRole == "Walkin DSE") &&
+      (userData?.hrmsRole?.toLowerCase().includes("dse") ||
+        userData?.hrmsRole?.toLowerCase().includes("sales consultant")) &&
       !isFilter
     ) {
       navigation.navigate(AppNavigator.TabStackIdentifiers.home, {
@@ -528,8 +526,8 @@ const FilterScreen = ({ route, navigation }) => {
         dispatch(updateFilterIds(payload));
       }
       if (
-        (userData.hrmsRole == "Sales Consultant" ||
-          userData.hrmsRole == "Walkin DSE") &&
+        (userData?.hrmsRole?.toLowerCase().includes("dse") ||
+          userData?.hrmsRole?.toLowerCase().includes("sales consultant")) &&
         !!!initialData
       ) {
         let payload = { ...selector.filterIds };
