@@ -39,22 +39,71 @@ const DropDownComponant = ({
   keyId = "",
   onRequestClose,
   disabledData = [],
+  allOption = false,
 }) => {
   const [multipleData, setMultipleData] = useState([]);
 
   useEffect(() => {
-    setMultipleData([...data]);
+    if (data.length > 0) {
+      let tmpArr = data;
+      if (allOption) {
+        let index = tmpArr.findIndex((item) => item.selected == false);
+        tmpArr = [{ name: "All", selected: index < 0 ? true : false }, ...data];
+      }
+      setMultipleData([...tmpArr]);
+    }
   }, [data]);
 
-  const itemSelected = (index) => {
+  const itemSelected = (index, item) => {
     let updatedMultipleData = [...multipleData];
-    const obj = { ...updatedMultipleData[index] };
-    if (obj.selected != undefined) {
-      obj.selected = !obj.selected;
+
+    if (
+      allOption &&
+      item?.name == "All" &&
+      updatedMultipleData[index].selected == false
+    ) {
+      updatedMultipleData.forEach((item, index) => {
+        updatedMultipleData[index].selected = true;
+      });
+    } else if (allOption && item?.name == "All") {
+      updatedMultipleData.forEach((item, index) => {
+        updatedMultipleData[index].selected = false;
+      });
     } else {
-      obj.selected = true;
+      const obj = { ...updatedMultipleData[index] };
+
+      if (allOption) {
+        if (!obj.selected) {
+          updatedMultipleData[0].selected = false;
+        } 
+      }
+
+      if (obj.selected != undefined) {
+        obj.selected = !obj.selected;
+      } else {
+        obj.selected = true;
+      }
+      updatedMultipleData[index] = obj;
     }
-    updatedMultipleData[index] = obj;
+
+    if (allOption) {
+      let flag = 0;
+      for (let i = 0; i < updatedMultipleData.length; i++) {
+        if (i != 0) {
+          if (!updatedMultipleData[i].selected) {
+            flag = 1;
+            break;
+          }
+        }
+      }
+
+      if (flag == 1) {
+        updatedMultipleData[0].selected = false;
+      } else {
+        updatedMultipleData[0].selected = true;
+      }
+    }
+
     setMultipleData(updatedMultipleData);
   };
 
@@ -66,7 +115,11 @@ const DropDownComponant = ({
       //         itemsSelected.push(value);
       //     }
       // })
-      selectedItems(multipleData, keyId);
+      let tmpArr = multipleData;
+      if (allOption) {
+        tmpArr.splice(0, 1);
+      }
+      selectedItems(tmpArr, keyId);
     } else {
       selectedItems(item, keyId);
     }
@@ -120,7 +173,7 @@ const DropDownComponant = ({
                   keyExtractor={(item, index) => index.toString()}
                   renderItem={({ item, index }) => {
                     return (
-                      <Pressable onPress={() => itemSelected(index)}>
+                      <Pressable onPress={() => itemSelected(index, item)}>
                         <View>
                           <List.Item
                             titleStyle={{

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Colors } from "../../styles";
+import { Colors, GlobalStyle } from "../../styles";
 import {
   View,
   StyleSheet,
@@ -9,12 +9,13 @@ import {
   ScrollView,
   TouchableOpacity,
   Platform,
+  Alert,
 } from "react-native";
 import uuid from "react-native-uuid";
 import * as AsyncStore from "../../asyncStore";
 import { client } from "../../networking/client";
 import URL from "../../networking/endpoints";
-import { clearSaveApiRes, getBranchesList, saveQrCode } from "../../redux/digitalPaymentReducer";
+import { clearDeleteApiRes, clearSaveApiRes, deleteQrCode, getBranchesList, saveQrCode } from "../../redux/digitalPaymentReducer";
 import { useDispatch, useSelector } from "react-redux";
 import { DropDownSelectionItem } from "../../pureComponents";
 import {
@@ -24,6 +25,8 @@ import {
 } from "../../components";
 import { showToast, showToastRedAlert, showToastSucess } from "../../utils/toast";
 import { useIsFocused } from "@react-navigation/native";
+
+const noImagePreview = "https://www.bigpharmacy.com.my/scripts/timthumb.php";
 
 const DigitalPaymentScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -39,14 +42,17 @@ const DigitalPaymentScreen = ({ navigation }) => {
     universalId: "",
   });
   const [showDropDownModel, setShowDropDownModel] = useState(false);
+  const [locallyUploaded, setLocallyUploaded] = useState([]);
   const [dropDownData, setDropDownData] = useState([]);
   const [selectedBranches, setSelectedBranches] = useState("");
   const [selectedBranchIds, setSelectedBranchIds] = useState([]);
   const [showImagePicker, setShowImagePicker] = useState(false);
   const [authToken, setAuthToken] = useState("");
   const [shownUploadSection, setShownUploadSection] = useState(false);
+  const [isSubmitPress, setIsSubmitPress] = useState(false);
 
   useEffect(() => {
+    setLocallyUploaded([]);
     getUserData();
   }, [isFocused]);
 
@@ -76,37 +82,42 @@ const DigitalPaymentScreen = ({ navigation }) => {
     });
   };
 
-  const getLatestQrList = async () => {
-    const response = await client.get(URL.QR(orgId));
-    const qr = await response.json();
-    qr.reverse();
-    setDataList(qr);
-    dispatch(clearSaveApiRes());
-  }
-
   const getQrCode = async (orgId, branchId) => {
     const response = await client.get(URL.QR(orgId));
     const qr = await response.json();
     if (qr.length > 0) {
       dispatch(clearSaveApiRes());
+      dispatch(clearDeleteApiRes());
       qr.reverse();
       setDataList(qr);
+      let flag = 0;
       for (let i = 0; i < qr.length; i++) {
         if (qr[i].branchId == branchId) {
+          flag = 1;
           setFileData({
             ...fileData,
             uri: qr[i].documentPath,
             name: qr[i].fileName,
             universalId: qr[i].universalid,
-            type: qr[i].fileName.substring(qr[i].fileName.lastIndexOf(".") + 1),
+            type: qr[i].fileName?.substring(qr[i].fileName?.lastIndexOf(".") + 1),
           });
           break;
         }
       }
+      if (flag == 0) {
+        setFileData({
+          name: "",
+          universalId: "",
+          type: "",
+          uri: noImagePreview,
+        });
+      }
     } else {
       setFileData({
-        ...fileData,
-        uri: "https://www.bigpharmacy.com.my/scripts/timthumb.php",
+        name: "",
+        universalId: "",
+        type: "",
+        uri: noImagePreview,
       });
     }
   };
@@ -122,6 +133,7 @@ const DigitalPaymentScreen = ({ navigation }) => {
       newArr.push(obj);
       if (selector.branches[i].branchId == userData.branchId) {
         setSelectedBranches(selector.branches[i].name);
+        setSelectedBranchIds([userData.branchId]);
       }
     }
     setBranchList(Object.assign([], newArr));
@@ -157,11 +169,48 @@ const DigitalPaymentScreen = ({ navigation }) => {
       .then((response) => {
         if (response) {
           if (response.documentPath) {
+            let newObj = {
+              orgId: userData.orgId,
+              uri: response.documentPath,
+              type: fileType,
+              name: response?.fileName ? response.fileName : fileName,
+              universalId: response.universalId,
+            };
+
+            let branchArrPayload = [...locallyUploaded];
+
+            if (branchArrPayload.length > 0) {
+              for (let i = 0; i < selectedBranchIds.length; i++) {
+                let flag = 0;
+                for (let j = 0; j < branchArrPayload.length; j++) {
+                  if (selectedBranchIds[i] === branchArrPayload[j].branchId) {
+                    flag = 1;
+                    branchArrPayload[j] = { ...branchArrPayload[j], ...newObj };
+                    break;
+                  }
+                }
+                if (flag == 0) {
+                  branchArrPayload.push({
+                    ...newObj,
+                    branchId: selectedBranchIds[i],
+                  });
+                }
+              };
+            } else {
+              for (let i = 0; i < selectedBranchIds.length; i++) {
+                branchArrPayload.push({
+                  ...newObj,
+                  branchId: selectedBranchIds[i],
+                });
+              }
+            }
+
+            setLocallyUploaded(Object.assign([], branchArrPayload))
             setFileData({
               ...fileData,
               uri: response.documentPath,
               type: fileType,
-              name: response.fileName ? response.fileName : fileName,
+              name: response?.fileName ? response.fileName : fileName,
               universalId: response.universalId,
             });
           } else {
@@ -182,17 +231,28 @@ const DigitalPaymentScreen = ({ navigation }) => {
       });
   };
 
+  useEffect(() => {
+    if (selector.saveQrCodeSuccess == "success") {
+      showToastSucess("QR Code updated successfully");
+      getLatestQrList();
+    }
+  }, [selector.saveQrCodeSuccess]);
+
   const submitClick = () => {
     if (selectedBranchIds.length <= 0) {
+      setIsSubmitPress(true);
       showToast("Please select Dealer Code");
       return;
     }
-    if (!fileData.uri) {
+
+    if (!fileData.uri || fileData.uri === noImagePreview) {
       showToast("Please choose image");
       return;
     }
 
     let branchArrPayload = [];
+    let tmpArr = [...locallyUploaded];
+
     for (let i = 0; i < selectedBranchIds.length; i++) {
       let obj = {
         branchId: selectedBranchIds[i],
@@ -203,18 +263,91 @@ const DigitalPaymentScreen = ({ navigation }) => {
         universalid: fileData.universalId,
       };
       branchArrPayload.push(obj);
+
+      for (let j = 0; j < tmpArr.length; j++) {
+        if (selectedBranchIds[i] == tmpArr[j].branchId) {
+          tmpArr.slice(j);
+        }
+      }
     }
 
+    setLocallyUploaded([...tmpArr]);
     dispatch(saveQrCode(branchArrPayload));
   };
+  
+  const deleteConfirmation = () => {
+    if (selectedBranchIds.length <= 0) {
+      showToast("Please select Dealer Code");
+      return;
+    }
+
+    if (!fileData.uri || fileData.uri === noImagePreview) {
+      showToast("No record found");
+      return;
+    }
+
+    Alert.alert("Are you sure?", "", [
+      {
+        text: "Cancel",
+        onPress: () => {},
+        style: "cancel",
+      },
+      {
+        text: "Delete",
+        onPress: () => deleteClick(),
+      },
+    ]);
+  };
+  
+  const deleteClick = () => {
+    let recordIds = [];
+    let tmpArr = [...locallyUploaded];
+    for (let i = 0; i < selectedBranchIds.length; i++) {
+      for (let j = 0; j < dataList.length; j++) {
+        if(selectedBranchIds[i] == dataList[j].branchId){
+          recordIds.push(dataList[j].id);
+        }
+      }
+
+      for (let j = 0; j < tmpArr.length; j++) {
+        if (selectedBranchIds[i] == tmpArr[j].branchId) {
+          tmpArr.slice(j);
+        }
+      }
+    }
+
+    setLocallyUploaded([...tmpArr]);
+
+    if (recordIds.length <= 0) {
+      showToast("No record found");
+      return;
+    } 
+    dispatch(deleteQrCode(recordIds));
+  }
 
   useEffect(() => {
-    if(selector.saveQrCodeSuccess == "success"){
-      showToastSucess("QR Code updated successfully");
-      getLatestQrList();
+    if (selector.deleteQrCodeSuccess == "success") {
+      showToastSucess("QR Code deleted successfully");
+      getLatestQrList("delete");
     }
-  }, [selector.saveQrCodeSuccess]);
-  
+  }, [selector.deleteQrCodeSuccess]);
+
+  const getLatestQrList = async (type = "") => {
+    const response = await client.get(URL.QR(userData.orgId));
+    const qr = await response.json();
+    qr.reverse();
+    setDataList([...qr]);
+    if (type === "delete") {
+      setFileData({
+        uri: "",
+        type: "",
+        name: "",
+        universalId: "",
+      });
+    }
+    dispatch(clearSaveApiRes());
+    dispatch(clearDeleteApiRes());
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -223,13 +356,16 @@ const DigitalPaymentScreen = ({ navigation }) => {
         multiple={true}
         headerTitle={"Select"}
         data={dropDownData}
+        allOption={true}
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
           setBranchList([...item]);
           let names = [];
           let branchIds = [];
           let selectedNames = [];
-          if (item?.length > 0) {
+
+          if (item.length > 0) {
+            setIsSubmitPress(false);
             item.forEach((obj) => {
               if (obj.selected != undefined && obj.selected == true) {
                 names.push(obj.name);
@@ -237,40 +373,60 @@ const DigitalPaymentScreen = ({ navigation }) => {
               }
             });
             selectedNames = names?.join(", ");
+          } else {
+            setIsSubmitPress(true);
           }
 
           if (branchIds.length == 1) {
-            if (dataList.length > 0) {
-              let flag = 0;
-              for (let i = 0; i < dataList.length; i++) {
-                if (dataList[i].branchId == branchIds[0]) {
+            let flag = 0;
+            if (locallyUploaded.length > 0) {
+              for (let i = 0; i < locallyUploaded.length; i++) {
+                if (locallyUploaded[i].branchId == branchIds[0]) {
                   flag = 1;
                   setFileData({
-                    ...fileData,
-                    uri: dataList[i].documentPath,
-                    name: dataList[i].fileName,
-                    universalId: dataList[i].universalid,
-                    type: dataList[i].fileName.substring(
-                      dataList[i].fileName.lastIndexOf(".") + 1
-                    ),
+                    uri: locallyUploaded[i].uri,
+                    name: locallyUploaded[i].name,
+                    universalId: locallyUploaded[i].universalid,
+                    type: locallyUploaded[i].type,
                   });
                   break;
                 }
               }
-              if (flag == 0) {
+            }
+
+            if (flag == 0) {
+              if (dataList.length > 0) {
+                let flag = 0;
+                for (let i = 0; i < dataList.length; i++) {
+                  if (dataList[i].branchId == branchIds[0]) {
+                    flag = 1;
+                    setFileData({
+                      uri: dataList[i].documentPath,
+                      name: dataList[i].fileName,
+                      universalId: dataList[i].universalid,
+                      type: dataList[i].fileName?.substring(
+                        dataList[i].fileName?.lastIndexOf(".") + 1
+                      ),
+                    });
+                    break;
+                  }
+                }
+                if (flag == 0) {
+                  setFileData({
+                    name: "",
+                    universalId: "",
+                    type: "",
+                    uri: noImagePreview,
+                  });
+                }
+              } else {
                 setFileData({
-                  ...fileData,
                   name: "",
                   universalId: "",
                   type: "",
-                  uri: "https://www.bigpharmacy.com.my/scripts/timthumb.php",
+                  uri: noImagePreview,
                 });
               }
-            } else {
-              setFileData({
-                ...fileData,
-                uri: "https://www.bigpharmacy.com.my/scripts/timthumb.php",
-              });
             }
           }
           setSelectedBranchIds(branchIds);
@@ -293,9 +449,7 @@ const DigitalPaymentScreen = ({ navigation }) => {
           <Image
             style={styles.tinyLogo}
             source={{
-              uri: fileData.uri
-                ? fileData.uri
-                : "https://www.bigpharmacy.com.my/scripts/timthumb.php",
+              uri: fileData.uri ? fileData.uri : noImagePreview,
             }}
             resizeMode="contain"
           />
@@ -315,18 +469,38 @@ const DigitalPaymentScreen = ({ navigation }) => {
             </View>
 
             <DropDownSelectionItem
-              label={"Dealer Code"}
+              label={"Dealer Code*"}
               value={selectedBranches}
               onPress={() => dropDownItemClicked()}
               takeMinHeight={true}
             />
 
-            <TouchableOpacity
-              style={styles.submitBtnContainer}
-              onPress={() => submitClick()}
-            >
-              <Text style={styles.submitBtnText}>Submit</Text>
-            </TouchableOpacity>
+            <Text
+              style={[
+                GlobalStyle.underline,
+                {
+                  backgroundColor:
+                    isSubmitPress && selectedBranchIds.length <= 0
+                      ? "red"
+                      : "rgba(208, 212, 214, 0.7)",
+                },
+              ]}
+            />
+
+            <View style={styles.btnRow}>
+              <TouchableOpacity
+                style={styles.submitBtnContainer}
+                onPress={() => submitClick()}
+              >
+                <Text style={styles.submitBtnText}>Submit</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.submitBtnContainer}
+                onPress={() => deleteConfirmation()}
+              >
+                <Text style={styles.submitBtnText}>Delete</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         ) : null}
       </ScrollView>
@@ -375,13 +549,18 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     flex: 1,
   },
+  btnRow: {
+    marginTop: 15,
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center"
+  },
   submitBtnContainer: {
     padding: 7,
     backgroundColor: Colors.RED,
     borderRadius: 5,
     paddingHorizontal: 20,
     alignSelf: "center",
-    marginTop: 15,
   },
   submitBtnText: {
     color: Colors.WHITE,
