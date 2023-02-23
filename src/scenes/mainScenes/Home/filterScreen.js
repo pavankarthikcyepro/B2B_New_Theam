@@ -532,7 +532,8 @@ const FilterScreen = ({ route, navigation }) => {
       }
       if (
         (userData.hrmsRole == "Sales Consultant" ||
-          userData.hrmsRole == "Walkin DSE") &&
+          userData.hrmsRole == "Walkin DSE" ||
+          userData.hrmsRole == "Field DSE") &&
         !!!initialData
       ) {
         let payload = { ...selector.filterIds };
