@@ -87,15 +87,6 @@ const WelcomeScreen = ({ navigation }) => {
           console.log("result", result);
           try {
             if (result.shouldUpdate) {
-              const employeeData = await AsyncStore.getData(
-                AsyncStore.Keys.LOGIN_EMPLOYEE
-              );
-              if (employeeData) {
-                dispatch(SetNewUpdateAvailable(true));
-                signOutClicked();
-              } else {
-                dispatch(SetNewUpdateAvailable(true));
-              }
               let updateOptions: StartUpdateOptions = {};
               if (Platform.OS === "android") {
                 updateOptions = {
@@ -111,7 +102,17 @@ const WelcomeScreen = ({ navigation }) => {
                 };
               }
 
-              inAppUpdates.startUpdate(updateOptions);
+              inAppUpdates.startUpdate(updateOptions).then(async () => {
+                const employeeData = await AsyncStore.getData(
+                  AsyncStore.Keys.LOGIN_EMPLOYEE
+                );
+                if (employeeData) {
+                  dispatch(SetNewUpdateAvailable(true));
+                  signOutClicked();
+                } else {
+                  dispatch(SetNewUpdateAvailable(true));
+                }
+              });
             } else {
               dispatch(SetNewUpdateAvailable(false));
             }
