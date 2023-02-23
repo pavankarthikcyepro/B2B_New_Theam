@@ -98,15 +98,18 @@ export default function leaderBoardScreen(props) {
         let isManager = false,
           editEnable = false;
         let isPreBookingApprover = false;
-        if (
-          jsonObj.hrmsRole === "MD" ||
-          jsonObj.hrmsRole === "General Manager" ||
-          jsonObj.hrmsRole === "Manager" ||
-          jsonObj.hrmsRole === "Sales Manager" ||
-          jsonObj.hrmsRole === "branch manager"
-        ) {
+        // if (
+        //   jsonObj.hrmsRole === "MD" ||
+        //   jsonObj.hrmsRole === "General Manager" ||
+        //   jsonObj.hrmsRole === "Manager" ||
+        //   jsonObj.hrmsRole === "Sales Manager" ||
+        //   jsonObj.hrmsRole === "branch manager"
+        // ) {
+        //   isManager = true;
+        // }
+        if (jsonObj?.isTeam.toLowerCase().includes("y")) {
           isManager = true;
-        }
+        } 
         if (jsonObj.roles.includes("PreBooking Approver")) {
 
           editEnable = true;
