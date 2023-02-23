@@ -362,15 +362,19 @@ const DropAnalysisScreen = ({ navigation }) => {
             const jsonObj = await JSON.parse(employeeData);
             // await setOrgId(jsonObj.orgId)
             
-            if (
-              jsonObj?.hrmsRole.toLowerCase().includes("manager") ||
-              jsonObj?.hrmsRole.toLowerCase() == "admin" ||
-              jsonObj?.hrmsRole.toLowerCase() == "sales head" ||
-                jsonObj?.hrmsRole.toLowerCase() == "md" || jsonObj?.hrmsRole.toLowerCase() == "crm"
-            ) {
+            // if (
+            //   jsonObj?.hrmsRole.toLowerCase().includes("manager") ||
+            //   jsonObj?.hrmsRole.toLowerCase() == "admin" ||
+            //   jsonObj?.hrmsRole.toLowerCase() == "sales head" ||
+            //     jsonObj?.hrmsRole.toLowerCase() == "md" || jsonObj?.hrmsRole.toLowerCase() == "crm" || jsonObj?.hrmsRole.toLowerCase() == "tl"
+            // ) {
                
-              setIsManager(true);
-            }
+            //   setIsManager(true);
+            // }
+
+              if (jsonObj?.isTeam.toLowerCase().includes("y")) {
+                    setIsManager(true);
+                 }
 
             // await setEmployeeName(jsonObj.empName)
             // await setEmployeeId(jsonObj.empId)
