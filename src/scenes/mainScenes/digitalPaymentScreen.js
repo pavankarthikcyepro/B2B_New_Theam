@@ -223,6 +223,7 @@ const DigitalPaymentScreen = ({ navigation }) => {
         multiple={true}
         headerTitle={"Select"}
         data={dropDownData}
+        allOption={true}
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
           setBranchList([...item]);
