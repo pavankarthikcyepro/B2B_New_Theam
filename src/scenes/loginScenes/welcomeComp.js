@@ -83,7 +83,7 @@ const WelcomeScreen = ({ navigation }) => {
       console.log("LLLL", VersionString);
       await inAppUpdates
         .checkNeedsUpdate({ curVersion: VersionString })
-        .then(async (result) => {
+        .then((result) => {
           console.log("result", result);
           try {
             if (result.shouldUpdate) {
@@ -102,7 +102,7 @@ const WelcomeScreen = ({ navigation }) => {
                 };
               }
 
-              inAppUpdates.startUpdate(updateOptions).then(async () => {
+              inAppUpdates.startUpdate(updateOptions).finally(async () => {
                 const employeeData = await AsyncStore.getData(
                   AsyncStore.Keys.LOGIN_EMPLOYEE
                 );
