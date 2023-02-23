@@ -487,10 +487,14 @@ const FilterScreen = ({ route, navigation }) => {
   };
 
   const submitBtnClicked = async (initialData = null) => {
+    console.log( userData.hrmsRole,selector.isDSE,!isFilter);
     if (
-      (userData.hrmsRole == "Sales Consultant" ||
-        userData.hrmsRole == "Walkin DSE") &&
-      !isFilter
+      selector.isDSE
+      // (userData.hrmsRole == "Sales Consultant" ||
+      //   userData.hrmsRole == "Walkin DSE" ||
+      //   userData.hrmsRole == "Field DSE")
+         &&
+      !isFilter == false
     ) {
       navigation.navigate(AppNavigator.TabStackIdentifiers.home, {
         screen: "Home",
