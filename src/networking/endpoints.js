@@ -93,7 +93,7 @@ import { GoogleMapKey } from "../service";
 //   "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic";
 
 // Dev End Points with JWT
-export const baseUrl = "http://qa-api.cyepro.com/";
+export const baseUrl = "https://stage-api.cyepro.com/";
 export const auth_url = baseUrl + "auth";
 export const hrms_url = baseUrl + "hrms";
 export const inventory_url = baseUrl + "inventory";
@@ -591,8 +591,6 @@ const URL = {
     sales_url + `/documents/uploadQrCode?orgId=${orgId}&branchId=${branchId}`,
 
   QR_SAVE: () => sales_url + `/qrcode/save`,
-
-  QR_DELETE: () => sales_url + `/qrcode/delete`,
 
   GET_VEHICAL_MODAL: () => {
     return vehicleInfoService_url + `/api/vehicle_details/vehicle_models`;
