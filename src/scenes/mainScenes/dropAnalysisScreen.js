@@ -128,7 +128,7 @@ const DropAnalysisScreen = ({ navigation }) => {
         const CurrentMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
         const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
        
-        const payload = getPayloadDataV3(CurrentMonthFirstDate, currentMonthLastDate, null, null, jsonObj.orgId, jsonObj.empName, "")
+        const payload = getPayloadDataV3(CurrentMonthFirstDate, currentMonthLastDate, null, null, jsonObj.orgId, jsonObj.empName, "", jsonObj.empId)
        
         dispatch(getDropAnalysisFilter(payload))
     }
@@ -159,7 +159,7 @@ const DropAnalysisScreen = ({ navigation }) => {
          
         }
         
-        const payload = getPayloadDataV3(startDate, endDate, stage, status, jsonObj.orgId, jsonObj.empName, filterValue)
+        const payload = getPayloadDataV3(startDate, endDate, stage, status, jsonObj.orgId, jsonObj.empName, filterValue, jsonObj.empId)
       
         dispatch(getDropAnalysisFilter(payload))
     }
@@ -421,7 +421,7 @@ const DropAnalysisScreen = ({ navigation }) => {
 
         
     }
-    const getPayloadDataV3 = (CurrentMonthFirstDate, currentMonthLastDate, stages, status, orgId, empName, filterValue="") => {
+    const getPayloadDataV3 = (CurrentMonthFirstDate, currentMonthLastDate, stages, status, orgId, empName, filterValue="",empId) => {
        
 
         const payload = {
@@ -433,7 +433,8 @@ const DropAnalysisScreen = ({ navigation }) => {
             "endDate": currentMonthLastDate,
             "stages":  stages,
             "status": status,
-            "filterValue": filterValue!=="" ? filterValue:""
+            "filterValue": filterValue!=="" ? filterValue:"",
+            "empId": empId
         }
         return payload;
     }
