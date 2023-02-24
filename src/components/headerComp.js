@@ -4,7 +4,7 @@ import { Button, IconButton } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import { Colors } from "../styles";
 import * as AsyncStore from "../asyncStore";
-import { setBranchId, setBranchName } from "../utils/helperFunctions";
+import { isReceptionist, setBranchId, setBranchName } from "../utils/helperFunctions";
 import NotificationIcon from "./NotificationIcon";
 
 const HeaderComp = ({
@@ -22,6 +22,7 @@ const HeaderComp = ({
   const selector = useSelector((state) => state.targetSettingsReducer);
 
   const [branch, setBranch] = useState("");
+  const [isIconShow, setIsIconShow] = useState(false);
 
   useEffect(async () => {
     if (selector.selectedBranchName) {
@@ -44,6 +45,18 @@ const HeaderComp = ({
       );
     }
   }, [selector.selectedBranchName]);
+
+  useEffect(async () => {
+    let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      if (isReceptionist(jsonObj.hrmsRole)) {
+        setIsIconShow(false);
+      } else {
+        setIsIconShow(true);
+      }
+    }
+  }, []);
 
   return (
     <View style={[style.container, { height: height }]}>
@@ -80,7 +93,7 @@ const HeaderComp = ({
         ) : null}
       </View>
       <View>
-        {filter && (
+        {filter && isIconShow && (
           <View style={style.filterContainer}>
             <IconButton
               icon="filter-outline"
