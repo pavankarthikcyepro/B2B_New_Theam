@@ -69,7 +69,6 @@ const profileBgWidth = profileWidth + 5;
 const commonMenu = [
   "Home",
   "Sign Out",
-  "Live Leads",
   "Settings",
   "Helpdesk",
   "QR Code",
@@ -79,6 +78,7 @@ const commonMenu = [
 ];
 const salesMenu = [
   ...commonMenu,
+  "Live Leads",
   "Target Planning",
   "Event Dashboard",
   "Geolocation",
@@ -90,6 +90,7 @@ const receptionTelCallerMenu = [
 ];
 const managerMenu = [
   ...commonMenu,
+  "Live Leads",
   "Event Dashboard",
   "Digital Payment",
   "Digital Dashboard",
@@ -99,6 +100,7 @@ const managerMenu = [
 ];
 const mdMenu = [
   ...commonMenu,
+  "Live Leads",
   "Event Dashboard",
   "Digital Payment",
   "Digital Dashboard",
@@ -260,9 +262,10 @@ const SideMenuScreen = ({ navigation }) => {
     getProfilePic(jsonObj);
     let newFilterData = [];
     if (
-      jsonObj.hrmsRole === "Reception" ||
-      jsonObj.hrmsRole === "CRM" ||
-      jsonObj.hrmsRole === "Tele Caller"
+      jsonObj.hrmsRole == "Reception" ||
+      jsonObj.hrmsRole == "CRM" ||
+      jsonObj.hrmsRole == "CRE" ||
+      jsonObj.hrmsRole == "Tele Caller"
     ) {
       newFilterData = selector.tableData.filter((item) =>
         receptionTelCallerMenu.includes(item.title)

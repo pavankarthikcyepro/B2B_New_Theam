@@ -26,24 +26,43 @@ export const saveQrCode = createAsyncThunk(
   }
 );
 
+export const deleteQrCode = createAsyncThunk(
+  "DIGITAL_PAYMENT_SLICE/deleteQrCode",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.QR_DELETE(), payload);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 const digitalPaymentReducer = createSlice({
   name: "DIGITAL_PAYMENT_SLICE",
   initialState: {
     branches: [],
     isLoading: false,
-    saveQrCodeSuccess: null,
+    saveQrCodeSuccess: "",
+    deleteQrCodeSuccess: "",
   },
   reducers: {
+    clearSaveApiRes: (state, action) => {
+      state.saveQrCodeSuccess = "";
+    },
+    clearDeleteApiRes: (state, action) => {
+      state.deleteQrCodeSuccess = "";
+    },
     clearState: (state, action) => {
       state.branches = [];
       state.isLoading = false;
-      state.saveQrCodeSuccess = null;
+      state.saveQrCodeSuccess = "";
+      state.deleteQrCodeSuccess = "";
     },
   },
   extraReducers: (builder) => {
     // Get branch list
     builder.addCase(getBranchesList.pending, (state, action) => {
-      state.saveQrCodeSuccess = true;
       state.branches = [];
     });
     builder.addCase(getBranchesList.fulfilled, (state, action) => {
@@ -57,18 +76,32 @@ const digitalPaymentReducer = createSlice({
     // Save QR code
     builder.addCase(saveQrCode.pending, (state, action) => {
       state.isLoading = true;
-      state.saveQrCodeSuccess = false;
+      state.saveQrCodeSuccess = "";
     });
     builder.addCase(saveQrCode.fulfilled, (state, action) => {
       state.isLoading = false;
-      state.saveQrCodeSuccess = true;
+      state.saveQrCodeSuccess = "success";
     });
     builder.addCase(saveQrCode.rejected, (state, action) => {
       state.isLoading = false;
-      state.saveQrCodeSuccess = false;
+      state.saveQrCodeSuccess = "";
+    });
+
+    // Delete QR code
+    builder.addCase(deleteQrCode.pending, (state, action) => {
+      state.isLoading = true;
+      state.deleteQrCodeSuccess = "";
+    });
+    builder.addCase(deleteQrCode.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.deleteQrCodeSuccess = "success";
+    });
+    builder.addCase(deleteQrCode.rejected, (state, action) => {
+      state.isLoading = false;
+      state.deleteQrCodeSuccess = "";
     });
   },
 });
 
-export const { clearState } = digitalPaymentReducer.actions;
+export const { clearSaveApiRes, clearDeleteApiRes, clearState } = digitalPaymentReducer.actions;
 export default digitalPaymentReducer.reducer;
