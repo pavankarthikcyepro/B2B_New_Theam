@@ -634,3 +634,16 @@ export const getHeight = (percentage = 0) => {
   }
   return (Dimensions.get('window').height * percentage) / 100;
 };
+
+export const isReceptionist = (role) => {
+  if (
+    role == "Reception" ||
+    role == "CRM" ||
+    role == "CRE" ||
+    role == "Tele Caller"
+  ) {
+    return true;
+  } else {
+    return false;
+  }
+};
