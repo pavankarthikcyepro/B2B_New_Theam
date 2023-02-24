@@ -166,8 +166,7 @@ const FilterScreen = ({ route, navigation }) => {
     if (
       nameKeyList.length > 0 &&
       isFocused &&
-      selector.filterIds?.levelSelected?.length > 4 &&
-      selector.isDSE
+      selector.filterIds?.levelSelected?.length > 4
     ) {
       dispatch(updateEmpDropDown());
       setEmployeeTitleNameList([]);
@@ -355,7 +354,7 @@ const FilterScreen = ({ route, navigation }) => {
     );
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
-      initalCall && selector.isDSE && submitBtnClicked(totalDataObjLocal);
+      initalCall && !selector.isDSE && submitBtnClicked(totalDataObjLocal);
     }
   };
 
