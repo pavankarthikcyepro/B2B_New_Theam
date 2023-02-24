@@ -3,6 +3,7 @@ import moment from "moment";
 import { client } from '../networking/client';
 import URL from "../networking/endpoints";
 import { convertTimeStampToDateString } from "../utils/helperFunctions";
+import { showToast } from "../utils/toast";
 
 
 export const getComplaintsListApi = createAsyncThunk("COMPLAINTS_TRACKER/getComplaintsListApi", async (payload, { rejectWithValue }) => {
@@ -333,6 +334,48 @@ export const complaintsSlice = createSlice({
              state.postComplaintFirstTimeRes = "",
                 state.postComplaintCloseRes=""
         },
+        clearStateFormDataBtnClick: (state, action) => {
+            state.mobile = "";
+            state.date_of_birth = "";
+            state.datePickerKeyId = "";
+            state.showDatepicker = false;
+            state.minDate = null;
+            state.maxDate = null;
+            state.location = "";
+            state.branch = "";
+            state.model = "";
+            state.customerName = "";
+            state.email = "";
+            state.stage = "";
+            state.stage_id = "";
+            state.consultant = "";
+            state.reporting_manager = "";
+            state.showImagePicker = false
+            state.imagePickerKeyId = "";
+            state.getDetailsFromPhoneRespnse = "";
+            // state.complaintFactorTypeDropdown = [];
+            state.complaintFactorType = "";
+            // state.complainLocationDropDown = [],
+                state.complainLocation = "",
+                state.complainBranchDropDown = [],
+                state.complainBranch = "",
+                state.complainDepartmentDropDown = [],
+                state.complainDepartment = "",
+                state.complainDesignationDropDown = [],
+                state.complainDesignation = "",
+                state.complainEmployeeDropDown = [],
+                state.complainEmployee = "";
+            state.closeComplaintSource = "",
+                state.closeComplaintFinalRate = "",
+                state.closeComplaintRemarks = "";
+            state.complaintCountDashboard = "";
+            state.complaintDescription = "";
+            state.complaintDetailsFromIdRes = "",
+                state.complaintdoc = ""
+            state.complainCloserDoc = "",
+                state.postComplaintFirstTimeRes = "",
+                state.postComplaintCloseRes = ""
+        },
         setImagePicker: (state, action) => {
             state.imagePickerKeyId = action.payload;
             state.showImagePicker = !state.showImagePicker;
@@ -500,6 +543,9 @@ export const complaintsSlice = createSlice({
         })
         builder.addCase(getDetailsFromPoneNumber.rejected, (state, action) => {
             state.isLoading = false;
+            showToast("No records found for the submitted number.")
+            
+            
         })
 
 
@@ -737,5 +783,7 @@ export const complaintsSlice = createSlice({
     }
 });
 
-export const { clearState, setCustomerDetails, setDatePicker, setDropDownData, setImagePicker, updateSelectedDate,clearStateFormData } = complaintsSlice.actions;
+export const { clearState, setCustomerDetails, setDatePicker,
+    setDropDownData, clearStateFormDataBtnClick,
+     setImagePicker, updateSelectedDate,clearStateFormData } = complaintsSlice.actions;
 export default complaintsSlice.reducer;

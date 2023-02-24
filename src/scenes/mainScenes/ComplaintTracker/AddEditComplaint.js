@@ -5,7 +5,7 @@ import { Colors, GlobalStyle } from '../../../styles';
 import { DatePickerComponent, DropDownComponant, ImagePickerComponent, TextinputComp } from '../../../components';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCustomerDetails, updateSelectedDate,clearState,setDatePicker,
-    setDropDownData, setImagePicker, getDetailsFromPoneNumber, getComplainFactorDropDownData, getLocationList, getBranchData, getDepartment, getDesignation, getEmployeeDetails, postComplaintFirstTime, clearStateFormData, getComplaitDetailsfromId, postComplaintClose
+    setDropDownData, setImagePicker, getDetailsFromPoneNumber, getComplainFactorDropDownData, getLocationList, getBranchData, getDepartment, getDesignation, getEmployeeDetails, postComplaintFirstTime, clearStateFormData, getComplaitDetailsfromId, postComplaintClose, clearStateFormDataBtnClick
 } from '../../../redux/complaintTrackerReducer';
 import { DateSelectItem, DropDownSelectionItem, ImageSelectItem } from '../../../pureComponents';
 import { UserState } from 'realm';
@@ -175,10 +175,17 @@ const AddEditComplaint = (props) => {
         }
     }
 
+    const isEditbaleForRegistration = ()=>{
+        if (props.route.params.from === "ADD_NEW" && selector.getDetailsFromPhoneRespnse) {
+            return true;
+        }else{
+            return false;
+        }
+    }
     const isEditable = ()=>{
      
         if (props.route.params.from ==="ADD_NEW"){
-         
+           
             return false;
         } else if (props.route.params.from === "ACTIVE_LIST" && userData.isCRE || userData.isCRM){
           
@@ -844,7 +851,7 @@ const AddEditComplaint = (props) => {
                                       keyboardType={"number-pad"}
                                       maxLength={10}
                                       // editable={false}
-                                      disabled={isEditable()}
+                                      disabled={isEditable() || isEditbaleForRegistration()}
                                       label={"Mobile Number*"}
                                       onChangeText={(text) =>
                                           dispatch(
@@ -883,7 +890,7 @@ const AddEditComplaint = (props) => {
                                           <DateSelectItem
                                               label={"Complaint Date"}
                                               value={complaintDate}
-                                              disabled={isEditable()}
+                                              disabled={isEditable() }
                                               onPress={() => {
                                                   setShowDatePicker(true)
                                               }}
@@ -897,7 +904,7 @@ const AddEditComplaint = (props) => {
                                               value={selector.location}
                                               //   keyboardType={}
                                               // editable={false}
-                                              disabled={isEditable()}
+                                              disabled={isEditable() || isEditbaleForRegistration()}
                                               label={"Location"}
                                               onChangeText={(text) =>
                                                   dispatch(
@@ -925,7 +932,7 @@ const AddEditComplaint = (props) => {
                                               value={selector.branch}
                                               //   keyboardType={"number-pad"}
                                               // editable={false}
-                                              disabled={isEditable()}
+                                              disabled={isEditable() || isEditbaleForRegistration()}
                                               label={"Branch"}
                                               onChangeText={(text) =>
                                                   dispatch(
@@ -941,7 +948,7 @@ const AddEditComplaint = (props) => {
                                               value={selector.model}
                                               //   keyboardType={"number-pad"}
                                               // editable={false}
-                                              disabled={isEditable()}
+                                              disabled={isEditable() || isEditbaleForRegistration()}
                                               label={"Model"}
                                               onChangeText={(text) =>
                                                   dispatch(
@@ -958,7 +965,7 @@ const AddEditComplaint = (props) => {
                                       value={selector.customerName}
                                       //   keyboardType={"number-pad"}
                                       // editable={false}
-                                      disabled={isEditable()}
+                                      disabled={isEditable() }
                                       label={"Customer Name"}
                                       onChangeText={(text) =>
                                           dispatch(
@@ -992,7 +999,7 @@ const AddEditComplaint = (props) => {
                                               value={selector.stage}
                                               //   keyboardType={"number-pad"}
                                               // editable={false}
-                                              disabled={isEditable()}
+                                              disabled={isEditable() || isEditbaleForRegistration()}
                                               label={"Stage"}
                                               onChangeText={(text) =>
                                                   dispatch(
@@ -1008,7 +1015,7 @@ const AddEditComplaint = (props) => {
                                               value={selector.stage_id}
                                               //   keyboardType={"number-pad"}
                                               // editable={false}
-                                              disabled={isEditable()}
+                                              disabled={isEditable() || isEditbaleForRegistration()}
                                               label={"Stage ID"}
                                               onChangeText={(text) =>
                                                   dispatch(
@@ -1027,7 +1034,7 @@ const AddEditComplaint = (props) => {
                                               value={selector.consultant}
                                               //   keyboardType={"number-pad"}
                                               // editable={false}
-                                              disabled={isEditable()}
+                                              disabled={isEditable() || isEditbaleForRegistration()}
                                               label={"Consultant*"}
                                               onChangeText={(text) =>
                                                   dispatch(
@@ -1054,7 +1061,7 @@ const AddEditComplaint = (props) => {
                                               value={selector.reporting_manager}
                                               //   keyboardType={"number-pad"}
                                               // editable={false}
-                                              disabled={isEditable()}
+                                              disabled={isEditable() || isEditbaleForRegistration()}
                                               label={"Reporting Manager"}
                                               onChangeText={(text) =>
                                                   dispatch(
@@ -1401,14 +1408,23 @@ const AddEditComplaint = (props) => {
                     
                   </View>
                   : null}
-                  {props.route.params.from === "ADD_NEW" && <Button
+                  {props.route.params.from === "ADD_NEW" && <View style={{flexDirection:"row",width:'100%',justifyContent:"space-between"}}><Button
                       mode="contained"
-                      style={styles.subBtnSty}
+                      style={styles.subBtnStyv2}
+                      color={Colors.PINK}
+                      labelStyle={{ textTransform: "none" }}
+                      onPress={() => { 
+                          dispatch(clearStateFormDataBtnClick());
+                         setcomplaintDate(currentDate); }}>
+                      Clear
+                  </Button><Button
+                      mode="contained"
+                          style={styles.subBtnStyv2}
                       color={Colors.PINK}
                       labelStyle={{ textTransform: "none" }}
                       onPress={() => { submitClicked("Active") }}>
-                      Submit
-                  </Button>}
+                          Submit
+                      </Button></View>}
                   {props.route.params.from === "ACTIVE_LIST" && props.route.params.which_btn !== "Close_Btn" && userData.isCRE || userData.isCRM?
                    <Button
                       mode="contained"
@@ -1479,5 +1495,6 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         borderColor: "#7a7b7d",
     },
-    subBtnSty:{ width: '50%', marginVertical: 10, alignSelf: "flex-end" }
+    subBtnSty:{ width: '50%', marginVertical: 10, alignSelf: "flex-end" },
+    subBtnStyv2: { width: '40%', marginVertical: 10, alignSelf: "flex-end" }
 })
