@@ -925,6 +925,10 @@ const TestDriveScreen = ({ route, navigation }) => {
           `${selector.customer_preferred_date} ${selector.customer_preferred_time}`,
           "DD/MM/YYYY HH:mm"
         ),
+        updatedDateTime: convertDateStringToMillisecondsUsingMoment(
+          `${selector.customer_preferred_date} ${selector.customer_preferred_time}`,
+          "DD/MM/YYYY HH:mm"
+        ),
       };
 
       dispatch(updateTestDriveTaskApi(payload));

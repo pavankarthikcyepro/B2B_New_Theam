@@ -1178,6 +1178,33 @@ const TargetScreen = ({ route }) => {
               </View>
             ) : null
           ) : null}
+          {/* {selector.filterIds?.employeeName?.length > 0 && <View
+            style={{
+              width: "100%",
+              height: 25,
+              borderRadius: 8,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <TextTicker
+              duration={10000}
+              loop={true}
+              bounce={false}
+              repeatSpacer={50}
+              marqueeDelay={0}
+              style={{
+                marginBottom: 0,
+              }}
+            >
+              {selector.filterIds?.employeeName?.length > 0 &&
+                selector.filterIds?.employeeName?.map((e) => {
+                  return (
+                    <Text style={{ padding: 2, color: Colors.RED }}>{e+", "}</Text>
+                  );
+                })}
+            </TextTicker>
+          </View>} */}
           {selector.isTeam && !receptionistRole.includes(userData.hrmsRole) ? (
             <View>
               <View style={styles.view1}>
@@ -1589,7 +1616,7 @@ const TargetScreen = ({ route }) => {
                                                                 "row",
                                                               justifyContent:
                                                                 "space-between",
-                                                              paddingVertical: 4,
+                                                              paddingTop: 4,
                                                               width:
                                                                 Dimensions.get(
                                                                   "screen"
@@ -1603,6 +1630,7 @@ const TargetScreen = ({ route }) => {
                                                               style={{
                                                                 flexDirection:
                                                                   "row",
+                                                                  marginTop: 8
                                                               }}
                                                             >
                                                               <Text
@@ -1793,6 +1821,7 @@ const TargetScreen = ({ route }) => {
                                                                         style={{
                                                                           flexDirection:
                                                                             "row",
+                                                                          marginTop: 8,
                                                                         }}
                                                                       >
                                                                         <Text
@@ -2005,33 +2034,88 @@ const TargetScreen = ({ route }) => {
                                                                                     innerItem4.empName
                                                                                   }
                                                                                 </Text>
-                                                                                <SourceModelView
-                                                                                  onClick={() => {
-                                                                                    navigation.navigate(
-                                                                                      AppNavigator
-                                                                                        .HomeStackIdentifiers
-                                                                                        .sourceModel,
-                                                                                      {
-                                                                                        empId:
-                                                                                          innerItem4.empId,
-                                                                                        headerTitle:
-                                                                                          innerItem4.empName,
-                                                                                        type: "TEAM",
-                                                                                        moduleType:
-                                                                                          "home",
-                                                                                      }
-                                                                                    );
-                                                                                  }}
+                                                                                <View
                                                                                   style={{
-                                                                                    transform:
-                                                                                      [
-                                                                                        {
-                                                                                          translateX:
-                                                                                            translation,
-                                                                                        },
-                                                                                      ],
+                                                                                    flexDirection:
+                                                                                      "row",
                                                                                   }}
-                                                                                />
+                                                                                >
+                                                                                  {innerItem4?.childCount >
+                                                                                    0 && (
+                                                                                    <Animated.View
+                                                                                      style={{
+                                                                                        transform:
+                                                                                          [
+                                                                                            {
+                                                                                              translateX:
+                                                                                                translation,
+                                                                                            },
+                                                                                          ],
+                                                                                      }}
+                                                                                    >
+                                                                                      <View
+                                                                                        style={{
+                                                                                          backgroundColor:
+                                                                                            "lightgrey",
+                                                                                          flexDirection:
+                                                                                            "row",
+                                                                                          paddingHorizontal: 7,
+                                                                                          borderRadius: 10,
+                                                                                          alignItems:
+                                                                                            "center",
+                                                                                          justifyContent:
+                                                                                            "space-between",
+                                                                                          marginBottom: 5,
+                                                                                          alignSelf:
+                                                                                            "flex-start",
+                                                                                          marginLeft: 7,
+                                                                                        }}
+                                                                                      >
+                                                                                        <MaterialIcons
+                                                                                          name="person"
+                                                                                          size={
+                                                                                            15
+                                                                                          }
+                                                                                          color={
+                                                                                            Colors.BLACK
+                                                                                          }
+                                                                                        />
+                                                                                        <Text>
+                                                                                          {
+                                                                                            innerItem4?.childCount
+                                                                                          }
+                                                                                        </Text>
+                                                                                      </View>
+                                                                                    </Animated.View>
+                                                                                  )}
+                                                                                  <SourceModelView
+                                                                                    onClick={() => {
+                                                                                      navigation.navigate(
+                                                                                        AppNavigator
+                                                                                          .HomeStackIdentifiers
+                                                                                          .sourceModel,
+                                                                                        {
+                                                                                          empId:
+                                                                                            innerItem4.empId,
+                                                                                          headerTitle:
+                                                                                            innerItem4.empName,
+                                                                                          type: "TEAM",
+                                                                                          moduleType:
+                                                                                            "home",
+                                                                                        }
+                                                                                      );
+                                                                                    }}
+                                                                                    style={{
+                                                                                      transform:
+                                                                                        [
+                                                                                          {
+                                                                                            translateX:
+                                                                                              translation,
+                                                                                          },
+                                                                                        ],
+                                                                                    }}
+                                                                                  />
+                                                                                </View>
                                                                               </View>
                                                                               <View
                                                                                 style={{
@@ -2146,33 +2230,88 @@ const TargetScreen = ({ route }) => {
                                                                                               innerItem5.empName
                                                                                             }
                                                                                           </Text>
-                                                                                          <SourceModelView
-                                                                                            onClick={() => {
-                                                                                              navigation.navigate(
-                                                                                                AppNavigator
-                                                                                                  .HomeStackIdentifiers
-                                                                                                  .sourceModel,
-                                                                                                {
-                                                                                                  empId:
-                                                                                                    innerItem5.empId,
-                                                                                                  headerTitle:
-                                                                                                    innerItem5.empName,
-                                                                                                  type: "TEAM",
-                                                                                                  moduleType:
-                                                                                                    "home",
-                                                                                                }
-                                                                                              );
-                                                                                            }}
+                                                                                          <View
                                                                                             style={{
-                                                                                              transform:
-                                                                                                [
-                                                                                                  {
-                                                                                                    translateX:
-                                                                                                      translation,
-                                                                                                  },
-                                                                                                ],
+                                                                                              flexDirection:
+                                                                                                "row",
                                                                                             }}
-                                                                                          />
+                                                                                          >
+                                                                                            {innerItem5?.childCount >
+                                                                                              0 && (
+                                                                                              <Animated.View
+                                                                                                style={{
+                                                                                                  transform:
+                                                                                                    [
+                                                                                                      {
+                                                                                                        translateX:
+                                                                                                          translation,
+                                                                                                      },
+                                                                                                    ],
+                                                                                                }}
+                                                                                              >
+                                                                                                <View
+                                                                                                  style={{
+                                                                                                    backgroundColor:
+                                                                                                      "lightgrey",
+                                                                                                    flexDirection:
+                                                                                                      "row",
+                                                                                                    paddingHorizontal: 7,
+                                                                                                    borderRadius: 10,
+                                                                                                    alignItems:
+                                                                                                      "center",
+                                                                                                    justifyContent:
+                                                                                                      "space-between",
+                                                                                                    marginBottom: 5,
+                                                                                                    alignSelf:
+                                                                                                      "flex-start",
+                                                                                                    marginLeft: 7,
+                                                                                                  }}
+                                                                                                >
+                                                                                                  <MaterialIcons
+                                                                                                    name="person"
+                                                                                                    size={
+                                                                                                      15
+                                                                                                    }
+                                                                                                    color={
+                                                                                                      Colors.BLACK
+                                                                                                    }
+                                                                                                  />
+                                                                                                  <Text>
+                                                                                                    {
+                                                                                                      innerItem5?.childCount
+                                                                                                    }
+                                                                                                  </Text>
+                                                                                                </View>
+                                                                                              </Animated.View>
+                                                                                            )}
+                                                                                            <SourceModelView
+                                                                                              onClick={() => {
+                                                                                                navigation.navigate(
+                                                                                                  AppNavigator
+                                                                                                    .HomeStackIdentifiers
+                                                                                                    .sourceModel,
+                                                                                                  {
+                                                                                                    empId:
+                                                                                                      innerItem5.empId,
+                                                                                                    headerTitle:
+                                                                                                      innerItem5.empName,
+                                                                                                    type: "TEAM",
+                                                                                                    moduleType:
+                                                                                                      "home",
+                                                                                                  }
+                                                                                                );
+                                                                                              }}
+                                                                                              style={{
+                                                                                                transform:
+                                                                                                  [
+                                                                                                    {
+                                                                                                      translateX:
+                                                                                                        translation,
+                                                                                                    },
+                                                                                                  ],
+                                                                                              }}
+                                                                                            />
+                                                                                          </View>
                                                                                         </View>
                                                                                         <View
                                                                                           style={{
@@ -3705,7 +3844,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingVertical: 4,
+    paddingTop: 4,
   },
   view12: {
     flexDirection: "row",

@@ -68,6 +68,7 @@ const DropAnalysisScreen = ({ navigation }) => {
         useState("All");
     const [tempFilterPayload, setTempFilterPayload] = useState([]);
     const [updateLeadStageArray, setupdateLeadStageArray] = useState([]);
+    const [isAppvoedCalled, setisAppvoedCalled] = useState(false);
 
     // const setMyState = data => {
     //     empIdStateRef.current = data.empId;
@@ -127,7 +128,7 @@ const DropAnalysisScreen = ({ navigation }) => {
         const CurrentMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
         const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
        
-        const payload = getPayloadDataV3(CurrentMonthFirstDate, currentMonthLastDate, null, null, jsonObj.orgId, jsonObj.empName, "")
+        const payload = getPayloadDataV3(CurrentMonthFirstDate, currentMonthLastDate, null, null, jsonObj.orgId, jsonObj.empName, "", jsonObj.empId)
        
         dispatch(getDropAnalysisFilter(payload))
     }
@@ -158,7 +159,7 @@ const DropAnalysisScreen = ({ navigation }) => {
          
         }
         
-        const payload = getPayloadDataV3(startDate, endDate, stage, status, jsonObj.orgId, jsonObj.empName, filterValue)
+        const payload = getPayloadDataV3(startDate, endDate, stage, status, jsonObj.orgId, jsonObj.empName, filterValue, jsonObj.empId)
       
         dispatch(getDropAnalysisFilter(payload))
     }
@@ -192,11 +193,17 @@ const DropAnalysisScreen = ({ navigation }) => {
     useEffect(() => {
        
         if (selector.approvalStatus === "sucess") {
-           selector.approvalStatus = ""
+        //    selector.approvalStatus = ""
            
             
            setisApprovalUIVisible(false)
-            dispatch(updateLeadStage(updateLeadStageArray))
+           if(isAppvoedCalled){
+               dispatch(updateLeadStage(updateLeadStageArray))
+           }
+           
+            getDropListFromServerV2(employeeId, employeeName, branchId, orgId, selectedFromDate, selectedToDate)
+            setIsResfresh(true);
+            dispatch(clearLeadDropState())
             // getDropListFromServerV2(employeeId, employeeName, branchId, orgId, selectedFromDate, selectedToDate)
             // setIsResfresh(true);
             // dispatch(clearLeadDropState())
@@ -215,9 +222,11 @@ const DropAnalysisScreen = ({ navigation }) => {
     useEffect(() => {
       
         if (selector.updateLeadStage === "sucess") {
-            getDropListFromServerV2(employeeId, employeeName, branchId, orgId, selectedFromDate, selectedToDate)
-            setIsResfresh(true);
-            dispatch(clearLeadDropState())
+            setupdateLeadStageArray([])
+            setisAppvoedCalled(false);
+            // getDropListFromServerV2(employeeId, employeeName, branchId, orgId, selectedFromDate, selectedToDate)
+            // setIsResfresh(true);
+            // dispatch(clearLeadDropState())
         }
       
     }, [selector.updateLeadStage])
@@ -353,15 +362,19 @@ const DropAnalysisScreen = ({ navigation }) => {
             const jsonObj = await JSON.parse(employeeData);
             // await setOrgId(jsonObj.orgId)
             
-            if (
-              jsonObj?.hrmsRole.toLowerCase().includes("manager") ||
-              jsonObj?.hrmsRole.toLowerCase() == "admin" ||
-              jsonObj?.hrmsRole.toLowerCase() == "sales head" ||
-                jsonObj?.hrmsRole.toLowerCase() == "md" || jsonObj?.hrmsRole.toLowerCase() == "crm"
-            ) {
+            // if (
+            //   jsonObj?.hrmsRole.toLowerCase().includes("manager") ||
+            //   jsonObj?.hrmsRole.toLowerCase() == "admin" ||
+            //   jsonObj?.hrmsRole.toLowerCase() == "sales head" ||
+            //     jsonObj?.hrmsRole.toLowerCase() == "md" || jsonObj?.hrmsRole.toLowerCase() == "crm" || jsonObj?.hrmsRole.toLowerCase() == "tl"
+            // ) {
                
-              setIsManager(true);
-            }
+            //   setIsManager(true);
+            // }
+
+              if (jsonObj?.isTeam.toLowerCase().includes("y")) {
+                    setIsManager(true);
+                 }
 
             // await setEmployeeName(jsonObj.empName)
             // await setEmployeeId(jsonObj.empId)
@@ -408,7 +421,7 @@ const DropAnalysisScreen = ({ navigation }) => {
 
         
     }
-    const getPayloadDataV3 = (CurrentMonthFirstDate, currentMonthLastDate, stages, status, orgId, empName, filterValue="") => {
+    const getPayloadDataV3 = (CurrentMonthFirstDate, currentMonthLastDate, stages, status, orgId, empName, filterValue="",empId) => {
        
 
         const payload = {
@@ -420,7 +433,8 @@ const DropAnalysisScreen = ({ navigation }) => {
             "endDate": currentMonthLastDate,
             "stages":  stages,
             "status": status,
-            "filterValue": filterValue!=="" ? filterValue:""
+            "filterValue": filterValue!=="" ? filterValue:"",
+            "empId": empId
         }
         return payload;
     }
@@ -525,7 +539,11 @@ const DropAnalysisScreen = ({ navigation }) => {
     const updateBulkStatus = async (status)=>{
         
         if(status === 'reject'){
-            
+
+            // let tempObj = {
+            //     "dropLeadIdList": selectedItemIds.map(item => item.dmsLeadDropInfo.leadDropId)
+            // }
+            // setupdateLeadStageArray(tempObj)
             const arr = await selectedItemIds.map(item =>
                 {
                 const dmsLeadDropInfo =
@@ -544,8 +562,10 @@ const DropAnalysisScreen = ({ navigation }) => {
             let tempObj = {
                 "dropLeadIdList": selectedItemIds.map(item => item.dmsLeadDropInfo.leadDropId)
             }
+            
             setupdateLeadStageArray(tempObj)
             dispatch(updateBulkApproval(selectedItemIds));
+            setisAppvoedCalled(true);
             
         } 
 
@@ -888,7 +908,8 @@ const DropAnalysisScreen = ({ navigation }) => {
                     backgroundColor: "rgb(211,211,211,0.65)",
                 }}
                 // values={["ETVBRL", "Allied", "View All"]}
-                values={['DROPPED ' + `${(droppedData.length)}`, 'REJECTED ' + `${(rejectedData.length)}`]}
+                // values={['DROPPED ' + `${(droppedData.length)}`, 'REJECTED ' + `${(rejectedData.length)}`]}
+                values={['DROPPED ' + `${(droppedData.length)}`]}
                 selectedIndex={toggleParamsIndex}
                 tintColor={Colors.RED}
                 fontStyle={{ color: Colors.BLACK, fontSize: 10 }}
@@ -1095,7 +1116,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                         {/* {isManager && renderApprovalUi()} */}
                     </View>}
             </> }
-            {toggleParamsIndex === 1 && <>
+            {/* {toggleParamsIndex === 1 && <>
                 {rejectedData.length === 0 ? <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} /> :
                     <View style={[{ backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10,marginTop:10 }]}>
                         <FlatList
@@ -1114,7 +1135,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                             onEndReachedThreshold={0}
                             onEndReached={() => {
                                 if (appSelector.searchKey === '') {
-                                    // getMoreEnquiryListFromServer()
+                                  
                                 }
                             }}
                             ListFooterComponent={renderFooter}
@@ -1162,9 +1183,9 @@ const DropAnalysisScreen = ({ navigation }) => {
                             }}
                         />
                         {renderFooter()}
-                        {/* {isManager && renderApprovalUi()} */}
+                      
                     </View>}
-            </>}
+            </>} */}
 
                 {/* {searchedData.length === 0 ? <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} /> :
                     <View style={[{ backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10 }]}>
