@@ -153,7 +153,8 @@ export const RenderEmployeeParameters = (parameter) => {
                     ]}
                   >
                     {selectedParameter
-                      ? displayType === 0
+                      ? displayType === 0 ||
+                        selectedParameter?.paramName?.includes("PER CAR")
                         ? selectedParameter?.achievment
                         : selectedParameter.paramName == "DROPPED" ||
                           selectedParameter?.target > 0
