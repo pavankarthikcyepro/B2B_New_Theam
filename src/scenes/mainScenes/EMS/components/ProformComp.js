@@ -44,6 +44,7 @@ const CheckboxTextAndAmountComp = ({
   amoutStyle = {},
   isChecked = false,
   onPress,
+  disabled = false,
 }) => {
   return (
     <View style={[styles.textAndAmountView, { paddingLeft: 2 }]}>
@@ -54,6 +55,7 @@ const CheckboxTextAndAmountComp = ({
           color={Colors.PINK}
           uncheckedColor={Colors.GRAY}
           onPress={onPress}
+          disabled={disabled}
         />
         <Text
           style={[
@@ -85,7 +87,7 @@ const TextAndAmountComp = ({
   componentStyle = {}
 }) => {
   return (
-    <View style={[styles.textAndAmountView,  componentStyle ]}>
+    <View style={[styles.textAndAmountView, componentStyle]}>
       <Text style={[styles.leftLabel, titleStyle]}>{title}</Text>
 
       {text && text != '' ? <Text style={[{ fontSize: 16, fontWeight: "400", width: '50%' }, amoutStyle]}>
@@ -248,7 +250,7 @@ export const ProformaComp = ({
   useEffect(() => {
     getUserData();
     dispatch(getProformaListingDetailsApi(universalId));
-  
+
 
   }, []);
 
@@ -676,7 +678,7 @@ export const ProformaComp = ({
         totalprice = totalprice + Number(data.amount);
         tempOtherPrice = tempOtherPrice + Number(data.amount);
         setOtherPrices(totalprice);
-     
+
       }
       setOtherPricesV2(tempOtherPrice)
     }
@@ -780,7 +782,7 @@ export const ProformaComp = ({
     setSelectedPaidAccessoriesList([])
 
   }
-  const onClick_Vartient = ()=>{
+  const onClick_Vartient = () => {
     clearPriceConfirmationData();
     dispatch(clearOfferPriceData());
     calculateOnRoadPrice(false, false, false)
@@ -804,7 +806,7 @@ export const ProformaComp = ({
   }
 
   const downloadPdf3 = async (from) => {
-     
+
     try {
       let siteTypeName =
         (await '<body style="padding:0; margin:0;">') +
@@ -827,10 +829,10 @@ export const ProformaComp = ({
         ">" +
         '</td>' +
         '<td  style="border-left:1px solid #ddd; padding-left:20px;">' +
-        '<div>'+
-      selector.proforma_orgName +'</div>' +
+        '<div>' +
+        selector.proforma_orgName + '</div>' +
         '<div > GSTN: ' +
-        `${selector.proforma_gstnNumber != null ? selector.proforma_gstnNumber : " "}`   + '</div>' +
+        `${selector.proforma_gstnNumber != null ? selector.proforma_gstnNumber : " "}` + '</div>' +
         '<div>' + selector.proforma_houseNo + '</div>' +
         '<div >' + selector.profprma_street + '</div>' +
         '<div >' + selector.proforma_branch + '</div>' +
@@ -844,7 +846,7 @@ export const ProformaComp = ({
         '</tr>' +
         '<tr>' +
         '<td>PROFORMA NO :</td>' +
-        '<td> ' + proformaNo +' </td>' +
+        '<td> ' + proformaNo + ' </td>' +
         '</tr>' +
         '<tr>' +
         '<td>DATE</td>' +
@@ -852,7 +854,7 @@ export const ProformaComp = ({
         '</tr>' +
         '<tr>' +
         '<td>PAN NO :</td>' +
-          '<td style="text-transform: uppercase"> ' + `${selector.pan_number != "" ? selector.pan_number : "-Na-"}` + '</td>' +
+        '<td style="text-transform: uppercase"> ' + `${selector.pan_number != "" ? selector.pan_number : "-Na-"}` + '</td>' +
         '</tr>' +
         '<tr>' +
         '<td>GST NO :</td>' +
@@ -862,7 +864,7 @@ export const ProformaComp = ({
         '<td colspan="4" style="text-align:center;"><strong>' + carModel + " " + "Model" + " " + carVariant + '</strong></td>' +
         '</tr>' +
         '<tr>' +
-        '<td colspan="4" style="text-align:center;"><strong>' + carColor +'</strong></td>' +
+        '<td colspan="4" style="text-align:center;"><strong>' + carColor + '</strong></td>' +
         '</tr>' +
         '<tr>' +
         '<td width="25%"><strong>PARTICULARS</strong></td>' +
@@ -939,7 +941,7 @@ export const ProformaComp = ({
         '</tr>' +
         '<tr>' +
         '<td>Other Charges</td>' +
-        '<td style="text-align: right;">' +otherPricesV2 +'</td>' +
+        '<td style="text-align: right;">' + otherPricesV2 + '</td>' +
         '<td></td>' +
         '<td style="text-align: right;"></td>' +
         '</tr>' +
@@ -962,7 +964,7 @@ export const ProformaComp = ({
 
           return '<div style="padding:4px">' + `${index + 1}` + " ) " + `${item}` + '</div>'
 
-        }).join(' ') + '</div>' +               
+        }).join(' ') + '</div>' +
         '</td>' +
         '</tr>' +
         '</table>' +
@@ -1537,7 +1539,7 @@ export const ProformaComp = ({
   // };
   const saveProformaDetails = async (from) => {
     var proformaStatus = "";
-    
+
     if (from === "save") {
       proformaStatus = "ENQUIRYCOMPLETED";
       const data1 = {
@@ -1737,7 +1739,7 @@ export const ProformaComp = ({
           cgstsgst_tax: 0,
           cess_tax: 0,
 
-          insurance_addon_data: selector.add_on_insurance? selector.add_on_insurance : selectedAddoninsurance,
+          insurance_addon_data: selector.add_on_insurance ? selector.add_on_insurance : selectedAddoninsurance,
           accessory_items: [...selectedPaidAccessoriesList],
           promotional_offers: selector.promotional_offer,
           special_scheme: selector.consumer_offer,
@@ -2041,10 +2043,10 @@ export const ProformaComp = ({
       if (mArray.length > 0) {
         newSelectedProforma = mArray.filter((item) => item.id === id);
         // todo
-       
+
         if (newSelectedProforma[0].performa_status === "PENDING_APPROVAL" ||
           newSelectedProforma[0].performa_status === "SENTFORAPPROVAL") {
-          
+
           setShowApproveRejectBtn(true);
           setshowSendForApprovBtn(false);
           setshowSaveBtn(false);
@@ -2101,7 +2103,7 @@ export const ProformaComp = ({
         } else {
           setSelectedInsurencePrice(0);
         }
-        if (oth_performa_column.insurance_addon_data){
+        if (oth_performa_column.insurance_addon_data) {
           setSelectedAddoninsurance(oth_performa_column.insurance_addon_data)
         }
         // let tempAddonData = {
@@ -2258,6 +2260,11 @@ export const ProformaComp = ({
 
   const isInputsEditable = () => {
     let isInputEditFlag = true;
+    if (isDownLoadVisible) {
+      isInputEditFlag = false
+    } else {
+      isInputEditFlag = true
+    }
     // if (
     //   selector &&
     //   selector.pre_booking_details_response &&
@@ -2277,7 +2284,7 @@ export const ProformaComp = ({
   }
 
   const clearPriceConfirmationData = () => {
-    
+
     setSelectedRegistrationCharges({});
     setRegistrationChargesType([]);
     setInsurenceAddOnTypes([]);
@@ -2478,6 +2485,10 @@ export const ProformaComp = ({
       dispatch(setDropDownData({ key: key, value: "", id: "" }));
     }
   };
+
+  const isEditable = () => {
+    return true;
+  }
 
   return (
     <View style={{}}>
@@ -2777,7 +2788,7 @@ export const ProformaComp = ({
               onPress={() => {
                 if (carModel != "" && carVariant != "") {
                   showDropDownModelMethod("COLOR", "Select Color");
-                   onClick_Vartient();
+                  onClick_Vartient();
                 } else {
                   showToast("Please Select Variant");
                 }
@@ -3035,6 +3046,8 @@ export const ProformaComp = ({
                         paddingVertical: 0,
                       },
                     ]}
+                    // disabled= {isDownLoadVisible ? true :false}
+                    disabled={!isInputsEditable()}
                     keyboardType={"number-pad"}
                     onChangeText={(text) => {
                       setTaxPercent(text);
@@ -3086,10 +3099,9 @@ export const ProformaComp = ({
                 <Text style={styles.shadowText}>
                   {rupeeSymbol +
                     " " +
-                    `${
-                      selectedRegistrationCharges?.cost
-                        ? selectedRegistrationCharges?.cost
-                        : "0.00"
+                    `${selectedRegistrationCharges?.cost
+                      ? selectedRegistrationCharges?.cost
+                      : "0.00"
                     }`}
                 </Text>
               </View>
@@ -3102,6 +3114,7 @@ export const ProformaComp = ({
               <View style={styles.symbolview}>
                 <View style={{ width: "70%" }}>
                   <DropDownSelectionItem
+                    disabled={!isInputsEditable()}
                     label={"Insurance Type:"}
                     value={selector.insurance_type}
                     onPress={() =>
@@ -3125,11 +3138,11 @@ export const ProformaComp = ({
                     label={"Add-on Insurance:"}
                     value={
                       selector.insurance_type !== ""
-                        ? selector.add_on_insurance ? selector.add_on_insurance :selectedAddoninsurance
+                        ? selector.add_on_insurance ? selector.add_on_insurance : selectedAddoninsurance
                         : ""
                     }
                     //todo
-                    disabled={!selector.insurance_type}
+                    disabled={!selector.insurance_type || !isInputsEditable()}
                     onPress={() =>
                       showDropDownModelMethod(
                         "INSURENCE_ADD_ONS",
@@ -3152,6 +3165,7 @@ export const ProformaComp = ({
               <View style={styles.symbolview}>
                 <View style={{ width: "70%" }}>
                   <DropDownSelectionItem
+                    disabled={!isInputsEditable()}
                     label={"Warranty:"}
                     value={selector.warranty}
                     onPress={() =>
@@ -3169,6 +3183,7 @@ export const ProformaComp = ({
               <Text style={GlobalStyle.underline}></Text>
 
               <CheckboxTextAndAmountComp
+                disabled={!isInputsEditable()}
                 title={"Handling Charges:"}
                 amount={
                   handlingChargSlctd
@@ -3189,6 +3204,7 @@ export const ProformaComp = ({
               <Text style={GlobalStyle.underline}></Text>
 
               <CheckboxTextAndAmountComp
+                disabled={!isInputsEditable()}
                 title={"Essential Kit:"}
                 amount={
                   essentialKitSlctd
@@ -3215,6 +3231,7 @@ export const ProformaComp = ({
               <Text style={GlobalStyle.underline}></Text>
 
               <Pressable
+                disabled={!isInputsEditable()}
                 onPress={() =>
                   navigation.navigate(
                     AppNavigator.EmsStackIdentifiers.paidAccessories,
@@ -3256,6 +3273,7 @@ export const ProformaComp = ({
 
               <CheckboxTextAndAmountComp
                 title={"Fast Tag:"}
+                disabled={!isInputsEditable()}
                 amount={
                   fastTagSlctd ? priceInfomationData?.fast_tag?.toFixed(2) : 0
                 }
@@ -4293,7 +4311,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     borderRadius: 5,
     // marginRight: 20,
-    flexDirection:"row"
+    flexDirection: "row"
   },
   otherPriceTextStyle: {
     fontSize: 14,
