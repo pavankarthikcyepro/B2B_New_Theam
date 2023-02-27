@@ -1420,7 +1420,11 @@ export const homeSlice = createSlice({
       .addCase(getEventSourceModelForSelf.fulfilled, (state, action) => {
         state.isEventLoading = false;
         if (action.payload) {
-          state.eventSourceModelForSelf = action.payload;
+          const tmpArr = action.payload;
+          tmpArr.sort(function (a, b) {
+            return new Date(b.eventDate) - new Date(a.eventDate);
+          });
+          state.eventSourceModelForSelf = tmpArr.reverse();
         }
       })
       .addCase(getEventSourceModelForSelf.rejected, (state, action) => {
@@ -1433,8 +1437,13 @@ export const homeSlice = createSlice({
       })
       .addCase(getEventSourceModel.fulfilled, (state, action) => {
         state.isEventLoading = false;
+        
         if (action.payload) {
-          state.sourceModelData = action.payload;
+          const tmpArr = action.payload;
+          tmpArr.sort(function (a, b) {
+            return new Date(b.eventDate) - new Date(a.eventDate);
+          });
+          state.sourceModelData = tmpArr.reverse();
         }
       })
       .addCase(getEventSourceModel.rejected, (state, action) => {
