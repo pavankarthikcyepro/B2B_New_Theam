@@ -177,6 +177,21 @@ const EventSourceModel = ({ route, navigation }) => {
         totals[d.paramName] = +totals[d.paramName] + +d.achievment;
       });
     });
+
+    const newVal = Object.values(leadSource);
+    let total = 0;
+    if (newVal.length > 0) {
+      for (let i = 0; i < newVal.length; i++) {
+        total = total + newVal[i][0].budget;
+      }
+    }
+
+    const con = totals["PreEnquiry"] != 0 ? total / totals["PreEnquiry"] : 0;
+    const enq = totals["Enquiry"] != 0 ? total / totals["Enquiry"] : 0;
+    const bkg = totals["Booking"] != 0 ? total / totals["Booking"] : 0;
+    totals["CONTACT PER CAR"] = Math.round(con);
+    totals["ENQUIRY PER CAR"] = Math.round(enq);
+    totals["BOOKING PER CAR"] = Math.round(bkg);
     setSourceModelTotals({ ...totals });
   };
 
