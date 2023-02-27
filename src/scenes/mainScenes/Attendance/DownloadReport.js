@@ -100,9 +100,9 @@ const DownloadReportScreen = ({ route, navigation }) => {
   const [selectedLocation, setSelectedLocation] = useState({});
   const [selectedDealerCode, setSelectedDealerCode] = useState({});
   const [Designation, setDesignation] = useState([]);
-  const [selectedDesignation, setSelectedDesignation] = useState({});
+  const [selectedDesignation, setSelectedDesignation] = useState([]);
   const [employees, setEmployees] = useState([]);
-  const [selectedEmployeeName, setSelectedEmployeeName] = useState({});
+  const [selectedEmployeeName, setSelectedEmployeeName] = useState([]);
 
   useEffect(() => {
     getAsyncData();
@@ -162,7 +162,10 @@ const DownloadReportScreen = ({ route, navigation }) => {
       );
       const json = await response.json();
       if (json) {
-        setDesignation(json);
+        const newArr2 = json.map((v) =>
+          Object.assign(v, { name: v?.designationName })
+        );
+        setDesignation(newArr2);
       }
     } catch (error) {
       console.log(error);
@@ -171,9 +174,12 @@ const DownloadReportScreen = ({ route, navigation }) => {
 
   const getEmployeesDropdown = async (item) => {
     try {
+      console.log("item", item);
       const response = await client.get(
         URL.GET_EMPLOYEES(item.dmsDesignationId, selectedDealerCode.id)
       );
+      console.log(response);
+
       const json = await response.json();
       if (json) {
         setEmployees(json);
@@ -756,9 +762,9 @@ const DownloadReportScreen = ({ route, navigation }) => {
     setSelectedLocation({});
     setDealerCode([]);
     setSelectedDealerCode({});
-    setSelectedDesignation({});
+    setSelectedDesignation([]);
     setDesignation([]);
-    setSelectedEmployeeName({});
+    setSelectedEmployeeName([]);
     setEmployees([]);
   };
 
@@ -791,31 +797,73 @@ const DownloadReportScreen = ({ route, navigation }) => {
     }
   };
 
-  const submit = () => {
-    validation();
+  const submit = async() => {
+    try {
+      // validation();
+    let payload = {
+      fromDate: "2023-02-01",
+      toDate: "2023-02-03",
+      orgId: 18,
+      userId: "941",
+      dealerCodes: [646, 647],
+      empIds: [
+        942, 944, 945, 946, 947, 923, 924, 925, 1082, 913, 914, 915, 916, 917,
+        930, 918, 919, 920, 921, 922, 955, 957, 959, 961, 960, 962, 952, 954,
+        963, 964, 965, 973, 958, 942, 943, 944, 945, 946, 947, 948, 949, 950,
+        951, 923, 924, 925, 1082, 913, 914, 915, 916, 917, 930, 918, 919, 920,
+        921, 922, 936, 938, 939, 933, 935, 937, 929, 931, 932, 934, 926, 927,
+        928, 1176, 956, 952, 953, 963, 964, 965, 967,
+      ],
+    };
+    const response = await client.post(
+          URL.GET_ATTENDANCE_REPORT(),
+          payload
+        );
+        const json = await response.json();
+        console.log(json);
+        if (json.downloadUrl) {
+          downloadInLocal(URL.GET_DOWNLOAD_URL(json.downloadUrl));
+        }
+    } catch (error) {
+      
+    }
   };
+
+  function formatName(list) {
+    let names = "";
+    if (list.length > 0) {
+      for (let i = 0; i < list.length; i++) {
+        const element = list[i];
+        names = element.name + ", ";
+      }
+      return names;
+    } else {
+      return names;
+    }
+  }
   return (
     <SafeAreaView style={styles.container}>
       <DropDown
         visible={showDropDownModel}
-        multiple={false}
+        multiple={dropDownFrom === "Employee Name" ? true : false}
         headerTitle={"Select"}
         data={dropDownData}
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
+          console.log(item);
           if (dropDownFrom === "Location") {
             setDealerCode([]);
             setSelectedDealerCode({});
             setSelectedDesignation({});
             setDesignation([]);
-            setSelectedEmployeeName({});
+            setSelectedEmployeeName([]);
             setEmployees([]);
             setSelectedLocation(item);
             getDealerDropDown(item);
           } else if (dropDownFrom === "Dealer Code") {
             setSelectedDesignation({});
             setDesignation([]);
-            setSelectedEmployeeName({});
+            setSelectedEmployeeName([]);
             setEmployees([]);
             setSelectedDealerCode(item);
             getDesignationDropdown(item);
@@ -916,7 +964,7 @@ const DownloadReportScreen = ({ route, navigation }) => {
                     <View>
                       <DropDownSelectionItem
                         label={"Designation"}
-                        value={selectedDesignation?.designationName}
+                        value={selectedDesignation?.name}
                         onPress={() => dropDownItemClicked3("Designation")}
                         takeMinHeight={true}
                         // disabled={disabletemp}
@@ -925,7 +973,7 @@ const DownloadReportScreen = ({ route, navigation }) => {
                     <View>
                       <DropDownSelectionItem
                         label={"Employee Name"}
-                        value={selectedEmployeeName?.empName}
+                        value={formatName(selectedEmployeeName)}
                         onPress={() => dropDownItemClicked3("Employee Name")}
                         takeMinHeight={true}
                         // disabled={disabletemp}
