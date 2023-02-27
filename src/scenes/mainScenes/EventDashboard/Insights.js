@@ -206,9 +206,11 @@ const EventInsights = ({ route, navigation }) => {
     const enq = totals["Enquiry"] != 0 ? total / totals["Enquiry"] : 0;
     const bkg = totals["Booking"] != 0 ? total / totals["Booking"] : 0;
 
-    totals["CONTACT PER CAR"] = Math.round(con);
-    totals["ENQUIRY PER CAR"] = Math.round(enq);
-    totals["BOOKING PER CAR"] = Math.round(bkg);
+    if (toggleParamsIndex != 1) {
+      totals["CONTACT PER CAR"] = Math.round(con);
+      totals["ENQUIRY PER CAR"] = Math.round(enq);
+      totals["BOOKING PER CAR"] = Math.round(bkg);
+    }
     setSourceModelTotals({ ...totals });
   };
 
