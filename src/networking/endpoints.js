@@ -591,7 +591,6 @@ const URL = {
     sales_url + `/documents/uploadQrCode?orgId=${orgId}&branchId=${branchId}`,
 
   QR_SAVE: () => sales_url + `/qrcode/save`,
-
   QR_DELETE: () => sales_url + `/qrcode/delete`,
 
   GET_VEHICAL_MODAL: () => {
