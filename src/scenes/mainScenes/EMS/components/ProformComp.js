@@ -312,11 +312,15 @@ export const ProformaComp = ({
 
   const getUserData = async () => {
     try {
+      let branch_id;
       const employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
       );
       AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
         setUserToken(token);
+      });
+      await AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_ID).then((branchId) => {
+        branch_id = branchId;
       });
 
       if (employeeData) {
@@ -350,7 +354,7 @@ export const ProformaComp = ({
 
 
         const data = {
-          branchId: branchId,
+          branchId: branch_id,
           orgId: jsonObj.orgId,
         };
         setOrgId(jsonObj.orgId);
@@ -2624,11 +2628,7 @@ export const ProformaComp = ({
                 key={"PROFORMA_LIST"}
                 data={proformaDataForDropdown}
                 ListEmptyComponent={() => {
-                  return (
-                    <View style={{ alignItems: "center", marginVertical: 20 }}>
-                      <Text>{"Data Not Available"}</Text>
-                    </View>
-                  );
+                  return (<View style={{ alignItems: 'center', marginVertical: 20 }}><Text>{"Data Not Available"}</Text></View>)
                 }}
                 keyExtractor={(item, index) => index.toString()}
                 style={
@@ -2747,16 +2747,13 @@ export const ProformaComp = ({
 
         {isnewProformaClicked ? (
           <>
-            <Text
-              style={{
-                color: Colors.BLACK,
-                fontSize: 16,
-                fontWeight: "700",
-                marginVertical: 10,
-              }}
-            >
-              New Proforma Invoice
-            </Text>
+            <Text style={{
+              color: Colors.BLACK,
+              fontSize: 16,
+              fontWeight: "700",
+              marginVertical: 10
+
+            }}>New Proforma Invoice</Text>
             <DropDownSelectionItem
               label={"Vehicle"}
               value={carModel}
@@ -2805,7 +2802,7 @@ export const ProformaComp = ({
       <View>
         {selectedProfroma != "" || carModel != "" ? (
           <>
-            {/* Proforma Invoice section */}
+ 
             <View
               style={{
                 backgroundColor: Colors.WHITE,
@@ -2825,9 +2822,7 @@ export const ProformaComp = ({
                     textAlign: "center",
                     fontWeight: "700",
                   }}
-                >
-                  PROFORMA INVOICE
-                </Text>
+                >PROFORMA INVOICE</Text>
               </View>
 
               <View
@@ -3141,7 +3136,6 @@ export const ProformaComp = ({
                         ? selector.add_on_insurance ? selector.add_on_insurance : selectedAddoninsurance
                         : ""
                     }
-                    //todo
                     disabled={!selector.insurance_type || !isInputsEditable()}
                     onPress={() =>
                       showDropDownModelMethod(
