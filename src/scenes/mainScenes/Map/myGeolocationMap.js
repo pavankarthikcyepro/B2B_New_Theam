@@ -33,6 +33,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import moment from "moment";
 import { getDistanceBetweenTwoPoints } from "../../../service";
 import { G, Path, Svg } from "react-native-svg";
+import { LOCATION_PIN, LOCATION_PIN2 } from "../../../assets/icon";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
@@ -354,14 +355,15 @@ const GeolocationMapScreen = ({ route }) => {
                 //   // flex:1
                 // }}
                 // image={index === coordinates.length - 1 ? CYEPRO : HISTORY_LOC}
+                image={Platform.OS === "ios" ? LOCATION_PIN : LOCATION_PIN2}
                 // title={marker}
                 // description={}
               >
-                <View
+                {/* <View
                   style={{ width: 33, height: Platform.OS === "ios" ? 59 : 37 }}
                 >
                   {addIcon()}
-                </View>
+                </View> */}
                 {/* <Svg width={40} height={30}>
                   <Image
                     source={require("../../../assets/images/cyepro-tick.svg")}

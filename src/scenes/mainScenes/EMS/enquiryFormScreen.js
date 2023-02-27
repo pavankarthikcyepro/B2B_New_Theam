@@ -2293,6 +2293,46 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
   }, [selector.update_enquiry_details_response]);
 
+
+  useEffect(() => {
+    if (leadStatus === "ENQUIRYCOMPLETED" &&
+      leadStage === "ENQUIRY" &&
+      carModelsList &&
+      carModelsList.length >0){
+      navigation.setOptions(
+        {
+         
+          headerRight: () => (
+            <TouchableOpacity
+              style={{
+                width: 110,
+                height: 30,
+                borderRadius: 15,
+                borderColor: Colors.RED,
+                borderWidth: 1,
+                justifyContent: "center",
+                alignItems: "center",
+                marginRight: 5,
+                flexDirection: "row",
+              }}
+              onPress={()=>{navigateToProforma()}}
+            >
+             
+              <Text
+                style={{
+                  fontSize: 12,
+                  fontWeight: "600",
+                  color: "#fff",
+                  marginLeft: 5,
+                }}
+              >Proforma Invoice</Text>
+              {/* <Text style={{ fontSize: 15, fontWeight: '600', color: '#fff' }}>200 days</Text> */}
+            </TouchableOpacity>
+          ),
+        });
+      }
+  }, [leadStatus, carModelsList])
+  
   const getEnquiryListFromServer = () => {
     if (userData.employeeId) {
       let endUrl =
@@ -3224,7 +3264,24 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           ref={scrollRef}
         >
           <View style={styles.baseVw}>
-            {leadStatus === "ENQUIRYCOMPLETED" &&
+
+            {/* {leadStatus === "ENQUIRYCOMPLETED" &&
+              leadStage === "ENQUIRY" &&
+              carModelsList &&
+              carModelsList.length > 0 ? (
+                <View style={styles.viewPro}>
+                  <TouchableOpacity
+                    style={styles.tochable1}
+                    onPress={() => navigateToProforma()}
+                  >
+                    <View style={{ flexDirection: "row", alignItems: "center" }}>
+                     
+                      <Text style={styles.etvbrlTxt}>Proforma Invoice</Text>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+            ) : null} */}
+            {/* {leadStatus === "ENQUIRYCOMPLETED" &&
             leadStage === "ENQUIRY" &&
             carModelsList &&
             carModelsList.length > 0 ? (
@@ -3247,7 +3304,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               >
                 <Text>Proforma Invoice</Text>
               </Button>
-            ) : null}
+            ) : null} */}
 
             {/* 
            {(leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY' && carModelsList && carModelsList.length > 0) ?
@@ -6471,5 +6528,26 @@ const styles = StyleSheet.create({
     color: Colors.WHITE,
     fontSize: 14,
     fontWeight: "600",
+  },
+
+  viewPro: {
+    width: "100%",
+    alignItems: "flex-end",
+    marginVertical: 6,
+    marginBottom:10
+  },
+  tochable1: {
+    width: 140,
+    height: 30,
+    borderColor: Colors.RED,
+    borderWidth: 1,
+    borderRadius: 4,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  etvbrlTxt: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: Colors.RED,
   },
 });
