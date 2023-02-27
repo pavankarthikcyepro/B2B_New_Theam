@@ -482,18 +482,7 @@ const FilterScreen = ({ route, navigation }) => {
   };
 
   const submitBtnClicked = async (initialData = null) => {
-<<<<<<< HEAD
-    if (
-      selector.isDSE
-      // (userData.hrmsRole == "Sales Consultant" ||
-      //   userData.hrmsRole == "Walkin DSE" ||
-      //   userData.hrmsRole == "Field DSE")
-      //    &&
-      // !isFilter == false
-    ) {
-=======
     if (selector.isDSE && !isFilter) {
->>>>>>> 25d89146562a3bcc10c5627edf2e1b77e663d398
       navigation.navigate(AppNavigator.TabStackIdentifiers.home, {
         screen: "Home",
         params: { from: "Filter" },
@@ -529,16 +518,7 @@ const FilterScreen = ({ route, navigation }) => {
         dispatch(updateEmpDropDown());
         dispatch(updateFilterIds(payload));
       }
-<<<<<<< HEAD
-      if (
-        (userData.hrmsRole == "Sales Consultant" ||
-          userData.hrmsRole == "Walkin DSE" ||
-          userData.hrmsRole == "Field DSE") &&
-        !!!initialData
-      ) {
-=======
       if (selector.isDSE && !!!initialData) {
->>>>>>> 25d89146562a3bcc10c5627edf2e1b77e663d398
         let payload = { ...selector.filterIds };
         payload["empSelected"] = [];
         payload["allEmpSelected"] = [];
