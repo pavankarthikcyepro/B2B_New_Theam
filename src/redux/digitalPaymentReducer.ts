@@ -2,18 +2,6 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { client } from "../networking/client";
 import URL from "../networking/endpoints";
 
-export const getBranchesList = createAsyncThunk(
-  "DIGITAL_PAYMENT_SLICE/getBranchesList",
-  async (orgId, { rejectWithValue }) => {
-    const response = await client.get(URL.BRANCHES(orgId));
-    const json = await response.json();
-    if (!response.ok) {
-      return rejectWithValue(json);
-    }
-    return json;
-  }
-);
-
 export const saveQrCode = createAsyncThunk(
   "DIGITAL_PAYMENT_SLICE/saveQrCode",
   async (payload, { rejectWithValue }) => {
@@ -41,7 +29,6 @@ export const deleteQrCode = createAsyncThunk(
 const digitalPaymentReducer = createSlice({
   name: "DIGITAL_PAYMENT_SLICE",
   initialState: {
-    branches: [],
     isLoading: false,
     saveQrCodeSuccess: "",
     deleteQrCodeSuccess: "",
@@ -54,25 +41,12 @@ const digitalPaymentReducer = createSlice({
       state.deleteQrCodeSuccess = "";
     },
     clearState: (state, action) => {
-      state.branches = [];
       state.isLoading = false;
       state.saveQrCodeSuccess = "";
       state.deleteQrCodeSuccess = "";
     },
   },
   extraReducers: (builder) => {
-    // Get branch list
-    builder.addCase(getBranchesList.pending, (state, action) => {
-      state.branches = [];
-    });
-    builder.addCase(getBranchesList.fulfilled, (state, action) => {
-      state.isLoading = false;
-      state.branches = action.payload;
-    });
-    builder.addCase(getBranchesList.rejected, (state, action) => {
-      state.isLoading = false;
-    });
-
     // Save QR code
     builder.addCase(saveQrCode.pending, (state, action) => {
       state.isLoading = true;

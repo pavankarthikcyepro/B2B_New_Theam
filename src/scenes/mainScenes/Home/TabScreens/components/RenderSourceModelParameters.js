@@ -166,10 +166,8 @@ export const RenderSourceModelParameters = (parameter) => {
                 ]}
               >
                 <Text style={[styles.totalText1, { color: elementColor }]}>
-                  {RestrictPercentage.includes(selectedParameter?.paramName)
-                    ? selectedParameter.achievment
-                    : selectedParameter
-                    ? displayType === 0
+                  {selectedParameter
+                    ? displayType === 0 || selectedParameter.paramName.includes("PER CAR")
                       ? selectedParameter.achievment
                       : selectedParameter.paramName == "DROPPED" ||
                         // selectedParameter.target > 0
