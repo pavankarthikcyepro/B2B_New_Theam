@@ -843,9 +843,10 @@ export const homeSlice = createSlice({
       levelSelected: [],
       empSelected: [],
       allEmpSelected: [],
-      employeeName:[]
+      employeeName: [],
     },
     leaderShipFIlterId: [],
+    newUpdateAvailable: false,
   },
   reducers: {
     dateSelected: (state, action) => {
@@ -874,6 +875,9 @@ export const homeSlice = createSlice({
     },
     updateIsDSE: (state, action) => {
       state.isDSE = action.payload;
+    },
+    SetNewUpdateAvailable: (state, action) => {
+      state.newUpdateAvailable = action.payload;
     },
     updateTargetData: (state, action) => {
       state.target_parameters_data = action.payload.targetData;
@@ -945,7 +949,7 @@ export const homeSlice = createSlice({
         levelSelected: [],
         empSelected: [],
         allEmpSelected: [],
-        employeeName:[]
+        employeeName: [],
       };
       state.leaderShipFIlterId = [];
     },
@@ -1412,7 +1416,7 @@ export const homeSlice = createSlice({
       .addCase(getSourceModelDataForSelf.rejected, (state, action) => {
         state.isLoading = false;
       })
-      
+
       .addCase(getEventSourceModelForSelf.pending, (state, action) => {
         state.isEventLoading = true;
         state.eventSourceModelForSelf = [];
@@ -1437,7 +1441,7 @@ export const homeSlice = createSlice({
       })
       .addCase(getEventSourceModel.fulfilled, (state, action) => {
         state.isEventLoading = false;
-        
+
         if (action.payload) {
           const tmpArr = action.payload;
           tmpArr.sort(function (a, b) {
@@ -1545,6 +1549,8 @@ export const {
   clearState,
   updateTargetData,
   updateFilterIds,
-  updateEmpDropDown,updateLeaderShipFilter
+  updateEmpDropDown,
+  updateLeaderShipFilter,
+  SetNewUpdateAvailable,
 } = homeSlice.actions;
 export default homeSlice.reducer;
