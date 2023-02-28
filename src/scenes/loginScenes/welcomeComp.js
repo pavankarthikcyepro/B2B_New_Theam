@@ -70,6 +70,10 @@ const WelcomeScreen = ({ navigation }) => {
   const loginButtonClicked = () => {
     navigation.navigate(AuthNavigator.AuthStackIdentifiers.LOGIN);
   };
+  
+  const RegisterButtonClicked = () => {
+    navigation.navigate(AuthNavigator.AuthStackIdentifiers.REGISTER);
+  };
 
   const UpdateApp = () => {
     alert("Please Update to Latest Version");
@@ -153,7 +157,15 @@ const WelcomeScreen = ({ navigation }) => {
         onPress={selector.newUpdateAvailable ? UpdateApp : loginButtonClicked}
         color={Colors.PINK}
       />
-
+      <View style={{ height: 10 }} />
+      <ButtonComp
+        title={"REGISTER"}
+        width={getWidth(100) - 40}
+        onPress={
+          selector.newUpdateAvailable ? UpdateApp : RegisterButtonClicked
+        }
+        color={Colors.PINK}
+      />
       <View style={styles.bottomViewStyle}>
         <Text style={styles.textOneStyle}>{"Important Notice"}</Text>
         <Text style={styles.textTwoStyle}>
