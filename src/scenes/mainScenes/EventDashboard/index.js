@@ -374,9 +374,9 @@ const EventDashBoardScreen = ({ route, navigation }) => {
             ? selector.filterIds.levelSelected
             : null;
         }
-        getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
-          .then((x) => {})
-          .catch((y) => {});
+        // getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
+        //   .then((x) => {})
+        //   .catch((y) => {});
       }
 
       if (
