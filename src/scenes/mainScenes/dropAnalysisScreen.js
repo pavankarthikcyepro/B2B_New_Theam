@@ -240,9 +240,21 @@ const DropAnalysisScreen = ({ navigation }) => {
                 let tempData = []
                 let data = [...selector.leadDropList];
                 // data = data.filter(x => x.status.toLowerCase() !== 'rejected');
+                
                 tempData = data.filter((item) => {
-                    return item.firstName.toLowerCase().includes(appSelector.searchKey.toLowerCase()) ||
-                        item.lastName.toLowerCase().includes(appSelector.searchKey.toLowerCase())
+                    if (item.stage == "PREENQUIRY"){
+                        return item.createdBy?.toLowerCase().includes(appSelector.searchKey.toLowerCase()) 
+                            || item.firstName.toLowerCase().includes(appSelector.searchKey.toLowerCase()) ||
+                            item.lastName.toLowerCase().includes(appSelector.searchKey.toLowerCase())
+                            || item.droppedby?.toLowerCase().includes(appSelector.searchKey.toLowerCase())
+                            || item.mobileNumber?.toLowerCase().includes(appSelector.searchKey.toLowerCase())
+                    }else{
+                        return item.firstName.toLowerCase().includes(appSelector.searchKey.toLowerCase()) ||
+                            item.lastName.toLowerCase().includes(appSelector.searchKey.toLowerCase()) ||
+                            item.salesConsultant?.toLowerCase().includes(appSelector.searchKey.toLowerCase())
+                            || item.droppedby?.toLowerCase().includes(appSelector.searchKey.toLowerCase())
+                            || item.mobileNumber?.toLowerCase().includes(appSelector.searchKey.toLowerCase())
+                    }
                 })
                 setSearchedData([]);
                 

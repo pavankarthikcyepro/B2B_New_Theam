@@ -11,6 +11,8 @@ const WARRANTY = require("./Icons/warranty.png");
 const EXCHANGE = require("./Icons/exchange.png");
 const ACCESSORIES = require("./Icons/accessories.png");
 const LEAD_ALLOCATION = require("./Icons/lead_allocation.png");
+const LOCATION_PIN = require("./images/local.png");
+const LOCATION_PIN2 = require("./images/local2.png");
 
 export {
   DOWN_ARROW,
@@ -26,4 +28,6 @@ export {
   EXCHANGE,
   ACCESSORIES,
   LEAD_ALLOCATION,
+  LOCATION_PIN,
+  LOCATION_PIN2,
 };

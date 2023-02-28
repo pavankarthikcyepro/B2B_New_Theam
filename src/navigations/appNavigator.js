@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import {
   View,
   Linking,
@@ -114,7 +114,7 @@ import EventDashBoardScreen from "../scenes/mainScenes/EventDashboard";
 import EventSourceModel from "../scenes/mainScenes/EventDashboard/EventSourceModel";
 import LeaderShipFilter from "../scenes/mainScenes/Home/TabScreens/leaderShipFilter";
 import Orientation from "react-native-orientation-locker";
-import { detectIsOrientationLock } from "../utils/helperFunctions";
+import { detectIsOrientationLock, isReceptionist } from "../utils/helperFunctions";
 import TaskthreeSixtyhistoryFilter from "../scenes/mainScenes/EMS/components/TaskthreeSixtyhistoryFilter";
 import DownloadReportScreen from "../scenes/mainScenes/Attendance/DownloadReport";
 import ComplaintTrackerMain, { ComplaintsTrackerTopTabNavigator } from "../scenes/mainScenes/ComplaintTracker/ComplaintTrackerMain";
@@ -122,6 +122,7 @@ import ComplaintList from "../scenes/mainScenes/ComplaintTracker/ComplaintList";
 import { ComplaintsTopTabNavigator } from "./complaintsTopTabNavigator";
 import AddEditComplaint from "../scenes/mainScenes/ComplaintTracker/AddEditComplaint";
 import ClosedComplaintList from "../scenes/mainScenes/ComplaintTracker/ClosedComplaintList";
+import * as AsyncStore from "../asyncStore";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -161,19 +162,35 @@ export const TestDriveHistoryIcon = ({ navigation }) => {
 };
 
 const MyTaskFilter = ({ navigation }) => {
-  const screen = useSelector((state) => state.mytaskReducer.currentScreen);
-  // if (screen === "TODAY") return <React.Fragment></React.Fragment>;
-  return (
-    <IconButton
-      icon="filter-outline"
-      style={{ paddingHorizontal: 0, marginHorizontal: 0 }}
-      color={Colors.WHITE}
-      size={25}
-      onPress={() =>
-        navigation.navigate(MyTasksStackIdentifiers.myTaskFilterScreen)
+  const [isIconShow, setIsIconShow] = useState(false);
+
+  useEffect(async () => {
+    let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      if (isReceptionist(jsonObj.hrmsRole)) {
+        setIsIconShow(false);
+      } else {
+        setIsIconShow(true);
       }
-    />
-  );
+    }
+  }, []);
+
+  if (isIconShow) {
+    return (
+      <IconButton
+        icon="filter-outline"
+        style={{ paddingHorizontal: 0, marginHorizontal: 0 }}
+        color={Colors.WHITE}
+        size={25}
+        onPress={() =>
+          navigation.navigate(MyTasksStackIdentifiers.myTaskFilterScreen)
+        }
+      />
+    );
+  }
+
+  return null;
 };
 
 const SearchIcon = () => {

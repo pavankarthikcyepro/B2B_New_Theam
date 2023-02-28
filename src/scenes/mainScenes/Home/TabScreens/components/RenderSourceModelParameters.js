@@ -5,7 +5,11 @@ import {sourceModelPercentage} from "../../../../../utils/helperFunctions";
 
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 100) / 5;
-
+const RestrictPercentage = [
+  "CONTACT PER CAR",
+  "ENQUIRY PER CAR",
+  "BOOKING PER CAR",
+];
 export const RenderSourceModelParameters = (parameter) => {
   const paramsData = [
     "PreEnquiry",
@@ -143,7 +147,6 @@ export const RenderSourceModelParameters = (parameter) => {
           const selectedParameter = item.targetAchievements.filter(
             (x) => x.paramName === param
           )[0];
-
           if (selectedParameter) {
             const elementColor = getColor(
               Number(selectedParameter.achievment),
@@ -164,7 +167,9 @@ export const RenderSourceModelParameters = (parameter) => {
               >
                 <Text style={[styles.totalText1, { color: elementColor }]}>
                   {selectedParameter
-                    ? displayType === 0 || selectedParameter.paramName.includes("PER CAR")
+                    ? displayType === 0 ||
+                      selectedParameter.paramName.includes("PER CAR") ||
+                      selectedParameter.paramName.includes("Accessories")
                       ? selectedParameter.achievment
                       : selectedParameter.paramName == "DROPPED" ||
                         // selectedParameter.target > 0

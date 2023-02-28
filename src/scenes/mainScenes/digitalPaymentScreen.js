@@ -15,7 +15,7 @@ import uuid from "react-native-uuid";
 import * as AsyncStore from "../../asyncStore";
 import { client } from "../../networking/client";
 import URL from "../../networking/endpoints";
-import { clearDeleteApiRes, clearSaveApiRes, deleteQrCode, getBranchesList, saveQrCode } from "../../redux/digitalPaymentReducer";
+import { clearDeleteApiRes, clearSaveApiRes, deleteQrCode, saveQrCode } from "../../redux/digitalPaymentReducer";
 import { useDispatch, useSelector } from "react-redux";
 import { DropDownSelectionItem } from "../../pureComponents";
 import {
@@ -59,7 +59,6 @@ const DigitalPaymentScreen = ({ navigation }) => {
   const getUserData = async () => {
     const data = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     const parsedData = JSON.parse(data);
-
     if (
       parsedData?.hrmsRole === "Business Head" ||
       parsedData?.hrmsRole === "MD" ||
@@ -74,8 +73,8 @@ const DigitalPaymentScreen = ({ navigation }) => {
     }
 
     setUserData(parsedData);
-    const { orgId, branchId } = parsedData;
-    await dispatch(getBranchesList(orgId));
+    const { orgId, branchId, branchs } = parsedData;
+    setBranchs(branchs);
     getQrCode(orgId, branchId);
     await AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
       setAuthToken(token);
@@ -122,22 +121,25 @@ const DigitalPaymentScreen = ({ navigation }) => {
     }
   };
 
-  useEffect(() => {
+  const setBranchs = (data) => {
+    data = data.map((item, index) => {
+      return { ...item, name: item.branchName };
+    });
+
     let newArr = [];
-    for (let i = 0; i < selector.branches.length; i++) {
+    for (let i = 0; i < data.length; i++) {
       let obj = {
-        ...selector.branches[i],
-        selected:
-          selector.branches[i].branchId == userData.branchId ? true : false,
+        ...data[i],
+        selected: data[i].branchId == userData.branchId ? true : false,
       };
       newArr.push(obj);
-      if (selector.branches[i].branchId == userData.branchId) {
-        setSelectedBranches(selector.branches[i].name);
+      if (data[i].branchId == userData.branchId) {
+        setSelectedBranches(data[i].name);
         setSelectedBranchIds([userData.branchId]);
       }
     }
     setBranchList(Object.assign([], newArr));
-  }, [selector.branches]);
+  };
 
   const dropDownItemClicked = async () => {
     setDropDownData([...branchList]);
