@@ -1813,6 +1813,61 @@ const ParametersScreen = ({ route }) => {
                                                                     >
                                                                       <View
                                                                         style={{
+                                                                          paddingHorizontal: 4,
+                                                                          display:
+                                                                            "flex",
+                                                                          flexDirection:
+                                                                            "row",
+                                                                          justifyContent:
+                                                                            "space-between",
+                                                                          paddingVertical: 4,
+                                                                        }}
+                                                                      >
+                                                                        <Text
+                                                                          style={{
+                                                                            fontSize: 10,
+                                                                            fontWeight:
+                                                                              "500",
+                                                                          }}
+                                                                        >
+                                                                          {
+                                                                            innerItem4.empName
+                                                                          }
+                                                                        </Text>
+                                                                        <Pressable
+                                                                          onPress={() => {
+                                                                            navigation.navigate(
+                                                                              AppNavigator
+                                                                                .HomeStackIdentifiers
+                                                                                .sourceModel,
+                                                                              {
+                                                                                empId:
+                                                                                  innerItem4.empId,
+                                                                                headerTitle:
+                                                                                  innerItem4.empName,
+                                                                                type: "TEAM",
+                                                                                moduleType:
+                                                                                  "live-leads",
+                                                                              }
+                                                                            );
+                                                                          }}
+                                                                        >
+                                                                          <Text
+                                                                            style={{
+                                                                              fontSize: 12,
+                                                                              fontWeight:
+                                                                                "600",
+                                                                              color:
+                                                                                Colors.BLUE,
+                                                                              marginLeft: 8,
+                                                                            }}
+                                                                          >
+                                                                            Source/Model
+                                                                          </Text>
+                                                                        </Pressable>
+                                                                      </View>
+                                                                      <View
+                                                                        style={{
                                                                           flexDirection:
                                                                             "row",
                                                                         }}
@@ -2174,6 +2229,61 @@ const ParametersScreen = ({ route }) => {
                                                                                   },
                                                                                 ]}
                                                                               >
+                                                                                <View
+                                                                                  style={{
+                                                                                    paddingHorizontal: 4,
+                                                                                    display:
+                                                                                      "flex",
+                                                                                    flexDirection:
+                                                                                      "row",
+                                                                                    justifyContent:
+                                                                                      "space-between",
+                                                                                    paddingVertical: 4,
+                                                                                  }}
+                                                                                >
+                                                                                  <Text
+                                                                                    style={{
+                                                                                      fontSize: 10,
+                                                                                      fontWeight:
+                                                                                        "500",
+                                                                                    }}
+                                                                                  >
+                                                                                    {
+                                                                                      innerItem5.empName
+                                                                                    }
+                                                                                  </Text>
+                                                                                  <Pressable
+                                                                                    onPress={() => {
+                                                                                      navigation.navigate(
+                                                                                        AppNavigator
+                                                                                          .HomeStackIdentifiers
+                                                                                          .sourceModel,
+                                                                                        {
+                                                                                          empId:
+                                                                                            innerItem5.empId,
+                                                                                          headerTitle:
+                                                                                            innerItem5.empName,
+                                                                                          type: "TEAM",
+                                                                                          moduleType:
+                                                                                            "live-leads",
+                                                                                        }
+                                                                                      );
+                                                                                    }}
+                                                                                  >
+                                                                                    <Text
+                                                                                      style={{
+                                                                                        fontSize: 12,
+                                                                                        fontWeight:
+                                                                                          "600",
+                                                                                        color:
+                                                                                          Colors.BLUE,
+                                                                                        marginLeft: 8,
+                                                                                      }}
+                                                                                    >
+                                                                                      Source/Model
+                                                                                    </Text>
+                                                                                  </Pressable>
+                                                                                </View>
                                                                                 <View
                                                                                   style={{
                                                                                     flexDirection:
@@ -2554,6 +2664,61 @@ const ParametersScreen = ({ route }) => {
                                                                                             },
                                                                                           ]}
                                                                                         >
+                                                                                          <View
+                                                                                            style={{
+                                                                                              paddingHorizontal: 4,
+                                                                                              display:
+                                                                                                "flex",
+                                                                                              flexDirection:
+                                                                                                "row",
+                                                                                              justifyContent:
+                                                                                                "space-between",
+                                                                                              paddingVertical: 4,
+                                                                                            }}
+                                                                                          >
+                                                                                            <Text
+                                                                                              style={{
+                                                                                                fontSize: 10,
+                                                                                                fontWeight:
+                                                                                                  "500",
+                                                                                              }}
+                                                                                            >
+                                                                                              {
+                                                                                                innerItem6.empName
+                                                                                              }
+                                                                                            </Text>
+                                                                                            <Pressable
+                                                                                              onPress={() => {
+                                                                                                navigation.navigate(
+                                                                                                  AppNavigator
+                                                                                                    .HomeStackIdentifiers
+                                                                                                    .sourceModel,
+                                                                                                  {
+                                                                                                    empId:
+                                                                                                      innerItem6.empId,
+                                                                                                    headerTitle:
+                                                                                                      innerItem6.empName,
+                                                                                                    type: "TEAM",
+                                                                                                    moduleType:
+                                                                                                      "live-leads",
+                                                                                                  }
+                                                                                                );
+                                                                                              }}
+                                                                                            >
+                                                                                              <Text
+                                                                                                style={{
+                                                                                                  fontSize: 12,
+                                                                                                  fontWeight:
+                                                                                                    "600",
+                                                                                                  color:
+                                                                                                    Colors.BLUE,
+                                                                                                  marginLeft: 8,
+                                                                                                }}
+                                                                                              >
+                                                                                                Source/Model
+                                                                                              </Text>
+                                                                                            </Pressable>
+                                                                                          </View>
                                                                                           <View
                                                                                             style={{
                                                                                               flexDirection:

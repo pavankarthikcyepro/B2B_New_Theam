@@ -142,7 +142,7 @@ const HomeScreen = ({ route, navigation }) => {
     orgId: 0,
   });
 
-    const isFocused = useIsFocused();
+  const isFocused = useIsFocused();
   const isDrawerOpen = useIsDrawerOpen();
 
   useEffect(() => {
@@ -184,7 +184,7 @@ const HomeScreen = ({ route, navigation }) => {
       selector.isModalVisible
       // && !isEmpty(initialPosition)
     ) {
-      getDetails();
+      // getDetails(); // Attendance POP up
     }
   }, [selector.isModalVisible, initialPosition]);
 
@@ -968,7 +968,8 @@ const HomeScreen = ({ route, navigation }) => {
               });
           }
         })
-        .catch(() => {
+        .catch((e) => {
+          console.log("FFFf", e);
           setLoading(false);
         });
     }
@@ -998,17 +999,23 @@ const HomeScreen = ({ route, navigation }) => {
           description: "Downloading image.",
         },
       };
-      config(options)
-        .fetch("GET", url)
-        .then((res) => {
-          setLoading(false);
-          RNFetchBlob.android.actionViewIntent(res.path());
-          // do some magic here
-        })
-        .catch((err) => {
-          console.error(err);
-          setLoading(false);
-        });
+      AsyncStore.getData(AsyncStore.Keys.ACCESS_TOKEN).then((token) => {
+        config(options)
+          .fetch("GET", url, {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          })
+          .then((res) => {
+            setLoading(false);
+            RNFetchBlob.android.actionViewIntent(res.path());
+            // do some magic here
+          })
+          .catch((err) => {
+            console.error(err);
+            setLoading(false);
+          });
+      });
     }
     if (Platform.OS === "ios") {
       options = {
@@ -1024,20 +1031,25 @@ const HomeScreen = ({ route, navigation }) => {
         //appendExt: fileExt,
         notification: true,
       };
-
-      config(options)
-        .fetch("GET", url)
-        .then((res) => {
-          setLoading(false);
-          setTimeout(() => {
-            // RNFetchBlob.ios.previewDocument('file://' + res.path());   //<---Property to display iOS option to save file
-            RNFetchBlob.ios.openDocument(res.data); //<---Property to display downloaded file on documaent viewer
-            // Alert.alert(CONSTANTS.APP_NAME,'File download successfully');
-          }, 300);
-        })
-        .catch((errorMessage) => {
-          setLoading(false);
-        });
+      AsyncStore.getData(AsyncStore.Keys.ACCESS_TOKEN).then((token) => {
+        config(options)
+          .fetch("GET", url, {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          })
+          .then((res) => {
+            setLoading(false);
+            setTimeout(() => {
+              // RNFetchBlob.ios.previewDocument('file://' + res.path());   //<---Property to display iOS option to save file
+              RNFetchBlob.ios.openDocument(res.data); //<---Property to display downloaded file on documaent viewer
+              // Alert.alert(CONSTANTS.APP_NAME,'File download successfully');
+            }, 300);
+          })
+          .catch((errorMessage) => {
+            setLoading(false);
+          });
+      });
     }
   };
 
@@ -1045,7 +1057,7 @@ const HomeScreen = ({ route, navigation }) => {
     navigation.navigate(
       screenName ? screenName : AppNavigator.TabStackIdentifiers.ems
     );
-    if (!screenName){
+    if (!screenName) {
       setTimeout(() => {
         navigation.navigate("LEADS", {
           // param: param === "INVOICE" ? "Retail" : param,
@@ -1172,13 +1184,13 @@ const HomeScreen = ({ route, navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <RenderModal />
-      <AttendanceFromSelf
+      {/* <AttendanceFromSelf
         visible={attendance}
         showReason={reason}
         inVisible={() => {
           setAttendance(false);
         }}
-      />
+      /> */}
       <DropDownComponant
         visible={showDropDownModel}
         headerTitle={dropDownTitle}
