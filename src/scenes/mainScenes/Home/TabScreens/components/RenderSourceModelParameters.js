@@ -167,7 +167,9 @@ export const RenderSourceModelParameters = (parameter) => {
               >
                 <Text style={[styles.totalText1, { color: elementColor }]}>
                   {selectedParameter
-                    ? displayType === 0 || selectedParameter.paramName.includes("PER CAR")
+                    ? displayType === 0 ||
+                      selectedParameter.paramName.includes("PER CAR") ||
+                      selectedParameter.paramName.includes("Accessories")
                       ? selectedParameter.achievment
                       : selectedParameter.paramName == "DROPPED" ||
                         // selectedParameter.target > 0
