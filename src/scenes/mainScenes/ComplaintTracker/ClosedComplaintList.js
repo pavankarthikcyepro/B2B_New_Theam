@@ -1,12 +1,12 @@
 import { SafeAreaView, StyleSheet, Text, View, Pressable, FlatList } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { DatePickerComponent, DateRangeComp, DropAnalysisSubFilterComp, LeadsFilterComp, SingleLeadSelectComp } from '../../../components';
+import { ComplaintTrackerSubFilterComp, DatePickerComponent, DateRangeComp, DropAnalysisSubFilterComp, LeadsFilterComp, SingleLeadSelectComp } from '../../../components';
 import moment from 'moment';
 import { Colors } from '../../../styles';
 import * as AsyncStore from "../../../asyncStore";
 import { IconButton, Searchbar } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
-import { getComplaintListFilterClosed } from '../../../redux/complaintTrackerReducer';
+import { getComplaintListFilterClosed, postDropComplaintSubMenu } from '../../../redux/complaintTrackerReducer';
 import { ComplintLidtItem } from './ComplintLidtItem';
 import { ComplainTrackerIdentifires } from '../../../navigations/appNavigator';
 import { EmptyListView } from '../../../pureComponents';
@@ -76,6 +76,25 @@ const ClosedComplaintList = (props) => {
         }
 
     }, [selector.closeComplainListres])
+
+    useEffect(() => {
+        if (selector.complaintMainFilterData) {
+            let path = selector.complaintMainFilterData;
+            const newArr = path.map((v) => ({ ...v, checked: false }));
+            setLeadsFilterData(newArr)
+        }
+    }, [selector.complaintMainFilterData])
+
+    useEffect(() => {
+        if (selector.complaintSubFilterData) {
+            let path = selector.complaintSubFilterData;
+            const newArr = path.map((v) => ({ ...v, checked: false }));
+            // setTempStore(newArr);
+            setSubMenu(newArr);
+        }
+
+
+    }, [selector.complaintSubFilterData])
 
     useEffect(() => {
         if (appSelector.isSearch) {
@@ -215,7 +234,7 @@ const ClosedComplaintList = (props) => {
                 break;
         }
     }
-    const getPayloadData = (startdate, toDate) => {
+    const getPayloadData = (startdate, toDate, mainMenu, subMenu) => {
 
 
         const payload = {
@@ -223,7 +242,9 @@ const ClosedComplaintList = (props) => {
             "loginUser": userData.employeeName,
             "startDate": startdate,
             "endDate": toDate,
-            "status": "Closed"
+            "status": "Closed",
+            "mainManu": mainMenu,
+            "subManu": subMenu
         }
         return payload;
     }
@@ -241,7 +262,9 @@ const ClosedComplaintList = (props) => {
             "loginUser": userData.employeeName,
             "startDate": CurrentMonthFirstDate,
             "endDate": currentMonthLastDate,
-            "status": "Closed"
+            "status": "Closed",
+            "mainManu": "",
+            "subManu": ""
         }
         dispatch(getComplaintListFilterClosed(payload))
     }
@@ -284,6 +307,14 @@ const ClosedComplaintList = (props) => {
 
     const getSubMenuList = (name) => {
         //    call secound API here 
+        const tempPayload = {
+            "menu": name,
+            "orgId": userData.orgId,
+            "userId": userData.employeeId
+
+        }
+        dispatch(postDropComplaintSubMenu(tempPayload))
+
     }
 
     return (
@@ -331,7 +362,7 @@ const ClosedComplaintList = (props) => {
                     //   getDropAnalysisWithFilterFromServer();
                     setLeadsFilterDropDownText("All")
                     setLeadsSubMenuFilterDropDownText("All");
-                    let path = selector.dropStageMenus;
+                    let path = selector.complaintMainFilterData;
 
                     const newArr = path.map((v) => ({ ...v, checked: false }));
                     setLeadsFilterData(newArr);
@@ -342,9 +373,10 @@ const ClosedComplaintList = (props) => {
                     const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
                     setFromDateState(CurrentMonthFirstDate);
                     setToDateState(currentMonthLastDate);
+                    initialCallToserver()
                 }}
             />
-            <DropAnalysisSubFilterComp
+            <ComplaintTrackerSubFilterComp
                 visible={leadsSubMenuFilterVisible}
                 modelList={subMenu}
                 submitCallback={(x) => {
@@ -356,7 +388,7 @@ const ClosedComplaintList = (props) => {
                     // if (data.length === subMenu.length) {
                     //     setLeadsSubMenuFilterDropDownText("All");
                     // } else {
-                    const names = data.map((y) => y?.subMenu);
+                    const names = data.map((y) => y?.menu);
                     setLeadsSubMenuFilterDropDownText(
                         names.toString() ? names.toString() : "Select Sub Menu"
                     );
@@ -364,7 +396,8 @@ const ClosedComplaintList = (props) => {
                     data.map((item) =>
                         tmpArr.push(item.leadStage)
                     )
-
+                    const payload = getPayloadData(selectedFromDate, selectedToDate, leadsFilterDropDownText, names.toString());
+                    dispatch(getComplaintListFilterClosed(payload))
                     //   getDropAnalysisWithFilterFromServerFilterApply(selectedFromDate, selectedToDate, ...tmpArr, null)
                     // }
                 }}

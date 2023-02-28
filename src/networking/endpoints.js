@@ -679,6 +679,20 @@ const URL = {
   GEY_COMPLAINT_DET_FROMID: (complaintId) => {
     return sales_url + `/complainttracker/getCt/${complaintId}`;
   },
+
+  GET_COMPLAINT_DROPDOWN_MAIN: () => {
+    return baseUrl + `dfd/common/dropComplaintMenuFilter`;
+  },
+  GET_COMPLAINT_CONSULTANT: (orgId, branchId) => {
+    return sales_url + `/employees/salesconsultant/${orgId}/${branchId}`;
+  },
+  GET_COMPLAINT_MANAGER: (empid) => {
+    return sales_url + `/employees/manager/${empid}`;
+  },
+  POST_GETSUBMENU_COMPLAINT: () => {
+    return baseUrl + `dfd/common/dropComplaintSubMenu`;
+  },
+
   POST_COMPLAINT: () => {
     return sales_url + `/complainttracker/save`;
   },

@@ -194,7 +194,7 @@ export const ComplintLidtItem = ({
                         {/*<Text style={styles.catText}>{enqCat}</Text>*/}
                     </View>
                     <Text style={styles.text2}>{date}</Text>
-                    <Text style={styles.text5}>{source + " - " + salesExecutiveName}</Text>
+                    <Text style={styles.text5} numberOfLines={1}>{source + " - " + salesExecutiveName}</Text>
                     <Text style={styles.text2}>{phone}</Text>
                     <View style={{ flexDirection: "row" ,alignContent:"center"}}>
                         <Text style={styles.text2}>{"Ageing - "}</Text>
@@ -391,5 +391,6 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: "600",
         marginBottom: 5,
+        width:'80%'
     },
 });

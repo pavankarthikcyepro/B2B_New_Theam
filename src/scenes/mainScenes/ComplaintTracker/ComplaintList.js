@@ -1,13 +1,13 @@
 import { Pressable, SafeAreaView, StyleSheet, Text, View, RefreshControl, FlatList } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { DatePickerComponent, DateRangeComp, DropAnalysisSubFilterComp, LeadsFilterComp, SingleLeadSelectComp } from '../../../components';
+import { ComplaintTrackerSubFilterComp, DatePickerComponent, DateRangeComp, DropAnalysisSubFilterComp, LeadsFilterComp, SingleLeadSelectComp } from '../../../components';
 import moment from 'moment';
 import { IconButton, Searchbar } from 'react-native-paper';
 import { Colors } from '../../../styles';
 import { MyTaskNewItem } from '../MyTasks/components/MyTasksNewItem';
 import { ComplintLidtItem } from './ComplintLidtItem';
 import { useDispatch, useSelector } from 'react-redux';
-import { getComplaintListFilter, getComplaintListFilterClosed } from '../../../redux/complaintTrackerReducer';
+import { getComplaintListFilter, getComplaintListFilterClosed, getComplaintMenuFilter, postDropComplaintSubMenu } from '../../../redux/complaintTrackerReducer';
 import * as AsyncStore from "../../../asyncStore";
 import { ComplainTrackerIdentifires } from '../../../navigations/appNavigator';
 import { EmptyListView } from '../../../pureComponents';
@@ -16,12 +16,12 @@ import { updateIsSearch, updateSearchKey } from '../../../redux/appReducer';
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().add(0, "day").format(dateFormat)
 const data = [{
-        id:0,
-        name:"manthan",
-        factoryType:"car servvice",
-        consultant:"churan",
-        mobileNo:"9978948079",
-        model:"Jeep compas"
+    id: 0,
+    name: "manthan",
+    factoryType: "car servvice",
+    consultant: "churan",
+    mobileNo: "9978948079",
+    model: "Jeep compas"
 }]
 
 const ComplaintList = (props) => {
@@ -65,7 +65,7 @@ const ComplaintList = (props) => {
     //     setFromDateState(CurrentMonthFirstDate);
     //     setToDateState(currentMonthLastDate);
     //     // getUserData()
-      
+
     // }, [])
     useEffect(() => {
         props.navigation.addListener("focus", () => {
@@ -76,17 +76,38 @@ const ComplaintList = (props) => {
             setFromDateState(CurrentMonthFirstDate);
             setToDateState(currentMonthLastDate);
             getUserData()
+            dispatch(getComplaintMenuFilter());
         });
     }, [props.navigation]);
 
-        useEffect(() => {
-          
-            if (selector.complaintListRes){
-                setActiveComplaintList(selector.complaintListRes)
-            }
-         
-        }, [selector.complaintListRes])
-        
+    useEffect(() => {
+
+        if (selector.complaintListRes) {
+            setActiveComplaintList(selector.complaintListRes)
+        }
+
+    }, [selector.complaintListRes])
+
+    useEffect(() => {
+        if (selector.complaintMainFilterData) {
+            let path = selector.complaintMainFilterData;
+            const newArr = path.map((v) => ({ ...v, checked: false }));
+            setLeadsFilterData(newArr)
+        }
+    }, [selector.complaintMainFilterData])
+
+    useEffect(() => {
+        if (selector.complaintSubFilterData){
+            let path = selector.complaintSubFilterData;
+            const newArr = path.map((v) => ({ ...v, checked: false }));
+            // setTempStore(newArr);
+            setSubMenu(newArr);
+        }
+    
+     
+    }, [selector.complaintSubFilterData])
+    
+
 
     useEffect(() => {
         if (appSelector.isSearch) {
@@ -94,15 +115,15 @@ const ComplaintList = (props) => {
             if (appSelector.searchKey !== "") {
                 let tempData = [];
                 tempData = selector.complaintListRes.filter((item) => {
-                
+
                     return (
                         `${item.customerName}`
                             .toLowerCase()
                             .includes(appSelector.searchKey.toLowerCase())
-                       
+
                     );
                 });
-              
+
                 // setActiveComplaintList([])
                 setActiveComplaintList(tempData)
                 // setSearchedData([]);
@@ -135,7 +156,7 @@ const ComplaintList = (props) => {
         dispatch(updateIsSearch(true));
     };
 
-    const getPayloadData = (startdate,toDate) => {
+    const getPayloadData = (startdate, toDate,mainMenu,subMenu) => {
 
 
         const payload = {
@@ -143,7 +164,9 @@ const ComplaintList = (props) => {
             "loginUser": userData.employeeName,
             "startDate": startdate,
             "endDate": toDate,
-            "status": "Active"
+            "status": "Active",
+            "mainManu": mainMenu,
+            "subManu": subMenu
         }
         return payload;
     }
@@ -153,7 +176,7 @@ const ComplaintList = (props) => {
         switch (key) {
             case "FROM_DATE":
                 setFromDateState(formatDate);
-                const payload = getPayloadData(formatDate,selectedToDate);
+                const payload = getPayloadData(formatDate, selectedToDate);
                 dispatch(getComplaintListFilter(payload))
 
                 break;
@@ -221,7 +244,7 @@ const ComplaintList = (props) => {
                     isCRM: isCRM,
                     isCRE: isCRE,
                 });
-               
+
                 // let payload = getPayloadData();
                 const dateFormat = "YYYY-MM-DD";
                 const currentDate = moment().add(0, "day").format(dateFormat)
@@ -232,7 +255,9 @@ const ComplaintList = (props) => {
                     "loginUser": jsonObj.empName,
                     "startDate": CurrentMonthFirstDate,
                     "endDate": currentMonthLastDate,
-                    "status": "Active"
+                    "status": "Active",
+                    "mainManu": "",
+                    "subManu": ""
                 }
                 dispatch(getComplaintListFilter(payload))
 
@@ -246,10 +271,12 @@ const ComplaintList = (props) => {
                     "loginUser": jsonObj.empName,
                     "startDate": CurrentMonthFirstDate,
                     "endDate": currentMonthLastDate,
-                    "status": "Closed"
+                    "status": "Closed",
+                    "mainManu": "",
+                    "subManu": ""
                 }
                 dispatch(getComplaintListFilterClosed(payload2))
-               
+
             }
         } catch (error) {
             alert(error);
@@ -270,7 +297,9 @@ const ComplaintList = (props) => {
             "loginUser": userData.employeeName,
             "startDate": CurrentMonthFirstDate,
             "endDate": currentMonthLastDate,
-            "status": "Active"
+            "status": "Active",
+            "mainManu": "",
+            "subManu": ""
         }
         dispatch(getComplaintListFilter(payload))
 
@@ -282,29 +311,29 @@ const ComplaintList = (props) => {
             <>
                 <View style={{}}>
                     <ComplintLidtItem
-                    displayClose = {userData.isCRE||userData.isCRM}
-                        ageing= {item.ageing}
+                        displayClose={userData.isCRE || userData.isCRM}
+                        ageing={item.ageing}
                         from={"ACTIVE_LIST"}
                         name={
                             getFirstLetterUpperCase(item.customerName)
                         }
                         navigator={props.navigation}
-                      
-                      
+
+
                         created={item.createdDate}
                         salesExecutiveName={item.salesExecutiveName}
                         phone={item.mobileNo}
                         source={item.complaintFactor}
                         model={item.model}
                         userData={userData.hrmsRole}
-                      
+
                         onItemPress={() => {
-                            
+
                         }}
-                        onDocPress={(from,which_btn) => {
+                        onDocPress={(from, which_btn) => {
                             props.navigation.navigate(ComplainTrackerIdentifires.addEditComplaint, {
                                 from: from,
-                                complaintId:item.id,
+                                complaintId: item.id,
                                 which_btn: which_btn
                             });
                         }}
@@ -317,100 +346,112 @@ const ComplaintList = (props) => {
 
 
     const getSubMenuList = (name) => {
-    //    call secound API here 
+        //    call secound API here 
+        const tempPayload = {
+            "menu": name,
+            "orgId": userData.orgId,
+            "userId": userData.employeeId
+
+        }
+        dispatch(postDropComplaintSubMenu(tempPayload))
+        
     }
-  return (
-    <SafeAreaView style={{flex:1}}>
-          <DatePickerComponent
-              visible={showDatePicker}
-              mode={"date"}
-              maximumDate={new Date(currentDate.toString())}
-              value={new Date()}
-              onChange={(event, selectedDate) => {
+    return (
+        <SafeAreaView style={{ flex: 1 }}>
+            <DatePickerComponent
+                visible={showDatePicker}
+                mode={"date"}
+                maximumDate={new Date(currentDate.toString())}
+                value={new Date()}
+                onChange={(event, selectedDate) => {
 
-                  setShowDatePicker(false);
-                  if (Platform.OS === "android") {
-                      if (selectedDate) {
-                          updateSelectedDate(selectedDate, datePickerId);
-                      }
-                  } else {
-                      updateSelectedDate(selectedDate, datePickerId);
-                  }
-              }}
-              onRequestClose={() => setShowDatePicker(false)}
-          />
+                    setShowDatePicker(false);
+                    if (Platform.OS === "android") {
+                        if (selectedDate) {
+                            updateSelectedDate(selectedDate, datePickerId);
+                        }
+                    } else {
+                        updateSelectedDate(selectedDate, datePickerId);
+                    }
+                }}
+                onRequestClose={() => setShowDatePicker(false)}
+            />
 
-          <SingleLeadSelectComp
-              isContactVisible={true}
-              visible={leadsFilterVisible}
-              modelList={leadsFilterData}
-              submitCallback={(x) => {
-                  setLeadsSubMenuFilterDropDownText("All")
-                  setLeadsFilterData([...x]);
-                  setLeadsFilterVisible(false);
-                  const data = x.filter((y) => y.checked);
-                  if (data.length === 3) {
-                      setLeadsFilterDropDownText("All");
-                  } else {
-                      const names = data.map((y) => y.menu);
-                      getSubMenuList(names.toString());
-                      setLeadsFilterDropDownText(names.toString());
-                  }
-              }}
-              cancelClicked={() => {
-                  setLeadsFilterVisible(false);
-              }}
-              selectAll={async () => {
-                  setSubMenu([]);
-                //   getDropAnalysisWithFilterFromServer();
-                  setLeadsFilterDropDownText("All")
-                  setLeadsSubMenuFilterDropDownText("All");
-                  let path = selector.dropStageMenus;
+            <SingleLeadSelectComp
+                isContactVisible={true}
+                visible={leadsFilterVisible}
+                modelList={leadsFilterData}
+                submitCallback={(x) => {
+                    setLeadsSubMenuFilterDropDownText("All")
+                    setLeadsFilterData([...x]);
+                    setLeadsFilterVisible(false);
+                    const data = x.filter((y) => y.checked);
+                    if (data.length === 3) {
+                        setLeadsFilterDropDownText("All");
+                    } else {
+                        const names = data.map((y) => y.menu);
+                        getSubMenuList(names.toString());
+                        setLeadsFilterDropDownText(names.toString());
+                    }
+                }}
+                cancelClicked={() => {
+                    setLeadsFilterVisible(false);
+                }}
+                selectAll={async () => {
+                    setSubMenu([]);
+                    //   getDropAnalysisWithFilterFromServer();
+                    setLeadsFilterDropDownText("All")
+                    setLeadsSubMenuFilterDropDownText("All");
+                    let path = selector.complaintMainFilterData;
 
-                  const newArr = path.map((v) => ({ ...v, checked: false }));
-                  setLeadsFilterData(newArr);
+                    const newArr = path.map((v) => ({ ...v, checked: false }));
+                    setLeadsFilterData(newArr);
 
-                  const dateFormat = "YYYY-MM-DD";
-                  const currentDate = moment().add(0, "day").format(dateFormat)
-                  const CurrentMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
-                  const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
-                  setFromDateState(CurrentMonthFirstDate);
-                  setToDateState(currentMonthLastDate);
-              }}
-          />
-          <DropAnalysisSubFilterComp
-              visible={leadsSubMenuFilterVisible}
-              modelList={subMenu}
-              submitCallback={(x) => {
-                  setSubMenu([...x]);
-                  
-                  setLeadsSubMenuFilterVisible(false);
-                  const data = x.filter((y) => y.checked);
+                    const dateFormat = "YYYY-MM-DD";
+                    const currentDate = moment().add(0, "day").format(dateFormat)
+                    const CurrentMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+                    const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+                    setFromDateState(CurrentMonthFirstDate);
+                    setToDateState(currentMonthLastDate);
+                    initialCallToserver()
+                }}
+            />
+            <ComplaintTrackerSubFilterComp
+                visible={leadsSubMenuFilterVisible}
+                modelList={subMenu}
+                submitCallback={(x) => {
+                    setSubMenu([...x]);
 
-                  // if (data.length === subMenu.length) {
-                  //     setLeadsSubMenuFilterDropDownText("All");
-                  // } else {
-                  const names = data.map((y) => y?.subMenu);
-                  setLeadsSubMenuFilterDropDownText(
-                      names.toString() ? names.toString() : "Select Sub Menu"
-                  );
-                  let tmpArr = [];
-                  data.map((item) =>
-                      tmpArr.push(item.leadStage)
-                  )
+                    setLeadsSubMenuFilterVisible(false);
+                    const data = x.filter((y) => y.checked);
 
-                //   getDropAnalysisWithFilterFromServerFilterApply(selectedFromDate, selectedToDate, ...tmpArr, null)
-                  // }
-              }}
-              cancelClicked={() => {
-                  setLeadsSubMenuFilterVisible(false);
-              }}
-              onChange={(x) => {
+                    // if (data.length === subMenu.length) {
+                    //     setLeadsSubMenuFilterDropDownText("All");
+                    // } else {
+                    const names = data.map((y) => y?.menu);
+                    setLeadsSubMenuFilterDropDownText(
+                        names.toString() ? names.toString() : "Select Sub Menu"
+                    );
+                    let tmpArr = [];
+                    data.map((item) =>
+                        tmpArr.push(item.leadStage)
+                    )
 
-              }}
-          />
+                    const payload = getPayloadData(selectedFromDate, selectedToDate,leadsFilterDropDownText, names.toString());
+                    dispatch(getComplaintListFilter(payload))
 
-          {/* <View style={{ width: "100%" }}>
+                    //   getDropAnalysisWithFilterFromServerFilterApply(selectedFromDate, selectedToDate, ...tmpArr, null)
+                    // }
+                }}
+                cancelClicked={() => {
+                    setLeadsSubMenuFilterVisible(false);
+                }}
+                onChange={(x) => {
+
+                }}
+            />
+
+            {/* <View style={{ width: "100%" }}>
               <DateRangeComp
                   fromDate={selectedFromDate}
                   toDate={selectedToDate}
@@ -419,16 +460,16 @@ const ComplaintList = (props) => {
               />
           </View> */}
 
-          <View style={styles.view1}>
-              <View style={{ width: "100%" }}>
-                  <DateRangeComp
-                      fromDate={selectedFromDate}
-                      toDate={selectedToDate}
-                      fromDateClicked={() => showDatePickerMethod("FROM_DATE")}
-                      toDateClicked={() => showDatePickerMethod("TO_DATE")}
-                  />
-              </View>
-              {/* <Pressable onPress={() => {}}>
+            <View style={styles.view1}>
+                <View style={{ width: "100%" }}>
+                    <DateRangeComp
+                        fromDate={selectedFromDate}
+                        toDate={selectedToDate}
+                        fromDateClicked={() => showDatePickerMethod("FROM_DATE")}
+                        toDateClicked={() => showDatePickerMethod("TO_DATE")}
+                    />
+                </View>
+                {/* <Pressable onPress={() => {}}>
                   <View style={styles.filterView}>
                       <Text style={styles.text1}>{"Filter"}</Text>
                       <IconButton
@@ -440,133 +481,133 @@ const ComplaintList = (props) => {
                   </View>
               </Pressable> */}
 
-              <View style={styles.fliterView}>
-                  <View style={{ width: '49%' }}>
-                      <Pressable
-                          onPress={() => {
-                              setLeadsFilterVisible(true);
-                          }}
-                      >
-                          <View
-                              style={{
-                                  borderWidth: 0.5,
-                                  borderColor: Colors.BORDER_COLOR,
-                                  borderRadius: 4,
-                                  flexDirection: "row",
-                                  justifyContent: "space-between",
-                                  alignItems: "center",
-                              }}
-                          >
-                              <Text
-                                  style={{
-                                      width: "65%",
-                                      paddingHorizontal: 5,
-                                      paddingVertical: 2,
-                                      fontSize: 12,
-                                      fontWeight: "600",
-                                  }}
-                                  numberOfLines={2}
-                              >
-                                  {leadsFilterDropDownText}
-                              </Text>
-                              <IconButton
-                                  icon={leadsFilterVisible ? "chevron-up" : "chevron-down"}
-                                  size={20}
-                                  color={Colors.BLACK}
-                                  style={{ margin: 0, padding: 0 }}
-                              />
-                          </View>
-                      </Pressable>
-                  </View>
-                  <View
-                      style={{
-                          width: "49%",
-                      }}
-                  >
-                      <Pressable
-                          onPress={() => {
-                              setLeadsSubMenuFilterVisible(true);
-                          }}
-                      >
-                          <View
-                              style={{
-                                  borderWidth: 0.5,
-                                  borderColor: Colors.BORDER_COLOR,
-                                  borderRadius: 4,
-                                  flexDirection: "row",
-                                  justifyContent: "space-between",
-                                  alignItems: "center",
-                              }}
-                          >
-                              <Text
-                                  style={{
-                                      width: "65%",
-                                      paddingHorizontal: 5,
-                                      paddingVertical: 2,
-                                      fontSize: 12,
-                                      fontWeight: "600",
-                                  }}
-                                  numberOfLines={2}
-                              >
-                                  {leadsSubMenuFilterDropDownText}
-                              </Text>
-                              <IconButton
-                                  icon={
-                                      leadsSubMenuFilterVisible ? "chevron-up" : "chevron-down"
-                                  }
-                                  size={20}
-                                  color={Colors.BLACK}
-                                  style={{
-                                      margin: 0,
-                                      padding: 0,
-                                  }}
-                              />
-                          </View>
-                      </Pressable>
-                  </View>
-              </View>
-          </View>
-          <View>
-              <Searchbar
-                  placeholder="Search"
-                  onChangeText={onChangeSearch}
-                  value={searchQuery}
-                  style={styles.searchBar}
-              />
-          </View>
-          {activeComplaintList.length <= 0 ? 
-          <EmptyListView
-              title={"No Data Found"}
-                  isLoading={selector.isLoading}
-          /> : <View style={[styles.flatlistView]}>
-              <FlatList
+                <View style={styles.fliterView}>
+                    <View style={{ width: '49%' }}>
+                        <Pressable
+                            onPress={() => {
+                                setLeadsFilterVisible(true);
+                            }}
+                        >
+                            <View
+                                style={{
+                                    borderWidth: 0.5,
+                                    borderColor: Colors.BORDER_COLOR,
+                                    borderRadius: 4,
+                                    flexDirection: "row",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                }}
+                            >
+                                <Text
+                                    style={{
+                                        width: "65%",
+                                        paddingHorizontal: 5,
+                                        paddingVertical: 2,
+                                        fontSize: 12,
+                                        fontWeight: "600",
+                                    }}
+                                    numberOfLines={2}
+                                >
+                                    {leadsFilterDropDownText}
+                                </Text>
+                                <IconButton
+                                    icon={leadsFilterVisible ? "chevron-up" : "chevron-down"}
+                                    size={20}
+                                    color={Colors.BLACK}
+                                    style={{ margin: 0, padding: 0 }}
+                                />
+                            </View>
+                        </Pressable>
+                    </View>
+                    <View
+                        style={{
+                            width: "49%",
+                        }}
+                    >
+                        <Pressable
+                            onPress={() => {
+                                setLeadsSubMenuFilterVisible(true);
+                            }}
+                        >
+                            <View
+                                style={{
+                                    borderWidth: 0.5,
+                                    borderColor: Colors.BORDER_COLOR,
+                                    borderRadius: 4,
+                                    flexDirection: "row",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                }}
+                            >
+                                <Text
+                                    style={{
+                                        width: "65%",
+                                        paddingHorizontal: 5,
+                                        paddingVertical: 2,
+                                        fontSize: 12,
+                                        fontWeight: "600",
+                                    }}
+                                    numberOfLines={2}
+                                >
+                                    {leadsSubMenuFilterDropDownText}
+                                </Text>
+                                <IconButton
+                                    icon={
+                                        leadsSubMenuFilterVisible ? "chevron-up" : "chevron-down"
+                                    }
+                                    size={20}
+                                    color={Colors.BLACK}
+                                    style={{
+                                        margin: 0,
+                                        padding: 0,
+                                    }}
+                                />
+                            </View>
+                        </Pressable>
+                    </View>
+                </View>
+            </View>
+            <View>
+                <Searchbar
+                    placeholder="Search"
+                    onChangeText={onChangeSearch}
+                    value={searchQuery}
+                    style={styles.searchBar}
+                />
+            </View>
+            {activeComplaintList.length <= 0 ?
+                <EmptyListView
+                    title={"No Data Found"}
+                    isLoading={selector.isLoading}
+                /> : <View style={[styles.flatlistView]}>
+                    <FlatList
 
-                  initialNumToRender={activeComplaintList.length}
-                  data={activeComplaintList}
-                  extraData={activeComplaintList}
-                  keyExtractor={(item, index) => index.toString()}
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={selector.isExtraLoading}
-                            onRefresh={() => initialCallToserver()}
-                            progressViewOffset={200}
-                        />
-                    }
-                  showsVerticalScrollIndicator={false}
-                  onEndReachedThreshold={0}
-                  onEndReached={() => {
-                      //   if (searchQuery === "") {
-                      //       getMoreEnquiryListFromServer();
-                      //   }
-                  }}
-                  //   ListFooterComponent={renderFooter}
-                  renderItem={renderItem}
-              />
-          </View> }
-        
- 
-      </SafeAreaView>
-  )
+                        initialNumToRender={activeComplaintList.length}
+                        data={activeComplaintList}
+                        extraData={activeComplaintList}
+                        keyExtractor={(item, index) => index.toString()}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={selector.isExtraLoading}
+                                onRefresh={() => initialCallToserver()}
+                                progressViewOffset={200}
+                            />
+                        }
+                        showsVerticalScrollIndicator={false}
+                        onEndReachedThreshold={0}
+                        onEndReached={() => {
+                            //   if (searchQuery === "") {
+                            //       getMoreEnquiryListFromServer();
+                            //   }
+                        }}
+                        //   ListFooterComponent={renderFooter}
+                        renderItem={renderItem}
+                    />
+                </View>}
+
+
+        </SafeAreaView>
+    )
 }
 
 export default ComplaintList
@@ -593,7 +634,7 @@ const styles = StyleSheet.create({
         height: 50,
         justifyContent: "center",
     },
-     txt1: {
+    txt1: {
         width: "80%",
         paddingHorizontal: 5,
         paddingVertical: 2,

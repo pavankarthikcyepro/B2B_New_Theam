@@ -5,7 +5,7 @@ import { Colors, GlobalStyle } from '../../../styles';
 import { DatePickerComponent, DropDownComponant, ImagePickerComponent, TextinputComp } from '../../../components';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCustomerDetails, updateSelectedDate,clearState,setDatePicker,
-    setDropDownData, setImagePicker, getDetailsFromPoneNumber, getComplainFactorDropDownData, getLocationList, getBranchData, getDepartment, getDesignation, getEmployeeDetails, postComplaintFirstTime, clearStateFormData, getComplaitDetailsfromId, postComplaintClose, clearStateFormDataBtnClick
+    setDropDownData, setImagePicker, getDetailsFromPoneNumber, getComplainFactorDropDownData, getLocationList, getBranchData, getDepartment, getDesignation, getEmployeeDetails, postComplaintFirstTime, clearStateFormData, getComplaitDetailsfromId, postComplaintClose, clearStateFormDataBtnClick, getBranchDataForRegister
 } from '../../../redux/complaintTrackerReducer';
 import { DateSelectItem, DropDownSelectionItem, ImageSelectItem } from '../../../pureComponents';
 import { UserState } from 'realm';
@@ -17,10 +17,33 @@ import { useEffect } from 'react';
 import * as AsyncStore from "../../../asyncStore";
 import { showToast } from '../../../utils/toast';
 import { useRef } from 'react';
+import { GetCarModelList } from '../../../utils/helperFunctions';
 const dateFormat = "DD/MM/YYYY";
 const currentDate = moment().add(0, "day").format(dateFormat)
 let deptId_local, branchid_local="";
-
+const stageDataLocal = [
+    {
+        "id": 1,
+        "name": "Contact",
+    },
+    {
+        "id": 2,
+        "name": "Enquiry",
+    },
+    {
+        "id": 3,
+        "name": "Booking",
+    },
+    {
+        "id": 4,
+        "name": "Retail",
+    },
+   
+    {
+        "id": 5,
+        "name": "Delivery",
+    }
+]
 const AddEditComplaint = (props) => {
     const [openAccordian, setOpenAccordian] = useState(0);
     const selector = useSelector((state) => state.complaintTrackerReducer);
@@ -48,6 +71,7 @@ const AddEditComplaint = (props) => {
         isCRE: false,
     });
     const [isSubmitPress, setIsSubmitPress] = useState(false);
+    const [carModelsList, setCarModelsList] = useState([]);
 
     useEffect(() => {
         getUserData()
@@ -145,6 +169,7 @@ const AddEditComplaint = (props) => {
 
                 dispatch(getComplainFactorDropDownData(jsonObj.orgId))
                 dispatch(getLocationList(jsonObj.orgId))
+                getCarModelListFromServer(jsonObj.orgId)
             }
         } catch (error) {
             alert(error);
@@ -350,7 +375,7 @@ const AddEditComplaint = (props) => {
                 "status": status
             }
 
-            // dispatch(postComplaintClose(payload));
+            dispatch(postComplaintClose(payload));
         } else if (status === "Update") {
             let payload = {
                 "id": selector.complaintDetailsFromIdRes ? selector.complaintDetailsFromIdRes?.id : 0,
@@ -586,12 +611,90 @@ const AddEditComplaint = (props) => {
                 })
                 setDataForDropDown([...newObjData6]);
                 break;
+
+            case "REG_LOCATION":
+                let objData7 = selector.complainLocationDropDown;
+                let newObjData7 = objData7.map((item) => {
+
+                    let obj = {
+                        id: item.id,
+                        name: item.name
+                    }
+                    return obj
+                })
+
+                setDataForDropDown([...newObjData7]);
+                break;
+            case "REG_BRANCH":
+                let objData9 = selector.complaintRegisterBranchDropDown;
+                let newObjData9 = objData9.map((item) => {
+
+                    let obj = {
+                        id: item.id,
+                        name: item.value    
+                    }
+                    return obj
+                })
+
+                setDataForDropDown([...newObjData9]);
+                break;
+            case "REG_MODEL":
+                let objData10 = carModelsList;
+                let newObjData10 = objData10.map((item) => {
+
+                    let obj = {
+                        id: item.id,
+                        name: item.model
+                    }
+                    return obj
+                })
+
+                setDataForDropDown([...newObjData10]);
+                break;
+            case "REG_STAGE":
+                // let objData11= stageDataLocal;
+                // let newObjData11 = objData11.map((item) => {
+
+                //     let obj = {
+                //         id: item.id,
+                //         name: item.menu
+                //     }
+                //     return obj
+                // })
+
+                setDataForDropDown([...stageDataLocal]);
+                break;
            
         }
         setDropDownKey(key);
         setDropDownTitle(headerText);
         setShowDropDownModel(true);
     };
+
+    const getCarModelListFromServer = (orgId) => {
+    // Call Api
+    GetCarModelList(orgId)
+      .then(
+        (resolve) => {
+          let modalList = [];
+          if (resolve.length > 0) {
+            // resolve.forEach((item) => {
+            //   modalList.push({
+            //     id: item.vehicleId,
+            //     name: item.model,
+            //     isChecked: false,
+            //     ...item,
+            //   });
+            // });
+              setCarModelsList(resolve);
+          }
+        //   console.log("manthass ",JSON.stringify([...modalList]));
+             
+        
+        },
+        (rejected) => {}
+      )
+  };
 
     const renderPickUpImageDoc = ()=>{
         return (<View style={{ flexDirection: "row", justifyContent: "space-between" }}>
@@ -789,6 +892,16 @@ const AddEditComplaint = (props) => {
                           id: "",
                           orgId: userData.orgId,
                       }))
+                  } else if (dropDownKey === "REG_LOCATION"){
+                      let payload = {
+                          orgId: userData.orgId,
+                          parent: "organization",
+                          child: "branch",
+                          parentId: item.id
+                      }
+                      dispatch(getBranchDataForRegister(payload))
+                  } else if (dropDownKey === "REG_BRANCH") {
+
                   }
                   setShowDropDownModel(false);
                   dispatch(
@@ -899,7 +1012,7 @@ const AddEditComplaint = (props) => {
 
                                       <View style={{ width: '40%' }}>
 
-                                          <TextinputComp
+                                          {/* <TextinputComp
                                               style={styles.textInputStyle}
                                               value={selector.location}
                                               //   keyboardType={}
@@ -913,7 +1026,16 @@ const AddEditComplaint = (props) => {
                                               }
                                               showRightIcon={false}
 
+                                          /> */}
+                                          <DropDownSelectionItem
+                                              disabled={isEditable() || isEditbaleForRegistration()}
+                                              label={"Location"}
+                                              value={selector.location}
+                                              onPress={() =>
+                                                  showDropDownModelMethod("REG_LOCATION", "Please Select")
+                                              }
                                           />
+                                          
                                           {/* <DropDownSelectionItem
                                   label={"Model*"}
                                   value={selector.carModel}
@@ -927,7 +1049,7 @@ const AddEditComplaint = (props) => {
 
                                   <View style={{ flexDirection: "row", width: '100%', justifyContent: "space-between" }}>
                                       <View style={{ width: '40%' }}>
-                                          <TextinputComp
+                                          {/* <TextinputComp
                                               style={styles.textInputStyle}
                                               value={selector.branch}
                                               //   keyboardType={"number-pad"}
@@ -940,10 +1062,19 @@ const AddEditComplaint = (props) => {
                                                   )
                                               }
                                               showRightIcon={false}
+                                          /> */}
+                                          <DropDownSelectionItem
+                                              disabled={isEditable() || isEditbaleForRegistration()}
+                                              label={"Branch"}
+                                              value={selector.branch}
+                                              onPress={() =>
+                                                  showDropDownModelMethod("REG_BRANCH", "Please Select")
+                                              }
                                           />
+                                          
                                       </View>
                                       <View style={{ width: '40%' }}>
-                                          <TextinputComp
+                                          {/* <TextinputComp
                                               style={styles.textInputStyle}
                                               value={selector.model}
                                               //   keyboardType={"number-pad"}
@@ -956,6 +1087,15 @@ const AddEditComplaint = (props) => {
                                                   )
                                               }
                                               showRightIcon={false}
+                                          /> */}
+
+                                          <DropDownSelectionItem
+                                              disabled={isEditable() || isEditbaleForRegistration()}
+                                              label={"Model"}
+                                              value={selector.model}
+                                              onPress={() =>
+                                                  showDropDownModelMethod("REG_MODEL", "Please Select")
+                                              }
                                           />
                                       </View>
                                   </View>
@@ -994,7 +1134,7 @@ const AddEditComplaint = (props) => {
 
                                   <View style={{ flexDirection: "row", width: '100%', justifyContent: "space-between" }}>
                                       <View style={{ width: '50%' }}>
-                                          <TextinputComp
+                                          {/* <TextinputComp
                                               style={styles.textInputStyle}
                                               value={selector.stage}
                                               //   keyboardType={"number-pad"}
@@ -1007,6 +1147,15 @@ const AddEditComplaint = (props) => {
                                                   )
                                               }
                                               showRightIcon={false}
+                                          /> */}
+
+                                          <DropDownSelectionItem
+                                              disabled={isEditable() || isEditbaleForRegistration()}
+                                              label={"Stage"}
+                                              value={selector.stage}
+                                              onPress={() =>
+                                                  showDropDownModelMethod("REG_STAGE", "Please Select")
+                                              }
                                           />
                                       </View>
                                       <View style={{ width: '50%' }}>

@@ -69,6 +69,20 @@ export const getBranchData = createAsyncThunk("COMPLAINTS_TRACKER/getBranchData"
     }
     return json;
 })
+export const getBranchDataForRegister = createAsyncThunk("COMPLAINTS_TRACKER/getBranchDataForRegister", async (payload, { rejectWithValue }) => {
+
+    const response = await client.get(URL.TARGET_DROPDOWN(
+        payload["orgId"],
+        payload["parent"],
+        payload["child"],
+        payload["parentId"]
+    ));
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
 export const getDepartment = createAsyncThunk("COMPLAINTS_TRACKER/getDepartment", async (payload, { rejectWithValue }) => {
 
     const response = await client.get(URL.TARGET_DROPDOWN(
@@ -181,6 +195,40 @@ export const getComplaitDetailsfromId = createAsyncThunk("COMPLAINTS_TRACKER/get
     return json;
 });
 
+
+export const getComplaintMenuFilter = createAsyncThunk("COMPLAINTS_TRACKER/getComplaintMenuFilter", async (payload, { rejectWithValue }) => {
+
+    const response = await client.get(URL.GET_COMPLAINT_DROPDOWN_MAIN());
+    const json = await response.json();
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+});
+
+
+// need to complete API integration
+export const getComplaintEmployees = createAsyncThunk("COMPLAINTS_TRACKER/getComplaintEmployees", async (payload, { rejectWithValue }) => {
+
+    const response = await client.get(URL.GET_COMPLAINT_CONSULTANT(payload["orgId"], payload["branchId"]));
+    const json = await response.json();
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+});
+
+
+export const postDropComplaintSubMenu = createAsyncThunk("COMPLAINTS_TRACKER/postDropComplaintSubMenu", async (payload, { rejectWithValue }) => {
+
+    const response = await client.post(URL.POST_GETSUBMENU_COMPLAINT(), payload);
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
 interface CustomerDetailModel {
     key: string;
     text: string;
@@ -243,7 +291,10 @@ export const complaintsSlice = createSlice({
         complaintDetailsFromIdRes:"",
         complaintdoc:"",
         complainCloserDoc:"",
-        postComplaintCloseRes :""
+        postComplaintCloseRes :"",
+        complaintMainFilterData : "",
+        complaintSubFilterData: "",
+        complaintRegisterBranchDropDown:[]
     },
     reducers: {
         clearState: (state, action) => {
@@ -270,6 +321,7 @@ export const complaintsSlice = createSlice({
             state.complainLocationDropDown = [],
                 state.complainLocation = "",
                 state.complainBranchDropDown = [],
+                state.complaintRegisterBranchDropDown = [],
                 state.complainBranch = "",
                 state.complainDepartmentDropDown = [],
                 state.complainDepartment = "",
@@ -290,7 +342,9 @@ export const complaintsSlice = createSlice({
                 state.complaintDetailsFromIdRes="",
                 state.complaintdoc = "",
                 state.complainCloserDoc = "",
-                state.postComplaintCloseRes=""
+                state.postComplaintCloseRes="",
+                state.complaintMainFilterData = "",
+                state.complaintSubFilterData = ""
         },
         clearStateFormData: (state, action) => {
             state.mobile = "";
@@ -316,6 +370,7 @@ export const complaintsSlice = createSlice({
             state.complainLocationDropDown = [],
                 state.complainLocation = "",
                 state.complainBranchDropDown = [],
+                state.complaintRegisterBranchDropDown = [],
                 state.complainBranch = "",
                 state.complainDepartmentDropDown = [],
                 state.complainDepartment = "",
@@ -358,6 +413,7 @@ export const complaintsSlice = createSlice({
             // state.complainLocationDropDown = [],
                 state.complainLocation = "",
                 state.complainBranchDropDown = [],
+                state.complaintRegisterBranchDropDown = [],
                 state.complainBranch = "",
                 state.complainDepartmentDropDown = [],
                 state.complainDepartment = "",
@@ -480,7 +536,18 @@ export const complaintsSlice = createSlice({
                 case "COMPLAINT_EMPLOYEE":
                     state.complainEmployee = value;
                     break;
-
+                case "REG_LOCATION" :
+                    state.location = value
+                    break;
+                case "REG_BRANCH":
+                    state.branch = value
+                    break;
+                case "REG_MODEL":
+                    state.model = value;
+                    break;
+                case "REG_STAGE":
+                    state.stage = value;
+                    break;
             }
         },
     },
@@ -600,6 +667,24 @@ export const complaintsSlice = createSlice({
         builder.addCase(getBranchData.rejected, (state, action) => {
             state.isLoading = false;
             state.complainBranchDropDown = [];
+        })
+
+        
+
+        builder.addCase(getBranchDataForRegister.pending, (state, action) => {
+            state.isLoading = true;
+            state.complaintRegisterBranchDropDown = [];
+        })
+        builder.addCase(getBranchDataForRegister.fulfilled, (state, action) => {
+            state.isLoading = false;
+
+            if (action.payload) {
+                state.complaintRegisterBranchDropDown = action.payload;
+            }
+        })
+        builder.addCase(getBranchDataForRegister.rejected, (state, action) => {
+            state.isLoading = false;
+            state.complaintRegisterBranchDropDown = [];
         })
 
 
@@ -779,6 +864,42 @@ export const complaintsSlice = createSlice({
         builder.addCase(getComplaitDetailsfromId.rejected, (state, action) => {
             state.isLoading = false;
             state.complaintDetailsFromIdRes = "";
+        })
+
+
+        builder.addCase(getComplaintMenuFilter.pending, (state, action) => {
+            state.isLoading = true;
+            state.complaintMainFilterData = "";
+        })
+        builder.addCase(getComplaintMenuFilter.fulfilled, (state, action) => {
+            state.isLoading = false;
+
+            if (action.payload) {
+                state.complaintMainFilterData = action.payload;
+                
+            }
+        })
+        builder.addCase(getComplaintMenuFilter.rejected, (state, action) => {
+            state.isLoading = false;
+            state.complaintMainFilterData = "";
+        })
+
+
+        builder.addCase(postDropComplaintSubMenu.pending, (state, action) => {
+            state.isLoading = true;
+            state.complaintSubFilterData = "";
+        })
+        builder.addCase(postDropComplaintSubMenu.fulfilled, (state, action) => {
+            state.isLoading = false;
+
+            if (action.payload) {
+                state.complaintSubFilterData = action.payload;
+
+            }
+        })
+        builder.addCase(postDropComplaintSubMenu.rejected, (state, action) => {
+            state.isLoading = false;
+            state.complaintSubFilterData = "";
         })
     }
 });
