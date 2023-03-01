@@ -2106,6 +2106,14 @@ const BookingFormScreen = ({ route, navigation }) => {
       return isError;
     };
 
+  function isSelfManagerBikeWo() {
+    if (userData.isSelfManager == "Y" && userData.isTracker === "N") {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
     return (
       <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
         <ImagePickerComponent
@@ -3830,7 +3838,7 @@ const BookingFormScreen = ({ route, navigation }) => {
 
                   <TextinputComp
                     style={styles.offerPriceTextInput}
-                    label={"Additional Offer 1:"}
+                    label={isSelfManagerBikeWo() ? "Govt/Subsidy": "Additional Offer 1:" }
                     value={selector.additional_offer_1}
                     showLeftAffixText={true}
                     disabled={true}

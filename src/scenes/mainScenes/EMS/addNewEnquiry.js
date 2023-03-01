@@ -3337,6 +3337,14 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     }
   };
 
+    function isSelfManagerBikeWo() {
+      if (userData.isSelfManager == "Y" && userData.isTracker === "N") {
+        return false;
+      } else {
+        return false;
+      }
+    }
+
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
       <SelectEmployeeComponant
@@ -5691,7 +5699,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                       }
                     />
                     <Text style={GlobalStyle.underline}></Text>
-
+{isSelfManagerBikeWo()&& <>
                     <DropDownSelectionItem
                       label={
                         userData.isSelfManager == "Y" ? "Range" : "Fuel Type"
@@ -5723,7 +5731,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                       clearKey={"C_TRANSMISSION_TYPE"}
                       onClear={onDropDownClear}
                     />
-
+</>}
                     <TextinputComp
                       style={styles.textInputStyle}
                       value={selector.c_price_range}
@@ -6124,7 +6132,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     }
                   />
                   <Text style={GlobalStyle.underline}></Text>
-
+{isSelfManagerBikeWo() && <>
                   <DropDownSelectionItem
                     label={
                       userData.isSelfManager == "Y" ? "Range" : "Fuel Type"
@@ -6156,7 +6164,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     clearKey={"R_TRANSMISSION_TYPE"}
                     onClear={onDropDownClear}
                   />
-
+</>}
                   <DateSelectItem
                     label={"Mth.Yr. of MFG"}
                     value={selector.r_mfg_year}

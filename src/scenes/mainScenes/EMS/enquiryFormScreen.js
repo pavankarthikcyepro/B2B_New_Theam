@@ -2293,46 +2293,48 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
   }, [selector.update_enquiry_details_response]);
 
-
   useEffect(() => {
-    if (leadStatus === "ENQUIRYCOMPLETED" &&
+    if (
+      leadStatus === "ENQUIRYCOMPLETED" &&
       leadStage === "ENQUIRY" &&
       carModelsList &&
-      carModelsList.length >0){
-      navigation.setOptions(
-        {
-         
-          headerRight: () => (
-            <TouchableOpacity
+      carModelsList.length > 0
+    ) {
+      navigation.setOptions({
+        headerRight: () => (
+          <TouchableOpacity
+            style={{
+              width: 110,
+              height: 30,
+              borderRadius: 15,
+              borderColor: Colors.RED,
+              borderWidth: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              marginRight: 5,
+              flexDirection: "row",
+            }}
+            onPress={() => {
+              navigateToProforma();
+            }}
+          >
+            <Text
               style={{
-                width: 110,
-                height: 30,
-                borderRadius: 15,
-                borderColor: Colors.RED,
-                borderWidth: 1,
-                justifyContent: "center",
-                alignItems: "center",
-                marginRight: 5,
-                flexDirection: "row",
+                fontSize: 12,
+                fontWeight: "600",
+                color: "#fff",
+                marginLeft: 5,
               }}
-              onPress={()=>{navigateToProforma()}}
             >
-             
-              <Text
-                style={{
-                  fontSize: 12,
-                  fontWeight: "600",
-                  color: "#fff",
-                  marginLeft: 5,
-                }}
-              >Proforma Invoice</Text>
-              {/* <Text style={{ fontSize: 15, fontWeight: '600', color: '#fff' }}>200 days</Text> */}
-            </TouchableOpacity>
-          ),
-        });
-      }
-  }, [leadStatus, carModelsList])
-  
+              Proforma Invoice
+            </Text>
+            {/* <Text style={{ fontSize: 15, fontWeight: '600', color: '#fff' }}>200 days</Text> */}
+          </TouchableOpacity>
+        ),
+      });
+    }
+  }, [leadStatus, carModelsList]);
+
   const getEnquiryListFromServer = () => {
     if (userData.employeeId) {
       let endUrl =
@@ -3126,6 +3128,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
   };
 
+  function isSelfManagerBikeWo() {
+    if (userData.isSelfManager == "Y" && userData.isTracker === "N") {
+      return false;
+    } else {
+      return false;
+    }
+  }
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
       <ImagePickerComponent
@@ -3264,7 +3273,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           ref={scrollRef}
         >
           <View style={styles.baseVw}>
-
             {/* {leadStatus === "ENQUIRYCOMPLETED" &&
               leadStage === "ENQUIRY" &&
               carModelsList &&
@@ -5403,39 +5411,43 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       }
                     />
                     <Text style={GlobalStyle.underline}></Text>
-
-                    <DropDownSelectionItem
-                      label={
-                        userData.isSelfManager == "Y" ? "Range" : "Fuel Type"
-                      }
-                      value={selector.c_fuel_type}
-                      onPress={() =>
-                        showDropDownModelMethod("C_FUEL_TYPE", "Fuel Type")
-                      }
-                      clearOption={true}
-                      clearKey={"C_FUEL_TYPE"}
-                      onClear={onDropDownClear}
-                    />
-                    <DropDownSelectionItem
-                      label={
-                        userData.isSelfManager == "Y"
-                          ? "Battery Type"
-                          : userData.isTracker == "Y"
-                          ? "Clutch Type"
-                          : "Transmission Type"
-                      }
-                      value={selector.c_transmission_type}
-                      onPress={() =>
-                        showDropDownModelMethod(
-                          "C_TRANSMISSION_TYPE",
-                          "Transmission Type"
-                        )
-                      }
-                      clearOption={true}
-                      clearKey={"C_TRANSMISSION_TYPE"}
-                      onClear={onDropDownClear}
-                    />
-
+                    {isSelfManagerBikeWo() && (
+                      <>
+                        <DropDownSelectionItem
+                          label={
+                            userData.isSelfManager == "Y"
+                              ? "Range"
+                              : "Fuel Type"
+                          }
+                          value={selector.c_fuel_type}
+                          onPress={() =>
+                            showDropDownModelMethod("C_FUEL_TYPE", "Fuel Type")
+                          }
+                          clearOption={true}
+                          clearKey={"C_FUEL_TYPE"}
+                          onClear={onDropDownClear}
+                        />
+                        <DropDownSelectionItem
+                          label={
+                            userData.isSelfManager == "Y"
+                              ? "Battery Type"
+                              : userData.isTracker == "Y"
+                              ? "Clutch Type"
+                              : "Transmission Type"
+                          }
+                          value={selector.c_transmission_type}
+                          onPress={() =>
+                            showDropDownModelMethod(
+                              "C_TRANSMISSION_TYPE",
+                              "Transmission Type"
+                            )
+                          }
+                          clearOption={true}
+                          clearKey={"C_TRANSMISSION_TYPE"}
+                          onClear={onDropDownClear}
+                        />
+                      </>
+                    )}
                     <TextinputComp
                       style={styles.textInputStyle}
                       value={selector.c_price_range}
@@ -5839,39 +5851,41 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     }
                   />
                   <Text style={GlobalStyle.underline}></Text>
-
-                  <DropDownSelectionItem
-                    label={
-                      userData.isSelfManager == "Y" ? "Range" : "Fuel Type"
-                    }
-                    value={selector.r_fuel_type}
-                    onPress={() =>
-                      showDropDownModelMethod("R_FUEL_TYPE", "Fuel Type")
-                    }
-                    clearOption={true}
-                    clearKey={"R_FUEL_TYPE"}
-                    onClear={onDropDownClear}
-                  />
-                  <DropDownSelectionItem
-                    label={
-                      userData.isSelfManager == "Y"
-                        ? "Battery Type"
-                        : userData.isTracker == "Y"
-                        ? "Clutch Type"
-                        : "Transmission Type"
-                    }
-                    value={selector.r_transmission_type}
-                    onPress={() =>
-                      showDropDownModelMethod(
-                        "R_TRANSMISSION_TYPE",
-                        "Transmission Type"
-                      )
-                    }
-                    clearOption={true}
-                    clearKey={"R_TRANSMISSION_TYPE"}
-                    onClear={onDropDownClear}
-                  />
-
+                  {isSelfManagerBikeWo() && (
+                    <>
+                      <DropDownSelectionItem
+                        label={
+                          userData.isSelfManager == "Y" ? "Range" : "Fuel Type"
+                        }
+                        value={selector.r_fuel_type}
+                        onPress={() =>
+                          showDropDownModelMethod("R_FUEL_TYPE", "Fuel Type")
+                        }
+                        clearOption={true}
+                        clearKey={"R_FUEL_TYPE"}
+                        onClear={onDropDownClear}
+                      />
+                      <DropDownSelectionItem
+                        label={
+                          userData.isSelfManager == "Y"
+                            ? "Battery Type"
+                            : userData.isTracker == "Y"
+                            ? "Clutch Type"
+                            : "Transmission Type"
+                        }
+                        value={selector.r_transmission_type}
+                        onPress={() =>
+                          showDropDownModelMethod(
+                            "R_TRANSMISSION_TYPE",
+                            "Transmission Type"
+                          )
+                        }
+                        clearOption={true}
+                        clearKey={"R_TRANSMISSION_TYPE"}
+                        onClear={onDropDownClear}
+                      />
+                    </>
+                  )}
                   <DateSelectItem
                     label={"Mth.Yr. of MFG"}
                     value={selector.r_mfg_year}
@@ -6534,7 +6548,7 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "flex-end",
     marginVertical: 6,
-    marginBottom:10
+    marginBottom: 10,
   },
   tochable1: {
     width: 140,

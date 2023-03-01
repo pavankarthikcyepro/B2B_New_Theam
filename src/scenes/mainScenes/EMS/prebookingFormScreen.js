@@ -3753,6 +3753,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     }
   };
 
+  function isSelfManagerBikeWo() {
+    if (userData.isSelfManager == "Y" && userData.isTracker === "N") {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
       <LoaderComponent visible={isLoading} />
@@ -6284,7 +6292,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 <TextinputComp
                   disabled={!isInputsEditable()}
                   style={styles.offerPriceTextInput}
-                  label={"Additional Offer 1:"}
+                  label={
+                    isSelfManagerBikeWo()
+                      ? "Govt/Subsidy"
+                      : "Additional Offer 1:"
+                  }
                   value={selector.additional_offer_1}
                   showLeftAffixText={true}
                   keyboardType="number-pad"
