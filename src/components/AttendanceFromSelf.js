@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { Colors } from "../styles";
 import { IconButton, Checkbox, Button } from "react-native-paper";
-import { RadioTextItem } from "../pureComponents";
+import { DropDownSelectionItem, RadioTextItem } from "../pureComponents";
 import { Dropdown } from "react-native-element-dropdown";
 import { TextinputComp } from "./textinputComp";
 import * as AsyncStore from "../asyncStore";
@@ -24,6 +24,7 @@ import { useNavigation } from "@react-navigation/native";
 import { AppNavigator } from "../navigations";
 import moment from "moment";
 import { monthNamesCap } from "../scenes/mainScenes/Attendance/AttendanceTop";
+import { useSelector } from "react-redux";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -60,6 +61,8 @@ const AttendanceFromSelf = ({
   showReason,
 }) => {
   const navigation = useNavigation();
+    const selector = useSelector((state) => state.homeReducer);
+
   const [comment, setComment] = useState("");
   const [commentError, setCommentError] = useState("");
   const [present, setPresent] = useState(true);
@@ -72,6 +75,17 @@ const AttendanceFromSelf = ({
   const [active, setActive] = useState(false);
   const [alreadyPresent, setAlreadyPresent] = useState(false);
   const [status, setStatus] = useState("");
+  const [DropDownData,setDropDownData]= useState({});
+  const [location, setLocation] = useState([]);
+  const [DealerCodes, setDealerCodes] = useState([]);
+  useEffect(() => {
+   if (selector.filter_drop_down_data) {
+    setDropDownData(selector.filter_drop_down_data);
+    setDealerCodes(selector.filter_drop_down_data["Dealer Code"]?.sublevels);
+    setLocation(selector.filter_drop_down_data["Location"]?.sublevels);
+   }
+  }, [selector.filter_drop_down_data]);
+  
   useEffect(() => {
     getDetails();
   }, [visible]);
@@ -324,7 +338,7 @@ const AttendanceFromSelf = ({
   function onClose() {
     setPresent(false);
   }
-
+  
   return (
     <Modal
       animationType={Platform.OS === "ios" ? "slide" : "fade"}
@@ -381,6 +395,44 @@ const AttendanceFromSelf = ({
               )}
             </View>
           </View>
+          {DealerCodes.length > 0 && location.length > 0 && (
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-around",
+                alignItems: "center",
+              }}
+            >
+              <Dropdown
+                label={"Location"}
+                visible={true}
+                underLine
+                onChange={(item) => {console.log(item);}}
+                data={location || []}
+                labelField={"name"}
+                valueField={"name"}
+                placeholder={"Location"}
+                style={[styles.dropdownElement]}
+                placeholderStyle={{
+                  color: Colors.GRAY,
+                }}
+              />
+              <Dropdown
+                label={"Dealer Code"}
+                visible={true}
+                underLine
+                onChange={(item) => {console.log(item);}}
+                data={DealerCodes || []}
+                labelField={"name"}
+                valueField={"name"}
+                placeholder={"Dealer Code"}
+                style={[styles.dropdownElement]}
+                placeholderStyle={{
+                  color: Colors.GRAY,
+                }}
+              />
+            </View>
+          )}
           <View style={{ flexDirection: "row" }}>
             {/* {punched ? (
               present ? (
@@ -718,4 +770,17 @@ const styles = StyleSheet.create({
     marginRight: 42,
   },
   badgeText: { fontSize: 12, color: Colors.WHITE, fontWeight: "bold" },
+  dropdownElement: {
+    height: 50,
+    width: "40%",
+    fontSize: 16,
+    fontWeight: "400",
+    backgroundColor: Colors.WHITE,
+    marginTop: 10,
+    borderRadius: 6,
+    padding: 15,
+    color: Colors.BLACK,
+    borderBottomColor: Colors.BLACK,
+    borderBottomWidth: 1,
+  },
 });

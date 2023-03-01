@@ -15,6 +15,7 @@ import { AppNavigator } from ".";
 import AttendanceFilter from "../scenes/mainScenes/Attendance/AttendanceFilter";
 import AttendanceDashboard from "../scenes/mainScenes/Attendance/Dashboard";
 import FilterAttendanceDashBoardScreen from "../scenes/mainScenes/Attendance/DashboardFilter";
+import DownloadReportScreen from "../scenes/mainScenes/Attendance/DownloadReport";
 
 export const AttendanceTopTabNavigatorIdentifiers = {
   myattendance: "MY_ATTENDANCE",
@@ -25,6 +26,7 @@ export const AttendanceTopTabNavigatorIdentifiers = {
   filter: "FILTER",
   dashboard: "DASHBOARD",
   dashboardFilter: "DASHBOARD FILTER",
+  report :"REPORT"
 };
 
 const screeOptionStyle = {
@@ -220,6 +222,13 @@ const AttendanceTopTabNavigatorTeams = () => {
         component={AttendanceTopTabNavigatorTeamsNav}
         options={{
           title: ({ focused }) => <Badge title={"Team"} focused={focused} />,
+        }}
+      />
+      <AttendanceTopTab.Screen
+        name={AttendanceTopTabNavigatorIdentifiers.report}
+        component={DownloadReportScreen}
+        options={{
+          title: ({ focused }) => <Badge title={"Report"} focused={focused} />,
         }}
       />
     </AttendanceTopTab.Navigator>

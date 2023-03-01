@@ -55,12 +55,12 @@ const data = [
     screen: 116,
     pngIcon: require("../assets/images/Target_Planning-01.png"),
   },
-  {
-    title: "Download Report",
-    icon: REPORT_DOWNLOAD,
-    screen: 121,
-    pngIcon: require("../assets/images/Target_Planning-01.png"),
-  },
+  // {
+  //   title: "Download Report",
+  //   icon: REPORT_DOWNLOAD,
+  //   screen: 121,
+  //   pngIcon: require("../assets/images/Target_Planning-01.png"),
+  // },
   {
     title: "Geolocation",
     icon: GEOLOCATION,
