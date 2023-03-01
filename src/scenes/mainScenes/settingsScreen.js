@@ -27,13 +27,13 @@ const datalist = [
   {
     name: "Change Password",
   },
-  {
-    name: "Deallocate",
-    isNoChildScreen: true
-  },
-  {
-    name: "Deallocate",
-  },
+  // {
+  //   name: "Deallocate",
+  //   isNoChildScreen: true
+  // },
+  // {
+  //   name: "Deallocate",
+  // },
 ];
 
 const SettingsScreen = ({ navigation }) => {
