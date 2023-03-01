@@ -58,9 +58,11 @@ const ClosedComplaintList = (props) => {
         // setFromDateState(CurrentMonthFirstDate);
         // setToDateState(currentMonthLastDate);
         getUserData()
-            dispatch(getComplaintMenuFilter());
+        
             setLeadsFilterDropDownText("All")
             setLeadsSubMenuFilterDropDownText("All");
+            setFromDateState("");
+            setToDateState("");
         });
     }, [props.navigation]);
     
@@ -227,6 +229,7 @@ const ClosedComplaintList = (props) => {
                 setLeadsFilterDropDownText("All")
                 setLeadsSubMenuFilterDropDownText("All");
                 let path = selector.complaintMainFilterData;
+               
                 const newArr = path.map((v) => ({ ...v, checked: false }));
                 setLeadsFilterData(newArr);
 
@@ -240,6 +243,7 @@ const ClosedComplaintList = (props) => {
                 setLeadsFilterDropDownText("All")
                 setLeadsSubMenuFilterDropDownText("All");
                 let path2 = selector.complaintMainFilterData;
+               
                 const newArr2 = path2.map((v) => ({ ...v, checked: false }));
                 setLeadsFilterData(newArr2);
 

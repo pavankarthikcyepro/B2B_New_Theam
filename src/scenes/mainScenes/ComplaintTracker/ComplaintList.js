@@ -57,6 +57,10 @@ const ComplaintList = (props) => {
     const [leadsSubMenuFilterDropDownText, setLeadsSubMenuFilterDropDownText] =
         useState("All");
 
+        useEffect(() => {
+            dispatch(getComplaintMenuFilter());
+        }, [])
+        
     
     useEffect(() => {
         props.navigation.addListener("focus", () => {
@@ -67,9 +71,11 @@ const ComplaintList = (props) => {
             // setFromDateState(CurrentMonthFirstDate);
             // setToDateState(currentMonthLastDate);
             getUserData()
-            dispatch(getComplaintMenuFilter());
+            
             setLeadsFilterDropDownText("All")
             setLeadsSubMenuFilterDropDownText("All");
+            setFromDateState("");
+            setToDateState("");
         });
     }, [props.navigation]);
 

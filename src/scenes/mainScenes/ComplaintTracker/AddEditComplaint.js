@@ -74,7 +74,7 @@ const AddEditComplaint = (props) => {
     });
     const [isSubmitPress, setIsSubmitPress] = useState(false);
     const [carModelsList, setCarModelsList] = useState([]);
-
+    const [selectedRegLocationid, setSelectedRegLocationid] = useState("")
     useEffect(() => {
         getUserData()
         setcomplaintDate(currentDate);
@@ -640,16 +640,26 @@ const AddEditComplaint = (props) => {
                 break;
             case "REG_BRANCH":
                 let objData9 = selector.complaintRegisterBranchDropDown;
-                let newObjData9 = objData9.map((item) => {
-
-                    let obj = {
-                        id: item.id,
-                        name: item.value    
-                    }
-                    return obj
+                let tempArr = [];
+                let newObjData9 = objData9.filter((item) => {
+                    
+                        if (selectedRegLocationid == item.parentId) {
+                           
+                           
+                                let obj = {
+                                    id: item.locationNodeDefId,
+                                    name: item.name
+                                }
+                                // return obj
+                                tempArr.push(obj)
+                            
+                        }
+                
+                    
+                    
                 })
-
-                setDataForDropDown([...newObjData9]);
+                
+                setDataForDropDown([...tempArr]);
                 break;
             case "REG_MODEL":
                 let objData10 = carModelsList;
@@ -928,6 +938,8 @@ const AddEditComplaint = (props) => {
                           child: "branch",
                           parentId: item.id
                       }
+                     
+                      setSelectedRegLocationid(item.id)
                       dispatch(getBranchDataForRegister(payload))
                   } else if (dropDownKey === "REG_CONSULTANT") {
                       dispatch(getComplaintManager(item.id))
@@ -936,6 +948,7 @@ const AddEditComplaint = (props) => {
                           orgId: userData.orgId,
                           branchId: item.id
                       }
+                      console.log("manthan--f ",item.id);
                       dispatch(getComplaintEmployees(payload))
                   }
                   setShowDropDownModel(false);
