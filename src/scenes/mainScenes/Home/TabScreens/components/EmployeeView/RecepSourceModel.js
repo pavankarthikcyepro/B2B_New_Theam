@@ -446,7 +446,13 @@ const RecepSourceModel = ({ route, navigation }) => {
                 borderRightWidth: 0,
               }}
             >
-              <View style={{ width: 175, height: 35 }} />
+              <View
+                style={{ width: 175, height: 35, justifyContent: "center" }}
+              >
+                <Text style={styles.tableTitleText}>
+                  {isSourceIndex == 0 ? "Sources" : "Models"}
+                </Text>
+              </View>
             </View>
             {renderTitleView()}
             <View
@@ -639,4 +645,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
   paramsTotalContainer: { width: "92%", minHeight: 40, flexDirection: "row" },
+  tableTitleText: {
+    fontWeight: "bold",
+    marginLeft: 5
+  }
 });

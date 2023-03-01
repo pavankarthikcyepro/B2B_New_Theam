@@ -1412,7 +1412,7 @@ const HomeScreen = ({ route, navigation }) => {
                   <Text
                     style={{
                       ...styles.rankText,
-                      color: "blue",
+                      color: Colors.RED,
                       textDecorationLine: selector.receptionistData
                         ?.contactsCount
                         ? "underline"
@@ -1443,7 +1443,7 @@ const HomeScreen = ({ route, navigation }) => {
                   <Text
                     style={{
                       ...styles.rankText,
-                      color: "blue",
+                      color: Colors.RED,
                       textDecorationLine: selector.receptionistData
                         ?.totalDroppedCount
                         ? "underline"
@@ -1468,7 +1468,7 @@ const HomeScreen = ({ route, navigation }) => {
                   <Text
                     style={{
                       ...styles.rankText,
-                      color: "blue",
+                      color: Colors.RED,
                       textDecorationLine: selector.receptionistData
                         ?.enquirysCount
                         ? "underline"
@@ -1491,7 +1491,7 @@ const HomeScreen = ({ route, navigation }) => {
                   <Text
                     style={{
                       ...styles.rankText,
-                      color: "blue",
+                      color: Colors.RED,
                       textDecorationLine: selector.receptionistData
                         ?.bookingsCount
                         ? "underline"
@@ -1513,7 +1513,7 @@ const HomeScreen = ({ route, navigation }) => {
                   <Text
                     style={{
                       ...styles.rankText,
-                      color: "blue",
+                      color: Colors.RED,
                       textDecorationLine: selector.receptionistData?.RetailCount
                         ? "underline"
                         : "none",
@@ -1710,14 +1710,28 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingLeft: 3,
-    height: 70,
     marginTop: 10,
-    width: "100%",
+    width: "95%",
+    alignSelf: "center",
+    shadowColor: Colors.DARK_GRAY,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    elevation: 5,
+    shadowRadius: 2,
+    shadowOpacity: 0.8,
+    paddingHorizontal: 10,
+    paddingTop: 5,
+    marginBottom: 7,
+    borderWidth: 1,
+    borderRadius: 5,
+    backgroundColor: Colors.WHITE,
+    borderColor: Colors.BORDER_COLOR,
   },
   rankIconBox: {
-    height: 40,
-    width: 40,
+    height: 35,
+    width: 35,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -1845,6 +1859,23 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-evenly",
     alignItems: "center",
+
+    width: "95%",
+    alignSelf: "center",
+    shadowColor: Colors.DARK_GRAY,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    elevation: 5,
+    shadowRadius: 2,
+    shadowOpacity: 0.8,
+    paddingTop: 5,
+    marginBottom: 7,
+    borderWidth: 1,
+    borderRadius: 5,
+    backgroundColor: Colors.WHITE,
+    borderColor: Colors.BORDER_COLOR,
   },
   hideRankBox: {
     paddingTop: 5,
