@@ -116,7 +116,7 @@ export const ComplintLidtItem = ({
     EmployeesRoles,
     userData,
     tdflage = "",
-    ageing = 0, displayClose = false, complaintID
+    ageing = 0, displayClose = false, complaintID, compliantBranch ="", currentStage="",complaintLocation =""
 }) => {
     let date = "";
     if (from === "CLOSED_LIST" || from === "ACTIVE_LIST") {
@@ -200,11 +200,15 @@ export const ComplintLidtItem = ({
                         <Text style={styles.text2}>{"Ageing - "}</Text>
                         <Text style={styles.text6}>{ageing}</Text>
                     </View>
+                    <Text style={styles.text2}>{compliantBranch}</Text>
+                    <Text style={styles.text2}>{complaintLocation}</Text>
+                   
                 </View>
                 <View style={{ width: "35%", alignItems: "center" }}>
                     {uniqueId ? (
                         <Text style={styles.leadIdText}>Lead ID : {uniqueId}</Text>
                     ) : null}
+                    <Text style={styles.leadIdText}>{currentStage}</Text>
                     <View style={styles.modal}>
                         <Text style={styles.text4}>{model}</Text>
                         {/* <Text style={styles.text4}>{"Jeep Compact SUV"}</Text> */}

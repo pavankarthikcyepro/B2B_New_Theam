@@ -5,7 +5,7 @@ import { Colors, GlobalStyle } from '../../../styles';
 import { DatePickerComponent, DropDownComponant, ImagePickerComponent, TextinputComp } from '../../../components';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCustomerDetails, updateSelectedDate,clearState,setDatePicker,
-    setDropDownData, setImagePicker, getDetailsFromPoneNumber, getComplainFactorDropDownData, getLocationList, getBranchData, getDepartment, getDesignation, getEmployeeDetails, postComplaintFirstTime, clearStateFormData, getComplaitDetailsfromId, postComplaintClose, clearStateFormDataBtnClick, getBranchDataForRegister
+    setDropDownData, setImagePicker, getDetailsFromPoneNumber, getComplainFactorDropDownData, getLocationList, getBranchData, getDepartment, getDesignation, getEmployeeDetails, postComplaintFirstTime, clearStateFormData, getComplaitDetailsfromId, postComplaintClose, clearStateFormDataBtnClick, getBranchDataForRegister, getComplaintEmployees, getComplaintManager
 } from '../../../redux/complaintTrackerReducer';
 import { DateSelectItem, DropDownSelectionItem, ImageSelectItem } from '../../../pureComponents';
 import { UserState } from 'realm';
@@ -17,7 +17,9 @@ import { useEffect } from 'react';
 import * as AsyncStore from "../../../asyncStore";
 import { showToast } from '../../../utils/toast';
 import { useRef } from 'react';
-import { GetCarModelList } from '../../../utils/helperFunctions';
+import { GetCarModelList, isEmail } from '../../../utils/helperFunctions';
+import _ from "lodash";
+
 const dateFormat = "DD/MM/YYYY";
 const currentDate = moment().add(0, "day").format(dateFormat)
 let deptId_local, branchid_local="";
@@ -167,9 +169,12 @@ const AddEditComplaint = (props) => {
                     isCRE: isCRE,
                 });
 
+               
+                // todo
                 dispatch(getComplainFactorDropDownData(jsonObj.orgId))
                 dispatch(getLocationList(jsonObj.orgId))
                 getCarModelListFromServer(jsonObj.orgId)
+               
             }
         } catch (error) {
             alert(error);
@@ -235,6 +240,12 @@ const AddEditComplaint = (props) => {
                 return;
             }
 
+        if (!_.isEmpty(selector.email) && !isEmail(selector.email)){
+            scrollToPos(0);
+            setOpenAccordian("1");
+            showToast("Please enter valid Email Id");
+            return;
+        }
         if (selector.consultant.length == 0) {
             scrollToPos(0);
             setOpenAccordian("1");
@@ -372,9 +383,11 @@ const AddEditComplaint = (props) => {
                 "complaintDocument": uploadedImagesDataObj?.complaint?.documentPath || selector.complaintdoc,
                 "complaintCloserDocument": uploadedImagesDataObjForClose?.complaint?.documentPath || selector.complainCloserDoc,
                 "aging": null,
-                "status": status
+                "status": status,
+                "rating": selector.closeComplaintFinalRate,
+                "remarks": selector.closeComplaintRemarks,
             }
-
+            
             dispatch(postComplaintClose(payload));
         } else if (status === "Update") {
             let payload = {
@@ -652,17 +665,33 @@ const AddEditComplaint = (props) => {
                 setDataForDropDown([...newObjData10]);
                 break;
             case "REG_STAGE":
-                // let objData11= stageDataLocal;
-                // let newObjData11 = objData11.map((item) => {
-
-                //     let obj = {
-                //         id: item.id,
-                //         name: item.menu
-                //     }
-                //     return obj
-                // })
-
                 setDataForDropDown([...stageDataLocal]);
+                break;
+            case "REG_CONSULTANT":
+                let objData11 = selector.complaintEmployees;
+                let newObjData11 = objData11.map((item) => {
+
+                    let obj = {
+                        id: item.empId,
+                        name: item.empName
+                    }
+                    return obj
+                })
+                setDataForDropDown([...newObjData11])
+                break;
+
+            case "REG_MANAGER":
+            
+                let obj  = [];
+                if (!_.isEmpty(selector.complaintManagers)){
+                    let temp = {
+                        id: selector.complaintManagers?.empId,
+                        name: selector.complaintManagers?.empName
+                    }
+                    obj.push(temp);
+                }                   
+                
+                setDataForDropDown(obj)
                 break;
            
         }
@@ -900,8 +929,14 @@ const AddEditComplaint = (props) => {
                           parentId: item.id
                       }
                       dispatch(getBranchDataForRegister(payload))
-                  } else if (dropDownKey === "REG_BRANCH") {
-
+                  } else if (dropDownKey === "REG_CONSULTANT") {
+                      dispatch(getComplaintManager(item.id))
+                  } else if (dropDownKey === "REG_BRANCH"){
+                      const payload = {
+                          orgId: userData.orgId,
+                          branchId: item.id
+                      }
+                      dispatch(getComplaintEmployees(payload))
                   }
                   setShowDropDownModel(false);
                   dispatch(
@@ -1131,6 +1166,17 @@ const AddEditComplaint = (props) => {
                                       showRightIcon={false}
 
                                   />
+                                  <Text
+                                      style={[
+                                          GlobalStyle.underline,
+                                          {
+                                              backgroundColor:
+                                                  isSubmitPress && selector.email === ""
+                                                      ? "red"
+                                                      : "rgba(208, 212, 214, 0.7)",
+                                          },
+                                      ]}
+                                  ></Text>
 
                                   <View style={{ flexDirection: "row", width: '100%', justifyContent: "space-between" }}>
                                       <View style={{ width: '50%' }}>
@@ -1178,7 +1224,7 @@ const AddEditComplaint = (props) => {
 
                                   <View style={{ flexDirection: "row", width: '100%', justifyContent: "space-between" }}>
                                       <View style={{ width: '50%' }}>
-                                          <TextinputComp
+                                          {/* <TextinputComp
                                               style={styles.textInputStyle}
                                               value={selector.consultant}
                                               //   keyboardType={"number-pad"}
@@ -1191,6 +1237,14 @@ const AddEditComplaint = (props) => {
                                                   )
                                               }
                                               showRightIcon={false}
+                                          /> */}
+                                          <DropDownSelectionItem
+                                              disabled={isEditable() || isEditbaleForRegistration()}
+                                              label={"Consultant*"}
+                                              value={selector.consultant}
+                                              onPress={() =>
+                                                  showDropDownModelMethod("REG_CONSULTANT", "Please Select")
+                                              }
                                           />
                                           <Text
                                               style={[
@@ -1205,7 +1259,7 @@ const AddEditComplaint = (props) => {
                                           ></Text>
                                       </View>
                                       <View style={{ width: '50%' }}>
-                                          <TextinputComp
+                                          {/* <TextinputComp
                                               style={styles.textInputStyle}
                                               value={selector.reporting_manager}
                                               //   keyboardType={"number-pad"}
@@ -1218,6 +1272,15 @@ const AddEditComplaint = (props) => {
                                                   )
                                               }
                                               showRightIcon={false}
+                                          /> */}
+
+                                          <DropDownSelectionItem
+                                              disabled={isEditable() || isEditbaleForRegistration()}
+                                              label={"Reporting Manager"}
+                                              value={selector.reporting_manager}
+                                              onPress={() =>
+                                                  showDropDownModelMethod("REG_MANAGER", "Please Select")
+                                              }
                                           />
                                       </View>
                                   </View>
@@ -1457,7 +1520,7 @@ const AddEditComplaint = (props) => {
                                   <TextinputComp
                                       style={styles.textInputStyle}
                                       value={selector.closeComplaintFinalRate}
-                                      //   keyboardType={"number-pad"}
+                                        keyboardType={"number-pad"}
                                       // editable={false}
                                       disabled={isEditable()}
                                       label={"Final Rating"}

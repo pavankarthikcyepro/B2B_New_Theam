@@ -57,26 +57,19 @@ const ComplaintList = (props) => {
     const [leadsSubMenuFilterDropDownText, setLeadsSubMenuFilterDropDownText] =
         useState("All");
 
-    // useEffect(() => {
-    //     const dateFormat = "YYYY-MM-DD";
-    //     const currentDate = moment().add(0, "day").format(dateFormat)
-    //     const CurrentMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
-    //     const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
-    //     setFromDateState(CurrentMonthFirstDate);
-    //     setToDateState(currentMonthLastDate);
-    //     // getUserData()
-
-    // }, [])
+    
     useEffect(() => {
         props.navigation.addListener("focus", () => {
-            const dateFormat = "YYYY-MM-DD";
-            const currentDate = moment().add(0, "day").format(dateFormat)
-            const CurrentMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
-            const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
-            setFromDateState(CurrentMonthFirstDate);
-            setToDateState(currentMonthLastDate);
+            // const dateFormat = "YYYY-MM-DD";
+            // const currentDate = moment().add(0, "day").format(dateFormat)
+            // const CurrentMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+            // const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+            // setFromDateState(CurrentMonthFirstDate);
+            // setToDateState(currentMonthLastDate);
             getUserData()
             dispatch(getComplaintMenuFilter());
+            setLeadsFilterDropDownText("All")
+            setLeadsSubMenuFilterDropDownText("All");
         });
     }, [props.navigation]);
 
@@ -176,13 +169,26 @@ const ComplaintList = (props) => {
         switch (key) {
             case "FROM_DATE":
                 setFromDateState(formatDate);
-                const payload = getPayloadData(formatDate, selectedToDate);
+                setSubMenu([]);
+                setLeadsFilterDropDownText("All")
+                setLeadsSubMenuFilterDropDownText("All");
+                let path = selector.complaintMainFilterData;
+                const newArr = path.map((v) => ({ ...v, checked: false }));
+                setLeadsFilterData(newArr);
+                const payload = getPayloadData(formatDate, selectedToDate, "", "");
                 dispatch(getComplaintListFilter(payload))
-
                 break;
             case "TO_DATE":
                 setToDateState(formatDate);
-                const payload2 = getPayloadData(selectedFromDate, formatDate);
+                
+                setSubMenu([]);
+                setLeadsFilterDropDownText("All")
+                setLeadsSubMenuFilterDropDownText("All");
+                let path2 = selector.complaintMainFilterData;
+                const newArr2 = path2.map((v) => ({ ...v, checked: false }));
+                setLeadsFilterData(newArr2);
+
+                const payload2 = getPayloadData(selectedFromDate, formatDate, "", "");
                 dispatch(getComplaintListFilter(payload2))
                 break;
         }
@@ -246,31 +252,27 @@ const ComplaintList = (props) => {
                 });
 
                 // let payload = getPayloadData();
-                const dateFormat = "YYYY-MM-DD";
-                const currentDate = moment().add(0, "day").format(dateFormat)
-                const CurrentMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
-                const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+                // const dateFormat = "YYYY-MM-DD";
+                // const currentDate = moment().add(0, "day").format(dateFormat)
+                // const CurrentMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+                // const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
                 const payload = {
                     "orgId": jsonObj.orgId,
                     "loginUser": jsonObj.empName,
-                    "startDate": CurrentMonthFirstDate,
-                    "endDate": currentMonthLastDate,
+                    // "startDate": CurrentMonthFirstDate,
+                    // "endDate": currentMonthLastDate,
                     "status": "Active",
                     "mainManu": "",
                     "subManu": ""
                 }
                 dispatch(getComplaintListFilter(payload))
 
-                // // let payload = getPayloadData();
-                // const dateFormat = "YYYY-MM-DD";
-                // const currentDate = moment().add(0, "day").format(dateFormat)
-                // const CurrentMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
-                // const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+             
                 const payload2 = {
                     "orgId": jsonObj.orgId,
                     "loginUser": jsonObj.empName,
-                    "startDate": CurrentMonthFirstDate,
-                    "endDate": currentMonthLastDate,
+                    // "startDate": CurrentMonthFirstDate,
+                    // "endDate": currentMonthLastDate,
                     "status": "Closed",
                     "mainManu": "",
                     "subManu": ""
@@ -286,17 +288,28 @@ const ComplaintList = (props) => {
     const initialCallToserver = () => {
 
         // let payload = getPayloadData();
-        const dateFormat = "YYYY-MM-DD";
-        const currentDate = moment().add(0, "day").format(dateFormat)
-        const CurrentMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
-        const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
-        setFromDateState(CurrentMonthFirstDate);
-        setToDateState(currentMonthLastDate);
+        // const dateFormat = "YYYY-MM-DD";
+        // const currentDate = moment().add(0, "day").format(dateFormat)
+        // const CurrentMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+        // const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+        // setFromDateState(CurrentMonthFirstDate);
+        // setToDateState(currentMonthLastDate);
+        setFromDateState("");
+        setToDateState("");
+        setSubMenu([]);
+        //   getDropAnalysisWithFilterFromServer();
+        setLeadsFilterDropDownText("All")
+        setLeadsSubMenuFilterDropDownText("All");
+        let path = selector.complaintMainFilterData;
+
+        const newArr = path.map((v) => ({ ...v, checked: false }));
+        setLeadsFilterData(newArr);
+
         const payload = {
             "orgId": userData.orgId,
             "loginUser": userData.employeeName,
-            "startDate": CurrentMonthFirstDate,
-            "endDate": currentMonthLastDate,
+            // "startDate": CurrentMonthFirstDate,
+            // "endDate": currentMonthLastDate,
             "status": "Active",
             "mainManu": "",
             "subManu": ""
@@ -338,6 +351,9 @@ const ComplaintList = (props) => {
                             });
                         }}
                         complaintID={item.id}
+                        compliantBranch={item.compliantBranch}
+                        currentStage={item.currentStage}
+                        complaintLocation={item.complaintLocation}
                     />
                 </View>
             </>
@@ -407,12 +423,12 @@ const ComplaintList = (props) => {
                     const newArr = path.map((v) => ({ ...v, checked: false }));
                     setLeadsFilterData(newArr);
 
-                    const dateFormat = "YYYY-MM-DD";
-                    const currentDate = moment().add(0, "day").format(dateFormat)
-                    const CurrentMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
-                    const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
-                    setFromDateState(CurrentMonthFirstDate);
-                    setToDateState(currentMonthLastDate);
+                    // const dateFormat = "YYYY-MM-DD";
+                    // const currentDate = moment().add(0, "day").format(dateFormat)
+                    // const CurrentMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+                    // const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+                    setFromDateState("");
+                    setToDateState("");
                     initialCallToserver()
                 }}
             />

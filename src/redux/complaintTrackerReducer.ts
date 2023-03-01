@@ -217,6 +217,15 @@ export const getComplaintEmployees = createAsyncThunk("COMPLAINTS_TRACKER/getCom
     }
     return json;
 });
+export const getComplaintManager = createAsyncThunk("COMPLAINTS_TRACKER/getComplaintManager", async (empid, { rejectWithValue }) => {
+
+    const response = await client.get(URL.GET_COMPLAINT_MANAGER(empid));
+    const json = await response.json();
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+});
 
 
 export const postDropComplaintSubMenu = createAsyncThunk("COMPLAINTS_TRACKER/postDropComplaintSubMenu", async (payload, { rejectWithValue }) => {
@@ -294,7 +303,9 @@ export const complaintsSlice = createSlice({
         postComplaintCloseRes :"",
         complaintMainFilterData : "",
         complaintSubFilterData: "",
-        complaintRegisterBranchDropDown:[]
+        complaintRegisterBranchDropDown:[],
+        complaintEmployees:[],
+        complaintManagers: []
     },
     reducers: {
         clearState: (state, action) => {
@@ -344,7 +355,9 @@ export const complaintsSlice = createSlice({
                 state.complainCloserDoc = "",
                 state.postComplaintCloseRes="",
                 state.complaintMainFilterData = "",
-                state.complaintSubFilterData = ""
+                state.complaintSubFilterData = "",
+                state.complaintEmployees = [],
+                state.complaintManagers = []
         },
         clearStateFormData: (state, action) => {
             state.mobile = "";
@@ -548,6 +561,12 @@ export const complaintsSlice = createSlice({
                 case "REG_STAGE":
                     state.stage = value;
                     break;
+                case "REG_CONSULTANT":
+                    state.consultant = value;
+                    break;
+                case "REG_MANAGER":
+                    state.reporting_manager = value;
+                    break;
             }
         },
     },
@@ -597,8 +616,8 @@ export const complaintsSlice = createSlice({
             if (action.payload) {
                 let dmsLeDDTO = action.payload.dmsEntity.dmsLeadDto;
                 state.getDetailsFromPhoneRespnse = action.payload;
-                state.location = dmsLeDDTO.referencenumber.split(" ")[0].toString()
-                state.branch = dmsLeDDTO.referencenumber.toString()
+                state.location = dmsLeDDTO.locationName.toString()
+                state.branch = dmsLeDDTO.branchName.toString()
                 state.model = dmsLeDDTO.model.toString()
                 state.customerName = dmsLeDDTO.firstName.toString() + " " + dmsLeDDTO.lastName.toString()
                 state.email = dmsLeDDTO.email.toString();
@@ -762,6 +781,7 @@ export const complaintsSlice = createSlice({
             state.isLoading = false;
 
             if (action.payload) {
+                showToast("Successfully updated");
                 state.postComplaintFirstTimeRes = action.payload;
             }
         })
@@ -779,6 +799,7 @@ export const complaintsSlice = createSlice({
             state.isLoading = false;
 
             if (action.payload) {
+                showToast("Successfully updated");
                 state.postComplaintCloseRes = action.payload;
             }
         })
@@ -900,6 +921,41 @@ export const complaintsSlice = createSlice({
         builder.addCase(postDropComplaintSubMenu.rejected, (state, action) => {
             state.isLoading = false;
             state.complaintSubFilterData = "";
+        })
+
+        builder.addCase(getComplaintEmployees.pending, (state, action) => {
+            state.isLoading = true;
+            state.complaintEmployees = [];
+        })
+        builder.addCase(getComplaintEmployees.fulfilled, (state, action) => {
+            state.isLoading = false;
+
+            if (action.payload) {
+                state.complaintEmployees = action.payload;
+
+            }
+        })
+        builder.addCase(getComplaintEmployees.rejected, (state, action) => {
+            state.isLoading = false;
+            state.complaintEmployees = [];
+        })
+
+
+        builder.addCase(getComplaintManager.pending, (state, action) => {
+            state.isLoading = true;
+            state.complaintManagers = []
+        })
+        builder.addCase(getComplaintManager.fulfilled, (state, action) => {
+            state.isLoading = false;
+
+            if (action.payload) {
+                state.complaintManagers = action.payload;
+
+            }
+        })
+        builder.addCase(getComplaintManager.rejected, (state, action) => {
+            state.isLoading = false;
+            state.complaintManagers = []
         })
     }
 });
