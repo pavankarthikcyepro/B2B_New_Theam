@@ -71,6 +71,7 @@ const AddEditComplaint = (props) => {
         branchId:"",
         isCRM: false,
         isCRE: false,
+        isCRMorCRE:false,
     });
     const [isSubmitPress, setIsSubmitPress] = useState(false);
     const [carModelsList, setCarModelsList] = useState([]);
@@ -83,7 +84,7 @@ const AddEditComplaint = (props) => {
 
     useEffect(() => {
         props.navigation.addListener("focus", () => {
-         
+            
             dispatch(clearStateFormData())
             if (props.route.params.from === "CLOSED_LIST" || props.route.params.from === "ACTIVE_LIST"){
                 let payload = {
@@ -125,7 +126,7 @@ const AddEditComplaint = (props) => {
                 const jsonObj = JSON.parse(employeeData);
                
                 let isManager = false,
-                    editEnable = false, isCRE= false, isCRM =false;
+                    editEnable = false, isCRE= false, isCRM =false,iscrmOrcre= false;
                 let isPreBookingApprover = false;
                 if (
                     jsonObj.hrmsRole === "MD" ||
@@ -147,6 +148,7 @@ const AddEditComplaint = (props) => {
 
                 ) {
                     isCRE = true;
+                     iscrmOrcre= true;
                 }
 
                 if (
@@ -154,6 +156,7 @@ const AddEditComplaint = (props) => {
 
                 ) {
                     isCRM = true;
+                    iscrmOrcre = true;
                 }
 
                 setUserData({
@@ -167,6 +170,7 @@ const AddEditComplaint = (props) => {
                     branchId: jsonObj.branchId, 
                      isCRM: isCRM,
                     isCRE: isCRE,
+                    isCRMorCRE:iscrmOrcre
                 });
 
                
@@ -217,7 +221,7 @@ const AddEditComplaint = (props) => {
         if (props.route.params.from ==="ADD_NEW"){
            
             return false;
-        } else if (props.route.params.from === "ACTIVE_LIST" && userData.isCRE || userData.isCRM){
+        } else if (props.route.params.from === "ACTIVE_LIST" && userData.isCRMorCRE){
           
             return false;
         } else if (props.route.params.from === "CLOSED_LIST"){
@@ -246,19 +250,19 @@ const AddEditComplaint = (props) => {
             showToast("Please enter valid Email Id");
             return;
         }
-        if (selector.consultant.length == 0) {
-            scrollToPos(0);
-            setOpenAccordian("1");
-            showToast("Please select consultant");
-            return;
-        }
+        // if (selector.consultant.length == 0) {
+        //     scrollToPos(0);
+        //     setOpenAccordian("1");
+        //     showToast("Please select consultant");
+        //     return;
+        // }
         
-        if (selector.consultant.length == 0) {
-            scrollToPos(0);
-            setOpenAccordian("1");
-            showToast("Please select consultant");
-            return;
-        }
+        // if (selector.consultant.length == 0) {
+        //     scrollToPos(0);
+        //     setOpenAccordian("1");
+        //     showToast("Please select consultant");
+        //     return;
+        // }
 
 
         if (selector.complaintFactorType.length == 0) {
@@ -328,12 +332,12 @@ const AddEditComplaint = (props) => {
                 "customeLocation": selector.location,
                 "currentStage": selector.stage,
                 "currentStageIdNo": selector.stage_id,
-                "salesExecutiveName": selector.consultant,
+                "employee": selector.consultant,
                 "manager": selector.reporting_manager,
                 "branch": selector.branch,
                 "complaintLocation": selector.complainLocation,
                 "designation": selector.complainDesignation,
-                "employee": selector.complainEmployee,
+                "salesExecutiveName": selector.complainEmployee,
                 "complaintDecription": selector.complaintDescription,
                 "mobileNo": selector.mobile,
                 "email": selector.email,
@@ -361,12 +365,12 @@ const AddEditComplaint = (props) => {
                 "customeLocation": selector.location,
                 "currentStage": selector.stage,
                 "currentStageIdNo": selector.stage_id,
-                "salesExecutiveName": selector.consultant,
+                "employee": selector.consultant,
                 "manager": selector.reporting_manager,
                 "branch": selector.branch,
                 "complaintLocation": selector.complainLocation,
                 "designation": selector.complainDesignation,
-                "employee": selector.complainEmployee,
+                "salesExecutiveName": selector.complainEmployee,
                 "complaintDecription": selector.complaintDescription,
                 "mobileNo": selector.mobile,
                 "email": selector.email,
@@ -396,12 +400,12 @@ const AddEditComplaint = (props) => {
                 "customeLocation": selector.location,
                 "currentStage": selector.stage,
                 "currentStageIdNo": selector.stage_id,
-                "salesExecutiveName": selector.consultant,
+                "employee": selector.consultant,
                 "manager": selector.reporting_manager,
                 "branch": selector.branch,
                 "complaintLocation": selector.complainLocation,
                 "designation": selector.complainDesignation,
-                "employee": selector.complainEmployee,
+                "salesExecutiveName": selector.complainEmployee,
                 "complaintDecription": selector.complaintDescription,
                 "mobileNo": selector.mobile,
                 "email": selector.email,
@@ -579,8 +583,8 @@ const AddEditComplaint = (props) => {
                 let newObjData3 = objData3.map((item) => {
 
                     let obj = {
-                        id: item.id,
-                        name: item.value
+                        id: item.branchId,
+                        name: item.branchName
                     }
                     return obj
                 })
@@ -640,26 +644,36 @@ const AddEditComplaint = (props) => {
                 break;
             case "REG_BRANCH":
                 let objData9 = selector.complaintRegisterBranchDropDown;
-                let tempArr = [];
-                let newObjData9 = objData9.filter((item) => {
+                // let tempArr = [];
+                // let newObjData9 = objData9.filter((item) => {
                     
-                        if (selectedRegLocationid == item.parentId) {
+                //         if (selectedRegLocationid == item.parentId) {
                            
                            
-                                let obj = {
-                                    id: item.locationNodeDefId,
-                                    name: item.name
-                                }
-                                // return obj
-                                tempArr.push(obj)
+                //                 let obj = {
+                //                     id: item.locationNodeDefId,
+                //                     name: item.name
+                //                 }
+                //                 // return obj
+                //                 tempArr.push(obj)
                             
-                        }
+                //         }
                 
                     
                     
+                // })
+                // setDataForDropDown([...tempArr]);
+                let newObjData9 = objData9.map((item) => {
+
+                    let obj = {
+                        id: item.branchId,
+                        name: item.branchName
+                    }
+                    return obj
                 })
+
+                setDataForDropDown([...newObjData9]);
                 
-                setDataForDropDown([...tempArr]);
                 break;
             case "REG_MODEL":
                 let objData10 = carModelsList;
@@ -835,6 +849,7 @@ const AddEditComplaint = (props) => {
                         child:"branch",
                         parentId: item.id
                     }
+                
                       dispatch(getBranchData(payload))
 
                       dispatch(
@@ -941,15 +956,52 @@ const AddEditComplaint = (props) => {
                      
                       setSelectedRegLocationid(item.id)
                       dispatch(getBranchDataForRegister(payload))
+
+                      dispatch(setDropDownData({
+                          key: "REG_CONSULTANT",
+                          value: "",
+                          id: "",
+                          orgId: userData.orgId,
+                      }))
+                      dispatch(setDropDownData({
+                          key: "REG_MANAGER",
+                          value: "",
+                          id: "",
+                          orgId: userData.orgId,
+                      }))
+                      dispatch(setDropDownData({
+                          key: "REG_BRANCH",
+                          value: "",
+                          id: "",
+                          orgId: userData.orgId,
+                      }))
                   } else if (dropDownKey === "REG_CONSULTANT") {
                       dispatch(getComplaintManager(item.id))
+                      dispatch(setDropDownData({
+                          key: "REG_MANAGER",
+                          value: "",
+                          id: "",
+                          orgId: userData.orgId,
+                      }))
                   } else if (dropDownKey === "REG_BRANCH"){
                       const payload = {
                           orgId: userData.orgId,
                           branchId: item.id
                       }
-                      console.log("manthan--f ",item.id);
+                    
                       dispatch(getComplaintEmployees(payload))
+                      dispatch(setDropDownData({
+                          key: "REG_CONSULTANT",
+                          value: "",
+                          id: "",
+                          orgId: userData.orgId,
+                      }))
+                      dispatch(setDropDownData({
+                          key: "REG_MANAGER",
+                          value: "",
+                          id: "",
+                          orgId: userData.orgId,
+                      }))
                   }
                   setShowDropDownModel(false);
                   dispatch(
@@ -1253,13 +1305,13 @@ const AddEditComplaint = (props) => {
                                           /> */}
                                           <DropDownSelectionItem
                                               disabled={isEditable() || isEditbaleForRegistration()}
-                                              label={"Consultant*"}
+                                              label={"Consultant"}
                                               value={selector.consultant}
                                               onPress={() =>
                                                   showDropDownModelMethod("REG_CONSULTANT", "Please Select")
                                               }
                                           />
-                                          <Text
+                                          {/* <Text
                                               style={[
                                                   GlobalStyle.underline,
                                                   {
@@ -1269,7 +1321,7 @@ const AddEditComplaint = (props) => {
                                                               : "rgba(208, 212, 214, 0.7)",
                                                   },
                                               ]}
-                                          ></Text>
+                                          ></Text> */}
                                       </View>
                                       <View style={{ width: '50%' }}>
                                           {/* <TextinputComp
@@ -1650,7 +1702,7 @@ const AddEditComplaint = (props) => {
                       onPress={() => { submitClicked("Active") }}>
                           Submit
                       </Button></View>}
-                  {props.route.params.from === "ACTIVE_LIST" && props.route.params.which_btn !== "Close_Btn" && userData.isCRE || userData.isCRM?
+                  {props.route.params.from === "ACTIVE_LIST" && props.route.params.which_btn !== "Close_Btn" && userData.isCRMorCRE ?
                    <Button
                       mode="contained"
                       style={styles.subBtnSty}
@@ -1659,7 +1711,7 @@ const AddEditComplaint = (props) => {
                       onPress={() => { submitClicked("Update") }}>
                       Update
                   </Button> : null}
-                  {props.route.params.which_btn === "Close_Btn" && userData.isCRE || userData.isCRM? <Button
+                  {props.route.params.which_btn === "Close_Btn" && userData.isCRMorCRE ? <Button
                       mode="contained"
                       style={styles.subBtnSty}
                       color={Colors.PINK}

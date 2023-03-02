@@ -57,12 +57,13 @@ export const getLocationList = createAsyncThunk("COMPLAINTS_TRACKER/getLocationL
 
 export const getBranchData = createAsyncThunk("COMPLAINTS_TRACKER/getBranchData", async (payload, { rejectWithValue }) => {
 
-    const response = await client.get(URL.TARGET_DROPDOWN(
-        payload["orgId"],
-        payload["parent"],
-        payload["child"],
-        payload["parentId"]
-    ));
+    // const response = await client.get(URL.TARGET_DROPDOWN(
+    //     payload["orgId"],
+    //     payload["parent"],
+    //     payload["child"],
+    //     payload["parentId"]
+    // ));
+    const response = await client.get(URL.DEALER_CODE_BRANCH_LIST(payload["orgId"], payload["parentId"]));
     const json = await response.json()
     if (!response.ok) {
         return rejectWithValue(json);
@@ -77,7 +78,8 @@ export const getBranchDataForRegister = createAsyncThunk("COMPLAINTS_TRACKER/get
     //     payload["child"],
     //     payload["parentId"]
     // ));
-    const response = await client.get(URL.DEALER_CODE_LIST1(payload["orgId"]));
+    // const response = await client.get(URL.DEALER_CODE_LIST1(payload["orgId"]));
+    const response = await client.get(URL.DEALER_CODE_BRANCH_LIST(payload["orgId"], payload["parentId"]));
     const json = await response.json()
     if (!response.ok) {
         return rejectWithValue(json);

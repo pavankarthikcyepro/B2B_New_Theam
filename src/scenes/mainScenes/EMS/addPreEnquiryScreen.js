@@ -135,7 +135,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
   const [dataForCarModels, setDataForCarModels] = useState([]);
   const [showDropDownModel, setShowDropDownModel] = useState(false);
   const [dataForDropDown, setDataForDropDown] = useState([]);
-    
+  const [dropDownKey, setDropDownKey] = useState("");
   const [oId, setOid] = useState("");
   const [dropDownTitle, setDropDownTitle] = useState("Select Data");
   const [showEventModel, setShowEventModel] = useState(false);

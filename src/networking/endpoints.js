@@ -575,6 +575,9 @@ const URL = {
   DEALER_CODE_LIST1: (orgId) => {
     return `${baseUrl}dfd/oh/data-nodes?orgId=${orgId}&levelCode=Level5`;
   },
+  DEALER_CODE_BRANCH_LIST: (orgId, locationId) => {
+    return `${baseUrl}dfd/oh/getLocationBasedBranches?orgId=${orgId}&locationId=${locationId}`;
+  },
   GET_DESIGNATION: (orgId, branchId) => {
     return `${sales_url}/employees/get/designations/${orgId}/${branchId}`;
   },
