@@ -7,7 +7,6 @@ import {
     FlatList,
     Dimensions,
     Pressable,
-    ActivityIndicator,
     RefreshControl
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
@@ -17,6 +16,7 @@ import { AppNavigator } from "../../../navigations";
 import { getPendingTasksListApi, getMorePendingTasksListApi } from "../../../redux/mytaskReducer";
 import * as AsyncStorage from "../../../asyncStore";
 import { EmptyListView } from "../../../pureComponents";
+import AnimLoaderComp from "../../../components/AnimLoaderComp";
 
 
 const mytasksIdentifires = {
@@ -116,10 +116,10 @@ const PendingTaskListScreen = ({ navigation }) => {
     const renderFooter = () => {
         if (!selector.isLoadingExtraDataForPendingTask) { return null }
         return (
-            <View style={styles.footer}>
-                <Text style={styles.btnText}>Loading More...</Text>
-                <ActivityIndicator color={Colors.GRAY} />
-            </View>
+          <View style={styles.footer}>
+            <Text style={styles.btnText}>Loading More...</Text>
+            <AnimLoaderComp visible={true} />
+          </View>
         );
     };
 

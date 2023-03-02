@@ -21,9 +21,10 @@ import {
   getSourceModelDataForSelf,
 } from "../../../../../../redux/homeReducer";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
-import { ActivityIndicator, IconButton } from "react-native-paper";
+import { IconButton } from "react-native-paper";
 import { AppNavigator } from "../../../../../../navigations";
 import { achievementPercentage } from "../../../../../../utils/helperFunctions";
+import AnimLoaderComp from "../../../../../../components/AnimLoaderComp";
 
 const RecepSourceModel = ({ route, navigation }) => {
   const paramsMetadata = [
@@ -517,9 +518,7 @@ const RecepSourceModel = ({ route, navigation }) => {
                   }
                 })}
               </View>
-              {isLoading && (
-                <ActivityIndicator size={"large"} color={Colors.RED} />
-              )}
+              {isLoading && <AnimLoaderComp visible={true} />}
               {renderDataView()}
               <>
                 <View

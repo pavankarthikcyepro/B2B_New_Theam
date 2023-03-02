@@ -23,7 +23,7 @@ import {
 import { Colors, GlobalStyle } from "../../../styles";
 import { client } from "../../../networking/client";
 import URL from "../../../networking/endpoints";
-import { ActivityIndicator, Button, IconButton } from "react-native-paper";
+import { Button, IconButton } from "react-native-paper";
 import * as AsyncStore from "../../../asyncStore";
 import moment from "moment";
 import { DropDownSelectionItem } from "../../../pureComponents";
@@ -31,6 +31,7 @@ import { AttendanceTopTabNavigatorIdentifiers } from "../../../navigations/atten
 import PieChart from "react-native-pie-chart";
 import { SceneMap, TabBar, TabView } from "react-native-tab-view";
 import { DateRangeCompOne } from "../../../components/dateRangeComp";
+import AnimLoaderComp from "../../../components/AnimLoaderComp";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
@@ -271,7 +272,7 @@ const AttendanceDashboard = ({ route, navigation }) => {
           keyExtractor={(item, index) => index}
           ListEmptyComponent={() =>
             loading ? (
-              <ActivityIndicator size="large" color={Colors.RED} />
+              <AnimLoaderComp visible={true} />
             ) : (
               <View style={styles.noDataView}>
                 <Text style={styles.tableTitleTxt}>No Data</Text>
@@ -433,7 +434,7 @@ const AttendanceDashboard = ({ route, navigation }) => {
       </View>
       {loading && (
         <View>
-          <ActivityIndicator size="large" color={Colors.RED} />
+          <AnimLoaderComp visible={true} />
         </View>
       )}
       <TabView

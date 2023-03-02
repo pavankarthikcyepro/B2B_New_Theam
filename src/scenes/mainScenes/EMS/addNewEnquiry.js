@@ -10,7 +10,6 @@ import {
   ScrollView,
   Pressable,
   Keyboard,
-  ActivityIndicator,
   KeyboardAvoidingView,
   Alert,
   BackHandler,
@@ -175,6 +174,7 @@ import {
 import { getEmployeesListApi } from "../../../redux/confirmedPreEnquiryReducer";
 import { client } from "../../../networking/client";
 import Fontisto from "react-native-vector-icons/Fontisto";
+import AnimLoaderComp from "../../../components/AnimLoaderComp";
 const theme = {
   ...DefaultTheme,
   // Specify custom property
@@ -3020,7 +3020,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
   if (!componentAppear) {
     return (
       <View style={styles.initialContainer}>
-        <ActivityIndicator size="small" color={Colors.RED} />
+        <AnimLoaderComp visible={true} />
       </View>
     );
   }

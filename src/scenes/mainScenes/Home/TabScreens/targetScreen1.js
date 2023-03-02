@@ -34,11 +34,12 @@ import { useNavigation } from "@react-navigation/native";
 import { AppNavigator } from "../../../../navigations";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
 import PercentageToggleControl from "./components/EmployeeView/PercentageToggleControl";
-import { ActivityIndicator, IconButton } from "react-native-paper";
+import { IconButton } from "react-native-paper";
 import { client } from "../../../../networking/client";
 import URL from "../../../../networking/endpoints";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import TextTicker from "react-native-text-ticker";
+import AnimLoaderComp from "../../../../components/AnimLoaderComp";
 
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 100) / 5;
@@ -890,11 +891,7 @@ const TargetScreen = ({ route }) => {
                   </View>
                 </View>
                 {isLoading ? (
-                  <ActivityIndicator
-                    color={Colors.RED}
-                    size={"large"}
-                    style={{ marginTop: 15 }}
-                  />
+                  <AnimLoaderComp visible={true} />
                 ) : (
                   <ScrollView
                     contentContainerStyle={styles.scrollview}
@@ -1234,11 +1231,7 @@ const TargetScreen = ({ route }) => {
                 </View>
               </View>
               {isLoading ? (
-                <ActivityIndicator
-                  color={Colors.RED}
-                  size={"large"}
-                  style={{ marginTop: 15 }}
-                />
+                <AnimLoaderComp visible={true} />
               ) : (
                 <ScrollView
                   contentContainerStyle={styles.scrollview}

@@ -12,7 +12,7 @@ import {
 import { Colors } from "../../styles";
 import { useDispatch, useSelector } from "react-redux";
 import { NotificationItem } from "../../pureComponents/notificationItem";
-import { ActivityIndicator, Button } from "react-native-paper";
+import { Button } from "react-native-paper";
 import URL from "../../networking/endpoints";
 import { client } from "../../networking/client";
 import * as AsyncStore from "../../asyncStore";
@@ -32,6 +32,7 @@ import {
   LEAD_ALLOCATION,
 } from "../../assets/icon";
 import { getNotificationList, notificationReadClearState, readNotification, setNotificationMyTaskAllFilter } from "../../redux/notificationReducer";
+import AnimLoaderComp from "../../components/AnimLoaderComp";
 
 const NotificationScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -164,7 +165,7 @@ const NotificationScreen = ({ navigation }) => {
         ListEmptyComponent={() =>
           !selector.notificationList.length ? (
             loading ? (
-              <ActivityIndicator size="large" color={Colors.RED} />
+              <AnimLoaderComp visible={true} />
             ) : (
               <Text style={styles.emptyMessageStyle}>Empty Notifications</Text>
             )

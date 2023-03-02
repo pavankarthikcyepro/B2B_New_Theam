@@ -7,7 +7,6 @@ import {
   Platform,
   ScrollView,
   Keyboard,
-  ActivityIndicator,
   KeyboardAvoidingView,
   Pressable,
   BackHandler,
@@ -157,6 +156,7 @@ import Geolocation from "@react-native-community/geolocation";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Entypo from "react-native-vector-icons/Entypo";
 import { client } from "../../../networking/client";
+import AnimLoaderComp from "../../../components/AnimLoaderComp";
 const rupeeSymbol = "\u20B9";
 
 const dmsAttachmentsObj = {
@@ -3567,7 +3567,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   if (!componentAppear) {
     return (
       <View style={styles.initialContainer}>
-        <ActivityIndicator size="small" color={Colors.RED} />
+        <AnimLoaderComp visible={true} />
       </View>
     );
   }
