@@ -34,8 +34,11 @@ import {
   getTestDriveAppointmentDetailsApi,
   validateTestDriveApi,
   generateOtpApi,
-  validateOtpApi,postReOpenTestDrive,getTestDriveHistoryCount,
+  validateOtpApi,
+  postReOpenTestDrive,
+  getTestDriveHistoryCount,
   clearOTP,
+  getTestDriveAppointmentDetailsApi2,
 } from "../../../redux/testDriveReducer";
 import {
   DateSelectItem,
@@ -184,7 +187,7 @@ const TestDriveScreen = ({ route, navigation }) => {
     isViewMode2("");
 
     if (route?.params?.taskStatus === "CLOSED") {
-      dispatch(getTestDriveHistoryCount(universalId))
+      dispatch(getTestDriveHistoryCount(universalId));
     }
   }, []);
 
@@ -283,7 +286,8 @@ const TestDriveScreen = ({ route, navigation }) => {
     //     "auth-token": token,
     //   },
     // })
-    await client.get(url)
+    await client
+      .get(url)
       .then((json) => json.json())
       .then((resp) => {
         if (resp.dmsEntity?.dmsLeadDto) {
@@ -310,14 +314,25 @@ const TestDriveScreen = ({ route, navigation }) => {
             }
 
             const { model, variant, fuel, transimmisionType } = primaryModel;
-            setSelectedVehicleDetails({
-              model,
-              varient: variant,
-              fuelType: fuel,
-              transType: transimmisionType,
-              vehicleId: 0,
-              varientId: 0,
-            });
+            if (route?.params?.reTestDrive) {
+              setSelectedVehicleDetails({
+                model: "",
+                varient: "",
+                fuelType: "",
+                transType: "",
+                vehicleId: 0,
+                varientId: 0,
+              });
+            } else {
+              setSelectedVehicleDetails({
+                model,
+                varient: variant,
+                fuelType: fuel,
+                transType: transimmisionType,
+                vehicleId: 0,
+                varientId: 0,
+              });
+            }
           }
         }
       })
@@ -389,7 +404,11 @@ const TestDriveScreen = ({ route, navigation }) => {
           orgId: jsonObj.orgId,
           entityModuleId: selector.task_details_response.entityModuleId,
         };
-        dispatch(getTestDriveAppointmentDetailsApi(payload));
+        if (route?.params?.reTestDrive) {
+          dispatch(getTestDriveAppointmentDetailsApi2(payload));
+        } else {
+          dispatch(getTestDriveAppointmentDetailsApi(payload));
+        }
       }
     }
   };
@@ -455,9 +474,10 @@ const TestDriveScreen = ({ route, navigation }) => {
         setHandleActionButtons(5);
       } else if (taskStatus === "ASSIGNED" && taskName === "Test Drive") {
         setHandleActionButtons(1);
-      } if (taskStatus === "RESCHEDULED" && taskName === "Test Drive") {
+      }
+      if (taskStatus === "RESCHEDULED" && taskName === "Test Drive") {
         setHandleActionButtons(4);
-      } 
+      }
 
       setSelectedDseDetails({
         name: selector.task_details_response.assignee?.empName,
@@ -558,7 +578,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       method: "POST",
       headers: {
         "Content-Type": "multipart/form-data",
-        "Authorization": "Bearer " + tempToken1,
+        Authorization: "Bearer " + tempToken1,
       },
       body: formData,
     })
@@ -805,7 +825,7 @@ const TestDriveScreen = ({ route, navigation }) => {
 
   const closeTask = (from) => {
     setIsSubmitPress(true);
-    setIsisReopenSubmitVisible(false)
+    setIsisReopenSubmitVisible(false);
     if (selectedVehicleDetails.model.length === 0) {
       showToast("Please select model");
       return;
@@ -869,31 +889,27 @@ const TestDriveScreen = ({ route, navigation }) => {
         return;
       }
     }
-    
+
     if (userData.isOtp === "Y") {
       generateOtpToCloseTask();
       if (from === "reopen") {
-        setIschangeScreen(false)
-        reSubmitClick("ASSIGNED", "Test Drive Approval")
-      }else{
-        setIschangeScreen(true)
+        setIschangeScreen(false);
+        reSubmitClick("ASSIGNED", "Test Drive Approval");
+      } else {
+        setIschangeScreen(true);
       }
     } else {
-    
-      if(from==="reopen"){
-      
-        setIschangeScreen(true)
-       
-        reSubmitClick("ASSIGNED", "Test Drive Approval")
+      if (from === "reopen") {
+        setIschangeScreen(true);
+
+        reSubmitClick("ASSIGNED", "Test Drive Approval");
         setIsCloseSelected(false);
-        isViewMode2("reopen")
-        setIsisReopenSubmitVisible(true)
+        isViewMode2("reopen");
+        setIsisReopenSubmitVisible(true);
         return;
-      }else{
-      
+      } else {
         submitClicked("CLOSED", "Test Drive");
       }
-    
     }
     setIsCloseSelected(true);
   };
@@ -1117,7 +1133,7 @@ const TestDriveScreen = ({ route, navigation }) => {
   const resendClicked = () => {
     generateOtpToCloseTask();
   };
-  
+
   function compare(dateTimeA, dateTimeB) {
     var momentA = moment(dateTimeA, "DD/MM/YYYY");
     var momentB = moment(dateTimeB, "DD/MM/YYYY");
@@ -1125,16 +1141,16 @@ const TestDriveScreen = ({ route, navigation }) => {
     else if (momentA < momentB) return -1;
     else return 0;
   }
-  const reSubmitClick = (status,taskName)=>{
-    // call API here 
-  
-    setIsisReopenSubmitVisible(false)
+  const reSubmitClick = (status, taskName) => {
+    // call API here
+
+    setIsisReopenSubmitVisible(false);
     setIsSubmitPress(true);
     if (!mobileNumber || mobileNumber.length === 0) {
       showToast("Please enter mobile number");
       return;
     }
-    
+
     if (selectedVehicleDetails.model.length === 0) {
       showToast("Please select model");
       return;
@@ -1161,12 +1177,14 @@ const TestDriveScreen = ({ route, navigation }) => {
       showToast("Please select customer preferred date");
       return;
     }
-      const dateFormat = "DD/MM/YYYY";
-      const currentDate = moment().add(0, "day").format(dateFormat)
-    
-    // conditon to show error for date older then today 
-    if (compare(selector.customer_preferred_date, currentDate) === -1){
-      showToast("Please select customer preferred date greater than today's date");
+    const dateFormat = "DD/MM/YYYY";
+    const currentDate = moment().add(0, "day").format(dateFormat);
+
+    // conditon to show error for date older then today
+    if (compare(selector.customer_preferred_date, currentDate) === -1) {
+      showToast(
+        "Please select customer preferred date greater than today's date"
+      );
       return;
     }
 
@@ -1188,7 +1206,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       showToast("Please select time");
       return;
     }
-   
+
     const preferredTime = moment(selector.customer_preferred_time, "HH:mm");
     const startTime = moment(selector.actual_start_time, "HH:mm");
     const endTime = moment(selector.actual_end_time, "HH:mm");
@@ -1211,7 +1229,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       showToast("Actual End Time Should not be less than Actual Start Time");
       return;
     }
-   
+
     if (
       selectedVehicleDetails.vehicleId === 0 ||
       selectedVehicleDetails.varientId === 0
@@ -1244,10 +1262,10 @@ const TestDriveScreen = ({ route, navigation }) => {
     const date = moment(selector.customer_preferred_date, "DD/MM/YYYY").format(
       "DD-MM-YYYY"
     );
-    let prefferedTime ;
-    let actualStartTime ;
-    let actualEndTime ;
-    
+    let prefferedTime;
+    let actualStartTime;
+    let actualEndTime;
+
     if (Platform.OS === "ios") {
       const preffTime = moment(
         selector.customer_preferred_time,
@@ -1271,7 +1289,6 @@ const TestDriveScreen = ({ route, navigation }) => {
     setExpectedStartAndEndTime({ start: actualStartTime, end: actualEndTime });
     setTaskStatusAndName({ status: status, name: taskName });
 
-    
     let reopenSubmitObj = {
       id: taskId,
       address: customerAddress,
@@ -1303,60 +1320,56 @@ const TestDriveScreen = ({ route, navigation }) => {
       vehicleId: vehicleId,
       driverId: selectedDriverDetails.id.toString(),
       testdriveId: 0,
-      customerHaveingDl: customerHavingDrivingLicense === 1
-    }
-  
+      customerHaveingDl: customerHavingDrivingLicense === 1,
+    };
+
     dispatch(postReOpenTestDrive(reopenSubmitObj));
-    
-  }
+  };
   useEffect(() => {
-   
-    if (selector.reopen_test_drive_res_status ==="successs"){
-      if(ischangeScreen){
+    if (selector.reopen_test_drive_res_status === "successs") {
+      if (ischangeScreen) {
         navigation.pop(2);
       }
     }
-  
-  }, [selector.reopen_test_drive_res_status])
-  
+  }, [selector.reopen_test_drive_res_status]);
+
   useEffect(() => {
-    if (route?.params?.taskStatus === "CLOSED"){
-     
-      if (selector.test_drive_history_count_statu === "successs"){
-       
+    if (route?.params?.taskStatus === "CLOSED") {
+      if (selector.test_drive_history_count_statu === "successs") {
         navigation.setOptions({
           headerRight: () => <TestDriveHistoryIcon navigation={navigation} />,
-        })
+        });
       }
-     
-    
     }
-  
-  }, [selector.test_drive_history_count_statu])
-   const TestDriveHistoryIcon = ({ navigation }) => {
+  }, [selector.test_drive_history_count_statu]);
+  const TestDriveHistoryIcon = ({ navigation }) => {
     return (
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <IconButton
+          style={{ marginEnd: 15 }}
+          icon="history"
+          color={Colors.WHITE}
+          size={30}
+          onPress={() =>
+            navigation.navigate("TEST_HISTORY", {
+              universalId: universalId,
+            })
+          }
+        />
 
-     
-      <View style={{flexDirection:'row',alignItems:"center"}}>
-       
-          <IconButton
-          style={{marginEnd:15}}
-            icon="history"
-            color={Colors.WHITE}
-            size={30}
-            onPress={() =>
-              navigation.navigate("TEST_HISTORY", {
-                universalId: universalId,
-
-              })
-
-            }
-          />
-       
-        
-        <Text style={{ fontSize: 16, color: Colors.PINK, fontWeight: "bold", position: "absolute", top: 9, right: 10, }}>{selector.test_drive_history_count}</Text>
+        <Text
+          style={{
+            fontSize: 16,
+            color: Colors.PINK,
+            fontWeight: "bold",
+            position: "absolute",
+            top: 9,
+            right: 10,
+          }}
+        >
+          {selector.test_drive_history_count}
+        </Text>
       </View>
-      
     );
   };
 
@@ -1387,32 +1400,34 @@ const TestDriveScreen = ({ route, navigation }) => {
   }, [selector.validate_otp_response_status]);
 
   const reOpenTask = () => {
-    isViewMode2("reopen")
-    setIsisReopenSubmitVisible(true)
-  }
+    isViewMode2("reopen");
+    setIsisReopenSubmitVisible(true);
+  };
   const isViewMode = () => {
     if (route?.params?.taskStatus === "CLOSED") {
       return true;
     }
     return false;
-  }
+  };
 
   const isViewMode2 = (from) => {
-    // todo 
-   
-    if(from ==="reopen"){
-      setIsValuesEditable(false)
-      
-      
-    }else{
+    // todo
+
+    if (from === "reopen") {
+      setIsValuesEditable(false);
+    } else {
       if (route?.params?.taskStatus === "CLOSED") {
-        setIsValuesEditable(true)
+        if (route?.params?.reTestDrive) {
+          setIsValuesEditable(false);
+        } else {
+          setIsValuesEditable(true);
+        }
+        // setIsValuesEditable(true)
         // return true;
       } else {
-        setIsValuesEditable(false)
+        setIsValuesEditable(false);
       }
     }
-    
   };
 
   const onDropDownClear = (key) => {
@@ -2055,6 +2070,18 @@ const TestDriveScreen = ({ route, navigation }) => {
             <View style={[styles.view1, { marginTop: 30 }]}>
               <Button
                 mode="contained"
+                style={{ width: 120 }}
+                color={Colors.GRAY}
+                // disabled={selector.is_loading_for_task_update}
+                labelStyle={{ textTransform: "none" }}
+                onPress={() => {
+                  navigation.goBack();
+                }}
+              >
+                Close
+              </Button>
+              <Button
+                mode="contained"
                 style={{ width: "45%" }}
                 color={Colors.RED}
                 // disabled={selector.is_loading_for_task_update}
@@ -2248,7 +2275,7 @@ const otpStyles = StyleSheet.create({
   titleText: {
     fontSize: 12,
     fontWeight: "600",
-    color:Colors.PINK
+    color: Colors.PINK,
   },
   badgeContainer: {
     marginLeft: 3,

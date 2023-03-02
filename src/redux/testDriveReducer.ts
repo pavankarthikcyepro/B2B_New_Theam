@@ -98,6 +98,24 @@ export const getTestDriveAppointmentDetailsApi = createAsyncThunk("TEST_DRIVE_SL
   return json;
 })
 
+export const getTestDriveAppointmentDetailsApi2 = createAsyncThunk(
+  "TEST_DRIVE_SLICE/getAppointmentDetailsApi2",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.get(
+      URL.GET_TEST_DRIVE_APPOINTMENT_DETAILS(
+        payload["entityModuleId"],
+        payload["barnchId"],
+        payload["orgId"]
+      )
+    );
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 export const validateTestDriveApi = createAsyncThunk("TEST_DRIVE_SLICE/validateTestDriveApi", async (payload, { rejectWithValue }) => {
 
   const response = await client.get(URL.VALIDATE_TEST_DRIVE_DATE(payload["date"], payload["vehicleId"]));
@@ -294,6 +312,62 @@ const testDriveSlice = createSlice({
     builder.addCase(getTestDriveAppointmentDetailsApi.rejected, (state, action) => {
       state.test_drive_appointment_details_response = null;
     })
+     builder.addCase(
+       getTestDriveAppointmentDetailsApi2.pending,
+       (state, action) => {
+         state.test_drive_appointment_details_response = null;
+       }
+     );
+     builder.addCase(
+       getTestDriveAppointmentDetailsApi2.fulfilled,
+       (state, action) => {
+         if (action.payload != null && action.payload.statusCode === "200") {
+           if (
+             action.payload.testDrives &&
+             action.payload.testDrives.length > 0
+           ) {
+             const testDrivesInfo = action.payload.testDrives[0];
+
+            //  const testDriveDatetime = testDrivesInfo.testDriveDatetime
+            //    ? testDrivesInfo.testDriveDatetime
+            //    : "";
+            //  const testDriveDatetimeAry = testDriveDatetime.split(" ");
+            //  if (testDriveDatetimeAry.length > 0) {
+            //    state.customer_preferred_date = moment(
+            //      testDriveDatetimeAry[0],
+            //      "DD-MM-YYYY"
+            //    ).format("DD/MM/YYYY");
+            //  }
+            //  if (testDriveDatetimeAry.length > 1) {
+            //    state.customer_preferred_time = testDriveDatetimeAry[1];
+            //  }
+
+            //  const startTime = testDrivesInfo.startTime
+            //    ? testDrivesInfo.startTime
+            //    : "";
+            //  const startTimeAry = startTime.split(" ");
+            //  if (startTimeAry.length > 1) {
+            //    state.actual_start_time = startTimeAry[1];
+            //  }
+            //  state.driverId = testDrivesInfo.driverId;
+            //  const endTime = testDrivesInfo.endTime
+            //    ? testDrivesInfo.endTime
+            //    : "";
+            //  const endTimeAry = endTime.split(" ");
+            //  if (endTimeAry.length > 1) {
+            //    state.actual_end_time = endTimeAry[1];
+            //  }
+            //  state.test_drive_appointment_details_response = testDrivesInfo;
+           }
+         }
+       }
+     );
+     builder.addCase(
+       getTestDriveAppointmentDetailsApi2.rejected,
+       (state, action) => {
+         state.test_drive_appointment_details_response = null;
+       }
+     );
     // Get Test Drive Vehicle list
     builder.addCase(getTestDriveVehicleListApi.pending, (state, action) => {
       state.test_drive_vehicle_list = [];

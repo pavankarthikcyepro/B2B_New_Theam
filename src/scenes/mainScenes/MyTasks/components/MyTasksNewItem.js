@@ -112,7 +112,10 @@ export const MyTaskNewItem = ({
   onlylead = false,
   EmployeesRoles,
   userData,
-  tdflage = "", updatedOn
+  tdflage = "",
+  updatedOn,
+  testDrive,
+  testDrivePress,
 }) => {
   let date = "";
   if (from == "MY_TASKS") {
@@ -178,7 +181,7 @@ export const MyTaskNewItem = ({
           position: "relative",
         }}
       >
-        <View style={{ width: "65%" }}>
+        <View style={{ width: "60%" }}>
           <View style={{ flexDirection: "row" }}>
             <View style={{ maxWidth: "73%" }}>
               <Text style={styles.text1}>{name}</Text>
@@ -246,7 +249,7 @@ export const MyTaskNewItem = ({
             )}
           </>
         </View>
-        <View style={{ width: "35%", alignItems: "center" }}>
+        <View style={{ width: "40%", alignItems: "center" }}>
           {uniqueId ? (
             <Text style={styles.leadIdText}>Lead ID : {uniqueId}</Text>
           ) : null}
@@ -262,6 +265,12 @@ export const MyTaskNewItem = ({
               justifyContent: "space-evenly",
             }}
           >
+            {testDrive && (
+              <>
+                <IconComp iconName={"plus"} onPress={() => {testDrivePress();}} />
+                <View style={{ padding: 5 }} />
+              </>
+            )}
             <IconComp
               iconName={"format-list-bulleted-square"}
               disabled={true}
