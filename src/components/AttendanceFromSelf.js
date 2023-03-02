@@ -61,7 +61,7 @@ const AttendanceFromSelf = ({
   showReason,
 }) => {
   const navigation = useNavigation();
-    const selector = useSelector((state) => state.homeReducer);
+  const selector = useSelector((state) => state.homeReducer);
 
   const [comment, setComment] = useState("");
   const [commentError, setCommentError] = useState("");
@@ -75,17 +75,41 @@ const AttendanceFromSelf = ({
   const [active, setActive] = useState(false);
   const [alreadyPresent, setAlreadyPresent] = useState(false);
   const [status, setStatus] = useState("");
-  const [DropDownData,setDropDownData]= useState({});
+  const [DropDownData, setDropDownData] = useState({});
   const [location, setLocation] = useState([]);
   const [DealerCodes, setDealerCodes] = useState([]);
-  useEffect(() => {
-   if (selector.filter_drop_down_data) {
-    setDropDownData(selector.filter_drop_down_data);
-    setDealerCodes(selector.filter_drop_down_data["Dealer Code"]?.sublevels);
-    setLocation(selector.filter_drop_down_data["Location"]?.sublevels);
-   }
+  const [selectedLocation, setSelectedLocation] = useState("");
+  const [selectedDealerCode, setSelectedDealerCode] = useState("");
+
+  useEffect(async () => {
+    if (selector.filter_drop_down_data) {
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        setDropDownData(selector.filter_drop_down_data);
+        var vals = jsonObj.branchs.map(function (a) {
+          return a.branchId;
+        });
+
+        let branchs = selector.filter_drop_down_data[
+          "Dealer Code"
+        ]?.sublevels?.filter((i) => {
+          vals.includes(i.id)== true
+        });
+        console.log(
+          vals,
+          branchs,
+          selector.filter_drop_down_data["Dealer Code"]?.sublevels
+        );
+        setDealerCodes(branchs);
+
+        setLocation(selector.filter_drop_down_data["Location"]?.sublevels);
+      }
+    }
   }, [selector.filter_drop_down_data]);
-  
+
   useEffect(() => {
     getDetails();
   }, [visible]);
@@ -339,7 +363,7 @@ const AttendanceFromSelf = ({
   function onClose() {
     setPresent(false);
   }
-  
+
   return (
     <Modal
       animationType={Platform.OS === "ios" ? "slide" : "fade"}
@@ -412,6 +436,7 @@ const AttendanceFromSelf = ({
                   underLine
                   onChange={(item) => {
                     console.log(item);
+                    setSelectedLocation(item);
                   }}
                   data={location || []}
                   labelField={"name"}
@@ -428,6 +453,7 @@ const AttendanceFromSelf = ({
                   underLine
                   onChange={(item) => {
                     console.log(item);
+                    setSelectedDealerCode(item);
                   }}
                   data={DealerCodes || []}
                   labelField={"name"}
