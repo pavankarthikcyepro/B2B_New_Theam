@@ -1737,7 +1737,7 @@ const styles = StyleSheet.create({
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.8,
     shadowRadius: 1,
     borderStyle: "solid",
     borderWidth: 1,
@@ -1746,6 +1746,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: 5,
+    backgroundColor: Colors.WHITE
   },
   rankHeadingText: {
     fontSize: 10,
