@@ -97,6 +97,7 @@ const AttendanceFromSelf = ({
       );
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
+        console.log(JSON.stringify(jsonObj));
         setUserData(jsonObj);
         var d = new Date();
         const response = await client.get(
@@ -395,44 +396,50 @@ const AttendanceFromSelf = ({
               )}
             </View>
           </View>
-          {DealerCodes.length > 0 && location.length > 0 && (
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-around",
-                alignItems: "center",
-              }}
-            >
-              <Dropdown
-                label={"Location"}
-                visible={true}
-                underLine
-                onChange={(item) => {console.log(item);}}
-                data={location || []}
-                labelField={"name"}
-                valueField={"name"}
-                placeholder={"Location"}
-                style={[styles.dropdownElement]}
-                placeholderStyle={{
-                  color: Colors.GRAY,
+          {userData?.branchs?.length > 1 &&
+            DealerCodes?.length > 0 &&
+            location?.length > 0 && (
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-around",
+                  alignItems: "center",
                 }}
-              />
-              <Dropdown
-                label={"Dealer Code"}
-                visible={true}
-                underLine
-                onChange={(item) => {console.log(item);}}
-                data={DealerCodes || []}
-                labelField={"name"}
-                valueField={"name"}
-                placeholder={"Dealer Code"}
-                style={[styles.dropdownElement]}
-                placeholderStyle={{
-                  color: Colors.GRAY,
-                }}
-              />
-            </View>
-          )}
+              >
+                <Dropdown
+                  label={"Location"}
+                  visible={true}
+                  underLine
+                  onChange={(item) => {
+                    console.log(item);
+                  }}
+                  data={location || []}
+                  labelField={"name"}
+                  valueField={"name"}
+                  placeholder={"Location"}
+                  style={[styles.dropdownElement]}
+                  placeholderStyle={{
+                    color: Colors.GRAY,
+                  }}
+                />
+                <Dropdown
+                  label={"Dealer Code"}
+                  visible={true}
+                  underLine
+                  onChange={(item) => {
+                    console.log(item);
+                  }}
+                  data={DealerCodes || []}
+                  labelField={"name"}
+                  valueField={"name"}
+                  placeholder={"Dealer Code"}
+                  style={[styles.dropdownElement]}
+                  placeholderStyle={{
+                    color: Colors.GRAY,
+                  }}
+                />
+              </View>
+            )}
           <View style={{ flexDirection: "row" }}>
             {/* {punched ? (
               present ? (
