@@ -224,13 +224,13 @@ const AttendanceTopTabNavigatorTeams = () => {
           title: ({ focused }) => <Badge title={"Team"} focused={focused} />,
         }}
       />
-      <AttendanceTopTab.Screen
+      {/* <AttendanceTopTab.Screen
         name={AttendanceTopTabNavigatorIdentifiers.report}
         component={DownloadReportScreen}
         options={{
           title: ({ focused }) => <Badge title={"Report"} focused={focused} />,
         }}
-      />
+      /> */}
     </AttendanceTopTab.Navigator>
   );
 };

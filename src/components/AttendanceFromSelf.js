@@ -98,12 +98,9 @@ const AttendanceFromSelf = ({
         ]?.sublevels?.filter((i) => {
           vals.includes(i.id)== true
         });
-        console.log(
-          vals,
-          branchs,
+        setDealerCodes(
           selector.filter_drop_down_data["Dealer Code"]?.sublevels
         );
-        setDealerCodes(branchs);
 
         setLocation(selector.filter_drop_down_data["Location"]?.sublevels);
       }
@@ -121,7 +118,6 @@ const AttendanceFromSelf = ({
       );
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
-        console.log(JSON.stringify(jsonObj));
         setUserData(jsonObj);
         var d = new Date();
         const response = await client.get(
@@ -420,7 +416,7 @@ const AttendanceFromSelf = ({
               )}
             </View>
           </View>
-          {userData?.branchs?.length > 1 &&
+          {userData?.branchs?.length > 0 &&
             DealerCodes?.length > 0 &&
             location?.length > 0 && (
               <View
@@ -439,6 +435,7 @@ const AttendanceFromSelf = ({
                     setSelectedLocation(item);
                   }}
                   data={location || []}
+                  value={selectedLocation ? selectedLocation : ""}
                   labelField={"name"}
                   valueField={"name"}
                   placeholder={"Location"}
@@ -449,6 +446,7 @@ const AttendanceFromSelf = ({
                 />
                 <Dropdown
                   label={"Dealer Code"}
+                  value={selectedDealerCode ? selectedDealerCode : ""}
                   visible={true}
                   underLine
                   onChange={(item) => {
