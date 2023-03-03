@@ -47,7 +47,7 @@ const TaskListScreen = ({ route, navigation }) => {
     });
   }, [navigation]);
 
-  const itemClicked = (item, retestDrive = false) => {
+  const itemClicked = (item, Closed = false) => {
     const taskName = item.taskName;
     const taskId = item.taskId;
     const universalId = item.universalId;
@@ -58,7 +58,7 @@ const TaskListScreen = ({ route, navigation }) => {
     const finalTaskName = trimName.replace(/ /g, "");
     let navigationId = "";
     let taskNameNew = "";
-    let reTestDrive = retestDrive;
+    let reTestDrive = Closed;
     switch (finalTaskName) {
       case "testdrive":
         navigationId = AppNavigator.MyTasksStackIdentifiers.testDrive;
@@ -182,14 +182,17 @@ const TaskListScreen = ({ route, navigation }) => {
                     itemClicked(item);
                   }}
                   testDrive={
-                    item.taskName == "Test Drive" && item.taskStatus == "CLOSED"
+                    (item.taskName == "Test Drive" ||
+                      item.taskName == "Home Visit") &&
+                    item.taskStatus == "CLOSED"
                       ? true
                       : false
                   }
-                  testDrivePress={()=>{
+                  testDrivePress={() => {
                     itemClicked(
                       item,
-                      item.taskName == "Test Drive" &&
+                      (item.taskName == "Test Drive" ||
+                        item.taskName == "Home Visit") &&
                         item.taskStatus == "CLOSED"
                         ? true
                         : false
