@@ -53,6 +53,16 @@ const color = [
   "#1f93ab",
   "#ec3466",
 ];
+const data = [
+  {
+    id: 0,
+    name: "Active"
+  },
+  {
+    id: 1,
+    name: "Closed"
+  }
+]
 const receptionistRole = ["Reception", "CRM", "Tele Caller"];
 const TargetScreen = ({ route }) => {
   const navigation = useNavigation();
@@ -878,6 +888,36 @@ const TargetScreen = ({ route }) => {
   function navigateToDropLostCancel(params) {
     navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis);
   }
+  const renderItem = (item, index) => {
+
+    return (
+      <View style={{
+        width: '100%',
+        padding: 10,
+        borderColor: index === 0 ? Colors.PURPLE : Colors.BLUE_V2,
+        borderWidth: 1,
+        borderRadius: 10,
+        justifyContent: "center",
+        marginVertical: 10
+
+      }}>
+        <View style={styles.scondView}>
+          <Text style={{
+            fontSize: 16,
+            color: index === 0 ? Colors.CORAL : Colors.GREEN_V2,
+            fontWeight: "700",
+            paddingVertical: 10
+          }}>{item.name}</Text>
+
+          <TouchableOpacity onPress={() => {
+            navigation.navigate(ComplainTrackerIdentifires.complainTrackerTop);
+          }}>
+            <Text style={styles.txt10}>0</Text>
+          </TouchableOpacity>
+        </View>
+      </View>)
+  }
+  
   return (
     <React.Fragment>
       {!selector.isLoading ? (
@@ -2698,7 +2738,22 @@ const TargetScreen = ({ route }) => {
                   {receptionistRole.includes(userData.hrmsRole) &&
                   !selector.isTeam ? (
                     <>
-                      <View style={styles.view14}>
+                    <View style={{flex:1}}>
+                          {/*  todo */}
+                              <View style={{flex:1}}>
+                              <FlatList
+                                data={data}
+                                bounces={false}
+                                renderItem={({ item, index }) => renderItem(item, index)}
+                              //   contentContainerStyle={styles.titleRow}
+                              //   bounces={false}
+                              />
+                              </View>
+                            
+                         
+                    </View>
+                        {/* CRM exisiting code start */}
+                      {/* <View style={styles.view14}>
                         <SourceModelView
                           style={{ alignSelf: "flex-end" }}
                           onClick={() => {
@@ -3148,7 +3203,8 @@ const TargetScreen = ({ route }) => {
                             )}
                           </View>
                         </View>
-                      </ScrollView>
+                      </ScrollView> */}
+                          {/* CRM exisiting code end */}
                     </>
                   ) : null}
                 </>
@@ -3958,5 +4014,15 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: "bold",
     color: Colors.WHITE,
+  },
+  scondView: {
+    flexDirection: "column",
+    margin: 10,
+  },
+  txt10: {
+    fontSize: 16,
+    color: Colors.BLACK,
+    fontWeight: "600",
+    textDecorationLine: 'underline'
   },
 });
