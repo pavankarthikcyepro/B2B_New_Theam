@@ -15,7 +15,8 @@ import {
   validateOtpApi,
   setDatePicker,
   updateSelectedDate,
-  updateHomeVisit
+  updateHomeVisit,
+  updateSelectedTime
 } from "../../../redux/homeVisitReducer";
 import {
   showToastSucess,
@@ -103,6 +104,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
   const [customerAddress, setCustomerAddress] = useState("");
   const [isSubmitPress, setIsSubmitPress] = useState(false);
   const [isDateError, setIsDateError] = useState(false);
+  const [datePickerMode, setDatePickerMode] = useState("date");
 
   useEffect(() => {
     getAsyncStorageData();
@@ -277,16 +279,20 @@ const HomeVisitScreen = ({ route, navigation }) => {
 
     let updateTime = moment(defaultDate).format("DD/MM/YYYY HH:mm");
     if (selector.actual_start_time != "") {
-      updateTime = `${selector.actual_start_time} ${moment().format("HH:mm")}`;
+      updateTime = `${selector.actual_start_time}`;
     }
 
     newTaskObj.taskUpdatedTime = convertDateStringToMillisecondsUsingMoment(
-      updateTime,
+      `${updateTime} ${moment().format("HH:mm")}`,
       "DD/MM/YYYY HH:mm"
     );
 
     newTaskObj.taskActualStartTime = convertDateStringToMillisecondsUsingMoment(
-      updateTime,
+      `${updateTime} ${
+        selector.next_follow_time
+          ? selector.next_follow_time
+          : moment().format("HH:mm")
+      }`,
       "DD/MM/YYYY HH:mm"
     );
 
@@ -306,7 +312,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
       }
       newTaskObj.taskStatus = "RESCHEDULED";
     }
-
+    
     dispatch(updateTaskApi(newTaskObj));
     setActionType(actionType);
   };
@@ -364,6 +370,12 @@ const HomeVisitScreen = ({ route, navigation }) => {
     return false;
   };
 
+  const showDatePickerModelMethod = (key, mode) => {
+    Keyboard.dismiss();
+    setDatePickerMode(mode);
+    dispatch(setDatePicker(key));
+  };
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -374,15 +386,16 @@ const HomeVisitScreen = ({ route, navigation }) => {
       <ScrollView style={[styles.container]}>
         <DatePickerComponent
           visible={selector.showDatepicker}
-          mode={"date"}
+          mode={datePickerMode}
           minimumDate={selector.minDate}
           maximumDate={selector.maxDate}
           value={new Date(Date.now())}
           onChange={(event, selectedDate) => {
-            if (Platform.OS === "android") {
-              //setDatePickerVisible(false);
+            if (selector.datePickerKeyId == "NEXT_FOLLOW_TIME") {
+              dispatch(updateSelectedTime({ key: "", text: selectedDate }));
+            } else {
+              dispatch(updateSelectedDate({ key: "", text: selectedDate }));
             }
-            dispatch(updateSelectedDate({ key: "", text: selectedDate }));
           }}
           onRequestClose={() => dispatch(setDatePicker())}
         />
@@ -543,12 +556,10 @@ const HomeVisitScreen = ({ route, navigation }) => {
             <DateSelectItem
               disabled={isViewMode()}
               label={"Next Followup Date"}
-              // label={"Actual Start Date"}
               value={selector.actual_start_time}
-              onPress={() => dispatch(setDatePicker("ACTUAL_START_TIME"))}
-            //  value={selector.expected_delivery_date}
-            // onPress={() =>
-            // dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
+              onPress={() =>
+                showDatePickerModelMethod("ACTUAL_START_TIME", "date")
+              }
             />
             <Text
               style={[
@@ -556,7 +567,27 @@ const HomeVisitScreen = ({ route, navigation }) => {
                 {
                   backgroundColor:
                     isSubmitPress &&
-                      (selector.actual_start_time === "" || isDateError)
+                    (selector.actual_start_time === "" || isDateError)
+                      ? "red"
+                      : "rgba(208, 212, 214, 0.7)",
+                },
+              ]}
+            ></Text>
+            <DateSelectItem
+              disabled={isViewMode()}
+              label={"Next Followup Time"}
+              value={selector.next_follow_time}
+              onPress={() =>
+                showDatePickerModelMethod("NEXT_FOLLOW_TIME", "time")
+              }
+            />
+            <Text
+              style={[
+                GlobalStyle.underline,
+                {
+                  backgroundColor:
+                    isSubmitPress &&
+                    (selector.actual_start_time === "" || isDateError)
                       ? "red"
                       : "rgba(208, 212, 214, 0.7)",
                 },
