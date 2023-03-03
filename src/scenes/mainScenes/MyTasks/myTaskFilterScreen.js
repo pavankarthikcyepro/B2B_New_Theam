@@ -257,7 +257,7 @@ const MyTaskFilterScreen = ({ navigation }) => {
         updateSelectedItems(updatedMultipleData, index, true);
       }
     } else {
-      setDropDownData([...newData]);
+      setDropDownData([...data]);
     }
     setSelectedItemIndex(index);
     !initalCall && setShowDropDownModel(true);
