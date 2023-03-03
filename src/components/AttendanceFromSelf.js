@@ -98,10 +98,7 @@ const AttendanceFromSelf = ({
         ]?.sublevels?.filter((i) => {
           vals.includes(i.id)== true
         });
-        setDealerCodes(
-          selector.filter_drop_down_data["Dealer Code"]?.sublevels
-        );
-
+        setDealerCodes(branchs);
         setLocation(selector.filter_drop_down_data["Location"]?.sublevels);
       }
     }
@@ -416,7 +413,7 @@ const AttendanceFromSelf = ({
               )}
             </View>
           </View>
-          {userData?.branchs?.length > 0 &&
+          {userData?.branchs?.length > 1 &&
             DealerCodes?.length > 0 &&
             location?.length > 0 && (
               <View
