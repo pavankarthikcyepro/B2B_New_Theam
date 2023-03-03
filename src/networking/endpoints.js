@@ -495,16 +495,16 @@ const URL = {
       `/employeeTracking/getDetailsByDate/${employeeId}/${orgId}/${date}`
     );
   },
-  GET_EMPLOYEES_DROP_DOWN_DATA_FOR_ATTENDANCE: (orgId, employeeId) => {
-    // return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8092/dfd/oh/team-attendance/${orgId}/${employeeId}`;
-    return baseUrl + `dfd/oh/team-attendance/${orgId}/${employeeId}`;
+  GET_EMPLOYEES_DROP_DOWN_DATA_FOR_ATTENDANCE: (orgId, employeeId,startDate,endDate) => {
+    return (
+      baseUrl +
+      `dfd/oh/team-attendance/${orgId}/${employeeId}/${startDate}/${endDate}`
+    );
   },
   GET_ATTENDANCE_REPORT: () => {
-    // return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8081/sales/reports/attendance_report`;
     return sales_url + "/reports/attendance_report";
   },
   GET_DOWNLOAD_URL: (file) => {
-    // return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8081/sales/reports/downloadFile/${file}`;
     return sales_url + `/reports/downloadFile/${file}`;
   },
   GET_TEAM_ATTENDANCE_COUNT: () => {
