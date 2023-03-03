@@ -2107,7 +2107,7 @@ const BookingFormScreen = ({ route, navigation }) => {
     };
 
   function isSelfManagerBikeWo() {
-    if (userData.isSelfManager == "Y" && userData.isTracker === "N") {
+    if (userData.isSelfManager == "Y") {
       return true;
     } else {
       return false;
@@ -3838,7 +3838,7 @@ const BookingFormScreen = ({ route, navigation }) => {
 
                   <TextinputComp
                     style={styles.offerPriceTextInput}
-                    label={isSelfManagerBikeWo() ? "Govt/Subsidy": "Additional Offer 1:" }
+                    label={isSelfManagerBikeWo() ? "Govt/Subsidy: ": "Additional Offer 1:" }
                     value={selector.additional_offer_1}
                     showLeftAffixText={true}
                     disabled={true}

@@ -3129,10 +3129,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   };
 
   function isSelfManagerBikeWo() {
-    if (userData.isSelfManager == "Y" && userData.isTracker === "N") {
+    if (userData.isSelfManager == "Y") {
       return false;
     } else {
-      return false;
+      return true;
     }
   }
   return (

@@ -113,6 +113,7 @@ const TargetScreen = ({ route }) => {
     hrmsRole: "",
     orgId: 0,
   });
+  const [selfManager, setSelfManager] = useState(false);
   const scrollViewRef = useRef();
   const paramsMetadata = [
     // 'Enquiry', 'Test Drive', 'Home Visit', 'Booking', 'INVOICE', 'Finance', 'Insurance', 'Exchange', 'EXTENDEDWARRANTY', 'Accessories'
@@ -558,6 +559,11 @@ const TargetScreen = ({ route }) => {
               (item) => item.empId === jsonObj.empId
             ),
           ];
+          if (jsonObj?.isSelfManager == "Y") {
+            setSelfManager(true);
+          } else {
+            setSelfManager(false);
+          }
           myParams[0] = {
             ...myParams[0],
             isOpenInner: false,
@@ -1005,6 +1011,7 @@ const TargetScreen = ({ route }) => {
                                         titleClick={async () => {}}
                                         roleName={item.roleName}
                                         stopLocation={true}
+                                        selfManager={selfManager}
                                       />
                                       <View
                                         style={{
@@ -1406,6 +1413,7 @@ const TargetScreen = ({ route }) => {
                                         color={"#C62159"}
                                         navigation={navigation}
                                         stopLocation={true}
+                                        selfManager={selfManager}
                                         titleClick={async () => {
                                           let localData = [...allParameters];
                                           await onEmployeeNameClick(
@@ -1556,6 +1564,7 @@ const TargetScreen = ({ route }) => {
                                                       branchName={getBranchName(
                                                         innerItem1.branchId
                                                       )}
+                                                      selfManager={selfManager}
                                                       titleClick={async () => {
                                                         const localData = [
                                                           ...allParameters,
@@ -1630,7 +1639,7 @@ const TargetScreen = ({ route }) => {
                                                               style={{
                                                                 flexDirection:
                                                                   "row",
-                                                                  marginTop: 8
+                                                                marginTop: 8,
                                                               }}
                                                             >
                                                               <Text
@@ -1744,6 +1753,9 @@ const TargetScreen = ({ route }) => {
                                                               branchName={getBranchName(
                                                                 innerItem2.branchId
                                                               )}
+                                                              selfManager={
+                                                                selfManager
+                                                              }
                                                               titleClick={async () => {
                                                                 const localData =
                                                                   [
@@ -1945,6 +1957,9 @@ const TargetScreen = ({ route }) => {
                                                                         branchName={getBranchName(
                                                                           innerItem3.branchId
                                                                         )}
+                                                                        selfManager={
+                                                                          selfManager
+                                                                        }
                                                                         titleClick={async () => {
                                                                           const localData =
                                                                             [
@@ -2139,6 +2154,9 @@ const TargetScreen = ({ route }) => {
                                                                                   branchName={getBranchName(
                                                                                     innerItem4.branchId
                                                                                   )}
+                                                                                  selfManager={
+                                                                                    selfManager
+                                                                                  }
                                                                                   titleClick={async () => {
                                                                                     const localData =
                                                                                       [
@@ -2335,6 +2353,9 @@ const TargetScreen = ({ route }) => {
                                                                                             branchName={getBranchName(
                                                                                               innerItem5.branchId
                                                                                             )}
+                                                                                            selfManager={
+                                                                                              selfManager
+                                                                                            }
                                                                                             titleClick={async () => {
                                                                                               const localData =
                                                                                                 [
@@ -2479,6 +2500,9 @@ const TargetScreen = ({ route }) => {
                                                                                                       branchName={getBranchName(
                                                                                                         innerItem6.branchId
                                                                                                       )}
+                                                                                                      selfManager={
+                                                                                                        selfManager
+                                                                                                      }
                                                                                                       titleClick={async () => {
                                                                                                         const localData =
                                                                                                           [
@@ -3515,7 +3539,7 @@ const TargetScreen = ({ route }) => {
                     <View style={{ marginHorizontal: 8 }}>
                       <View style={{ height: 4 }}></View>
                       <View style={styles.statWrap}>
-                        <Text style={styles.txt6}>Accessories/Car</Text>
+                        <Text style={styles.txt6}>Accessories/Vehicle</Text>
                         {accData !== null && retailData !== null && (
                           <Text
                             style={{
@@ -3591,6 +3615,7 @@ export const RenderLevel1NameView = ({
   disable = false,
   receptionManager = false,
   stopLocation = false,
+  selfManager = false,
 }) => {
   return (
     <View
@@ -3629,7 +3654,7 @@ export const RenderLevel1NameView = ({
           </Text>
         </TouchableOpacity>
         {/* {level === 0 && !!branchName && ( */}
-        {branchName ? (
+        {!selfManager && branchName ? (
           <TouchableOpacity
             disabled={stopLocation}
             onPress={() => {

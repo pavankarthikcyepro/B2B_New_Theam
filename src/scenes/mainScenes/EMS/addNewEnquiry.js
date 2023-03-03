@@ -1628,7 +1628,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
         // if aadhar number
         if (!aadharArr.length && selector.adhaar_number) {
-         let newObj = {
+          let newObj = {
             ...dmsAttachmentsObj,
             documentNumber: selector.adhaar_number,
             documentType: "aadhar",
@@ -3337,13 +3337,13 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     }
   };
 
-    function isSelfManagerBikeWo() {
-      if (userData.isSelfManager == "Y" && userData.isTracker === "N") {
-        return false;
-      } else {
-        return false;
-      }
+  function isSelfManagerBikeWo() {
+    if (userData.isSelfManager == "Y") {
+      return false;
+    } else {
+      return true;
     }
+  }
 
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
@@ -5699,39 +5699,43 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                       }
                     />
                     <Text style={GlobalStyle.underline}></Text>
-{isSelfManagerBikeWo()&& <>
-                    <DropDownSelectionItem
-                      label={
-                        userData.isSelfManager == "Y" ? "Range" : "Fuel Type"
-                      }
-                      value={selector.c_fuel_type}
-                      onPress={() =>
-                        showDropDownModelMethod("C_FUEL_TYPE", "Fuel Type")
-                      }
-                      clearOption={true}
-                      clearKey={"C_FUEL_TYPE"}
-                      onClear={onDropDownClear}
-                    />
-                    <DropDownSelectionItem
-                      label={
-                        userData.isSelfManager == "Y"
-                          ? "Battery Type"
-                          : userData.isTracker == "Y"
-                          ? "Clutch Type"
-                          : "Transmission Type"
-                      }
-                      value={selector.c_transmission_type}
-                      onPress={() =>
-                        showDropDownModelMethod(
-                          "C_TRANSMISSION_TYPE",
-                          "Transmission Type"
-                        )
-                      }
-                      clearOption={true}
-                      clearKey={"C_TRANSMISSION_TYPE"}
-                      onClear={onDropDownClear}
-                    />
-</>}
+                    {isSelfManagerBikeWo() && (
+                      <>
+                        <DropDownSelectionItem
+                          label={
+                            userData.isSelfManager == "Y"
+                              ? "Range"
+                              : "Fuel Type"
+                          }
+                          value={selector.c_fuel_type}
+                          onPress={() =>
+                            showDropDownModelMethod("C_FUEL_TYPE", "Fuel Type")
+                          }
+                          clearOption={true}
+                          clearKey={"C_FUEL_TYPE"}
+                          onClear={onDropDownClear}
+                        />
+                        <DropDownSelectionItem
+                          label={
+                            userData.isSelfManager == "Y"
+                              ? "Battery Type"
+                              : userData.isTracker == "Y"
+                              ? "Clutch Type"
+                              : "Transmission Type"
+                          }
+                          value={selector.c_transmission_type}
+                          onPress={() =>
+                            showDropDownModelMethod(
+                              "C_TRANSMISSION_TYPE",
+                              "Transmission Type"
+                            )
+                          }
+                          clearOption={true}
+                          clearKey={"C_TRANSMISSION_TYPE"}
+                          onClear={onDropDownClear}
+                        />
+                      </>
+                    )}
                     <TextinputComp
                       style={styles.textInputStyle}
                       value={selector.c_price_range}
@@ -6132,39 +6136,41 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     }
                   />
                   <Text style={GlobalStyle.underline}></Text>
-{isSelfManagerBikeWo() && <>
-                  <DropDownSelectionItem
-                    label={
-                      userData.isSelfManager == "Y" ? "Range" : "Fuel Type"
-                    }
-                    value={selector.r_fuel_type}
-                    onPress={() =>
-                      showDropDownModelMethod("R_FUEL_TYPE", "Fuel Type")
-                    }
-                    clearOption={true}
-                    clearKey={"R_FUEL_TYPE"}
-                    onClear={onDropDownClear}
-                  />
-                  <DropDownSelectionItem
-                    label={
-                      userData.isSelfManager == "Y"
-                        ? "Battery Type"
-                        : userData.isTracker == "Y"
-                        ? "Clutch Type"
-                        : "Transmission Type"
-                    }
-                    value={selector.r_transmission_type}
-                    onPress={() =>
-                      showDropDownModelMethod(
-                        "R_TRANSMISSION_TYPE",
-                        "Transmission Type"
-                      )
-                    }
-                    clearOption={true}
-                    clearKey={"R_TRANSMISSION_TYPE"}
-                    onClear={onDropDownClear}
-                  />
-</>}
+                  {isSelfManagerBikeWo() && (
+                    <>
+                      <DropDownSelectionItem
+                        label={
+                          userData.isSelfManager == "Y" ? "Range" : "Fuel Type"
+                        }
+                        value={selector.r_fuel_type}
+                        onPress={() =>
+                          showDropDownModelMethod("R_FUEL_TYPE", "Fuel Type")
+                        }
+                        clearOption={true}
+                        clearKey={"R_FUEL_TYPE"}
+                        onClear={onDropDownClear}
+                      />
+                      <DropDownSelectionItem
+                        label={
+                          userData.isSelfManager == "Y"
+                            ? "Battery Type"
+                            : userData.isTracker == "Y"
+                            ? "Clutch Type"
+                            : "Transmission Type"
+                        }
+                        value={selector.r_transmission_type}
+                        onPress={() =>
+                          showDropDownModelMethod(
+                            "R_TRANSMISSION_TYPE",
+                            "Transmission Type"
+                          )
+                        }
+                        clearOption={true}
+                        clearKey={"R_TRANSMISSION_TYPE"}
+                        onClear={onDropDownClear}
+                      />
+                    </>
+                  )}
                   <DateSelectItem
                     label={"Mth.Yr. of MFG"}
                     value={selector.r_mfg_year}
