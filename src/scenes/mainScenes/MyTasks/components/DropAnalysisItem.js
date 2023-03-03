@@ -175,7 +175,7 @@ export const DropAnalysisItem = ({
           >
             <View style={{ width: "60%" }}>
               <View style={{ flexDirection: "row" }}>
-                {isManager && isCheckboxVisible && dropStatus == "DROPPED" && (
+                {isManager && isCheckboxVisible && dropStatus == "DROPPED" && leadStage !== "DELIVERY" && leadStage !== "INVOICE" && (
                   <Checkbox.Android
                     onPress={() => {
                       checkboxSelected();

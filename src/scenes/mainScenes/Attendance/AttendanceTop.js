@@ -25,7 +25,7 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import VerifyAttendance from "../../../components/VerifyAttendance";
 import AttendanceForm from "../../../components/AttendanceForm";
 import AttendanceFromSelf from "../../../components/AttendanceFromSelf";
-import { ActivityIndicator } from "react-native-paper";
+import AnimLoaderComp from "../../../components/AnimLoaderComp";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
@@ -468,22 +468,25 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
         </TouchableOpacity>
 
         <Text style={{ color: Colors.RED }}>{selectedMonth(currentMonth)}</Text>
-        {currentMonth.getMonth() !== new Date().getMonth() ?
-        <TouchableOpacity
-          onPress={() => {
-            var d = currentMonth;
-            d.setMonth(d.getMonth() + 1);
-            setCurrentMonth(new Date(d));
-          }}
-          style={{ flexDirection: "row", alignItems: "center" }}
-        >
-          <Text style={{ color: Colors.RED }}>{nextMonth(currentMonth)}</Text>
-          <MaterialIcons
-            name="arrow-forward-ios"
-            size={20}
-            color={Colors.RED}
-          />
-        </TouchableOpacity> : <View style={{width:45}}/>}
+        {currentMonth.getMonth() !== new Date().getMonth() ? (
+          <TouchableOpacity
+            onPress={() => {
+              var d = currentMonth;
+              d.setMonth(d.getMonth() + 1);
+              setCurrentMonth(new Date(d));
+            }}
+            style={{ flexDirection: "row", alignItems: "center" }}
+          >
+            <Text style={{ color: Colors.RED }}>{nextMonth(currentMonth)}</Text>
+            <MaterialIcons
+              name="arrow-forward-ios"
+              size={20}
+              color={Colors.RED}
+            />
+          </TouchableOpacity>
+        ) : (
+          <View style={{ width: 45 }} />
+        )}
       </View>
       <FlatList
         data={monthData}
@@ -496,7 +499,7 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
         ListEmptyComponent={() =>
           !monthData.length ? (
             loading ? (
-              <ActivityIndicator size="large" color={Colors.RED} />
+              <AnimLoaderComp visible={true} />
             ) : (
               <Text>Something Went Wrong</Text>
             )

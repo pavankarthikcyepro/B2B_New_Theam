@@ -14,7 +14,6 @@ import {
   Image,
   Pressable,
   ScrollView,
-  ActivityIndicator,
 } from "react-native";
 import { Colors } from "../../../styles";
 import { IconButton } from "react-native-paper";
@@ -53,6 +52,7 @@ import { client } from "../../../networking/client";
 import URL from "../../../networking/endpoints";
 import RNFetchBlob from "rn-fetch-blob";
 import _ from "lodash";
+import AnimLoaderComp from "../../../components/AnimLoaderComp";
 
 const screenWidth = Dimensions.get("window").width;
 const buttonWidth = (screenWidth - 100) / 2;
@@ -68,7 +68,7 @@ const AcitivityLoader = () => {
         alignItems: "center",
       }}
     >
-      <ActivityIndicator size={"small"} color={Colors.GRAY} />
+      <AnimLoaderComp visible={true} />
     </View>
   );
 };

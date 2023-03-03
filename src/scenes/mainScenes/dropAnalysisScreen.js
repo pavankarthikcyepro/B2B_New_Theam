@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { SafeAreaView, StyleSheet, View, TouchableOpacity, FlatList, ActivityIndicator, Text, RefreshControl, Pressable } from "react-native";
+import { SafeAreaView, StyleSheet, View, TouchableOpacity, FlatList, Text, RefreshControl, Pressable } from "react-native";
 import { PageControlItem } from "../../../pureComponents/pageControlItem";
 import { Button, IconButton } from "react-native-paper";
 import {  EmptyListView } from "../../pureComponents";
@@ -17,6 +17,7 @@ import { updateTAB, updateIsSearch, updateSearchKey } from '../../redux/appReduc
 import { showToast } from "../../utils/toast";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
 import { current } from "@reduxjs/toolkit";
+import AnimLoaderComp from "../../components/AnimLoaderComp";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().add(0, "day").format(dateFormat)
@@ -670,10 +671,10 @@ const DropAnalysisScreen = ({ navigation }) => {
     const renderFooter = () => {
         if (!selector.isLoadingExtraData) { return null }
         return (
-            <View style={styles.footer}>
-                <Text style={styles.btnText}>Loading More...</Text>
-                <ActivityIndicator color={Colors.GRAY} />
-            </View>
+          <View style={styles.footer}>
+            <Text style={styles.btnText}>Loading More...</Text>
+            <AnimLoaderComp visible={true} />
+          </View>
         );
     };
     const IconComp = ({ iconName, onPress, bgColor }) => {

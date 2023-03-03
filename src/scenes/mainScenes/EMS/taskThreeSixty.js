@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from "react";
-import { SafeAreaView, View, Text, StyleSheet, FlatList, SectionList, ActivityIndicator, TouchableOpacity, Image, Platform, Linking } from "react-native";
+import { SafeAreaView, View, Text, StyleSheet, FlatList, SectionList, TouchableOpacity, Image, Platform, Linking } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { getWorkFlow, getEnquiryDetails, getLeadAge, getFollowUPCount, getTestDriveHistoryCount } from "../../../redux/taskThreeSixtyReducer";
 import { Colors, GlobalStyle } from "../../../styles"
@@ -9,6 +9,7 @@ import { AppNavigator } from "../../../navigations";
 import { showToast } from "../../../utils/toast";
 import * as AsyncStore from "../../../asyncStore";
 import { EmsStackIdentifiers } from "../../../navigations/appNavigator";
+import AnimLoaderComp from "../../../components/AnimLoaderComp";
 
 const mytasksIdentifires = {
   testdrive: "TEST_DRIVE",
@@ -199,9 +200,9 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
   if (selector.isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="small" color={Colors.RED} />
+        <AnimLoaderComp visible={true} />
       </View>
-    )
+    );
   }
 
   const openMap = (latitude, longitude) => {

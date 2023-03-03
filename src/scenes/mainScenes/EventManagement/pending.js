@@ -7,7 +7,6 @@ import {
   StyleSheet,
   FlatList,
   Dimensions,
-  ActivityIndicator,
   RefreshControl
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
@@ -15,6 +14,7 @@ import { EmptyListView, EventManagementItem } from "../../../pureComponents";
 import { useDispatch, useSelector } from "react-redux";
 import * as AsyncStore from "../../../asyncStore";
 import { getPendingEventListApi, getMorePendingEventListApi } from "../../../redux/eventManagementReducer";
+import AnimLoaderComp from "../../../components/AnimLoaderComp";
 
 
 const PendingListScreen = ({ navigation }) => {
@@ -70,7 +70,7 @@ const PendingListScreen = ({ navigation }) => {
     return (
       <View style={styles.footer}>
         <Text style={styles.btnText}>Loading More...</Text>
-        <ActivityIndicator color={Colors.GRAY} />
+        <AnimLoaderComp visible={true} />
       </View>
     );
   };

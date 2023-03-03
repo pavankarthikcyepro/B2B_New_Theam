@@ -115,6 +115,9 @@ export const dashboard = baseUrl + "dfd/dashboard";
 export const salesGap = baseUrl + "dfd/sales-gap";
 export const getBranch = baseUrl + "dfd/oh";
 export const tasktransfer = baseUrl + "dfd/sales-gap/target-dropdown";
+
+
+
 export const getLeaderBoardData =
   baseUrl + "dfd/dashboard/v2/get_emp_target_Dealer_ranking";
 export const getBranchRankingData =
@@ -345,6 +348,10 @@ const URL = {
     );
   },
   CUSTOMER_LEAD_REFERENCE: () => sales_url + "/lead-customer-reference",
+
+  GET_DET_FROM_PHONE: (phone, orgId) => sales_url + `/lead/phone/${phone}/${orgId}`,
+  GET_COMPLAIN_FACTOR_DATA: (orgId) => baseUrl + `dfdg/df-get-all/${orgId}/"Active"/${orgId}/ComplaintFactor`,
+
   GET_COMPLAINTS: () => dynamicReports_url + "/v2-generate-query",
   GET_EVENTS: () => {
     return ops_url + `/dms/getAllServiceEventsByFilterByStatus`;
@@ -568,6 +575,9 @@ const URL = {
   DEALER_CODE_LIST1: (orgId) => {
     return `${baseUrl}dfd/oh/data-nodes?orgId=${orgId}&levelCode=Level5`;
   },
+  DEALER_CODE_BRANCH_LIST: (orgId, locationId) => {
+    return `${baseUrl}dfd/oh/getLocationBasedBranches?orgId=${orgId}&locationId=${locationId}`;
+  },
   GET_DESIGNATION: (orgId, branchId) => {
     return `${sales_url}/employees/get/designations/${orgId}/${branchId}`;
   },
@@ -664,6 +674,36 @@ const URL = {
   },
   GET_EMPLOYEE_DETAILS: (orgId, branchId, deptId, desigId) => {
     return `${getEmployeeData}?orgId=${orgId}&branchId=${branchId}&deptId=${deptId}&desigId=${desigId}`;
+  },
+
+  GET_DASHBOARD_COUNT_COMPLAINT: ( empId) => {
+    return sales_url +`/complainttracker/getCounts/${empId}`;
+  },
+  GEY_COMPLAINT_DET_FROMID: (complaintId) => {
+    return sales_url + `/complainttracker/getCt/${complaintId}`;
+  },
+
+  GET_COMPLAINT_DROPDOWN_MAIN: () => {
+    return baseUrl + `dfd/common/dropComplaintMenuFilter`;
+  },
+  GET_COMPLAINT_CONSULTANT: (orgId, branchId) => {
+    return sales_url + `/employees/salesconsultant/${orgId}/${branchId}`;
+  },
+  GET_COMPLAINT_MANAGER: (empid) => {
+    return sales_url + `/employees/manager/${empid}`;
+  },
+  POST_GETSUBMENU_COMPLAINT: () => {
+    return baseUrl + `dfd/common/dropComplaintSubMenu`;
+  },
+
+  POST_COMPLAINT: () => {
+    return sales_url + `/complainttracker/save`;
+  },
+  POST_COMPLAINT_CLOSE: () => {
+    return sales_url + `/complainttracker/savecomplaint`;
+  },
+  GET_COMPLAINT_LIST: () => {
+    return sales_url + `/complainttracker/filter`;
   },
   TRANSFER_TASK: (fromUserId, toUserId) => {
     return (

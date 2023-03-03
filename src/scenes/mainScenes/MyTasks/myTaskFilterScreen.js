@@ -2,7 +2,6 @@ import { useIsFocused } from "@react-navigation/native";
 import moment from "moment";
 import React, { useState, useEffect, useCallback } from "react";
 import {
-  ActivityIndicator,
   Dimensions,
   SafeAreaView,
   StyleSheet,
@@ -15,6 +14,7 @@ import { Button } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import * as AsyncStore from "../../../asyncStore";
 import { DropDownComponant } from "../../../components";
+import AnimLoaderComp from "../../../components/AnimLoaderComp";
 import { MyTasksStackIdentifiers } from "../../../navigations/appNavigator";
 import { DropDownSelectionItem } from "../../../pureComponents";
 import {
@@ -40,7 +40,7 @@ const AcitivityLoader = () => {
         alignItems: "center",
       }}
     >
-      <ActivityIndicator size={"small"} color={Colors.GRAY} />
+      <AnimLoaderComp visible={true} />
     </View>
   );
 };
