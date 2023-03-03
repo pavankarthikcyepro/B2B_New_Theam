@@ -360,30 +360,33 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
       selectedIds: selectedIds,
     };
 
-    // Promise.all([dispatch(getEmployeesDropDownData(payload1))])
-    //   .then(() => {
-    //     Promise.all([
-    //     //   dispatch(getLeadSourceTableList(payload)),
-    //     //   dispatch(getVehicleModelTableList(payload)),
-    //     //   dispatch(getEventTableList(payload)),
-    //     //   dispatch(getLostDropChartData(payload)),
-    //     //   dispatch(updateFilterDropDownData(totalDataObj)),
-    //     //   // // Table Data
-    //     //   dispatch(getTaskTableList(payload2)),
-    //     //   dispatch(getSalesData(payload2)),
-    //     //   dispatch(getSalesComparisonData(payload2)),
-    //     //   // // Target Params Data
-    //     //   dispatch(getTargetParametersData(payload2)),
-    //     //   dispatch(getTargetParametersEmpDataInsights(payload2)), // Added to filter an Home Screen's INSIGHT
-    //     ])
-    //       .then(() => {})
-    //       .catch(() => {
-    //         setIsLoading(false);
-    //       });
-    //   })
-    //   .catch(() => {
-    //     setIsLoading(false);
-    //   });
+    if (userData.hrmsRole == "CRM"){
+      Promise.all([dispatch(getEmployeesDropDownData(payload1))])
+        .then(() => {
+      
+          //     Promise.all([
+          //     //   dispatch(getLeadSourceTableList(payload)),
+          //     //   dispatch(getVehicleModelTableList(payload)),
+          //     //   dispatch(getEventTableList(payload)),
+          //     //   dispatch(getLostDropChartData(payload)),
+          //     //   dispatch(updateFilterDropDownData(totalDataObj)),
+          //     //   // // Table Data
+          //     //   dispatch(getTaskTableList(payload2)),
+          //     //   dispatch(getSalesData(payload2)),
+          //     //   dispatch(getSalesComparisonData(payload2)),
+          //     //   // // Target Params Data
+          //     //   dispatch(getTargetParametersData(payload2)),
+          //     //   dispatch(getTargetParametersEmpDataInsights(payload2)), // Added to filter an Home Screen's INSIGHT
+          //     ])
+          // .then(() => {})
+          // .catch(() => {
+          //   setIsLoading(false);
+          // });
+        })
+        .catch(() => {
+          setIsLoading(false);
+        });
+    }
     if (from == "EMPLOYEE") {
       if (true) {
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.monthlyTarget, {
@@ -394,7 +397,9 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
       }
       // navigation.navigate(AppNavigator.TabStackIdentifiers.home, { screen: "Home", params: { from: 'Filter' }, })
     } else {
+      if(!userData.hrmsRole == "CRM"){
       navigation.goBack(); // NEED TO COMMENT FOR ASSOCIATE FILTER
+      }
     }
   };
 
@@ -415,7 +420,9 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
             });
           });
         }
+       
         newDataObj[key] = newArray;
+       
       }
       setName(names, newDataObj);
     }
@@ -591,7 +598,7 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
                           );
                         }
                         if (userData.hrmsRole === "Reception") {
-                          if (item === "Dealer Code") {
+                          // if (item === "Dealer Code") {
                             return (
                               <View>
                                 <DropDownSelectionItem
@@ -602,7 +609,7 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
                                 />
                               </View>
                             );
-                          }
+                          // }
                         } else {
                           return (
                             <View>

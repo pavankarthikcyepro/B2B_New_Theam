@@ -101,6 +101,7 @@ import AttendanceFromSelf from "../../../components/AttendanceFromSelf";
 import Orientation from "react-native-orientation-locker";
 import { useIsFocused } from "@react-navigation/native";
 import { useIsDrawerOpen } from "@react-navigation/drawer";
+import { isReceptionist } from "../../../utils/helperFunctions";
 
 const officeLocation = {
   latitude: 37.33233141,
@@ -391,7 +392,9 @@ const HomeScreen = ({ route, navigation }) => {
     });
   };
   const moveToFilter = () => {
-    if (userData.hrmsRole == "Reception" || userData.hrmsRole == "CRM") {
+
+    // if (userData.hrmsRole == "Reception" || userData.hrmsRole == "CRM") {
+    if (isReceptionist(userData.hrmsRole)) {
       navigation.navigate(
         AppNavigator.HomeStackIdentifiers.receptionistFilter,
         {
