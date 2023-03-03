@@ -33,6 +33,7 @@ import taskTransferReducer from "./taskTransferReducer";
 import leaddropReducer from "./leaddropReducer";
 import liveLeadsReducer from "./liveLeadsReducer";
 import settingReducer from "./settingReducer";
+import complaintTrackerReducer from "./complaintTrackerReducer";
 import digitalPaymentReducer from "./digitalPaymentReducer";
 
 
@@ -69,6 +70,7 @@ const reducer = combineReducers({
   taskTransferReducer,
   liveLeadsReducer,
   settingReducer,
+  complaintTrackerReducer,
   digitalPaymentReducer,
 });
 
