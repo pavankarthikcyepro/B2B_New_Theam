@@ -359,10 +359,10 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
       empId: userData.employeeId,
       selectedIds: selectedIds,
     };
-
+    // uncomment once api for emp for crm ready
     if (userData.hrmsRole == "CRM"){
-      Promise.all([dispatch(getEmployeesDropDownData(payload1))])
-        .then(() => {
+      // Promise.all([dispatch(getEmployeesDropDownData(payload1))])
+      //   .then(() => {
       
           //     Promise.all([
           //     //   dispatch(getLeadSourceTableList(payload)),
@@ -382,10 +382,10 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
           // .catch(() => {
           //   setIsLoading(false);
           // });
-        })
-        .catch(() => {
-          setIsLoading(false);
-        });
+        // })
+        // .catch(() => {
+        //   setIsLoading(false);
+        // });
     }
     if (from == "EMPLOYEE") {
       if (true) {
@@ -397,9 +397,9 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
       }
       // navigation.navigate(AppNavigator.TabStackIdentifiers.home, { screen: "Home", params: { from: 'Filter' }, })
     } else {
-      if(!userData.hrmsRole == "CRM"){
+      // if(!userData.hrmsRole == "CRM"){
       navigation.goBack(); // NEED TO COMMENT FOR ASSOCIATE FILTER
-      }
+      // }
     }
   };
 
