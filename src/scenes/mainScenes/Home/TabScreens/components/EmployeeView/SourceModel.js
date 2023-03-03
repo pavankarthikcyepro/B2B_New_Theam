@@ -15,8 +15,9 @@ import URL from "../../../../../../networking/endpoints";
 import { useDispatch, useSelector } from "react-redux";
 import { getSourceModelDataForSelf } from "../../../../../../redux/homeReducer";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
-import { ActivityIndicator, IconButton } from "react-native-paper";
+import { IconButton } from "react-native-paper";
 import { AppNavigator } from "../../../../../../navigations";
+import AnimLoaderComp from "../../../../../../components/AnimLoaderComp";
 
 const SourceModel = ({ route, navigation }) => {
   const dispatch = useDispatch();
@@ -511,7 +512,7 @@ function isEmpty(obj) {
           </View>
           <View style={{ height: "85%" }}>
             {isLoading || isEmpty(leadSource) ? (
-              <ActivityIndicator color={Colors.RED} size={"large"} />
+              <AnimLoaderComp visible={true} />
             ) : (
               <ScrollView>
                 <View style={[styles.flexRow, { paddingHorizontal: 6 }]}>
@@ -525,7 +526,10 @@ function isEmpty(obj) {
                   <ScrollView
                     ref={scrollViewRef}
                     onContentSizeChange={(contentWidth, contentHeight) => {
-                      scrollViewRef?.current?.scrollTo({ y: 0, animated: true });
+                      scrollViewRef?.current?.scrollTo({
+                        y: 0,
+                        animated: true,
+                      });
                     }}
                     horizontal
                   >

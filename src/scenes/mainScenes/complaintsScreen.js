@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { SafeAreaView, StyleSheet, View, FlatList, Text, RefreshControl, ActivityIndicator } from "react-native";
+import { SafeAreaView, StyleSheet, View, FlatList, Text, RefreshControl } from "react-native";
 import { ComplaintsTopTabNavigator } from "../../navigations/complaintsTopTabNavigator";
 import { DateRangeComp, DatePickerComponent } from '../../components';
 import { ComplaintsItem, EmptyListView } from "../../pureComponents";
@@ -10,6 +10,7 @@ import { getComplaintsListApi, getMoreComplaintsListApi } from "../../redux/comp
 import { Colors } from "../../styles";
 import { callNumber, sendEmail } from "../../utils/helperFunctions";
 import { showToastSucess } from "../../utils/toast";
+import AnimLoaderComp from "../../components/AnimLoaderComp";
 
 const dateFormat = "YYYY-MM-DD"
 
@@ -131,7 +132,7 @@ const ComplaintsScreen = ({ navigation }) => {
     return (
       <View style={styles.footer}>
         <Text style={styles.btnText}>Loading More...</Text>
-        <ActivityIndicator color={Colors.GRAY} />
+        <AnimLoaderComp visible={true} />
       </View>
     );
   };

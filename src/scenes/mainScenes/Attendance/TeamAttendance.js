@@ -17,12 +17,13 @@ import { DropDownComponant } from "../../../components";
 import { Colors, GlobalStyle } from "../../../styles";
 import { client } from "../../../networking/client";
 import URL from "../../../networking/endpoints";
-import { ActivityIndicator, Button, IconButton } from "react-native-paper";
+import { Button, IconButton } from "react-native-paper";
 import * as AsyncStore from "../../../asyncStore";
 import moment from "moment";
 import { DropDownSelectionItem } from "../../../pureComponents";
 import { AttendanceTopTabNavigatorIdentifiers } from "../../../navigations/attendanceTopTabNavigator";
 import { updateTheTeamAttendanceFilter } from "../../../redux/homeReducer";
+import AnimLoaderComp from "../../../components/AnimLoaderComp";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
@@ -273,8 +274,9 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
         >
           <Text style={{ fontSize: 14, fontWeight: "600", color: Colors.RED }}>
             {
-            // isEmpty(employeeList) &&
-              "Please select the Criteria using filter option "}
+              // isEmpty(employeeList) &&
+              "Please select the Criteria using filter option "
+            }
           </Text>
           {/* <View style={{ marginVertical: 5 }}>
             <DropDownSelectionItem
@@ -318,7 +320,7 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
       <ScrollView showsVerticalScrollIndicator={false}>
         {loading && (
           <View>
-            <ActivityIndicator size="large" color={Colors.RED} />
+            <AnimLoaderComp visible={true} />
           </View>
         )}
         {Object.keys(employeeList).map(function (key, index) {

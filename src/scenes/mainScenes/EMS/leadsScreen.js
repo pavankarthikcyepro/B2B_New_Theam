@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  ActivityIndicator,
   FlatList,
   Modal,
   Platform,
@@ -41,6 +40,7 @@ import Entypo from "react-native-vector-icons/FontAwesome";
 import { getLeadsList } from "../../../redux/enquiryReducer";
 import URL from "../../../networking/endpoints";
 import { client } from "../../../networking/client";
+import AnimLoaderComp from "../../../components/AnimLoaderComp";
 
 const EmployeesRoles = [
   "Reception".toLowerCase(),
@@ -920,7 +920,7 @@ const LeadsScreen = ({ route, navigation }) => {
     return (
       <View style={styles.footer}>
         <Text style={styles.btnText}>Loading More...</Text>
-        <ActivityIndicator color={Colors.GRAY} />
+        <AnimLoaderComp visible={true} />
       </View>
     );
   };
