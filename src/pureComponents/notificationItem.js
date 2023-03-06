@@ -2,6 +2,7 @@ import React from "react";
 import { StyleSheet, View, Text, TouchableOpacity, Image } from "react-native";
 import { IconButton } from "react-native-paper";
 import { Colors, GlobalStyle } from "../styles";
+import ReadMore from "react-native-read-more-text";
 
 export const NotificationItem = ({ title, date, onPress, icon, style, isFlag }) => {
   const conversionIndex = title.includes("Conversion :")
@@ -12,11 +13,31 @@ export const NotificationItem = ({ title, date, onPress, icon, style, isFlag }) 
   let firstStr = "";
   let secStr = "";
   let thirdStr = "";
+  let secStrCount = 0;
 
   if (conversionIndex >= 0 && perIndex >= 0) {
     firstStr = title.slice(0, conversionIndex);
     secStr = title.slice(conversionIndex, perIndex + 1);
     thirdStr = title.slice(perIndex + 1, title.length);
+  }
+
+  let isConsAvailable = title.includes("Consultants :");
+  if (!isConsAvailable) {
+    isConsAvailable = title.includes("Consultants:");
+  }
+
+  const consStartIndex = title.indexOf("[");
+  const consEndIndex = title.indexOf("]");
+
+  if (consStartIndex >= 0 && consEndIndex >= 0) {
+    firstStr = title.slice(0, consStartIndex);
+    secStr = title.slice(consStartIndex + 1, consEndIndex);
+    thirdStr = title.slice(consEndIndex + 1, title.length);
+    secStr = secStr.split(", ").join(",\n");
+    secStrCount = title
+      .slice(consStartIndex + 1, consEndIndex)
+      .split(",").length;
+    firstStr = firstStr + (secStrCount <= 5 ? "\n" : "");
   }
 
   return (
@@ -25,20 +46,24 @@ export const NotificationItem = ({ title, date, onPress, icon, style, isFlag }) 
         <Image source={icon} style={styles.iconContainer} />
         <View style={{ margin: 5, flex: 1 }}>
           {secStr ? (
-            <Text style={styles.title}>
+            <ReadMore numberOfLines={4} style={styles.title}>
               {firstStr}
               <Text
                 style={[
                   styles.perText,
-                  isFlag == "Y" ? { color: Colors.RED, fontWeight: "bold" } : null,
+                  isFlag == "Y"
+                    ? { color: Colors.RED, fontWeight: "bold" }
+                    : null,
                 ]}
               >
-                {secStr}
+                {secStrCount > 5 ? secStrCount : secStr}
               </Text>
               <Text style={styles.title}>{thirdStr}</Text>
-            </Text>
+            </ReadMore>
           ) : (
-            <Text style={styles.title}>{title}</Text>
+            <ReadMore numberOfLines={4} style={styles.title}>
+              {title}
+            </ReadMore>
           )}
         </View>
       </View>
