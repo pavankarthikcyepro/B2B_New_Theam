@@ -22,6 +22,7 @@ import moment from "moment";
 import { MyStockTopTabNavigatorIdentifiers } from "../../../navigations/myStockNavigator";
 import { updateCurrentScreen } from "../../../redux/myStockReducer";
 import { RadioTextItem1 } from "../../../pureComponents/radioTextItem";
+import { LoaderComponent } from "../../../components";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
@@ -35,6 +36,7 @@ const AvailableScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.homeReducer);
   const [available, setAvailable] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {
@@ -78,6 +80,7 @@ const AvailableScreen = ({ route, navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
+        <LoaderComponent visible={loading} onRequestClose={() => {}} />
         <View style={styles.mainView}>
           <View style={styles.radioView}>
             <RadioTextItem1

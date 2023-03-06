@@ -19,6 +19,7 @@ import { client } from "../../../networking/client";
 import URL from "../../../networking/endpoints";
 import * as AsyncStore from "../../../asyncStore";
 import moment from "moment";
+import { LoaderComponent } from "../../../components";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
@@ -31,6 +32,8 @@ const screenWidth = Dimensions.get("window").width;
 const OverviewDetailScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.homeReducer);
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     navigation.setOptions({
       title: route?.params?.headerTitle ? route?.params?.headerTitle : "Detail",
@@ -49,6 +52,7 @@ const OverviewDetailScreen = ({ route, navigation }) => {
     { title: ">15", value: "5" },
     { title: "<15", value: "5" },
   ];
+
   const total = [{ title: "Total", value: "35" }];
 
   const renderData = (item) => {
@@ -90,6 +94,7 @@ const renderTableData = (item, index) => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
+        <LoaderComponent visible={loading} onRequestClose={() => {}} />
         <View style={styles.mainView}>
           <View style={styles.titleView}>
             <Text style={styles.titleText}>{"Stock Yard"}</Text>

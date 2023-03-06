@@ -20,6 +20,7 @@ import URL from "../../../networking/endpoints";
 import * as AsyncStore from "../../../asyncStore";
 import moment from "moment";
 import { MyStockTopTabNavigatorIdentifiers } from "../../../navigations/myStockNavigator";
+import { LoaderComponent } from "../../../components";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
@@ -95,6 +96,7 @@ const VariantDetailScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.homeReducer);
   const [newData, setNewData] = useState(data);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     navigation.setOptions({
@@ -156,7 +158,7 @@ const VariantDetailScreen = ({ route, navigation }) => {
     );
   };
 
-  const renderChildData= (item1)=>{
+  const renderChildData = (item1) => {
     return (
       <View style={styles.boxView1}>
         <View style={{ width: "40%" }}>
@@ -177,10 +179,12 @@ const VariantDetailScreen = ({ route, navigation }) => {
         </View>
       </View>
     );
-  }
+  };
+  
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
+        <LoaderComponent visible={loading} onRequestClose={() => {}} />
         <View style={styles.mainView}>
           <View style={styles.titleView}>
             <View style={{ width: "40%" }}>
