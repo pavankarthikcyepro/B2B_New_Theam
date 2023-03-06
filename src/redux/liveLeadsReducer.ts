@@ -58,7 +58,7 @@ export const getMenuList = createAsyncThunk("LIVE_LEADS/getMenuList", async (nam
 
 export const getOrganaizationHirarchyList = createAsyncThunk("LIVE_LEADS/getOrganaizationHirarchyList", async (payload: any, { rejectWithValue }) => {
 
-    const response = await client.get(URL.ORG_HIRARCHY(payload.orgId, payload.branchId))
+    const response = await client.get(URL.ORG_HIRARCHY(payload.orgId, payload.empId))
     const json = await response.json()
 
     if (!response.ok) {

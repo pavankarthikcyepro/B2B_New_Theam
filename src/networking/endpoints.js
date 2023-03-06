@@ -401,8 +401,8 @@ const URL = {
   SAVETESTDRIVE: () => {
     return sales_url + "/task-history/savetestDrive";
   },
-  ORG_HIRARCHY: (orgId, branchId) => {
-    return orgnaizationHirarchy + `/active-levels/${orgId}/${branchId}`;
+  ORG_HIRARCHY: (orgId, empId) => {
+    return orgnaizationHirarchy + `/active-levels/${orgId}/${empId}`;
   },
   LEAD_SOURCE_DATA: () => dashboard + "/v2/get_leadsource_data",
   VEHICLE_MODEL_DATA: () => dashboard + "/v2/get_vehicle_model_data",

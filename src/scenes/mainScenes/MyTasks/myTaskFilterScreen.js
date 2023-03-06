@@ -67,7 +67,7 @@ const MyTaskFilterScreen = ({ navigation }) => {
   const getFilterDropDownData = async () => {
     const payload = {
       orgId: "",
-      branchId: "",
+      empId: "",
     };
     const employeeData = await AsyncStore.getData(
       AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -75,7 +75,7 @@ const MyTaskFilterScreen = ({ navigation }) => {
     if (employeeData) {
       const jsonObj = await JSON.parse(employeeData);
       payload["orgId"] = jsonObj?.orgId;
-      payload["branchId"] = jsonObj?.branchId;
+      payload["empId"] = jsonObj?.empId;
     }
     Promise.all([dispatch(getOrganizationHierarchyList(payload))]);
   };

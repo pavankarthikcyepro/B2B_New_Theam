@@ -267,7 +267,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
       const jsonObj = JSON.parse(employeeData);
       const payload = {
         orgId: jsonObj.orgId,
-        branchId: jsonObj.branchId,
+        empId: jsonObj.empId,
       };
       setHeaderText(jsonObj.empName);
       setHrmsRole(jsonObj.hrmsRole);

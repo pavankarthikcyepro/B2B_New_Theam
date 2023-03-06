@@ -143,7 +143,7 @@ const MyTasksScreen = ({ navigation }) => {
         });
         const payload = {
           orgId: jsonObj.orgId,
-          branchId: jsonObj.branchId,
+          empId: jsonObj.empId,
         };
         dispatch(getOrganizationHierarchyList(payload))
           .then((res) => {

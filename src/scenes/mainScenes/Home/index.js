@@ -265,9 +265,13 @@ const HomeScreen = ({ route, navigation }) => {
       userData.hrmsRole === "Reception" ||
       userData.hrmsRole === "Tele Caller"
     ) {
+      console.log("manthan00ddd selector.receptionistFilterIds ", selector.receptionistFilterIds);
       let payload = {
         orgId: userData.orgId,
         loggedInEmpId: userData.empId,
+        // "startDate": selector.receptionistFilterIds.startDate,
+        // "endDate": selector.receptionistFilterIds.endDate,
+        // "dealerCodes": selector.receptionistFilterIds.dealerCodes
       };
       dispatch(getReceptionistData(payload));
     } else if (userData.hrmsRole === "CRM") {
@@ -277,7 +281,7 @@ const HomeScreen = ({ route, navigation }) => {
       };
       dispatch(getReceptionistManagerData(payload));
     }
-  }, [userData]);
+  }, [userData, selector.receptionistFilterIds]);
 
   const setTargetData = async () => {
     let obj = {
@@ -450,7 +454,7 @@ const HomeScreen = ({ route, navigation }) => {
       });
       const payload = {
         orgId: jsonObj.orgId,
-        branchId: jsonObj.branchId,
+        empId: jsonObj.empId,
       };
       setHeaderText(jsonObj.empName);
       const dateFormat = "YYYY-MM-DD";

@@ -224,7 +224,7 @@ export const getOrganizationHierarchyList = createAsyncThunk(
   "MY_TASKS/getOrganizationHierarchyList",
   async (payload: any, { rejectWithValue }) => {
     const response = await client.get(
-      URL.ORG_HIRARCHY(payload.orgId, payload.branchId)
+      URL.ORG_HIRARCHY(payload.orgId, payload.empId)
     );
     const json = await response.json();
     if (!response.ok) {

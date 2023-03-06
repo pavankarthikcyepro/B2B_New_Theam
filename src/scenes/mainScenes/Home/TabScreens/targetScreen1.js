@@ -56,14 +56,25 @@ const color = [
 const data = [
   {
     id: 0,
-    name: "Active"
+    name: "Enquiry"
   },
   {
     id: 1,
-    name: "Closed"
-  }
+    name: "Booking"
+  },
+  {
+    id: 2,
+    name: "Retail"
+  },
+  {
+    id: 3,
+    name: "Lost"
+  },
+  
+  
 ]
 const receptionistRole = ["Reception", "CRM", "Tele Caller"];
+const CRMRole = ["CRM"];
 const TargetScreen = ({ route }) => {
   const navigation = useNavigation();
   const selector = useSelector((state) => state.homeReducer);
@@ -72,7 +83,7 @@ const TargetScreen = ({ route }) => {
   const [retailData, setRetailData] = useState(null);
   const [bookingData, setBookingData] = useState(null);
   const [enqData, setEnqData] = useState(null);
-
+  
   const [visitData, setVisitData] = useState(null);
   const [TDData, setTDData] = useState(null);
   const [exgData, setExgData] = useState(null);
@@ -892,13 +903,15 @@ const TargetScreen = ({ route }) => {
 
     return (
       <View style={{
-        width: '100%',
+        width: 300,
         padding: 10,
-        borderColor: index === 0 ? Colors.PURPLE : Colors.BLUE_V2,
+        borderColor: index === 0 ? Colors.PURPLE : index === 2 ? Colors.RED : index === 3 ? Colors.YELLOW : Colors.BLUE_V2,
         borderWidth: 1,
         borderRadius: 10,
         justifyContent: "center",
-        marginVertical: 10
+        marginVertical: 10,
+        // marginStart:'8%'
+
 
       }}>
         <View style={styles.scondView}>
@@ -910,9 +923,20 @@ const TargetScreen = ({ route }) => {
           }}>{item.name}</Text>
 
           <TouchableOpacity onPress={() => {
-            navigation.navigate(ComplainTrackerIdentifires.complainTrackerTop);
+            
+            {
+              item.id === 0 ? selector.receptionistData.enquirysCount > 0 && navigateToEMS() :
+                item.id === 1 ? navigateToDropLostCancel() :
+                  item.id === 2 ? selector.receptionistData.RetailCount > 0 && navigateToEMS() :
+                    item.id === 3 ? navigateToDropLostCancel() : null
+            }
           }}>
-            <Text style={styles.txt10}>0</Text>
+            {item.id === 0 ? <Text style={styles.txt10}> {selector.receptionistData.enquirysCount} </Text> : 
+              item.id === 1 ? <Text style={styles.txt10}> {selector.receptionistData.bookingsCount} </Text> : 
+                item.id === 2 ? <Text style={styles.txt10}>  {selector.receptionistData.RetailCount} </Text> : 
+                  item.id === 3 ? <Text style={styles.txt10}> {selector.receptionistData.totalLostCount} </Text> : 
+            <Text style={styles.txt10}>0</Text> }
+           
           </TouchableOpacity>
         </View>
       </View>)
@@ -2738,199 +2762,277 @@ const TargetScreen = ({ route }) => {
                   {receptionistRole.includes(userData.hrmsRole) &&
                   !selector.isTeam ? (
                     <>
-                    <View style={{flex:1}}>
-                          {/*  todo */}
-                              <View style={{flex:1}}>
-                              <FlatList
-                                data={data}
-                                bounces={false}
-                                renderItem={({ item, index }) => renderItem(item, index)}
-                              //   contentContainerStyle={styles.titleRow}
-                              //   bounces={false}
-                              />
-                              </View>
-                            
-                         
-                    </View>
-                        {/* CRM exisiting code start */}
-                      {/* <View style={styles.view14}>
-                        <SourceModelView
-                          style={{ alignSelf: "flex-end" }}
-                          onClick={() => {
-                            navigation.navigate("RECEP_SOURCE_MODEL", {
-                              empId: userData.empId,
-                              headerTitle: "Source/Model",
-                              loggedInEmpId: userData.empId,
-                              orgId: userData.orgId,
-                              role: userData.hrmsRole,
-                            });
-                          }}
-                        />
-                      </View>
-                      <ScrollView showsVerticalScrollIndicator={false}>
-                        <View style={styles.recBoxContainer}>
-                          <View style={styles.view15}>
-                            <View
-                              style={{
-                                justifyContent: "center",
-                                alignItems: "center",
-                                width: "35%",
-                              }}
-                            >
-                              <Text
-                                style={{
-                                  fontSize: 14,
-                                  fontWeight: "500",
+                          {CRMRole.includes(userData.hrmsRole) && <View style={{ paddingHorizontal: '8%' }}>
+                            <View style={styles.newView}>
+                              <Text style={{
+                                fontSize: 12,
+                                fontWeight: "600",
+                                color: Colors.BLUE,
+                                marginLeft: 8,
+                              }}>Leads Allocated</Text>
+                              <SourceModelView
+                                style={{ alignSelf: "flex-end" }}
+                                onClick={() => {
+                                  navigation.navigate("RECEP_SOURCE_MODEL", {
+                                    empId: userData.empId,
+                                    headerTitle: "Source/Model",
+                                    loggedInEmpId: userData.empId,
+                                    orgId: userData.orgId,
+                                    role: userData.hrmsRole,
+                                  });
                                 }}
-                              >
-                                {"Consultant Name"}
-                              </Text>
+                              />
                             </View>
+                            {/* todo */}
+                            <FlatList
+                              data={data}
+                              bounces={false}
+                              renderItem={({ item, index }) => renderItem(item, index)}
+                              contentContainerStyle={{ width: '100%' }}
+                            />
+                          </View> 
+                            }
+                    
+                        
 
-                            <View
-                              style={{
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                                width: "60%",
-                              }}
-                            >
-                              <Text
-                                style={{ ...styles.txt4, width: "25%" }}
-                                numberOfLines={2}
-                              >
-                                {"Enq"}
-                              </Text>
-                              <Text
-                                style={{ ...styles.txt4, width: "25%" }}
-                                numberOfLines={2}
-                              >
-                                {"Bkg"}
-                              </Text>
-                              <Text
-                                style={{ ...styles.txt4, width: "25%" }}
-                                numberOfLines={2}
-                              >
-                                {"Retail"}
-                              </Text>
-                              <Text
-                                style={{ ...styles.txt4, width: "25%" }}
-                                numberOfLines={2}
-                              >
-                                {"Lost"}
-                              </Text>
+                        {/* CRM exisiting code start */}
+                          {!CRMRole.includes(userData.hrmsRole) && <>
+                            <View style={styles.view14}>
+                              <SourceModelView
+                                style={{ alignSelf: "flex-end" }}
+                                onClick={() => {
+                                  navigation.navigate("RECEP_SOURCE_MODEL", {
+                                    empId: userData.empId,
+                                    headerTitle: "Source/Model",
+                                    loggedInEmpId: userData.empId,
+                                    orgId: userData.orgId,
+                                    role: userData.hrmsRole,
+                                  });
+                                }}
+                              />
                             </View>
-                          </View>
-                          <FlatList
-                            data={selector.receptionistData.consultantList}
-                            style={{ marginTop: 10 }}
-                            nestedScrollEnabled
-                            renderItem={({ item }) => {
-                              Array.prototype.random = function () {
-                                return this[
-                                  Math.floor(Math.random() * this.length)
-                                ];
-                              };
-                              let selectedColor = color.random();
-                              return (
+                            <ScrollView showsVerticalScrollIndicator={false}>
+                              <View style={styles.recBoxContainer}>
+                                <View style={styles.view15}>
+                                  <View
+                                    style={{
+                                      justifyContent: "center",
+                                      alignItems: "center",
+                                      width: "35%",
+                                    }}
+                                  >
+                                    <Text
+                                      style={{
+                                        fontSize: 14,
+                                        fontWeight: "500",
+                                      }}
+                                    >
+                                      {"Consultant Name"}
+                                    </Text>
+                                  </View>
+
+                                  <View
+                                    style={{
+                                      flexDirection: "row",
+                                      justifyContent: "space-between",
+                                      width: "60%",
+                                    }}
+                                  >
+                                    <Text
+                                      style={{ ...styles.txt4, width: "25%" }}
+                                      numberOfLines={2}
+                                    >
+                                      {"Enq"}
+                                    </Text>
+                                    <Text
+                                      style={{ ...styles.txt4, width: "25%" }}
+                                      numberOfLines={2}
+                                    >
+                                      {"Bkg"}
+                                    </Text>
+                                    <Text
+                                      style={{ ...styles.txt4, width: "25%" }}
+                                      numberOfLines={2}
+                                    >
+                                      {"Retail"}
+                                    </Text>
+                                    <Text
+                                      style={{ ...styles.txt4, width: "25%" }}
+                                      numberOfLines={2}
+                                    >
+                                      {"Lost"}
+                                    </Text>
+                                  </View>
+                                </View>
+                                <FlatList
+                                  data={selector.receptionistData.consultantList}
+                                  style={{ marginTop: 10 }}
+                                  nestedScrollEnabled
+                                  renderItem={({ item }) => {
+                                    Array.prototype.random = function () {
+                                      return this[
+                                        Math.floor(Math.random() * this.length)
+                                      ];
+                                    };
+                                    let selectedColor = color.random();
+                                    return (
+                                      <View style={styles.view16}>
+                                        <View style={styles.view17}>
+                                          <Text numberOfLines={1}>
+                                            {item?.emp_name}
+                                          </Text>
+                                        </View>
+                                        <View style={styles.view18}>
+                                          <View
+                                            style={{
+                                              minWidth: 45,
+                                              height: 25,
+                                              borderColor: Colors.RED,
+                                              borderWidth: 1,
+                                              borderRadius: 8,
+                                              justifyContent: "center",
+                                              alignItems: "center",
+                                            }}
+                                          >
+                                            <Text
+                                              onPress={() => {
+                                                item?.enquiryCount > 0 &&
+                                                  navigateToEMS();
+                                              }}
+                                              style={{
+                                                padding: 2,
+                                                textDecorationLine:
+                                                  item?.enquiryCount > 0
+                                                    ? "underline"
+                                                    : "none",
+                                              }}
+                                            >
+                                              {item?.enquiryCount}
+                                            </Text>
+                                          </View>
+                                          <View
+                                            style={{
+                                              minWidth: 45,
+                                              height: 25,
+                                              borderColor: Colors.RED,
+                                              borderWidth: 1,
+                                              borderRadius: 8,
+                                              justifyContent: "center",
+                                              alignItems: "center",
+                                            }}
+                                          >
+                                            <Text
+                                              onPress={() => {
+                                                item?.bookingCount > 0 &&
+                                                  navigateToEMS();
+                                              }}
+                                              style={{
+                                                padding: 2,
+                                                textDecorationLine:
+                                                  item?.bookingCount > 0
+                                                    ? "underline"
+                                                    : "none",
+                                              }}
+                                            >
+                                              {item?.bookingCount}
+                                            </Text>
+                                          </View>
+                                          <View
+                                            style={{
+                                              minWidth: 45,
+                                              height: 25,
+                                              borderColor: Colors.RED,
+                                              borderWidth: 1,
+                                              borderRadius: 8,
+                                              justifyContent: "center",
+                                              alignItems: "center",
+                                            }}
+                                          >
+                                            <Text
+                                              onPress={() => {
+                                                item?.retailCount > 0 &&
+                                                  navigateToEMS();
+                                              }}
+                                              style={{
+                                                padding: 2,
+                                                textDecorationLine:
+                                                  item?.retailCount > 0
+                                                    ? "underline"
+                                                    : "none",
+                                              }}
+                                            >
+                                              {item?.retailCount}
+                                            </Text>
+                                          </View>
+                                          <View
+                                            style={{
+                                              minWidth: 45,
+                                              height: 25,
+                                              borderColor: Colors.RED,
+                                              borderWidth: 1,
+                                              borderRadius: 8,
+                                              justifyContent: "center",
+                                              alignItems: "center",
+                                            }}
+                                          >
+                                            <Text
+                                              onPress={() => {
+                                                navigateToDropLostCancel();
+                                              }}
+                                              style={{
+                                                padding: 2,
+                                                textDecorationLine:
+                                                  item?.droppedCount > 0
+                                                    ? "underline"
+                                                    : "none",
+                                              }}
+                                            >
+                                              {item?.droppedCount}
+                                            </Text>
+                                          </View>
+                                        </View>
+                                      </View>
+                                    );
+                                  }}
+                                />
                                 <View style={styles.view16}>
-                                  <View style={styles.view17}>
-                                    <Text numberOfLines={1}>
-                                      {item?.emp_name}
+                                  <View
+                                    style={{
+                                      justifyContent: "center",
+                                      alignItems: "center",
+                                      width: "35%",
+                                    }}
+                                  >
+                                    <Text
+                                      style={{
+                                        fontSize: 15,
+                                        fontWeight: "600",
+                                        color: "#00b1ff",
+                                      }}
+                                    >
+                                      {"          Total"}
                                     </Text>
                                   </View>
                                   <View style={styles.view18}>
-                                    <View
-                                      style={{
-                                        minWidth: 45,
-                                        height: 25,
-                                        borderColor: Colors.RED,
-                                        borderWidth: 1,
-                                        borderRadius: 8,
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                      }}
-                                    >
+                                    <View style={styles.view20}>
                                       <Text
                                         onPress={() => {
-                                          item?.enquiryCount > 0 &&
-                                            navigateToEMS();
+                                          selector.receptionistData.enquirysCount >
+                                            0 && navigateToEMS();
                                         }}
                                         style={{
                                           padding: 2,
                                           textDecorationLine:
-                                            item?.enquiryCount > 0
+                                            selector.receptionistData.enquirysCount >
+                                              0
                                               ? "underline"
                                               : "none",
                                         }}
                                       >
-                                        {item?.enquiryCount}
+                                        {selector.receptionistData.enquirysCount}
                                       </Text>
                                     </View>
-                                    <View
-                                      style={{
-                                        minWidth: 45,
-                                        height: 25,
-                                        borderColor: Colors.RED,
-                                        borderWidth: 1,
-                                        borderRadius: 8,
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                      }}
-                                    >
-                                      <Text
-                                        onPress={() => {
-                                          item?.bookingCount > 0 &&
-                                            navigateToEMS();
-                                        }}
-                                        style={{
-                                          padding: 2,
-                                          textDecorationLine:
-                                            item?.bookingCount > 0
-                                              ? "underline"
-                                              : "none",
-                                        }}
-                                      >
-                                        {item?.bookingCount}
-                                      </Text>
-                                    </View>
-                                    <View
-                                      style={{
-                                        minWidth: 45,
-                                        height: 25,
-                                        borderColor: Colors.RED,
-                                        borderWidth: 1,
-                                        borderRadius: 8,
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                      }}
-                                    >
-                                      <Text
-                                        onPress={() => {
-                                          item?.retailCount > 0 &&
-                                            navigateToEMS();
-                                        }}
-                                        style={{
-                                          padding: 2,
-                                          textDecorationLine:
-                                            item?.retailCount > 0
-                                              ? "underline"
-                                              : "none",
-                                        }}
-                                      >
-                                        {item?.retailCount}
-                                      </Text>
-                                    </View>
-                                    <View
-                                      style={{
-                                        minWidth: 45,
-                                        height: 25,
-                                        borderColor: Colors.RED,
-                                        borderWidth: 1,
-                                        borderRadius: 8,
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                      }}
-                                    >
+                                    <View style={styles.view20}>
                                       <Text
                                         onPress={() => {
                                           navigateToDropLostCancel();
@@ -2938,272 +3040,216 @@ const TargetScreen = ({ route }) => {
                                         style={{
                                           padding: 2,
                                           textDecorationLine:
-                                            item?.droppedCount > 0
+                                            selector.receptionistData.bookingsCount >
+                                              0
                                               ? "underline"
                                               : "none",
                                         }}
                                       >
-                                        {item?.droppedCount}
+                                        {selector.receptionistData.bookingsCount}
+                                      </Text>
+                                    </View>
+                                    <View style={styles.view20}>
+                                      <Text
+                                        onPress={() => {
+                                          selector.receptionistData.RetailCount > 0 &&
+                                            navigateToEMS();
+                                        }}
+                                        style={{
+                                          padding: 2,
+                                          textDecorationLine:
+                                            selector.receptionistData.RetailCount > 0
+                                              ? "underline"
+                                              : "none",
+                                        }}
+                                      >
+                                        {selector.receptionistData.RetailCount}
+                                      </Text>
+                                    </View>
+                                    <View style={styles.view20}>
+                                      <Text
+                                        onPress={() => {
+                                          navigateToDropLostCancel();
+                                        }}
+                                        style={{
+                                          padding: 2,
+                                          textDecorationLine:
+                                            selector.receptionistData.totalLostCount >
+                                              0
+                                              ? "underline"
+                                              : "none",
+                                        }}
+                                      >
+                                        {selector.receptionistData.totalLostCount}
                                       </Text>
                                     </View>
                                   </View>
                                 </View>
-                              );
-                            }}
-                          />
-                          <View style={styles.view16}>
-                            <View
-                              style={{
-                                justifyContent: "center",
-                                alignItems: "center",
-                                width: "35%",
-                              }}
-                            >
-                              <Text
-                                style={{
-                                  fontSize: 15,
-                                  fontWeight: "600",
-                                  color: "#00b1ff",
-                                }}
-                              >
-                                {"          Total"}
-                              </Text>
-                            </View>
-                            <View style={styles.view18}>
-                              <View style={styles.view20}>
-                                <Text
-                                  onPress={() => {
-                                    selector.receptionistData.enquirysCount >
-                                      0 && navigateToEMS();
-                                  }}
-                                  style={{
-                                    padding: 2,
-                                    textDecorationLine:
-                                      selector.receptionistData.enquirysCount >
-                                      0
-                                        ? "underline"
-                                        : "none",
-                                  }}
-                                >
-                                  {selector.receptionistData.enquirysCount}
-                                </Text>
                               </View>
-                              <View style={styles.view20}>
-                                <Text
-                                  onPress={() => {
-                                    navigateToDropLostCancel();
-                                  }}
-                                  style={{
-                                    padding: 2,
-                                    textDecorationLine:
-                                      selector.receptionistData.bookingsCount >
-                                      0
-                                        ? "underline"
-                                        : "none",
-                                  }}
-                                >
-                                  {selector.receptionistData.bookingsCount}
-                                </Text>
-                              </View>
-                              <View style={styles.view20}>
-                                <Text
-                                  onPress={() => {
-                                    selector.receptionistData.RetailCount > 0 &&
-                                      navigateToEMS();
-                                  }}
-                                  style={{
-                                    padding: 2,
-                                    textDecorationLine:
-                                      selector.receptionistData.RetailCount > 0
-                                        ? "underline"
-                                        : "none",
-                                  }}
-                                >
-                                  {selector.receptionistData.RetailCount}
-                                </Text>
-                              </View>
-                              <View style={styles.view20}>
-                                <Text
-                                  onPress={() => {
-                                    navigateToDropLostCancel();
-                                  }}
-                                  style={{
-                                    padding: 2,
-                                    textDecorationLine:
-                                      selector.receptionistData.totalLostCount >
-                                      0
-                                        ? "underline"
-                                        : "none",
-                                  }}
-                                >
-                                  {selector.receptionistData.totalLostCount}
-                                </Text>
-                              </View>
-                            </View>
-                          </View>
-                        </View>
-                        <View style={styles.view21}>
-                          <View style={{ ...styles.statWrap, width: "33%" }}>
-                            <Text style={styles.txt5}>E2B</Text>
-                            {selector.receptionistData.bookingsCount !== null &&
-                            selector.receptionistData.enquirysCount !== null ? (
-                              <Text
-                                style={{
-                                  color:
-                                    Math.floor(
-                                      (parseInt(
+                              <View style={styles.view21}>
+                                <View style={{ ...styles.statWrap, width: "33%" }}>
+                                  <Text style={styles.txt5}>E2B</Text>
+                                  {selector.receptionistData.bookingsCount !== null &&
+                                    selector.receptionistData.enquirysCount !== null ? (
+                                    <Text
+                                      style={{
+                                        color:
+                                          Math.floor(
+                                            (parseInt(
+                                              selector.receptionistData.bookingsCount
+                                            ) /
+                                              parseInt(
+                                                selector.receptionistData
+                                                  .enquirysCount
+                                              )) *
+                                            100
+                                          ) > 40
+                                            ? "#14ce40"
+                                            : "#ff0000",
+                                        fontSize: 12,
+                                        marginRight: 4,
+                                      }}
+                                    >
+                                      {parseInt(
                                         selector.receptionistData.bookingsCount
-                                      ) /
+                                      ) === 0 ||
                                         parseInt(
-                                          selector.receptionistData
-                                            .enquirysCount
-                                        )) *
-                                        100
-                                    ) > 40
-                                      ? "#14ce40"
-                                      : "#ff0000",
-                                  fontSize: 12,
-                                  marginRight: 4,
-                                }}
-                              >
-                                {parseInt(
-                                  selector.receptionistData.bookingsCount
-                                ) === 0 ||
-                                parseInt(
-                                  selector.receptionistData.enquirysCount
-                                ) === 0
-                                  ? 0
-                                  : Math.round(
-                                      (parseInt(
-                                        selector.receptionistData.bookingsCount
-                                      ) /
-                                        parseInt(
-                                          selector.receptionistData
-                                            .enquirysCount
-                                        )) *
-                                        100
-                                    )}
-                                %
-                              </Text>
-                            ) : (
-                              <Text
-                                style={{
-                                  color: "#ff0000",
-                                  fontSize: 12,
-                                }}
-                              >
-                                0%
-                              </Text>
-                            )}
-                          </View>
-                          <View style={{ ...styles.statWrap, width: "33%" }}>
-                            <Text style={styles.txt6}>B2R</Text>
-                            {selector.receptionistData.bookingsCount !== null &&
-                            selector.receptionistData.RetailCount !== null ? (
-                              <Text
-                                style={{
-                                  color:
-                                    Math.floor(
-                                      (parseInt(
+                                          selector.receptionistData.enquirysCount
+                                        ) === 0
+                                        ? 0
+                                        : Math.round(
+                                          (parseInt(
+                                            selector.receptionistData.bookingsCount
+                                          ) /
+                                            parseInt(
+                                              selector.receptionistData
+                                                .enquirysCount
+                                            )) *
+                                          100
+                                        )}
+                                      %
+                                    </Text>
+                                  ) : (
+                                    <Text
+                                      style={{
+                                        color: "#ff0000",
+                                        fontSize: 12,
+                                      }}
+                                    >
+                                      0%
+                                    </Text>
+                                  )}
+                                </View>
+                                <View style={{ ...styles.statWrap, width: "33%" }}>
+                                  <Text style={styles.txt6}>B2R</Text>
+                                  {selector.receptionistData.bookingsCount !== null &&
+                                    selector.receptionistData.RetailCount !== null ? (
+                                    <Text
+                                      style={{
+                                        color:
+                                          Math.floor(
+                                            (parseInt(
+                                              selector.receptionistData.RetailCount
+                                            ) /
+                                              parseInt(
+                                                selector.receptionistData
+                                                  .bookingsCount
+                                              )) *
+                                            100
+                                          ) > 40
+                                            ? "#14ce40"
+                                            : "#ff0000",
+                                        fontSize: 12,
+                                        marginRight: 4,
+                                      }}
+                                    >
+                                      {parseInt(
                                         selector.receptionistData.RetailCount
-                                      ) /
+                                      ) === 0 ||
                                         parseInt(
-                                          selector.receptionistData
-                                            .bookingsCount
-                                        )) *
-                                        100
-                                    ) > 40
-                                      ? "#14ce40"
-                                      : "#ff0000",
-                                  fontSize: 12,
-                                  marginRight: 4,
-                                }}
-                              >
-                                {parseInt(
-                                  selector.receptionistData.RetailCount
-                                ) === 0 ||
-                                parseInt(
-                                  selector.receptionistData.bookingsCount
-                                ) === 0
-                                  ? 0
-                                  : Math.round(
-                                      (parseInt(
-                                        selector.receptionistData.RetailCount
-                                      ) /
+                                          selector.receptionistData.bookingsCount
+                                        ) === 0
+                                        ? 0
+                                        : Math.round(
+                                          (parseInt(
+                                            selector.receptionistData.RetailCount
+                                          ) /
+                                            parseInt(
+                                              selector.receptionistData
+                                                .bookingsCount
+                                            )) *
+                                          100
+                                        )}
+                                      %
+                                    </Text>
+                                  ) : (
+                                    <Text
+                                      style={{
+                                        color: "#ff0000",
+                                        fontSize: 12,
+                                      }}
+                                    >
+                                      0%
+                                    </Text>
+                                  )}
+                                </View>
+                                <View style={{ ...styles.statWrap, width: "33%" }}>
+                                  <Text style={styles.txt6}>E2R</Text>
+                                  {selector.receptionistData.enquirysCount !== null &&
+                                    selector.receptionistData.RetailCount !== null ? (
+                                    <Text
+                                      style={{
+                                        color:
+                                          Math.floor(
+                                            (parseInt(
+                                              selector.receptionistData.RetailCount
+                                            ) /
+                                              parseInt(
+                                                selector.receptionistData
+                                                  .enquirysCount
+                                              )) *
+                                            100
+                                          ) > 40
+                                            ? "#14ce40"
+                                            : "#ff0000",
+                                        fontSize: 12,
+                                        marginRight: 4,
+                                      }}
+                                    >
+                                      {parseInt(
+                                        selector.receptionistData.enquirysCount
+                                      ) === 0 ||
                                         parseInt(
-                                          selector.receptionistData
-                                            .bookingsCount
-                                        )) *
-                                        100
-                                    )}
-                                %
-                              </Text>
-                            ) : (
-                              <Text
-                                style={{
-                                  color: "#ff0000",
-                                  fontSize: 12,
-                                }}
-                              >
-                                0%
-                              </Text>
-                            )}
-                          </View>
-                          <View style={{ ...styles.statWrap, width: "33%" }}>
-                            <Text style={styles.txt6}>E2R</Text>
-                            {selector.receptionistData.enquirysCount !== null &&
-                            selector.receptionistData.RetailCount !== null ? (
-                              <Text
-                                style={{
-                                  color:
-                                    Math.floor(
-                                      (parseInt(
-                                        selector.receptionistData.RetailCount
-                                      ) /
-                                        parseInt(
-                                          selector.receptionistData
-                                            .enquirysCount
-                                        )) *
-                                        100
-                                    ) > 40
-                                      ? "#14ce40"
-                                      : "#ff0000",
-                                  fontSize: 12,
-                                  marginRight: 4,
-                                }}
-                              >
-                                {parseInt(
-                                  selector.receptionistData.enquirysCount
-                                ) === 0 ||
-                                parseInt(
-                                  selector.receptionistData.RetailCount
-                                ) === 0
-                                  ? 0
-                                  : Math.round(
-                                      (parseInt(
-                                        selector.receptionistData.RetailCount
-                                      ) /
-                                        parseInt(
-                                          selector.receptionistData
-                                            .enquirysCount
-                                        )) *
-                                        100
-                                    )}
-                                %
-                              </Text>
-                            ) : (
-                              <Text
-                                style={{
-                                  color: "#ff0000",
-                                  fontSize: 12,
-                                }}
-                              >
-                                0%
-                              </Text>
-                            )}
-                          </View>
-                        </View>
-                      </ScrollView> */}
+                                          selector.receptionistData.RetailCount
+                                        ) === 0
+                                        ? 0
+                                        : Math.round(
+                                          (parseInt(
+                                            selector.receptionistData.RetailCount
+                                          ) /
+                                            parseInt(
+                                              selector.receptionistData
+                                                .enquirysCount
+                                            )) *
+                                          100
+                                        )}
+                                      %
+                                    </Text>
+                                  ) : (
+                                    <Text
+                                      style={{
+                                        color: "#ff0000",
+                                        fontSize: 12,
+                                      }}
+                                    >
+                                      0%
+                                    </Text>
+                                  )}
+                                </View>
+                              </View>
+                            </ScrollView>
+                          </>}
+                     
                           {/* CRM exisiting code end */}
                     </>
                   ) : null}
@@ -4017,7 +4063,7 @@ const styles = StyleSheet.create({
   },
   scondView: {
     flexDirection: "column",
-    margin: 10,
+    marginHorizontal: 10,
   },
   txt10: {
     fontSize: 16,
@@ -4025,4 +4071,10 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     textDecorationLine: 'underline'
   },
+  newView: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginVertical: 10,
+    marginRight: 10,
+  }
 });
