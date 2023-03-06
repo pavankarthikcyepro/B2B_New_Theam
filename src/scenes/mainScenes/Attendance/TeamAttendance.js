@@ -123,7 +123,7 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
         const json = await response.json();
         if (!json.status) {
           setEmployeeList(json);
-          dispatch(updateTheTeamAttendanceFilter([]));
+          // dispatch(updateTheTeamAttendanceFilter([]));
         }
         setLoading(false);
       }
