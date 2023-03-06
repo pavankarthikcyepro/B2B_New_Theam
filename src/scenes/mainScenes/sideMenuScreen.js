@@ -75,6 +75,8 @@ const commonMenu = [
   "Drop Analysis",
   "My Attendance",
   "Download Report",
+  "Complaint Tracker"
+
 ];
 const salesMenu = [
   ...commonMenu,
@@ -82,6 +84,7 @@ const salesMenu = [
   "Target Planning",
   "Event Dashboard",
   "Geolocation",
+  "Complaint Tracker"
 ];
 const receptionTelCallerMenu = [
   ...commonMenu,
@@ -97,6 +100,7 @@ const managerMenu = [
   "Target Planning",
   "Task Transfer",
   "Geolocation",
+  "Complaint Tracker"
 ];
 const mdMenu = [
   ...commonMenu,
@@ -106,6 +110,7 @@ const mdMenu = [
   "Digital Dashboard",
   "Target Planning",
   "Task Transfer",
+  "Complaint Tracker"
 ];
 
 const SideMenuScreen = ({ navigation }) => {
@@ -364,9 +369,13 @@ const SideMenuScreen = ({ navigation }) => {
       case 121:
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.reportDownload);
         break;
+      case 123:
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.complaintTracker);
+        break;
       case 112:
         signOutClicked();
         break;
+      
       // case 999:
       //   navigation.navigate("Target Settings");
       //   break;
