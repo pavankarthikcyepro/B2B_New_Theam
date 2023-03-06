@@ -128,7 +128,7 @@ const OverviewScreen = ({ route, navigation }) => {
           </View>
           <View style={styles.titleView}>
             <Text style={styles.titleText}>{"Location"}</Text>
-            <Text style={styles.titleText}>{"Car Stock"}</Text>
+            <Text style={styles.titleText}>{"Stock"}</Text>
           </View>
           {data.map((item) => {
             return renderData(item);
