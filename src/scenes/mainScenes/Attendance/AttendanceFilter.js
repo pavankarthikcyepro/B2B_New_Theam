@@ -147,13 +147,19 @@ const AttendanceFilter = ({ route, navigation }) => {
   function Added() {
     if (!_.isEmpty(totalDataObj) && nameKeyList) {
       if (selector.selectedIDS.length > 0) {
-        console.log(nameKeyList);
         let condition = selector.filter_drop_down_data[
           nameKeyList[nameKeyList.length - 1]
         ].sublevels.filter(
           (e) => e.id === selector.selectedIDS[selector.selectedIDS.length - 1]
         );
         updateSelectedItems(condition[0], 4);
+        if (
+          selector.selectedDate.startDate &&
+          selector.selectedDate.startDate
+        ) {
+          setFromDate(selector.selectedDate.startDate);
+          setToDate(selector.selectedDate.startDate);
+        }
       }
     }
   }
