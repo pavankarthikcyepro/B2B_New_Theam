@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, StyleSheet, View, Text, FlatList, Pressable, Alert, ActivityIndicator, RefreshControl, Platform ,Keyboard} from 'react-native';
+import { SafeAreaView, StyleSheet, View, Text, FlatList, Pressable, Alert, RefreshControl, Platform ,Keyboard} from 'react-native';
 import { PreEnquiryItem, PageControlItem, EmptyListView } from '../../../pureComponents';
 import { Colors, GlobalStyle } from '../../../styles';
 import { useSelector, useDispatch } from 'react-redux';
@@ -23,6 +23,7 @@ import {
 import { MyTaskNewItem } from '../MyTasks/components/MyTasksNewItem';
 import { getLeadsList, getStatus } from '../../../redux/leaddropReducer';
 import { useIsFocused } from '@react-navigation/native';
+import AnimLoaderComp from '../../../components/AnimLoaderComp';
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().add(0, "day").endOf('month').format(dateFormat)
@@ -433,10 +434,10 @@ const PreEnquiryScreen = ({ route, navigation }) => {
     const renderFooter = () => {
         if (!selector.isLoadingExtraData) { return null }
         return (
-            <View style={styles.footer}>
-                <Text style={styles.btnText}>Loading More...</Text>
-                <ActivityIndicator color={Colors.GRAY} />
-            </View>
+          <View style={styles.footer}>
+            <Text style={styles.btnText}>Loading More...</Text>
+            <AnimLoaderComp visible={true} />
+          </View>
         );
     };
 

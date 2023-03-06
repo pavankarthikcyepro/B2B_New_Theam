@@ -153,7 +153,9 @@ export const RenderEmployeeParameters = (parameter) => {
                     ]}
                   >
                     {selectedParameter
-                      ? displayType === 0
+                      ? displayType === 0 ||
+                        selectedParameter?.paramName?.includes("PER CAR") ||
+                        selectedParameter?.paramName?.includes("Accessories")
                         ? selectedParameter?.achievment
                         : selectedParameter.paramName == "DROPPED" ||
                           selectedParameter?.target > 0
@@ -169,7 +171,8 @@ export const RenderEmployeeParameters = (parameter) => {
                       : 0}
                   </Text>
                 </View>
-                {selectedParameter && !hideTgt &&
+                {selectedParameter &&
+                !hideTgt &&
                 selectedParameter?.paramName !== "DROPPED" ? (
                   <Text
                     style={[

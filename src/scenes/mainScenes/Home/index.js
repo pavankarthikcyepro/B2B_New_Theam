@@ -142,7 +142,7 @@ const HomeScreen = ({ route, navigation }) => {
     orgId: 0,
   });
 
-    const isFocused = useIsFocused();
+  const isFocused = useIsFocused();
   const isDrawerOpen = useIsDrawerOpen();
 
   useEffect(() => {
@@ -184,7 +184,7 @@ const HomeScreen = ({ route, navigation }) => {
       selector.isModalVisible
       // && !isEmpty(initialPosition)
     ) {
-      getDetails();
+      getDetails(); // Attendance POP up
     }
   }, [selector.isModalVisible, initialPosition]);
 
@@ -968,7 +968,8 @@ const HomeScreen = ({ route, navigation }) => {
               });
           }
         })
-        .catch(() => {
+        .catch((e) => {
+          console.log("FFFf", e);
           setLoading(false);
         });
     }
@@ -999,17 +1000,23 @@ const HomeScreen = ({ route, navigation }) => {
           description: "Downloading image.",
         },
       };
-      config(options)
-        .fetch("GET", url)
-        .then((res) => {
-          setLoading(false);
-          RNFetchBlob.android.actionViewIntent(res.path());
-          // do some magic here
-        })
-        .catch((err) => {
-          console.error(err);
-          setLoading(false);
-        });
+      AsyncStore.getData(AsyncStore.Keys.ACCESS_TOKEN).then((token) => {
+        config(options)
+          .fetch("GET", url, {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          })
+          .then((res) => {
+            setLoading(false);
+            RNFetchBlob.android.actionViewIntent(res.path());
+            // do some magic here
+          })
+          .catch((err) => {
+            console.error(err);
+            setLoading(false);
+          });
+      });
     }
     if (Platform.OS === "ios") {
       options = {
@@ -1025,20 +1032,25 @@ const HomeScreen = ({ route, navigation }) => {
         //appendExt: fileExt,
         notification: true,
       };
-
-      config(options)
-        .fetch("GET", url)
-        .then((res) => {
-          setLoading(false);
-          setTimeout(() => {
-            // RNFetchBlob.ios.previewDocument('file://' + res.path());   //<---Property to display iOS option to save file
-            RNFetchBlob.ios.openDocument(res.data); //<---Property to display downloaded file on documaent viewer
-            // Alert.alert(CONSTANTS.APP_NAME,'File download successfully');
-          }, 300);
-        })
-        .catch((errorMessage) => {
-          setLoading(false);
-        });
+      AsyncStore.getData(AsyncStore.Keys.ACCESS_TOKEN).then((token) => {
+        config(options)
+          .fetch("GET", url, {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          })
+          .then((res) => {
+            setLoading(false);
+            setTimeout(() => {
+              // RNFetchBlob.ios.previewDocument('file://' + res.path());   //<---Property to display iOS option to save file
+              RNFetchBlob.ios.openDocument(res.data); //<---Property to display downloaded file on documaent viewer
+              // Alert.alert(CONSTANTS.APP_NAME,'File download successfully');
+            }, 300);
+          })
+          .catch((errorMessage) => {
+            setLoading(false);
+          });
+      });
     }
   };
 
@@ -1046,7 +1058,7 @@ const HomeScreen = ({ route, navigation }) => {
     navigation.navigate(
       screenName ? screenName : AppNavigator.TabStackIdentifiers.ems
     );
-    if (!screenName){
+    if (!screenName) {
       setTimeout(() => {
         navigation.navigate("LEADS", {
           // param: param === "INVOICE" ? "Retail" : param,
@@ -1166,6 +1178,9 @@ const HomeScreen = ({ route, navigation }) => {
       />
     );
   };
+  function navigateToDropLostCancel(params) {
+    navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis);
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -1395,7 +1410,16 @@ const HomeScreen = ({ route, navigation }) => {
                   {"Contact"}
                 </Text>
                 <View style={styles.cardView}>
-                  <Text style={{ ...styles.rankText, color: "blue" }}>
+                  <Text
+                    style={{
+                      ...styles.rankText,
+                      color: Colors.RED,
+                      textDecorationLine: selector.receptionistData
+                        ?.contactsCount
+                        ? "underline"
+                        : "none",
+                    }}
+                  >
                     {selector.receptionistData?.contactsCount || 0}
                   </Text>
                 </View>
@@ -1414,10 +1438,19 @@ const HomeScreen = ({ route, navigation }) => {
                   numberOfLines={1}
                   style={{ ...styles.rankHeadingText, width: 50 }}
                 >
-                  {"Drops"}
+                  {"Drop"}
                 </Text>
                 <View style={styles.cardView}>
-                  <Text style={{ ...styles.rankText, color: "blue" }}>
+                  <Text
+                    style={{
+                      ...styles.rankText,
+                      color: Colors.RED,
+                      textDecorationLine: selector.receptionistData
+                        ?.totalDroppedCount
+                        ? "underline"
+                        : "none",
+                    }}
+                  >
                     {selector.receptionistData?.totalDroppedCount || 0}
                   </Text>
                 </View>
@@ -1433,7 +1466,16 @@ const HomeScreen = ({ route, navigation }) => {
                   {"Enquiry"}
                 </Text>
                 <View style={styles.cardView}>
-                  <Text style={{ ...styles.rankText, color: "blue" }}>
+                  <Text
+                    style={{
+                      ...styles.rankText,
+                      color: Colors.RED,
+                      textDecorationLine: selector.receptionistData
+                        ?.enquirysCount
+                        ? "underline"
+                        : "none",
+                    }}
+                  >
                     {selector.receptionistData?.enquirysCount || 0}
                   </Text>
                 </View>
@@ -1447,7 +1489,16 @@ const HomeScreen = ({ route, navigation }) => {
               >
                 <Text style={styles.rankHeadingText}>{"Bookings"}</Text>
                 <View style={styles.cardView}>
-                  <Text style={{ ...styles.rankText, color: "blue" }}>
+                  <Text
+                    style={{
+                      ...styles.rankText,
+                      color: Colors.RED,
+                      textDecorationLine: selector.receptionistData
+                        ?.bookingsCount
+                        ? "underline"
+                        : "none",
+                    }}
+                  >
                     {selector.receptionistData?.bookingsCount || 0}
                   </Text>
                 </View>
@@ -1460,7 +1511,15 @@ const HomeScreen = ({ route, navigation }) => {
               >
                 <Text style={styles.rankHeadingText}>{"Retails"}</Text>
                 <View style={styles.cardView}>
-                  <Text style={{ ...styles.rankText, color: "blue" }}>
+                  <Text
+                    style={{
+                      ...styles.rankText,
+                      color: Colors.RED,
+                      textDecorationLine: selector.receptionistData?.RetailCount
+                        ? "underline"
+                        : "none",
+                    }}
+                  >
                     {selector.receptionistData?.RetailCount || 0}
                   </Text>
                 </View>
@@ -1652,20 +1711,34 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingLeft: 3,
-    height: 70,
     marginTop: 10,
-    width: "100%",
+    width: "95%",
+    alignSelf: "center",
+    shadowColor: Colors.DARK_GRAY,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    elevation: 5,
+    shadowRadius: 2,
+    shadowOpacity: 0.8,
+    paddingHorizontal: 10,
+    paddingTop: 5,
+    marginBottom: 7,
+    borderWidth: 1,
+    borderRadius: 5,
+    backgroundColor: Colors.WHITE,
+    borderColor: Colors.BORDER_COLOR,
   },
   rankIconBox: {
-    height: 40,
-    width: 40,
+    height: 35,
+    width: 35,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.8,
     shadowRadius: 1,
     borderStyle: "solid",
     borderWidth: 1,
@@ -1674,6 +1747,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: 5,
+    backgroundColor: Colors.WHITE
   },
   rankHeadingText: {
     fontSize: 10,
@@ -1787,6 +1861,23 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-evenly",
     alignItems: "center",
+
+    width: "95%",
+    alignSelf: "center",
+    shadowColor: Colors.DARK_GRAY,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    elevation: 5,
+    shadowRadius: 2,
+    shadowOpacity: 0.8,
+    paddingTop: 5,
+    marginBottom: 7,
+    borderWidth: 1,
+    borderRadius: 5,
+    backgroundColor: Colors.WHITE,
+    borderColor: Colors.BORDER_COLOR,
   },
   hideRankBox: {
     paddingTop: 5,

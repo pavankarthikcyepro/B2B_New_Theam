@@ -19,6 +19,8 @@ import { HeaderComp } from "./headerComp";
 import {LeadsFilterComp} from './LeadsFilterComp';
 import { SingleLeadSelectComp } from "./SingleLeadSelectComp";
 import { ProformaTextinputOffers } from "./proformaTextinputOffers";
+import { DropAnalysisSubFilterComp } from "./DropAnalysisSubFilterComp";
+import { ComplaintTrackerSubFilterComp } from "./ComplaintTrackerSubFilterComp";
 
 export {
     ButtonComp,
@@ -40,5 +42,7 @@ export {
     HeaderComp,
     LeadsFilterComp,
     SingleLeadSelectComp,
-    ProformaTextinputOffers
+    ProformaTextinputOffers,
+    DropAnalysisSubFilterComp,
+    ComplaintTrackerSubFilterComp,
 };

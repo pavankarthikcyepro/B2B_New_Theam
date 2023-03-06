@@ -1,10 +1,15 @@
+import moment from "moment";
 import React from "react";
 import {Dimensions, StyleSheet, Text, View} from "react-native";
 import {sourceModelPercentage} from "../../../../../utils/helperFunctions";
 
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 100) / 5;
-
+const RestrictPercentage = [
+  "CONTACT PER CAR",
+  "ENQUIRY PER CAR",
+  "BOOKING PER CAR",
+];
 export const RenderSourceModelParameters = (parameter) => {
   const paramsData = [
     "PreEnquiry",
@@ -18,6 +23,9 @@ export const RenderSourceModelParameters = (parameter) => {
     "Insurance",
     "EXTENDEDWARRANTY",
     "Accessories",
+    "CONTACT PER CAR",
+    "ENQUIRY PER CAR",
+    "BOOKING PER CAR",
   ];
 
   const getColor = (ach, tar) => {
@@ -36,16 +44,57 @@ export const RenderSourceModelParameters = (parameter) => {
     }
   };
 
-  const { params, item, color, displayType, moduleType, sourceModelTotals } =
-    parameter;
+  const {
+    params,
+    item,
+    color,
+    displayType,
+    moduleType,
+    sourceModelTotals,
+    isEvent = false,
+    eventIndex,
+  } = parameter;
 
   // const paramsData = params.map(({paramName}) => paramName);
   if (moduleType !== "live-leads") {
     paramsData.splice(6, 0, "DROPPED");
   }
+
+  const columnBlock = (value, key = "", color, width = 80, fontSize = 14) => {
+    return (
+      <View key={key} style={[styles.itemBox, { width: width }]}>
+        <Text style={[styles.totalText1, { color: color, fontSize: fontSize }]}>
+          {value}
+        </Text>
+      </View>
+    );
+  };
+
+  const getFormattedDate = (value) => {
+    let date = moment(value, "ddd MMM DD").format("DD-MM-YYYY");
+    return date;
+  };
   
   return (
     <>
+      {isEvent ? (
+        <>
+          {columnBlock(
+            getFormattedDate(item.targetAchievements[0].eventDate),
+            `date_${eventIndex}`,
+            "#FA03B9",
+            100,
+            12
+          )}
+          {columnBlock(
+            item.targetAchievements[0].budget,
+            `budget_${eventIndex}`,
+            "#FA03B9",
+            80,
+            12
+          )}
+        </>
+      ) : null}
       {paramsData.map((param, i) => {
         if (moduleType === "live-leads") {
           if (
@@ -57,7 +106,7 @@ export const RenderSourceModelParameters = (parameter) => {
             const selectedParameter = item.targetAchievements.filter(
               (x) => x.paramName === param
             )[0];
-            
+
             if (selectedParameter) {
               const elementColor = getColor(
                 Number(selectedParameter.achievment),
@@ -69,7 +118,10 @@ export const RenderSourceModelParameters = (parameter) => {
                   style={[
                     styles.itemBox,
                     {
-                      width: param === "Accessories" ? 80 : 60,
+                      width:
+                        param === "Accessories" || param.includes("PER CAR")
+                          ? 80
+                          : 60,
                     },
                   ]}
                 >
@@ -78,7 +130,8 @@ export const RenderSourceModelParameters = (parameter) => {
                       ? displayType === 0
                         ? selectedParameter.achievment
                         : selectedParameter.paramName == "DROPPED" ||
-                          selectedParameter.target > 0
+                          // selectedParameter.target > 0
+                          selectedParameter.achievment > 0
                         ? `${sourceModelPercentage(
                             selectedParameter.achievment,
                             sourceModelTotals[selectedParameter.paramName]
@@ -94,7 +147,6 @@ export const RenderSourceModelParameters = (parameter) => {
           const selectedParameter = item.targetAchievements.filter(
             (x) => x.paramName === param
           )[0];
-
           if (selectedParameter) {
             const elementColor = getColor(
               Number(selectedParameter.achievment),
@@ -105,15 +157,23 @@ export const RenderSourceModelParameters = (parameter) => {
                 key={`${param}_${i}`}
                 style={[
                   styles.itemBox,
-                  { width: param === "Accessories" ? 80 : 60 },
+                  {
+                    width:
+                      param === "Accessories" || param.includes("PER CAR")
+                        ? 80
+                        : 60,
+                  },
                 ]}
               >
                 <Text style={[styles.totalText1, { color: elementColor }]}>
                   {selectedParameter
-                    ? displayType === 0
+                    ? displayType === 0 ||
+                      selectedParameter.paramName.includes("PER CAR") ||
+                      selectedParameter.paramName.includes("Accessories")
                       ? selectedParameter.achievment
                       : selectedParameter.paramName == "DROPPED" ||
-                        selectedParameter.target > 0
+                        // selectedParameter.target > 0
+                        selectedParameter.achievment > 0
                       ? `${sourceModelPercentage(
                           selectedParameter.achievment,
                           sourceModelTotals[selectedParameter.paramName]

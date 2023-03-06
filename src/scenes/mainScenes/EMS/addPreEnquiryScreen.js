@@ -213,31 +213,31 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         });
 
       if (jsonObj.hrmsRole === "Reception") {
-        const resultAry = homeSelector.source_of_enquiry_list.filter(
-          (item) => item.name == "Showroom"
-        );
-        if (resultAry.length > 0) {
-          dispatch(
-            setDropDownData({
-              key: "SOURCE_OF_ENQUIRY",
-              value: resultAry[0].name,
-              id: resultAry[0].id,
-            })
-          );
-        }
+        // const resultAry = homeSelector.source_of_enquiry_list.filter(
+        //   (item) => item.name == "Showroom"
+        // );
+        // if (resultAry.length > 0) {
+        //   dispatch(
+        //     setDropDownData({
+        //       key: "SOURCE_OF_ENQUIRY",
+        //       value: resultAry[0].name,
+        //       id: resultAry[0].id,
+        //     })
+        //   );
+        // }
       } else if (jsonObj.hrmsRole === "Tele Caller") {
-        const resultAry = homeSelector.source_of_enquiry_list.filter(
-          (item) => item.name == "Digital Marketing"
-        );
-        if (resultAry.length > 0) {
-          dispatch(
-            setDropDownData({
-              key: "SOURCE_OF_ENQUIRY",
-              value: resultAry[0].name,
-              id: resultAry[0].id,
-            })
-          );
-        }
+        // const resultAry = homeSelector.source_of_enquiry_list.filter(
+        //   (item) => item.name == "Digital Marketing"
+        // );
+        // if (resultAry.length > 0) {
+        //   dispatch(
+        //     setDropDownData({
+        //       key: "SOURCE_OF_ENQUIRY",
+        //       value: resultAry[0].name,
+        //       id: resultAry[0].id,
+        //     })
+        //   );
+        // }
       }
     }
   };
@@ -498,14 +498,6 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     //     showToastRedAlert("Please fill required fields");
     //     return;
     // }
-    if (selector.enquiryType.length == 0) {
-      showToastRedAlert("Please select enquiry segment");
-      return;
-    }
-    if (selector.customerType.length == 0) {
-      showToastRedAlert("Please select customer type");
-      return;
-    }
     if (selector.firstName.length == 0) {
       showToastRedAlert("Please enter first name");
       return;
@@ -528,6 +520,14 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     }
     if (!fromEdit && subSourceData.length > 0 && !selector.subSourceOfEnquiry) {
       showToastRedAlert("Please select sub source of lead");
+      return;
+    }
+    if (selector.enquiryType.length == 0) {
+      showToastRedAlert("Please select enquiry segment");
+      return;
+    }
+    if (selector.customerType.length == 0) {
+      showToastRedAlert("Please select customer type");
       return;
     }
     // if (selector.sourceOfEnquiry.length > 0 && selector.subSourceOfEnquiry.length == 0) {

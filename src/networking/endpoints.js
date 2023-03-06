@@ -115,6 +115,9 @@ export const dashboard = baseUrl + "dfd/dashboard";
 export const salesGap = baseUrl + "dfd/sales-gap";
 export const getBranch = baseUrl + "dfd/oh";
 export const tasktransfer = baseUrl + "dfd/sales-gap/target-dropdown";
+
+
+
 export const getLeaderBoardData =
   baseUrl + "dfd/dashboard/v2/get_emp_target_Dealer_ranking";
 export const getBranchRankingData =
@@ -335,7 +338,7 @@ const URL = {
   GET_TEST_DRIVE_APPOINTMENT_DETAILS: (entityModuleId, branchId, orgId) => {
     return (
       ops_url +
-      `/testdrive/history?branchId=${branchId}&filterType=TESTDRIVE&filterVal=${entityModuleId}&orgId=${orgId}`
+      `/testdrive/history?branch=${branchId}&filterType=TESTDRIVE&filterVal=${entityModuleId}&orgId=${orgId}`
     );
   },
   VALIDATE_TEST_DRIVE_DATE: (date, vehicleId) => {
@@ -345,6 +348,10 @@ const URL = {
     );
   },
   CUSTOMER_LEAD_REFERENCE: () => sales_url + "/lead-customer-reference",
+
+  GET_DET_FROM_PHONE: (phone, orgId) => sales_url + `/lead/phone/${phone}/${orgId}`,
+  GET_COMPLAIN_FACTOR_DATA: (orgId) => baseUrl + `dfdg/df-get-all/${orgId}/"Active"/${orgId}/ComplaintFactor`,
+
   GET_COMPLAINTS: () => dynamicReports_url + "/v2-generate-query",
   GET_EVENTS: () => {
     return ops_url + `/dms/getAllServiceEventsByFilterByStatus`;
@@ -406,8 +413,14 @@ const URL = {
     return sales_url + "/lead-drop";
   },
   LEAD_DROPPED: () => sales_url + "/lead",
+
+  DROP_ANALYSIS_LIST_FILTER: () => sales_url + "/lead-drop/leadlist",
+
   UPDATE_BULKAPPROVAL: () => {
     return sales_url + "/lead-drop/bulkdrop";
+  },
+  UPDATE_DROP_STAGE: () => {
+    return sales_url + "/lead/updateDropStage";
   },
   REVOKE: (id) => {
     return sales_url + "/lead-drop/updateStatusEnquire/ENQUIRY/" + id;
@@ -439,6 +452,14 @@ const URL = {
   GET_SUB_MENU: (stage) => {
     return sales_url + "/lead/stagedropdown?menu=" + stage;
   },
+  GET_DROP_SUBMENU: (stage) => {
+    return sales_url + "/lead/dropstagesubmenu?menu=" + stage;
+  },
+
+  GET_DROPSTAGE_MENU: (stage) => {
+    return sales_url + "/lead/dropstagemenu";
+  },
+
   GET_LEAD_LIST: (branchId, empName, empId, offSet, limit) => {
     return (
       sales_url +
@@ -474,16 +495,16 @@ const URL = {
       `/employeeTracking/getDetailsByDate/${employeeId}/${orgId}/${date}`
     );
   },
-  GET_EMPLOYEES_DROP_DOWN_DATA_FOR_ATTENDANCE: (orgId, employeeId) => {
-    // return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8092/dfd/oh/team-attendance/${orgId}/${employeeId}`;
-    return baseUrl + `dfd/oh/team-attendance/${orgId}/${employeeId}`;
+  GET_EMPLOYEES_DROP_DOWN_DATA_FOR_ATTENDANCE: (orgId, employeeId,startDate,endDate) => {
+    return (
+      baseUrl +
+      `dfd/oh/team-attendance/${orgId}/${employeeId}/${startDate}/${endDate}`
+    );
   },
   GET_ATTENDANCE_REPORT: () => {
-    // return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8081/sales/reports/attendance_report`;
     return sales_url + "/reports/attendance_report";
   },
   GET_DOWNLOAD_URL: (file) => {
-    // return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8081/sales/reports/downloadFile/${file}`;
     return sales_url + `/reports/downloadFile/${file}`;
   },
   GET_TEAM_ATTENDANCE_COUNT: () => {
@@ -554,6 +575,9 @@ const URL = {
   DEALER_CODE_LIST1: (orgId) => {
     return `${baseUrl}dfd/oh/data-nodes?orgId=${orgId}&levelCode=Level5`;
   },
+  DEALER_CODE_BRANCH_LIST: (orgId, locationId) => {
+    return `${baseUrl}dfd/oh/getLocationBasedBranches?orgId=${orgId}&locationId=${locationId}`;
+  },
   GET_DESIGNATION: (orgId, branchId) => {
     return `${sales_url}/employees/get/designations/${orgId}/${branchId}`;
   },
@@ -567,9 +591,18 @@ const URL = {
     return baseUrl + "dfdr/dynamic-reports/etvbrl_report";
   },
 
-  QR: (orgId, branchId) => {
-    return sales_url + `/qrcode/get/${orgId}/${branchId}`;
+  QR: (orgId) => {
+    return sales_url + `/qrcode/get/${orgId}`;
   },
+
+  BRANCHES: (orgId) => sales_url + `/workflow/get_branchs/${orgId}`,
+
+  UPLOAD_QR: (orgId, branchId) =>
+    sales_url + `/documents/uploadQrCode?orgId=${orgId}&branchId=${branchId}`,
+
+  QR_SAVE: () => sales_url + `/qrcode/save`,
+  QR_DELETE: () => sales_url + `/qrcode/delete`,
+
   GET_VEHICAL_MODAL: () => {
     return vehicleInfoService_url + `/api/vehicle_details/vehicle_models`;
   },
@@ -590,6 +623,8 @@ const URL = {
   },
   GET_TEAMS_TARGET_PARAMS: () =>
     dashboard + "/v4/get_target_params_for_all_emps",
+  GET_TEAMS_EVENT_PARAMS: () =>
+    dashboard + "/v4/get_target_params_for_all_emps_events",
   // GET_TOTAL_TARGET_PARAMS: () => dashboard + "/v4/get_target_params",
   GET_TOTAL_TARGET_PARAMS: () => dashboard + "/v2/get_target_params",
   GET_EMPLOYEE_DETAILS: (orgId, branchId, deptId, desigId) => {
@@ -639,6 +674,36 @@ const URL = {
   },
   GET_EMPLOYEE_DETAILS: (orgId, branchId, deptId, desigId) => {
     return `${getEmployeeData}?orgId=${orgId}&branchId=${branchId}&deptId=${deptId}&desigId=${desigId}`;
+  },
+
+  GET_DASHBOARD_COUNT_COMPLAINT: ( empId) => {
+    return sales_url +`/complainttracker/getCounts/${empId}`;
+  },
+  GEY_COMPLAINT_DET_FROMID: (complaintId) => {
+    return sales_url + `/complainttracker/getCt/${complaintId}`;
+  },
+
+  GET_COMPLAINT_DROPDOWN_MAIN: () => {
+    return baseUrl + `dfd/common/dropComplaintMenuFilter`;
+  },
+  GET_COMPLAINT_CONSULTANT: (orgId, branchId) => {
+    return sales_url + `/employees/salesconsultant/${orgId}/${branchId}`;
+  },
+  GET_COMPLAINT_MANAGER: (empid) => {
+    return sales_url + `/employees/manager/${empid}`;
+  },
+  POST_GETSUBMENU_COMPLAINT: () => {
+    return baseUrl + `dfd/common/dropComplaintSubMenu`;
+  },
+
+  POST_COMPLAINT: () => {
+    return sales_url + `/complainttracker/save`;
+  },
+  POST_COMPLAINT_CLOSE: () => {
+    return sales_url + `/complainttracker/savecomplaint`;
+  },
+  GET_COMPLAINT_LIST: () => {
+    return sales_url + `/complainttracker/filter`;
   },
   TRANSFER_TASK: (fromUserId, toUserId) => {
     return (
@@ -763,6 +828,9 @@ const URL = {
   },
   GET_TASK_360_HISTORY: (universalId) => {
     return sales_url + "/workflow/universalId/" + universalId;
+  },
+  GET_FOLLOWUP_COUNT: (universalId) => {
+    return sales_url + "/workflow/followupCounts/" + universalId;
   },
   CALL_DEALLOCATE: (empId) => {
     return roleManagement_url + "/dms/emp-update/" + empId;

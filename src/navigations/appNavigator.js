@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import {
   View,
   Linking,
@@ -116,7 +116,15 @@ import LeaderShipFilter from "../scenes/mainScenes/Home/TabScreens/leaderShipFil
 import Orientation from "react-native-orientation-locker";
 import { detectIsOrientationLock } from "../utils/helperFunctions";
 import { MyStockMainTopTabNavigator, MyStockTopTabNavigator } from "./myStockNavigator";
+import { detectIsOrientationLock, isReceptionist } from "../utils/helperFunctions";
+import TaskthreeSixtyhistoryFilter from "../scenes/mainScenes/EMS/components/TaskthreeSixtyhistoryFilter";
 import DownloadReportScreen from "../scenes/mainScenes/Attendance/DownloadReport";
+import ComplaintTrackerMain, { ComplaintsTrackerTopTabNavigator } from "../scenes/mainScenes/ComplaintTracker/ComplaintTrackerMain";
+import ComplaintList from "../scenes/mainScenes/ComplaintTracker/ComplaintList";
+import { ComplaintsTopTabNavigator } from "./complaintsTopTabNavigator";
+import AddEditComplaint from "../scenes/mainScenes/ComplaintTracker/AddEditComplaint";
+import ClosedComplaintList from "../scenes/mainScenes/ComplaintTracker/ClosedComplaintList";
+import * as AsyncStore from "../asyncStore";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -156,19 +164,35 @@ export const TestDriveHistoryIcon = ({ navigation }) => {
 };
 
 const MyTaskFilter = ({ navigation }) => {
-  const screen = useSelector((state) => state.mytaskReducer.currentScreen);
-  // if (screen === "TODAY") return <React.Fragment></React.Fragment>;
-  return (
-    <IconButton
-      icon="filter-outline"
-      style={{ paddingHorizontal: 0, marginHorizontal: 0 }}
-      color={Colors.WHITE}
-      size={25}
-      onPress={() =>
-        navigation.navigate(MyTasksStackIdentifiers.myTaskFilterScreen)
+  const [isIconShow, setIsIconShow] = useState(false);
+
+  useEffect(async () => {
+    let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      if (isReceptionist(jsonObj.hrmsRole)) {
+        setIsIconShow(false);
+      } else {
+        setIsIconShow(true);
       }
-    />
-  );
+    }
+  }, []);
+
+  if (isIconShow) {
+    return (
+      <IconButton
+        icon="filter-outline"
+        style={{ paddingHorizontal: 0, marginHorizontal: 0 }}
+        color={Colors.WHITE}
+        size={25}
+        onPress={() =>
+          navigation.navigate(MyTasksStackIdentifiers.myTaskFilterScreen)
+        }
+      />
+    );
+  }
+
+  return null;
 };
 
 const SearchIcon = () => {
@@ -366,6 +390,7 @@ export const DrawerStackIdentifiers = {
   digitalDashboard: "DIGITAL_DASHBOARD",
   myStock: "MY_STOCK",
   reportDownload:"REPORT_DOWNLOAD",
+  complaintTracker:"COMPLAINT_TRACKER"
 };
 
 export const TabStackIdentifiers = {
@@ -410,6 +435,8 @@ export const EmsStackIdentifiers = {
   webViewComp: "webViewComp",
   ProformaScreen: "PROFORMA_SCREEN",
   newEnquiry: "NEW_ENQUIRY",
+  testDriveHistory: "TEST_HISTORY",
+  task360HistoryFilter: "TASK_360_HISTORY_FILTER",
 };
 
 export const PreBookingStackIdentifiers = {
@@ -445,6 +472,15 @@ export const EventDashboardStackIdentifiers = {
   home: "EVENT_DASHBOARD",
   event: "EVENT",
   sourceModel: "EVENT_SOURCE_MODEL",
+};
+
+export const ComplainTrackerIdentifires = {
+  complainTrackerDashboard: "COMPLAIN_TRACKER",
+  complainTrackerList: "COMPLAINT_LIST",
+  complainTrackerTop:"COMPLAINT_TRACKER_TOP",
+  closedComplainTeackerList:"CLOCSED_LIST",
+  addEditComplaint:"ADD_EDIT_COMPLAINT"
+  
 };
 
 const HomeStack = createStackNavigator();
@@ -626,7 +662,13 @@ const EmsStackNavigator = ({ navigation }) => {
           headerTitle: route?.params?.title ?? "History",
         })}
       />
-
+      <EmsStack.Screen
+        name={EmsStackIdentifiers.task360HistoryFilter}
+        component={TaskthreeSixtyhistoryFilter}
+        options={({ route }) => ({
+          headerTitle: "History Filter",
+        })}
+      />
       <EmsStack.Screen
         name={EmsStackIdentifiers.homeVisit}
         component={HomeVisitScreen}
@@ -664,6 +706,14 @@ const EmsStackNavigator = ({ navigation }) => {
         name={EmsStackIdentifiers.ProformaScreen}
         component={ProformaScreen}
         options={{ title: "Proforma Invoice" }}
+      />
+      <EmsStack.Screen
+        name={EmsStackIdentifiers.testDriveHistory}
+        component={TestDriveHistory}
+        options={{
+          title: "Test Drive History",
+          // headerRight: () => <TestDriveHistoryIcon navigation={navigation} />,
+        }}
       />
     </EmsStack.Navigator>
   );
@@ -1028,7 +1078,7 @@ const DropAnalysisStackNavigator = ({ navigation }) => {
         name={"DROP_ANALYSIS"}
         component={DropAnalysisScreen}
         options={{
-          title: "Lead Drop List",
+          title: "Drop List",
           headerLeft: () => <MenuIcon navigation={navigation} />,
           headerRight: () => {
             return (
@@ -1040,6 +1090,13 @@ const DropAnalysisStackNavigator = ({ navigation }) => {
             );
           },
         }}
+      />
+      <DropAnalysisStack.Screen
+        name={"DROP_ANALYSIS_HISTORY"}
+        component={TaskThreeSixtyHistory}
+        options={({ route }) => ({
+          headerTitle: route?.params?.title ?? "History",
+        })}
       />
     </DropAnalysisStack.Navigator>
   );
@@ -1062,6 +1119,58 @@ const LiveLeadsStackNavigator = ({ navigation }) => {
         }}
       />
     </LiveLeadsStack.Navigator>
+  );
+};
+
+const ComplainTrackgerStack = createStackNavigator();
+
+const ComplainTrackgerStackNavigator = ({ navigation }) => {
+  return (
+    <ComplainTrackgerStack.Navigator
+      initialRouteName={ComplainTrackerIdentifires.complainTrackerDashboard}
+      screenOptions={screeOptionStyle}
+    >
+      <ComplainTrackgerStack.Screen
+        name={ComplainTrackerIdentifires.complainTrackerDashboard}
+        component={ComplaintTrackerMain}
+        options={{
+          title: "Complaint Tracker",
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+      <ComplainTrackgerStack.Screen
+        name={ComplainTrackerIdentifires.complainTrackerTop}
+        component={ComplaintsTrackerTopTabNavigator}
+        options={{
+          title: "Complaints",
+          // headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+      <ComplainTrackgerStack.Screen
+        name={ComplainTrackerIdentifires.complainTrackerList}
+        component={ComplaintList}
+        options={{
+          title: "Complaints",
+          // headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+      <ComplainTrackgerStack.Screen
+        name={ComplainTrackerIdentifires.closedComplainTeackerList}
+        component={ClosedComplaintList}
+        options={{
+          title: "Complaints",
+          // headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+      <ComplainTrackgerStack.Screen
+        name={ComplainTrackerIdentifires.addEditComplaint}
+        component={AddEditComplaint}
+        options={{
+          title: "Complaint Tracker",
+          // headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+    </ComplainTrackgerStack.Navigator>
   );
 };
 
@@ -1221,6 +1330,10 @@ const MainStackDrawerNavigator = ({ navigation }) => {
       <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.liveLeads}
         component={LiveLeadsStackNavigator}
+      />
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.complaintTracker}
+        component={ComplainTrackgerStackNavigator}
       />
       <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.monthlyTarget}

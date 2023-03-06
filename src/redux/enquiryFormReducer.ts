@@ -425,6 +425,21 @@ export const getEventConfigList = createAsyncThunk(
   }
 );
 
+
+export const getOtherPricesDropDown = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/getOtherPricesDropDown",
+  async (orgId, { rejectWithValue }) => {
+    const url = URL.GET_OTHER_PRICES_DROP_DOWN(orgId);
+    const response = await client.get(url);
+    const json = await response.json();
+    if (response.status != 200) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+
 interface PersonalIntroModel {
   key: string;
   text: string;
@@ -456,6 +471,7 @@ const initialState = {
   maxDate: null,
 
   //Proforma Invoice
+  otherPricesDropDown: [],
   getTermsNConditions_res: "",
   getTermsNConditions_res_status: "",
   proforma_API_respData: "",
@@ -629,6 +645,7 @@ const initialState = {
   customer_types: null,
   enquiry_type_list: [],
   isAddressSet: false,
+  isAddressSet2: false,
   isOpened: false,
   refNo: "",
   rmfgYear: null,
@@ -726,6 +743,7 @@ const enquiryDetailsOverViewSlice = createSlice({
         (state.foc_accessoriesFromServer = ""),
         (state.event_list_Config = []);
       state.event_list_response_Config_status = "";
+      state.otherPricesDropDown= [];
     },
     clearState2: (state, action) => {
       state.enableEdit = false;
@@ -796,6 +814,7 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.additional_offer_1 = "";
       state.additional_offer_2 = "";
       state.foc_accessoriesFromServer = "";
+      state.otherPricesDropDown= [];
     },
     setEditable: (state, action) => {
       state.enableEdit = !state.enableEdit;
@@ -823,7 +842,12 @@ const enquiryDetailsOverViewSlice = createSlice({
             state.gender = genderData?.length > 0 ? genderData[0].name : "";
             state.relation = "";
             state.gender_types_data = genderData;
-            state.relation_types_data = Relation_Data_Obj[value.toLowerCase()];
+            if (value) {
+              state.relation_types_data =
+                Relation_Data_Obj[value.toLowerCase()];
+            } else {
+              state.relation_types_data = [];
+            }
           }
           state.salutation = value;
           break;
@@ -2074,7 +2098,11 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.city = action.payload.District || "";
       state.district = action.payload.District || "";
       state.state = action.payload.State || "";
-      state.isAddressSet = true;
+      if (Object.keys(action.payload).length > 0 ){
+        state.isAddressSet = true;
+      } else {
+        state.isAddressSet = false;
+      }
       if (state.is_permanent_address_same === "YES") {
         state.p_village = action.payload.Block || "";
         state.p_mandal = state.mandal
@@ -2087,6 +2115,11 @@ const enquiryDetailsOverViewSlice = createSlice({
       }
     },
     updateAddressByPincode2: (state, action) => {
+      if (Object.keys(action.payload).length > 0) {
+        state.isAddressSet2 = true;
+      } else {
+        state.isAddressSet2 = false;
+      }
       state.p_village = action.payload.Block || "";
       state.p_mandal = state.p_mandal
         ? state.p_mandal
@@ -2511,6 +2544,24 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.isLoading = false;
       state.event_list_Config = [];
     });
+
+
+    //Get Other prices drop down data
+    builder.addCase(getOtherPricesDropDown.pending, (state, action) => { });
+    builder.addCase(getOtherPricesDropDown.fulfilled, (state, action) => {
+      if (action.payload) {
+        let data = [];
+        for (let i = 0; i < action.payload.length; i++) {
+          let obj = {
+            id: action.payload[i].id,
+            name: action.payload[i].Name,
+          };
+          data.push(obj);
+        }
+        state.otherPricesDropDown = Object.assign([], data);
+      }
+    });
+    builder.addCase(getOtherPricesDropDown.rejected, (state, action) => { });
   },
 });
 

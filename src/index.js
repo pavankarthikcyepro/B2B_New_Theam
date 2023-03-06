@@ -356,14 +356,14 @@ const AppScreen = () => {
       });
       // sendLocalNotification();
     }
-    if (Platform.OS === "android") {
-      PushNotification.checkPermissions((item) => {
-        if (!item.alert) {
-          PushNotification.requestPermissions();
-        }
-      });
-      // sendLocalNotification();
-    }
+    // if (Platform.OS === "android") {
+    //   PushNotification.checkPermissions((item) => {
+    //     if (!item.alert) {
+    //       PushNotification.requestPermissions();
+    //     }
+    //   });
+    //   // sendLocalNotification();
+    // }
 
     const checkUserToken = async () => {
       await BackgroundService.stop();

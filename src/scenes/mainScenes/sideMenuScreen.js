@@ -60,6 +60,7 @@ import { myTaskClearState } from "../../redux/mytaskReducer";
 import Snackbar from "react-native-snackbar";
 import NetInfo from "@react-native-community/netinfo";
 import { notificationClearState } from "../../redux/notificationReducer";
+import { saveFilterPayload, updateDealerFilterData, updateFilterSelectedData } from "../../redux/targetSettingsReducer";
 
 const screenWidth = Dimensions.get("window").width;
 const profileWidth = screenWidth / 6;
@@ -68,7 +69,6 @@ const profileBgWidth = profileWidth + 5;
 const commonMenu = [
   "Home",
   "Sign Out",
-  "Live Leads",
   "Settings",
   "Helpdesk",
   "QR Code",
@@ -76,12 +76,16 @@ const commonMenu = [
   "My Attendance",
   "My Stock",
   "Download Report",
+  "Complaint Tracker"
+
 ];
 const salesMenu = [
   ...commonMenu,
+  "Live Leads",
   "Target Planning",
   "Event Dashboard",
   "Geolocation",
+  "Complaint Tracker"
 ];
 const receptionTelCallerMenu = [
   ...commonMenu,
@@ -90,20 +94,24 @@ const receptionTelCallerMenu = [
 ];
 const managerMenu = [
   ...commonMenu,
+  "Live Leads",
   "Event Dashboard",
   "Digital Payment",
   "Digital Dashboard",
   "Target Planning",
   "Task Transfer",
   "Geolocation",
+  "Complaint Tracker"
 ];
 const mdMenu = [
   ...commonMenu,
+  "Live Leads",
   "Event Dashboard",
   "Digital Payment",
   "Digital Dashboard",
   "Target Planning",
   "Task Transfer",
+  "Complaint Tracker"
 ];
 
 const SideMenuScreen = ({ navigation }) => {
@@ -260,9 +268,10 @@ const SideMenuScreen = ({ navigation }) => {
     getProfilePic(jsonObj);
     let newFilterData = [];
     if (
-      jsonObj.hrmsRole === "Reception" ||
-      jsonObj.hrmsRole === "CRM" ||
-      jsonObj.hrmsRole === "Tele Caller"
+      jsonObj.hrmsRole == "Reception" ||
+      jsonObj.hrmsRole == "CRM" ||
+      jsonObj.hrmsRole == "CRE" ||
+      jsonObj.hrmsRole == "Tele Caller"
     ) {
       newFilterData = selector.tableData.filter((item) =>
         receptionTelCallerMenu.includes(item.title)
@@ -364,9 +373,13 @@ const SideMenuScreen = ({ navigation }) => {
       case 121:
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.reportDownload);
         break;
+      case 123:
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.complaintTracker);
+        break;
       case 112:
         signOutClicked();
         break;
+      
       // case 999:
       //   navigation.navigate("Target Settings");
       //   break;
@@ -395,6 +408,9 @@ const SideMenuScreen = ({ navigation }) => {
     dispatch(notificationClearState());
     dispatch(clearEnqState());
     dispatch(clearLeadDropState());
+    dispatch(saveFilterPayload({}));
+    dispatch(updateFilterSelectedData({}));
+    dispatch(updateDealerFilterData({}));
     signOut();
   };
 

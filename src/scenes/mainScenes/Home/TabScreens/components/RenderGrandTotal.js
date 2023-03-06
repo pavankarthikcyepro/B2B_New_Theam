@@ -55,7 +55,8 @@ export const RenderGrandTotal = (parameter) => {
                 },
               ]}
             >
-              {displayType === 0
+              {displayType === 0 ||
+              selectedParameter?.paramName.includes("PER CAR")
                 ? Number(
                     selectedParameter?.achievment
                       ? selectedParameter.achievment

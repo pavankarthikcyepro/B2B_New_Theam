@@ -7,7 +7,6 @@ import {
   Platform,
   ScrollView,
   Keyboard,
-  ActivityIndicator,
   KeyboardAvoidingView,
   Pressable,
   BackHandler,
@@ -157,6 +156,7 @@ import Geolocation from "@react-native-community/geolocation";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Entypo from "react-native-vector-icons/Entypo";
 import { client } from "../../../networking/client";
+import AnimLoaderComp from "../../../components/AnimLoaderComp";
 const rupeeSymbol = "\u20B9";
 
 const dmsAttachmentsObj = {
@@ -407,7 +407,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [configureRuleData, setConfigureRuleData] = useState("");
   const [isMiniAmountCheck, setisMiniAmountCheck] = useState(true);
   const [otherPriceDropDownIndex, setOtherPriceDropDownIndex] = useState(null);
-  const [isSelectOption, setIsSelectOption] = useState(false);
 
   // Edit buttons shows
   useEffect(() => {
@@ -1533,7 +1532,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
   const showDropDownModelMethod = (key, headerText) => {
     Keyboard.dismiss();
-    setIsSelectOption(false);
     const orgId = +userData.orgId;
 
     switch (key) {
@@ -1612,7 +1610,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           showToast("No Insurence Types Data Found");
           return;
         }
-        setIsSelectOption(true);
         setDataForDropDown([...insurenceVarientTypes]);
         break;
       case "WARRANTY":
@@ -1620,7 +1617,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           showToast("No Warranty Data Found");
           return;
         }
-        setIsSelectOption(true);
         setDataForDropDown([...warrentyTypes]);
         break;
       case "INSURENCE_ADD_ONS":
@@ -1628,7 +1624,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           showToast("No AddOns Insurence Data Found");
           return;
         }
-        setIsSelectOption(true);
         setDataForDropDown([...insurenceAddOnTypes]);
         setShowMultipleDropDownData(true);
         break;
@@ -1636,7 +1631,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         setDataForDropDown([...Vehicle_Types]);
         break;
       case "REGISTRATION_CHARGES":
-        setIsSelectOption(true);
         setDataForDropDown([...registrationChargesType]);
         break;
       case "CUSTOMER_TYPE_CATEGORY":
@@ -3573,7 +3567,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   if (!componentAppear) {
     return (
       <View style={styles.initialContainer}>
-        <ActivityIndicator size="small" color={Colors.RED} />
+        <AnimLoaderComp visible={true} />
       </View>
     );
   }
@@ -3743,6 +3737,22 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     );
   };
 
+  const onDropDownClear = (key) => {
+    if (key) {
+      if (key === "REGISTRATION_CHARGES") {
+        setSelectedRegistrationCharges({});
+      } else if (key === "INSURANCE_TYPE") {
+        setSelectedInsurencePrice(0);
+      } else if (key === "INSURENCE_ADD_ONS") {
+        setSelectedAddOnsPrice(0);
+        setSelectedInsurenceAddons([]);
+      } else if (key === "WARRANTY") {
+        setSelectedWarrentyPrice(0);
+      }
+      dispatch(setDropDownData({ key: key, value: "", id: "" }));
+    }
+  };
+
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
       <LoaderComponent visible={isLoading} />
@@ -3762,7 +3772,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         headerTitle={dropDownTitle}
         data={dataForDropDown}
         disabledData={addNewInput}
-        isSelectOption={isSelectOption}
         multiple={showMultipleDropDownData}
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
@@ -3788,40 +3797,28 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             };
             dispatch(getDropSubReasonDataApi(payload));
           } else if (dropDownKey === "INSURENCE_ADD_ONS") {
-            if (item.name == "Select") {
-              setSelectedAddOnsPrice(0);
-              setSelectedInsurenceAddons([]);
-              dispatch(
-                setDropDownData({ key: dropDownKey, value: names, id: "" })
-              );
-            } else {
-              setSelectedRegistrationCharges(item);
-              let totalCost = 0;
-              let names = "";
-              let insurenceAddOns = [];
-              if (item.length > 0) {
-                item.forEach((obj, index) => {
-                  totalCost += Number(obj.cost);
-                  names += obj.name + (index + 1 < item.length ? ", " : "");
-                  insurenceAddOns.push({
-                    insuranceAmount: obj.cost,
-                    insuranceAddonName: obj.name,
-                  });
+            setSelectedRegistrationCharges(item);
+            let totalCost = 0;
+            let names = "";
+            let insurenceAddOns = [];
+            if (item.length > 0) {
+              item.forEach((obj, index) => {
+                totalCost += Number(obj.cost);
+                names += obj.name + (index + 1 < item.length ? ", " : "");
+                insurenceAddOns.push({
+                  insuranceAmount: obj.cost,
+                  insuranceAddonName: obj.name,
                 });
-              }
-              setSelectedAddOnsPrice(totalCost);
-              setSelectedInsurenceAddons([...insurenceAddOns]);
-              dispatch(
-                setDropDownData({ key: dropDownKey, value: names, id: "" })
-              );
+              });
             }
+            setSelectedAddOnsPrice(totalCost);
+            setSelectedInsurenceAddons([...insurenceAddOns]);
+            dispatch(
+              setDropDownData({ key: dropDownKey, value: names, id: "" })
+            );
             return;
           } else if (dropDownKey === "REGISTRATION_CHARGES") {
-            if (item.name == "Select") {
-              setSelectedRegistrationCharges({});
-            } else {
-              setSelectedRegistrationCharges(item);
-            }
+            setSelectedRegistrationCharges(item);
           } else if (dropDownKey === "OTHER_PRICES") {
             inputHandlerName(item.name, otherPriceDropDownIndex);
           }
@@ -3839,23 +3836,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             );
           }
 
-          if (item.name == "Select") {
-            dispatch(
-              setDropDownData({
-                key: dropDownKey,
-                value: "",
-                id: "",
-              })
-            );
-          } else {
-            dispatch(
-              setDropDownData({
-                key: dropDownKey,
-                value: item.name,
-                id: item.id,
-              })
-            );
-          }
+          dispatch(
+            setDropDownData({
+              key: dropDownKey,
+              value: item.name,
+              id: item.id,
+            })
+          );
         }}
       />
 
@@ -4162,6 +4149,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           "Marital Status"
                         )
                       }
+                      clearOption={true}
+                      clearKey={"MARITAL_STATUS"}
+                      onClear={onDropDownClear}
                     />
                   </View>
                 ) : null}
@@ -4907,6 +4897,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   onPress={() =>
                     showDropDownModelMethod("FORM_60_PAN", "Retail Finance")
                   }
+                  clearOption={true}
+                  clearKey={"FORM_60_PAN"}
+                  onClear={onDropDownClear}
                 />
                 {/* } */}
 
@@ -5496,6 +5489,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           "Customer Type Category"
                         )
                       }
+                      clearOption={true}
+                      clearKey={"CUSTOMER_TYPE_CATEGORY"}
+                      onClear={onDropDownClear}
                     />
                     <Text style={GlobalStyle.underline}></Text>
                   </View>
@@ -5646,6 +5642,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       onPress={() =>
                         showDropDownModelMethod("VEHICLE_TYPE", "Vehicle Type")
                       }
+                      clearOption={true}
+                      clearKey={"VEHICLE_TYPE"}
+                      onClear={onDropDownClear}
                     />
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -5729,6 +5728,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           "Registration Charges"
                         )
                       }
+                      clearOption={true}
+                      clearKey={"REGISTRATION_CHARGES"}
+                      onClear={onDropDownClear}
                     />
                   </View>
 
@@ -5760,6 +5762,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           "Insurance Type"
                         )
                       }
+                      clearOption={true}
+                      clearKey={"INSURANCE_TYPE"}
+                      onClear={onDropDownClear}
                     />
                   </View>
                   <Text style={styles.shadowText}>
@@ -5786,6 +5791,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           "Add-on Insurance"
                         )
                       }
+                      clearOption={true}
+                      clearKey={"INSURENCE_ADD_ONS"}
+                      onClear={onDropDownClear}
                     />
                   </View>
                   {selector.insurance_type !== "" ? (
@@ -5808,6 +5816,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       onPress={() =>
                         showDropDownModelMethod("WARRANTY", "Warranty")
                       }
+                      clearOption={true}
+                      clearKey={"WARRANTY"}
+                      onClear={onDropDownClear}
                     />
                   </View>
                   <Text style={styles.shadowText}>
@@ -5985,17 +5996,18 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             paddingHorizontal: 10,
                           }}
                         >
-                          <View style={{ width: "33%" }}>
+                          <View style={{ width: "45%" }}>
                             <DropDownSelectionItem
                               label={"Name"}
                               disabled={!isInputsEditable()}
                               value={item.name}
                               style={{
-                                height: 40,
+                                height: 50,
                                 borderColor: checkIsError("name", index)
                                   ? Colors.RED
                                   : Colors.BLACK,
                               }}
+                              takeMinHeight={true}
                               otherPrices={true}
                               onPress={() => {
                                 showDropDownModelMethod(
@@ -6004,6 +6016,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                 );
                                 setOtherPriceDropDownIndex(index);
                               }}
+                              clearOption={true}
+                              clearKey={"OTHER_PRICES"}
+                              onClear={onDropDownClear}
                             />
                           </View>
 
@@ -6039,7 +6054,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             onChangeText={(value) =>
                               inputHandlerPrice(value, index)
                             }
-                            value={`${item.amount}`}
+                            value={`${item?.amount ?? "0"}`}
                           />
                           <TouchableOpacity
                             disabled={!isInputsEditable()}
@@ -6416,6 +6431,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         "Finance Category"
                       )
                     }
+                    clearOption={true}
+                    clearKey={"FINANCE_CATEGORY"}
+                    onClear={onDropDownClear}
                   />
                 )}
 
@@ -6544,6 +6562,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       onPress={() =>
                         showDropDownModelMethod("BANK_FINANCE", "Bank/Financer")
                       }
+                      clearOption={true}
+                      clearKey={"BANK_FINANCE"}
+                      onClear={onDropDownClear}
                     />
 
                     <TextinputComp
@@ -6593,6 +6614,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           "Approx Annual Income"
                         )
                       }
+                      clearOption={true}
+                      clearKey={"APPROX_ANNUAL_INCOME"}
+                      onClear={onDropDownClear}
                     />
                   </View>
                 )}
@@ -6651,6 +6675,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   onPress={() =>
                     showDropDownModelMethod("PAYMENT_AT", "Payment At")
                   }
+                  clearOption={true}
+                  clearKey={"PAYMENT_AT"}
+                  onClear={onDropDownClear}
                 />
                 <Text style={GlobalStyle.underline} />
 
@@ -6664,6 +6691,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       "Booking Payment Mode"
                     )
                   }
+                  clearOption={true}
+                  clearKey={"BOOKING_PAYMENT_MODE"}
+                  onClear={onDropDownClear}
                 />
                 <Text
                   style={[
@@ -7442,8 +7472,8 @@ const styles = StyleSheet.create({
   },
   otherPriceInput: {
     backgroundColor: Colors.LIGHT_GRAY,
-    width: "33%",
-    height: 40,
+    width: "25%",
+    height: 50,
     borderBottomWidth: 1,
   },
   otherPriceTitleRow: {

@@ -83,6 +83,7 @@ const AttendanceScreen = ({ route, navigation }) => {
     wfh: 0,
     totalTime: "0",
     total: 0,
+    notLoggedIn: 0,
   });
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedFromDate, setSelectedFromDate] = useState("");
@@ -476,6 +477,7 @@ const AttendanceScreen = ({ route, navigation }) => {
           wfh: json?.wfh || 0,
           totalTime: json?.totalTime || "0",
           total: json?.total || 0,
+          notLoggedIn: json?.notLoggedIn ||0,
         });
       }
     } catch (error) {}
@@ -502,6 +504,7 @@ const AttendanceScreen = ({ route, navigation }) => {
           wfh: json?.wfh || 0,
           totalTime: json?.totalTime || "0",
           total: json?.total || 0,
+          notLoggedIn: json?.notLoggedIn || 0,
         });
       }
     } catch (error) {}
@@ -533,6 +536,7 @@ const AttendanceScreen = ({ route, navigation }) => {
             wfh: json?.wfh || 0,
             totalTime: json?.totalTime || "0",
             total: json?.total || 0,
+            notLoggedIn: json?.notLoggedIn || 0,
           });
         }
       }
@@ -1072,7 +1076,7 @@ const AttendanceScreen = ({ route, navigation }) => {
             />
             <View style={styles.parameterCountView}>
               <Text style={styles.parameterText}>{"No Logged"}</Text>
-              <Text style={styles.parameterText}>{attendanceCount.total}</Text>
+              <Text style={styles.parameterText}>{attendanceCount.notLoggedIn}</Text>
             </View>
           </View>
           <View style={styles.parameterView}>

@@ -10,7 +10,6 @@ import {
   ScrollView,
   Pressable,
   Keyboard,
-  ActivityIndicator,
   KeyboardAvoidingView,
   Alert,
   BackHandler,
@@ -175,6 +174,7 @@ import {
 import { getEmployeesListApi } from "../../../redux/confirmedPreEnquiryReducer";
 import { client } from "../../../networking/client";
 import Fontisto from "react-native-vector-icons/Fontisto";
+import AnimLoaderComp from "../../../components/AnimLoaderComp";
 const theme = {
   ...DefaultTheme,
   // Specify custom property
@@ -3020,7 +3020,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
   if (!componentAppear) {
     return (
       <View style={styles.initialContainer}>
-        <ActivityIndicator size="small" color={Colors.RED} />
+        <AnimLoaderComp visible={true} />
       </View>
     );
   }
@@ -3324,6 +3324,19 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       </Modal>
     );
   };
+
+  const onDropDownClear = (key) => {
+    if (key) {
+      dispatch(
+        setDropDownData({
+          key: key,
+          value: "",
+          id: "",
+        })
+      );
+    }
+  };
+
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
       <SelectEmployeeComponant
@@ -3572,6 +3585,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                           "Select Salutation"
                         )
                       }
+                      clearOption={true}
+                      clearKey={"SALUTATION"}
+                      onClear={onDropDownClear}
                     />
                     <Text style={GlobalStyle.underline} />
                   </View>
@@ -3653,9 +3669,12 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     <DropDownSelectionItem
                       label={"Relation"}
                       value={selector.relation}
-                      onPress={() =>
-                        showDropDownModelMethod("RELATION", "Relation")
-                      }
+                      onPress={() => {
+                        showDropDownModelMethod("RELATION", "Relation");
+                      }}
+                      clearOption={true}
+                      clearKey={"RELATION"}
+                      onClear={onDropDownClear}
                     />
                   </View>
                   <View style={{ width: "45%" }}>
@@ -4023,6 +4042,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                           "Referred BY Source"
                         )
                       }
+                      clearOption={true}
+                      clearKey={"RF_SOURCE"}
+                      onClear={onDropDownClear}
                     />
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -4100,6 +4122,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                       "KMs Travelled in Month"
                     )
                   }
+                  clearOption={true}
+                  clearKey={"KMS_TRAVELLED"}
+                  onClear={onDropDownClear}
                 />
 
                 <DropDownSelectionItem
@@ -4108,6 +4133,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                   onPress={() =>
                     showDropDownModelMethod("WHO_DRIVES", "Who Drives")
                   }
+                  clearOption={true}
+                  clearKey={"WHO_DRIVES"}
+                  onClear={onDropDownClear}
                 />
 
                 <DropDownSelectionItem
@@ -4119,6 +4147,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                       "How many members in your family?"
                     )
                   }
+                  clearOption={true}
+                  clearKey={"MEMBERS"}
+                  onClear={onDropDownClear}
                 />
 
                 <DropDownSelectionItem
@@ -4130,6 +4161,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                       "What is prime expectation from the Vehicle?"
                     )
                   }
+                  clearOption={true}
+                  clearKey={"PRIME_EXPECTATION_CAR"}
+                  onClear={onDropDownClear}
                 />
               </List.Accordion>
               <View style={styles.space}></View>
@@ -4183,26 +4217,43 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                 {addressData.length > 0 && (
                   <>
                     <Text style={GlobalStyle.underline}></Text>
-                    <Dropdown
-                      style={[styles.dropdownContainer]}
-                      placeholderStyle={styles.placeholderStyle}
-                      selectedTextStyle={styles.selectedTextStyle}
-                      inputSearchStyle={styles.inputSearchStyle}
-                      iconStyle={styles.iconStyle}
-                      data={addressData}
-                      search
-                      maxHeight={300}
-                      labelField="label"
-                      valueField="value"
-                      placeholder={"Select address"}
-                      searchPlaceholder="Search..."
-                      value={defaultAddress}
-                      // onFocus={() => setIsFocus(true)}
-                      // onBlur={() => setIsFocus(false)}
-                      onChange={(val) => {
-                        dispatch(updateAddressByPincode(val.value));
-                      }}
-                    />
+                    <View style={styles.addressDropDownRow}>
+                      <Dropdown
+                        style={[styles.dropdownContainer]}
+                        placeholderStyle={styles.placeholderStyle}
+                        selectedTextStyle={styles.selectedTextStyle}
+                        inputSearchStyle={styles.inputSearchStyle}
+                        iconStyle={styles.iconStyle}
+                        data={addressData}
+                        search
+                        maxHeight={300}
+                        labelField="label"
+                        valueField="value"
+                        placeholder={"Select address"}
+                        searchPlaceholder="Search..."
+                        value={defaultAddress}
+                        // onFocus={() => setIsFocus(true)}
+                        // onBlur={() => setIsFocus(false)}
+                        onChange={(val) => {
+                          dispatch(updateAddressByPincode(val.value));
+                        }}
+                      />
+
+                      {selector.isAddressSet ? (
+                        <IconButton
+                          onPress={() => {
+                            let tmp = addressData;
+                            setAddressData([]);
+                            setAddressData([...tmp]);
+                            dispatch(updateAddressByPincode(""));
+                          }}
+                          icon="close-circle-outline"
+                          color={Colors.BLACK}
+                          size={20}
+                          style={styles.addressClear}
+                        />
+                      ) : null}
+                    </View>
                   </>
                 )}
                 <Text style={GlobalStyle.underline}></Text>
@@ -4439,30 +4490,45 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
                   {addressData2.length > 0 && (
                     <>
-                      <Text style={GlobalStyle.underline}></Text>
-                      <Dropdown
-                        style={[styles.dropdownContainer]}
-                        placeholderStyle={styles.placeholderStyle}
-                        selectedTextStyle={styles.selectedTextStyle}
-                        inputSearchStyle={styles.inputSearchStyle}
-                        iconStyle={styles.iconStyle}
-                        data={addressData2}
-                        search
-                        maxHeight={300}
-                        labelField="label"
-                        valueField="value"
-                        placeholder={"Select address"}
-                        searchPlaceholder="Search..."
-                        // value={defaultAddress}
-                        // onFocus={() => setIsFocus(true)}
-                        // onBlur={() => setIsFocus(false)}
-                        onChange={(val) => {
-                          dispatch(updateAddressByPincode2(val.value));
-                        }}
-                      />
+                      <View style={styles.addressDropDownRow}>
+                        <Dropdown
+                          style={[styles.dropdownContainer]}
+                          placeholderStyle={styles.placeholderStyle}
+                          selectedTextStyle={styles.selectedTextStyle}
+                          inputSearchStyle={styles.inputSearchStyle}
+                          iconStyle={styles.iconStyle}
+                          data={addressData2}
+                          search
+                          maxHeight={300}
+                          labelField="label"
+                          valueField="value"
+                          placeholder={"Select address"}
+                          searchPlaceholder="Search..."
+                          // value={defaultAddress}
+                          // onFocus={() => setIsFocus(true)}
+                          // onBlur={() => setIsFocus(false)}
+                          onChange={(val) => {
+                            dispatch(updateAddressByPincode2(val.value));
+                          }}
+                        />
+                        {selector.isAddressSet2 ? (
+                          <IconButton
+                            onPress={() => {
+                              let tmp = addressData2;
+                              setAddressData2([]);
+                              setAddressData2([...tmp]);
+                              dispatch(updateAddressByPincode2(""));
+                            }}
+                            icon="close-circle-outline"
+                            color={Colors.BLACK}
+                            size={20}
+                            style={styles.addressClear}
+                          />
+                        ) : null}
+                      </View>
                     </>
                   )}
-
+                  <Text style={GlobalStyle.underline}></Text>
                   <View style={styles.radioGroupBcVw}>
                     <RadioTextItem
                       label={"Urban"}
@@ -4832,6 +4898,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                         "Finance Category"
                       )
                     }
+                    clearOption={true}
+                    clearKey={"FINANCE_CATEGORY"}
+                    onClear={onDropDownClear}
                   />
                 )}
 
@@ -4912,6 +4981,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                       onPress={() =>
                         showDropDownModelMethod("BANK_FINANCE", "Bank/Financer")
                       }
+                      clearOption={true}
+                      clearKey={"BANK_FINANCE"}
+                      onClear={onDropDownClear}
                     />
 
                     <TextinputComp
@@ -4958,6 +5030,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                           "Approx Annual Income"
                         )
                       }
+                      clearOption={true}
+                      clearKey={"APPROX_ANNUAL_INCOME"}
+                      onClear={onDropDownClear}
                     />
                   </View>
                 )}
@@ -5527,6 +5602,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                       label={"Make"}
                       value={selector.c_make}
                       onPress={() => showDropDownModelMethod("C_MAKE", "Make")}
+                      clearOption={true}
+                      clearKey={"C_MAKE"}
+                      onClear={onDropDownClear}
                     />
                     {selector.c_make === "Other" && (
                       <View>
@@ -5554,6 +5632,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                       onPress={() =>
                         showDropDownModelMethod("C_MODEL", "Model")
                       }
+                      clearOption={true}
+                      clearKey={"C_MODEL"}
+                      onClear={onDropDownClear}
                     />
                     {selector.c_model === "Other" && (
                       <View>
@@ -5619,6 +5700,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                       onPress={() =>
                         showDropDownModelMethod("C_FUEL_TYPE", "Fuel Type")
                       }
+                      clearOption={true}
+                      clearKey={"C_FUEL_TYPE"}
+                      onClear={onDropDownClear}
                     />
                     <DropDownSelectionItem
                       label={
@@ -5635,6 +5719,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                           "Transmission Type"
                         )
                       }
+                      clearOption={true}
+                      clearKey={"C_TRANSMISSION_TYPE"}
+                      onClear={onDropDownClear}
                     />
 
                     <TextinputComp
@@ -5767,6 +5854,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     label={"Make"}
                     value={selector.a_make}
                     onPress={() => showDropDownModelMethod("A_MAKE", "Make")}
+                    clearOption={true}
+                    clearKey={"A_MAKE"}
+                    onClear={onDropDownClear}
                   />
                   {selector.a_make === "Other" && (
                     <View>
@@ -5792,6 +5882,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     label={"Model"}
                     value={selector.a_model}
                     onPress={() => showDropDownModelMethod("A_MODEL", "Model")}
+                    clearOption={true}
+                    clearKey={"A_MODEL"}
+                    onClear={onDropDownClear}
                   />
                   {selector.a_model === "Other" && (
                     <View>
@@ -5943,6 +6036,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     label={"Make"}
                     value={selector.r_make}
                     onPress={() => showDropDownModelMethod("R_MAKE", "Make")}
+                    clearOption={true}
+                    clearKey={"R_MAKE"}
+                    onClear={onDropDownClear}
                   />
                   {selector.r_make === "Other" && (
                     <View>
@@ -5968,6 +6064,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     label={"Model"}
                     value={selector.r_model}
                     onPress={() => showDropDownModelMethod("R_MODEL", "Model")}
+                    clearOption={true}
+                    clearKey={"R_MODEL"}
+                    onClear={onDropDownClear}
                   />
                   {selector.r_model === "Other" && (
                     <View>
@@ -6034,6 +6133,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     onPress={() =>
                       showDropDownModelMethod("R_FUEL_TYPE", "Fuel Type")
                     }
+                    clearOption={true}
+                    clearKey={"R_FUEL_TYPE"}
+                    onClear={onDropDownClear}
                   />
                   <DropDownSelectionItem
                     label={
@@ -6050,6 +6152,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                         "Transmission Type"
                       )
                     }
+                    clearOption={true}
+                    clearKey={"R_TRANSMISSION_TYPE"}
+                    onClear={onDropDownClear}
                   />
 
                   <DateSelectItem
@@ -6280,6 +6385,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                               "Insurance Type"
                             )
                           }
+                          clearOption={true}
+                          clearKey={"R_INSURENCE_TYPE"}
+                          onClear={onDropDownClear}
                         />
                         <DateSelectItem
                           label={"Insurance From Date"}
@@ -6309,6 +6417,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                             "Insurence Company Name"
                           )
                         }
+                        clearOption={true}
+                        clearKey={"R_INSURENCE_COMPANY_NAME"}
+                        onClear={onDropDownClear}
                       />
                       {/* <TextinputComp
                         style={styles.textInputStyle}
@@ -6607,10 +6718,8 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   dropdownContainer: {
-    backgroundColor: "#fff",
+    flex: 1,
     padding: 16,
-    // borderWidth: 1,
-    width: "100%",
     height: 50,
     borderRadius: 5,
   },
@@ -6715,5 +6824,18 @@ const styles = StyleSheet.create({
     color: Colors.WHITE,
     fontSize: 14,
     fontWeight: "600",
+  },
+  addressDropDownRow: {
+    flexDirection: "row",
+    backgroundColor: "#fff",
+    justifyContent: "space-between",
+  },
+  addressClear: {
+    marginHorizontal: 0,
+    paddingHorizontal: 5,
+    borderLeftWidth: 1,
+    borderRadius: 0,
+    borderLeftColor: Colors.GRAY,
+    alignSelf: "center",
   },
 });

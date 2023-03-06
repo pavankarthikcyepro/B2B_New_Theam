@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { SafeAreaView, StyleSheet, View, FlatList, RefreshControl, Text, ActivityIndicator, Pressable } from "react-native";
+import { SafeAreaView, StyleSheet, View, FlatList, RefreshControl, Text, Pressable } from "react-native";
 import {IconButton, Searchbar} from "react-native-paper";
 import { PreEnquiryItem, EmptyListView } from "../../../pureComponents";
 import { DateRangeComp, DatePickerComponent, SortAndFilterComp } from "../../../components";
@@ -14,6 +14,7 @@ import { Category_Type_List_For_Filter } from '../../../jsonData/enquiryFormScre
 import { MyTaskNewItem } from '../MyTasks/components/MyTasksNewItem';
 import { updateTAB, updateIsSearch, updateSearchKey } from '../../../redux/appReducer';
 import { getCallRecordingCredentials } from '../../../redux/callRecordingReducer';
+import AnimLoaderComp from "../../../components/AnimLoaderComp";
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().add(0, "day").format(dateFormat)
 const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
@@ -262,10 +263,10 @@ const PreBookingScreen = ({ navigation }) => {
     const renderFooter = () => {
         if (!selector.isLoadingExtraData) { return null }
         return (
-            <View style={styles.footer}>
-                <Text style={styles.btnText}>Loading More...</Text>
-                <ActivityIndicator color={Colors.GRAY} />
-            </View>
+          <View style={styles.footer}>
+            <Text style={styles.btnText}>Loading More...</Text>
+            <AnimLoaderComp visible={true} />
+          </View>
         );
     };
 

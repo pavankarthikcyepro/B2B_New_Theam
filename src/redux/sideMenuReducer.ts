@@ -18,6 +18,8 @@ export const DIGITAL_DASHBOARD = "DIGITAL_DASHBOARD";
 export const EVENT_DASHBOARD = "EVENT_DASHBOARD";
 export const MY_STOCK = "MY_STOCK";
 export const REPORT_DOWNLOAD = "REPORT_DOWNLOAD";
+export const COMPLAINT_TRACKER = "REPORT_DOWNLOAD";
+
 
 const data = [
   {
@@ -62,24 +64,24 @@ const data = [
     screen: 120,
     pngIcon: require("../assets/images/Target_Planning-01.png"),
   },
-  {
-    title: "Download Report",
-    icon: REPORT_DOWNLOAD,
-    screen: 121,
-    pngIcon: require("../assets/images/Target_Planning-01.png"),
-  },
+  // {
+  //   title: "Download Report",
+  //   icon: REPORT_DOWNLOAD,
+  //   screen: 121,
+  //   pngIcon: require("../assets/images/Target_Planning-01.png"),
+  // },
   {
     title: "Geolocation",
     icon: GEOLOCATION,
     screen: 117,
     pngIcon: require("../assets/images/Target_Planning-01.png"),
   },
-  {
-    title: "Drop/Lost/Cancel",
-    icon: DROP_LOST_CANCEL,
-    screen: 115,
-    pngIcon: require("../assets/images/Settings-01.png"),
-  },
+  // {
+  //   title: "Drop/Lost/Cancel",
+  //   icon: DROP_LOST_CANCEL,
+  //   screen: 115,
+  //   pngIcon: require("../assets/images/Settings-01.png"),
+  // },
   // {
   //   title: "Task Management",
   //   icon: CUSTOMER_RELATIONSHIP_STR,
@@ -146,11 +148,17 @@ const data = [
     pngIcon: require("../assets/images/Settings-01.png"),
   },
   {
+    title: "Complaint Tracker",
+    icon: COMPLAINT_TRACKER,
+    screen: 123,
+    pngIcon: require("../assets/images/review.png"),
+  },
+  {
     title: "Sign Out",
     icon: CUSTOMER_RELATIONSHIP_STR,
     screen: 112,
     pngIcon: require("../assets/images/Signout-01.png"),
-  },
+  }
 ];
 
 const dataForManager = [
@@ -226,7 +234,14 @@ const dataForManager = [
     icon: DROP_ANALYSIS,
     screen: 113,
   },
+  {
+    title: "Complaint Tracker",
+    icon: COMPLAINT_TRACKER,
+    screen: 123,
+    // pngIcon: require("../assets/images/review.png"),
+  },
   { title: "Sign Out", icon: CUSTOMER_RELATIONSHIP_STR, screen: 112 },
+
 ];
 
 // {

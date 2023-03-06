@@ -15,8 +15,9 @@ import URL from "../../../../../../networking/endpoints";
 import { useDispatch, useSelector } from "react-redux";
 import { getSourceModelDataForSelf } from "../../../../../../redux/homeReducer";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
-import { ActivityIndicator, IconButton } from "react-native-paper";
+import { IconButton } from "react-native-paper";
 import { AppNavigator } from "../../../../../../navigations";
+import AnimLoaderComp from "../../../../../../components/AnimLoaderComp";
 
 const SourceModel = ({ route, navigation }) => {
   const dispatch = useDispatch();
@@ -74,11 +75,21 @@ const SourceModel = ({ route, navigation }) => {
 
     let payload = {
       // endDate: monthLastDate,
-      endDate: moduleType === "live-leads" ? monthLastDate : monthLastDate,
+      endDate:
+        moduleType === "live-leads"
+          ? monthLastDate
+          : selector?.filterIds?.endDate
+          ? selector.filterIds.endDate
+          : monthLastDate,
       loggedInEmpId: empId,
       empId: empId,
       // startDate: monthFirstDate,
-      startDate: moduleType === "live-leads" ? "2021-01-01" : monthFirstDate,
+      startDate:
+        moduleType === "live-leads"
+          ? "2021-01-01"
+          : selector?.filterIds?.startDate
+          ? selector.filterIds.startDate
+          : monthFirstDate,
       levelSelected: null,
       pageNo: 0,
       size: 100,
@@ -86,6 +97,16 @@ const SourceModel = ({ route, navigation }) => {
       pageNo: 0,
       selectedEmpId: empId,
     };
+
+    // if (type != "TEAM") {
+    if (selector.filterIds?.empSelected?.length) {
+      payload["empSelected"] = selector.filterIds.empSelected;
+    } else {
+      payload["levelSelected"] = selector.filterIds?.levelSelected?.length
+        ? selector.filterIds.levelSelected
+        : null;
+    }
+    // }
 
     const urlSelf = URL.MODEL_SOURCE_SELF();
     const urlInsights = URL.MODEL_SOURCE_INSIGHTS();
@@ -491,7 +512,7 @@ function isEmpty(obj) {
           </View>
           <View style={{ height: "85%" }}>
             {isLoading || isEmpty(leadSource) ? (
-              <ActivityIndicator color={Colors.RED} size={"large"} />
+              <AnimLoaderComp visible={true} />
             ) : (
               <ScrollView>
                 <View style={[styles.flexRow, { paddingHorizontal: 6 }]}>
@@ -505,7 +526,10 @@ function isEmpty(obj) {
                   <ScrollView
                     ref={scrollViewRef}
                     onContentSizeChange={(contentWidth, contentHeight) => {
-                      scrollViewRef?.current?.scrollTo({ y: 0, animated: true });
+                      scrollViewRef?.current?.scrollTo({
+                        y: 0,
+                        animated: true,
+                      });
                     }}
                     horizontal
                   >

@@ -9,7 +9,6 @@ import {
   Image,
   Pressable,
   ScrollView,
-  ActivityIndicator,
 } from "react-native";
 import { Colors } from "../../../styles";
 import { IconButton } from "react-native-paper";
@@ -34,6 +33,7 @@ import {
 } from "../../../redux/homeReducer";
 import { showAlertMessage, showToast } from "../../../utils/toast";
 import { AppNavigator } from "../../../navigations";
+import AnimLoaderComp from "../../../components/AnimLoaderComp";
 
 const screenWidth = Dimensions.get("window").width;
 const buttonWidth = (screenWidth - 100) / 2;
@@ -49,7 +49,7 @@ const AcitivityLoader = () => {
         alignItems: "center",
       }}
     >
-      <ActivityIndicator size={"small"} color={Colors.GRAY} />
+      <AnimLoaderComp visible={true} />
     </View>
   );
 };
@@ -314,14 +314,12 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
     setTotalDataObj({ ...totalDataObjLocal });
   };
 
-  const submitBtnClicked = (initialData) => {
+  const submitBtnClicked = () => {
     let i = 0;
     const selectedIds = [];
     for (i; i < nameKeyList.length; i++) {
       let key = nameKeyList[i];
-      const dataArray = initialData
-        ? initialData[key].sublevels
-        : totalDataObj[key].sublevels;
+      const dataArray = totalDataObj[key].sublevels;
       if (dataArray.length > 0) {
         dataArray.forEach((item, index) => {
           if (item.selected != undefined && item.selected == true) {
@@ -396,7 +394,7 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
       }
       // navigation.navigate(AppNavigator.TabStackIdentifiers.home, { screen: "Home", params: { from: 'Filter' }, })
     } else {
-      // navigation.goBack(); // NEED TO COMMENT FOR ASSOCIATE FILTER
+      navigation.goBack(); // NEED TO COMMENT FOR ASSOCIATE FILTER
     }
   };
 

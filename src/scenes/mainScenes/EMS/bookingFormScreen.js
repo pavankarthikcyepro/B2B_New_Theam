@@ -7,7 +7,6 @@ import {
     Platform,
     ScrollView, TouchableOpacity,
     Keyboard,
-    ActivityIndicator,
     KeyboardAvoidingView,
     Pressable,
     BackHandler,
@@ -113,6 +112,7 @@ import URL from "../../../networking/endpoints";
 import uuid from "react-native-uuid";
 import { DropComponent } from "./components/dropComp";
 import { set } from "immer/dist/internal";
+import AnimLoaderComp from "../../../components/AnimLoaderComp";
 
 const rupeeSymbol = "\u20B9";
 
@@ -2003,9 +2003,9 @@ const BookingFormScreen = ({ route, navigation }) => {
 
     if (!componentAppear) {
         return (
-            <View style={styles.initialContainer}>
-                <ActivityIndicator size="small" color={Colors.RED} />
-            </View>
+          <View style={styles.initialContainer}>
+            <AnimLoaderComp visible={true} />
+          </View>
         );
     }
 
