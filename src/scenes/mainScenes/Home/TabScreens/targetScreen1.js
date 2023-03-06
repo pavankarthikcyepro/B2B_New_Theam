@@ -34,11 +34,12 @@ import { useNavigation } from "@react-navigation/native";
 import { AppNavigator } from "../../../../navigations";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
 import PercentageToggleControl from "./components/EmployeeView/PercentageToggleControl";
-import { ActivityIndicator, IconButton } from "react-native-paper";
+import { IconButton } from "react-native-paper";
 import { client } from "../../../../networking/client";
 import URL from "../../../../networking/endpoints";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import TextTicker from "react-native-text-ticker";
+import AnimLoaderComp from "../../../../components/AnimLoaderComp";
 
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 100) / 5;
@@ -890,11 +891,7 @@ const TargetScreen = ({ route }) => {
                   </View>
                 </View>
                 {isLoading ? (
-                  <ActivityIndicator
-                    color={Colors.RED}
-                    size={"large"}
-                    style={{ marginTop: 15 }}
-                  />
+                  <AnimLoaderComp visible={true} />
                 ) : (
                   <ScrollView
                     contentContainerStyle={styles.scrollview}
@@ -1234,11 +1231,7 @@ const TargetScreen = ({ route }) => {
                 </View>
               </View>
               {isLoading ? (
-                <ActivityIndicator
-                  color={Colors.RED}
-                  size={"large"}
-                  style={{ marginTop: 15 }}
-                />
+                <AnimLoaderComp visible={true} />
               ) : (
                 <ScrollView
                   contentContainerStyle={styles.scrollview}
@@ -1630,7 +1623,7 @@ const TargetScreen = ({ route }) => {
                                                               style={{
                                                                 flexDirection:
                                                                   "row",
-                                                                  marginTop: 8
+                                                                marginTop: 8,
                                                               }}
                                                             >
                                                               <Text
@@ -2720,274 +2713,277 @@ const TargetScreen = ({ route }) => {
                         />
                       </View>
                       <ScrollView showsVerticalScrollIndicator={false}>
-                        <View style={styles.view15}>
-                          <View
-                            style={{
-                              justifyContent: "center",
-                              alignItems: "center",
-                              width: "35%",
-                            }}
-                          >
-                            <Text
+                        <View style={styles.recBoxContainer}>
+                          <View style={styles.view15}>
+                            <View
                               style={{
-                                fontSize: 14,
-                                fontWeight: "400",
-                                textDecorationLine: "underline",
-                                textDecorationColor: "#00b1ff",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                width: "35%",
                               }}
                             >
-                              {"Consultant Name"}
-                            </Text>
-                          </View>
+                              <Text
+                                style={{
+                                  fontSize: 14,
+                                  fontWeight: "500",
+                                }}
+                              >
+                                {"Consultant Name"}
+                              </Text>
+                            </View>
 
-                          <View
-                            style={{
-                              flexDirection: "row",
-                              justifyContent: "space-between",
-                              width: "60%",
-                            }}
-                          >
-                            <Text
-                              style={{ ...styles.txt4, width: "25%" }}
-                              numberOfLines={2}
-                            >
-                              {"Enq"}
-                            </Text>
-                            <Text
-                              style={{ ...styles.txt4, width: "25%" }}
-                              numberOfLines={2}
-                            >
-                              {"Bkg"}
-                            </Text>
-                            <Text
-                              style={{ ...styles.txt4, width: "25%" }}
-                              numberOfLines={2}
-                            >
-                              {"Retail"}
-                            </Text>
-                            <Text
-                              style={{ ...styles.txt4, width: "25%" }}
-                              numberOfLines={2}
-                            >
-                              {"Lost"}
-                            </Text>
-                          </View>
-                        </View>
-                        <FlatList
-                          data={selector.receptionistData.consultantList}
-                          style={{ marginTop: 10 }}
-                          nestedScrollEnabled
-                          renderItem={({ item }) => {
-                            Array.prototype.random = function () {
-                              return this[
-                                Math.floor(Math.random() * this.length)
-                              ];
-                            };
-                            let selectedColor = color.random();
-                            return (
-                              <View style={styles.view16}>
-                                <View style={styles.view17}>
-                                  <Text numberOfLines={1}>
-                                    {item?.emp_name}
-                                  </Text>
-                                </View>
-                                <View style={styles.view18}>
-                                  <View
-                                    style={{
-                                      minWidth: 45,
-                                      height: 25,
-                                      borderColor: Colors.RED,
-                                      borderWidth: 1,
-                                      borderRadius: 8,
-                                      justifyContent: "center",
-                                      alignItems: "center",
-                                    }}
-                                  >
-                                    <Text
-                                      onPress={() => {
-                                        item?.enquiryCount > 0 &&
-                                          navigateToEMS();
-                                      }}
-                                      style={{
-                                        padding: 2,
-                                        textDecorationLine:
-                                          item?.enquiryCount > 0
-                                            ? "underline"
-                                            : "none",
-                                      }}
-                                    >
-                                      {item?.enquiryCount}
-                                    </Text>
-                                  </View>
-                                  <View
-                                    style={{
-                                      minWidth: 45,
-                                      height: 25,
-                                      borderColor: Colors.RED,
-                                      borderWidth: 1,
-                                      borderRadius: 8,
-                                      justifyContent: "center",
-                                      alignItems: "center",
-                                    }}
-                                  >
-                                    <Text
-                                      onPress={() => {
-                                        item?.bookingCount > 0 &&
-                                          navigateToEMS();
-                                      }}
-                                      style={{
-                                        padding: 2,
-                                        textDecorationLine:
-                                          item?.bookingCount > 0
-                                            ? "underline"
-                                            : "none",
-                                      }}
-                                    >
-                                      {item?.bookingCount}
-                                    </Text>
-                                  </View>
-                                  <View
-                                    style={{
-                                      minWidth: 45,
-                                      height: 25,
-                                      borderColor: Colors.RED,
-                                      borderWidth: 1,
-                                      borderRadius: 8,
-                                      justifyContent: "center",
-                                      alignItems: "center",
-                                    }}
-                                  >
-                                    <Text
-                                      onPress={() => {
-                                        item?.retailCount > 0 &&
-                                          navigateToEMS();
-                                      }}
-                                      style={{
-                                        padding: 2,
-                                        textDecorationLine:
-                                          item?.retailCount > 0
-                                            ? "underline"
-                                            : "none",
-                                      }}
-                                    >
-                                      {item?.retailCount}
-                                    </Text>
-                                  </View>
-                                  <View
-                                    style={{
-                                      minWidth: 45,
-                                      height: 25,
-                                      borderColor: Colors.RED,
-                                      borderWidth: 1,
-                                      borderRadius: 8,
-                                      justifyContent: "center",
-                                      alignItems: "center",
-                                    }}
-                                  >
-                                    <Text
-                                      onPress={() => {
-                                        navigateToDropLostCancel();
-                                      }}
-                                      style={{
-                                        padding: 2,
-                                        textDecorationLine:
-                                          item?.droppedCount > 0
-                                            ? "underline"
-                                            : "none",
-                                      }}
-                                    >
-                                      {item?.droppedCount}
-                                    </Text>
-                                  </View>
-                                </View>
-                              </View>
-                            );
-                          }}
-                        />
-                        <View style={styles.view16}>
-                          <View
-                            style={{
-                              justifyContent: "center",
-                              alignItems: "center",
-                              width: "35%",
-                            }}
-                          >
-                            <Text
+                            <View
                               style={{
-                                fontSize: 15,
-                                fontWeight: "600",
-                                color: "#00b1ff",
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                                width: "60%",
                               }}
                             >
-                              {"          Total"}
-                            </Text>
+                              <Text
+                                style={{ ...styles.txt4, width: "25%" }}
+                                numberOfLines={2}
+                              >
+                                {"Enq"}
+                              </Text>
+                              <Text
+                                style={{ ...styles.txt4, width: "25%" }}
+                                numberOfLines={2}
+                              >
+                                {"Bkg"}
+                              </Text>
+                              <Text
+                                style={{ ...styles.txt4, width: "25%" }}
+                                numberOfLines={2}
+                              >
+                                {"Retail"}
+                              </Text>
+                              <Text
+                                style={{ ...styles.txt4, width: "25%" }}
+                                numberOfLines={2}
+                              >
+                                {"Lost"}
+                              </Text>
+                            </View>
                           </View>
-                          <View style={styles.view18}>
-                            <View style={styles.view20}>
+                          <FlatList
+                            data={selector.receptionistData.consultantList}
+                            style={{ marginTop: 10 }}
+                            nestedScrollEnabled
+                            renderItem={({ item }) => {
+                              Array.prototype.random = function () {
+                                return this[
+                                  Math.floor(Math.random() * this.length)
+                                ];
+                              };
+                              let selectedColor = color.random();
+                              return (
+                                <View style={styles.view16}>
+                                  <View style={styles.view17}>
+                                    <Text numberOfLines={1}>
+                                      {item?.emp_name}
+                                    </Text>
+                                  </View>
+                                  <View style={styles.view18}>
+                                    <View
+                                      style={{
+                                        minWidth: 45,
+                                        height: 25,
+                                        borderColor: Colors.RED,
+                                        borderWidth: 1,
+                                        borderRadius: 8,
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                      }}
+                                    >
+                                      <Text
+                                        onPress={() => {
+                                          item?.enquiryCount > 0 &&
+                                            navigateToEMS();
+                                        }}
+                                        style={{
+                                          padding: 2,
+                                          textDecorationLine:
+                                            item?.enquiryCount > 0
+                                              ? "underline"
+                                              : "none",
+                                        }}
+                                      >
+                                        {item?.enquiryCount}
+                                      </Text>
+                                    </View>
+                                    <View
+                                      style={{
+                                        minWidth: 45,
+                                        height: 25,
+                                        borderColor: Colors.RED,
+                                        borderWidth: 1,
+                                        borderRadius: 8,
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                      }}
+                                    >
+                                      <Text
+                                        onPress={() => {
+                                          item?.bookingCount > 0 &&
+                                            navigateToEMS();
+                                        }}
+                                        style={{
+                                          padding: 2,
+                                          textDecorationLine:
+                                            item?.bookingCount > 0
+                                              ? "underline"
+                                              : "none",
+                                        }}
+                                      >
+                                        {item?.bookingCount}
+                                      </Text>
+                                    </View>
+                                    <View
+                                      style={{
+                                        minWidth: 45,
+                                        height: 25,
+                                        borderColor: Colors.RED,
+                                        borderWidth: 1,
+                                        borderRadius: 8,
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                      }}
+                                    >
+                                      <Text
+                                        onPress={() => {
+                                          item?.retailCount > 0 &&
+                                            navigateToEMS();
+                                        }}
+                                        style={{
+                                          padding: 2,
+                                          textDecorationLine:
+                                            item?.retailCount > 0
+                                              ? "underline"
+                                              : "none",
+                                        }}
+                                      >
+                                        {item?.retailCount}
+                                      </Text>
+                                    </View>
+                                    <View
+                                      style={{
+                                        minWidth: 45,
+                                        height: 25,
+                                        borderColor: Colors.RED,
+                                        borderWidth: 1,
+                                        borderRadius: 8,
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                      }}
+                                    >
+                                      <Text
+                                        onPress={() => {
+                                          navigateToDropLostCancel();
+                                        }}
+                                        style={{
+                                          padding: 2,
+                                          textDecorationLine:
+                                            item?.droppedCount > 0
+                                              ? "underline"
+                                              : "none",
+                                        }}
+                                      >
+                                        {item?.droppedCount}
+                                      </Text>
+                                    </View>
+                                  </View>
+                                </View>
+                              );
+                            }}
+                          />
+                          <View style={styles.view16}>
+                            <View
+                              style={{
+                                justifyContent: "center",
+                                alignItems: "center",
+                                width: "35%",
+                              }}
+                            >
                               <Text
-                                onPress={() => {
-                                  selector.receptionistData.enquirysCount > 0 &&
-                                    navigateToEMS();
-                                }}
                                 style={{
-                                  padding: 2,
-                                  textDecorationLine:
-                                    selector.receptionistData.enquirysCount > 0
-                                      ? "underline"
-                                      : "none",
+                                  fontSize: 15,
+                                  fontWeight: "600",
+                                  color: "#00b1ff",
                                 }}
                               >
-                                {selector.receptionistData.enquirysCount}
+                                {"          Total"}
                               </Text>
                             </View>
-                            <View style={styles.view20}>
-                              <Text
-                                onPress={() => {
-                                  navigateToDropLostCancel();
-                                }}
-                                style={{
-                                  padding: 2,
-                                  textDecorationLine:
-                                    selector.receptionistData.bookingsCount > 0
-                                      ? "underline"
-                                      : "none",
-                                }}
-                              >
-                                {selector.receptionistData.bookingsCount}
-                              </Text>
-                            </View>
-                            <View style={styles.view20}>
-                              <Text
-                                onPress={() => {
-                                  selector.receptionistData.RetailCount > 0 &&
-                                    navigateToEMS();
-                                }}
-                                style={{
-                                  padding: 2,
-                                  textDecorationLine:
-                                    selector.receptionistData.RetailCount > 0
-                                      ? "underline"
-                                      : "none",
-                                }}
-                              >
-                                {selector.receptionistData.RetailCount}
-                              </Text>
-                            </View>
-                            <View style={styles.view20}>
-                              <Text
-                                onPress={() => {
-                                  navigateToDropLostCancel();
-                                }}
-                                style={{
-                                  padding: 2,
-                                  textDecorationLine:
-                                    selector.receptionistData.totalLostCount > 0
-                                      ? "underline"
-                                      : "none",
-                                }}
-                              >
-                                {selector.receptionistData.totalLostCount}
-                              </Text>
+                            <View style={styles.view18}>
+                              <View style={styles.view20}>
+                                <Text
+                                  onPress={() => {
+                                    selector.receptionistData.enquirysCount >
+                                      0 && navigateToEMS();
+                                  }}
+                                  style={{
+                                    padding: 2,
+                                    textDecorationLine:
+                                      selector.receptionistData.enquirysCount >
+                                      0
+                                        ? "underline"
+                                        : "none",
+                                  }}
+                                >
+                                  {selector.receptionistData.enquirysCount}
+                                </Text>
+                              </View>
+                              <View style={styles.view20}>
+                                <Text
+                                  onPress={() => {
+                                    navigateToDropLostCancel();
+                                  }}
+                                  style={{
+                                    padding: 2,
+                                    textDecorationLine:
+                                      selector.receptionistData.bookingsCount >
+                                      0
+                                        ? "underline"
+                                        : "none",
+                                  }}
+                                >
+                                  {selector.receptionistData.bookingsCount}
+                                </Text>
+                              </View>
+                              <View style={styles.view20}>
+                                <Text
+                                  onPress={() => {
+                                    selector.receptionistData.RetailCount > 0 &&
+                                      navigateToEMS();
+                                  }}
+                                  style={{
+                                    padding: 2,
+                                    textDecorationLine:
+                                      selector.receptionistData.RetailCount > 0
+                                        ? "underline"
+                                        : "none",
+                                  }}
+                                >
+                                  {selector.receptionistData.RetailCount}
+                                </Text>
+                              </View>
+                              <View style={styles.view20}>
+                                <Text
+                                  onPress={() => {
+                                    navigateToDropLostCancel();
+                                  }}
+                                  style={{
+                                    padding: 2,
+                                    textDecorationLine:
+                                      selector.receptionistData.totalLostCount >
+                                      0
+                                        ? "underline"
+                                        : "none",
+                                  }}
+                                >
+                                  {selector.receptionistData.totalLostCount}
+                                </Text>
+                              </View>
                             </View>
                           </View>
                         </View>
@@ -3881,16 +3877,27 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     marginRight: 10,
   },
+  recBoxContainer: {
+    borderWidth: 1.5,
+    borderColor: Colors.RED,
+    borderRadius: 7,
+    paddingBottom: 5,
+    overflow: "hidden",
+  },
   view15: {
     flexDirection: "row",
     justifyContent: "space-between",
     paddingHorizontal: 10,
+    backgroundColor: Colors.BORDER_COLOR,
+    paddingVertical: 10,
+    marginRight: 1,
+    borderTopLeftRadius: 6,
+    borderTopRightRadius: 6,
   },
   txt4: {
     fontSize: 13,
-    fontWeight: "400",
-    textDecorationLine: "underline",
-    textAlign: "center",
+    fontWeight: "500",
+    textAlign: "center"
   },
   view16: {
     flexDirection: "row",

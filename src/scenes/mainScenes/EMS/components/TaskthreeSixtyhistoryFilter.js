@@ -9,7 +9,6 @@ import {
     Image,
     Pressable,
     ScrollView,
-    ActivityIndicator,
 } from "react-native";
 import { Colors } from "../../../../styles";
 import { IconButton } from "react-native-paper";
@@ -39,6 +38,7 @@ import { showAlertMessage, showToast } from "../../../../utils/toast";
 import { AppNavigator } from "../../../../navigations";
 import { DropDown } from "../../../mainScenes/TargetSettingsScreen/TabScreen/dropDown";
 import { EmsStackIdentifiers, HomeStackIdentifiers } from "../../../../navigations/appNavigator";
+import AnimLoaderComp from "../../../../components/AnimLoaderComp";
 
 const screenWidth = Dimensions.get("window").width;
 const buttonWidth = (screenWidth - 100) / 2;
@@ -46,16 +46,16 @@ const dateFormat = "YYYY-MM-DD";
 
 const AcitivityLoader = () => {
     return (
-        <View
-            style={{
-                width: "100%",
-                height: 50,
-                justifyContent: "center",
-                alignItems: "center",
-            }}
-        >
-            <ActivityIndicator size={"small"} color={Colors.GRAY} />
-        </View>
+      <View
+        style={{
+          width: "100%",
+          height: 50,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <AnimLoaderComp visible={true} />
+      </View>
     );
 };
 let dealeid;

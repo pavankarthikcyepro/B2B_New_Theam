@@ -6,7 +6,6 @@ import {
   StyleSheet,
   FlatList,
   Dimensions,
-  ActivityIndicator,
   RefreshControl
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
@@ -14,6 +13,7 @@ import { ComplaintsItem, EmptyListView } from "../../../pureComponents";
 import { useDispatch, useSelector } from "react-redux";
 import { getComplaintsListApi, getMoreComplaintsListApi } from "../../../redux/complaintsReducer";
 import * as AsyncStorage from "../../../asyncStore";
+import AnimLoaderComp from "../../../components/AnimLoaderComp";
 
 const ActiveComplaintsScreen = ({ navigation }) => {
 
@@ -71,7 +71,7 @@ const ActiveComplaintsScreen = ({ navigation }) => {
     return (
       <View style={styles.footer}>
         <Text style={styles.btnText}>Loading More...</Text>
-        <ActivityIndicator color={Colors.GRAY} />
+        <AnimLoaderComp visible={true} />
       </View>
     );
   };

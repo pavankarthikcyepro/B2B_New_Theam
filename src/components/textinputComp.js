@@ -9,7 +9,7 @@ const TextinputComp = ({ value, mode = 'flat', label, disabled, placeholder, err
     let rightIconComp = null;
     if (showRightIcon) {
         if (rightIconObj) {
-            rightIconComp = <TextInput.Icon name={rightIconObj.name} color={rightIconObj.color} onPress={onRightIconPressed} />
+            rightIconComp = <TextInput.Icon name={rightIconObj.name} color={rightIconObj.color} onPress={onRightIconPressed} disabled={disabled} />
         } else {
             rightIconComp = <TextInput.Icon name="eye-off-outline" color={Colors.GRAY} onPress={onRightIconPressed} />
         }

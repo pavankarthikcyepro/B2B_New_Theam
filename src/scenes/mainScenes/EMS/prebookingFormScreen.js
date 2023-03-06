@@ -7,7 +7,6 @@ import {
   Platform,
   ScrollView,
   Keyboard,
-  ActivityIndicator,
   KeyboardAvoidingView,
   Pressable,
   BackHandler,
@@ -157,6 +156,7 @@ import Geolocation from "@react-native-community/geolocation";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Entypo from "react-native-vector-icons/Entypo";
 import { client } from "../../../networking/client";
+import AnimLoaderComp from "../../../components/AnimLoaderComp";
 const rupeeSymbol = "\u20B9";
 
 const dmsAttachmentsObj = {
@@ -407,6 +407,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [configureRuleData, setConfigureRuleData] = useState("");
   const [isMiniAmountCheck, setisMiniAmountCheck] = useState(true);
   const [otherPriceDropDownIndex, setOtherPriceDropDownIndex] = useState(null);
+  const [receiptDocModel, setReceiptDocModel] = useState(false);
 
   // Edit buttons shows
   useEffect(() => {
@@ -1225,7 +1226,16 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       // Update Attachment details
       saveAttachmentDetailsInLocalObject(dmsLeadDto.dmsAttachments);
       dispatch(updateDmsAttachments(dmsLeadDto.dmsAttachments));
-
+      if (dmsLeadDto.leadStatus === "PREBOOKINGCOMPLETED") {
+        let newInd = dmsLeadDto.dmsAttachments.findIndex((obj) => {
+          return obj.documentType == "receipt" && obj.documentPath != "";
+        });
+        if (newInd < 0) {
+          setReceiptDocModel(true);
+        } else {
+          setReceiptDocModel(false);
+        }
+      }
       // Update Paid Accesories
       if (dmsLeadDto.dmsAccessories.length > 0) {
         let initialValue = 0;
@@ -3567,7 +3577,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   if (!componentAppear) {
     return (
       <View style={styles.initialContainer}>
-        <ActivityIndicator size="small" color={Colors.RED} />
+        <AnimLoaderComp visible={true} />
       </View>
     );
   }
@@ -7051,6 +7061,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
               {/* // 11.Reject */}
             </List.AccordionGroup>
 
+            {/* Lead created by self */}
             {showApproveRejectBtn &&
               !isLeadCreatedBySelf() &&
               userData.isPreBookingApprover &&
@@ -7082,6 +7093,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 </View>
               )}
 
+            {/* User Self Manager */}
             {showApproveRejectBtn && userData.isSelfManager == "Y" ? (
               <View style={styles.actionBtnView}>
                 {!isRejectSelected && (
@@ -7110,25 +7122,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
               </View>
             ) : null}
 
-            {isEditButtonShow && (
-              <View style={styles.actionBtnView}>
-                <Button
-                  mode="contained"
-                  color={Colors.RED}
-                  labelStyle={{ textTransform: "none" }}
-                  onPress={() => {
-                    setIsEdit(true);
-                    setShowApproveRejectBtn(true);
-                    // new conditions
-                    setIsEditButtonShow(false);
-                    setIsSubmitCancelButtonShow(true);
-                  }}
-                >
-                  EDIT
-                </Button>
-              </View>
-            )}
-
             {isSubmitShow() && (
               <View style={styles.actionBtnView}>
                 <Button
@@ -7136,7 +7129,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   style={{ width: 120 }}
                   color={Colors.BLACK}
                   labelStyle={{ textTransform: "none" }}
-                  onPress={() => setIsDropSelected(true)}
+                  onPress={() => {
+                    setIsDropSelected(true);
+                    setOpenAccordian("10");
+                    setTimeout(() => {
+                      scrollRef.current.scrollToEnd({ animated: true });
+                    }, 500);
+                  }}
                 >
                   Cancel
                 </Button>
@@ -7155,46 +7154,79 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             )}
 
             {showPrebookingPaymentSection &&
-              !userData.isManager &&
-              !isDropSelected && (
-                <>
-                  {!isEdit && uploadedImagesDataObj.receipt?.fileName && (
-                    <View style={styles.actionBtnView}>
-                      <Button
-                        mode="contained"
-                        // style={{ width: 120 }}
-                        color={Colors.BLACK}
-                        // disabled={selector.isLoading}
-                        labelStyle={{ textTransform: "none" }}
-                        onPress={() => setIsDropSelected(true)}
-                      >
-                        Drop
-                      </Button>
-                      <Button
-                        mode="contained"
-                        color={Colors.RED}
-                        // disabled={
-                        //     uploadedImagesDataObj.receipt
-                        //         ? selector.isLoading == true
-                        //             ? true
-                        //             : false
-                        //         : true
-                        // }
-                        labelStyle={{ textTransform: "none" }}
-                        onPress={() => {
-                          isProceedToBookingClicked = true;
-                          proceedToBookingClicked();
-                        }}
-                      >
-                        Proceed To Booking View
-                      </Button>
-                    </View>
-                  )}
-                </>
-              )}
+            !userData.isManager &&
+            !isSubmitShow() &&
+            !isDropSelected ? (
+              <View style={styles.actionBtnView}>
+                <Button
+                  mode="contained"
+                  color={Colors.BLACK}
+                  labelStyle={{ textTransform: "none", fontSize: 10 }}
+                  onPress={() => {
+                    setIsDropSelected(true);
+                    setOpenAccordian("10");
+                    setIsEditButtonShow(false);
+                    setTimeout(() => {
+                      scrollRef.current.scrollToEnd({ animated: true });
+                    }, 500);
+                  }}
+                >
+                  Drop
+                </Button>
+                <Button
+                  mode="contained"
+                  color={Colors.RED}
+                  labelStyle={{ textTransform: "none", fontSize: 10 }}
+                  onPress={() => {
+                    setIsEdit(true);
+                    setShowApproveRejectBtn(true);
+                    setIsEditButtonShow(false);
+                    setIsSubmitCancelButtonShow(true);
+                  }}
+                >
+                  Edit
+                </Button>
+                <Button
+                  mode="contained"
+                  color={Colors.RED}
+                  labelStyle={{ textTransform: "none", fontSize: 10 }}
+                  onPress={() => {
+                    isProceedToBookingClicked = true;
+                    proceedToBookingClicked();
+                  }}
+                >
+                  Proceed To Booking View
+                </Button>
+              </View>
+            ) : isEditButtonShow ? (
+              <View style={styles.actionBtnView}>
+                <Button
+                  mode="contained"
+                  color={Colors.RED}
+                  labelStyle={{ textTransform: "none" }}
+                  onPress={() => {
+                    setIsEdit(true);
+                    setShowApproveRejectBtn(true);
+                    // new conditions
+                    setIsEditButtonShow(false);
+                    setIsSubmitCancelButtonShow(true);
+                  }}
+                >
+                  Edit
+                </Button>
+              </View>
+            ) : null}
 
             {isDropSelected && (
               <View style={styles.prebookingBtnView}>
+                <Button
+                  mode="contained"
+                  color={Colors.RED}
+                  labelStyle={{ textTransform: "none" }}
+                  onPress={() => setIsDropSelected(false)}
+                >
+                  Back
+                </Button>
                 <Button
                   mode="contained"
                   color={Colors.RED}
@@ -7209,6 +7241,66 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+
+      <Modal
+        animationType="fade"
+        visible={receiptDocModel}
+        onRequestClose={() => setReceiptDocModel(false)}
+        transparent={true}
+      >
+        <View style={styles.modelMainContainer}>
+          <View style={styles.modelContainer}>
+            <View style={styles.closeContainer}>
+              <IconButton
+                icon="close-circle"
+                color={Colors.RED}
+                style={{ margin: 0 }}
+                size={25}
+                onPress={() => {
+                  setReceiptDocModel(false);
+                  // setIsEdit(true);
+                  setShowApproveRejectBtn(true);
+                  // new conditions
+                  setIsEditButtonShow(false);
+                  setIsSubmitCancelButtonShow(true);
+                }}
+              />
+            </View>
+
+            <View style={styles.recDocTitleContainer}>
+              <Text style={styles.recDocTitleText}>
+                Please upload receipt or Edit details
+              </Text>
+            </View>
+
+            <View style={styles.photoOptionContainer}>
+              <TouchableOpacity
+                style={styles.photoOptionBtn}
+                onPress={() => {
+                  setReceiptDocModel(false);
+                  setOpenAccordian("12");
+                  scrollToPos(12);
+                }}
+              >
+                <Text style={styles.photoOptionBtnText}>Upload Recepit</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.photoOptionBtn, { paddingHorizontal: 30 }]}
+                onPress={() => {
+                  setReceiptDocModel(false);
+                  setIsEdit(true);
+                  setShowApproveRejectBtn(true);
+                  // new conditions
+                  setIsEditButtonShow(false);
+                  setIsSubmitCancelButtonShow(true);
+                }}
+              >
+                <Text style={styles.photoOptionBtnText}>Edit</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
 
       <Modal
         animationType="fade"
@@ -7393,7 +7485,7 @@ const styles = StyleSheet.create({
   prebookingBtnView: {
     marginTop: 20,
     flexDirection: "row",
-    justifyContent: "center",
+    justifyContent: "space-around",
     alignItems: "center",
   },
   selectedImageBckVw: {
@@ -7526,5 +7618,51 @@ const styles = StyleSheet.create({
     color: Colors.WHITE,
     fontSize: 14,
     fontWeight: "600",
+  },
+
+  modelMainContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  modelContainer: {
+    width: "90%",
+    borderRadius: 10,
+    backgroundColor: Colors.WHITE,
+    padding: 15,
+    alignSelf: "center",
+  },
+  closeContainer: {
+    position: "absolute",
+    right: 0,
+    top: -35,
+  },
+  recDocTitleContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  recDocTitleText: {
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  photoOptionContainer: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    alignItems: "center",
+    marginTop: 7,
+  },
+  chooseTitleText: {
+    marginTop: 15,
+    alignSelf: "center"
+  },
+  photoOptionBtn: {
+    borderRadius: 5,
+    backgroundColor: Colors.RED,
+    padding: 10,
+  },
+  photoOptionBtnText: {
+    color: Colors.WHITE,
   },
 });

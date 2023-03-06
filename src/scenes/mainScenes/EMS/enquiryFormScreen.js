@@ -16,7 +16,6 @@ import {
   ScrollView,
   Pressable,
   Keyboard,
-  ActivityIndicator,
   KeyboardAvoidingView,
   Alert,
   BackHandler,
@@ -177,6 +176,7 @@ import {
 } from "../../../jsonData/preEnquiryScreenJsonData";
 import Fontisto from "react-native-vector-icons/Fontisto";
 import { client } from "../../../networking/client";
+import AnimLoaderComp from "../../../components/AnimLoaderComp";
 
 const theme = {
   ...DefaultTheme,
@@ -2885,7 +2885,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   if (!componentAppear) {
     return (
       <View style={styles.initialContainer}>
-        <ActivityIndicator size="small" color={Colors.RED} />
+        <AnimLoaderComp visible={true} />
       </View>
     );
   }
