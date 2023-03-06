@@ -185,7 +185,7 @@ const HomeScreen = ({ route, navigation }) => {
       selector.isModalVisible
       // && !isEmpty(initialPosition)
     ) {
-      // getDetails(); // Attendance POP up
+      getDetails(); // Attendance POP up
     }
   }, [selector.isModalVisible, initialPosition]);
 
@@ -1191,13 +1191,13 @@ const HomeScreen = ({ route, navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <RenderModal />
-      {/* <AttendanceFromSelf
+      <AttendanceFromSelf
         visible={attendance}
         showReason={reason}
         inVisible={() => {
           setAttendance(false);
         }}
-      /> */}
+      />
       <DropDownComponant
         visible={showDropDownModel}
         headerTitle={dropDownTitle}

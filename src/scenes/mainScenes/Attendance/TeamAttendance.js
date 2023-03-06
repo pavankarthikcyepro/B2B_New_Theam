@@ -60,88 +60,6 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
   const [allParameters, setAllParameters] = useState([]);
   const [dropdownList, setDropdownList] = useState({});
   const [employeeList, setEmployeeList] = useState({});
-  const data = [
-    {
-      role: "Sales Manager",
-      employee: [
-        {
-          profilePic:
-            "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg",
-          empId: 105,
-          orgID: 18,
-          empName: "Suresh",
-        },
-        {
-          profilePic:
-            "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg",
-          empId: 104,
-          orgID: 18,
-          empName: "Suresh",
-        },
-        {
-          profilePic:
-            "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg",
-          empId: 106,
-          orgID: 18,
-          empName: "Suresh",
-        },
-        {
-          profilePic:
-            "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg",
-          empId: 109,
-          orgID: 18,
-          empName: "Suresh",
-        },
-      ],
-    },
-    {
-      role: "Sales Consultant",
-      employee: [
-        {
-          profilePic:
-            "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg",
-          empId: 90,
-          orgID: 18,
-          empName: "Suresh",
-        },
-        {
-          profilePic:
-            "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg",
-          empId: 91,
-          orgID: 18,
-          empName: "Suresh",
-        },
-        {
-          profilePic:
-            "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg",
-          empId: 92,
-          orgID: 18,
-          empName: "Suresh",
-        },
-        {
-          profilePic:
-            "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg",
-          empId: 93,
-          orgID: 18,
-          empName: "Suresh",
-        },
-        {
-          profilePic:
-            "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg",
-          empId: 94,
-          orgID: 18,
-          empName: "Suresh",
-        },
-        {
-          profilePic:
-            "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg",
-          empId: 95,
-          orgID: 18,
-          empName: "Suresh",
-        },
-      ],
-    },
-  ];
 
   useEffect(() => {
     getInitialParameters();
@@ -191,10 +109,14 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
           data?.length > 0
             ? data
             : [(selectedLocation.id, selectedDealerCode.id)];
+        let endDate = selector.selectedDate.endDate;
+        let startDate = selector.selectedDate.startDate;
         const response = await client.post(
           URL.GET_EMPLOYEES_DROP_DOWN_DATA_FOR_ATTENDANCE(
             jsonObj.orgId,
-            jsonObj.empId
+            jsonObj.empId,
+            startDate,
+            endDate
           ),
           payload
         );
