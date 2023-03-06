@@ -75,6 +75,8 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
   useEffect(() => {
     if (selector.selectedIDS.length > 0) {
       getEmployeeList(selector.selectedIDS);
+    }else{
+      setEmployeeList({});
     }
   }, [selector.selectedIDS]);
 
