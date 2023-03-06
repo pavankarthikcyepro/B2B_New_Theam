@@ -13,6 +13,7 @@ export const NotificationItem = ({ title, date, onPress, icon, style, isFlag }) 
   let firstStr = "";
   let secStr = "";
   let thirdStr = "";
+  let secStrCount = 0;
 
   if (conversionIndex >= 0 && perIndex >= 0) {
     firstStr = title.slice(0, conversionIndex);
@@ -29,10 +30,14 @@ export const NotificationItem = ({ title, date, onPress, icon, style, isFlag }) 
   const consEndIndex = title.indexOf("]");
 
   if (consStartIndex >= 0 && consEndIndex >= 0) {
-    firstStr = title.slice(0, consStartIndex) + "\n";
+    firstStr = title.slice(0, consStartIndex);
     secStr = title.slice(consStartIndex + 1, consEndIndex);
     thirdStr = title.slice(consEndIndex + 1, title.length);
     secStr = secStr.split(", ").join(",\n");
+    secStrCount = title
+      .slice(consStartIndex + 1, consEndIndex)
+      .split(",").length;
+    firstStr = firstStr + (secStrCount <= 5 ? "\n" : "");
   }
 
   return (
@@ -51,7 +56,7 @@ export const NotificationItem = ({ title, date, onPress, icon, style, isFlag }) 
                     : null,
                 ]}
               >
-                {secStr}
+                {secStrCount > 5 ? secStrCount : secStr}
               </Text>
               <Text style={styles.title}>{thirdStr}</Text>
             </ReadMore>
