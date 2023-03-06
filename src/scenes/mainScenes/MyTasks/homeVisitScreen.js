@@ -109,6 +109,9 @@ const HomeVisitScreen = ({ route, navigation }) => {
   useEffect(() => {
     getAsyncStorageData();
     dispatch(getTaskDetailsApi(taskId));
+    return () => {
+      dispatch(clearState());
+    }
   }, []);
 
   useEffect(() => {
@@ -283,16 +286,16 @@ const HomeVisitScreen = ({ route, navigation }) => {
     }
 
     newTaskObj.taskUpdatedTime = convertDateStringToMillisecondsUsingMoment(
-      `${updateTime} ${moment().format("HH:mm")}`,
-      "DD/MM/YYYY HH:mm"
-    );
-
-    newTaskObj.taskActualStartTime = convertDateStringToMillisecondsUsingMoment(
       `${updateTime} ${
         selector.next_follow_time
           ? selector.next_follow_time
           : moment().format("HH:mm")
       }`,
+      "DD/MM/YYYY HH:mm"
+    );
+
+    newTaskObj.taskActualStartTime = convertDateStringToMillisecondsUsingMoment(
+      `${updateTime} ${moment().format("HH:mm")}`,
       "DD/MM/YYYY HH:mm"
     );
 

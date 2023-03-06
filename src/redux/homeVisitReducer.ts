@@ -169,8 +169,11 @@ const slice = createSlice({
           startDate,
           "DD/MM/YYYY"
         );
+        const updateDate = taskObj.taskUpdatedTime
+          ? taskObj.taskUpdatedTime
+          : "";
         state.next_follow_time = convertTimeStampToDateString(
-          startDate,
+          updateDate,
           "HH:mm "
         );
         const endDate = taskObj.taskActualEndTime
