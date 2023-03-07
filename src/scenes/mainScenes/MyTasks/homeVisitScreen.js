@@ -66,14 +66,14 @@ const CELL_COUNT = 4;
 const screenWidth = Dimensions.get("window").width;
 const otpViewHorizontalPadding = (screenWidth - (160 + 80)) / 2;
 
-const LocalButtonComp = ({ title, onPress, disabled }) => {
+const LocalButtonComp = ({ title, onPress, disabled, styles, textStyles }) => {
   return (
     <Button
-      style={{ width: 120 }}
+      style={{ width: 120, ...styles }}
       mode="contained"
       color={Colors.RED}
       disabled={disabled}
-      labelStyle={{ textTransform: "none" }}
+      labelStyle={{ textTransform: "none", ...textStyles }}
       onPress={onPress}
     >
       {title}
@@ -647,80 +647,6 @@ const HomeVisitScreen = ({ route, navigation }) => {
           ) : null}
         </View>
 
-        {!isCloseSelected && !isViewMode() ? (
-          // <View style={styles.view1}>
-          //   <Button
-          //     mode="contained"
-          //     style={{ width: 120 }}
-          //     color={Colors.RED}
-          //     disabled={selector.is_loading_for_task_update}
-          //     labelStyle={{ textTransform: "none" }}
-          //     onPress={updateTask}
-          //   >
-          //     Update
-          //   </Button>
-          //   <Button
-          //     mode="contained"
-          //     style={{ width: 120 }}
-          //     color={Colors.RED}
-          //     disabled={selector.is_loading_for_task_update}
-          //     labelStyle={{ textTransform: "none" }}
-          //     onPress={closeTask}
-          //   >
-          //     Close
-          //   </Button>
-
-          //   <Button
-          //     mode="contained"
-          //     style={{ width: 120 }}
-          //     color={Colors.RED}
-          //     disabled={selector.is_loading_for_task_update}
-          //     labelStyle={{ textTransform: "none" }}
-          //     onPress={cancelTask}
-          //   >
-          //     Cancel
-          //   </Button>
-          //   <Button
-          //     mode="contained"
-          //     style={{ width: 120 }}
-          //     color={Colors.RED}
-          //     disabled={selector.is_loading_for_task_update}
-          //     labelStyle={{ textTransform: "none" }}
-          //     onPress={rescheduleTask}
-          //   >
-          //     Reschedule
-          //   </Button>
-          // </View>
-
-          <View>
-            <View style={styles.view1}>
-              <LocalButtonComp
-                title={"Update"}
-                onPress={updateTask}
-                disabled={selector.is_loading_for_task_update}
-              />
-              <LocalButtonComp
-                title={"Close"}
-                onPress={closeTask}
-                disabled={selector.is_loading_for_task_update}
-              />
-            </View>
-
-            <View style={styles.view1}>
-              <LocalButtonComp
-                title={"Cancel"}
-                onPress={cancelTask}
-                disabled={selector.is_loading_for_task_update}
-              />
-              <LocalButtonComp
-                title={"Reschedule"}
-                onPress={rescheduleTask}
-                disabled={selector.is_loading_for_task_update}
-              />
-            </View>
-          </View>
-        ) : null}
-
         {isCloseSelected ? (
           <View style={[styles.view1, { marginTop: 30 }]}>
             <Button
@@ -744,6 +670,47 @@ const HomeVisitScreen = ({ route, navigation }) => {
               Resend
             </Button>
           </View>
+        ) : !isCloseSelected && !isViewMode() ? (
+          selector.customer_remarks ? (
+            <View>
+              <View style={styles.view1}>
+                <LocalButtonComp
+                  title={"Close"}
+                  onPress={closeTask}
+                  disabled={selector.is_loading_for_task_update}
+                  styles={styles.btnContainer}
+                  textStyles={styles.btnTextStyles}
+                />
+                <LocalButtonComp
+                  title={"Update Info"}
+                  onPress={updateTask}
+                  disabled={selector.is_loading_for_task_update}
+                  styles={styles.btnContainer}
+                  textStyles={styles.btnTextStyles}
+                />
+                <LocalButtonComp
+                  title={"Reschedule"}
+                  onPress={rescheduleTask}
+                  disabled={selector.is_loading_for_task_update}
+                  styles={styles.btnContainer}
+                  textStyles={styles.btnTextStyles}
+                />
+              </View>
+            </View>
+          ) : (
+            <View style={styles.view1}>
+              <LocalButtonComp
+                title={"Cancel"}
+                onPress={() => navigation.goBack()}
+                disabled={selector.is_loading_for_task_update}
+              />
+              <LocalButtonComp
+                title={"Submit"}
+                onPress={updateTask}
+                disabled={selector.is_loading_for_task_update}
+              />
+            </View>
+          )
         ) : null}
       </ScrollView>
       <LoaderComponent visible={loading} />
@@ -764,20 +731,21 @@ const styles = StyleSheet.create({
   view1: {
     marginTop: 10,
     flexDirection: "row",
-    justifyContent: "space-evenly",
+    justifyContent: "space-around",
     alignItems: "center",
+    marginHorizontal: 8,
   },
   dropdownContainer: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     padding: 8,
     // borderWidth: 1,
-    width: '100%',
+    width: "100%",
     height: 50,
-    borderRadius: 5
+    borderRadius: 5,
   },
   dropdown: {
     height: 50,
-    borderColor: 'gray',
+    borderColor: "gray",
     borderWidth: 0.5,
     borderRadius: 8,
     paddingHorizontal: 8,
@@ -786,8 +754,8 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   label: {
-    position: 'absolute',
-    backgroundColor: 'white',
+    position: "absolute",
+    backgroundColor: "white",
     left: 22,
     top: 8,
     zIndex: 999,
@@ -796,12 +764,12 @@ const styles = StyleSheet.create({
   },
   placeholderStyle: {
     fontSize: 16,
-    color: Colors.GRAY
+    color: Colors.GRAY,
   },
   selectedTextStyle: {
     fontSize: 16,
-    color: '#000',
-    fontWeight: '400'
+    color: "#000",
+    fontWeight: "400",
   },
   iconStyle: {
     width: 20,
@@ -821,5 +789,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     paddingLeft: 12,
     paddingBottom: 2,
+  },
+  btnContainer: {
+    width: "29%"
+  },
+  btnTextStyles: {
+    fontSize: 11
   },
 });
