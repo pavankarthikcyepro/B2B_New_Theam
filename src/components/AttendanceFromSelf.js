@@ -96,7 +96,7 @@ const AttendanceFromSelf = ({
         let branchs = selector.filter_drop_down_data[
           "Dealer Code"
         ]?.sublevels?.filter((i) => {
-          vals.includes(i.id)== true
+          vals.includes(i.id) == true;
         });
         setDealerCodes(branchs);
         setLocation(selector.filter_drop_down_data["Location"]?.sublevels);
@@ -212,6 +212,8 @@ const AttendanceFromSelf = ({
           reason: reason ? reason : "",
           punchIn: present ? n : workFromHome ? n : null,
           punchOut: null,
+          dealerCodeLogin:userData?.branchs?.length > 1?selectedDealerCode.id: null,
+          dealerCodeLogout:null,
         };
         var d = new Date();
         const response = await client.get(
@@ -286,6 +288,9 @@ const AttendanceFromSelf = ({
           : present && endBetween <= now && now <= endDate2
           ? n
           : null,
+        dealerCodeLogin: json[json.length - 1].dealerCodeLogin,
+        dealerCodeLogout:
+          userData?.branchs?.length > 1 ? selectedDealerCode.id : null,
       };
       const updateData = await client.put(
         URL.UPDATE_EMPLOYEE_ATTENDANCE(json[json.length - 1].id),
@@ -450,7 +455,7 @@ const AttendanceFromSelf = ({
                     console.log(item);
                     setSelectedDealerCode(item);
                   }}
-                  data={DealerCodes || []}
+                  data={DealerCodes.filter((i) => i.refParentId == selectedLocation.id) || []}
                   labelField={"name"}
                   valueField={"name"}
                   placeholder={"Dealer Code"}
