@@ -897,7 +897,13 @@ const TargetScreen = ({ route }) => {
   }
 
   function navigateToDropLostCancel(params) {
-    navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis);
+  
+    navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
+      screen: "DROP_ANALYSIS",
+      params: { emp_id: params, fromScreen: "targetScreen1", dealercodes: selector.receptionistFilterIds.dealerCodes },
+    });
+    
+
   }
   const renderItem = (item, index) => {
 
@@ -2977,7 +2983,8 @@ const TargetScreen = ({ route }) => {
                                           >
                                             <Text
                                               onPress={() => {
-                                                navigateToDropLostCancel();
+                                              
+                                                navigateToDropLostCancel([item.emp_id]);
                                               }}
                                               style={{
                                                 padding: 2,
@@ -3035,7 +3042,8 @@ const TargetScreen = ({ route }) => {
                                     <View style={styles.view20}>
                                       <Text
                                         onPress={() => {
-                                          navigateToDropLostCancel();
+                                          navigateToEMS()
+                                          // navigateToDropLostCancel();
                                         }}
                                         style={{
                                           padding: 2,
@@ -3069,7 +3077,14 @@ const TargetScreen = ({ route }) => {
                                     <View style={styles.view20}>
                                       <Text
                                         onPress={() => {
-                                          navigateToDropLostCancel();
+                                         
+                                          let empIdArry = [];
+                                        const temp =   selector.receptionistData.consultantList.map((item)=>{
+                                            empIdArry.push(item.emp_id);
+                                          
+                                        })
+                                         
+                                          navigateToDropLostCancel([...empIdArry]);
                                         }}
                                         style={{
                                           padding: 2,

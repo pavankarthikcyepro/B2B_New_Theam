@@ -344,7 +344,13 @@ const SideMenuScreen = ({ navigation }) => {
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.evtbrlReport);
         break;
       case 113:
-        navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis);
+        // navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, { emp_id: "", fromScreen: "" });
+        // added empty params to reset & manage APi call in dropanalysis screen 
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
+          screen: "DROP_ANALYSIS",
+          params: { emp_id: "", fromScreen: "" },
+        });
+        
         break;
       case 114:
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.liveLeads);

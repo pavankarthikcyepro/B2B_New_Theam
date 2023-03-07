@@ -899,6 +899,16 @@ const TabNavigator = ({ navigation, route }) => {
         name={TabStackIdentifiers.ems}
         component={EmsStackNavigator}
         options={{ title: "EMS" }}
+        // listeners={{
+        //   tabPress: e => navigation.setParams(
+        //     {
+        //       screenName: "",
+        //       params:"" ,
+        //       moduleType: "",
+        //       employeeDetail: "",
+        //       selectedEmpId: ""
+        //   }),
+        // }} 
         // listeners={({ navigation, route }) => ({
         //     tabPress: e => {
         //         if (route.state && route.state.routeNames.length > 0) {
@@ -1070,7 +1080,7 @@ const DropAnalysisStack = createStackNavigator();
 
 const DropAnalysisStackNavigator = ({ navigation }) => {
   return (
-    <DropAnalysisStack.Navigator screenOptions={screeOptionStyle}>
+    <DropAnalysisStack.Navigator screenOptions={screeOptionStyle} initialRouteName={"DROP_ANALYSIS"} >
       <DropAnalysisStack.Screen
         name={"DROP_ANALYSIS"}
         component={DropAnalysisScreen}
@@ -1087,6 +1097,7 @@ const DropAnalysisStackNavigator = ({ navigation }) => {
             );
           },
         }}
+        initialParams={{ emp_id: "", fromScreen: "" }}
       />
       <DropAnalysisStack.Screen
         name={"DROP_ANALYSIS_HISTORY"}

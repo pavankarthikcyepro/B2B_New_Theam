@@ -108,6 +108,13 @@ const EMSTopTabNavigatorTwo = () => {
             <Badge title={"LEADS"} focused={focused} countList={leadList_totoalElemntData} />
           ),
         }}
+        // initialParams={{
+        //   screenName : "",
+        //   moduleType: "",
+        //   employeeDetail: "",
+        //   selectedEmpId: "",
+        //   params:""
+        // }}
       />
       {/*<EMSTopTab.Screen*/}
       {/*  name={EmsTopTabNavigatorIdentifiers.enquiry}*/}

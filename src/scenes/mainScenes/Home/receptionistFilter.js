@@ -456,7 +456,9 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
         return ;
       // navigation.goBack(); // NEED TO COMMENT FOR ASSOCIATE FILTER
       }
-      navigation.goBack(); // NEED TO COMMENT FOR ASSOCIATE FILTER
+      // navigation.goBack(); // NEED TO COMMENT FOR ASSOCIATE FILTER
+      // navigation.navigate()
+      navigation.navigate("Home");
     }
   };
 

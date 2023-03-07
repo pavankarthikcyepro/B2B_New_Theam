@@ -341,6 +341,12 @@ const LeadsScreen = ({ route, navigation }) => {
           setSubMenu([]);
         });
     }
+
+    // if(route?.params?.fromScreen ==="Home"){
+    //     //  todo call new api here 
+
+    // }
+
   }, [route.params]);
 
   const defualtCall = async (tempStores, leadStage, leadStatus) => {

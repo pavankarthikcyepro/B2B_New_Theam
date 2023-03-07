@@ -94,6 +94,7 @@ import { GoogleMapKey } from "../service";
 
 // Dev End Points with JWT
 export const baseUrl = "https://stage-api.cyepro.com/";
+// export const baseUrl = "http://dev-api.cyepro.com/";
 export const auth_url = baseUrl + "auth";
 export const hrms_url = baseUrl + "hrms";
 export const inventory_url = baseUrl + "inventory";
@@ -415,6 +416,7 @@ const URL = {
   LEAD_DROPPED: () => sales_url + "/lead",
 
   DROP_ANALYSIS_LIST_FILTER: () => sales_url + "/lead-drop/leadlist",
+  DROP_ANALYSIS_LIST_REDIRECTIONS: () => sales_url + "/lead-drop/receptionist/leadlist",
 
   UPDATE_BULKAPPROVAL: () => {
     return sales_url + "/lead-drop/bulkdrop";
