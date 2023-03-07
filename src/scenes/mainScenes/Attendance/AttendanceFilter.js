@@ -40,6 +40,7 @@ import { AppNavigator } from "../../../navigations";
 import { DropDown } from "../TargetSettingsScreen/TabScreen/dropDown";
 import { AttendanceTopTabNavigatorIdentifiers } from "../../../navigations/attendanceTopTabNavigator";
 import AnimLoaderComp from "../../../components/AnimLoaderComp";
+import _ from "lodash";
 
 const screenWidth = Dimensions.get("window").width;
 const buttonWidth = (screenWidth - 100) / 2;
@@ -113,21 +114,9 @@ const AttendanceFilter = ({ route, navigation }) => {
       for (let key in selector.filter_drop_down_data) {
         names.push(key);
       }
-      setNameKeyList(names);
       setTotalDataObj(selector.filter_drop_down_data);
-      // if (selector.selectedIDS.length > 0) {
-      //   let condition = selector.filter_drop_down_data[
-      //     names[names.length - 1]
-      //   ].sublevels.filter(
-      //     (e) => e.id === selector.selectedIDS[selector.selectedIDS.length - 1]
-      //   );
-      //   console.log("condition", condition);
-      //   setTimeout(() => {
-      //     updateSelectedItems(condition[0], 4);
-      //   }, 2000);
-      // }
+      setNameKeyList(names);
     }
-
     const currentDate = moment().format(dateFormat);
     const monthFirstDate = moment(currentDate, dateFormat)
       .subtract(0, "months")
@@ -139,7 +128,41 @@ const AttendanceFilter = ({ route, navigation }) => {
       .format(dateFormat);
     setFromDate(monthFirstDate);
     setToDate(monthLastDate);
+    setTimeout(() => {
+      Added();
+    }, 2000);
   }, [selector.filter_drop_down_data]);
+
+  useEffect(() => {
+    if (!_.isEmpty(totalDataObj) && nameKeyList.length > 0) {
+      // Added();
+      addTodo();
+    }
+  }, [nameKeyList]);
+
+  const addTodo = useCallback(() => {
+    Added();
+  }, [nameKeyList]);
+
+  function Added() {
+    if (!_.isEmpty(totalDataObj) && nameKeyList) {
+      if (selector.selectedIDS.length > 0) {
+        let condition = selector.filter_drop_down_data[
+          nameKeyList[nameKeyList.length - 1]
+        ].sublevels.filter(
+          (e) => e.id === selector.selectedIDS[selector.selectedIDS.length - 1]
+        );
+        updateSelectedItems(condition[0], 4);
+        if (
+          selector.selectedDate.startDate &&
+          selector.selectedDate.startDate
+        ) {
+          setFromDate(selector.selectedDate.startDate);
+          setToDate(selector.selectedDate.startDate);
+        }
+      }
+    }
+  }
 
   //   useEffect(() => {
   //     if (nameKeyList.length > 0) {

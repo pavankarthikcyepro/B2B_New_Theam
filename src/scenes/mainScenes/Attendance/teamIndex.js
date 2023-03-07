@@ -554,7 +554,9 @@ const AttendanceTeamMemberScreen = ({ route, navigation }) => {
           )
         );
         const json = await response.json();
-        const response1 = await client.get(URL.GET_HOLIDAYS(jsonObj.orgId));
+        const response1 = await client.get(
+          URL.GET_HOLIDAYS(jsonObj.orgId, start, end)
+        );
         const json1 = await response1.json();
         if (json) {
           let newArray = [];
