@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { SafeAreaView, View, Text, StyleSheet, Keyboard, Dimensions, KeyboardAvoidingView } from "react-native";
+import { SafeAreaView, View, Text, StyleSheet, Keyboard, Dimensions, KeyboardAvoidingView, TouchableOpacity } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { TextinputComp, LoaderComponent, DatePickerComponent } from "../../../components";
-import { Button } from "react-native-paper";
+import { Button, IconButton } from "react-native-paper";
 import { useSelector, useDispatch } from "react-redux";
 import { Dropdown } from 'react-native-element-dropdown';
 import Geolocation from '@react-native-community/geolocation';
@@ -377,6 +377,29 @@ const HomeVisitScreen = ({ route, navigation }) => {
     Keyboard.dismiss();
     setDatePickerMode(mode);
     dispatch(setDatePicker(key));
+  };
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => <HistoryIcon navigation={navigation} />,
+    });
+  }, []);
+
+  const HistoryIcon = ({ navigation }) => {
+    return (
+      <TouchableOpacity
+        onPress={() => navigation.navigate("HOME_HISTORY")}
+        style={styles.historyIconContainer}
+      >
+        <IconButton
+          style={{ marginEnd: 15 }}
+          icon="history"
+          color={Colors.WHITE}
+          size={30}
+        />
+        <Text style={styles.historyCountText}>1</Text>
+      </TouchableOpacity>
+    );
   };
 
   return (
@@ -791,9 +814,18 @@ const styles = StyleSheet.create({
     paddingBottom: 2,
   },
   btnContainer: {
-    width: "29%"
+    width: "29%",
   },
   btnTextStyles: {
-    fontSize: 11
+    fontSize: 11,
+  },
+  historyIconContainer: { flexDirection: "row", alignItems: "center" },
+  historyCountText: {
+    fontSize: 16,
+    color: Colors.PINK,
+    fontWeight: "bold",
+    position: "absolute",
+    top: 9,
+    right: 10,
   },
 });

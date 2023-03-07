@@ -123,6 +123,7 @@ import { ComplaintsTopTabNavigator } from "./complaintsTopTabNavigator";
 import AddEditComplaint from "../scenes/mainScenes/ComplaintTracker/AddEditComplaint";
 import ClosedComplaintList from "../scenes/mainScenes/ComplaintTracker/ClosedComplaintList";
 import * as AsyncStore from "../asyncStore";
+import HomeVisitHistory from "../scenes/mainScenes/MyTasks/homeVisitHistory";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -433,6 +434,7 @@ export const EmsStackIdentifiers = {
   ProformaScreen: "PROFORMA_SCREEN",
   newEnquiry: "NEW_ENQUIRY",
   testDriveHistory: "TEST_HISTORY",
+  homeVisitHistory: "HOME_HISTORY",
   task360HistoryFilter: "TASK_360_HISTORY_FILTER",
 };
 
@@ -459,6 +461,7 @@ export const MyTasksStackIdentifiers = {
   tasksListScreen: "TASKS_LIST_SCREEN",
   myTaskFilterScreen: "MYTASK_FILTER",
   testDriveHistory: "TEST_HISTORY",
+  homeVisitHistory: "HOME_HISTORY",
 };
 
 export const PriceStackIdentifiers = {
@@ -711,6 +714,11 @@ const EmsStackNavigator = ({ navigation }) => {
           title: "Test Drive History",
           // headerRight: () => <TestDriveHistoryIcon navigation={navigation} />,
         }}
+      />
+      <EmsStack.Screen
+        name={EmsStackIdentifiers.homeVisitHistory}
+        component={HomeVisitHistory}
+        options={{ title: "Home Visit History" }}
       />
     </EmsStack.Navigator>
   );
