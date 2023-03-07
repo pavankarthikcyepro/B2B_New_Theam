@@ -25,6 +25,7 @@ import { AppNavigator } from "../navigations";
 import moment from "moment";
 import { monthNamesCap } from "../scenes/mainScenes/Attendance/AttendanceTop";
 import { useSelector } from "react-redux";
+import { showToastRedAlert } from "../utils/toast";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -90,14 +91,12 @@ const AttendanceFromSelf = ({
         const jsonObj = JSON.parse(employeeData);
         setDropDownData(selector.filter_drop_down_data);
         var vals = jsonObj.branchs.map(function (a) {
-          return a.branchId;
+          return a.branchName;
         });
 
         let branchs = selector.filter_drop_down_data[
           "Dealer Code"
-        ]?.sublevels?.filter((i) => {
-          vals.includes(i.id) == true;
-        });
+        ]?.sublevels?.filter((i) => vals.includes(i.name) == true);
         setDealerCodes(branchs);
         setLocation(selector.filter_drop_down_data["Location"]?.sublevels);
       }
@@ -175,6 +174,16 @@ const AttendanceFromSelf = ({
         error = true;
       }
     }
+    if (userData?.branchs?.length > 1) {
+      if (selectedLocation == "") {
+        error = true;
+        showToastRedAlert("Please Select Location");
+      }
+      if (selectedDealerCode == "") {
+        error = true;
+        showToastRedAlert("Please Select Dealer Code");
+      }
+    }
     if (!error) {
       return true;
     } else {
@@ -212,8 +221,12 @@ const AttendanceFromSelf = ({
           reason: reason ? reason : "",
           punchIn: present ? n : workFromHome ? n : null,
           punchOut: null,
-          dealerCodeLogin:userData?.branchs?.length > 1?selectedDealerCode.id: null,
-          dealerCodeLogout:null,
+          dealerCodeLogin:
+            userData?.branchs?.length > 1 ? selectedDealerCode.name : null,
+          // dealerCodeLogout: null,
+          locationLogin:
+            userData?.branchs?.length > 1 ? selectedLocation.name : null,
+          // locationLogout: null,
         };
         var d = new Date();
         const response = await client.get(
@@ -290,7 +303,10 @@ const AttendanceFromSelf = ({
           : null,
         dealerCodeLogin: json[json.length - 1].dealerCodeLogin,
         dealerCodeLogout:
-          userData?.branchs?.length > 1 ? selectedDealerCode.id : null,
+          userData?.branchs?.length > 1 ? selectedDealerCode.name : null,
+        locationLogin: json[json.length - 1].locationLogin,
+        locationLogout:
+          userData?.branchs?.length > 1 ? selectedLocation.name : null,
       };
       const updateData = await client.put(
         URL.UPDATE_EMPLOYEE_ATTENDANCE(json[json.length - 1].id),
@@ -314,6 +330,16 @@ const AttendanceFromSelf = ({
 
   const LogOut = async () => {
     try {
+      if (userData?.branchs?.length > 1) {
+        if (selectedLocation == "") {
+          showToastRedAlert("Please Select Location");
+          return;
+        }
+        if (selectedDealerCode == "") {
+          showToastRedAlert("Please Select Dealer Code");
+          return;
+        }
+      }
       let employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
       );
@@ -437,7 +463,7 @@ const AttendanceFromSelf = ({
                     setSelectedLocation(item);
                   }}
                   data={location || []}
-                  value={selectedLocation ? selectedLocation : ""}
+                  value={selectedLocation ? selectedLocation.name : ""}
                   labelField={"name"}
                   valueField={"name"}
                   placeholder={"Location"}
@@ -448,14 +474,18 @@ const AttendanceFromSelf = ({
                 />
                 <Dropdown
                   label={"Dealer Code"}
-                  value={selectedDealerCode ? selectedDealerCode : ""}
+                  value={selectedDealerCode ? selectedDealerCode.name : ""}
                   visible={true}
                   underLine
                   onChange={(item) => {
                     console.log(item);
                     setSelectedDealerCode(item);
                   }}
-                  data={DealerCodes.filter((i) => i.refParentId == selectedLocation.id) || []}
+                  data={
+                    DealerCodes.filter(
+                      (i) => i.refParentId == selectedLocation.id
+                    ) || []
+                  }
                   labelField={"name"}
                   valueField={"name"}
                   placeholder={"Dealer Code"}
