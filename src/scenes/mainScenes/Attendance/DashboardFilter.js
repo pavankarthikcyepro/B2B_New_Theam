@@ -120,7 +120,6 @@ const FilterAttendanceDashBoardScreen = ({ route, navigation }) => {
       for (let key in selector.filter_drop_down_data) {
         names.push(key);
       }
-      console.log(names);
       setNameKeyList(names);
       setTotalDataObj(selector.filter_drop_down_data);
     }

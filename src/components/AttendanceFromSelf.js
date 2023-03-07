@@ -93,11 +93,12 @@ const AttendanceFromSelf = ({
         var vals = jsonObj.branchs.map(function (a) {
           return a.branchName;
         });
-
         let branchs = selector.filter_drop_down_data[
           "Dealer Code"
         ]?.sublevels?.filter((i) => vals.includes(i.name) == true);
-        setDealerCodes(branchs);
+        setDealerCodes(
+          selector.filter_drop_down_data["Dealer Code"]?.sublevels
+        );
         setLocation(selector.filter_drop_down_data["Location"]?.sublevels);
       }
     }
@@ -222,10 +223,14 @@ const AttendanceFromSelf = ({
           punchIn: present ? n : workFromHome ? n : null,
           punchOut: null,
           dealerCodeLogin:
-            userData?.branchs?.length > 1 ? selectedDealerCode.name : null,
+            userData?.branchs?.length > 1
+              ? selectedDealerCode.name
+              : userData.branchs[0].branchName,
           // dealerCodeLogout: null,
           locationLogin:
-            userData?.branchs?.length > 1 ? selectedLocation.name : null,
+            userData?.branchs?.length > 1
+              ? selectedLocation.name
+              : userData.branchs[0].location,
           // locationLogout: null,
         };
         var d = new Date();
@@ -303,10 +308,14 @@ const AttendanceFromSelf = ({
           : null,
         dealerCodeLogin: json[json.length - 1].dealerCodeLogin,
         dealerCodeLogout:
-          userData?.branchs?.length > 1 ? selectedDealerCode.name : null,
+          userData?.branchs?.length > 1
+            ? selectedDealerCode.name
+            : userData.branchs[0].location,
         locationLogin: json[json.length - 1].locationLogin,
         locationLogout:
-          userData?.branchs?.length > 1 ? selectedLocation.name : null,
+          userData?.branchs?.length > 1
+            ? selectedLocation.name
+            : userData.branchs[0].location,
       };
       const updateData = await client.put(
         URL.UPDATE_EMPLOYEE_ATTENDANCE(json[json.length - 1].id),
@@ -459,7 +468,6 @@ const AttendanceFromSelf = ({
                   visible={true}
                   underLine
                   onChange={(item) => {
-                    console.log(item);
                     setSelectedLocation(item);
                   }}
                   data={location || []}
@@ -478,7 +486,6 @@ const AttendanceFromSelf = ({
                   visible={true}
                   underLine
                   onChange={(item) => {
-                    console.log(item);
                     setSelectedDealerCode(item);
                   }}
                   data={

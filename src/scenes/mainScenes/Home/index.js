@@ -978,7 +978,7 @@ const HomeScreen = ({ route, navigation }) => {
           }
         })
         .catch((e) => {
-          console.log("FFFf", e);
+          console.log("Error", e);
           setLoading(false);
         });
     }
