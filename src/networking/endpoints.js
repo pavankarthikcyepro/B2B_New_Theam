@@ -349,8 +349,10 @@ const URL = {
   },
   CUSTOMER_LEAD_REFERENCE: () => sales_url + "/lead-customer-reference",
 
-  GET_DET_FROM_PHONE: (phone, orgId) => sales_url + `/lead/phone/${phone}/${orgId}`,
-  GET_COMPLAIN_FACTOR_DATA: (orgId) => baseUrl + `dfdg/df-get-all/${orgId}/"Active"/${orgId}/ComplaintFactor`,
+  GET_DET_FROM_PHONE: (phone, orgId) =>
+    sales_url + `/lead/phone/${phone}/${orgId}`,
+  GET_COMPLAIN_FACTOR_DATA: (orgId) =>
+    baseUrl + `dfdg/df-get-all/${orgId}/"Active"/${orgId}/ComplaintFactor`,
 
   GET_COMPLAINTS: () => dynamicReports_url + "/v2-generate-query",
   GET_EVENTS: () => {
@@ -495,7 +497,12 @@ const URL = {
       `/employeeTracking/getDetailsByDate/${employeeId}/${orgId}/${date}`
     );
   },
-  GET_EMPLOYEES_DROP_DOWN_DATA_FOR_ATTENDANCE: (orgId, employeeId,startDate,endDate) => {
+  GET_EMPLOYEES_DROP_DOWN_DATA_FOR_ATTENDANCE: (
+    orgId,
+    employeeId,
+    startDate,
+    endDate
+  ) => {
     return (
       baseUrl +
       `dfd/oh/team-attendance/${orgId}/${employeeId}/${startDate}/${endDate}`
@@ -676,8 +683,8 @@ const URL = {
     return `${getEmployeeData}?orgId=${orgId}&branchId=${branchId}&deptId=${deptId}&desigId=${desigId}`;
   },
 
-  GET_DASHBOARD_COUNT_COMPLAINT: ( empId) => {
-    return sales_url +`/complainttracker/getCounts/${empId}`;
+  GET_DASHBOARD_COUNT_COMPLAINT: (empId) => {
+    return sales_url + `/complainttracker/getCounts/${empId}`;
   },
   GEY_COMPLAINT_DET_FROMID: (complaintId) => {
     return sales_url + `/complainttracker/getCt/${complaintId}`;
@@ -765,9 +772,11 @@ const URL = {
       `/${empId}/${orgId}/${start}/${end}`
     );
   },
-  GET_HOLIDAYS: (orgId) => {
+  GET_HOLIDAYS: (orgId, start, end) => {
     return (
-      sales_url + "/employeeHolidayList/getAllHolidayDetails/" + `${orgId}`
+      sales_url +
+      "/employeeHolidayList/getAllHolidayDetails/" +
+      `${orgId}/${start}/${end}`
     );
   },
   NOTIFICATION_LIST: (empId) => {
