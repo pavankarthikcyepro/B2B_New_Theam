@@ -9,7 +9,6 @@ import {
   Image,
   Pressable,
   ScrollView,
-  ActivityIndicator,
 } from "react-native";
 import { Colors } from "../../../styles";
 import { IconButton } from "react-native-paper";
@@ -40,6 +39,8 @@ import { showAlertMessage, showToast } from "../../../utils/toast";
 import { AppNavigator } from "../../../navigations";
 import { DropDown } from "../TargetSettingsScreen/TabScreen/dropDown";
 import { AttendanceTopTabNavigatorIdentifiers } from "../../../navigations/attendanceTopTabNavigator";
+import AnimLoaderComp from "../../../components/AnimLoaderComp";
+import _ from "lodash";
 
 const screenWidth = Dimensions.get("window").width;
 const buttonWidth = (screenWidth - 100) / 2;
@@ -55,7 +56,7 @@ const AcitivityLoader = () => {
         alignItems: "center",
       }}
     >
-      <ActivityIndicator size={"small"} color={Colors.GRAY} />
+      <AnimLoaderComp visible={true} />
     </View>
   );
 };
@@ -113,10 +114,9 @@ const AttendanceFilter = ({ route, navigation }) => {
       for (let key in selector.filter_drop_down_data) {
         names.push(key);
       }
-      setNameKeyList(names);
       setTotalDataObj(selector.filter_drop_down_data);
+      setNameKeyList(names);
     }
-
     const currentDate = moment().format(dateFormat);
     const monthFirstDate = moment(currentDate, dateFormat)
       .subtract(0, "months")
@@ -128,7 +128,41 @@ const AttendanceFilter = ({ route, navigation }) => {
       .format(dateFormat);
     setFromDate(monthFirstDate);
     setToDate(monthLastDate);
+    setTimeout(() => {
+      Added();
+    }, 2000);
   }, [selector.filter_drop_down_data]);
+
+  useEffect(() => {
+    if (!_.isEmpty(totalDataObj) && nameKeyList.length > 0) {
+      // Added();
+      addTodo();
+    }
+  }, [nameKeyList]);
+
+  const addTodo = useCallback(() => {
+    Added();
+  }, [nameKeyList]);
+
+  function Added() {
+    if (!_.isEmpty(totalDataObj) && nameKeyList) {
+      if (selector.selectedIDS.length > 0) {
+        let condition = selector.filter_drop_down_data[
+          nameKeyList[nameKeyList.length - 1]
+        ].sublevels.filter(
+          (e) => e.id === selector.selectedIDS[selector.selectedIDS.length - 1]
+        );
+        updateSelectedItems(condition[0], 4);
+        if (
+          selector.selectedDate.startDate &&
+          selector.selectedDate.startDate
+        ) {
+          setFromDate(selector.selectedDate.startDate);
+          setToDate(selector.selectedDate.startDate);
+        }
+      }
+    }
+  }
 
   //   useEffect(() => {
   //     if (nameKeyList.length > 0) {
@@ -348,6 +382,8 @@ const AttendanceFilter = ({ route, navigation }) => {
       }
     }
     setTotalDataObj({ ...totalDataObjLocal });
+    dispatch(updateTheTeamAttendanceFilter([]));
+    dispatch(updateTheTeamAttendanceFilterDate({}));
   };
 
   const submitBtnClicked = (initialData) => {
@@ -366,7 +402,12 @@ const AttendanceFilter = ({ route, navigation }) => {
         });
       }
     }
-    if (selectedIds.length > 0) {
+
+    let condition = totalDataObj[
+      nameKeyList[nameKeyList.length - 1]
+    ].sublevels.filter((e) => e.selected === true);
+
+    if (condition.length > 0 && selectedIds.length > 0) {
       setIsLoading(true);
       dispatch(updateTheTeamAttendanceFilter(selectedIds));
       dispatch(
@@ -379,69 +420,7 @@ const AttendanceFilter = ({ route, navigation }) => {
       navigation.navigate(AttendanceTopTabNavigatorIdentifiers.team);
       //   getDashboadTableDataFromServer(selectedIds, "LEVEL");
     } else {
-      showToast("Please select any value");
-    }
-  };
-
-  const getDashboadTableDataFromServer = (selectedIds, from) => {
-    const payload = {
-      startDate: fromDate,
-      endDate: toDate,
-      loggedInEmpId: userData.employeeId,
-    };
-    if (from == "LEVEL") {
-      payload["levelSelected"] = selectedIds;
-    } else {
-      payload["empSelected"] = selectedIds;
-    }
-
-    const payload2 = {
-      ...payload,
-      pageNo: 0,
-      size: 5,
-    };
-
-    const payload1 = {
-      orgId: userData.orgId,
-      empId: userData.employeeId,
-      selectedIds: selectedIds,
-    };
-
-    Promise.all([dispatch(getEmployeesDropDownData(payload1))])
-      .then(() => {
-        // Promise.all([
-        // //   dispatch(getLeadSourceTableList(payload)),
-        // //   dispatch(getVehicleModelTableList(payload)),
-        // //   dispatch(getEventTableList(payload)),
-        // //   dispatch(getLostDropChartData(payload)),
-        // //   dispatch(updateFilterDropDownData(totalDataObj)),
-        //   // // Table Data
-        // //   dispatch(getTaskTableList(payload2)),
-        // //   dispatch(getSalesData(payload2)),
-        // //   dispatch(getSalesComparisonData(payload2)),
-        //   // // Target Params Data
-        // //   dispatch(getTargetParametersData(payload2)),
-        // //   dispatch(getTargetParametersEmpDataInsights(payload2)), // Added to filter an Home Screen's INSIGHT
-        // ])
-        //   .then(() => {})
-        //   .catch(() => {
-        //     setIsLoading(false);
-        //   });
-      })
-      .catch(() => {
-        setIsLoading(false);
-      });
-    if (from == "EMPLOYEE") {
-      if (true) {
-        navigation.navigate(AppNavigator.DrawerStackIdentifiers.monthlyTarget, {
-          params: { from: "Filter" },
-        });
-      } else {
-        navigation.goBack();
-      }
-      // navigation.navigate(AppNavigator.TabStackIdentifiers.home, { screen: "Home", params: { from: 'Filter' }, })
-    } else {
-      // navigation.goBack(); // NEED TO COMMENT FOR ASSOCIATE FILTER
+      showToast("Please select Dealer Code");
     }
   };
 
@@ -530,13 +509,6 @@ const AttendanceFilter = ({ route, navigation }) => {
         toDate: toDate,
       },
     });
-    // let selectedID = x[x-1];
-    // return;
-    // if (selectedIds.length > 0) {
-    //   getDashboadTableDataFromServer(selectedIds, "EMPLOYEE");
-    // } else {
-    //   showToast("Please select any value");
-    // }
   };
 
   const updateSelectedDate = (date, key) => {
@@ -604,9 +576,7 @@ const AttendanceFilter = ({ route, navigation }) => {
           renderItem={({ item, index }) => {
             if (index === 0) {
               return (
-                <View
-                  style={styles.view1}
-                >
+                <View style={styles.view1}>
                   <View style={{ width: "48%" }}>
                     <DateSelectItem
                       label={"From Date"}
@@ -803,11 +773,11 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
     alignItems: "center",
   },
-  view1:{
+  view1: {
     flexDirection: "row",
     justifyContent: "space-evenly",
     paddingBottom: 5,
     borderColor: Colors.BORDER_COLOR,
     borderWidth: 1,
-  }
+  },
 });

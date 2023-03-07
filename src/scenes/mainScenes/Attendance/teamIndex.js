@@ -82,6 +82,7 @@ const AttendanceTeamMemberScreen = ({ route, navigation }) => {
     wfh: 0,
     totalTime: "0",
     total: 0,
+    notLoggedIn:0,
   });
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedFromDate, setSelectedFromDate] = useState("");
@@ -342,6 +343,7 @@ const AttendanceTeamMemberScreen = ({ route, navigation }) => {
           wfh: json?.wfh || 0,
           totalTime: json?.totalTime || "0",
           total: json?.total || 0,
+          notLoggedIn: json?.notLoggedIn || 0,
         });
       }
     } catch (error) {}
@@ -495,6 +497,7 @@ const AttendanceTeamMemberScreen = ({ route, navigation }) => {
           wfh: json?.wfh || 0,
           totalTime: json?.totalTime || "0",
           total: json?.total || 0,
+          notLoggedIn: json?.notLoggedIn || 0,
         });
       }
     } catch (error) {}
@@ -526,6 +529,7 @@ const AttendanceTeamMemberScreen = ({ route, navigation }) => {
             wfh: json?.wfh || 0,
             totalTime: json?.totalTime || "0",
             total: json?.total || 0,
+            notLoggedIn: json?.notLoggedIn || 0,
           });
         }
       }
@@ -550,7 +554,9 @@ const AttendanceTeamMemberScreen = ({ route, navigation }) => {
           )
         );
         const json = await response.json();
-        const response1 = await client.get(URL.GET_HOLIDAYS(jsonObj.orgId));
+        const response1 = await client.get(
+          URL.GET_HOLIDAYS(jsonObj.orgId, start, end)
+        );
         const json1 = await response1.json();
         if (json) {
           let newArray = [];
@@ -975,6 +981,18 @@ const AttendanceTeamMemberScreen = ({ route, navigation }) => {
             <View style={styles.parameterCountView}>
               <Text style={styles.parameterText}>{"WFH"}</Text>
               <Text style={styles.parameterText}>{attendanceCount.wfh}</Text>
+            </View>
+          </View>
+          <View style={styles.parameterView}>
+            <View
+              style={{
+                width: 25,
+                marginRight: 5,
+              }}
+            />
+            <View style={styles.parameterCountView}>
+              <Text style={styles.parameterText}>{"No Logged"}</Text>
+              <Text style={styles.parameterText}>{attendanceCount.notLoggedIn}</Text>
             </View>
           </View>
           <View style={styles.parameterView}>

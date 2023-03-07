@@ -20,6 +20,7 @@ import {LeadsFilterComp} from './LeadsFilterComp';
 import { SingleLeadSelectComp } from "./SingleLeadSelectComp";
 import { ProformaTextinputOffers } from "./proformaTextinputOffers";
 import { DropAnalysisSubFilterComp } from "./DropAnalysisSubFilterComp";
+import { ComplaintTrackerSubFilterComp } from "./ComplaintTrackerSubFilterComp";
 
 export {
     ButtonComp,
@@ -42,5 +43,6 @@ export {
     LeadsFilterComp,
     SingleLeadSelectComp,
     ProformaTextinputOffers,
-    DropAnalysisSubFilterComp
+    DropAnalysisSubFilterComp,
+    ComplaintTrackerSubFilterComp,
 };

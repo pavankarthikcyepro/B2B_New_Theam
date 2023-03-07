@@ -14,7 +14,6 @@ import {
   Image,
   Pressable,
   ScrollView,
-  ActivityIndicator,
 } from "react-native";
 import { Colors } from "../../../styles";
 import { IconButton } from "react-native-paper";
@@ -41,6 +40,7 @@ import { showAlertMessage, showToast } from "../../../utils/toast";
 import { AppNavigator } from "../../../navigations";
 import { DropDown } from "../TargetSettingsScreen/TabScreen/dropDown";
 import { AttendanceTopTabNavigatorIdentifiers } from "../../../navigations/attendanceTopTabNavigator";
+import AnimLoaderComp from "../../../components/AnimLoaderComp";
 
 const screenWidth = Dimensions.get("window").width;
 const buttonWidth = (screenWidth - 100) / 2;
@@ -56,7 +56,7 @@ const AcitivityLoader = () => {
         alignItems: "center",
       }}
     >
-      <ActivityIndicator size={"small"} color={Colors.GRAY} />
+      <AnimLoaderComp visible={true} />
     </View>
   );
 };

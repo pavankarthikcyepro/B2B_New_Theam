@@ -21,4 +21,6 @@ export const TARGET_GRAY = "#aaa3a3";
 export const DARK_GREEN = "#14ce40";
 export const GRAY_LIGHT = "#6D6E70";
 export const LIGHT_GRAY2 = "#A5A5A5";
-
+export const BLUE_V2 = "#2c97de";
+export const PURPLE = "#9f31bf";
+export const GREEN_V2 = "#24c23c"

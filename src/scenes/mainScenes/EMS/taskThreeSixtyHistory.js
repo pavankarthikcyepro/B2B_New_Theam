@@ -1,8 +1,9 @@
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Dimensions, FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { IconButton } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
+import AnimLoaderComp from '../../../components/AnimLoaderComp';
 import { EmsStackIdentifiers } from '../../../navigations/appNavigator';
 import { getTaskThreeSixtyHistory ,clearState} from '../../../redux/taskThreeSixtyReducer';
 import { Colors, GlobalStyle } from '../../../styles';
@@ -281,11 +282,7 @@ const TaskThreeSixtyHistory = (props) => {
     return (
       <View style={styles.emptyContainer}>
         {selector.isLoading ? (
-          <ActivityIndicator
-            animating={true}
-            color={Colors.GRAY}
-            size={"small"}
-          />
+          <AnimLoaderComp visible={true} />
         ) : (
           <Text style={styles.noDataText}>No History Found</Text>
         )}
